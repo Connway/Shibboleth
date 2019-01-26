@@ -12,7 +12,7 @@ files
 	"include/wx/aui/tabartmsw.h",
 	"include/wx/aui/barartmsw.h",
 	"include/wx/xrc/xh_aui.h",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/aui/auibar.cpp",
 	"src/aui/auibook.cpp",
 	"src/aui/dockart.cpp",

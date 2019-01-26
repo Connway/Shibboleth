@@ -184,6 +184,7 @@ void ECSArchetype::dirtyHash(void)
 bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 {
 	if (!json.isObject()) {
+		// $TODO: Log error.
 		return false;
 	}
 

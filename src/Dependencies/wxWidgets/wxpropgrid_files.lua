@@ -9,7 +9,7 @@ files
 	"include/wx/propgrid/propgridiface.h",
 	"include/wx/propgrid/propgridpagestate.h",
 	"include/wx/propgrid/props.h",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/propgrid/advprops.cpp",
 	"src/propgrid/editors.cpp",
 	"src/propgrid/manager.cpp",

@@ -33,10 +33,13 @@ class IFile;
 class ECSManager final : public IManager
 {
 public:
-	struct EntityID
+	struct EntityID final
 	{
-		int32_t archetype_index;
+	private:
 		int32_t entity_index;
+		void* entity_page;
+
+		friend class ECSManager;
 	};
 
 	bool init(void) override;
@@ -45,6 +48,12 @@ public:
 	void addArchetype(ECSArchetype&& archetype, const char* name);
 	const ECSArchetype& getArchetype(Gaff::Hash64 name) const;
 	const ECSArchetype& getArchetype(const char* name) const;
+
+	EntityID createEntityByName(Gaff::Hash64 name);
+	EntityID createEntityByName(const char* name);
+
+	EntityID createEntity(const ECSArchetype& archetype);
+	EntityID createEntity(Gaff::Hash64 archetype);
 
 private:
 	struct alignas(16) EntityPage
@@ -65,7 +74,7 @@ private:
 	};
 
 	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
-	VectorMap<Gaff::Hash64, EntityData> _entity_pages;
+	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
 
 	bool loadFile(const char* file_name, IFile* file);
 

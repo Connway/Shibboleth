@@ -10,7 +10,7 @@ files
 	"include/wx/ribbon/panel.h",
 	"include/wx/ribbon/toolbar.h",
 	"include/wx/xrc/xh_ribbon.h",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/ribbon/art_aui.cpp",
 	"src/ribbon/art_internal.cpp",
 	"src/ribbon/art_msw.cpp",

@@ -61,27 +61,58 @@ bool ECSManager::init(void)
 void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
-
-	EntityData& data = _entity_pages[archetype.getHash()];
-	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
-	data.archetype = std::move(archetype);
-
 	ProxyAllocator allocator("ECS");
-	data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
+
+	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
+	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
+	//data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
+	data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
+	data->archetype = std::move(archetype);
 
 	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
+	_entity_pages[archetype.getHash()].reset(data);
 }
 
 const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 name) const
 {
 	const auto it = _archtypes.find(name);
-	GAFF_ASSERT(it && it != _archtypes.end());
-	return _entity_pages.find(it->second)->second.archetype;
+	GAFF_ASSERT(it != _archtypes.end() && it->first == name);
+	return _entity_pages.find(it->second)->second->archetype;
 }
 
 const ECSArchetype& ECSManager::getArchetype(const char* name) const
 {
 	return getArchetype(Gaff::FNV1aHash64String(name));
+}
+
+ECSManager::EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
+{
+	const auto it = _archtypes.find(name);
+	GAFF_ASSERT(it != _archtypes.end() && it->first == name);
+	return createEntity(it->second);
+}
+
+ECSManager::EntityID ECSManager::createEntityByName(const char* name)
+{
+	return createEntityByName(Gaff::FNV1aHash64String(name));
+}
+
+ECSManager::EntityID ECSManager::createEntity(const ECSArchetype& archetype)
+{
+	return createEntity(archetype.getHash());
+}
+
+ECSManager::EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
+{
+	const auto it = _entity_pages.find(archetype);
+	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
+	EntityData& data = *(it->second);
+	
+	EntityID id;
+	id.entity_index = data.num_entities++;
+	id.entity_page = data.entities;
+
+	return id;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)
@@ -93,11 +124,21 @@ bool ECSManager::loadFile(const char*, IFile* file)
 		return false;
 	}
 
+	const Gaff::JSON name = json["name"];
+
+	if (!name.isString()) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	ECSArchetype archetype;
-	archetype.fromJSON(json);
 
-	addArchetype(std::move(archetype), "");
+	if (!archetype.fromJSON(json)) {
+		// $TODO: Log error.
+		return false;
+	}
 
+	addArchetype(std::move(archetype), name.getString());
 	return false;
 }
 

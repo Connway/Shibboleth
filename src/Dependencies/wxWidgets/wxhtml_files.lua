@@ -20,7 +20,7 @@ files
 	"include/wx/htmllbox.h",
 	"include/wx/wxhtml.h",
 	"include/wx/html/forcelnk.h",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/msw/helpbest.cpp",
 	"src/generic/htmllbox.cpp",
 	"src/html/helpctrl.cpp",

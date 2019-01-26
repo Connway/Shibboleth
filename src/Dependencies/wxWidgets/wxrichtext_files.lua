@@ -23,7 +23,7 @@ files
 	"include/wx/richtext/richtextxml.h",
 	"include/wx/xrc/xh_richtext.h",
 	"include/wx/richtext/richtexttabspage.h",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/richtext/richtextbuffer.cpp",
 	"src/richtext/richtextctrl.cpp",
 	"src/richtext/richtextformatdlg.cpp",

@@ -200,7 +200,7 @@ files
 	"src/common/datetimefmt.cpp",
 	"src/common/datstrm.cpp",
 	"src/common/dircmn.cpp",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/common/dynlib.cpp",
 	"src/common/dynload.cpp",
 	"src/common/encconv.cpp",
