@@ -37,6 +37,9 @@ enum
     // right clicking the header
     wxHD_ALLOW_HIDE = 0x0002,
 
+    // force putting column images on right
+    wxHD_BITMAP_ON_RIGHT = 0x0004,
+
     // style used by default when creating the control
     wxHD_DEFAULT_STYLE = wxHD_ALLOW_REORDER
 };
@@ -160,12 +163,12 @@ public:
     // -------------------------------
 
     // the user doesn't need to TAB to this control
-    virtual bool AcceptsFocusFromKeyboard() const { return false; }
+    virtual bool AcceptsFocusFromKeyboard() const wxOVERRIDE { return false; }
 
     // this method is only overridden in order to synchronize the control with
     // the main window when it is scrolled, the derived class must implement
     // DoScrollHorz()
-    virtual void ScrollWindow(int dx, int dy, const wxRect *rect = NULL);
+    virtual void ScrollWindow(int dx, int dy, const wxRect *rect = NULL) wxOVERRIDE;
 
 protected:
     // this method must be implemented by the derived classes to return the
@@ -211,7 +214,7 @@ protected:
 
 protected:
     // this window doesn't look nice with the border so don't use it by default
-    virtual wxBorder GetDefaultBorder() const { return wxBORDER_NONE; }
+    virtual wxBorder GetDefaultBorder() const wxOVERRIDE { return wxBORDER_NONE; }
 
 private:
     // methods implementing our public API and defined in platform-specific
@@ -232,7 +235,7 @@ private:
     void OnRClick(wxHeaderCtrlEvent& event);
 #endif // wxUSE_MENUS
 
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_EVENT_TABLE();
 };
 
 // ----------------------------------------------------------------------------
@@ -331,8 +334,8 @@ public:
 
 protected:
     // implement/override base class methods
-    virtual const wxHeaderColumn& GetColumn(unsigned int idx) const;
-    virtual bool UpdateColumnWidthToFit(unsigned int idx, int widthTitle);
+    virtual const wxHeaderColumn& GetColumn(unsigned int idx) const wxOVERRIDE;
+    virtual bool UpdateColumnWidthToFit(unsigned int idx, int widthTitle) wxOVERRIDE;
 
     // and define another one to be overridden in the derived classes: it
     // should return the best width for the given column contents or -1 if not
@@ -405,7 +408,7 @@ public:
     unsigned int GetNewOrder() const { return m_order; }
     void SetNewOrder(unsigned int order) { m_order = order; }
 
-    virtual wxEvent *Clone() const { return new wxHeaderCtrlEvent(*this); }
+    virtual wxEvent *Clone() const wxOVERRIDE { return new wxHeaderCtrlEvent(*this); }
 
 protected:
     // the column affected by the event
@@ -418,7 +421,7 @@ protected:
     unsigned int m_order;
 
 private:
-    DECLARE_DYNAMIC_CLASS_NO_ASSIGN(wxHeaderCtrlEvent)
+    wxDECLARE_DYNAMIC_CLASS_NO_ASSIGN(wxHeaderCtrlEvent);
 };
 
 

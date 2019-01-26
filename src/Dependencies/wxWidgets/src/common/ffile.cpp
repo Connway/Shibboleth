@@ -31,10 +31,6 @@
     #include "wx/crt.h"
 #endif
 
-#ifdef __WINDOWS__
-#include "wx/msw/mslu.h"
-#endif
-
 #include "wx/ffile.h"
 
 // ============================================================================
@@ -125,6 +121,9 @@ bool wxFFile::ReadAll(wxString *str, const wxMBConv& conv)
 
 size_t wxFFile::Read(void *pBuf, size_t nCount)
 {
+    if ( !nCount )
+        return 0;
+
     wxCHECK_MSG( pBuf, 0, wxT("invalid parameter") );
     wxCHECK_MSG( IsOpened(), 0, wxT("can't read from closed file") );
 
@@ -139,6 +138,9 @@ size_t wxFFile::Read(void *pBuf, size_t nCount)
 
 size_t wxFFile::Write(const void *pBuf, size_t nCount)
 {
+    if ( !nCount )
+        return 0;
+
     wxCHECK_MSG( pBuf, 0, wxT("invalid parameter") );
     wxCHECK_MSG( IsOpened(), 0, wxT("can't write to closed file") );
 
@@ -205,7 +207,7 @@ bool wxFFile::Seek(wxFileOffset ofs, wxSeekMode mode)
     {
         default:
             wxFAIL_MSG(wxT("unknown seek mode"));
-            // still fall through
+            wxFALLTHROUGH;
 
         case wxFromStart:
             origin = SEEK_SET;
@@ -277,6 +279,20 @@ wxFileOffset wxFFile::Length() const
     }
 
     return wxInvalidOffset;
+}
+
+bool wxFFile::Eof() const
+{
+    wxCHECK_MSG( IsOpened(), false,
+                 wxT("wxFFile::Eof(): file is closed!") );
+    return feof(m_fp) != 0;
+}
+
+bool wxFFile::Error() const
+{
+    wxCHECK_MSG( IsOpened(), false,
+                 wxT("wxFFile::Error(): file is closed!") );
+    return ferror(m_fp) != 0;
 }
 
 #endif // wxUSE_FFILE

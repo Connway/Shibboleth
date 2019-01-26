@@ -20,6 +20,7 @@
 #include "wx/ribbon/art.h"
 #include "wx/ribbon/bar.h"
 #include "wx/dcbuffer.h"
+#include "wx/scopedptr.h"
 
 #ifndef WX_PRECOMP
 #endif
@@ -59,10 +60,10 @@ public:
 wxDEFINE_EVENT(wxEVT_RIBBONTOOLBAR_CLICKED, wxRibbonToolBarEvent);
 wxDEFINE_EVENT(wxEVT_RIBBONTOOLBAR_DROPDOWN_CLICKED, wxRibbonToolBarEvent);
 
-IMPLEMENT_DYNAMIC_CLASS(wxRibbonToolBarEvent, wxCommandEvent)
-IMPLEMENT_CLASS(wxRibbonToolBar, wxRibbonControl)
+wxIMPLEMENT_DYNAMIC_CLASS(wxRibbonToolBarEvent, wxCommandEvent);
+wxIMPLEMENT_CLASS(wxRibbonToolBar, wxRibbonControl);
 
-BEGIN_EVENT_TABLE(wxRibbonToolBar, wxRibbonControl)
+wxBEGIN_EVENT_TABLE(wxRibbonToolBar, wxRibbonControl)
     EVT_ENTER_WINDOW(wxRibbonToolBar::OnMouseEnter)
     EVT_ERASE_BACKGROUND(wxRibbonToolBar::OnEraseBackground)
     EVT_LEAVE_WINDOW(wxRibbonToolBar::OnMouseLeave)
@@ -72,7 +73,7 @@ BEGIN_EVENT_TABLE(wxRibbonToolBar, wxRibbonControl)
     EVT_MOTION(wxRibbonToolBar::OnMouseMove)
     EVT_PAINT(wxRibbonToolBar::OnPaint)
     EVT_SIZE(wxRibbonToolBar::OnSize)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 wxRibbonToolBar::wxRibbonToolBar()
 {
@@ -112,7 +113,7 @@ void wxRibbonToolBar::CommonInit(long WXUNUSED(style))
     m_nrows_max = 1;
     m_sizes = new wxSize[1];
     m_sizes[0] = wxSize(0, 0);
-    SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+    SetBackgroundStyle(wxBG_STYLE_PAINT);
 }
 
 wxRibbonToolBar::~wxRibbonToolBar()
@@ -245,12 +246,12 @@ wxRibbonToolBarToolBase* wxRibbonToolBar::InsertTool(
     wxASSERT(bitmap.IsOk());
 
     // Create the wxRibbonToolBarToolBase with parameters
-    wxRibbonToolBarToolBase* tool = new wxRibbonToolBarToolBase;
+    wxScopedPtr<wxRibbonToolBarToolBase> tool(new wxRibbonToolBarToolBase);
     tool->id = tool_id;
     tool->bitmap = bitmap;
     if(bitmap_disabled.IsOk())
     {
-        wxASSERT(bitmap.GetSize() == bitmap_disabled.GetSize());
+        wxASSERT(bitmap.GetScaledSize() == bitmap_disabled.GetScaledSize());
         tool->bitmap_disabled = bitmap_disabled;
     }
     else
@@ -271,8 +272,10 @@ wxRibbonToolBarToolBase* wxRibbonToolBar::InsertTool(
         size_t tool_count = group->tools.GetCount();
         if(pos <= tool_count)
         {
-            group->tools.Insert(tool, pos);
-            return tool;
+            // Give the ownership of the tool to group->tools
+            wxRibbonToolBarToolBase* const p = tool.release();
+            group->tools.Insert(p, pos);
+            return p;
         }
         pos -= tool_count + 1;
     }
@@ -516,7 +519,7 @@ bool wxRibbonToolBar::GetToolState(int tool_id)const
 wxBitmap wxRibbonToolBar::MakeDisabledBitmap(const wxBitmap& original)
 {
     wxImage img(original.ConvertToImage());
-    return wxBitmap(img.ConvertToGreyscale());
+    return wxBitmap(img.ConvertToGreyscale(), -1, original.GetScaleFactor());
 }
 
 void wxRibbonToolBar::AppendGroup()
@@ -745,7 +748,7 @@ bool wxRibbonToolBar::Realize()
         {
             wxRibbonToolBarToolBase* tool = group->tools.Item(t);
             tool->size = m_art->GetToolSize(temp_dc, this,
-                tool->bitmap.GetSize(), tool->kind, t == 0,
+                tool->bitmap.GetScaledSize(), tool->kind, t == 0,
                 t == (tool_count - 1), &tool->dropdown);
             if(t == 0)
                 tool->state |= wxRIBBON_TOOLBAR_TOOL_FIRST;

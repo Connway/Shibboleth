@@ -21,6 +21,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_activityindicator.h">
+      <Filter>include\wx\xrc</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_all.h">
       <Filter>include\wx\xrc</Filter>
     </ClInclude>
@@ -220,6 +223,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp">
       <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_activityindicator.cpp">
+      <Filter>src\xrc</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_animatctrl.cpp">
       <Filter>src\xrc</Filter>

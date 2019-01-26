@@ -25,7 +25,6 @@
 #include "wx/filepicker.h"
 #include "wx/tooltip.h"
 
-#include <gtk/gtk.h>
 #include "wx/gtk/private.h"
 
 // ============================================================================
@@ -36,7 +35,7 @@
 // wxFileButton
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS(wxFileButton, wxButton)
+wxIMPLEMENT_DYNAMIC_CLASS(wxFileButton, wxButton);
 
 bool wxFileButton::Create( wxWindow *parent, wxWindowID id,
                         const wxString &label, const wxString &path,
@@ -89,9 +88,7 @@ bool wxFileButton::Create( wxWindow *parent, wxWindowID id,
         // we need to know when the dialog has been dismissed clicking OK...
         // NOTE: the "clicked" signal is not available for a GtkFileChooserButton
         //       thus we are forced to use wxFileDialog's event
-        m_dialog->Connect(wxEVT_BUTTON,
-                wxCommandEventHandler(wxFileButton::OnDialogOK),
-                NULL, this);
+        m_dialog->Bind(wxEVT_BUTTON, &wxFileButton::OnDialogOK, this);
 
         m_parent->DoAddChild( this );
 
@@ -223,7 +220,7 @@ static void selection_changed(GtkFileChooser* chooser, wxDirButton* win)
 // wxDirButtonGTK
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS(wxDirButton, wxButton)
+wxIMPLEMENT_DYNAMIC_CLASS(wxDirButton, wxButton);
 
 bool wxDirButton::Create( wxWindow *parent, wxWindowID id,
                         const wxString &label, const wxString &path,

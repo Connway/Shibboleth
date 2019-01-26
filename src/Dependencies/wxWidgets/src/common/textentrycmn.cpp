@@ -27,6 +27,7 @@
 #ifndef WX_PRECOMP
     #include "wx/window.h"
     #include "wx/dataobj.h"
+    #include "wx/textctrl.h"            // Only needed for wxTE_PASSWORD.
 #endif //WX_PRECOMP
 
 #include "wx/textentry.h"
@@ -37,7 +38,7 @@
 // wxTextEntryHintData
 // ----------------------------------------------------------------------------
 
-class WXDLLIMPEXP_CORE wxTextEntryHintData wxBIND_OR_CONNECT_HACK_ONLY_BASE_CLASS
+class WXDLLIMPEXP_CORE wxTextEntryHintData
 {
 public:
     wxTextEntryHintData(wxTextEntryBase *entry, wxWindow *win)
@@ -45,23 +46,17 @@ public:
           m_win(win),
           m_text(m_entry->GetValue())
     {
-        wxBIND_OR_CONNECT_HACK(win, wxEVT_SET_FOCUS, wxFocusEventHandler,
-                                wxTextEntryHintData::OnSetFocus, this);
-        wxBIND_OR_CONNECT_HACK(win, wxEVT_KILL_FOCUS, wxFocusEventHandler,
-                                wxTextEntryHintData::OnKillFocus, this);
-        wxBIND_OR_CONNECT_HACK(win, wxEVT_TEXT,
-                                wxCommandEventHandler,
-                                wxTextEntryHintData::OnTextChanged, this);
+        win->Bind(wxEVT_SET_FOCUS, &wxTextEntryHintData::OnSetFocus, this);
+        win->Bind(wxEVT_KILL_FOCUS, &wxTextEntryHintData::OnKillFocus, this);
+        win->Bind(wxEVT_TEXT, &wxTextEntryHintData::OnTextChanged, this);
     }
 
-#ifdef wxHAS_EVENT_BIND
     ~wxTextEntryHintData()
     {
         m_win->Unbind(wxEVT_SET_FOCUS, &wxTextEntryHintData::OnSetFocus, this);
         m_win->Unbind(wxEVT_KILL_FOCUS, &wxTextEntryHintData::OnKillFocus, this);
         m_win->Unbind(wxEVT_TEXT, &wxTextEntryHintData::OnTextChanged, this);
     }
-#endif // wxHAS_EVENT_BIND
 
     // Get the real text of the control such as it was before we replaced it
     // with the hint.
@@ -325,11 +320,76 @@ bool wxTextEntryBase::CanPaste() const
 }
 
 // ----------------------------------------------------------------------------
+// input restrictions
+// ----------------------------------------------------------------------------
+
+#ifndef wxHAS_NATIVE_TEXT_FORCEUPPER
+
+namespace
+{
+
+// Poor man's lambda: helper for binding ConvertToUpperCase() to the event
+struct ForceUpperFunctor
+{
+    explicit ForceUpperFunctor(wxTextEntryBase* entry)
+        : m_entry(entry)
+    {
+    }
+
+    void operator()(wxCommandEvent& event)
+    {
+        event.Skip();
+        m_entry->ConvertToUpperCase();
+    }
+
+    wxTextEntryBase* const m_entry;
+};
+
+} // anonymous namespace
+
+#endif // !wxHAS_NATIVE_TEXT_FORCEUPPER
+
+void wxTextEntryBase::ConvertToUpperCase()
+{
+    const wxString& valueOld = GetValue();
+    const wxString& valueNew = valueOld.Upper();
+
+    if ( valueNew != valueOld )
+    {
+        long from, to;
+        GetSelection(&from, &to);
+        ChangeValue(valueNew);
+        SetSelection(from, to);
+    }
+}
+
+void wxTextEntryBase::ForceUpper()
+{
+    // Do nothing if this method is never called because a native override is
+    // provided: this is just a tiny size-saving optimization, nothing else.
+#ifndef wxHAS_NATIVE_TEXT_FORCEUPPER
+    wxWindow* const win = GetEditableWindow();
+    wxCHECK_RET( win, wxS("can't be called before creating the window") );
+
+    // Convert the current control contents to upper case
+    ConvertToUpperCase();
+
+    // And ensure that any text entered in the future is converted too
+    win->Bind(wxEVT_TEXT, ForceUpperFunctor(this));
+#endif // !wxHAS_NATIVE_TEXT_FORCEUPPER
+}
+
+// ----------------------------------------------------------------------------
 // hints support
 // ----------------------------------------------------------------------------
 
 bool wxTextEntryBase::SetHint(const wxString& hint)
 {
+    // Hint contents would be shown hidden in a password text entry anyhow, so
+    // we just can't support hints in this case.
+    if ( GetEditableWindow()->HasFlag(wxTE_PASSWORD) )
+        return false;
+
     if ( !hint.empty() )
     {
         if ( !m_hintData )

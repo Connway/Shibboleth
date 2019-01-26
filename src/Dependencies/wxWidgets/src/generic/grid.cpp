@@ -56,18 +56,6 @@
 
 const char wxGridNameStr[] = "grid";
 
-#if defined(__WXMOTIF__)
-    #define WXUNUSED_MOTIF(identifier)  WXUNUSED(identifier)
-#else
-    #define WXUNUSED_MOTIF(identifier)  identifier
-#endif
-
-#if defined(__WXGTK__)
-    #define WXUNUSED_GTK(identifier)    WXUNUSED(identifier)
-#else
-    #define WXUNUSED_GTK(identifier)    identifier
-#endif
-
 // Required for wxIs... functions
 #include <ctype.h>
 
@@ -163,7 +151,7 @@ wxDEFINE_EVENT( wxEVT_GRID_TABBING, wxGridEvent );
 
 namespace
 {
-    
+
     // ensure that first is less or equal to second, swapping the values if
     // necessary
     void EnsureFirstLessThanSecond(int& first, int& second)
@@ -171,22 +159,22 @@ namespace
         if ( first > second )
             wxSwap(first, second);
     }
-    
+
 } // anonymous namespace
 
 // ============================================================================
 // implementation
 // ============================================================================
 
-IMPLEMENT_ABSTRACT_CLASS(wxGridCellEditorEvtHandler, wxEvtHandler)
+wxIMPLEMENT_ABSTRACT_CLASS(wxGridCellEditorEvtHandler, wxEvtHandler);
 
-BEGIN_EVENT_TABLE( wxGridCellEditorEvtHandler, wxEvtHandler )
+wxBEGIN_EVENT_TABLE( wxGridCellEditorEvtHandler, wxEvtHandler )
     EVT_KILL_FOCUS( wxGridCellEditorEvtHandler::OnKillFocus )
     EVT_KEY_DOWN( wxGridCellEditorEvtHandler::OnKeyDown )
     EVT_CHAR( wxGridCellEditorEvtHandler::OnChar )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
-BEGIN_EVENT_TABLE(wxGridHeaderCtrl, wxHeaderCtrl)
+wxBEGIN_EVENT_TABLE(wxGridHeaderCtrl, wxHeaderCtrl)
     EVT_HEADER_CLICK(wxID_ANY, wxGridHeaderCtrl::OnClick)
     EVT_HEADER_DCLICK(wxID_ANY, wxGridHeaderCtrl::OnDoubleClick)
     EVT_HEADER_RIGHT_CLICK(wxID_ANY, wxGridHeaderCtrl::OnRightClick)
@@ -197,7 +185,7 @@ BEGIN_EVENT_TABLE(wxGridHeaderCtrl, wxHeaderCtrl)
 
     EVT_HEADER_BEGIN_REORDER(wxID_ANY, wxGridHeaderCtrl::OnBeginReorder)
     EVT_HEADER_END_REORDER(wxID_ANY, wxGridHeaderCtrl::OnEndReorder)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 wxGridOperations& wxGridRowOperations::Dual() const
 {
@@ -232,12 +220,12 @@ wxGridCellWorker::~wxGridCellWorker()
 // ----------------------------------------------------------------------------
 
 void wxGridHeaderLabelsRenderer::DrawLabel(const wxGrid& grid,
-                                           wxDC& dc,
-                                           const wxString& value,
-                                           const wxRect& rect,
-                                           int horizAlign,
-                                           int vertAlign,
-                                           int textOrientation) const
+                                         wxDC& dc,
+                                         const wxString& value,
+                                         const wxRect& rect,
+                                         int horizAlign,
+                                         int vertAlign,
+                                         int textOrientation) const
 {
     dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
     dc.SetTextForeground(grid.GetLabelTextColour());
@@ -666,7 +654,7 @@ void wxGridCellAttrData::UpdateAttrRows( size_t pos, int numRows )
         {
             if (numRows > 0)
             {
-                // If rows inserted, include row counter where necessary
+                // If rows inserted, increment row counter where necessary
                 coords.SetRow(row + numRows);
             }
             else if (numRows < 0)
@@ -700,15 +688,15 @@ void wxGridCellAttrData::UpdateAttrCols( size_t pos, int numCols )
         {
             if ( numCols > 0 )
             {
-                // If rows inserted, include row counter where necessary
+                // If cols inserted, increment col counter where necessary
                 coords.SetCol(col + numCols);
             }
             else if (numCols < 0)
             {
-                // If rows deleted ...
+                // If cols deleted ...
                 if ((size_t)col >= pos - numCols)
                 {
-                    // ...either decrement row counter (if row still exists)...
+                    // ...either decrement col counter (if col still exists)...
                     coords.SetCol(col + numCols);
                 }
                 else
@@ -812,12 +800,12 @@ void wxGridRowOrColAttrData::UpdateAttrRowsOrCols( size_t pos, int numRowsOrCols
         {
             if ( numRowsOrCols > 0 )
             {
-                // If rows inserted, include row counter where necessary
+                // If rows or cols inserted, increment row/col counter where necessary
                 rowOrCol += numRowsOrCols;
             }
             else if ( numRowsOrCols < 0)
             {
-                // If rows deleted, either decrement row counter (if row still exists)
+                // If rows/cols deleted, either decrement row/col counter (if row/col still exists)
                 if ((size_t)rowOrCol >= pos - numRowsOrCols)
                     rowOrCol += numRowsOrCols;
                 else
@@ -1009,7 +997,7 @@ const wxGridCornerHeaderRenderer& wxGridCellAttrProvider::GetCornerRenderer()
 // wxGridTableBase
 // ----------------------------------------------------------------------------
 
-IMPLEMENT_ABSTRACT_CLASS( wxGridTableBase, wxObject )
+wxIMPLEMENT_ABSTRACT_CLASS(wxGridTableBase, wxObject);
 
 wxGridTableBase::wxGridTableBase()
 {
@@ -1179,6 +1167,11 @@ wxString wxGridTableBase::GetColLabelValue( int col )
     return s2;
 }
 
+wxString wxGridTableBase::GetCornerLabelValue() const
+{
+    return wxString();
+}
+
 wxString wxGridTableBase::GetTypeName( int WXUNUSED(row), int WXUNUSED(col) )
 {
     return wxGRID_VALUE_STRING;
@@ -1268,7 +1261,7 @@ wxGridTableMessage::wxGridTableMessage( wxGridTableBase *table, int id,
 
 WX_DEFINE_OBJARRAY(wxGridStringArray)
 
-IMPLEMENT_DYNAMIC_CLASS( wxGridStringTable, wxGridTableBase )
+wxIMPLEMENT_DYNAMIC_CLASS(wxGridStringTable, wxGridTableBase);
 
 wxGridStringTable::wxGridStringTable()
         : wxGridTableBase()
@@ -1323,7 +1316,7 @@ void wxGridStringTable::Clear()
         {
             for ( col = 0; col < numCols; col++ )
             {
-                m_data[row][col] = wxEmptyString;
+                m_data[row][col].clear();
             }
         }
     }
@@ -1612,24 +1605,33 @@ void wxGridStringTable::SetColLabelValue( int col, const wxString& value )
     m_colLabels[col] = value;
 }
 
+void wxGridStringTable::SetCornerLabelValue( const wxString& value )
+{
+    m_cornerLabel = value;
+}
+
+wxString wxGridStringTable::GetCornerLabelValue() const
+{
+    return m_cornerLabel;
+}
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(wxGridSubwindow, wxWindow)
+wxBEGIN_EVENT_TABLE(wxGridSubwindow, wxWindow)
     EVT_MOUSE_CAPTURE_LOST(wxGridSubwindow::OnMouseCaptureLost)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 void wxGridSubwindow::OnMouseCaptureLost(wxMouseCaptureLostEvent& WXUNUSED(event))
 {
     m_owner->CancelMouseCapture();
 }
 
-BEGIN_EVENT_TABLE( wxGridRowLabelWindow, wxGridSubwindow )
+wxBEGIN_EVENT_TABLE( wxGridRowLabelWindow, wxGridSubwindow )
     EVT_PAINT( wxGridRowLabelWindow::OnPaint )
     EVT_MOUSEWHEEL( wxGridRowLabelWindow::OnMouseWheel )
     EVT_MOUSE_EVENTS( wxGridRowLabelWindow::OnMouseEvent )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 void wxGridRowLabelWindow::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
@@ -1663,11 +1665,11 @@ void wxGridRowLabelWindow::OnMouseWheel( wxMouseEvent& event )
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE( wxGridColLabelWindow, wxGridSubwindow )
+wxBEGIN_EVENT_TABLE( wxGridColLabelWindow, wxGridSubwindow )
     EVT_PAINT( wxGridColLabelWindow::OnPaint )
     EVT_MOUSEWHEEL( wxGridColLabelWindow::OnMouseWheel )
     EVT_MOUSE_EVENTS( wxGridColLabelWindow::OnMouseEvent )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 void wxGridColLabelWindow::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
@@ -1701,11 +1703,11 @@ void wxGridColLabelWindow::OnMouseWheel( wxMouseEvent& event )
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE( wxGridCornerLabelWindow, wxGridSubwindow )
+wxBEGIN_EVENT_TABLE( wxGridCornerLabelWindow, wxGridSubwindow )
     EVT_MOUSEWHEEL( wxGridCornerLabelWindow::OnMouseWheel )
     EVT_MOUSE_EVENTS( wxGridCornerLabelWindow::OnMouseEvent )
     EVT_PAINT( wxGridCornerLabelWindow::OnPaint )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 void wxGridCornerLabelWindow::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
@@ -1727,7 +1729,7 @@ void wxGridCornerLabelWindow::OnMouseWheel( wxMouseEvent& event )
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE( wxGridWindow, wxGridSubwindow )
+wxBEGIN_EVENT_TABLE( wxGridWindow, wxGridSubwindow )
     EVT_PAINT( wxGridWindow::OnPaint )
     EVT_MOUSEWHEEL( wxGridWindow::OnMouseWheel )
     EVT_MOUSE_EVENTS( wxGridWindow::OnMouseEvent )
@@ -1737,7 +1739,7 @@ BEGIN_EVENT_TABLE( wxGridWindow, wxGridSubwindow )
     EVT_SET_FOCUS( wxGridWindow::OnFocus )
     EVT_KILL_FOCUS( wxGridWindow::OnFocus )
     EVT_ERASE_BACKGROUND( wxGridWindow::OnEraseBackground )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 void wxGridWindow::OnPaint( wxPaintEvent &WXUNUSED(event) )
 {
@@ -1883,7 +1885,10 @@ void wxGrid::Render( wxDC& dc,
     dc.DrawRectangle( pointOffSet, sizeCells );
 
     // draw cells
-    DrawGridCellArea( dc, renderCells );
+    {
+        wxDCClipper clipper( dc, wxRect(pointOffSet, sizeCells) );
+        DrawGridCellArea( dc, renderCells );
+    }
 
     // draw grid lines
     if ( style & wxGRID_DRAW_CELL_LINES )
@@ -2129,7 +2134,7 @@ void wxGridWindow::OnFocus(wxFocusEvent& event)
 
 /////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE( wxGrid, wxScrolledWindow )
+wxBEGIN_EVENT_TABLE( wxGrid, wxScrolledWindow )
     EVT_PAINT( wxGrid::OnPaint )
     EVT_SIZE( wxGrid::OnSize )
     EVT_KEY_DOWN( wxGrid::OnKeyDown )
@@ -2137,7 +2142,7 @@ BEGIN_EVENT_TABLE( wxGrid, wxScrolledWindow )
     EVT_CHAR ( wxGrid::OnChar )
     EVT_ERASE_BACKGROUND( wxGrid::OnEraseBackground )
     EVT_COMMAND(wxID_ANY, wxEVT_GRID_HIDE_EDITOR, wxGrid::OnHideEditor )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 bool wxGrid::Create(wxWindow *parent, wxWindowID id,
                           const wxPoint& pos, const wxSize& size,
@@ -2273,7 +2278,7 @@ void wxGrid::Create()
     // now that we have the grid window, use its font to compute the default
     // row height
     m_defaultRowHeight = m_gridWin->GetCharHeight();
-#if defined(__WXMOTIF__) || defined(__WXGTK__)  // see also text ctrl sizing in ShowCellEditControl()
+#if defined(__WXMOTIF__) || defined(__WXGTK__) || defined(__WXQT__)  // see also text ctrl sizing in ShowCellEditControl()
     m_defaultRowHeight += 8;
 #else
     m_defaultRowHeight += 4;
@@ -2334,6 +2339,17 @@ wxGrid::SetTable(wxGridTableBase *table,
 
         if (m_table)
         {
+            // We can't leave the in-place control editing the data of the
+            // table alive, as it would try to use the table object that we
+            // don't have any more later otherwise, so hide it manually.
+            //
+            // Notice that we can't call DisableCellEditControl() from here
+            // which would try to save the current editor value into the table
+            // which might be half-deleted by now, so we have to manually mark
+            // the edit control as being disabled.
+            HideCellEditControl();
+            m_cellEditCtrlEnabled = false;
+
             m_table->SetView(0);
             if( m_ownTable )
                 delete m_table;
@@ -2416,7 +2432,6 @@ void wxGrid::Init()
     m_selection = NULL;
     m_defaultCellAttr = NULL;
     m_typeRegistry = NULL;
-    m_winCapture = NULL;
 
     m_rowLabelWidth  = WXGRID_DEFAULT_ROW_LABEL_WIDTH;
     m_colLabelHeight = WXGRID_DEFAULT_COL_LABEL_HEIGHT;
@@ -2430,7 +2445,7 @@ void wxGrid::Init()
     m_attrCache.attr = NULL;
 
     m_labelFont = GetFont();
-    m_labelFont.SetWeight( wxBOLD );
+    m_labelFont.SetWeight( wxFONTWEIGHT_BOLD );
 
     m_rowLabelHorizAlign = wxALIGN_CENTRE;
     m_rowLabelVertAlign  = wxALIGN_CENTRE;
@@ -2438,6 +2453,10 @@ void wxGrid::Init()
     m_colLabelHorizAlign = wxALIGN_CENTRE;
     m_colLabelVertAlign  = wxALIGN_CENTRE;
     m_colLabelTextOrientation = wxHORIZONTAL;
+
+    m_cornerLabelHorizAlign = wxALIGN_CENTRE;
+    m_cornerLabelVertAlign = wxALIGN_CENTRE;
+    m_cornerLabelTextOrientation = wxHORIZONTAL;
 
     m_defaultColWidth  = WXGRID_DEFAULT_COL_WIDTH;
     m_defaultRowHeight = 0; // this will be initialized after creation
@@ -3845,15 +3864,30 @@ void wxGrid::CancelMouseCapture()
     // cancel operation currently in progress, whatever it is
     if ( m_winCapture )
     {
-        m_isDragging = false;
-        m_startDragPos = wxDefaultPosition;
-
-        m_cursorMode = WXGRID_CURSOR_SELECT_CELL;
-        m_winCapture->SetCursor( *wxSTANDARD_CURSOR );
-        m_winCapture = NULL;
+        DoAfterDraggingEnd();
 
         // remove traces of whatever we drew on screen
         Refresh();
+    }
+}
+
+void wxGrid::DoAfterDraggingEnd()
+{
+    m_isDragging = false;
+    m_startDragPos = wxDefaultPosition;
+
+    m_cursorMode = WXGRID_CURSOR_SELECT_CELL;
+    m_winCapture->SetCursor( *wxSTANDARD_CURSOR );
+    m_winCapture = NULL;
+}
+
+void wxGrid::EndDraggingIfNecessary()
+{
+    if ( m_winCapture )
+    {
+        m_winCapture->ReleaseMouse();
+
+        DoAfterDraggingEnd();
     }
 }
 
@@ -3891,11 +3925,7 @@ void wxGrid::ChangeCursorMode(CursorMode mode,
         win = m_gridWin;
     }
 
-    if ( m_winCapture )
-    {
-        m_winCapture->ReleaseMouse();
-        m_winCapture = NULL;
-    }
+    EndDraggingIfNecessary();
 
     m_cursorMode = mode;
 
@@ -3939,7 +3969,7 @@ wxGrid::DoGridCellDrag(wxMouseEvent& event,
                        bool isFirstDrag)
 {
     bool performDefault = true ;
-    
+
     if ( coords == wxGridNoCellCoords )
         return performDefault; // we're outside any valid cell
 
@@ -3971,7 +4001,7 @@ wxGrid::DoGridCellDrag(wxMouseEvent& event,
                     // if event is handled by user code, no further processing
                     if ( SendEvent(wxEVT_GRID_CELL_BEGIN_DRAG, coords, event) != 0 )
                         performDefault = false;
-                    
+
                     return performDefault;
                 }
             }
@@ -3983,7 +4013,7 @@ wxGrid::DoGridCellDrag(wxMouseEvent& event,
             // we don't handle the other key modifiers
             event.Skip();
     }
-    
+
     return performDefault;
 }
 
@@ -4013,34 +4043,14 @@ void wxGrid::DoGridLineDrag(wxMouseEvent& event, const wxGridOperations& oper)
     oper.DrawParallelLineInRect(dc, rectWin, m_dragLastPos);
 }
 
-void wxGrid::DoGridDragEvent(wxMouseEvent& event, const wxGridCellCoords& coords)
+bool wxGrid::DoGridDragEvent(wxMouseEvent& event,
+                             const wxGridCellCoords& coords,
+                             bool isFirstDrag)
 {
-    if ( !m_isDragging )
-    {
-        // Don't start doing anything until the mouse has been dragged far
-        // enough
-        const wxPoint& pt = event.GetPosition();
-        if ( m_startDragPos == wxDefaultPosition )
-        {
-            m_startDragPos = pt;
-            return;
-        }
-
-        if ( abs(m_startDragPos.x - pt.x) <= DRAG_SENSITIVITY &&
-                abs(m_startDragPos.y - pt.y) <= DRAG_SENSITIVITY )
-            return;
-    }
-
-    const bool isFirstDrag = !m_isDragging;
-    m_isDragging = true;
-
     switch ( m_cursorMode )
     {
         case WXGRID_CURSOR_SELECT_CELL:
-            // no further handling if handled by user
-            if ( DoGridCellDrag(event, coords, isFirstDrag) == false )
-                return;
-            break;
+            return DoGridCellDrag(event, coords, isFirstDrag);
 
         case WXGRID_CURSOR_RESIZE_ROW:
             DoGridLineDrag(event, wxGridRowOperations());
@@ -4054,13 +4064,7 @@ void wxGrid::DoGridDragEvent(wxMouseEvent& event, const wxGridCellCoords& coords
             event.Skip();
     }
 
-    if ( isFirstDrag )
-    {
-        wxASSERT_MSG( !m_winCapture, "shouldn't capture the mouse twice" );
-
-        m_winCapture = m_gridWin;
-        m_winCapture->CaptureMouse();
-    }
+    return true;
 }
 
 void
@@ -4154,12 +4158,6 @@ wxGrid::DoGridCellLeftUp(wxMouseEvent& event, const wxGridCellCoords& coords)
 {
     if ( m_cursorMode == WXGRID_CURSOR_SELECT_CELL )
     {
-        if (m_winCapture)
-        {
-            m_winCapture->ReleaseMouse();
-            m_winCapture = NULL;
-        }
-
         if ( coords == m_currentCellCoords && m_waitForSlowClick && CanEnableCellControl() )
         {
             ClearSelection();
@@ -4260,14 +4258,6 @@ wxGrid::DoGridMouseMoveEvent(wxMouseEvent& WXUNUSED(event),
 
 void wxGrid::ProcessGridCellMouseEvent(wxMouseEvent& event)
 {
-    if ( event.Entering() || event.Leaving() )
-    {
-        // we don't care about these events but we must not reset m_isDragging
-        // if they happen so return before anything else is done
-        event.Skip();
-        return;
-    }
-
     const wxPoint pos = CalcUnscrolledPosition(event.GetPosition());
 
     // coordinates of the cell under mouse
@@ -4281,17 +4271,64 @@ void wxGrid::ProcessGridCellMouseEvent(wxMouseEvent& event)
         coords.SetCol(coords.GetCol() + cell_cols);
     }
 
-    if ( event.Dragging() )
+    // Releasing the left mouse button must be processed in any case, so deal
+    // with it first.
+    if ( event.LeftUp() )
     {
-        if ( event.LeftIsDown() )
-            DoGridDragEvent(event, coords);
-        else
-            event.Skip();
+        // Note that we must call this one first, before resetting the
+        // drag-related data, as it relies on m_cursorMode being still set and
+        // EndDraggingIfNecessary() resets it.
+        DoGridCellLeftUp(event, coords);
+
+        EndDraggingIfNecessary();
         return;
     }
 
-    m_isDragging = false;
-    m_startDragPos = wxDefaultPosition;
+    const bool isDraggingWithLeft = event.Dragging() && event.LeftIsDown();
+
+    // While dragging the mouse, only releasing the left mouse button, which
+    // cancels the drag operation, is processed (above) and any other events
+    // are just ignored while it's in progress.
+    if ( m_isDragging )
+    {
+        if ( isDraggingWithLeft )
+            DoGridDragEvent(event, coords, false /* not first drag */);
+        return;
+    }
+
+    // Now check if we're starting a drag operation (if it had been already
+    // started, m_isDragging would be true above).
+    if ( isDraggingWithLeft )
+    {
+        // To avoid accidental drags, don't start doing anything until the
+        // mouse has been dragged far enough.
+        const wxPoint& pt = event.GetPosition();
+        if ( m_startDragPos == wxDefaultPosition )
+        {
+            m_startDragPos = pt;
+            return;
+        }
+
+        if ( abs(m_startDragPos.x - pt.x) <= DRAG_SENSITIVITY &&
+                abs(m_startDragPos.y - pt.y) <= DRAG_SENSITIVITY )
+            return;
+
+        if ( DoGridDragEvent(event, coords, true /* first drag */) )
+        {
+            wxASSERT_MSG( !m_winCapture, "shouldn't capture the mouse twice" );
+
+            m_winCapture = m_gridWin;
+            m_winCapture->CaptureMouse();
+
+            m_isDragging = true;
+        }
+
+        return;
+    }
+
+    // If we're not dragging, cancel any dragging operation which could have
+    // been in progress.
+    EndDraggingIfNecessary();
 
     // deal with various button presses
     if ( event.IsButton() )
@@ -4308,12 +4345,6 @@ void wxGrid::ProcessGridCellMouseEvent(wxMouseEvent& event)
                 SendEvent(wxEVT_GRID_CELL_RIGHT_CLICK, coords, event);
             else if ( event.RightDClick() )
                 SendEvent(wxEVT_GRID_CELL_RIGHT_DCLICK, coords, event);
-        }
-
-        // this one should be called even if we're not over any cell
-        if ( event.LeftUp() )
-        {
-            DoGridCellLeftUp(event, coords);
         }
     }
     else if ( event.Moving() )
@@ -4550,12 +4581,6 @@ bool wxGrid::ProcessTableMessage( wxGridTableMessage& msg )
 {
     switch ( msg.GetId() )
     {
-        case wxGRIDTABLE_REQUEST_VIEW_GET_VALUES:
-            return GetModelValues();
-
-        case wxGRIDTABLE_REQUEST_VIEW_SEND_VALUES:
-            return SetModelValues();
-
         case wxGRIDTABLE_NOTIFY_ROWS_INSERTED:
         case wxGRIDTABLE_NOTIFY_ROWS_APPENDED:
         case wxGRIDTABLE_NOTIFY_ROWS_DELETED:
@@ -4644,7 +4669,7 @@ wxGrid::SendGridSizeEvent(wxEventType type,
 //  +1 if the event was processed (but not vetoed)
 //   0 if the event wasn't handled
 int
-wxGrid::SendEvent(const wxEventType type,
+wxGrid::SendEvent(wxEventType type,
                   int row, int col,
                   const wxMouseEvent& mouseEv)
 {
@@ -4704,7 +4729,7 @@ wxGrid::SendEvent(const wxEventType type,
            // explicitly allow the event for it to take place
            gridEvt.Veto();
        }
-              
+
        claimed = GetEventHandler()->ProcessEvent(gridEvt);
        vetoed = !gridEvt.IsAllowed();
    }
@@ -4719,7 +4744,7 @@ wxGrid::SendEvent(const wxEventType type,
 // Generate a grid event of specified type, return value same as above
 //
 int
-wxGrid::SendEvent(const wxEventType type, int row, int col, const wxString& s)
+wxGrid::SendEvent(wxEventType type, int row, int col, const wxString& s)
 {
     wxGridEvent gridEvt( GetId(), type, this, row, col );
     gridEvt.SetString(s);
@@ -4977,7 +5002,7 @@ void wxGrid::OnKeyDown( wxKeyEvent& event )
                             MoveCursorRight(false);
                             break;
                         }
-                        //else: fall through
+                        wxFALLTHROUGH;
 
                     default:
                         event.Skip();
@@ -5192,7 +5217,7 @@ wxGrid::UpdateBlockBeingSelected(int topRow, int leftCol,
         {
             default:
                 wxFAIL_MSG( "unknown selection mode" );
-                // fall through
+                wxFALLTHROUGH;
 
             case wxGridSelectCells:
                 // arbitrary blocks selection allowed so just use the cell
@@ -5200,7 +5225,7 @@ wxGrid::UpdateBlockBeingSelected(int topRow, int leftCol,
                 break;
 
             case wxGridSelectRows:
-                // only full rows selection allowd, ensure that we do select
+                // only full rows selection allowed, ensure that we do select
                 // full rows
                 leftCol = 0;
                 rightCol = GetNumberCols() - 1;
@@ -5318,51 +5343,6 @@ wxGrid::UpdateBlockBeingSelected(int topRow, int leftCol,
     // change selection
     m_selectedBlockTopLeft = updateTopLeft;
     m_selectedBlockBottomRight = updateBottomRight;
-}
-
-//
-// ------ functions to get/send data (see also public functions)
-//
-
-bool wxGrid::GetModelValues()
-{
-    // Hide the editor, so it won't hide a changed value.
-    HideCellEditControl();
-
-    if ( m_table )
-    {
-        // all we need to do is repaint the grid
-        //
-        m_gridWin->Refresh();
-        return true;
-    }
-
-    return false;
-}
-
-bool wxGrid::SetModelValues()
-{
-    int row, col;
-
-    // Disable the editor, so it won't hide a changed value.
-    // Do we also want to save the current value of the editor first?
-    // I think so ...
-    DisableCellEditControl();
-
-    if ( m_table )
-    {
-        for ( row = 0; row < m_numRows; row++ )
-        {
-            for ( col = 0; col < m_numCols; col++ )
-            {
-                m_table->SetValue( row, col, GetCellValue(row, col) );
-            }
-        }
-
-        return true;
-    }
-
-    return false;
 }
 
 // Note - this function only draws cells that are in the list of
@@ -5583,11 +5563,12 @@ void wxGrid::DrawCellHighlight( wxDC& dc, const wxGridCellAttr *attr )
         // size of the rectangle is reduced to compensate for the thickness of
         // the line. If this is too strange on non-wxMSW platforms then
         // please #ifdef this appropriately.
+#ifndef __WXQT__
         rect.x += penWidth / 2;
         rect.y += penWidth / 2;
         rect.width -= penWidth - 1;
         rect.height -= penWidth - 1;
-
+#endif
         // Now draw the rectangle
         // use the cellHighlightColour if the cell is inside a selection, this
         // will ensure the cell is always visible.
@@ -5855,7 +5836,7 @@ wxGrid::DoDrawGridLines(wxDC& dc,
         int i = GetColAt( colPos );
 
         int colRight = GetColRight(i);
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
         if (GetLayoutDirection() != wxLayout_RightToLeft)
 #endif
             colRight--;
@@ -5956,6 +5937,13 @@ void wxGrid::DrawCornerLabel(wxDC& dc)
 {
     wxRect rect(wxSize(m_rowLabelWidth, m_colLabelHeight));
 
+    wxGridCellAttrProvider * const
+        attrProvider = m_table ? m_table->GetAttrProvider() : NULL;
+    const wxGridCornerHeaderRenderer&
+        rend = attrProvider ? attrProvider->GetCornerRenderer()
+                            : static_cast<wxGridCornerHeaderRenderer&>
+                                (gs_defaultHeaderRenderers.cornerRenderer);
+
     if ( m_nativeColumnLabels )
     {
         rect.Deflate(1);
@@ -5967,14 +5955,17 @@ void wxGrid::DrawCornerLabel(wxDC& dc)
         rect.width++;
         rect.height++;
 
-        wxGridCellAttrProvider * const
-            attrProvider = m_table ? m_table->GetAttrProvider() : NULL;
-        const wxGridCornerHeaderRenderer&
-            rend = attrProvider ? attrProvider->GetCornerRenderer()
-                                : static_cast<wxGridCornerHeaderRenderer&>
-                                    (gs_defaultHeaderRenderers.cornerRenderer);
-
         rend.DrawBorder(*this, dc, rect);
+    }
+
+    wxString label = GetCornerLabelValue();
+    if( !label.IsEmpty() )
+    {
+        int hAlign, vAlign;
+        GetCornerLabelAlignment(&hAlign, &vAlign);
+        const int orient = GetCornerLabelTextOrientation();
+
+        rend.DrawLabel(*this, dc, label, rect, hAlign, vAlign, orient);
     }
 }
 
@@ -6386,6 +6377,7 @@ void wxGrid::ShowCellEditControl()
             if (rect.x < 0)
                 nXMove = rect.x;
 
+#ifndef __WXQT__
             // cell is shifted by one pixel
             // However, don't allow x or y to become negative
             // since the SetSize() method interprets that as
@@ -6394,6 +6386,11 @@ void wxGrid::ShowCellEditControl()
                 rect.x--;
             if (rect.y > 0)
                 rect.y--;
+#else
+            // Substract 1 pixel in every dimension to fit in the cell area.
+            // If not, Qt will draw the control outside the cell.
+            rect.Deflate(1, 1);
+#endif
 
             wxGridCellEditor* editor = attr->GetEditor(this, row, col);
             if ( !editor->IsCreated() )
@@ -6413,7 +6410,7 @@ void wxGrid::ShowCellEditControl()
             // resize editor to overflow into righthand cells if allowed
             int maxWidth = rect.width;
             wxString value = GetCellValue(row, col);
-            if ( (value != wxEmptyString) && (attr->GetOverflow()) )
+            if ( !value.empty() && attr->GetOverflow() )
             {
                 int y;
                 GetTextExtent(value, &maxWidth, &y, NULL, NULL, &attr->GetFont());
@@ -6728,12 +6725,14 @@ wxRect wxGrid::CellToRect( int row, int col ) const
         for (i=row; i < row + cell_rows; i++)
             rect.height += GetRowHeight(i);
 
+#ifndef __WXQT__
         // if grid lines are enabled, then the area of the cell is a bit smaller
         if (m_gridLinesEnabled)
         {
             rect.width -= 1;
             rect.height -= 1;
         }
+#endif
     }
 
     return rect;
@@ -7072,6 +7071,19 @@ int wxGrid::GetColLabelTextOrientation() const
     return m_colLabelTextOrientation;
 }
 
+void wxGrid::GetCornerLabelAlignment( int *horiz, int *vert ) const
+{
+    if ( horiz )
+        *horiz = m_cornerLabelHorizAlign;
+    if ( vert )
+        *vert  = m_cornerLabelVertAlign;
+}
+
+int wxGrid::GetCornerLabelTextOrientation() const
+{
+    return m_cornerLabelTextOrientation;
+}
+
 wxString wxGrid::GetRowLabelValue( int row ) const
 {
     if ( m_table )
@@ -7097,6 +7109,18 @@ wxString wxGrid::GetColLabelValue( int col ) const
         wxString s;
         s << col;
         return s;
+    }
+}
+
+wxString wxGrid::GetCornerLabelValue() const
+{
+    if ( m_table )
+    {
+        return m_table->GetCornerLabelValue();
+    }
+    else
+    {
+        return wxString();
     }
 }
 
@@ -7267,12 +7291,45 @@ void wxGrid::SetColLabelAlignment( int horiz, int vert )
     }
 }
 
+void wxGrid::SetCornerLabelAlignment( int horiz, int vert )
+{
+    // allow old (incorrect) defs to be used
+    switch ( horiz )
+    {
+        case wxLEFT:   horiz = wxALIGN_LEFT; break;
+        case wxRIGHT:  horiz = wxALIGN_RIGHT; break;
+        case wxCENTRE: horiz = wxALIGN_CENTRE; break;
+    }
+
+    switch ( vert )
+    {
+        case wxTOP:    vert = wxALIGN_TOP;    break;
+        case wxBOTTOM: vert = wxALIGN_BOTTOM; break;
+        case wxCENTRE: vert = wxALIGN_CENTRE; break;
+    }
+
+    if ( horiz == wxALIGN_LEFT || horiz == wxALIGN_CENTRE || horiz == wxALIGN_RIGHT )
+    {
+        m_cornerLabelHorizAlign = horiz;
+    }
+
+    if ( vert == wxALIGN_TOP || vert == wxALIGN_CENTRE || vert == wxALIGN_BOTTOM )
+    {
+        m_cornerLabelVertAlign = vert;
+    }
+
+    if ( !GetBatchCount() )
+    {
+        m_cornerLabelWin->Refresh();
+    }
+}
+
 // Note: under MSW, the default column label font must be changed because it
 //       does not support vertical printing
 //
-// Example: wxFont font(9, wxSWISS, wxNORMAL, wxBOLD);
-//                      pGrid->SetLabelFont(font);
-//                      pGrid->SetColLabelTextOrientation(wxVERTICAL);
+// Example:
+//      pGrid->SetLabelFont(wxFontInfo(9).Family(wxFONTFAMILY_SWISS));
+//      pGrid->SetColLabelTextOrientation(wxVERTICAL);
 //
 void wxGrid::SetColLabelTextOrientation( int textOrientation )
 {
@@ -7281,6 +7338,15 @@ void wxGrid::SetColLabelTextOrientation( int textOrientation )
 
     if ( !GetBatchCount() )
         m_colWindow->Refresh();
+}
+
+void wxGrid::SetCornerLabelTextOrientation( int textOrientation )
+{
+    if ( textOrientation == wxHORIZONTAL || textOrientation == wxVERTICAL )
+        m_cornerLabelTextOrientation = textOrientation;
+
+    if ( !GetBatchCount() )
+        m_cornerLabelWin->Refresh();
 }
 
 void wxGrid::SetRowLabelValue( int row, const wxString& s )
@@ -7324,6 +7390,19 @@ void wxGrid::SetColLabelValue( int col, const wxString& s )
                     GetColLabelWindow()->Refresh( true, &rect );
                 }
             }
+        }
+    }
+}
+
+void wxGrid::SetCornerLabelValue( const wxString& s )
+{
+    if ( m_table )
+    {
+        m_table->SetCornerLabelValue( s );
+        if ( !GetBatchCount() )
+        {
+            wxRect rect = m_cornerLabelWin->GetRect();
+            m_cornerLabelWin->Refresh(true, &rect);
         }
     }
 }
@@ -7465,7 +7544,7 @@ int wxGrid::GetColSize( int col ) const
 void wxGrid::SetDefaultCellBackgroundColour( const wxColour& col )
 {
     m_defaultCellAttr->SetBackgroundColour(col);
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     m_gridWin->SetBackgroundColour(col);
 #endif
 }
@@ -7996,12 +8075,18 @@ void wxGrid::RegisterDataType(const wxString& typeName,
 
 wxGridCellEditor * wxGrid::GetDefaultEditorForCell(int row, int col) const
 {
+    if ( !m_table )
+        return NULL;
+
     wxString typeName = m_table->GetTypeName(row, col);
     return GetDefaultEditorForType(typeName);
 }
 
 wxGridCellRenderer * wxGrid::GetDefaultRendererForCell(int row, int col) const
 {
+    if ( !m_table )
+        return NULL;
+
     wxString typeName = m_table->GetTypeName(row, col);
     return GetDefaultRendererForType(typeName);
 }
@@ -8435,8 +8520,11 @@ wxGrid::AutoSizeColOrRow(int colOrRow, bool setAsMin, wxGridDirection direction)
         wxGridCellRenderer *renderer = attr->GetRenderer(this, row, col);
         if ( renderer )
         {
-            wxSize size = renderer->GetBestSize(*this, *attr, dc, row, col);
-            extent = column ? size.x : size.y;
+            extent = column
+                        ? renderer->GetBestWidth(*this, *attr, dc, row, col,
+                                                 GetRowHeight(row))
+                        : renderer->GetBestHeight(*this, *attr, dc, row, col,
+                                                  GetColWidth(col));
 
             if ( span != CellSpan_None )
             {
@@ -9126,7 +9214,7 @@ void wxGrid::SetDropTarget(wxDropTarget *dropTarget)
 // grid event classes
 // ----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS( wxGridEvent, wxNotifyEvent )
+wxIMPLEMENT_DYNAMIC_CLASS(wxGridEvent, wxNotifyEvent);
 
 wxGridEvent::wxGridEvent( int id, wxEventType type, wxObject* obj,
                           int row, int col, int x, int y, bool sel,
@@ -9139,7 +9227,7 @@ wxGridEvent::wxGridEvent( int id, wxEventType type, wxObject* obj,
     SetEventObject(obj);
 }
 
-IMPLEMENT_DYNAMIC_CLASS( wxGridSizeEvent, wxNotifyEvent )
+wxIMPLEMENT_DYNAMIC_CLASS(wxGridSizeEvent, wxNotifyEvent);
 
 wxGridSizeEvent::wxGridSizeEvent( int id, wxEventType type, wxObject* obj,
                                   int rowOrCol, int x, int y,
@@ -9153,7 +9241,7 @@ wxGridSizeEvent::wxGridSizeEvent( int id, wxEventType type, wxObject* obj,
 }
 
 
-IMPLEMENT_DYNAMIC_CLASS( wxGridRangeSelectEvent, wxNotifyEvent )
+wxIMPLEMENT_DYNAMIC_CLASS(wxGridRangeSelectEvent, wxNotifyEvent);
 
 wxGridRangeSelectEvent::wxGridRangeSelectEvent(int id, wxEventType type, wxObject* obj,
                                                const wxGridCellCoords& topLeft,
@@ -9169,7 +9257,7 @@ wxGridRangeSelectEvent::wxGridRangeSelectEvent(int id, wxEventType type, wxObjec
 }
 
 
-IMPLEMENT_DYNAMIC_CLASS(wxGridEditorCreatedEvent, wxCommandEvent)
+wxIMPLEMENT_DYNAMIC_CLASS(wxGridEditorCreatedEvent, wxCommandEvent);
 
 wxGridEditorCreatedEvent::wxGridEditorCreatedEvent(int id, wxEventType type,
                                                    wxObject* obj, int row,

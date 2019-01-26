@@ -65,9 +65,9 @@ public:
 protected:
     wxBitmap    m_bitmap;
 
-    wxSize DoGetBestSize() const;
+    wxSize DoGetBestSize() const wxOVERRIDE;
 
-    void UpdateColour();
+    void UpdateColour() wxOVERRIDE;
 
     // the colour data shown in wxColourPickerCtrlGeneric
     // controls. This member is static so that all colour pickers
@@ -75,7 +75,7 @@ protected:
     static wxColourData ms_data;
 
 private:
-   DECLARE_DYNAMIC_CLASS(wxGenericColourButton)
+    wxDECLARE_DYNAMIC_CLASS(wxGenericColourButton);
 };
 
 

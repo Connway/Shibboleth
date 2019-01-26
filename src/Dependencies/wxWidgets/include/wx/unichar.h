@@ -14,6 +14,13 @@
 #include "wx/chartype.h"
 #include "wx/stringimpl.h"
 
+// We need to get std::swap() declaration in order to specialize it below and
+// it is declared in different headers for C++98 and C++11. Instead of testing
+// which one is being used, just include both of them as it's simpler and less
+// error-prone.
+#include <algorithm>        // std::swap() for C++98
+#include <utility>          // std::swap() for C++11
+
 class WXDLLIMPEXP_FWD_BASE wxUniCharRef;
 class WXDLLIMPEXP_FWD_BASE wxString;
 
@@ -80,6 +87,38 @@ public:
         *c = wx_truncate_cast(char, m_value);
         return true;
     }
+
+    // Returns true if the character is a BMP character:
+    static bool IsBMP(wxUint32 value) { return value < 0x10000; }
+
+    // Returns true if the character is a supplementary character:
+    static bool IsSupplementary(wxUint32 value) { return 0x10000 <= value && value < 0x110000; }
+
+    // Returns the high surrogate code unit for the supplementary character
+    static wxUint16 HighSurrogate(wxUint32 value)
+    {
+        wxASSERT_MSG(IsSupplementary(value), "wxUniChar::HighSurrogate() must be called on a supplementary character");
+        return static_cast<wxUint16>(0xD800 | ((value - 0x10000) >> 10));
+    }
+
+    // Returns the low surrogate code unit for the supplementary character
+    static wxUint16 LowSurrogate(wxUint32 value)
+    {
+        wxASSERT_MSG(IsSupplementary(value), "wxUniChar::LowSurrogate() must be called on a supplementary character");
+        return static_cast<wxUint16>(0xDC00 | ((value - 0x10000) & 0x03FF));
+    }
+
+    // Returns true if the character is a BMP character:
+    bool IsBMP() const { return IsBMP(m_value); }
+
+    // Returns true if the character is a supplementary character:
+    bool IsSupplementary() const { return IsSupplementary(m_value); }
+
+    // Returns the high surrogate code unit for the supplementary character
+    wxUint16 HighSurrogate() const { return HighSurrogate(m_value); }
+
+    // Returns the low surrogate code unit for the supplementary character
+    wxUint16 LowSurrogate() const { return LowSurrogate(m_value); }
 
     // Conversions to char and wchar_t types: all of those are needed to be
     // able to pass wxUniChars to verious standard narrow and wide character
@@ -214,6 +253,11 @@ public:
     bool IsAscii() const { return UniChar().IsAscii(); }
     bool GetAsChar(char *c) const { return UniChar().GetAsChar(c); }
 
+    bool IsBMP() const { return UniChar().IsBMP(); }
+    bool IsSupplementary() const { return UniChar().IsSupplementary(); }
+    wxUint16 HighSurrogate() const { return UniChar().HighSurrogate(); }
+    wxUint16 LowSurrogate() const { return UniChar().LowSurrogate(); }
+
     // Assignment operators:
 #if wxUSE_UNICODE_UTF8
     wxUniCharRef& operator=(const wxUniChar& c);
@@ -288,6 +332,34 @@ inline wxUniChar& wxUniChar::operator=(const wxUniCharRef& c)
     m_value = c.UniChar().m_value;
     return *this;
 }
+
+// wxUniCharRef doesn't behave quite like a reference, notably because template
+// deduction from wxUniCharRef doesn't yield wxUniChar as would have been the
+// case if it were a real reference. This results in a number of problems and
+// we can't fix all of them but we can at least provide a working swap() for
+// it, instead of the default version which doesn't work because a "wrong" type
+// is deduced.
+namespace std
+{
+
+template <>
+inline
+void swap<wxUniCharRef>(wxUniCharRef& lhs, wxUniCharRef& rhs)
+{
+    if ( &lhs != &rhs )
+    {
+        // The use of wxUniChar here is the crucial difference: in the default
+        // implementation, tmp would be wxUniCharRef and so assigning to lhs
+        // would modify it too. Here we make a real copy, not affected by
+        // changing lhs, instead.
+        wxUniChar tmp = lhs;
+        lhs = rhs;
+        rhs = tmp;
+    }
+}
+
+} // namespace std
+
 
 // Comparison operators for the case when wxUniChar(Ref) is the second operand
 // implemented in terms of member comparison functions

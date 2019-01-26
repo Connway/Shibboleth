@@ -80,7 +80,6 @@ project "EditorBasicModule"
 		"zlib-ng",
 		"wxBase",
 		"wxCore",
-		"wxAdv",
 		"wxPropGrid"
 	}
 

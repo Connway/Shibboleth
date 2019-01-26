@@ -39,9 +39,6 @@ VectorInspector::VectorInspector(
 	wxTextCtrl* const y = new wxTextCtrl(this, wxID_ANY);
 	wxTextCtrl* z = nullptr;
 
-	x->SetMinSize(wxSize(150, 40));
-	y->SetMinSize(wxSize(150, 40));
-
 	if (&ref_def == &Reflection<glm::vec3>::GetReflectionDefinition()) {
 		glm::vec3& vec3 = *reinterpret_cast<glm::vec3*>(value);
 
@@ -50,7 +47,6 @@ VectorInspector::VectorInspector(
 		wxFloatingPointValidator<float> z_validator(3, &vec3.z, wxNUM_VAL_NO_TRAILING_ZEROES);
 
 		z = new wxTextCtrl(this, wxID_ANY);
-		z->SetMinSize(wxSize(150, 40));
 
 		x->SetValidator(x_validator);
 		y->SetValidator(y_validator);
@@ -70,21 +66,20 @@ VectorInspector::VectorInspector(
 	y->GetValidator()->TransferToWindow();
 
 	sizer->Add(new wxStaticText(this, wxID_ANY, "X: "), 0, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
-	sizer->Add(x, 1, wxEXPAND | wxALIGN_CENTER);
+	sizer->Add(x, 1, wxALIGN_CENTER);
 	sizer->AddSpacer(10);
 	sizer->Add(new wxStaticText(this, wxID_ANY, "Y: "), 0, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
-	sizer->Add(y, 1, wxEXPAND | wxALIGN_CENTER);
+	sizer->Add(y, 1, wxALIGN_CENTER);
 
 	Bind(wxEVT_TEXT, &VectorInspector::onTextChange, this, x->GetId());
 	Bind(wxEVT_TEXT, &VectorInspector::onTextChange, this, y->GetId());
 
 	if (z) {
-		z->SetMinSize(wxSize(150, 40));
 		z->GetValidator()->TransferToWindow();
 
 		sizer->AddSpacer(10);
 		sizer->Add(new wxStaticText(this, wxID_ANY, "Z: "), 0, wxALIGN_CENTER_VERTICAL | wxALIGN_LEFT);
-		sizer->Add(z, 1, wxEXPAND | wxALIGN_CENTER);
+		sizer->Add(z, 1, wxALIGN_CENTER);
 
 		Bind(wxEVT_TEXT, &VectorInspector::onTextChange, this, z->GetId());
 	}

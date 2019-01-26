@@ -30,6 +30,7 @@
 
 @interface wxNSSearchField : NSSearchField
 {
+    BOOL m_withinTextDidChange;
 }
 
 @end
@@ -48,10 +49,20 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-    self = [super initWithFrame:frame];
+    if ( self = [super initWithFrame:frame] )
+    {
+        m_withinTextDidChange = NO;
+    }
     return self;
 }
- 
+
+- (void)textDidChange:(NSNotification *)aNotification
+{
+    m_withinTextDidChange = YES;
+    [super textDidChange:aNotification];
+    m_withinTextDidChange = NO;
+}
+
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
     wxUnusedVar(aNotification);
@@ -84,6 +95,11 @@
     return matches;
 }
 
+- (BOOL) isWithinTextDidChange
+{
+    return m_withinTextDidChange;
+}
+
 @end
 
 // ============================================================================
@@ -101,7 +117,7 @@ public :
     ~wxNSSearchFieldControl();
 
     // search field options
-    virtual void ShowSearchButton( bool show )
+    virtual void ShowSearchButton( bool show ) wxOVERRIDE
     {
         if ( show )
             [m_searchFieldCell resetSearchButtonCell];
@@ -110,12 +126,12 @@ public :
         [m_searchField setNeedsDisplay:YES];
     }
 
-    virtual bool IsSearchButtonVisible() const
+    virtual bool IsSearchButtonVisible() const wxOVERRIDE
     {
         return [m_searchFieldCell searchButtonCell] != nil;
     }
 
-    virtual void ShowCancelButton( bool show )
+    virtual void ShowCancelButton( bool show ) wxOVERRIDE
     {
         if ( show )
             [m_searchFieldCell resetCancelButtonCell];
@@ -124,12 +140,12 @@ public :
         [m_searchField setNeedsDisplay:YES];
     }
 
-    virtual bool IsCancelButtonVisible() const
+    virtual bool IsCancelButtonVisible() const wxOVERRIDE
     {
         return [m_searchFieldCell cancelButtonCell] != nil;
     }
 
-    virtual void SetSearchMenu( wxMenu* menu )
+    virtual void SetSearchMenu( wxMenu* menu ) wxOVERRIDE
     {
         if ( menu )
             [m_searchFieldCell setSearchMenuTemplate:menu->GetHMenu()];
@@ -138,18 +154,18 @@ public :
         [m_searchField setNeedsDisplay:YES];
     }
 
-    virtual void SetDescriptiveText(const wxString& text)
+    virtual void SetDescriptiveText(const wxString& text) wxOVERRIDE
     {
         [m_searchFieldCell setPlaceholderString:
             wxCFStringRef( text , m_wxPeer->GetFont().GetEncoding() ).AsNSString()];
     }
 
-    virtual bool SetFocus()
+    virtual bool SetFocus() wxOVERRIDE
     {
        return  wxNSTextFieldControl::SetFocus();
     }
 
-    void controlAction( WXWidget WXUNUSED(slf), void *WXUNUSED(_cmd), void *WXUNUSED(sender))
+    void controlAction( WXWidget WXUNUSED(slf), void *WXUNUSED(_cmd), void *WXUNUSED(sender)) wxOVERRIDE
     {
         wxSearchCtrl* wxpeer = (wxSearchCtrl*) GetWXPeer();
         if ( wxpeer )
@@ -157,7 +173,8 @@ public :
             NSString *searchString = [m_searchField stringValue];
             if ( searchString == nil || !searchString.length )
             {
-                wxpeer->HandleSearchFieldCancelHit();
+                if ( ![m_searchField isWithinTextDidChange])
+                   wxpeer->HandleSearchFieldCancelHit();
             }
             else
             {

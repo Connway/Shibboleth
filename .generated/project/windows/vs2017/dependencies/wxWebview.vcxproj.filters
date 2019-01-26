@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_ie.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_missing.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webviewhistoryitem_ie.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>

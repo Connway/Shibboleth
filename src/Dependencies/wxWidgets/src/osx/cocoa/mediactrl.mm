@@ -30,29 +30,9 @@
 
 #include "wx/mediactrl.h"
 
-#ifndef WX_PRECOMP
-    #include "wx/timer.h"
-#endif
-
 #include "wx/osx/private.h"
 
-#ifndef wxOSX_USE_QTKIT
-    #if wxOSX_USE_IPHONE
-        #define wxOSX_USE_QTKIT 0
-        #define wxOSX_USE_AVFOUNDATION 1
-    #else
-        #define wxOSX_USE_QTKIT 1
-        #define wxOSX_USE_AVFOUNDATION 0
-    #endif
-#else
-    #if wxOSX_USE_QTKIT
-        #define wxOSX_USE_AVFOUNDATION 0
-    #else
-        #define wxOSX_USE_AVFOUNDATION 1
-    #endif
-#endif
-
-#if wxOSX_USE_AVFOUNDATION && wxOSX_USE_COCOA && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9 && defined(__LP64__)
+#if wxOSX_USE_COCOA && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9 && defined(__LP64__)
     #define wxOSX_USE_AVKIT 1
 #else
     #define wxOSX_USE_AVKIT 0
@@ -61,405 +41,6 @@
 //===========================================================================
 //  BACKEND DECLARATIONS
 //===========================================================================
-
-#if wxOSX_USE_QTKIT
-
-//---------------------------------------------------------------------------
-//
-//  wxQTMediaBackend
-//
-//---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-//  QT Includes
-//---------------------------------------------------------------------------
-#include <QTKit/QTKit.h>
-
-#include "wx/cocoa/autorelease.h"
-#include "wx/cocoa/string.h"
-
-class WXDLLIMPEXP_FWD_MEDIA wxQTMediaBackend;
-
-@interface wxQTMovie : QTMovie {
-    
-    wxQTMediaBackend* m_backend;
-}
-
--(BOOL)isPlaying;
-
-@end
-
-class WXDLLIMPEXP_MEDIA wxQTMediaBackend : public wxMediaBackendCommonBase
-{
-public:
-
-    wxQTMediaBackend();
-    ~wxQTMediaBackend();
-
-    virtual bool CreateControl(wxControl* ctrl, wxWindow* parent,
-                                     wxWindowID id,
-                                     const wxPoint& pos,
-                                     const wxSize& size,
-                                     long style,
-                                     const wxValidator& validator,
-                                     const wxString& name);
-
-    virtual bool Play();
-    virtual bool Pause();
-    virtual bool Stop();
-
-    virtual bool Load(const wxString& fileName);
-    virtual bool Load(const wxURI& location);
-
-    virtual wxMediaState GetState();
-
-    virtual bool SetPosition(wxLongLong where);
-    virtual wxLongLong GetPosition();
-    virtual wxLongLong GetDuration();
-
-    virtual void Move(int x, int y, int w, int h);
-    wxSize GetVideoSize() const;
-
-    virtual double GetPlaybackRate();
-    virtual bool SetPlaybackRate(double dRate);
-
-    virtual double GetVolume();
-    virtual bool SetVolume(double dVolume);
-    
-    void Cleanup();
-    void FinishLoad();
-
-    virtual bool   ShowPlayerControls(wxMediaCtrlPlayerControls flags);
-private:
-    void DoShowPlayerControls(wxMediaCtrlPlayerControls flags);
-    
-    wxSize m_bestSize;              //Original movie size
-    wxQTMovie* m_movie;               //QTMovie handle/instance
-    QTMovieView* m_movieview;       //QTMovieView instance
-
-    wxMediaCtrlPlayerControls m_interfaceflags; // Saved interface flags
-
-    wxDECLARE_DYNAMIC_CLASS(wxQTMediaBackend);
-};
-
-// --------------------------------------------------------------------------
-// wxQTMovie
-// --------------------------------------------------------------------------
-
-@implementation wxQTMovie 
-
-- (id)initWithURL:(NSURL *)url error:(NSError **)errorPtr
-{
-    if ( [super initWithURL:url error:errorPtr] != nil )
-    {
-        m_backend = NULL;
-        
-        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-        [nc addObserver:self selector:@selector(movieDidEnd:) 
-                   name:QTMovieDidEndNotification object:nil];
-        [nc addObserver:self selector:@selector(movieRateChanged:) 
-                   name:QTMovieRateDidChangeNotification object:nil];
-        [nc addObserver:self selector:@selector(loadStateChanged:) 
-                   name:QTMovieLoadStateDidChangeNotification object:nil];
-        
-        return self;
-    }
-    else 
-        return nil;
-}
-
--(void)dealloc
-{
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:self];
-    
-    [super dealloc];    
-}
-
--(wxQTMediaBackend*) backend
-{
-    return m_backend;
-}
-
--(void) setBackend:(wxQTMediaBackend*) backend
-{
-    m_backend = backend;
-}
-
-- (void)movieDidEnd:(NSNotification *)notification
-{
-    if ( m_backend )
-    {
-        if ( m_backend->SendStopEvent() )
-            m_backend->QueueFinishEvent();
-    }
-}
-
-- (void)movieRateChanged:(NSNotification *)notification
-{
-    NSDictionary *userInfo = [notification userInfo];
-    
-    NSNumber *newRate = [userInfo objectForKey:QTMovieRateDidChangeNotificationParameter];
-    
-    if ([newRate intValue] == 0)
-    {
-        m_backend->QueuePauseEvent();
-    }	
-    else if ( [self isPlaying] == NO )
-    {
-        m_backend->QueuePlayEvent();
-    }
-}
-
--(void)loadStateChanged:(NSNotification *)notification
-{
-    QTMovie *movie = [notification object];
-    long loadState = [[movie attributeForKey:QTMovieLoadStateAttribute] longValue];
-    if ( loadState == QTMovieLoadStateError )
-    {
-        // error occurred 
-    }
-    else if (loadState >= QTMovieLoadStatePlayable)
-    {
-        // the movie has loaded enough media data to begin playing, but we don't have an event for that yet
-    }
-    else if (loadState >= QTMovieLoadStateComplete) // we might use QTMovieLoadStatePlaythroughOK
-    {
-        m_backend->FinishLoad();
-    }
-}
-
--(BOOL)isPlaying
-{
-    if ([self rate] == 0)
-    {
-        return NO;
-    }
-    
-    return YES;
-}
-
-@end
-
-// --------------------------------------------------------------------------
-// wxQTMediaBackend
-// --------------------------------------------------------------------------
-
-IMPLEMENT_DYNAMIC_CLASS(wxQTMediaBackend, wxMediaBackend);
-
-wxQTMediaBackend::wxQTMediaBackend() : 
-    m_movie(nil), m_movieview(nil),
-    m_interfaceflags(wxMEDIACTRLPLAYERCONTROLS_NONE)
-{
-}
-
-wxQTMediaBackend::~wxQTMediaBackend()
-{
-    Cleanup();
-}
-
-bool wxQTMediaBackend::CreateControl(wxControl* inctrl, wxWindow* parent,
-                                     wxWindowID wid,
-                                     const wxPoint& pos,
-                                     const wxSize& size,
-                                     long style,
-                                     const wxValidator& validator,
-                                     const wxString& name)
-{
-    wxMediaCtrl* mediactrl = (wxMediaCtrl*) inctrl;
-
-    mediactrl->DontCreatePeer();
-    
-    if ( !mediactrl->wxControl::Create(
-                                       parent, wid, pos, size,
-                                       wxWindow::MacRemoveBordersFromStyle(style),
-                                       validator, name))
-    {
-        return false;
-    }
-    
-    NSRect r = wxOSXGetFrameForControl( mediactrl, pos , size ) ;
-    QTMovieView* theView = [[QTMovieView alloc] initWithFrame: r];
-
-    wxWidgetCocoaImpl* impl = new wxWidgetCocoaImpl(mediactrl,theView);
-    mediactrl->SetPeer(impl);
-    
-    m_movieview = theView;
-    // will be set up after load
-    [theView setControllerVisible:NO];
-
-    m_ctrl = mediactrl;
-    return true;
-}
-
-bool wxQTMediaBackend::Load(const wxString& fileName)
-{
-    return Load(
-                wxURI(
-                    wxString( wxT("file://") ) + fileName
-                     )
-               );
-}
-
-bool wxQTMediaBackend::Load(const wxURI& location)
-{
-    wxCFStringRef uri(location.BuildURI());
-    NSURL *url = [NSURL URLWithString: uri.AsNSString()];
-    
-    if (! [wxQTMovie canInitWithURL:url])
-        return false;
-    
-    [m_movie release];
-    wxQTMovie* movie = [[wxQTMovie alloc] initWithURL:url error: nil ];
-
-    m_movie = movie;
-    if (movie != nil)
-    {
-        [m_movie setBackend:this];
-        [m_movieview setMovie:movie];
-
-        // If the media file is able to be loaded quickly then there may not be
-        // any QTMovieLoadStateDidChangeNotification message sent, so we need to
-        // also check the load state here and finish our initialization if it has
-        // been loaded.
-        long loadState = [[m_movie attributeForKey:QTMovieLoadStateAttribute] longValue];
-        if (loadState >= QTMovieLoadStateComplete)
-        {
-            FinishLoad();
-        }        
-    }
-    
-    return movie != nil;
-}
-
-void wxQTMediaBackend::FinishLoad()
-{
-    DoShowPlayerControls(m_interfaceflags);
-    
-    NSSize s = [[m_movie attributeForKey:QTMovieNaturalSizeAttribute] sizeValue];
-    m_bestSize = wxSize(s.width, s.height);
-    
-    NotifyMovieLoaded();
-}
-
-bool wxQTMediaBackend::Play()
-{
-    [m_movieview play:nil];
-    return true;
-}
-
-bool wxQTMediaBackend::Pause()
-{
-    [m_movieview pause:nil];
-    return true;
-}
-
-bool wxQTMediaBackend::Stop()
-{
-    [m_movieview pause:nil];
-    [m_movieview gotoBeginning:nil];
-    return true;
-}
-
-double wxQTMediaBackend::GetVolume()
-{
-    return [m_movie volume];
-}
-
-bool wxQTMediaBackend::SetVolume(double dVolume)
-{
-    [m_movie setVolume:dVolume];
-    return true;
-}
-double wxQTMediaBackend::GetPlaybackRate()
-{
-    return [m_movie rate];
-}
-
-bool wxQTMediaBackend::SetPlaybackRate(double dRate)
-{
-    [m_movie setRate:dRate];
-    return true;
-}
-
-bool wxQTMediaBackend::SetPosition(wxLongLong where)
-{
-    QTTime position;
-    position = [m_movie currentTime];
-    position.timeValue = (where.GetValue() / 1000.0) * position.timeScale;
-    [m_movie setCurrentTime:position];
-    return true;
-}
-
-wxLongLong wxQTMediaBackend::GetPosition()
-{
-    QTTime position = [m_movie currentTime];
-    return ((double) position.timeValue) / position.timeScale * 1000;
-}
-
-wxLongLong wxQTMediaBackend::GetDuration()
-{
-    QTTime duration = [m_movie duration];
-    return ((double) duration.timeValue) / duration.timeScale * 1000;
-}
-
-wxMediaState wxQTMediaBackend::GetState()
-{
-    if ( [m_movie isPlaying] )
-        return wxMEDIASTATE_PLAYING;
-    else
-    {
-        if ( GetPosition() == 0 )
-            return wxMEDIASTATE_STOPPED;
-        else
-            return wxMEDIASTATE_PAUSED;
-    }
-}
-
-void wxQTMediaBackend::Cleanup()
-{
-    [m_movieview setMovie:NULL];
-    [m_movie release];
-    m_movie = nil;
-}
-
-wxSize wxQTMediaBackend::GetVideoSize() const
-{
-    return m_bestSize;
-}
-
-void wxQTMediaBackend::Move(int x, int y, int w, int h)
-{
-    // as we have a native player, no need to move the video area 
-}
-
-bool wxQTMediaBackend::ShowPlayerControls(wxMediaCtrlPlayerControls flags)
-{
-    if ( m_interfaceflags != flags )
-        DoShowPlayerControls(flags);
-    
-    m_interfaceflags = flags;    
-    return true;
-}
-
-void wxQTMediaBackend::DoShowPlayerControls(wxMediaCtrlPlayerControls flags)
-{
-    if (flags == wxMEDIACTRLPLAYERCONTROLS_NONE )
-    {
-        [m_movieview setControllerVisible:NO];
-    }
-    else 
-    {
-        [m_movieview setControllerVisible:YES];
-        
-        [m_movieview setStepButtonsVisible:(flags & wxMEDIACTRLPLAYERCONTROLS_STEP) ? YES:NO];
-        [m_movieview setVolumeButtonVisible:(flags & wxMEDIACTRLPLAYERCONTROLS_VOLUME) ? YES:NO];
-    }
-}
-
-#endif
-
-#if wxOSX_USE_AVFOUNDATION
 
 //---------------------------------------------------------------------------
 //
@@ -479,7 +60,7 @@ static void *AVSPPlayerItemStatusContext = &AVSPPlayerItemStatusContext;
 static void *AVSPPlayerRateContext = &AVSPPlayerRateContext;
 
 @interface wxAVPlayer : AVPlayer {
-    
+
     AVPlayerLayer *playerLayer;
 
     wxAVMediaBackend* m_backend;
@@ -494,52 +75,52 @@ static void *AVSPPlayerRateContext = &AVSPPlayerRateContext;
 class WXDLLIMPEXP_MEDIA wxAVMediaBackend : public wxMediaBackendCommonBase
 {
 public:
-    
+
     wxAVMediaBackend();
     ~wxAVMediaBackend();
-    
+
     virtual bool CreateControl(wxControl* ctrl, wxWindow* parent,
                                wxWindowID id,
                                const wxPoint& pos,
                                const wxSize& size,
                                long style,
                                const wxValidator& validator,
-                               const wxString& name);
-    
-    virtual bool Play();
-    virtual bool Pause();
-    virtual bool Stop();
-    
-    virtual bool Load(const wxString& fileName);
-    virtual bool Load(const wxURI& location);
-    
-    virtual wxMediaState GetState();
-    
-    virtual bool SetPosition(wxLongLong where);
-    virtual wxLongLong GetPosition();
-    virtual wxLongLong GetDuration();
-    
-    virtual void Move(int x, int y, int w, int h);
-    wxSize GetVideoSize() const;
-    
-    virtual double GetPlaybackRate();
-    virtual bool SetPlaybackRate(double dRate);
-    
-    virtual double GetVolume();
-    virtual bool SetVolume(double dVolume);
-    
+                               const wxString& name) wxOVERRIDE;
+
+    virtual bool Play() wxOVERRIDE;
+    virtual bool Pause() wxOVERRIDE;
+    virtual bool Stop() wxOVERRIDE;
+
+    virtual bool Load(const wxString& fileName) wxOVERRIDE;
+    virtual bool Load(const wxURI& location) wxOVERRIDE;
+
+    virtual wxMediaState GetState() wxOVERRIDE;
+
+    virtual bool SetPosition(wxLongLong where) wxOVERRIDE;
+    virtual wxLongLong GetPosition() wxOVERRIDE;
+    virtual wxLongLong GetDuration() wxOVERRIDE;
+
+    virtual void Move(int x, int y, int w, int h) wxOVERRIDE;
+    wxSize GetVideoSize() const wxOVERRIDE;
+
+    virtual double GetPlaybackRate() wxOVERRIDE;
+    virtual bool SetPlaybackRate(double dRate) wxOVERRIDE;
+
+    virtual double GetVolume() wxOVERRIDE;
+    virtual bool SetVolume(double dVolume) wxOVERRIDE;
+
     void Cleanup();
     void FinishLoad();
-    
-    virtual bool   ShowPlayerControls(wxMediaCtrlPlayerControls flags);
+
+    virtual bool   ShowPlayerControls(wxMediaCtrlPlayerControls flags) wxOVERRIDE;
 private:
     void DoShowPlayerControls(wxMediaCtrlPlayerControls flags);
-    
+
     wxSize m_bestSize;              //Original movie size
     wxAVPlayer* m_player;               //AVPlayer handle/instance
-    
+
     wxMediaCtrlPlayerControls m_interfaceflags; // Saved interface flags
-    
+
     wxDECLARE_DYNAMIC_CLASS(wxAVMediaBackend);
 };
 
@@ -553,13 +134,13 @@ private:
 
 - (id) init
 {
-    self = [super init];
-    
-    [self addObserver:self forKeyPath:@"currentItem.status"
+    if ( self = [super init] )
+    {
+        [self addObserver:self forKeyPath:@"currentItem.status"
                   options:NSKeyValueObservingOptionNew context:AVSPPlayerItemStatusContext];
-    [self addObserver:self forKeyPath:@"rate"
+        [self addObserver:self forKeyPath:@"rate"
               options:NSKeyValueObservingOptionNew context:AVSPPlayerRateContext];
-
+    }
     return self;
 }
 
@@ -567,10 +148,10 @@ private:
 {
     [playerLayer release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [self removeObserver:self forKeyPath:@"rate" context:AVSPPlayerRateContext];
     [self removeObserver:self forKeyPath:@"currentItem.status" context:AVSPPlayerItemStatusContext];
-    
+
     [super dealloc];
 }
 
@@ -643,7 +224,7 @@ private:
     {
         return NO;
     }
-    
+
     return YES;
 }
 
@@ -676,13 +257,12 @@ private:
 
 - (id) initWithFrame:(CGRect)rect player:(wxAVPlayer*) player
 {
-    if ( !(self=[super initWithFrame:rect]) )
-        return nil;
-
-    AVPlayerLayer* playerLayer = (AVPlayerLayer*) [self layer];
-    [playerLayer setPlayer: player];
-    [player setPlayerLayer:playerLayer];
-
+    if ( self = [super initWithFrame:rect] )
+    {
+        AVPlayerLayer* playerLayer = (AVPlayerLayer*) [self layer];
+        [playerLayer setPlayer: player];
+        [player setPlayerLayer:playerLayer];
+    }
     return self;
 }
 
@@ -716,11 +296,10 @@ private:
 
 - (id) initWithFrame:(NSRect)rect player:(wxAVPlayer*) player
 {
-    if ( !(self=[super initWithFrame:rect]) )
-        return nil;
-    
-    self.player = player;
-    
+    if ( self = [super initWithFrame:rect] )
+    {
+        self.player = player;
+    }
     return self;
 }
 
@@ -751,18 +330,18 @@ private:
     }
 }
 
-- (id) initWithFrame:(NSRect)rect player:(AVPlayer*) player
+- (id) initWithFrame:(NSRect)rect player:(wxAVPlayer*) player
 {
-    if ( !(self=[super initWithFrame:rect]) )
-        return nil;
-    
-    [self setWantsLayer:YES];
-    AVPlayerLayer* playerlayer = [[AVPlayerLayer playerLayerWithPlayer: player] retain];
-    [player setPlayerLayer:playerlayer];
+    if ( self = [super initWithFrame:rect] )
+    {
+        [self setWantsLayer:YES];
+        AVPlayerLayer* playerlayer = [AVPlayerLayer playerLayerWithPlayer: player];
+        [player setPlayerLayer:playerlayer];
 
-    [playerlayer setFrame:[[self layer] bounds]];
-    [playerlayer setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
-    [[self layer] addSublayer:playerlayer];
+        [playerlayer setFrame:[[self layer] bounds]];
+        [playerlayer setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
+        [[self layer] addSublayer:playerlayer];
+    }
 
     return self;
 }
@@ -776,7 +355,7 @@ private:
 
 #endif
 
-IMPLEMENT_DYNAMIC_CLASS(wxAVMediaBackend, wxMediaBackend);
+wxIMPLEMENT_DYNAMIC_CLASS(wxAVMediaBackend, wxMediaBackend);
 
 wxAVMediaBackend::wxAVMediaBackend() :
 m_player(nil),
@@ -798,9 +377,9 @@ bool wxAVMediaBackend::CreateControl(wxControl* inctrl, wxWindow* parent,
                                      const wxString& name)
 {
     wxMediaCtrl* mediactrl = (wxMediaCtrl*) inctrl;
-    
+
     mediactrl->DontCreatePeer();
-    
+
     if ( !mediactrl->wxControl::Create(
                                        parent, wid, pos, size,
                                        wxWindow::MacRemoveBordersFromStyle(style),
@@ -812,8 +391,8 @@ bool wxAVMediaBackend::CreateControl(wxControl* inctrl, wxWindow* parent,
     m_player = [[wxAVPlayer alloc] init];
     [m_player setBackend:this];
 
-    NSRect r = wxOSXGetFrameForControl( mediactrl, pos , size ) ;
-    
+    WXRect r = wxOSXGetFrameForControl( mediactrl, pos , size ) ;
+
     WXWidget view = NULL;
 #if wxOSX_USE_AVKIT
     if ( NSClassFromString(@"AVPlayerView") )
@@ -822,12 +401,12 @@ bool wxAVMediaBackend::CreateControl(wxControl* inctrl, wxWindow* parent,
         [(wxAVPlayerView*) view setControlsStyle:AVPlayerViewControlsStyleNone];
     }
 #endif
-    
+
     if ( view == NULL )
     {
         view = [[wxAVView alloc] initWithFrame: r player:m_player];
     }
-    
+
 #if wxOSX_USE_IPHONE
     wxWidgetIPhoneImpl* impl = new wxWidgetIPhoneImpl(mediactrl,view);
 #else
@@ -852,16 +431,16 @@ bool wxAVMediaBackend::Load(const wxURI& location)
 {
     wxCFStringRef uri(location.BuildURI());
     NSURL *url = [NSURL URLWithString: uri.AsNSString()];
-    
+
     AVAsset* asset = [AVAsset assetWithURL:url];
     if (! asset )
         return false;
-    
+
     if ( [asset isPlayable] )
     {
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
         [m_player replaceCurrentItemWithPlayerItem:playerItem];
-    
+
         return playerItem != nil;
     }
     return false;
@@ -870,12 +449,12 @@ bool wxAVMediaBackend::Load(const wxURI& location)
 void wxAVMediaBackend::FinishLoad()
 {
     DoShowPlayerControls(m_interfaceflags);
-    
+
     AVPlayerItem *playerItem = [m_player currentItem];
-    
+
     CGSize s = [playerItem presentationSize];
     m_bestSize = wxSize(s.width, s.height);
-    
+
     NotifyMovieLoaded();
 }
 
@@ -935,7 +514,7 @@ wxLongLong wxAVMediaBackend::GetPosition()
 wxLongLong wxAVMediaBackend::GetDuration()
 {
     AVPlayerItem *playerItem = [m_player currentItem];
-    
+
     if ([playerItem status] == AVPlayerItemStatusReadyToPlay)
         return CMTimeGetSeconds([[playerItem asset] duration])*1000.0;
     else
@@ -976,7 +555,7 @@ bool wxAVMediaBackend::ShowPlayerControls(wxMediaCtrlPlayerControls flags)
 {
     if ( m_interfaceflags != flags )
         DoShowPlayerControls(flags);
-    
+
     m_interfaceflags = flags;
     return true;
 }
@@ -995,8 +574,6 @@ void wxAVMediaBackend::DoShowPlayerControls(wxMediaCtrlPlayerControls flags)
     }
 #endif
 }
-
-#endif
 
 //in source file that contains stuff you don't directly use
 #include "wx/html/forcelnk.h"

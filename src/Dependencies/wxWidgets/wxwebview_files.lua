@@ -5,6 +5,7 @@ files
 	"include/wx/webview.h",
 	"include/wx/webviewarchivehandler.h",
 	"include/wx/webviewfshandler.h",
+	"include/wx/msw/webview_missing.h",
 	"src/common/dummy.cpp",
 	"src/common/webview.cpp",
 	"src/common/webviewarchivehandler.cpp",

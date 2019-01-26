@@ -15,6 +15,8 @@ class WXDLLIMPEXP_FWD_CORE wxFrame;
 
 #include "wx/arrstr.h"
 
+class wxMenuRadioItemsData;
+
 // ----------------------------------------------------------------------------
 // Menu
 // ----------------------------------------------------------------------------
@@ -60,12 +62,17 @@ public:
     // we don't want native menu events being triggered
     void SetNoEventsMode( bool noEvents );
     bool GetNoEventsMode() const { return m_noEventsMode; }
+
+    // Returns the start and end position of the radio group to which the item
+    // at given position belongs. Return false if there is no radio group
+    // containing this position.
+    bool OSXGetRadioGroupRange(int pos, int *start, int *end) const;
+
 protected:
     // hide special menu items like exit, preferences etc
     // that are expected in the app menu
     void DoRearrange() ;
 
-    bool DoHandleMenuEvent( wxEvent& evt );
     virtual wxMenuItem* DoAppend(wxMenuItem *item);
     virtual wxMenuItem* DoInsert(size_t pos, wxMenuItem *item);
     virtual wxMenuItem* DoRemove(wxMenuItem *item);
@@ -90,9 +97,11 @@ private:
     // don't trigger native events
     bool m_noEventsMode;
 
+    wxMenuRadioItemsData* m_radioData;
+
     wxMenuImpl* m_peer;
 
-    DECLARE_DYNAMIC_CLASS(wxMenu)
+    wxDECLARE_DYNAMIC_CLASS(wxMenu);
 };
 
 #if wxOSX_USE_COCOA_OR_CARBON
@@ -153,6 +162,7 @@ public:
     static void SetAutoWindowMenu( bool enable ) { s_macAutoWindowMenu = enable ; }
     static bool GetAutoWindowMenu() { return s_macAutoWindowMenu ; }
 
+    void MacUninstallMenuBar() ;
     void MacInstallMenuBar() ;
     static wxMenuBar* MacGetInstalledMenuBar() { return s_macInstalledMenuBar ; }
     static void MacSetCommonMenuBar(wxMenuBar* menubar) { s_macCommonMenuBar=menubar; }
@@ -160,6 +170,11 @@ public:
 
 
     static WXHMENU MacGetWindowMenuHMenu() { return s_macWindowMenuHandle ; }
+    
+    virtual void DoGetPosition(int *x, int *y) const;
+    virtual void DoGetSize(int *width, int *height) const;
+    virtual void DoGetClientSize(int *width, int *height) const;
+
 protected:
     // common part of all ctors
     void Init();
@@ -174,7 +189,7 @@ private:
     wxMenu* m_rootMenu;
     wxMenu* m_appleMenu;
 
-    DECLARE_DYNAMIC_CLASS(wxMenuBar)
+    wxDECLARE_DYNAMIC_CLASS(wxMenuBar);
 };
 
 #endif

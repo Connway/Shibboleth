@@ -22,7 +22,6 @@
 #include "wx/utils.h"
 #include "wx/sysopt.h"
 
-#include <gtk/gtk.h>
 #include "wx/gtk/private.h"
 #include "wx/gtk/private/mnemonics.h"
 
@@ -34,7 +33,7 @@
 // wxControl creation
 // ----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS(wxControl, wxWindow)
+wxIMPLEMENT_DYNAMIC_CLASS(wxControl, wxWindow);
 
 wxControl::wxControl()
 {
@@ -97,6 +96,11 @@ void wxControl::PostCreation(const wxSize& size)
 {
     wxWindow::PostCreation();
 
+#ifdef __WXGTK3__
+    if (HasFlag(wxNO_BORDER))
+        GTKApplyCssStyle("*{ border:none; border-radius:0; padding:0 }");
+#endif
+
 #ifndef __WXGTK3__
     // NB: GetBestSize needs to know the style, otherwise it will assume
     //     default font and if the user uses a different font, determined
@@ -118,7 +122,7 @@ void wxControl::PostCreation(const wxSize& size)
 void wxControl::GTKFixSensitivity(bool WXUNUSED_IN_GTK3(onlyIfUnderMouse))
 {
 #ifndef __WXGTK3__
-    if (gtk_check_version(2,14,0)
+    if (!wx_is_at_least_gtk2(14)
 #if wxUSE_SYSTEM_OPTIONS
         && (wxSystemOptions::GetOptionInt(wxT("gtk.control.disable-sensitivity-fix")) != 1)
 #endif
@@ -251,17 +255,18 @@ wxControl::GetDefaultAttributesFromGTKWidget(GtkWidget* widget,
     }
     GtkStyleContext* sc = gtk_widget_get_style_context(widget);
     gtk_style_context_save(sc);
-    GdkRGBA c;
-    gtk_style_context_set_state(sc, stateFlag);
-    gtk_style_context_get_color(sc, stateFlag, &c);
-    attr.colFg = wxColour(c);
-    gtk_style_context_get_background_color(sc, stateFlag, &c);
-    attr.colBg = wxColour(c);
+    GdkRGBA *fc, *bc;
     wxNativeFontInfo info;
-    gtk_style_context_get(
-        sc, stateFlag, GTK_STYLE_PROPERTY_FONT, &info.description, NULL);
-    attr.font = wxFont(info);
+    gtk_style_context_set_state(sc, stateFlag);
+    gtk_style_context_get(sc, stateFlag,
+        "color", &fc, "background-color", &bc,
+        GTK_STYLE_PROPERTY_FONT, &info.description, NULL);
     gtk_style_context_restore(sc);
+    attr.colFg = wxColour(*fc);
+    attr.colBg = wxColour(*bc);
+    attr.font = wxFont(info);
+    gdk_rgba_free(fc);
+    gdk_rgba_free(bc);
 #else
     GtkStyle* style;
 
@@ -342,7 +347,7 @@ wxPoint wxControl::GTKGetEntryMargins(GtkEntry* entry) const
 #if GTK_CHECK_VERSION(2,10,0)
     // The margins we have previously set
     const GtkBorder* border = NULL;
-    if (gtk_check_version(2,10,0) == NULL)
+    if (wx_is_at_least_gtk2(10))
         border = gtk_entry_get_inner_border(entry);
 
     if ( border )

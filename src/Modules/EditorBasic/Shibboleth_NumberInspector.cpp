@@ -84,7 +84,7 @@ NumberInspector::NumberInspector(
 
 	const wxValidator* const validator = createValidator(value, ref_def, parent_ref_def, var_index);
 	_text = new wxTextCtrl(this, wxID_ANY);
-	_text->SetMinSize(wxSize(150, 40));
+	//_text->SetMinSize(wxSize(150, 40));
 	_text->SetWindowStyle(wxVSCROLL);
 	_text->SetValidator(*validator);
 

@@ -26,11 +26,8 @@
 
 class WXDLLIMPEXP_FWD_BASE wxString;
 
-WXDLLIMPEXP_BASE void wxMacConvertNewlines13To10( wxString *data ) ;
-WXDLLIMPEXP_BASE void wxMacConvertNewlines10To13( wxString *data ) ;
-
-WXDLLIMPEXP_BASE void wxMacConvertNewlines13To10( char * data ) ;
-WXDLLIMPEXP_BASE void wxMacConvertNewlines10To13( char * data ) ;
+WXDLLIMPEXP_BASE wxString wxMacConvertNewlines13To10(const wxString& data);
+WXDLLIMPEXP_BASE wxString wxMacConvertNewlines10To13(const wxString& data);
 
 WXDLLIMPEXP_BASE wxUint32 wxMacGetSystemEncFromFontEnc(wxFontEncoding encoding) ;
 WXDLLIMPEXP_BASE wxFontEncoding wxMacGetFontEncFromSystemEnc(wxUint32 encoding) ;
@@ -46,7 +43,7 @@ public:
     wxCFStringRef(const wxString &str,
                         wxFontEncoding encoding = wxFONTENCODING_DEFAULT) ;
 
-#if wxOSX_USE_COCOA_OR_IPHONE
+#ifdef __WXMAC__
     wxCFStringRef(NSString* ref)
         : wxCFRef< CFStringRef >((CFStringRef) ref)
     {
@@ -71,12 +68,10 @@ public:
 
     static wxString AsString( CFStringRef ref, wxFontEncoding encoding = wxFONTENCODING_DEFAULT ) ;
     static wxString AsStringWithNormalizationFormC( CFStringRef ref, wxFontEncoding encoding = wxFONTENCODING_DEFAULT ) ;
-#if wxOSX_USE_COCOA_OR_IPHONE
+#ifdef __WXMAC__
     static wxString AsString( NSString* ref, wxFontEncoding encoding = wxFONTENCODING_DEFAULT ) ;
     static wxString AsStringWithNormalizationFormC( NSString* ref, wxFontEncoding encoding = wxFONTENCODING_DEFAULT ) ;
-#endif
 
-#if wxOSX_USE_COCOA_OR_IPHONE
     NSString* AsNSString() const { return (NSString*)(CFStringRef) *this; }
 #endif
 private:

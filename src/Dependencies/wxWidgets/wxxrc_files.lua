@@ -65,6 +65,7 @@ files
 	"include/wx/xrc/xh_unkwn.h",
 	"include/wx/xrc/xh_wizrd.h",
 	"include/wx/xrc/xmlres.h",
+	"include/wx/xrc/xh_activityindicator.h",
 	"src/common/dummy.cpp",
 	"src/xrc/xh_animatctrl.cpp",
 	"src/xrc/xh_bannerwindow.cpp",
@@ -131,5 +132,6 @@ files
 	"src/xrc/xh_wizrd.cpp",
 	"src/xrc/xmladv.cpp",
 	"src/xrc/xmlres.cpp",
-	"src/xrc/xmlrsall.cpp"
+	"src/xrc/xmlrsall.cpp",
+	"src/xrc/xh_activityindicator.cpp"
 }

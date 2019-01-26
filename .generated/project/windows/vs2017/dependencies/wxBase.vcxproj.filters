@@ -10,9 +10,6 @@
     <Filter Include="include\wx\generic">
       <UniqueIdentifier>{B3682963-9F4C-EAB8-08AD-E40BF4AFD43A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\wx\html">
-      <UniqueIdentifier>{0B0AEF1F-7795-5CE4-80A6-DFD8ECB0B8E4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\wx\meta">
       <UniqueIdentifier>{FD88F11F-6914-5FE4-7225-E2D8DE2FBBE4}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cmdline.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\compiler.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\confbase.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -150,6 +150,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\evtloop.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\evtloopsrc.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\except.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -210,9 +213,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\hashset.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\forcelnk.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\iconloc.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -252,6 +252,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\longlong.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\lzmastream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\math.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -280,6 +283,9 @@
       <Filter>include\wx\meta</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\meta\pod.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\meta\removeref.h">
       <Filter>include\wx\meta</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mimetype.h">
@@ -333,9 +339,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\mimetype.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\mslu.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\private.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
@@ -355,6 +358,9 @@
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\winundef.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\winver.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\wrapcctl.h">
@@ -406,6 +412,9 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\scopeguard.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\secretstore.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sharedptr.h">
@@ -626,9 +635,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dynarray.cpp">
-      <Filter>src\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dynlib.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -716,6 +722,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\longlong.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\lzmastream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\memory.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -747,6 +756,9 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\regex.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\secretstore.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\sstream.cpp">
@@ -884,9 +896,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\mimetype.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\mslu.cpp">
-      <Filter>src\msw</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\power.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -894,6 +903,9 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\registry.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\secretstore.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\snglinst.cpp">

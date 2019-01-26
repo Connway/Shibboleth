@@ -65,8 +65,6 @@ typedef wxObjectListNode wxNode;
 #define WX_DECLARE_LIST_WITH_DECL(elT, liT, decl) \
     WX_DECLARE_LIST_XO(elT*, liT, decl)
 
-#if !defined(__VISUALC__) || __VISUALC__ >= 1300 // == !VC6
-
 template<class T>
 class wxList_SortFunction
 {
@@ -77,42 +75,6 @@ public:
 private:
     wxSortCompareFunction m_f;
 };
-
-#define WX_LIST_SORTFUNCTION( elT, f ) wxList_SortFunction<elT>(f)
-#define WX_LIST_VC6_WORKAROUND(elT, liT, decl)
-
-#else // if defined( __VISUALC__ ) && __VISUALC__ < 1300 // == VC6
-
-#define WX_LIST_SORTFUNCTION( elT, f ) std::greater<elT>( f )
-#define WX_LIST_VC6_WORKAROUND(elT, liT, decl)                                \
-    decl liT;                                                                 \
-                                                                              \
-    /* Workaround for broken VC6 STL incorrectly requires a std::greater<> */ \
-    /* to be passed into std::list::sort() */                                 \
-    template <>                                                               \
-    struct std::greater<elT>                                                  \
-    {                                                                         \
-        private:                                                              \
-            wxSortCompareFunction m_CompFunc;                                 \
-        public:                                                               \
-            greater( wxSortCompareFunction compfunc = NULL )                  \
-                : m_CompFunc( compfunc ) {}                                   \
-            bool operator()(const elT X, const elT Y) const                   \
-                {                                                             \
-                    return m_CompFunc ?                                       \
-                        ( m_CompFunc( wxListCastElementToVoidPtr(X),          \
-                                      wxListCastElementToVoidPtr(Y) ) < 0 ) : \
-                        ( X > Y );                                            \
-                }                                                             \
-    };
-
-// helper for std::greater<elT> above:
-template<typename T>
-inline const void *wxListCastElementToVoidPtr(const T* ptr) { return ptr; }
-inline const void *wxListCastElementToVoidPtr(const wxString& str)
-    { return (const char*)str; }
-
-#endif // VC6/!VC6
 
 /*
     Note 1: the outer helper class _WX_LIST_HELPER_##liT below is a workaround
@@ -154,7 +116,6 @@ inline const void *wxListCastElementToVoidPtr(const wxString& str)
         static void DeleteFunction( _WX_LIST_ITEM_TYPE_##liT X );             \
     };                                                                        \
                                                                               \
-    WX_LIST_VC6_WORKAROUND(elT, liT, decl)                                    \
     class liT : public std::list<elT>                                          \
     {                                                                         \
     private:                                                                  \
@@ -166,8 +127,6 @@ inline const void *wxListCastElementToVoidPtr(const wxString& str)
         class compatibility_iterator                                           \
         {                                                                     \
         private:                                                              \
-            /* Workaround for broken VC6 nested class name resolution */      \
-            typedef std::list<elT>::iterator iterator;                        \
             friend class liT;                                                 \
                                                                               \
             iterator m_iter;                                                  \
@@ -318,7 +277,7 @@ inline const void *wxListCastElementToVoidPtr(const wxString& str)
         }                                                                     \
         /* Workaround for broken VC6 std::list::sort() see above */           \
         void Sort( wxSortCompareFunction compfunc )                           \
-            { sort( WX_LIST_SORTFUNCTION( elT, compfunc ) ); }                \
+            { sort( wxList_SortFunction<elT>(compfunc ) ); }                  \
         ~liT() { Clear(); }                                                   \
                                                                               \
         /* It needs access to our EmptyList */                                \
@@ -640,6 +599,17 @@ private:
 // macros for definition of "template" list type
 // -----------------------------------------------------------------------------
 
+// Helper macro defining common iterator typedefs
+#if wxUSE_STD_CONTAINERS_COMPATIBLY
+    #include <iterator>
+
+    #define WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()                          \
+        typedef std::ptrdiff_t difference_type;                               \
+        typedef std::bidirectional_iterator_tag iterator_category;
+#else
+    #define WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()
+#endif
+
 // and now some heavy magic...
 
 // declare a list type named 'name' and containing elements of type 'T *'
@@ -693,9 +663,9 @@ private:
             { wxNodeBase::SetData(data); }                                  \
                                                                             \
     protected:                                                              \
-        virtual void DeleteData();                                          \
+        virtual void DeleteData() wxOVERRIDE;                               \
                                                                             \
-        DECLARE_NO_COPY_CLASS(nodetype)                                     \
+        wxDECLARE_NO_COPY_CLASS(nodetype);                                  \
     };                                                                      \
                                                                             \
     classexp name : public wxListBase                                       \
@@ -783,6 +753,7 @@ private:
         virtual wxNodeBase *CreateNode(wxNodeBase *prev, wxNodeBase *next,  \
                                void *data,                                  \
                                const wxListKey& key = wxDefaultListKey)     \
+                               wxOVERRIDE                                   \
             {                                                               \
                 return new nodetype(this,                                   \
                                     (nodetype *)prev, (nodetype *)next,     \
@@ -801,19 +772,21 @@ private:
                                                                             \
         classexp iterator                                                   \
         {                                                                   \
-            typedef name list;                                              \
         public:                                                             \
+            WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()                        \
+            typedef T* value_type;                                          \
+            typedef value_type* pointer;                                    \
+            typedef value_type& reference;                                  \
+                                                                            \
             typedef nodetype Node;                                          \
             typedef iterator itor;                                          \
-            typedef T* value_type;                                          \
-            typedef value_type* ptr_type;                                   \
-            typedef value_type& reference;                                  \
                                                                             \
             Node* m_node;                                                   \
             Node* m_init;                                                   \
         public:                                                             \
+            /* Compatibility typedefs, don't use */                         \
             typedef reference reference_type;                               \
-            typedef ptr_type pointer_type;                                  \
+            typedef pointer pointer_type;                                   \
                                                                             \
             iterator(Node* node, Node* init) : m_node(node), m_init(init) {}\
             iterator() : m_node(NULL), m_init(NULL) { }                     \
@@ -851,19 +824,20 @@ private:
         };                                                                  \
         classexp const_iterator                                             \
         {                                                                   \
-            typedef name list;                                              \
         public:                                                             \
-            typedef nodetype Node;                                          \
+            WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()                        \
             typedef T* value_type;                                          \
-            typedef const value_type& const_reference;                      \
+            typedef const value_type* pointer;                              \
+            typedef const value_type& reference;                            \
+                                                                            \
+            typedef nodetype Node;                                          \
             typedef const_iterator itor;                                    \
-            typedef value_type* ptr_type;                                   \
                                                                             \
             Node* m_node;                                                   \
             Node* m_init;                                                   \
         public:                                                             \
-            typedef const_reference reference_type;                         \
-            typedef const ptr_type pointer_type;                            \
+            typedef reference reference_type;                               \
+            typedef pointer pointer_type;                                   \
                                                                             \
             const_iterator(Node* node, Node* init)                          \
                 : m_node(node), m_init(init) { }                            \
@@ -904,19 +878,20 @@ private:
         };                                                                  \
         classexp reverse_iterator                                           \
         {                                                                   \
-            typedef name list;                                              \
         public:                                                             \
-            typedef nodetype Node;                                          \
+            WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()                        \
             typedef T* value_type;                                          \
-            typedef reverse_iterator itor;                                  \
-            typedef value_type* ptr_type;                                   \
+            typedef value_type* pointer;                                    \
             typedef value_type& reference;                                  \
+                                                                            \
+            typedef nodetype Node;                                          \
+            typedef reverse_iterator itor;                                  \
                                                                             \
             Node* m_node;                                                   \
             Node* m_init;                                                   \
         public:                                                             \
             typedef reference reference_type;                               \
-            typedef ptr_type pointer_type;                                  \
+            typedef pointer pointer_type;                                   \
                                                                             \
             reverse_iterator(Node* node, Node* init)                        \
                 : m_node(node), m_init(init) { }                            \
@@ -943,19 +918,20 @@ private:
         };                                                                  \
         classexp const_reverse_iterator                                     \
         {                                                                   \
-            typedef name list;                                              \
         public:                                                             \
-            typedef nodetype Node;                                          \
+            WX_DECLARE_LIST_ITER_DIFF_AND_CATEGORY()                        \
             typedef T* value_type;                                          \
+            typedef const value_type* pointer;                              \
+            typedef const value_type& reference;                            \
+                                                                            \
+            typedef nodetype Node;                                          \
             typedef const_reverse_iterator itor;                            \
-            typedef value_type* ptr_type;                                   \
-            typedef const value_type& const_reference;                      \
                                                                             \
             Node* m_node;                                                   \
             Node* m_init;                                                   \
         public:                                                             \
-            typedef const_reference reference_type;                         \
-            typedef const ptr_type pointer_type;                            \
+            typedef reference reference_type;                               \
+            typedef pointer pointer_type;                                   \
                                                                             \
             const_reverse_iterator(Node* node, Node* init)                  \
                 : m_node(node), m_init(init) { }                            \
@@ -983,7 +959,7 @@ private:
                 { return it.m_node == m_node; }                             \
         };                                                                  \
                                                                             \
-        wxEXPLICIT name(size_type n, const_reference v = value_type())      \
+        explicit name(size_type n, const_reference v = value_type())        \
             { assign(n, v); }                                               \
         name(const const_iterator& first, const const_iterator& last)       \
             { assign(first, last); }                                        \
@@ -1216,7 +1192,6 @@ public:
     void Sort(wxSortCompareFunction compfunc) { wxListBase::Sort(compfunc); }
 #endif // !wxUSE_STD_CONTAINERS
 
-#ifndef __VISUALC6__
     template<typename T>
     wxVector<T> AsVector() const
     {
@@ -1230,7 +1205,6 @@ public:
 
         return vector;
     }
-#endif // !__VISUALC6__
 
 };
 

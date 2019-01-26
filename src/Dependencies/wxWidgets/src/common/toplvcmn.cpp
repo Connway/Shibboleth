@@ -31,20 +31,22 @@
 
 #include "wx/display.h"
 
+#include "wx/private/tlwgeom.h"
+
 // ----------------------------------------------------------------------------
 // event table
 // ----------------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(wxTopLevelWindowBase, wxWindow)
+wxBEGIN_EVENT_TABLE(wxTopLevelWindowBase, wxWindow)
     EVT_CLOSE(wxTopLevelWindowBase::OnCloseWindow)
     EVT_SIZE(wxTopLevelWindowBase::OnSize)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 // ============================================================================
 // implementation
 // ============================================================================
 
-IMPLEMENT_ABSTRACT_CLASS(wxTopLevelWindow, wxWindow)
+wxIMPLEMENT_ABSTRACT_CLASS(wxTopLevelWindow, wxWindow);
 
 // ----------------------------------------------------------------------------
 // construction/destruction
@@ -247,8 +249,7 @@ void wxTopLevelWindowBase::DoCentre(int dir)
     // we need the display rect anyhow so store it first: notice that we should
     // be centered on the same display as our parent window, the display of
     // this window itself is not really defined yet
-    int nDisplay = wxDisplay::GetFromWindow(GetParent() ? GetParent() : this);
-    wxDisplay dpy(nDisplay == wxNOT_FOUND ? 0 : nDisplay);
+    wxDisplay dpy(GetParent() ? GetParent() : this);
     const wxRect rectDisplay(dpy.GetClientArea());
 
     // what should we centre this window on?
@@ -311,6 +312,28 @@ void wxTopLevelWindowBase::DoCentre(int dir)
 }
 
 // ----------------------------------------------------------------------------
+// Saving/restoring geometry
+// ----------------------------------------------------------------------------
+
+bool wxTopLevelWindowBase::SaveGeometry(const GeometrySerializer& ser) const
+{
+    wxTLWGeometry geom;
+    if ( !geom.GetFrom(static_cast<const wxTopLevelWindow*>(this)) )
+        return false;
+
+    return geom.Save(ser);
+}
+
+bool wxTopLevelWindowBase::RestoreToGeometry(GeometrySerializer& ser)
+{
+    wxTLWGeometry geom;
+    if ( !geom.Restore(ser) )
+        return false;
+
+    return geom.ApplyTo(static_cast<wxTopLevelWindow*>(this));
+}
+
+// ----------------------------------------------------------------------------
 // wxTopLevelWindow size management: we exclude the areas taken by
 // menu/status/toolbars from the client area, so the client area is what's
 // really available for the frame contents
@@ -343,11 +366,7 @@ void wxTopLevelWindowBase::DoClientToScreen(int *x, int *y) const
 
 bool wxTopLevelWindowBase::IsAlwaysMaximized() const
 {
-#if defined(__SMARTPHONE__) || defined(__POCKETPC__)
-    return true;
-#else
     return false;
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -373,6 +392,22 @@ void wxTopLevelWindowBase::SetIcon(const wxIcon& icon)
 // ----------------------------------------------------------------------------
 // event handlers
 // ----------------------------------------------------------------------------
+
+bool wxTopLevelWindowBase::IsTopNavigationDomain(NavigationKind kind) const
+{
+    // This switch only exists to generate a compiler warning and force us to
+    // revisit this code if any new kinds of navigation are added in the
+    // future, but for now we block of them by default (some derived classes
+    // relax this however).
+    switch ( kind )
+    {
+        case Navigation_Tab:
+        case Navigation_Accel:
+            break;
+    }
+
+    return true;
+}
 
 // default resizing behaviour - if only ONE subwindow, resize to fill the
 // whole client area

@@ -24,7 +24,9 @@
 
 #ifndef WX_PRECOMP
     #include "wx/arrstr.h"
+    #include "wx/event.h"
     #include "wx/string.h"
+    #include "wx/textctrl.h"    // Only for wxTE_PROCESS_XXX constants
 #endif // WX_PRECOMP
 
 #if wxUSE_TEXTCTRL || wxUSE_COMBOBOX
@@ -34,10 +36,14 @@
 #include "wx/dynlib.h"
 
 #include "wx/msw/private.h"
+#include "wx/msw/private/winstyle.h"
 
 #if wxUSE_UXTHEME
     #include "wx/msw/uxtheme.h"
 #endif
+
+#include "wx/msw/wrapwin.h"
+#include <shlwapi.h>
 
 #define GetEditHwnd() ((HWND)(GetEditHWND()))
 
@@ -45,8 +51,7 @@
 // Classes used by auto-completion implementation.
 // ----------------------------------------------------------------------------
 
-// standard VC6 SDK (WINVER == 0x0400) does not know about IAutoComplete
-#if wxUSE_OLE && (WINVER >= 0x0500)
+#if wxUSE_OLE
     #define HAS_AUTOCOMPLETE
 #endif
 
@@ -55,17 +60,13 @@
 #include "wx/msw/ole/oleutils.h"
 #include <shldisp.h>
 
-#if defined(__MINGW32__) || defined (__WATCOMC__) || defined(__CYGWIN__)
+#if defined(__MINGW32__) || defined(__CYGWIN__)
     // needed for IID_IAutoComplete, IID_IAutoComplete2 and ACO_AUTOSUGGEST
     #include <shlguid.h>
 
     #ifndef ACO_AUTOAPPEND
         #define ACO_AUTOAPPEND 0x02
     #endif
-#endif
-
-#ifndef ACO_UPDOWNKEYDROPSLIST
-    #define ACO_UPDOWNKEYDROPSLIST 0x20
 #endif
 
 #ifndef SHACF_FILESYS_ONLY
@@ -173,7 +174,7 @@ public:
 
     virtual HRESULT STDMETHODCALLTYPE Next(ULONG celt,
                                            LPOLESTR *rgelt,
-                                           ULONG *pceltFetched)
+                                           ULONG *pceltFetched) wxOVERRIDE
     {
         if ( !rgelt || (!pceltFetched && celt > 1) )
             return E_POINTER;
@@ -215,7 +216,7 @@ public:
         return S_OK;
     }
 
-    virtual HRESULT STDMETHODCALLTYPE Skip(ULONG celt)
+    virtual HRESULT STDMETHODCALLTYPE Skip(ULONG celt) wxOVERRIDE
     {
         if ( !celt )
             return E_INVALIDARG;
@@ -237,7 +238,7 @@ public:
         return S_OK;
     }
 
-    virtual HRESULT STDMETHODCALLTYPE Reset()
+    virtual HRESULT STDMETHODCALLTYPE Reset() wxOVERRIDE
     {
         CSLock lock(m_csRestart);
 
@@ -246,7 +247,7 @@ public:
         return S_OK;
     }
 
-    virtual HRESULT STDMETHODCALLTYPE Clone(IEnumString **ppEnum)
+    virtual HRESULT STDMETHODCALLTYPE Clone(IEnumString **ppEnum) wxOVERRIDE
     {
         if ( !ppEnum )
             return E_POINTER;
@@ -357,7 +358,7 @@ IMPLEMENT_IUNKNOWN_METHODS(wxIEnumString)
 
 // This class gathers the all auto-complete-related stuff we use. It is
 // allocated on demand by wxTextEntry when AutoComplete() is called.
-class wxTextAutoCompleteData wxBIND_OR_CONNECT_HACK_ONLY_BASE_CLASS
+class wxTextAutoCompleteData
 {
 public:
     // The constructor associates us with the given text entry.
@@ -438,9 +439,7 @@ public:
             pAutoComplete2->Release();
         }
 
-        wxBIND_OR_CONNECT_HACK(m_win, wxEVT_CHAR_HOOK, wxKeyEventHandler,
-                               wxTextAutoCompleteData::OnCharHook,
-                               this);
+        m_win->Bind(wxEVT_CHAR_HOOK, &wxTextAutoCompleteData::OnCharHook, this);
     }
 
     ~wxTextAutoCompleteData()
@@ -506,10 +505,8 @@ public:
                 // neither as, due to our use of ACO_AUTOAPPEND, we get
                 // EN_CHANGE notifications from the control every time
                 // IAutoComplete auto-appends something to it.
-                wxBIND_OR_CONNECT_HACK(m_win, wxEVT_AFTER_CHAR,
-                                        wxKeyEventHandler,
-                                        wxTextAutoCompleteData::OnAfterChar,
-                                        this);
+                m_win->Bind(wxEVT_AFTER_CHAR,
+                            &wxTextAutoCompleteData::OnAfterChar, this);
             }
 
             UpdateStringsFromCustomCompleter();
@@ -578,21 +575,54 @@ private:
 
     void OnCharHook(wxKeyEvent& event)
     {
-        // If the autocomplete drop-down list is currently displayed when the
-        // user presses Escape, we need to dismiss it manually from here as
-        // Escape could be eaten by something else (e.g. EVT_CHAR_HOOK in the
-        // dialog that this control is found in) otherwise.
-        if ( event.GetKeyCode() == WXK_ESCAPE )
+        // We need to override the default handling of some keys here.
+        bool specialKey = false;
+        switch ( event.GetKeyCode() )
         {
+            case WXK_RETURN:
+                if ( m_win->HasFlag(wxTE_PROCESS_ENTER) )
+                    specialKey = true;
+                break;
+
+            case WXK_TAB:
+                if ( m_win->HasFlag(wxTE_PROCESS_TAB) )
+                    specialKey = true;
+                break;
+
+            case WXK_ESCAPE:
+                specialKey = true;
+                break;
+        }
+
+        if ( specialKey )
+        {
+            // Check if the drop down is currently open.
             DWORD dwFlags = 0;
             if ( SUCCEEDED(m_autoCompleteDropDown->GetDropDownStatus(&dwFlags,
                                                                      NULL))
                     && dwFlags == ACDD_VISIBLE )
             {
-                ::SendMessage(GetHwndOf(m_win), WM_KEYDOWN, WXK_ESCAPE, 0);
+                if ( event.GetKeyCode() == WXK_ESCAPE )
+                {
+                    // We need to dismiss the drop-down manually as Escape
+                    // could be eaten by something else (e.g. EVT_CHAR_HOOK in
+                    // the dialog that this control is found in) otherwise.
+                    ::SendMessage(GetHwndOf(m_win), WM_KEYDOWN, WXK_ESCAPE, 0);
 
-                // Do not skip the event in this case, we've already handled it.
-                return;
+                    // Do not skip the event in this case, we've already handled it.
+                    return;
+                }
+            }
+            else // Drop down is not open.
+            {
+                // In this case we need to handle Return and Tab as both of
+                // them are simply eaten by the auto completer and never reach
+                // us at all otherwise.
+                if ( event.GetKeyCode() != WXK_ESCAPE )
+                {
+                    m_entry->MSWProcessSpecialKey(event);
+                    return;
+                }
             }
         }
 
@@ -780,24 +810,6 @@ void wxTextEntry::GetSelection(long *from, long *to) const
 
 bool wxTextEntry::DoAutoCompleteFileNames(int flags)
 {
-    typedef HRESULT (WINAPI *SHAutoComplete_t)(HWND, DWORD);
-    static SHAutoComplete_t s_pfnSHAutoComplete = (SHAutoComplete_t)-1;
-    static wxDynamicLibrary s_dllShlwapi;
-    if ( s_pfnSHAutoComplete == (SHAutoComplete_t)-1 )
-    {
-        if ( !s_dllShlwapi.Load(wxT("shlwapi.dll"), wxDL_VERBATIM | wxDL_QUIET) )
-        {
-            s_pfnSHAutoComplete = NULL;
-        }
-        else
-        {
-            wxDL_INIT_FUNC(s_pfn, SHAutoComplete, s_dllShlwapi);
-        }
-    }
-
-    if ( !s_pfnSHAutoComplete )
-        return false;
-
     DWORD dwFlags = 0;
     if ( flags & wxFILE )
         dwFlags |= SHACF_FILESYS_ONLY;
@@ -809,7 +821,7 @@ bool wxTextEntry::DoAutoCompleteFileNames(int flags)
         return false;
     }
 
-    HRESULT hr = (*s_pfnSHAutoComplete)(GetEditHwnd(), dwFlags);
+    HRESULT hr = ::SHAutoComplete(GetEditHwnd(), dwFlags);
     if ( FAILED(hr) )
     {
         wxLogApiError(wxT("SHAutoComplete()"), hr);
@@ -826,6 +838,11 @@ bool wxTextEntry::DoAutoCompleteFileNames(int flags)
 }
 
 #endif // wxUSE_DYNLIB_CLASS
+
+void wxTextEntry::MSWProcessSpecialKey(wxKeyEvent& WXUNUSED(event))
+{
+    wxFAIL_MSG(wxS("Must be overridden if can be called"));
+}
 
 wxTextAutoCompleteData *wxTextEntry::GetOrCreateCompleter()
 {
@@ -918,7 +935,7 @@ void wxTextEntry::SetEditable(bool editable)
 }
 
 // ----------------------------------------------------------------------------
-// max length
+// input restrictions
 // ----------------------------------------------------------------------------
 
 void wxTextEntry::SetMaxLength(unsigned long len)
@@ -931,6 +948,13 @@ void wxTextEntry::SetMaxLength(unsigned long len)
     }
 
     ::SendMessage(GetEditHwnd(), EM_LIMITTEXT, len, 0);
+}
+
+void wxTextEntry::ForceUpper()
+{
+    ConvertToUpperCase();
+
+    wxMSWWinStyleUpdater(GetEditHwnd()).TurnOn(ES_UPPERCASE);
 }
 
 // ----------------------------------------------------------------------------
@@ -946,7 +970,7 @@ void wxTextEntry::SetMaxLength(unsigned long len)
 
 bool wxTextEntry::SetHint(const wxString& hint)
 {
-    if ( wxGetWinVersion() >= wxWinVersion_Vista && wxUxThemeEngine::GetIfActive() )
+    if ( wxGetWinVersion() >= wxWinVersion_Vista && wxUxThemeIsActive() )
     {
         // notice that this message always works with Unicode strings
         //
@@ -963,7 +987,7 @@ bool wxTextEntry::SetHint(const wxString& hint)
 
 wxString wxTextEntry::GetHint() const
 {
-    if ( wxUxThemeEngine::GetIfActive() )
+    if ( wxUxThemeIsActive() )
     {
         wchar_t buf[256];
         if ( ::SendMessage(GetEditHwnd(), EM_GETCUEBANNER,
@@ -983,7 +1007,6 @@ wxString wxTextEntry::GetHint() const
 
 bool wxTextEntry::DoSetMargins(const wxPoint& margins)
 {
-#if !defined(__WXWINCE__)
     bool res = true;
 
     if ( margins.x != -1 )
@@ -1002,22 +1025,15 @@ bool wxTextEntry::DoSetMargins(const wxPoint& margins)
     }
 
     return res;
-#else
-    return false;
-#endif
 }
 
 wxPoint wxTextEntry::DoGetMargins() const
 {
-#if !defined(__WXWINCE__)
     LRESULT lResult = ::SendMessage(GetEditHwnd(), EM_GETMARGINS,
                                     0, 0);
     int left = LOWORD(lResult);
     int top = -1;
     return wxPoint(left, top);
-#else
-    return wxPoint(-1, -1);
-#endif
 }
 
 #endif // wxUSE_TEXTCTRL || wxUSE_COMBOBOX

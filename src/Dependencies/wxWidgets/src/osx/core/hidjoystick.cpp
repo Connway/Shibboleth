@@ -77,7 +77,7 @@ public:
     virtual ~wxHIDJoystick();
 
     bool Create(int nWhich);
-    virtual void BuildCookies(CFArrayRef Array);
+    virtual void BuildCookies(CFArrayRef Array) wxOVERRIDE;
     void MakeCookies(CFArrayRef Array);
     IOHIDElementCookie* GetCookies();
     IOHIDQueueInterface** GetQueue();
@@ -95,7 +95,7 @@ class wxJoystickThread : public wxThread
 {
 public:
     wxJoystickThread(wxHIDJoystick* hid, int joystick);
-    void* Entry();
+    void* Entry() wxOVERRIDE;
     static void HIDCallback(void* target, IOReturn res, void* context, void* sender);
 
 private:
@@ -133,7 +133,7 @@ void wxGetIntFromCFDictionary(CFTypeRef cfDict, CFStringRef key, int* pOut)
 //
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-IMPLEMENT_DYNAMIC_CLASS(wxJoystick, wxObject)
+wxIMPLEMENT_DYNAMIC_CLASS(wxJoystick, wxObject);
 
 //---------------------------------------------------------------------------
 // wxJoystick Constructor
@@ -872,7 +872,7 @@ void* wxJoystickThread::Entry()
                 wxevent.SetEventType(wxEVT_JOY_BUTTON_UP);
             }
 
-            wxevent.SetButtonChange(nIndex+1);
+            wxevent.SetButtonChange(1 << nIndex);
         }
         else if (nIndex == wxJS_AXIS_X)
         {

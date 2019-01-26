@@ -60,7 +60,7 @@ static const size_t LEN_CODE = 3;
 // macros
 // ----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS(wxFTP, wxProtocol)
+wxIMPLEMENT_DYNAMIC_CLASS(wxFTP, wxProtocol);
 IMPLEMENT_PROTOCOL(wxFTP, wxT("ftp"), wxT("ftp"), true)
 
 // ============================================================================
@@ -237,7 +237,7 @@ char wxFTP::SendCommand(const wxString& command)
 
     wxString tmp_str = command + wxT("\r\n");
     const wxWX2MBbuf tmp_buf = tmp_str.mb_str();
-    if ( Write(wxMBSTRINGCAST tmp_buf, strlen(tmp_buf)).Error())
+    if ( Write(static_cast<const char *>(tmp_buf), strlen(tmp_buf)).Error())
     {
         m_lastError = wxPROTO_NETERR;
         return 0;
@@ -386,7 +386,7 @@ bool wxFTP::SetTransferMode(TransferMode transferMode)
     {
         default:
             wxFAIL_MSG(wxT("unknown FTP transfer mode"));
-            // fall through
+            wxFALLTHROUGH;
 
         case BINARY:
             mode = wxT('I');
@@ -582,7 +582,13 @@ wxSocketBase *wxFTP::GetActivePort()
     addrNew.AnyAddress();
     addrNew.Service(0); // pick an open port number.
 
-    wxSocketServer *sockSrv = new wxSocketServer(addrNew);
+    wxSocketServer* const
+        sockSrv = new wxSocketServer
+                      (
+                        addrNew,
+                        wxSocketServer::GetBlockingFlagIfNeeded()
+                      );
+
     if (!sockSrv->IsOk())
     {
         // We use IsOk() here to see if everything is ok
@@ -647,7 +653,11 @@ wxSocketBase *wxFTP::GetPassivePort()
     addr.Hostname(hostaddr);
     addr.Service(port);
 
-    wxSocketClient *client = new wxSocketClient();
+    // If we're used from a worker thread or can't dispatch events even though
+    // we're in the main one, we can't use non-blocking sockets.
+    wxSocketClient* const
+        client = new wxSocketClient(wxSocketClient::GetBlockingFlagIfNeeded());
+
     if ( !client->Connect(addr) )
     {
         m_lastError = wxPROTO_CONNERR;

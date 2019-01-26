@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsymboldlg.h">
       <Filter>include\wx\richtext</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtexttabspage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextuicustomization.h">
       <Filter>include\wx\richtext</Filter>
     </ClInclude>

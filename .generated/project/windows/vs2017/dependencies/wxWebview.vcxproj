@@ -212,6 +212,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_ie.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_missing.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webviewhistoryitem_ie.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webview.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webviewarchivehandler.h" />

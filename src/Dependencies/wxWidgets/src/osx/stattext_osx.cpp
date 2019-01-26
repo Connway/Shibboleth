@@ -50,7 +50,6 @@ bool wxStaticText::Create( wxWindow *parent,
         // Normally this is done in SetLabel() below but we avoid doing it when
         // this style is used, so we need to explicitly do it in the ctor in
         // this case or otherwise the control would retain its initial tiny size.
-        InvalidateBestSize();
         SetInitialSize(size);
     }
 
@@ -59,6 +58,9 @@ bool wxStaticText::Create( wxWindow *parent,
 
 void wxStaticText::SetLabel(const wxString& label)
 {
+    if ( label == m_labelOrig )
+        return;
+
     m_labelOrig = label;
 
     // middle/end ellipsization is handled by the OS:
@@ -76,12 +78,7 @@ void wxStaticText::SetLabel(const wxString& label)
         DoSetLabel(GetEllipsizedLabel());
     }
 
-    if ( !(GetWindowStyle() & wxST_NO_AUTORESIZE) &&
-         !IsEllipsized() )  // don't resize if we adjust to current size
-    {
-        InvalidateBestSize();
-        SetSize( GetBestSize() );
-    }
+    AutoResizeIfNecessary();
 
     Refresh();
 
@@ -95,11 +92,7 @@ bool wxStaticText::SetFont(const wxFont& font)
 
     if ( ret )
     {
-        if ( !(GetWindowStyle() & wxST_NO_AUTORESIZE) )
-        {
-            InvalidateBestSize();
-            SetSize( GetBestSize() );
-        }
+        AutoResizeIfNecessary();
     }
 
     return ret;

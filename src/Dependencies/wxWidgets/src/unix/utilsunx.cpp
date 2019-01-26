@@ -20,7 +20,11 @@
 
 #include "wx/utils.h"
 
-#define USE_PUTENV (!defined(HAVE_SETENV) && defined(HAVE_PUTENV))
+#if !defined(HAVE_SETENV) && defined(HAVE_PUTENV)
+    #define USE_PUTENV 1
+#else
+    #define USE_PUTENV 0
+#endif
 
 #ifndef WX_PRECOMP
     #include "wx/string.h"
@@ -46,7 +50,7 @@
 
 #include "wx/private/selectdispatcher.h"
 #include "wx/private/fdiodispatcher.h"
-#include "wx/unix/execute.h"
+#include "wx/unix/private/execute.h"
 #include "wx/unix/pipe.h"
 #include "wx/unix/private.h"
 
@@ -147,20 +151,10 @@
 #if !defined(HAVE_USLEEP) && \
     ((defined(__SUN__) && !defined(__SunOs_5_6) && \
                          !defined(__SunOs_5_7) && !defined(__SUNPRO_CC)) || \
-     defined(__osf__) || defined(__EMX__))
+     defined(__osf__))
     extern "C"
     {
-        #ifdef __EMX__
-            /* I copied this from the XFree86 diffs. AV. */
-            #define INCL_DOSPROCESS
-            #include <os2.h>
-            inline void usleep(unsigned long delay)
-            {
-                DosSleep(delay ? (delay/1000l) : 1l);
-            }
-        #else // Unix
-            int usleep(unsigned int usec);
-        #endif // __EMX__/Unix
+        int usleep(unsigned int usec);
     };
 
     #define HAVE_USLEEP 1
@@ -253,6 +247,10 @@ int wxKill(long pid, wxSignal sig, wxKillError *rc, int flags)
 // Shutdown or reboot the PC
 bool wxShutdown(int flags)
 {
+#if defined(__WXOSX__) && wxOSX_USE_IPHONE
+    wxUnusedVar(flags);
+    return false;
+#else
     flags &= ~wxSHUTDOWN_FORCE;
 
     wxChar level;
@@ -276,6 +274,7 @@ bool wxShutdown(int flags)
     }
 
     return system(wxString::Format("init %c", level).mb_str()) == 0;
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -305,14 +304,14 @@ bool wxPipeInputStream::CanRead() const
     {
         case -1:
             wxLogSysError(_("Impossible to get child process input"));
-            // fall through
+            wxFALLTHROUGH;
 
         case 0:
             return false;
 
         default:
             wxFAIL_MSG(wxT("unexpected select() return value"));
-            // still fall through
+            wxFALLTHROUGH;
 
         case 1:
             // input available -- or maybe not, as select() returns 1 when a
@@ -346,7 +345,7 @@ size_t wxPipeOutputStream::OnSysWrite(const void *buffer, size_t size)
 #endif
            // do not treat it as an error
            m_file->ClearLastError();
-           // fall through
+           wxFALLTHROUGH;
 
        // no error
        case 0:
@@ -410,12 +409,12 @@ public:
 
         for ( int i = 0; i < m_argc; i++ )
         {
-            m_argv[i] = wxStrdup(args[i]);
+            m_argv[i] = wxStrdup(args[i].mb_str(wxConvWhateverWorks));
         }
     }
 
 #if wxUSE_UNICODE
-    ArgsArray(wchar_t **wargv)
+    ArgsArray(const wchar_t* const* wargv)
     {
         int argc = 0;
         while ( wargv[argc] )
@@ -440,7 +439,7 @@ public:
         delete [] m_argv;
     }
 
-    operator char**() const { return m_argv; }
+    operator const char* const*() const { return m_argv; }
 
 private:
     void Init(int argc)
@@ -462,8 +461,8 @@ private:
 // wxExecute implementations
 // ----------------------------------------------------------------------------
 
-#if defined(__DARWIN__)
-bool wxMacLaunch(char **argv);
+#if defined(__DARWIN__) && !defined(__WXOSX_IPHONE__)
+bool wxMacLaunch(const char* const* argv);
 #endif
 
 long wxExecute(const wxString& command, int flags, wxProcess *process,
@@ -477,7 +476,7 @@ long wxExecute(const wxString& command, int flags, wxProcess *process,
 
 #if wxUSE_UNICODE
 
-long wxExecute(wchar_t **wargv, int flags, wxProcess *process,
+long wxExecute(const wchar_t* const* wargv, int flags, wxProcess* process,
         const wxExecuteEnv *env)
 {
     ArgsArray argv(wargv);
@@ -565,7 +564,7 @@ int BlockUntilChildExit(wxExecuteData& execData)
 } // anonymous namespace
 
 // wxExecute: the real worker function
-long wxExecute(char **argv, int flags, wxProcess *process,
+long wxExecute(const char* const* argv, int flags, wxProcess* process,
         const wxExecuteEnv *env)
 {
     // for the sync execution, we return -1 to indicate failure, but for async
@@ -587,7 +586,7 @@ long wxExecute(char **argv, int flags, wxProcess *process,
                     wxT("wxExecute() can be called only from the main thread") );
 #endif // wxUSE_THREADS
 
-#if defined(__WXCOCOA__) || ( defined(__WXOSX_MAC__) && wxOSX_USE_COCOA_OR_CARBON )
+#if defined(__DARWIN__) && !defined(__WXOSX_IPHONE__)
     // wxMacLaunch() only executes app bundles and only does it asynchronously.
     // It returns false if the target is not an app bundle, thus falling
     // through to the regular code for non app bundles.
@@ -659,7 +658,7 @@ long wxExecute(char **argv, int flags, wxProcess *process,
         //     always opened so don't do it any more, after all there doesn't
         //     seem to be any real problem with keeping them opened
 
-#if !defined(__VMS) && !defined(__EMX__)
+#if !defined(__VMS)
         if ( flags & wxEXEC_MAKE_GROUP_LEADER )
         {
             // Set process group to child process' pid.  Then killing -pid
@@ -697,22 +696,13 @@ long wxExecute(char **argv, int flags, wxProcess *process,
         // the descriptors do not need to be closed but for now this is better
         // than never closing them at all as wx code never used FD_CLOEXEC.
 
-#ifdef __DARWIN__
         // TODO: Iterating up to FD_SETSIZE is both inefficient (because it may
         //       be quite big) and incorrect (because in principle we could
         //       have more opened descriptions than this number). Unfortunately
         //       there is no good portable solution for closing all descriptors
         //       above a certain threshold but non-portable solutions exist for
-        //       most platforms, see [http://stackoverflow.com/questions/899038/
+        //       most platforms, see [https://stackoverflow.com/questions/899038/
         //          getting-the-highest-allocated-file-descriptor]
-        //
-        // Unfortunately, we cannot do this safely on OS X, because libdispatch
-        // may crash when we do this:
-        //     Exception Type:  EXC_BAD_INSTRUCTION (SIGILL)
-        //     Exception Codes: 0x0000000000000001, 0x0000000000000000
-        //
-        //     Application Specific Information:
-        //     BUG IN CLIENT OF LIBDISPATCH: Do not close random Unix descriptors
         for ( int fd = 0; fd < (int)FD_SETSIZE; ++fd )
         {
             if ( fd != STDIN_FILENO  &&
@@ -722,7 +712,6 @@ long wxExecute(char **argv, int flags, wxProcess *process,
                 close(fd);
             }
         }
-#endif // !__DARWIN__
 
 
         // Process additional options if we have any
@@ -759,10 +748,10 @@ long wxExecute(char **argv, int flags, wxProcess *process,
             }
         }
 
-        execvp(*argv, argv);
+        execvp(*argv, const_cast<char**>(argv));
 
         fprintf(stderr, "execvp(");
-        for ( char **a = argv; *a; a++ )
+        for (const char* const* a = argv; *a; a++)
             fprintf(stderr, "%s%s", a == argv ? "" : ", ", *a);
         fprintf(stderr, ") failed with error %d!\n", errno);
 
@@ -1134,23 +1123,30 @@ wxLinuxDistributionInfo wxGetLinuxDistributionInfo()
 // these functions are in src/osx/utilsexc_base.cpp for wxMac
 #ifndef __DARWIN__
 
-wxOperatingSystemId wxGetOsVersion(int *verMaj, int *verMin)
+wxOperatingSystemId wxGetOsVersion(int *verMaj, int *verMin, int *verMicro)
 {
     // get OS version
-    int major, minor;
+    int major = -1, minor = -1, micro = -1;
     wxString release = wxGetCommandOutput(wxT("uname -r"));
-    if ( release.empty() ||
-         wxSscanf(release.c_str(), wxT("%d.%d"), &major, &minor) != 2 )
+    if ( !release.empty() )
     {
-        // failed to get version string or unrecognized format
-        major =
-        minor = -1;
+        if ( wxSscanf(release.c_str(), wxT("%d.%d.%d"), &major, &minor, &micro ) != 3 )
+        {
+            micro = 0;
+            if ( wxSscanf(release.c_str(), wxT("%d.%d"), &major, &minor ) != 2 )
+            {
+                // failed to get version string or unrecognized format
+                major = minor = micro = -1;
+            }
+        }
     }
 
     if ( verMaj )
         *verMaj = major;
     if ( verMin )
         *verMin = minor;
+    if ( verMicro )
+        *verMicro = micro;
 
     // try to understand which OS are we running
     wxString kernel = wxGetCommandOutput(wxT("uname -s"));
@@ -1166,6 +1162,16 @@ wxOperatingSystemId wxGetOsVersion(int *verMaj, int *verMin)
 wxString wxGetOsDescription()
 {
     return wxGetCommandOutput(wxT("uname -s -r -m"));
+}
+
+bool wxCheckOsVersion(int majorVsn, int minorVsn, int microVsn)
+{
+    int majorCur, minorCur, microCur;
+    wxGetOsVersion(&majorCur, &minorCur, &microCur);
+
+    return majorCur > majorVsn
+        || (majorCur == majorVsn && minorCur >= minorVsn)
+        || (majorCur == majorVsn && minorCur == minorVsn && microCur >= microVsn);
 }
 
 #endif // !__DARWIN__
@@ -1311,10 +1317,10 @@ public:
         gs_envVars.clear();
     }
 
-    DECLARE_DYNAMIC_CLASS(wxSetEnvModule)
+    wxDECLARE_DYNAMIC_CLASS(wxSetEnvModule);
 };
 
-IMPLEMENT_DYNAMIC_CLASS(wxSetEnvModule, wxModule)
+wxIMPLEMENT_DYNAMIC_CLASS(wxSetEnvModule, wxModule);
 
 #endif // USE_PUTENV
 
@@ -1396,7 +1402,8 @@ bool wxUnsetEnv(const wxString& variable)
 
 #include <signal.h>
 
-extern "C" void wxFatalSignalHandler(wxTYPE_SA_HANDLER)
+extern "C" {
+static void wxFatalSignalHandler(wxTYPE_SA_HANDLER)
 {
     if ( wxTheApp )
     {
@@ -1405,6 +1412,7 @@ extern "C" void wxFatalSignalHandler(wxTYPE_SA_HANDLER)
     }
 
     abort();
+}
 }
 
 bool wxHandleFatalExceptions(bool doit)

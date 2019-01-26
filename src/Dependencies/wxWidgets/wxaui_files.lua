@@ -8,7 +8,10 @@ files
 	"include/wx/aui/framemanager.h",
 	"include/wx/aui/tabart.h",
 	"include/wx/aui/tabmdi.h",
-	"include/wx/xrc/xh_auinotbk.h",
+	"include/wx/xrc/xh_auitoolb.h",
+	"include/wx/aui/tabartmsw.h",
+	"include/wx/aui/barartmsw.h",
+	"include/wx/xrc/xh_aui.h",
 	"src/common/dummy.cpp",
 	"src/aui/auibar.cpp",
 	"src/aui/auibook.cpp",
@@ -17,5 +20,8 @@ files
 	"src/aui/framemanager.cpp",
 	"src/aui/tabart.cpp",
 	"src/aui/tabmdi.cpp",
-	"src/xrc/xh_auinotbk.cpp"
+	"src/xrc/xh_auitoolb.cpp",
+	"src/aui/tabartmsw.cpp",
+	"src/aui/barartmsw.cpp",
+	"src/xrc/xh_aui.cpp"
 }

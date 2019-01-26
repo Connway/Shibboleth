@@ -44,9 +44,9 @@
 #include "wx/paper.h"
 
 
-IMPLEMENT_DYNAMIC_CLASS(wxPrintData, wxObject)
-IMPLEMENT_DYNAMIC_CLASS(wxPrintDialogData, wxObject)
-IMPLEMENT_DYNAMIC_CLASS(wxPageSetupDialogData, wxObject)
+wxIMPLEMENT_DYNAMIC_CLASS(wxPrintData, wxObject);
+wxIMPLEMENT_DYNAMIC_CLASS(wxPrintDialogData, wxObject);
+wxIMPLEMENT_DYNAMIC_CLASS(wxPageSetupDialogData, wxObject);
 
 // ============================================================================
 // implementation
@@ -67,7 +67,6 @@ wxPrintData::wxPrintData()
     m_printCollate = false;
 
     // New, 24/3/99
-    m_printerName = wxEmptyString;
     m_colour = true;
     m_duplexMode = wxDUPLEX_SIMPLEX;
     m_printQuality = wxPRINT_QUALITY_HIGH;

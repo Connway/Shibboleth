@@ -427,10 +427,15 @@ bool wxRichTextPrintout::SubstituteKeywords(wxString& str, const wxString& title
     num.Printf(wxT("%lu"), (unsigned long) pageCount);
     str.Replace(wxT("@PAGESCNT@"), num);
 
+#if wxUSE_DATETIME
     wxDateTime now = wxDateTime::Now();
 
     str.Replace(wxT("@DATE@"), now.FormatDate());
     str.Replace(wxT("@TIME@"), now.FormatTime());
+#else
+    str.Replace(wxT("@DATE@"), wxEmptyString);
+    str.Replace(wxT("@TIME@"), wxEmptyString);
+#endif
 
     str.Replace(wxT("@TITLE@"), title);
 
@@ -664,7 +669,7 @@ wxString wxRichTextPrinting::GetFooterText(wxRichTextOddEvenPage page, wxRichTex
  * Header/footer data
  */
 
-IMPLEMENT_CLASS(wxRichTextHeaderFooterData, wxObject)
+wxIMPLEMENT_CLASS(wxRichTextHeaderFooterData, wxObject);
 
 /// Copy
 void wxRichTextHeaderFooterData::Copy(const wxRichTextHeaderFooterData& data)
@@ -739,7 +744,7 @@ void wxRichTextHeaderFooterData::Clear()
 {
     int i;
     for (i = 0; i < 12; i++)
-        m_text[i] = wxEmptyString;
+        m_text[i].clear();
 }
 
 #endif // wxUSE_RICHTEXT & wxUSE_PRINTING_ARCHITECTURE

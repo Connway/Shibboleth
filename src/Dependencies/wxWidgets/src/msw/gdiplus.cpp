@@ -861,13 +861,13 @@ bool wxGdiPlus::DoInit()
 class wxGdiPlusModule : public wxModule
 {
 public:
-    virtual bool OnInit() { return true; }
-    virtual void OnExit() { wxGdiPlus::Terminate(); }
+    virtual bool OnInit() wxOVERRIDE { return true; }
+    virtual void OnExit() wxOVERRIDE { wxGdiPlus::Terminate(); }
 
-    DECLARE_DYNAMIC_CLASS(wxGdiPlusModule)
+    wxDECLARE_DYNAMIC_CLASS(wxGdiPlusModule);
 };
 
-IMPLEMENT_DYNAMIC_CLASS(wxGdiPlusModule, wxModule)
+wxIMPLEMENT_DYNAMIC_CLASS(wxGdiPlusModule, wxModule);
 
 // ============================================================================
 // implementation of the functions themselves

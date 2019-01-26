@@ -275,7 +275,7 @@ struct EllipsizeCalculator
 {
     EllipsizeCalculator(const wxString& s, const wxDC& dc,
                         int maxFinalWidthPx, int replacementWidthPx)
-        : 
+        :
           m_initialCharToRemove(0),
           m_nCharsToRemove(0),
           m_outputNeedsUpdate(true),
@@ -520,6 +520,9 @@ wxString wxControlBase::Ellipsize(const wxString& label, const wxDC& dc,
                                   wxEllipsizeMode mode, int maxFinalWidth,
                                   int flags)
 {
+    if (mode == wxELLIPSIZE_NONE)
+        return label;
+
     wxString ret;
 
     // these cannot be cached between different Ellipsize() calls as they can
@@ -581,15 +584,9 @@ wxStaticBitmapBase::~wxStaticBitmapBase()
 
 wxSize wxStaticBitmapBase::DoGetBestSize() const
 {
-    wxSize best;
-    wxBitmap bmp = GetBitmap();
-    if ( bmp.IsOk() )
-        best = bmp.GetScaledSize();
-    else
-        // this is completely arbitrary
-        best = wxSize(16, 16);
-    CacheBestSize(best);
-    return best;
+    // the fall back size is completely arbitrary
+    const wxBitmap bmp = GetBitmap();
+    return bmp.IsOk() ? bmp.GetScaledSize() : wxSize(16, 16);
 }
 
 #endif // wxUSE_STATBMP

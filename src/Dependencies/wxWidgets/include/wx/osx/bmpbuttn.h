@@ -20,12 +20,11 @@ class WXDLLIMPEXP_CORE wxBitmapButton : public wxBitmapButtonBase
 public:
     wxBitmapButton()
         {
-            SetMargins(wxDEFAULT_BUTTON_MARGIN, wxDEFAULT_BUTTON_MARGIN);
         }
 
     wxBitmapButton(wxWindow *parent, wxWindowID id, const wxBitmap& bitmap,
                    const wxPoint& pos = wxDefaultPosition,
-                   const wxSize& size = wxDefaultSize, long style = wxBU_AUTODRAW,
+                   const wxSize& size = wxDefaultSize, long style = 0,
                    const wxValidator& validator = wxDefaultValidator,
                    const wxString& name = wxButtonNameStr)
         {
@@ -34,7 +33,7 @@ public:
 
     bool Create(wxWindow *parent, wxWindowID id, const wxBitmap& bitmap,
                 const wxPoint& pos = wxDefaultPosition,
-                const wxSize& size = wxDefaultSize, long style = wxBU_AUTODRAW,
+                const wxSize& size = wxDefaultSize, long style = 0,
                 const wxValidator& validator = wxDefaultValidator,
                 const wxString& name = wxButtonNameStr);
 
@@ -42,7 +41,7 @@ protected:
 
     virtual wxSize DoGetBestSize() const;
 
-    DECLARE_DYNAMIC_CLASS(wxBitmapButton)
+    wxDECLARE_DYNAMIC_CLASS(wxBitmapButton);
 };
 
 #endif // _WX_OSX_BMPBUTTN_H_
