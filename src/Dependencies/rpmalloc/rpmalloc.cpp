@@ -49,6 +49,8 @@
 
 #ifdef RPMALLOC_USE_PTHREADS_OVER_TLS
 #define THREAD_LOCAL static_assert(false, "Thread Local Storage is unsupported on this platform! Use Pthreads.");
+#elif RPMALLOC_PLATFORM_MACOSX
+#define RPMALLOC_THREAD_LOCAL __thread
 #else
 #define RPMALLOC_THREAD_LOCAL thread_local
 #endif
@@ -138,6 +140,10 @@
 #ifndef ENABLE_VALIDATE_ARGS
 //! Enable validation of args to public entry points
 #define ENABLE_VALIDATE_ARGS      0
+#endif
+
+#if ENABLE_VALIDATE_ARGS && defined(RPMALLOC_PLATFORM_WIN)
+#include <Intsafe.h>
 #endif
 
 #ifndef ENABLE_STATISTICS
@@ -232,7 +238,7 @@ typedef struct heap_t heap_t;
 typedef struct span_t span_t;
 //! Size class definition
 typedef struct size_class_t size_class_t;
-//! Span block bookkeeping 
+//! Span block bookkeeping
 typedef struct span_block_t span_block_t;
 //! Span data union, usage depending on span state
 typedef union span_data_t span_data_t;
@@ -383,7 +389,7 @@ static span_t*
 _memory_map(size_t page_count);
 
 static void
-_memory_unmap(span_t* ptr, size_t page_count);
+_memory_unmap(span_t* ptr);
 
 static void*
 _memory_allocate_external(size_t bytes);
@@ -419,7 +425,7 @@ _memory_counter_increase(span_counter_t* counter, uint32_t* global_counter) {
 
 //! Insert the given list of memory page spans in the global cache for small/medium blocks
 static void
-_memory_global_cache_insert(span_t* first_span, size_t list_size, size_t page_count) {
+_memory_global_cache_insert(span_t* first_span, size_t list_size) {
 	assert((list_size == 1) || (first_span->next_span != 0));
 #if MAX_SPAN_CACHE_DIVISOR > 0
 	while (1) {
@@ -458,14 +464,14 @@ _memory_global_cache_insert(span_t* first_span, size_t list_size, size_t page_co
 	for (size_t ispan = 0; ispan < list_size; ++ispan) {
 		assert(first_span);
 		span_t* next_span = first_span->next_span;
-		_memory_unmap(first_span, page_count);
+		_memory_unmap(first_span);
 		first_span = next_span;
 	}
 }
 
 //! Extract a number of memory page spans from the global cache for small/medium blocks
 static span_t*
-_memory_global_cache_extract(size_t page_count) {
+_memory_global_cache_extract() {
 	span_t* span = 0;
 	std::atomic<void*>* cache = &_memory_span_cache;
 	std::atomic_thread_fence(std::memory_order_acquire);
@@ -540,7 +546,7 @@ _memory_global_cache_large_insert(span_t* span_list, size_t list_size, size_t sp
 	for (size_t ispan = 0; ispan < list_size; ++ispan) {
 		assert(span_list);
 		span_t* next_span = span_list->next_span;
-		_memory_unmap(span_list, span_count * SPAN_MAX_PAGE_COUNT);
+		_memory_unmap(span_list);
 		span_list = next_span;
 	}
 }
@@ -663,7 +669,7 @@ use_active:
 	span_t* span = heap->span_cache;
 	if (!span) {
 		//Step 5: No span available in the thread cache, try grab a list of spans from the global cache
-		span = _memory_global_cache_extract(size_class->page_count);
+		span = _memory_global_cache_extract();
 #if ENABLE_STATISTICS
 		if (span)
 			heap->global_to_thread += (size_t)span->data.list_size * size_class->page_count * RPMALLOC_PAGE_SIZE;
@@ -736,7 +742,7 @@ _memory_allocate_large_from_heap(heap_t* heap, size_t size) {
 		}
 		if (!span) {
 			//Step 5: No span available in the thread cache, try grab a list of spans from the global cache
-			span = _memory_global_cache_extract(SPAN_MAX_PAGE_COUNT);
+			span = _memory_global_cache_extract();
 #if ENABLE_STATISTICS
 			if (span)
 				heap->global_to_thread += (size_t)span->data.list_size * SPAN_MAX_PAGE_COUNT * RPMALLOC_PAGE_SIZE;
@@ -773,7 +779,7 @@ _memory_allocate_large_from_heap(heap_t* heap, size_t size) {
 
 use_cache:
 	//Step 1: Check if cache for this large size class (or the following, unless first class) has a span
-	while (!heap->large_cache[idx] && (idx < LARGE_CLASS_COUNT) && (idx < num_spans + 1))
+	while (!heap->large_cache[idx] && (idx < (LARGE_CLASS_COUNT - 1)) && (idx < (num_spans + 1)))
 		++idx;
 	span_t* span = heap->large_cache[idx];
 	if (span) {
@@ -789,6 +795,10 @@ use_cache:
 		}
 
 		span->size_class = SIZE_CLASS_COUNT + (count_t)idx;
+
+		// Mark span as owned by this heap
+		span->heap_id = heap->id;
+		std::atomic_thread_fence(std::memory_order_release);
 
 		//Increase counter
 		_memory_counter_increase(&heap->large_counter[idx], &_memory_max_allocation_large[idx]);
@@ -883,10 +893,10 @@ _memory_list_remove(span_t** head, span_t* span) {
 
 //! Insert span into thread cache, releasing to global cache if overflow
 static void
-_memory_heap_cache_insert(heap_t* heap, span_t* span, size_t page_count) {
+_memory_heap_cache_insert(heap_t* heap, span_t* span) {
 #if MAX_SPAN_CACHE_DIVISOR == 0
 	(void)sizeof(heap);
-	_memory_global_cache_insert(span, 1, page_count);
+	_memory_global_cache_insert(span, 1);
 #else
 	span_t** cache = &heap->span_cache;
 	span->next_span = *cache;
@@ -911,9 +921,9 @@ _memory_heap_cache_insert(heap_t* heap, span_t* span, size_t page_count) {
 		next->data.list_size = span->data.list_size - list_size;
 		last->next_span = 0; //Terminate list
 		*cache = next;
-		_memory_global_cache_insert(span, list_size, page_count);
+		_memory_global_cache_insert(span, list_size);
 #if ENABLE_STATISTICS
-		heap->thread_to_global += list_size * page_count * RPMALLOC_PAGE_SIZE;
+		heap->thread_to_global += list_size * QUICK_ALLOCATION_PAGES_COUNT * RPMALLOC_PAGE_SIZE;
 #endif
 	}
 #endif
@@ -940,7 +950,7 @@ _memory_deallocate_to_heap(heap_t* heap, span_t* span, void* p) {
 	//Check if the span will become completely free
 	if (block_data->free_count == ((count_t)size_class->block_count - 1)) {
 		//Track counters
-		assert(heap->span_counter[span_class_idx].current_allocations > 0);
+		assert(heap->span_counter.current_allocations > 0);
 		--heap->span_counter.current_allocations;
 
 		//If it was active, reset counter. Otherwise, if not active, remove from
@@ -951,7 +961,7 @@ _memory_deallocate_to_heap(heap_t* heap, span_t* span, void* p) {
 			_memory_list_remove(&heap->size_cache[class_idx], span);
 
 		//Add to span cache
-		_memory_heap_cache_insert(heap, span, size_class->page_count);
+		_memory_heap_cache_insert(heap, span);
 		return;
 	}
 
@@ -978,7 +988,7 @@ _memory_deallocate_large_to_heap(heap_t* heap, span_t* span) {
 		//Track counters
 		--heap->span_counter.current_allocations;
 		//Add to span cache
-		_memory_heap_cache_insert(heap, span, SPAN_MAX_PAGE_COUNT);
+		_memory_heap_cache_insert(heap, span);
 		return;
 	}
 
@@ -1110,9 +1120,7 @@ _memory_deallocate(void* p) {
 		_memory_deallocate_defer(heap_id, p);
 	}
 	else {
-		//Oversized allocation, page count is stored in next_span
-		size_t num_pages = (size_t)span->next_span;
-		_memory_unmap(span, num_pages);
+		_memory_unmap(span);
 	}
 }
 
@@ -1249,7 +1257,7 @@ rpmalloc_initialize(void) {
 
 	_segments_head = 0;
 	_segments_rw_lock = 0;
-	
+
 	//Initialize this thread
 	rpmalloc_thread_initialize();
 	return 0;
@@ -1266,13 +1274,15 @@ rpmalloc_finalize(void) {
 		if (heap) {
 			_memory_deallocate_deferred(heap, 0);
 
-			const size_t page_count = QUICK_ALLOCATION_PAGES_COUNT;
-			span_t* span = heap->span_cache;
-			unsigned int span_count = span ? span->data.list_size : 0;
-			for (unsigned int ispan = 0; ispan < span_count; ++ispan) {
-				span_t* next_span = span->next_span;
-				_memory_unmap(span, page_count);
-				span = next_span;
+			{
+				const size_t page_count = QUICK_ALLOCATION_PAGES_COUNT;
+				span_t* span = heap->span_cache;
+				unsigned int span_count = span ? span->data.list_size : 0;
+				for (unsigned int ispan = 0; ispan < span_count; ++ispan) {
+					span_t* next_span = span->next_span;
+					_memory_unmap(span);
+					span = next_span;
+				}
 			}
 
 			//Free large spans
@@ -1281,7 +1291,7 @@ rpmalloc_finalize(void) {
 				span_t* span = heap->large_cache[iclass];
 				while (span) {
 					span_t* next_span = span->next_span;
-					_memory_unmap(span, span_count * SPAN_MAX_PAGE_COUNT);
+					_memory_unmap(span);
 					span = next_span;
 				}
 			}
@@ -1291,22 +1301,24 @@ rpmalloc_finalize(void) {
 		_memory_heaps[list_idx] = 0;
 	}
 
-	//Free global caches
-	void* span_ptr = _memory_span_cache.load();
-	size_t cache_count = (uintptr_t)span_ptr & ~SPAN_MASK;
-	span_t* span = (span_t*)((void*)((uintptr_t)span_ptr & SPAN_MASK));
-	while (cache_count) {
-		span_t* skip_span = span->prev_span;
-		unsigned int span_count = span->data.list_size;
-		for (unsigned int ispan = 0; ispan < span_count; ++ispan) {
-			span_t* next_span = span->next_span;
-			_memory_unmap(span, QUICK_ALLOCATION_PAGES_COUNT);
-			span = next_span;
+	{
+		//Free global caches
+		void* span_ptr = _memory_span_cache.load();
+		size_t cache_count = (uintptr_t)span_ptr & ~SPAN_MASK;
+		span_t* span = (span_t*)((void*)((uintptr_t)span_ptr & SPAN_MASK));
+		while (cache_count) {
+			span_t* skip_span = span->prev_span;
+			unsigned int span_count = span->data.list_size;
+			for (unsigned int ispan = 0; ispan < span_count; ++ispan) {
+				span_t* next_span = span->next_span;
+				_memory_unmap(span);
+				span = next_span;
+			}
+			span = skip_span;
+			cache_count -= span_count;
 		}
-		span = skip_span;
-		cache_count -= span_count;
+		_memory_span_cache = 0;
 	}
-	_memory_span_cache = 0;
 
 	for (size_t iclass = 0; iclass < LARGE_CLASS_COUNT; ++iclass) {
 		void* span_ptr = _memory_large_cache[iclass].load();
@@ -1317,7 +1329,7 @@ rpmalloc_finalize(void) {
 			unsigned int span_count = span->data.list_size;
 			for (unsigned int ispan = 0; ispan < span_count; ++ispan) {
 				span_t* next_span = span->next_span;
-				_memory_unmap(span, (iclass + 1) * SPAN_MAX_PAGE_COUNT);
+				_memory_unmap(span);
 				span = next_span;
 			}
 			span = skip_span;
@@ -1342,7 +1354,7 @@ rpmalloc_finalize(void) {
 
 	RPMALLOC_FREE_THREAD_LOCAL(_memory_thread_heap);
 	RPMALLOC_FREE_THREAD_LOCAL(_memory_preferred_heap);
-	
+
 	std::atomic_thread_fence(std::memory_order_release);
 }
 
@@ -1396,7 +1408,6 @@ rpmalloc_thread_initialize(void) {
 			heap_t* heap = _memory_allocate_heap();
 
 			int32_t id = heap->id;
-			assert(atomic_load32(&_memory_heaps[id]) == 0);
 			RPMALLOC_SET_THREAD_LOCAL(_memory_thread_heap, heap);
 			_memory_heaps[id] = _mark_heap_in_use(heap);
 			RPMALLOC_SET_THREAD_LOCAL(_memory_preferred_heap, id);
@@ -1405,8 +1416,8 @@ rpmalloc_thread_initialize(void) {
 		_release_heaps_lock();
 
 #if ENABLE_STATISTICS
-		heap->thread_to_global = 0;
-		heap->global_to_thread = 0;
+		RPMALLOC_GET_THREAD_LOCAL(heap_t*, _memory_thread_heap)->thread_to_global = 0;
+		RPMALLOC_GET_THREAD_LOCAL(heap_t*, _memory_thread_heap)->global_to_thread = 0;
 #endif
 	}
 	assert(RPMALLOC_GET_THREAD_LOCAL(heap_t*, _memory_thread_heap));
@@ -1527,7 +1538,6 @@ void _return_span_to_segment(segment_t* segment, span_t* span) {
 	uint32_t slot = (uint32_t)(pointer_diff(span, first_span) / SPAN_MAX_SIZE);
 
 	assert(slot < SPANS_PER_SEGMENT);
-	assert((slots & (1 << b)) == 1);
 
 	uint32_t slots = segment->free_markers.load();
 	uint32_t new_slots;
@@ -1582,8 +1592,8 @@ void _return_span_to_segment(segment_t* segment, span_t* span) {
 		if (head)
 		{
 #if ENABLE_STATISTICS
-			atomic_add32(&_mapped_pages, -(int32_t)QUICK_ALLOCATION_PAGES_COUNT);
-			atomic_add32(&_unmapped_total, (int32_t)QUICK_ALLOCATION_PAGES_COUNT);
+			_mapped_pages -= QUICK_ALLOCATION_PAGES_COUNT;
+			_unmapped_total -= QUICK_ALLOCATION_PAGES_COUNT;
 #endif
 			_memory_deallocate_external(head);
 		}
@@ -1656,7 +1666,7 @@ _memory_map(size_t page_count) {
 
 		segment->first_span = span;
 		segment->next_segment = (void*)SINGLE_SEGMENT_MARKER;
-		
+
 		// Allocate a segment that will not be re-used
 		span->owner_segment = segment;
 	}
@@ -1666,7 +1676,7 @@ _memory_map(size_t page_count) {
 
 //! Unmap pages from virtual memory
 static void
-_memory_unmap(span_t* span, size_t page_count) {
+_memory_unmap(span_t* span) {
 	segment_t* segment = span->owner_segment;
 	assert(segment);
 	segment_t* nn = static_cast<segment_t*>(segment->next_segment.load());
@@ -1675,8 +1685,8 @@ _memory_unmap(span_t* span, size_t page_count) {
 		_memory_deallocate_external(segment);
 
 #if ENABLE_STATISTICS
-		atomic_add32(&_mapped_pages, -(int32_t)page_count);
-		atomic_add32(&_unmapped_total, (int32_t)page_count);
+		_mapped_pages -= QUICK_ALLOCATION_PAGES_COUNT;
+		_unmapped_total -= QUICK_ALLOCATION_PAGES_COUNT;
 #endif
 	}
 	else
@@ -1689,8 +1699,8 @@ static void*
 _memory_allocate_external(size_t bytes)
 {
 #if ENABLE_STATISTICS
-	atomic_add32(&_mapped_pages, bytes / RPMALLOC_PAGE_SIZE);
-	atomic_add32(&_mapped_total, bytes / RPMALLOC_PAGE_SIZE);
+	_mapped_total += (int)(bytes / RPMALLOC_PAGE_SIZE);
+	_mapped_pages += (int)(bytes / RPMALLOC_PAGE_SIZE);
 #endif
 	return rpmalloc_allocate_memory_external(bytes);
 }
@@ -1727,7 +1737,7 @@ RPMALLOC_CALL void*
 rpcalloc(size_t num, size_t size) {
 	size_t total;
 #if ENABLE_VALIDATE_ARGS
-#ifdef PLATFORM_WINDOWS
+#ifdef RPMALLOC_PLATFORM_WIN
 	int err = SizeTMult(num, size, &total);
 	if ((err != S_OK) || (total >= MAX_ALLOC_SIZE)) {
 		errno = EINVAL;
@@ -1762,6 +1772,7 @@ rprealloc(void* ptr, size_t size) {
 void*
 rpaligned_realloc(void* ptr, size_t alignment, size_t size, size_t oldsize,
 	unsigned int flags) {
+	(void)alignment; // Silence warning
 #if ENABLE_VALIDATE_ARGS
 	if (size + alignment < size) {
 		errno = EINVAL;
@@ -1843,18 +1854,20 @@ void
 rpmalloc_global_statistics(rpmalloc_global_statistics_t* stats) {
 	memset(stats, 0, sizeof(rpmalloc_global_statistics_t));
 #if ENABLE_STATISTICS
-	stats->mapped = (size_t)atomic_load32(&_mapped_pages) * RPMALLOC_PAGE_SIZE;
-	stats->mapped_total = (size_t)atomic_load32(&_mapped_total) * RPMALLOC_PAGE_SIZE;
-	stats->unmapped_total = (size_t)atomic_load32(&_unmapped_total) * RPMALLOC_PAGE_SIZE;
+	stats->mapped = _mapped_pages * RPMALLOC_PAGE_SIZE;
+	stats->mapped_total = _mapped_total * RPMALLOC_PAGE_SIZE;
+	stats->unmapped_total = _unmapped_total * RPMALLOC_PAGE_SIZE;
 #endif
-	void* global_span_ptr = _memory_span_cache.load();
-	while (global_span_ptr == SPAN_LIST_LOCK_TOKEN) {
-		thread_yield();
-		global_span_ptr = _memory_span_cache.load();
+	{
+		void* global_span_ptr = _memory_span_cache.load();
+		while (global_span_ptr == SPAN_LIST_LOCK_TOKEN) {
+			thread_yield();
+			global_span_ptr = _memory_span_cache.load();
+		}
+		uintptr_t global_span_count = (uintptr_t)global_span_ptr & ~SPAN_MASK;
+		size_t list_bytes = global_span_count * QUICK_ALLOCATION_PAGES_COUNT * RPMALLOC_PAGE_SIZE;
+		stats->cached += list_bytes;
 	}
-	uintptr_t global_span_count = (uintptr_t)global_span_ptr & ~SPAN_MASK;
-	size_t list_bytes = global_span_count * QUICK_ALLOCATION_PAGES_COUNT * RPMALLOC_PAGE_SIZE;
-	stats->cached += list_bytes;
 
 	for (size_t iclass = 0; iclass < LARGE_CLASS_COUNT; ++iclass) {
 		void* global_span_ptr = _memory_large_cache[iclass].load();
