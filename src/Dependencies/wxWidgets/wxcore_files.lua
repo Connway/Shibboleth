@@ -445,7 +445,7 @@ files
 	"src/common/docview.cpp",
 	"src/common/dpycmn.cpp",
 	"src/common/dseldlg.cpp",
-	"src/common/dummy.cpp",
+	-- "src/common/dummy.cpp",
 	"src/common/effects.cpp",
 	"src/common/event.cpp",
 	"src/common/fddlgcmn.cpp",

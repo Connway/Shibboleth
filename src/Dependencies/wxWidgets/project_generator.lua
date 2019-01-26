@@ -10,7 +10,6 @@ function wxWidgetsProject(proj_name, lib_type)
 
 	defines
 	{
-		"NOPCH",
 		"WXBUILDING",
 		"wxUSE_ZLIB_H_IN_PATH",
 		"__WXMSW__",
@@ -33,9 +32,6 @@ function wxWidgetsProject(proj_name, lib_type)
 
 	includedirs { "include" }
 
-	-- pchheader "wx/wxprec.h"
-	-- pchsource "src/common/dummpy.cpp"
-
 	filter { "system:windows" }
 		includedirs { "include/msvc" }
 		defines { "__WXMSW__" }
@@ -43,6 +39,17 @@ function wxWidgetsProject(proj_name, lib_type)
 	filter {}
 
 	if lib_type == "SharedLib" then
+		pchheader "wx/wxprec.h"
+
+		filter { "action:vs*" }
+			files { "src/common/dummy.cpp" }
+			pchsource "src/common/dummy.cpp"
+
+		filter { "files:**.c" }
+			flags { "NoPCH" }
+
+		filter {}
+
 		postbuildcommands
 		{
 			"{MKDIR} ../../../../../workingdir/bin",
