@@ -52,7 +52,7 @@ enum {
 };
 
 
-IMPLEMENT_DYNAMIC_CLASS(wxJoystick, wxObject)
+wxIMPLEMENT_DYNAMIC_CLASS(wxJoystick, wxObject);
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ class wxJoystickThread : public wxThread
 {
 public:
     wxJoystickThread(int device, int joystick);
-    void* Entry();
+    void* Entry() wxOVERRIDE;
 
 private:
     void      SendEvent(wxEventType type, long ts, int change = 0);
@@ -181,18 +181,17 @@ void* wxJoystickThread::Entry()
                 if (j_evt.value)
                 {
                     m_buttons |= (1 << j_evt.number);
-                    SendEvent(wxEVT_JOY_BUTTON_DOWN, j_evt.time, j_evt.number);
+                    SendEvent(wxEVT_JOY_BUTTON_DOWN, j_evt.time, 1 << j_evt.number);
                 }
                 else
                 {
                     m_buttons &= ~(1 << j_evt.number);
-                    SendEvent(wxEVT_JOY_BUTTON_UP, j_evt.time, j_evt.number);
+                    SendEvent(wxEVT_JOY_BUTTON_UP, j_evt.time, 1 << j_evt.number);
                 }
             }
         }
     }
 
-    close(m_device);
     return NULL;
 }
 
@@ -231,7 +230,8 @@ wxJoystick::~wxJoystick()
     ReleaseCapture();
     if (m_thread)
         m_thread->Delete();  // It's detached so it will delete itself
-    m_device = -1;
+    if (m_device != -1)
+        close(m_device);
 }
 
 

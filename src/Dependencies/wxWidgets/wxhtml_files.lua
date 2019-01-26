@@ -19,6 +19,7 @@ files
 	"include/wx/html/winpars.h",
 	"include/wx/htmllbox.h",
 	"include/wx/wxhtml.h",
+	"include/wx/html/forcelnk.h",
 	"src/common/dummy.cpp",
 	"src/msw/helpbest.cpp",
 	"src/generic/htmllbox.cpp",
@@ -45,5 +46,6 @@ files
 	"src/html/m_style.cpp",
 	"src/html/m_tables.cpp",
 	"src/html/styleparams.cpp",
-	"src/html/winpars.cpp"
+	"src/html/winpars.cpp",
+	"src/html/chm.cpp"
 }

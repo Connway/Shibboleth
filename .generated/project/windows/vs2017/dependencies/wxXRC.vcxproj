@@ -211,6 +211,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_activityindicator.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_all.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_animatctrl.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bannerwindow.h" />
@@ -279,6 +280,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_activityindicator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_animatctrl.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_bannerwindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_bmp.cpp" />
@@ -358,9 +360,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     </ProjectReference>
     <ProjectReference Include="wxCore.vcxproj">
       <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="wxAdv.vcxproj">
-      <Project>{6F53AB10-DB67-D3C1-A4E9-762110BDCFF2}</Project>
     </ProjectReference>
     <ProjectReference Include="wxHTML.vcxproj">
       <Project>{E94E1926-D5F0-43FC-BEAB-5750AAECCA4C}</Project>

@@ -77,7 +77,6 @@ project "EditorECSModule"
 		"zlib-ng",
 		"wxBase",
 		"wxCore",
-		"wxAdv",
 		"ECS"
 	}
 

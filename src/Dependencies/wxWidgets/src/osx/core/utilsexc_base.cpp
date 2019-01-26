@@ -55,67 +55,6 @@ wxSocketManager *wxOSXSocketManagerCF = NULL;
 
 #if ( !wxUSE_GUI && !wxOSX_USE_IPHONE ) || wxOSX_USE_COCOA_OR_CARBON
 
-// have a fast version for mac code that returns the version as a return value
-
-long UMAGetSystemVersion()
-{
-    static SInt32 sUMASystemVersion = 0 ;
-    if ( sUMASystemVersion == 0 )
-    {
-        // gestaltSystemVersion is deprecated since 10.8 and produces a runtime
-        // warning since 10.10 and will always return 0x109z. (z = micro version)
-        // As a workaround to the runtime warning return the hard coded value
-        // to supress the operating system warning.
-        int majorCur, minorCur;
-        wxGetOsVersion(&majorCur, &minorCur);
-        if ( majorCur > 10 || (majorCur == 10 && minorCur >= 10) )
-            sUMASystemVersion = 0x1090;
-        else
-            verify_noerr(Gestalt(gestaltSystemVersion, &sUMASystemVersion));
-    }
-    return sUMASystemVersion ;
-}
-
-// our OS version is the same in non GUI and GUI cases
-wxOperatingSystemId wxGetOsVersion(int *majorVsn, int *minorVsn)
-{
-    // This returns 10 and 6 for OS X 10.6, consistent with behaviour on
-    // other platforms.
-    SInt32 maj, min;
-    Gestalt(gestaltSystemVersionMajor, &maj);
-    Gestalt(gestaltSystemVersionMinor, &min);
-
-    if ( majorVsn != NULL )
-        *majorVsn = maj;
-
-    if ( minorVsn != NULL )
-        *minorVsn = min;
-
-#if 0
-    SInt32 theSystem;
-    Gestalt(gestaltSystemVersion, &theSystem);
-
-    if ( majorVsn != NULL )
-        *majorVsn = (theSystem >> 8);
-
-    if ( minorVsn != NULL )
-        *minorVsn = (theSystem & 0xFF);
-#endif
-    return wxOS_MAC_OSX_DARWIN;
-}
-
-#include <sys/utsname.h>
-
-wxString wxGetOsDescription()
-{
-    struct utsname name;
-    uname(&name);
-    return wxString::Format(wxT("Mac OS X (%s %s %s)"),
-            wxString::FromAscii(name.sysname).c_str(),
-            wxString::FromAscii(name.release).c_str(),
-            wxString::FromAscii(name.machine).c_str());
-}
-
 //===========================================================================
 //  IMPLEMENTATION
 //===========================================================================
@@ -129,12 +68,12 @@ wxString wxGetOsDescription()
 // process is the process passed from wxExecute for pipe streams etc.
 // returns -1 on error for wxEXEC_SYNC and 0 on error for wxEXEC_ASYNC
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-bool wxMacLaunch(char **argv)
+bool wxMacLaunch(const char* const* argv)
 {
     // Obtains the number of arguments for determining the size of
     // the CFArray used to hold them
     CFIndex cfiCount = 0;
-    for(char** argvcopy = argv; *argvcopy != NULL ; ++argvcopy)
+    for (const char* const* argvcopy = argv; *argvcopy != NULL; ++argvcopy)
     {
         ++cfiCount;
     }

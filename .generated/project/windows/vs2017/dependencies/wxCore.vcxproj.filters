@@ -7,14 +7,8 @@
     <Filter Include="include\wx">
       <UniqueIdentifier>{A746B8DA-93FE-F927-FC05-D383E8DC9418}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\wx\aui">
-      <UniqueIdentifier>{15B45475-0182-487B-EA15-B9A1D68224E0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\wx\generic">
       <UniqueIdentifier>{B3682963-9F4C-EAB8-08AD-E40BF4AFD43A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\wx\html">
-      <UniqueIdentifier>{0B0AEF1F-7795-5CE4-80A6-DFD8ECB0B8E4}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\wx\msw">
       <UniqueIdentifier>{EDE65475-D9B4-487B-C248-B9A1AEB524E0}</UniqueIdentifier>
@@ -22,20 +16,11 @@
     <Filter Include="include\wx\msw\ole">
       <UniqueIdentifier>{BC413452-A825-F5A7-1186-EFFAFD88DF29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\wx\msw\rt">
+      <UniqueIdentifier>{E2F275E3-4E09-7479-9780-FF9A03D64401}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\wx\persist">
       <UniqueIdentifier>{E0754518-CC59-066E-35BA-00C121BDF0EF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\wx\propgrid">
-      <UniqueIdentifier>{3D667202-A9C7-4F10-3235-96C29E9586CF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\wx\ribbon">
-      <UniqueIdentifier>{921D60EE-FE33-5E84-47AB-E9A5B3002F0C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\wx\richtext">
-      <UniqueIdentifier>{412DA209-AD8E-7F17-36FC-C5C9A25CB6D6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\wx\stc">
-      <UniqueIdentifier>{80005575-6CCE-487B-5562-B9A141CF24E0}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\wx\xrc">
       <UniqueIdentifier>{83155575-6FE3-487B-5877-B9A144E424E0}</UniqueIdentifier>
@@ -55,6 +40,9 @@
     <Filter Include="src\msw\ole">
       <UniqueIdentifier>{42CC4BE8-AE81-C4DD-3776-BEB4A32ABBE1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\msw\rt">
+      <UniqueIdentifier>{A844E36B-94FC-24B9-FD03-FE14E9DABFA9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\xrc">
       <UniqueIdentifier>{094D30A9-752C-AF44-7E44-3A1BEAA215A6}</UniqueIdentifier>
     </Filter>
@@ -67,6 +55,12 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\access.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\activityindicator.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\addremovectrl.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\affinematrix2d.h">
@@ -87,32 +81,11 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\anybutton.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\artprov.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\appprogress.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\aui.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\auibar.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\auibook.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\dockart.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\floatpane.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\framemanager.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabart.h">
-      <Filter>include\wx\aui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabmdi.h">
-      <Filter>include\wx\aui</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\artprov.h">
+      <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bannerwindow.h">
       <Filter>include\wx</Filter>
@@ -169,6 +142,9 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cmndata.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\collheaderctrl.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\collpane.h">
@@ -255,9 +231,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcsvg.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\debugrpt.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dialog.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -271,9 +244,6 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\display.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\display_impl.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dnd.h">
@@ -298,9 +268,6 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\encinfo.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\evtloopsrc.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fdrepdlg.h">
@@ -360,6 +327,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\accel.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\activityindicator.h">
+      <Filter>include\wx\generic</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\animate.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
@@ -381,16 +351,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\clrpickerg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\collheaderctrl.h">
+      <Filter>include\wx\generic</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\collpaneg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\colrdlgg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\combo.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\ctrlsub.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\custombgwin.h">
@@ -408,9 +375,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dirctrlg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dirdlgg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dragimgg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
@@ -420,19 +384,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dvrenderers.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fdrepdlg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filectrlg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filedlgg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filepickerg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fontdlgg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fontpickerg.h">
@@ -465,13 +420,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\laywin.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\listctrl.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\logg.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\mdig.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\msgdlgg.h">
@@ -528,9 +477,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\stattextg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\statusbr.h">
-      <Filter>include\wx\generic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\textdlgg.h">
       <Filter>include\wx\generic</Filter>
     </ClInclude>
@@ -547,9 +493,6 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gifdecod.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\glcanvas.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\graphics.h">
@@ -574,57 +517,6 @@
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\helpwin.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpctrl.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdata.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdlg.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpfrm.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpwnd.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlcell.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmldefs.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlfilt.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlpars.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlproc.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmltag.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlwin.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmprint.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\m_templ.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\styleparams.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\winpars.h">
-      <Filter>include\wx\html</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\htmllbox.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\hyperlink.h">
@@ -675,6 +567,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\infobar.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\itemattr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\itemid.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -705,9 +600,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mdi.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mediactrl.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\menu.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -736,6 +628,9 @@
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\app.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\appprogress.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\bitmap.h">
@@ -858,13 +753,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\gdiimage.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\glcanvas.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\headerctrl.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\helpbest.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\helpchm.h">
@@ -930,9 +819,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\notebook.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\notifmsg.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\access.h">
       <Filter>include\wx\msw\ole</Filter>
     </ClInclude>
@@ -940,6 +826,9 @@
       <Filter>include\wx\msw\ole</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\automtn.h">
+      <Filter>include\wx\msw\ole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\comimpl.h">
       <Filter>include\wx\msw\ole</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\dataform.h">
@@ -960,8 +849,14 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\oleutils.h">
       <Filter>include\wx\msw\ole</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\safearray.h">
+      <Filter>include\wx\msw\ole</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\uuid.h">
       <Filter>include\wx\msw\ole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ownerdrawnbutton.h">
+      <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ownerdrw.h">
       <Filter>include\wx\msw</Filter>
@@ -1002,6 +897,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\richmsgdlg.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\rt\utils.h">
+      <Filter>include\wx\msw\rt</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\scrolbar.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
@@ -1035,6 +933,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\taskbar.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\taskbarbutton.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\textctrl.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
@@ -1060,15 +961,6 @@
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\uxtheme.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\uxthemep.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_ie.h">
-      <Filter>include\wx\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webviewhistoryitem_ie.h">
       <Filter>include\wx\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\window.h">
@@ -1110,10 +1002,16 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\pen.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\peninfobase.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\bookctrl.h">
+      <Filter>include\wx\persist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\dataview.h">
       <Filter>include\wx\persist</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\splitter.h">
@@ -1137,6 +1035,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\position.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\preferences.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\print.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -1151,33 +1052,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propdlg.h">
       <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\advprops.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\editors.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\manager.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\property.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgrid.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgriddefs.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgridiface.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgridpagestate.h">
-      <Filter>include\wx\propgrid</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\props.h">
-      <Filter>include\wx\propgrid</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\quantize.h">
       <Filter>include\wx</Filter>
@@ -1203,98 +1077,8 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\renderer.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\art.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\art_internal.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\bar.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\buttonbar.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\control.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\gallery.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\page.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\panel.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\toolbar.h">
-      <Filter>include\wx\ribbon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richmsgdlg.h">
       <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbackgroundpage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextborderspage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbuffer.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbulletspage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextctrl.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextdialogpage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextfontpage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextformatdlg.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtexthtml.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextimagedlg.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextindentspage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextliststylepage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextmarginspage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextprint.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsizepage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstyledlg.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstylepage.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstyles.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsymboldlg.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextuicustomization.h">
-      <Filter>include\wx\richtext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextxml.h">
-      <Filter>include\wx\richtext</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtooltip.h">
       <Filter>include\wx</Filter>
@@ -1359,13 +1143,19 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\statusbr.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\stc\stc.h">
-      <Filter>include\wx\stc</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\systhemectrl.h">
+      <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\taskbar.h">
       <Filter>include\wx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\taskbarbutton.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tbarbase.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\testing.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textcompleter.h">
@@ -1446,12 +1236,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\vscroll.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webview.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webviewarchivehandler.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\window.h">
       <Filter>include\wx</Filter>
     </ClInclude>
@@ -1473,205 +1257,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wupdlock.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wxhtml.h">
-      <Filter>include\wx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xpmdecod.h">
       <Filter>include\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xpmhand.h">
       <Filter>include\wx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_all.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_animatctrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bannerwindow.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmp.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmpbt.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmpcbox.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bttn.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_cald.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_chckb.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_chckl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_choic.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_choicbk.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_clrpicker.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_cmdlinkbn.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_collpane.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_combo.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_comboctrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_datectrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_dirpicker.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_dlg.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_editlbox.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_filectrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_filepicker.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_fontpicker.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_frame.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_gauge.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_gdctl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_grid.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_html.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_htmllbox.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_hyperlink.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listb.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listbk.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listc.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_mdi.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_menu.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_notbk.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_odcombo.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_panel.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_propdlg.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_radbt.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_radbx.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_scrol.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_scwin.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_sizer.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_slidr.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_spin.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_split.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_srchctrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_statbar.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stbmp.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stbox.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stlin.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_sttxt.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_text.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_tglbtn.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_timectrl.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_toolb.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_toolbk.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_tree.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_treebk.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_unkwn.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_wizrd.h">
-      <Filter>include\wx\xrc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xmlres.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xmlreshandler.h">
       <Filter>include\wx\xrc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1682,10 +1274,16 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\accesscmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\addremovectrl.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\affinematrix2d.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\anidecod.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\animatecmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\appcmn.cpp">
@@ -1706,6 +1304,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bmpbtncmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bmpcboxcmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bookctrl.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -1713,6 +1314,9 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\cairo.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\calctrlcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\checkboxcmn.cpp">
@@ -1755,6 +1359,9 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\ctrlsub.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\datavcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dcbase.cpp">
@@ -1859,6 +1466,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\graphcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gridcmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\headercolcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -1866,6 +1476,9 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\helpbase.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\hyperlnkcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\iconbndl.cpp">
@@ -1940,6 +1553,12 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\nbkbase.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\notifmsgcmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\odcombocmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\overlaycmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -1985,6 +1604,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\rgncmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\richtooltipcmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\scrolbarcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -2022,6 +1644,9 @@
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\stockitem.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\taskbarcmn.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\tbarbase.cpp">
@@ -2072,10 +1697,28 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\xpmdecod.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\aboutdlgg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\activityindicator.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\animateg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\bannerwindow.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\bmpcboxg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\busyinfo.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\buttonbar.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\calctrlg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\choicbkg.cpp">
@@ -2087,10 +1730,22 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\clrpickerg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\collheaderctrlg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\collpaneg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\combog.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\commandlinkbuttong.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\datavgen.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\datectlg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\dcpsg.cpp">
@@ -2100,6 +1755,9 @@
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\dragimgg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\editlbox.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\filectrlg.cpp">
@@ -2114,10 +1772,31 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\graphicc.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\grid.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\gridctrl.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\grideditors.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\gridsel.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\headerctrlg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\helpext.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\hyperlinkg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\infobar.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\laywin.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\listbkg.cpp">
@@ -2132,7 +1811,13 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\msgdlgg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\notifmsgg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\numdlgg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\odcombo.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\preferencesg.cpp">
@@ -2147,10 +1832,19 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\progdlgg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\propdlg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\renderg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\richmsgdlgg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\richtooltipg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\sashwin.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\scrlwing.cpp">
@@ -2160,6 +1854,9 @@
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\spinctlg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\splash.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\splitter.cpp">
@@ -2180,6 +1877,12 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\textdlgg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\timectrlg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\tipdlg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\tipwin.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
@@ -2192,11 +1895,20 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\treectlg.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\treelist.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\vlbox.cpp">
       <Filter>src\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\vscroll.cpp">
       <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\wizard.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\aboutdlg.cpp">
+      <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\accel.cpp">
       <Filter>src\msw</Filter>
@@ -2205,6 +1917,9 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\app.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\appprogress.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\artmsw.cpp">
@@ -2216,10 +1931,16 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\bmpbuttn.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\bmpcbox.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\brush.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\button.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\calctrl.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\caret.cpp">
@@ -2249,13 +1970,28 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\combobox.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\commandlinkbutton.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\control.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\cursor.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\customdraw.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\data.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datecontrols.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datectrl.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datetimectrl.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dc.cpp">
@@ -2333,6 +2069,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\graphics.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\graphicsd2d.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\headerctrl.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -2342,6 +2081,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\helpwin.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\hyperlink.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\icon.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -2349,6 +2091,9 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\iniconf.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\joystick.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\listbox.cpp">
@@ -2378,9 +2123,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\msgdlg.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\mslu.cpp">
-      <Filter>src\msw</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\nativdlg.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -2393,6 +2135,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\notebook.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\notifmsg.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\access.cpp">
       <Filter>src\msw\ole</Filter>
     </ClCompile>
@@ -2400,6 +2145,9 @@
       <Filter>src\msw\ole</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\automtn.cpp">
+      <Filter>src\msw\ole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\comimpl.cpp">
       <Filter>src\msw\ole</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\dataobj.cpp">
@@ -2424,9 +2172,6 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\palette.cpp">
-      <Filter>src\msw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\panel.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\pen.cpp">
@@ -2459,6 +2204,15 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\richmsgdlg.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\richtooltip.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\rt\notifmsgrt.cpp">
+      <Filter>src\msw\rt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\rt\utilsrt.cpp">
+      <Filter>src\msw\rt</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\scrolbar.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -2466,6 +2220,9 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\slider.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\sound.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\spinbutt.cpp">
@@ -2489,6 +2246,15 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\statusbar.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\systhemectrl.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\taskbar.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\taskbarbutton.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\textctrl.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
@@ -2499,6 +2265,9 @@
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\tglbtn.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\timectrl.cpp">
       <Filter>src\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\toolbar.cpp">

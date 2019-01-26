@@ -24,6 +24,7 @@
 
 #include "wx/mstream.h"
 #include "wx/metafile.h"
+#include "wx/scopedarray.h"
 #include "wx/tokenzr.h"
 #include "wx/filename.h"
 
@@ -391,8 +392,8 @@ bool wxDataObject::GetFromPasteboard( void * pb )
     PasteboardRef pasteboard = (PasteboardRef) pb;
 
     size_t formatcount = GetFormatCount(wxDataObject::Set);
-    wxDataFormat *array = new wxDataFormat[ formatcount ];
-    GetAllFormats(array, wxDataObject::Set);
+    wxScopedArray<wxDataFormat> array(formatcount);
+    GetAllFormats(array.get(), wxDataObject::Set);
     
     ItemCount itemCount = 0;
     wxString filenamesPassed;
@@ -459,7 +460,7 @@ bool wxDataObject::GetFromPasteboard( void * pb )
                             // indicate the expected format for the type, benefiting from native conversions eg utf8 -> utf16
                             flavorType = (CFStringRef) wxDataFormat( flavorFormat.GetType()).GetFormatId();
                         }
-
+                        
                         err = PasteboardCopyItemFlavorData( pasteboard, itemID, flavorType , &flavorData );
                         if ( err == noErr )
                         {
@@ -487,7 +488,17 @@ bool wxDataObject::GetFromPasteboard( void * pb )
                                     memcpy( buf, CFDataGetBytePtr( flavorData ), flavorDataSize );
 
                                     if (dataFormat.GetType() == wxDF_TEXT)
-                                        wxMacConvertNewlines10To13( (char*) buf );
+                                    {
+                                        for (char* p = static_cast<char*>(buf); *p; p++)
+                                            if (*p == '\r')
+                                                *p = '\n';
+                                    }
+                                    else if (dataFormat.GetType() == wxDF_UNICODETEXT)
+                                    {
+                                        for (wxChar16* p = static_cast<wxChar16*>(buf); *p; p++)
+                                            if (*p == '\r')
+                                                *p = '\n';
+                                    }
                                     SetData( flavorFormat, flavorDataSize, buf );
                                     transferred = true;
                                     free( buf );
@@ -535,8 +546,8 @@ bool wxDataObject::HasDataInPasteboard( void * pb )
 {
     PasteboardRef pasteboard = (PasteboardRef) pb;
     size_t formatcount = GetFormatCount(wxDataObject::Set);
-    wxDataFormat *array = new wxDataFormat[ formatcount ];
-    GetAllFormats(array, wxDataObject::Set);
+    wxScopedArray<wxDataFormat> array(formatcount);
+    GetAllFormats(array.get(), wxDataObject::Set);
     ItemCount itemCount = 0;
     bool hasData = false;
 

@@ -21,7 +21,7 @@ WX_DEFINE_ARRAY( char * , wxChoiceDataArray ) ;
 // Choice item
 class WXDLLIMPEXP_CORE wxChoice: public wxChoiceBase
 {
-    DECLARE_DYNAMIC_CLASS(wxChoice)
+    wxDECLARE_DYNAMIC_CLASS(wxChoice);
 
 public:
     wxChoice()
@@ -91,7 +91,6 @@ protected:
 
     wxArrayString m_strings;
     wxChoiceDataArray m_datas ;
-    wxMenu*    m_popUpMenu ;
 
 private:
     // This should be called when the number of items in the control changes.

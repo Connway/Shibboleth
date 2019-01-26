@@ -25,9 +25,7 @@
 #include "wx/accel.h"
 #include "wx/stockitem.h"
 
-#include <gtk/gtk.h>
 #include "wx/gtk/private.h"
-#include "wx/gtk/private/gtk2-compat.h"
 #include "wx/gtk/private/mnemonics.h"
 
 // Number of currently open modal dialogs, defined in src/gtk/toplevel.cpp.
@@ -35,12 +33,6 @@ extern int wxOpenModalDialogsCount;
 
 // we use normal item but with a special id for the menu title
 static const int wxGTK_TITLE_ID = -3;
-
-// forward declare it as it's used by wxMenuBar too when using Hildon
-extern "C"
-{
-    static void menuitem_activate(GtkWidget*, wxMenuItem* item);
-}
 
 #if wxUSE_ACCEL
 static void wxGetGtkAccel(const wxMenuItem*, guint*, GdkModifierType*);
@@ -74,16 +66,7 @@ static void DoCommonMenuCallbackCode(wxMenu *menu, wxMenuEvent& event)
     if ( !IsMenuEventAllowed(menu) )
         return;
 
-    event.SetEventObject( menu );
-
-    wxEvtHandler* handler = menu->GetEventHandler();
-    if (handler && handler->SafelyProcessEvent(event))
-        return;
-
-    wxWindow *win = menu->GetWindow();
-    wxCHECK_RET( win, "event for a menu without associated window?" );
-
-    win->HandleWindowEvent( event );
+    wxMenu::ProcessMenuEvent(menu, event, menu->GetWindow());
 }
 
 // Return the top level menu containing this menu (possibly this menu itself).
@@ -126,12 +109,6 @@ wxMenuBar::~wxMenuBar()
 
 void wxMenuBar::Init(size_t n, wxMenu *menus[], const wxString titles[], long style)
 {
-#if wxUSE_LIBHILDON || wxUSE_LIBHILDON2
-    // Hildon window uses a single menu instead of a menu bar, so wxMenuBar is
-    // the same as menu in this case
-    m_widget =
-    m_menubar = gtk_menu_new();
-#else // !wxUSE_LIBHILDON && !wxUSE_LIBHILDON2
     if (!PreCreation( NULL, wxDefaultPosition, wxDefaultSize ) ||
         !CreateBase( NULL, -1, wxDefaultPosition, wxDefaultSize, style, wxDefaultValidator, wxT("menubar") ))
     {
@@ -141,6 +118,7 @@ void wxMenuBar::Init(size_t n, wxMenu *menus[], const wxString titles[], long st
 
     m_menubar = gtk_menu_bar_new();
 
+#ifndef __WXGTK4__
     if ((style & wxMB_DOCKABLE)
 #ifdef __WXGTK3__
         // using GtkHandleBox prevents menubar from drawing with GTK+ >= 3.19.7
@@ -148,17 +126,19 @@ void wxMenuBar::Init(size_t n, wxMenu *menus[], const wxString titles[], long st
 #endif
         )
     {
+        wxGCC_WARNING_SUPPRESS(deprecated-declarations)
         m_widget = gtk_handle_box_new();
+        wxGCC_WARNING_RESTORE()
         gtk_container_add(GTK_CONTAINER(m_widget), m_menubar);
         gtk_widget_show(m_menubar);
     }
     else
+#endif
     {
         m_widget = m_menubar;
     }
 
     PostCreation();
-#endif // wxUSE_LIBHILDON || wxUSE_LIBHILDON2/!wxUSE_LIBHILDON && !wxUSE_LIBHILDON2
 
     g_object_ref_sink(m_widget);
 
@@ -192,10 +172,8 @@ namespace
 void
 EnsureNoGrab(GtkWidget* widget)
 {
-#if !wxUSE_LIBHILDON && !wxUSE_LIBHILDON2
     gtk_widget_hide(widget);
     gtk_grab_remove(widget);
-#endif // !wxUSE_LIBHILDON && !wxUSE_LIBHILDON2
 }
 
 void
@@ -327,30 +305,6 @@ void wxMenuBar::GtkAppend(wxMenu* menu, const wxString& title, int pos)
 {
     menu->SetLayoutDirection(GetLayoutDirection());
 
-#if wxUSE_LIBHILDON || wxUSE_LIBHILDON2
-    // if the menu has only one item, append it directly to the top level menu
-    // instead of inserting a useless submenu
-    if ( menu->GetMenuItemCount() == 1 )
-    {
-        wxMenuItem * const item = menu->FindItemByPosition(0);
-
-        // remove both mnemonics and accelerator: neither is useful under Maemo
-        const wxString str(wxStripMenuCodes(item->GetItemLabel()));
-
-        if ( item->IsSubMenu() )
-        {
-            GtkAppend(item->GetSubMenu(), str, pos);
-            return;
-        }
-
-        menu->m_owner = gtk_menu_item_new_with_mnemonic( wxGTK_CONV( str ) );
-
-        g_signal_connect(menu->m_owner, "activate",
-                         G_CALLBACK(menuitem_activate), item);
-        item->SetMenuItem(menu->m_owner);
-    }
-    else
-#endif // wxUSE_LIBHILDON || wxUSE_LIBHILDON2 /!wxUSE_LIBHILDON && !wxUSE_LIBHILDON2
     {
         // This doesn't have much effect right now.
         menu->SetTitle( title );
@@ -737,12 +691,16 @@ void wxMenuItem::Check( bool check )
     if (check == m_isChecked)
         return;
 
-    wxMenuItemBase::Check( check );
-
     switch ( GetKind() )
     {
-        case wxITEM_CHECK:
         case wxITEM_RADIO:
+            // It doesn't make sense to uncheck a radio item.
+            if ( !check )
+                return;
+
+            wxFALLTHROUGH;
+        case wxITEM_CHECK:
+            wxMenuItemBase::Check( check );
             gtk_check_menu_item_set_active( (GtkCheckMenuItem*)m_menuItem, (gint)check );
             break;
 
@@ -817,15 +775,19 @@ void wxMenu::Init()
 
     m_owner = NULL;
 
+#ifndef __WXGTK4__
     // Tearoffs are entries, just like separators. So if we want this
     // menu to be a tear-off one, we just append a tearoff entry
     // immediately.
     if ( m_style & wxMENU_TEAROFF )
     {
+        wxGCC_WARNING_SUPPRESS(deprecated-declarations)
         GtkWidget *tearoff = gtk_tearoff_menu_item_new();
+        wxGCC_WARNING_RESTORE()
 
         gtk_menu_shell_append(GTK_MENU_SHELL(m_menu), tearoff);
     }
+#endif
 
     // append the title as the very first entry if we have it
     if ( !m_title.empty() )
@@ -844,8 +806,7 @@ wxMenu::~wxMenu()
     // Destroying a menu generates a "hide" signal even if it's not shown
     // currently, so disconnect it to avoid dummy wxEVT_MENU_CLOSE events
     // generation.
-    g_signal_handlers_disconnect_matched(m_menu,
-        GSignalMatchType(G_SIGNAL_MATCH_DATA), 0, 0, NULL, NULL, this);
+    g_signal_handlers_disconnect_by_data(m_menu, this);
 
     if (m_owner)
     {
@@ -859,7 +820,7 @@ wxMenu::~wxMenu()
     g_object_unref(m_accel);
 }
 
-void wxMenu::SetLayoutDirection(const wxLayoutDirection dir)
+void wxMenu::SetLayoutDirection(wxLayoutDirection dir)
 {
     if ( m_owner )
         wxWindow::GTKSetLayout(m_owner, dir);
@@ -938,8 +899,13 @@ void wxMenu::GtkAppend(wxMenuItem* mitem, int pos)
             wxFAIL_MSG("unexpected menu item kind");
             // fall through
         case wxITEM_NORMAL:
+#ifdef __WXGTK4__
+            //TODO GtkImageMenuItem is gone, have to implement it ourselves with
+            //   GtkMenuItem GtkBox GtkAccelLabel GtkImage
+            menuItem = gtk_menu_item_new_with_label("");
+#else
+            wxGCC_WARNING_SUPPRESS(deprecated-declarations)
             const wxBitmap& bitmap = mitem->GetBitmap();
-            const char* stockid;
             if (bitmap.IsOk())
             {
                 // always use pixbuf, because pixmap mask does not
@@ -949,12 +915,18 @@ void wxMenu::GtkAppend(wxMenuItem* mitem, int pos)
                 gtk_widget_show(image);
                 gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuItem), image);
             }
-            else if ((stockid = wxGetStockGtkID(mitem->GetId())) != NULL)
-                // use stock bitmap for this item if available on the assumption
-                // that it never hurts to follow GTK+ conventions more closely
-                menuItem = gtk_image_menu_item_new_from_stock(stockid, NULL);
             else
-                menuItem = gtk_menu_item_new_with_label("");
+            {
+                const char* stockid = wxGetStockGtkID(mitem->GetId());
+                if (stockid)
+                    // use stock bitmap for this item if available on the assumption
+                    // that it never hurts to follow GTK+ conventions more closely
+                    menuItem = gtk_image_menu_item_new_from_stock(stockid, NULL);
+                else
+                    menuItem = gtk_menu_item_new_with_label("");
+            }
+            wxGCC_WARNING_RESTORE()
+#endif
             break;
     }
     mitem->SetMenuItem(menuItem);
@@ -1018,8 +990,7 @@ wxMenuItem *wxMenu::DoRemove(wxMenuItem *item)
 
     GtkWidget * const mitem = item->GetMenuItem();
 
-    g_signal_handlers_disconnect_matched(mitem,
-        GSignalMatchType(G_SIGNAL_MATCH_DATA), 0, 0, NULL, NULL, item);
+    g_signal_handlers_disconnect_by_data(mitem, item);
 
 #ifdef __WXGTK3__
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(mitem), NULL);
@@ -1318,8 +1289,10 @@ wxGetGtkAccel(const wxMenuItem* item, guint* accel_key, GdkModifierType* accel_m
     const wxString string = GetGtkHotKey(*item);
     if (!string.empty())
         gtk_accelerator_parse(wxGTK_CONV_SYS(string), accel_key, accel_mods);
+#ifndef __WXGTK4__
     else
     {
+        wxGCC_WARNING_SUPPRESS(deprecated-declarations)
         GtkStockItem stock_item;
         const char* stockid = wxGetStockGtkID(item->GetId());
         if (stockid && gtk_stock_lookup(stockid, &stock_item))
@@ -1327,10 +1300,14 @@ wxGetGtkAccel(const wxMenuItem* item, guint* accel_key, GdkModifierType* accel_m
             *accel_key = stock_item.keyval;
             *accel_mods = stock_item.modifier;
         }
+        wxGCC_WARNING_RESTORE()
     }
+#endif
 }
 #endif // wxUSE_ACCEL
 
+#ifndef __WXGTK4__
+wxGCC_WARNING_SUPPRESS(deprecated-declarations)
 const char *wxGetStockGtkID(wxWindowID id)
 {
     #define STOCKITEM(wx,gtk)      \
@@ -1433,5 +1410,7 @@ const char *wxGetStockGtkID(wxWindowID id)
 
     return NULL;
 }
+wxGCC_WARNING_RESTORE()
+#endif // !__WXGTK4__
 
 #endif // wxUSE_MENUS

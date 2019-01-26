@@ -25,9 +25,7 @@ Libraries Affected:
 		Adding OF macro
 		Adding STDC defines
 	wxWidgets
-		Fixing setup.h wxSETUPH_PATH macro.
-		Fixing compiler errors with VS2017.
-		Exporting helper function.
+		Fixing setup.h wxSETUP_PATH macro.
+		Exporting wxIsDriveAvailable() helper function.
 		Injecting Shibboleth allocator initialization to wxThreadInternal::WinThreadStart.
-		Modified wxCollapsiblePane to include a label and changed the Windows collapse button text.
 		Fixed off by one bugs in editlbox.cpp.

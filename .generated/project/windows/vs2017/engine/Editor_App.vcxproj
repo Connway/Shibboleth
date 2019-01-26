@@ -256,9 +256,6 @@
     <ProjectReference Include="..\dependencies\wxAui.vcxproj">
       <Project>{9355AB10-FF69-D3C1-C8EB-762134BFCFF2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\wxAdv.vcxproj">
-      <Project>{6F53AB10-DB67-D3C1-A4E9-762110BDCFF2}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

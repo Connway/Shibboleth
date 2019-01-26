@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\auibook.h">
       <Filter>include\wx\aui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\barartmsw.h">
+      <Filter>include\wx\aui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\dockart.h">
       <Filter>include\wx\aui</Filter>
     </ClInclude>
@@ -48,10 +51,16 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabart.h">
       <Filter>include\wx\aui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabartmsw.h">
+      <Filter>include\wx\aui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabmdi.h">
       <Filter>include\wx\aui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_auinotbk.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_aui.h">
+      <Filter>include\wx\xrc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_auitoolb.h">
       <Filter>include\wx\xrc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +69,9 @@
       <Filter>src\aui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\auibook.cpp">
+      <Filter>src\aui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\barartmsw.cpp">
       <Filter>src\aui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\dockart.cpp">
@@ -74,13 +86,19 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\tabart.cpp">
       <Filter>src\aui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\tabartmsw.cpp">
+      <Filter>src\aui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\aui\tabmdi.cpp">
       <Filter>src\aui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_auinotbk.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_aui.cpp">
+      <Filter>src\xrc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xh_auitoolb.cpp">
       <Filter>src\xrc</Filter>
     </ClCompile>
   </ItemGroup>

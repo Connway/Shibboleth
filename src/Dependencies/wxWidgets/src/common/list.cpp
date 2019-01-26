@@ -51,6 +51,7 @@ bool wxListKey::operator==(wxListKeyValue value) const
             wxFAIL_MSG(wxT("bad key type."));
             // let compiler optimize the line above away in release build
             // by not putting return here...
+            wxFALLTHROUGH;
 
         case wxKEY_STRING:
             return *m_key.string == *value.string;
@@ -511,9 +512,6 @@ void wxListBase::Sort(const wxSortCompareFunction compfunc)
 
     // sort the array
     qsort((void *)objArray,num,sizeof(wxObject *),
-#ifdef __WXWINCE__
-        (int (__cdecl *)(const void *,const void *))
-#endif
         compfunc);
 
     // put the sorted pointers back into the list
@@ -695,15 +693,9 @@ bool wxStringList::Member(const wxChar *s) const
     return false;
 }
 
-#ifdef __WXWINCE__
-extern "C"
-{
-static int __cdecl
-#else
 extern "C"
 {
 static int LINKAGEMODE
-#endif
 
 wx_comparestrings(const void *arg1, const void *arg2)
 {

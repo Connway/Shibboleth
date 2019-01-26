@@ -230,6 +230,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstylepage.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstyles.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsymboldlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtexttabspage.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextuicustomization.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextxml.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_richtext.h" />
@@ -260,9 +261,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     </ProjectReference>
     <ProjectReference Include="wxCore.vcxproj">
       <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="wxAdv.vcxproj">
-      <Project>{6F53AB10-DB67-D3C1-A4E9-762110BDCFF2}</Project>
     </ProjectReference>
     <ProjectReference Include="wxHTML.vcxproj">
       <Project>{E94E1926-D5F0-43FC-BEAB-5750AAECCA4C}</Project>

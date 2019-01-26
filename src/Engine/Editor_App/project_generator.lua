@@ -32,8 +32,7 @@ project "Editor_App"
 		"zlib-ng",
 		"wxBase",
 		"wxCore",
-		"wxAUI",
-		"wxADV"
+		"wxAUI"
 	}
 
 	IncludeWxWidgets()

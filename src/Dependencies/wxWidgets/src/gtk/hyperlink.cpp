@@ -29,7 +29,6 @@
 #ifndef WX_PRECOMP
 #endif
 
-#include <gtk/gtk.h>
 #include "wx/gtk/private.h"
 
 // ----------------------------------------------------------------------------
@@ -39,11 +38,7 @@
 static inline bool UseNative()
 {
     // native gtk_link_button widget is only available in GTK+ 2.10 and later
-#ifdef __WXGTK3__
-    return true;
-#else
-    return !gtk_check_version(2, 10, 0);
-#endif
+    return wx_is_at_least_gtk2(10);
 }
 
 // ============================================================================
@@ -88,6 +83,22 @@ static void clicked_hook(GtkLinkButton* button, const char*, void*)
 // ----------------------------------------------------------------------------
 // wxHyperlinkCtrl
 // ----------------------------------------------------------------------------
+
+wxHyperlinkCtrl::wxHyperlinkCtrl()
+{
+}
+
+wxHyperlinkCtrl::wxHyperlinkCtrl(wxWindow *parent,
+                                 wxWindowID id,
+                                 const wxString& label,
+                                 const wxString& url,
+                                 const wxPoint& pos,
+                                 const wxSize& size,
+                                 long style,
+                                 const wxString& name)
+{
+    (void)Create(parent, id, label, url, pos, size, style, name);
+}
 
 wxHyperlinkCtrl::~wxHyperlinkCtrl()
 {
@@ -273,9 +284,7 @@ void wxHyperlinkCtrl::SetVisited(bool visited)
 {
     base_type::SetVisited(visited);
 #if GTK_CHECK_VERSION(2,14,0)
-#ifndef __WXGTK3__
-    if (gtk_check_version(2,14,0) == NULL)
-#endif
+    if (wx_is_at_least_gtk2(14))
     {
         gtk_link_button_set_visited(GTK_LINK_BUTTON(m_widget), visited);
     }
@@ -285,9 +294,7 @@ void wxHyperlinkCtrl::SetVisited(bool visited)
 bool wxHyperlinkCtrl::GetVisited() const
 {
 #if GTK_CHECK_VERSION(2,14,0)
-#ifndef __WXGTK3__
-    if (gtk_check_version(2,14,0) == NULL)
-#endif
+    if (wx_is_at_least_gtk2(14))
     {
         return gtk_link_button_get_visited(GTK_LINK_BUTTON(m_widget)) != 0;
     }

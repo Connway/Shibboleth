@@ -38,9 +38,9 @@ public:
 
     virtual ~wxOSXAudioToolboxSoundData();
 
-    virtual bool Play(unsigned flags);
+    virtual bool Play(unsigned flags) wxOVERRIDE;
 
-    virtual void DoStop();
+    virtual void DoStop() wxOVERRIDE;
 protected:
     static void CompletionCallback(SystemSoundID  mySSID, void * soundRef);
     void SoundCompleted();
@@ -94,6 +94,7 @@ void wxOSXAudioToolboxSoundData::DoStop()
     if ( m_playing )
     {
         m_playing = false;
+        AudioServicesRemoveSystemSoundCompletion(m_soundID);
         AudioServicesDisposeSystemSoundID (m_soundID);
 
         wxSound::SoundStopped(this);

@@ -40,6 +40,8 @@
 
 #include "wx/private/markupparser.h"
 
+#include <algorithm>
+
 extern WXDLLEXPORT_DATA(const char) wxStaticTextNameStr[] = "staticText";
 
 // ----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ wxFLAGS_MEMBER(wxALIGN_RIGHT)
 wxFLAGS_MEMBER(wxALIGN_CENTRE)
 wxEND_FLAGS( wxStaticTextStyle )
 
-wxIMPLEMENT_DYNAMIC_CLASS_XTI(wxStaticText, wxControl, "wx/stattext.h")
+wxIMPLEMENT_DYNAMIC_CLASS_XTI(wxStaticText, wxControl, "wx/stattext.h");
 
 wxBEGIN_PROPERTIES_TABLE(wxStaticText)
 wxPROPERTY( Label,wxString, SetLabel, GetLabel, wxString(), 0 /*flags*/, \
@@ -103,52 +105,59 @@ wxCONSTRUCTOR_6( wxStaticText, wxWindow*, Parent, wxWindowID, Id, \
 
 void wxTextWrapper::Wrap(wxWindow *win, const wxString& text, int widthMax)
 {
-    wxString line;
+    const wxClientDC dc(win);
 
-    wxString::const_iterator lastSpace = text.end();
-    wxString::const_iterator lineStart = text.begin();
-    for ( wxString::const_iterator p = lineStart; ; ++p )
+    const wxArrayString ls = wxSplit(text, '\n', '\0');
+    for ( wxArrayString::const_iterator i = ls.begin(); i != ls.end(); ++i )
     {
-        if ( IsStartOfNewLine() )
-        {
-            OnNewLine();
+        wxString line = *i;
 
-            lastSpace = text.end();
-            line.clear();
-            lineStart = p;
+        if ( i != ls.begin() )
+        {
+            // Do this even if the line is empty, except if it's the first one.
+            OnNewLine();
         }
 
-        if ( p == text.end() || *p == wxT('\n') )
+        // Is this a special case when wrapping is disabled?
+        if ( widthMax < 0 )
         {
             DoOutputLine(line);
-
-            if ( p == text.end() )
-                break;
+            continue;
         }
-        else // not EOL
+
+        for ( bool newLine = false; !line.empty(); newLine = true )
         {
-            if ( *p == wxT(' ') )
-                lastSpace = p;
+            if ( newLine )
+                OnNewLine();
 
-            line += *p;
+            wxArrayInt widths;
+            dc.GetPartialTextExtents(line, widths);
 
-            if ( widthMax >= 0 && lastSpace != text.end() )
+            const size_t posEnd = std::lower_bound(widths.begin(),
+                                                   widths.end(),
+                                                   widthMax) - widths.begin();
+
+            // Does the entire remaining line fit?
+            if ( posEnd == line.length() )
             {
-                int width;
-                win->GetTextExtent(line, &width, NULL);
-
-                if ( width > widthMax )
-                {
-                    // remove the last word from this line
-                    line.erase(lastSpace - lineStart, p + 1 - lineStart);
-                    DoOutputLine(line);
-
-                    // go back to the last word of this line which we didn't
-                    // output yet
-                    p = lastSpace;
-                }
+                DoOutputLine(line);
+                break;
             }
-            //else: no wrapping at all or impossible to wrap
+
+            // Find the last word to chop off.
+            const size_t lastSpace = line.rfind(' ', posEnd);
+            if ( lastSpace == wxString::npos )
+            {
+                // No spaces, so can't wrap.
+                DoOutputLine(line);
+                break;
+            }
+
+            // Output the part that fits.
+            DoOutputLine(line.substr(0, lastSpace));
+
+            // And redo the layout with the rest.
+            line = line.substr(lastSpace + 1);
         }
     }
 }
@@ -169,12 +178,12 @@ public:
     }
 
 protected:
-    virtual void OnOutputLine(const wxString& line)
+    virtual void OnOutputLine(const wxString& line) wxOVERRIDE
     {
         m_text += line;
     }
 
-    virtual void OnNewLine()
+    virtual void OnNewLine() wxOVERRIDE
     {
         m_text += wxT('\n');
     }
@@ -192,6 +201,26 @@ void wxStaticTextBase::Wrap(int width)
 {
     wxLabelWrapper wrapper;
     wrapper.WrapLabel(this, width);
+}
+
+void wxStaticTextBase::AutoResizeIfNecessary()
+{
+    // This flag is specifically used to prevent the control from resizing even
+    // when its label changes.
+    if ( HasFlag(wxST_NO_AUTORESIZE) )
+        return;
+
+    // This method is only called if either the label or the font changed, i.e.
+    // if the label extent changed, so the best size is not the same neither
+    // any more.
+    //
+    // Note that we don't invalidate it when wxST_NO_AUTORESIZE is on because
+    // this would result in the control being effectively resized during the
+    // next Layout() and this style is used expressly to prevent this from
+    // happening.
+    InvalidateBestSize();
+
+    SetSize(GetBestSize());
 }
 
 // ----------------------------------------------------------------------------

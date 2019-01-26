@@ -34,7 +34,7 @@
 // wxProtoInfo
 // ----------------------------------------------------------------------------
 
-IMPLEMENT_CLASS(wxProtoInfo, wxObject)
+wxIMPLEMENT_CLASS(wxProtoInfo, wxObject);
 
 wxProtoInfo::wxProtoInfo(const wxChar *name, const wxChar *serv,
                          const bool need_host1, wxClassInfo *info)
@@ -57,17 +57,15 @@ wxProtoInfo::wxProtoInfo(const wxChar *name, const wxChar *serv,
 // ----------------------------------------------------------------------------
 
 #if wxUSE_SOCKETS
-IMPLEMENT_ABSTRACT_CLASS(wxProtocol, wxSocketClient)
+wxIMPLEMENT_ABSTRACT_CLASS(wxProtocol, wxSocketClient);
 #else
-IMPLEMENT_ABSTRACT_CLASS(wxProtocol, wxObject)
+wxIMPLEMENT_ABSTRACT_CLASS(wxProtocol, wxObject);
 #endif
 
 wxProtocol::wxProtocol()
 #if wxUSE_SOCKETS
     // Only use non blocking sockets if we can dispatch events.
-    : wxSocketClient((wxIsMainThread() && wxApp::IsMainLoopRunning()
-                        ? wxSOCKET_NONE
-                        : wxSOCKET_BLOCK) | wxSOCKET_WAITALL)
+    : wxSocketClient(wxSocketClient::GetBlockingFlagIfNeeded() | wxSOCKET_WAITALL)
 #endif
 {
     m_lastError = wxPROTO_NOERR;

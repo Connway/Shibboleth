@@ -20,9 +20,7 @@
     #include "wx/arrstr.h"
 #endif
 
-#include <gtk/gtk.h>
 #include "wx/gtk/private.h"
-#include "wx/gtk/private/gtk2-compat.h"
 
 // ----------------------------------------------------------------------------
 // GTK callbacks
@@ -55,7 +53,19 @@ gtkcombobox_popupshown_callback(GObject *WXUNUSED(gobject),
                                   : wxEVT_COMBOBOX_CLOSEUP,
                           combo->GetId() );
     event.SetEventObject( combo );
-    combo->HandleWindowEvent( event );
+
+#ifndef __WXGTK3__
+    // Process the close up event once the combobox is already closed with GTK+
+    // 2, otherwise changing the combobox from its handler result in errors.
+    if ( !isShown )
+    {
+        combo->GetEventHandler()->AddPendingEvent( event );
+    }
+    else
+#endif // GTK+ < 3
+    {
+        combo->HandleWindowEvent( event );
+    }
 }
 
 }
@@ -64,7 +74,7 @@ gtkcombobox_popupshown_callback(GObject *WXUNUSED(gobject),
 // wxComboBox
 //-----------------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(wxComboBox, wxChoice)
+wxBEGIN_EVENT_TABLE(wxComboBox, wxChoice)
     EVT_CHAR(wxComboBox::OnChar)
 
     EVT_MENU(wxID_CUT, wxComboBox::OnCut)
@@ -82,7 +92,7 @@ BEGIN_EVENT_TABLE(wxComboBox, wxChoice)
     EVT_UPDATE_UI(wxID_REDO, wxComboBox::OnUpdateRedo)
     EVT_UPDATE_UI(wxID_CLEAR, wxComboBox::OnUpdateDelete)
     EVT_UPDATE_UI(wxID_SELECTALL, wxComboBox::OnUpdateSelectAll)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 wxComboBox::~wxComboBox()
 {
@@ -185,9 +195,7 @@ bool wxComboBox::Create( wxWindow *parent, wxWindowID id, const wxString& value,
     g_signal_connect_after (m_widget, "changed",
                         G_CALLBACK (gtkcombobox_changed_callback), this);
 
-#ifndef __WXGTK3__
-    if ( !gtk_check_version(2,10,0) )
-#endif
+    if ( wx_is_at_least_gtk2(10) )
     {
         g_signal_connect (m_widget, "notify::popup-shown",
                           G_CALLBACK (gtkcombobox_popupshown_callback), this);
@@ -285,8 +293,7 @@ GtkWidget* wxComboBox::GetConnectWidget()
 GdkWindow* wxComboBox::GTKGetWindow(wxArrayGdkWindows& /* windows */) const
 {
 #ifdef __WXGTK3__
-    GdkWindow* wxGTKFindWindow(GtkWidget* widget);
-    return wxGTKFindWindow(GTK_WIDGET(GetEntry()));
+    return GTKFindWindow(GTK_WIDGET(GetEntry()));
 #else
     return gtk_entry_get_text_window(GetEntry());
 #endif
@@ -301,6 +308,12 @@ wxComboBox::GetClassDefaultAttributes(wxWindowVariant WXUNUSED(variant))
 #else
     return GetDefaultAttributesFromGTKWidget(gtk_combo_box_entry_new(), true);
 #endif
+}
+
+void wxComboBox::Clear()
+{
+    wxTextEntry::Clear();
+    wxItemContainer::Clear();
 }
 
 void wxComboBox::SetValue(const wxString& value)

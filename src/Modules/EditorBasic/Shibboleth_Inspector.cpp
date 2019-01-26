@@ -36,23 +36,23 @@ THE SOFTWARE.
 #include "Shibboleth_Math.h"
 
 NS_SHIBBOLETH
-//class Test final : public Gaff::IReflectionObject
-//{
-//private:
-//	int32_t t1 = 123;
-//	float t2 = 456.0f;
-//	glm::vec3 t3 = glm::vec3(0.0f, 1.0f, 2.0f);
-//
-//	SHIB_REFLECTION_CLASS_DECLARE(Test);
-//};
-//
-//class TestInner final : public Gaff::IReflectionObject
-//{
-//private:
-//	Test t;
-//
-//	SHIB_REFLECTION_CLASS_DECLARE(TestInner);
-//};
+class Test final : public Gaff::IReflectionObject
+{
+private:
+	int32_t t1 = 123;
+	float t2 = 456.0f;
+	glm::vec3 t3 = glm::vec3(0.0f, 1.0f, 2.0f);
+
+	SHIB_REFLECTION_CLASS_DECLARE(Test);
+};
+
+class TestInner final : public Gaff::IReflectionObject
+{
+private:
+	Test t;
+
+	SHIB_REFLECTION_CLASS_DECLARE(TestInner);
+};
 
 //class TestOuter final : public Gaff::IReflectionObject
 //{
@@ -63,32 +63,32 @@ NS_SHIBBOLETH
 //};
 NS_END
 
-//SHIB_REFLECTION_DECLARE(Test)
-//SHIB_REFLECTION_DEFINE(Test)
+SHIB_REFLECTION_DECLARE(Test)
+SHIB_REFLECTION_DEFINE(Test)
 
 //SHIB_REFLECTION_DECLARE(TestOuter)
 //SHIB_REFLECTION_DEFINE(TestOuter)
 
-//SHIB_REFLECTION_DECLARE(TestInner)
-//SHIB_REFLECTION_DEFINE(TestInner)
+SHIB_REFLECTION_DECLARE(TestInner)
+SHIB_REFLECTION_DEFINE(TestInner)
 
 NS_SHIBBOLETH
-//SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Test)
-//	.BASE(Gaff::IReflectionObject)
-//	.var("IntProp", &Test::t1)
-//	.var("FloatProp", &Test::t2)
-//	.var("Vec3Prop", &Test::t3)
-//SHIB_REFLECTION_CLASS_DEFINE_END(Test)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Test)
+	.BASE(Gaff::IReflectionObject)
+	.var("IntProp", &Test::t1)
+	.var("FloatProp", &Test::t2)
+	.var("Vec3Prop", &Test::t3)
+SHIB_REFLECTION_CLASS_DEFINE_END(Test)
 
 //SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestOuter)
 //	.BASE(Gaff::IReflectionObject)
 //	.var("InnerClass", &TestOuter::t)
 //SHIB_REFLECTION_CLASS_DEFINE_END(TestOuter)
 
-//SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestInner)
-//	.BASE(Gaff::IReflectionObject)
-//	.var("InnerClassAgain", &TestInner::t)
-//SHIB_REFLECTION_CLASS_DEFINE_END(TestInner)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestInner)
+	.BASE(Gaff::IReflectionObject)
+	.var("InnerClassAgain", &TestInner::t)
+SHIB_REFLECTION_CLASS_DEFINE_END(TestInner)
 NS_END
 
 
@@ -101,13 +101,10 @@ static wxCollapsiblePane* CreateCollapsiblePane(wxWindow* parent, const wxString
 	return new wxCollapsiblePane(
 		parent,
 		wxID_ANY,
-		wxEmptyString,
+		label,
 		wxDefaultPosition,
 		wxDefaultSize,
-		wxCP_DEFAULT_STYLE | wxCP_NO_TLW_RESIZE,
-		wxDefaultValidator,
-		wxCollapsiblePaneNameStr,
-		label
+		wxCP_DEFAULT_STYLE | wxCP_NO_TLW_RESIZE
 	);
 }
 
@@ -170,7 +167,7 @@ Inspector::Inspector(
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);
 
-	//onItemSelected(EditorItemSelectedMessage(new TestInner));
+	onItemSelected(EditorItemSelectedMessage(new TestInner));
 }
 
 Inspector::~Inspector(void)
@@ -271,14 +268,14 @@ void Inspector::createEditors(void* object, const Gaff::IReflectionDefinition& r
 			coll_sizer->SetSizeHints(window);
 			window->SetSizer(coll_sizer);
 
-			sizer->Add(coll_pane, 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+			sizer->Add(coll_pane, 1, wxEXPAND);
 
 			Bind(wxEVT_COLLAPSIBLEPANE_CHANGED, &Inspector::paneChanged, this, coll_pane->GetId());
 
 			createEditors(var_obj, var_ref_def, coll_sizer, 15);
 		}
 
-		parent_sizer->Add(sizer, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
+		parent_sizer->Add(sizer, 0, /*wxEXPAND |*/ wxALL, 5);
 	}
 }
 

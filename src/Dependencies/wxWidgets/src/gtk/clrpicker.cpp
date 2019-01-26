@@ -20,7 +20,7 @@
 
 #include "wx/clrpicker.h"
 
-#include <gtk/gtk.h>
+#include "wx/gtk/private/wrapgtk.h"
 
 // ============================================================================
 // implementation
@@ -36,9 +36,14 @@ static void gtk_clrbutton_setcolor_callback(GtkColorButton *widget,
 {
     // update the m_colour member of the wxColourButton
     wxASSERT(p);
-#ifdef __WXGTK3__
+#ifdef __WXGTK4__
+    GdkRGBA gdkColor;
+    gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(widget), &gdkColor);
+#elif defined(__WXGTK3__)
+    wxGCC_WARNING_SUPPRESS(deprecated-declarations)
     GdkRGBA gdkColor;
     gtk_color_button_get_rgba(widget, &gdkColor);
+    wxGCC_WARNING_RESTORE()
 #else
     GdkColor gdkColor;
     gtk_color_button_get_color(widget, &gdkColor);
@@ -55,7 +60,7 @@ static void gtk_clrbutton_setcolor_callback(GtkColorButton *widget,
 // wxColourButton
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_DYNAMIC_CLASS(wxColourButton, wxButton)
+wxIMPLEMENT_DYNAMIC_CLASS(wxColourButton, wxButton);
 
 bool wxColourButton::Create( wxWindow *parent, wxWindowID id,
                         const wxColour &col,
@@ -78,6 +83,9 @@ bool wxColourButton::Create( wxWindow *parent, wxWindowID id,
 #endif
     g_object_ref(m_widget);
 
+    // Display opacity slider
+    g_object_set(G_OBJECT(m_widget), "use-alpha",
+                 static_cast<bool>(style & wxCLRP_SHOW_ALPHA), NULL);
     // GtkColourButton signals
     g_signal_connect(m_widget, "color-set",
                     G_CALLBACK(gtk_clrbutton_setcolor_callback), this);
@@ -97,8 +105,12 @@ wxColourButton::~wxColourButton()
 
 void wxColourButton::UpdateColour()
 {
-#ifdef __WXGTK3__
+#ifdef __WXGTK4__
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(m_widget), m_colour);
+#elif defined(__WXGTK3__)
+    wxGCC_WARNING_SUPPRESS(deprecated-declarations)
     gtk_color_button_set_rgba(GTK_COLOR_BUTTON(m_widget), m_colour);
+    wxGCC_WARNING_RESTORE()
 #else
     gtk_color_button_set_color(GTK_COLOR_BUTTON(m_widget), m_colour.GetColor());
 #endif

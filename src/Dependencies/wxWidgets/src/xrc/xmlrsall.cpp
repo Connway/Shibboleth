@@ -34,6 +34,9 @@ void wxXmlResource::InitAllHandlers()
     // these are configurable handlers
     //
     // please keep them in alphabetical order of wxUSE_XXX guards
+#if wxUSE_ACTIVITYINDICATOR
+    AddHandler(new wxActivityIndicatorXmlHandler);
+#endif
 #if wxUSE_ANIMATIONCTRL
     AddHandler(new wxAnimationCtrlXmlHandler);
 #endif
@@ -162,6 +165,7 @@ void wxXmlResource::InitAllHandlers()
 #endif
 #if wxUSE_SPINCTRL
     AddHandler(new wxSpinCtrlXmlHandler);
+    AddHandler(new wxSpinCtrlDoubleXmlHandler);
 #endif
 #if wxUSE_SPLITTER
     AddHandler(new wxSplitterWindowXmlHandler);

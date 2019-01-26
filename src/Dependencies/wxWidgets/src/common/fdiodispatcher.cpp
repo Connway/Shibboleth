@@ -33,6 +33,7 @@
     #include "wx/unix/private/epolldispatcher.h"
 #endif
 
+static
 wxFDIODispatcher *gs_dispatcher = NULL;
 
 // ============================================================================
@@ -135,11 +136,11 @@ bool wxMappedFDIODispatcher::UnregisterFD(int fd)
 class wxFDIODispatcherModule : public wxModule
 {
 public:
-    virtual bool OnInit() { return true; }
-    virtual void OnExit() { wxDELETE(gs_dispatcher); }
+    virtual bool OnInit() wxOVERRIDE { return true; }
+    virtual void OnExit() wxOVERRIDE { wxDELETE(gs_dispatcher); }
 
 private:
-    DECLARE_DYNAMIC_CLASS(wxFDIODispatcherModule)
+    wxDECLARE_DYNAMIC_CLASS(wxFDIODispatcherModule);
 };
 
-IMPLEMENT_DYNAMIC_CLASS(wxFDIODispatcherModule, wxModule)
+wxIMPLEMENT_DYNAMIC_CLASS(wxFDIODispatcherModule, wxModule);

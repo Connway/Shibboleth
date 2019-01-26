@@ -348,8 +348,10 @@ void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 		ProxyAllocator allocator("Editor");
 
 		for (const IECSVarAttribute* attr : var_attrs) {
-			void* const instance = attr->getType().create(allocator);
+			const size_t size = static_cast<size_t>(attr->getType().getReflectionInstance().size());
+			void* const instance = SHIB_ALLOC(size, allocator);
 			instances.emplace_back(instance);
+			memset(instance, 0, size);
 		}
 	}
 
@@ -365,20 +367,6 @@ void ArchetypeEditor::initComponentList(void)
 	const wxTreeItemId root = _ecs_components->GetRootItem();
 
 	for (const Gaff::IReflectionDefinition* ref_def : comp_ref_defs) {
-		const auto var_attrs = ref_def->getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
-		bool invalid_var = false;
-
-		for (const IECSVarAttribute* attr : var_attrs) {
-			if (!attr->getType().getFactory()) {
-				// $TODO: Log error.
-				invalid_var = true;
-			}
-		}
-
-		if (invalid_var) {
-			continue;
-		}
-
 		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
 		wxTreeItemId category_id = root;
 

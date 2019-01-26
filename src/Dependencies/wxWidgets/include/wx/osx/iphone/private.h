@@ -24,6 +24,8 @@
 
 #if wxUSE_GUI
 
+typedef CGRect WXRect;
+
 OSStatus WXDLLIMPEXP_CORE wxMacDrawCGImage(
                                CGContextRef    inContext,
                                const CGRect *  inBounds,
@@ -103,6 +105,7 @@ public :
     void                SetFont( const wxFont & font , const wxColour& foreground , long windowStyle, bool ignoreBlack = true );
 
     void                InstallEventHandler( WXWidget control = NULL );
+    bool                EnableTouchEvents(int WXUNUSED(eventsMask)) { return false; }
 
     virtual void        DoNotifyFocusEvent(bool receivedFocus, wxWidgetImpl* otherWindow);
 
@@ -119,7 +122,7 @@ public :
     virtual void         controlTextDidChange();
 protected:
     WXWidget m_osxView;
-    DECLARE_DYNAMIC_CLASS_NO_COPY(wxWidgetIPhoneImpl)
+    wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxWidgetIPhoneImpl);
 };
 
 class wxNonOwnedWindowIPhoneImpl : public wxNonOwnedWindowImpl
@@ -157,6 +160,11 @@ public :
 
     virtual void SetTitle( const wxString& title, wxFontEncoding encoding ) ;
 
+    // Title bar buttons don't exist in iOS.
+    virtual bool EnableCloseButton(bool WXUNUSED(enable)) { return false; }
+    virtual bool EnableMaximizeButton(bool WXUNUSED(enable)) { return false; }
+    virtual bool EnableMinimizeButton(bool WXUNUSED(enable)) { return false; }
+
     virtual bool IsMaximized() const;
 
     virtual bool IsIconized() const;
@@ -167,6 +175,8 @@ public :
 
     virtual bool IsFullScreen() const;
 
+    virtual bool EnableFullScreenView(bool enable);
+    
     virtual bool ShowFullScreen(bool show, long style);
 
     virtual void RequestUserAttention(int flags);
@@ -185,7 +195,7 @@ protected :
     WX_UIWindow          m_macWindow;
     void *              m_macFullScreenData ;
     bool                m_initialShowSent;
-    DECLARE_DYNAMIC_CLASS_NO_COPY(wxNonOwnedWindowIPhoneImpl)
+    wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxNonOwnedWindowIPhoneImpl);
 };
 
 #ifdef __OBJC__

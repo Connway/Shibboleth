@@ -81,7 +81,7 @@ wxWidgetsProject("wxCore", "SharedLib")
 	links(core_deps)
 
 	filter { "system:windows" }
-		links { "Comctl32", "Rpcrt4" }
+		links { "Comctl32", "Rpcrt4", "Winmm" }
 
 	filter {}
 
@@ -95,15 +95,15 @@ wxWidgetsProject("wxXML", "SharedLib")
 	links(xml_deps)
 
 
-wxWidgetsProject("wxAdv", "SharedLib")
-	local adv_deps = { "wxBase", "wxCore" }
-	dependson(adv_deps)
-	links(adv_deps)
+-- wxWidgetsProject("wxAdv", "SharedLib")
+-- 	local adv_deps = { "wxBase", "wxCore" }
+-- 	dependson(adv_deps)
+-- 	links(adv_deps)
 
-	filter { "system:windows" }
-		links { "Winmm" }
+-- 	filter { "system:windows" }
+-- 		links { "Winmm" }
 
-	filter {}
+-- 	filter {}
 
 wxWidgetsProject("wxAui", "SharedLib")
 	local aui_deps = { "wxBase", "wxCore" }
@@ -124,7 +124,7 @@ wxWidgetsProject("wxMedia", "SharedLib")
 -- wxWidgetsProject("wxNet", "SharedLib")
 
 wxWidgetsProject("wxPropGrid", "SharedLib")
-	local propgrid_deps = { "wxBase", "wxCore", "wxAdv" }
+	local propgrid_deps = { "wxBase", "wxCore" }
 	dependson(propgrid_deps)
 	links(propgrid_deps)
 
@@ -141,7 +141,7 @@ wxWidgetsProject("wxRibbon", "SharedLib")
 	links(ribbon_deps)
 
 wxWidgetsProject("wxRichText", "SharedLib")
-	local richtext_deps = { "wxBase", "wxCore", "wxAdv", "wxHTML", "wxXML", "wxXRC" }
+	local richtext_deps = { "wxBase", "wxCore", "wxHTML", "wxXML", "wxXRC" }
 	dependson(richtext_deps)
 	links(richtext_deps)
 
@@ -151,7 +151,7 @@ wxWidgetsProject("wxWebview", "SharedLib")
 	links(webview_deps)
 
 wxWidgetsProject("wxXRC", "SharedLib")
-	local xrc_deps = { "wxBase", "wxCore", "wxAdv", "wxHTML", "wxXML" }
+	local xrc_deps = { "wxBase", "wxCore", "wxHTML", "wxXML" }
 	dependson(xrc_deps)
 	links(xrc_deps)
 

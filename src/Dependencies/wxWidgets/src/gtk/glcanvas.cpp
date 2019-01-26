@@ -15,9 +15,8 @@
 
 #include "wx/glcanvas.h"
 
-#include <gtk/gtk.h>
+#include "wx/gtk/private/wrapgtk.h"
 #include <gdk/gdkx.h>
-#include "wx/gtk/private/gtk2-compat.h"
 
 #if WXWIN_COMPATIBILITY_2_8
 
@@ -140,7 +139,22 @@ parent_set_hook(GSignalInvocationHint*, guint, const GValue* param_values, void*
 // wxGlCanvas
 //---------------------------------------------------------------------------
 
-IMPLEMENT_CLASS(wxGLCanvas, wxWindow)
+wxIMPLEMENT_CLASS(wxGLCanvas, wxWindow);
+
+wxGLCanvas::wxGLCanvas(wxWindow *parent,
+                       const wxGLAttributes& dispAttrs,
+                       wxWindowID id,
+                       const wxPoint& pos,
+                       const wxSize& size,
+                       long style,
+                       const wxString& name,
+                       const wxPalette& palette)
+#if WXWIN_COMPATIBILITY_2_8
+    : m_createImplicitContext(false)
+#endif
+{
+    Create(parent, dispAttrs, id, pos, size, style, name, palette);
+}
 
 wxGLCanvas::wxGLCanvas(wxWindow *parent,
                        wxWindowID id,
@@ -208,6 +222,19 @@ wxGLCanvas::wxGLCanvas(wxWindow *parent,
 
 #endif // WXWIN_COMPATIBILITY_2_8
 
+static bool IsAvailable()
+{
+#ifdef GDK_WINDOWING_X11
+    if ( !GDK_IS_X11_DISPLAY(gdk_display_get_default()) )
+#endif
+    {
+        wxSafeShowMessage(_("Fatal Error"), _("wxGLCanvas is only supported on X11 currently.  You may be able to\nwork around this by setting environment variable GDK_BACKEND=x11 before starting\nyour program."));
+        return false;
+    }
+
+    return true;
+}
+
 bool wxGLCanvas::Create(wxWindow *parent,
                         wxWindowID id,
                         const wxPoint& pos,
@@ -217,6 +244,30 @@ bool wxGLCanvas::Create(wxWindow *parent,
                         const int *attribList,
                         const wxPalette& palette)
 {
+    if ( !IsAvailable() )
+        return false;
+
+    // Separate 'GLXFBConfig/XVisual' attributes.
+    // Also store context attributes for wxGLContext ctor
+    wxGLAttributes dispAttrs;
+    if ( ! ParseAttribList(attribList, dispAttrs, &m_GLCTXAttrs) )
+        return false;
+
+    return Create(parent, dispAttrs, id, pos, size, style, name, palette);
+}
+
+bool wxGLCanvas::Create(wxWindow *parent,
+                        const wxGLAttributes& dispAttrs,
+                        wxWindowID id,
+                        const wxPoint& pos,
+                        const wxSize& size,
+                        long style,
+                        const wxString& name,
+                        const wxPalette& palette)
+{
+    if ( !IsAvailable() )
+        return false;
+
 #if wxUSE_PALETTE
     wxASSERT_MSG( !palette.IsOk(), wxT("palettes not supported") );
 #endif // wxUSE_PALETTE
@@ -230,7 +281,7 @@ bool wxGLCanvas::Create(wxWindow *parent,
     m_backgroundStyle = wxBG_STYLE_PAINT;
 #endif
 
-    if ( !InitVisual(attribList) )
+    if ( !InitVisual(dispAttrs) )
         return false;
 
     // watch for the "parent-set" signal on m_wxwindow so we can set colormap

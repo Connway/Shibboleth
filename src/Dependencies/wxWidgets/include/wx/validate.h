@@ -62,9 +62,12 @@ public:
     // Called to transfer data from the window
     virtual bool TransferFromWindow() { return false; }
 
+    // Called when the validator is associated with a window, may be useful to
+    // override if it needs to somehow initialize the window.
+    virtual void SetWindow(wxWindow *win) { m_validatorWindow = win; }
+
     // accessors
-    wxWindow *GetWindow() const { return (wxWindow *)m_validatorWindow; }
-    void SetWindow(wxWindowBase *win) { m_validatorWindow = win; }
+    wxWindow *GetWindow() const { return m_validatorWindow; }
 
     // validators beep by default if invalid key is pressed, this function
     // allows to change this
@@ -85,12 +88,12 @@ public:
 #endif
 
 protected:
-    wxWindowBase *m_validatorWindow;
+    wxWindow *m_validatorWindow;
 
 private:
     static bool ms_isSilent;
 
-    DECLARE_DYNAMIC_CLASS(wxValidator)
+    wxDECLARE_DYNAMIC_CLASS(wxValidator);
     wxDECLARE_NO_ASSIGN_CLASS(wxValidator);
 };
 

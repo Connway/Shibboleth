@@ -30,6 +30,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\forcelnk.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpctrl.h">
       <Filter>include\wx\html</Filter>
     </ClInclude>
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\htmllbox.cpp">
       <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\chm.cpp">
+      <Filter>src\html</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\helpctrl.cpp">
       <Filter>src\html</Filter>

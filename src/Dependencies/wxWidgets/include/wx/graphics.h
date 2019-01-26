@@ -15,10 +15,13 @@
 
 #if wxUSE_GRAPHICS_CONTEXT
 
+#include "wx/affinematrix2d.h"
 #include "wx/geometry.h"
+#include "wx/colour.h"
 #include "wx/dynarray.h"
-#include "wx/dc.h"
+#include "wx/font.h"
 #include "wx/image.h"
+#include "wx/peninfobase.h"
 #include "wx/vector.h"
 
 enum wxAntialiasMode
@@ -68,6 +71,7 @@ enum wxCompositionMode
     wxCOMPOSITION_ADD /* R = S + D */
 };
 
+class WXDLLIMPEXP_FWD_CORE wxDC;
 class WXDLLIMPEXP_FWD_CORE wxWindowDC;
 class WXDLLIMPEXP_FWD_CORE wxMemoryDC;
 #if wxUSE_PRINTING_ARCHITECTURE
@@ -123,10 +127,38 @@ public:
     wxGraphicsRenderer* GetRenderer() const;
     wxGraphicsObjectRefData* GetGraphicsData() const;
 protected:
-    virtual wxObjectRefData* CreateRefData() const;
-    virtual wxObjectRefData* CloneRefData(const wxObjectRefData* data) const;
+    virtual wxObjectRefData* CreateRefData() const wxOVERRIDE;
+    virtual wxObjectRefData* CloneRefData(const wxObjectRefData* data) const wxOVERRIDE;
 
-    DECLARE_DYNAMIC_CLASS(wxGraphicsObject)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsObject);
+};
+
+// ----------------------------------------------------------------------------
+// wxGraphicsPenInfo describes a wxGraphicsPen
+// ----------------------------------------------------------------------------
+
+class wxGraphicsPenInfo : public wxPenInfoBase<wxGraphicsPenInfo>
+{
+public:
+    explicit wxGraphicsPenInfo(const wxColour& colour = wxColour(),
+                               wxDouble width = 1.0,
+                               wxPenStyle style = wxPENSTYLE_SOLID)
+        : wxPenInfoBase<wxGraphicsPenInfo>(colour, style)
+    {
+        m_width = width;
+    }
+
+    // Setters
+
+    wxGraphicsPenInfo& Width(wxDouble width)
+        { m_width = width; return *this; }
+
+    // Accessors
+
+    wxDouble GetWidth() const { return m_width; }
+
+private:
+    wxDouble m_width;
 };
 
 class WXDLLIMPEXP_CORE wxGraphicsPen : public wxGraphicsObject
@@ -135,7 +167,7 @@ public:
     wxGraphicsPen() {}
     virtual ~wxGraphicsPen() {}
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsPen)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsPen);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsPen) wxNullGraphicsPen;
@@ -146,7 +178,7 @@ public:
     wxGraphicsBrush() {}
     virtual ~wxGraphicsBrush() {}
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsBrush)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsBrush);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsBrush) wxNullGraphicsBrush;
@@ -157,7 +189,7 @@ public:
     wxGraphicsFont() {}
     virtual ~wxGraphicsFont() {}
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsFont)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsFont);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsFont) wxNullGraphicsFont;
@@ -183,7 +215,7 @@ public:
     { return (wxGraphicsBitmapData*) GetRefData(); }
 
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsBitmap)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsBitmap);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsBitmap) wxNullGraphicsBitmap;
@@ -249,7 +281,7 @@ public:
     { return (wxGraphicsMatrixData*) GetRefData(); }
 
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsMatrix)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsMatrix);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsMatrix) wxNullGraphicsMatrix;
@@ -335,7 +367,7 @@ public:
     { return (wxGraphicsPathData*) GetRefData(); }
 
 private:
-    DECLARE_DYNAMIC_CLASS(wxGraphicsPath)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsPath);
 };
 
 extern WXDLLIMPEXP_DATA_CORE(wxGraphicsPath) wxNullGraphicsPath;
@@ -420,7 +452,7 @@ private:
 class WXDLLIMPEXP_CORE wxGraphicsContext : public wxGraphicsObject
 {
 public:
-    wxGraphicsContext(wxGraphicsRenderer* renderer);
+    wxGraphicsContext(wxGraphicsRenderer* renderer, wxWindow* window = NULL);
 
     virtual ~wxGraphicsContext();
 
@@ -435,9 +467,16 @@ public:
 #endif
 #endif
 
+    // Create a context from a DC of unknown type, if supported, returns NULL otherwise
+    static wxGraphicsContext* CreateFromUnknownDC(const wxDC& dc);
+
     static wxGraphicsContext* CreateFromNative( void * context );
 
     static wxGraphicsContext* CreateFromNativeWindow( void * window );
+
+#ifdef __WXMSW__
+    static wxGraphicsContext* CreateFromNativeHDC(WXHDC dc);
+#endif
 
     static wxGraphicsContext* Create( wxWindow* window );
 
@@ -450,6 +489,9 @@ public:
 
     // create a context that can be used for measuring texts only, no drawing allowed
     static wxGraphicsContext * Create();
+
+    // Return the window this context is associated with, if any.
+    wxWindow* GetWindow() const { return m_window; }
 
     // begin a new document (relevant only for printing / pdf etc) if there is a progress dialog, message will be shown
     virtual bool StartDoc( const wxString& message );
@@ -469,7 +511,10 @@ public:
 
     wxGraphicsPath CreatePath() const;
 
-    virtual wxGraphicsPen CreatePen(const wxPen& pen) const;
+    wxGraphicsPen CreatePen(const wxPen& pen) const;
+
+    wxGraphicsPen CreatePen(const wxGraphicsPenInfo& info) const
+        { return DoCreatePen(info); }
 
     virtual wxGraphicsBrush CreateBrush(const wxBrush& brush ) const;
 
@@ -541,6 +586,9 @@ public:
 
     // resets the clipping to original extent
     virtual void ResetClip() = 0;
+
+    // returns bounding box of the clipping region
+    virtual void GetClipBox(wxDouble* x, wxDouble* y, wxDouble* w, wxDouble* h) = 0;
 
     // returns the native context
     virtual void * GetNativeContext() = 0;
@@ -640,6 +688,9 @@ public:
     // draws a path by first filling and then stroking
     virtual void DrawPath( const wxGraphicsPath& path, wxPolygonFillMode fillStyle = wxODDEVEN_RULE );
 
+    // paints a transparent rectangle (only useful for bitmaps or windows)
+    virtual void ClearRectangle(wxDouble x, wxDouble y, wxDouble w, wxDouble h);
+
     //
     // text
     //
@@ -728,6 +779,8 @@ protected:
     // implementations of overloaded public functions: we use different names
     // for them to avoid the virtual function hiding problems in the derived
     // classes
+    virtual wxGraphicsPen DoCreatePen(const wxGraphicsPenInfo& info) const;
+
     virtual void DoDrawText(const wxString& str, wxDouble x, wxDouble y) = 0;
     virtual void DoDrawRotatedText(const wxString& str, wxDouble x, wxDouble y,
                                    wxDouble angle);
@@ -738,8 +791,14 @@ protected:
                                          wxDouble angle,
                                          const wxGraphicsBrush& backgroundBrush);
 
+private:
+    // The associated window, if any, i.e. if one was passed directly to
+    // Create() or the associated window of the wxDC this context was created
+    // from.
+    wxWindow* const m_window;
+
     wxDECLARE_NO_COPY_CLASS(wxGraphicsContext);
-    DECLARE_ABSTRACT_CLASS(wxGraphicsContext)
+    wxDECLARE_ABSTRACT_CLASS(wxGraphicsContext);
 };
 
 #if 0
@@ -772,7 +831,7 @@ private:
     wxGraphicsMatrix* m_matrix;
     wxGraphicsPath* m_path;
 
-    DECLARE_DYNAMIC_CLASS(wxGraphicsFigure)
+    wxDECLARE_DYNAMIC_CLASS(wxGraphicsFigure);
 };
 
 #endif
@@ -793,6 +852,17 @@ public:
     static wxGraphicsRenderer* GetDefaultRenderer();
 
     static wxGraphicsRenderer* GetCairoRenderer();
+
+#ifdef __WXMSW__
+#if wxUSE_GRAPHICS_GDIPLUS
+    static wxGraphicsRenderer* GetGDIPlusRenderer();
+#endif
+
+#if wxUSE_GRAPHICS_DIRECT2D
+    static wxGraphicsRenderer* GetDirect2DRenderer();
+#endif
+#endif
+
     // Context
 
     virtual wxGraphicsContext * CreateContext( const wxWindowDC& dc) = 0;
@@ -809,6 +879,10 @@ public:
     virtual wxGraphicsContext * CreateContextFromNativeContext( void * context ) = 0;
 
     virtual wxGraphicsContext * CreateContextFromNativeWindow( void * window ) = 0;
+
+#ifdef __WXMSW__
+    virtual wxGraphicsContext * CreateContextFromNativeHDC(WXHDC dc) = 0;
+#endif
 
     virtual wxGraphicsContext * CreateContext( wxWindow* window ) = 0;
 
@@ -830,7 +904,7 @@ public:
 
     // Paints
 
-    virtual wxGraphicsPen CreatePen(const wxPen& pen) = 0;
+    virtual wxGraphicsPen CreatePen(const wxGraphicsPenInfo& info) = 0;
 
     virtual wxGraphicsBrush CreateBrush(const wxBrush& brush ) = 0;
 
@@ -868,9 +942,13 @@ public:
     // create a subimage from a native image representation
     virtual wxGraphicsBitmap CreateSubBitmap( const wxGraphicsBitmap &bitmap, wxDouble x, wxDouble y, wxDouble w, wxDouble h  ) = 0;
 
+    virtual wxString GetName() const = 0;
+    virtual void
+    GetVersion(int* major, int* minor = NULL, int* micro = NULL) const = 0;
+
 private:
     wxDECLARE_NO_COPY_CLASS(wxGraphicsRenderer);
-    DECLARE_ABSTRACT_CLASS(wxGraphicsRenderer)
+    wxDECLARE_ABSTRACT_CLASS(wxGraphicsRenderer);
 };
 
 

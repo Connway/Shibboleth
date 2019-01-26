@@ -211,6 +211,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\forcelnk.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpctrl.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdata.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdlg.h" />
@@ -234,6 +235,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\htmllbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\chm.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\helpctrl.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\helpdata.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\html\helpdlg.cpp" />

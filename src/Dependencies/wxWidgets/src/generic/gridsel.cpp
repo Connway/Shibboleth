@@ -144,14 +144,15 @@ void wxGridSelection::SetSelectionMode( wxGrid::wxGridSelectionModes selmode )
         }
 
         // Note that m_blockSelectionTopLeft's size may be changing!
-        for (n = 0; n < m_blockSelectionTopLeft.GetCount(); n++)
+        for ( n = m_blockSelectionTopLeft.GetCount(); n > 0; )
         {
+            n--;
             wxGridCellCoords& coords = m_blockSelectionTopLeft[n];
             int topRow = coords.GetRow();
             int leftCol = coords.GetCol();
-            coords = m_blockSelectionBottomRight[n];
-            int bottomRow = coords.GetRow();
-            int rightCol = coords.GetCol();
+            wxGridCellCoords& coords2 = m_blockSelectionBottomRight[n];
+            int bottomRow = coords2.GetRow();
+            int rightCol = coords2.GetCol();
 
             if (selmode == wxGrid::wxGridSelectRows)
             {
@@ -379,7 +380,7 @@ void wxGridSelection::SelectBlock( int topRow, int leftCol,
     {
         default:
             wxFAIL_MSG( "unknown selection mode" );
-            // fall through
+            wxFALLTHROUGH;
 
         case wxGrid::wxGridSelectCells:
             // nothing to do -- in this mode arbitrary blocks can be selected

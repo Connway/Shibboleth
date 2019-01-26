@@ -25,6 +25,14 @@
     #include "wx/msw/wrapwin.h"
 #endif
 
+#if defined(__WXQT__)
+    #include <QtGui/QFont>
+#endif
+
+#if defined(__WXOSX__)
+#include "wx/osx/core/cfref.h"
+#endif
+
 class WXDLLIMPEXP_FWD_BASE wxArrayString;
 struct WXDLLIMPEXP_FWD_CORE wxNativeEncodingInfo;
 
@@ -110,26 +118,18 @@ public:
     // set the XFLD
     void SetXFontName(const wxString& xFontName);
 #elif defined(__WXMSW__)
-    wxNativeFontInfo(const LOGFONT& lf_) : lf(lf_) { }
+    wxNativeFontInfo(const LOGFONT& lf_) : lf(lf_), pointSize(0.0f) { }
 
     LOGFONT      lf;
-#elif defined(__WXPM__)
-    // OS/2 native structures that define a font
-    FATTRS       fa;
-    FONTMETRICS  fm;
-    FACENAMEDESC fn;
+
+    // MSW only has limited support for fractional point sizes and we need to
+    // store the fractional point size separately if it was initially specified
+    // as we can't losslessly recover it from LOGFONT later.
+    float        pointSize;
 #elif defined(__WXOSX__)
 public:
     wxNativeFontInfo(const wxNativeFontInfo& info) { Init(info); }
-    wxNativeFontInfo( int size,
-                  wxFontFamily family,
-                  wxFontStyle style,
-                  wxFontWeight weight,
-                  bool underlined,
-                  const wxString& faceName,
-                  wxFontEncoding encoding)
-    { Init(size,family,style,weight,underlined,faceName,encoding); }
-
+ 
     ~wxNativeFontInfo() { Free(); }
 
     wxNativeFontInfo& operator=(const wxNativeFontInfo& info)
@@ -142,45 +142,47 @@ public:
         return *this;
     }
 
-    void Init(CTFontDescriptorRef descr);
+    void InitFromFont(CTFontRef font);
+    void InitFromFontDescriptor(CTFontDescriptorRef font);
     void Init(const wxNativeFontInfo& info);
-    void Init(int size,
-                  wxFontFamily family,
-                  wxFontStyle style,
-                  wxFontWeight weight,
-                  bool underlined,
-                  const wxString& faceName ,
-                  wxFontEncoding encoding);
 
     void Free();
-    void EnsureValid();
+    
+    wxString GetFamilyName() const;
+    wxString GetStyleName() const;
 
     static void UpdateNamesMap(const wxString& familyname, CTFontDescriptorRef descr);
     static void UpdateNamesMap(const wxString& familyname, CTFontRef font);
 
-    bool m_descriptorValid;
-
-#if wxOSX_USE_ATSU_TEXT
-    bool            m_atsuFontValid;
-    // the atsu font ID
-    wxUint32        m_atsuFontID;
-    // the qd styles that are not intrinsic to the font above
-    wxInt16         m_atsuAdditionalQDStyles;
-#if wxOSX_USE_CARBON
-    wxInt16         m_qdFontFamily;
-    wxInt16         m_qdFontStyle;
-#endif
-#endif
-
-    int           m_pointSize;
-    wxFontFamily  m_family;
+    static CGFloat GetCTWeight( CTFontRef font );
+    static CGFloat GetCTWeight( CTFontDescriptorRef font );
+    static CGFloat GetCTSlant( CTFontDescriptorRef font );
+    
+    
+    CTFontDescriptorRef GetCTFontDescriptor() const;
+private:
+    // attributes for regenerating a CTFontDescriptor, stay close to native values
+    // for better roundtrip fidelity
+    CGFloat       m_ctWeight;
     wxFontStyle   m_style;
-    wxFontWeight  m_weight;
+    CGFloat       m_ctSize;
+    wxFontFamily  m_family;
+    
+    wxString      m_styleName;
+    wxString      m_familyName;
+
+    // native font description
+    wxCFRef<CTFontDescriptorRef> m_descriptor;
+    void          CreateCTFontDescriptor();
+
+    // these attributes are not part of a CTFont
     bool          m_underlined;
     bool          m_strikethrough;
-    wxString      m_faceName;
     wxFontEncoding m_encoding;
+
 public :
+#elif defined(__WXQT__)
+    QFont m_qtFont;
 #else // other platforms
     //
     //  This is a generic implementation that should work on all ports
@@ -188,10 +190,10 @@ public :
     //
     #define wxNO_NATIVE_FONTINFO
 
-    int           pointSize;
+    float         pointSize;
     wxFontFamily  family;
     wxFontStyle   style;
-    wxFontWeight  weight;
+    int           weight;
     bool          underlined;
     bool          strikethrough;
     wxString      faceName;
@@ -227,21 +229,21 @@ public:
     // init with the parameters of the given font
     void InitFromFont(const wxFont& font)
     {
-#if wxUSE_PANGO
+#if wxUSE_PANGO || defined(__WXOSX__)
         Init(*font.GetNativeFontInfo());
 #else
         // translate all font parameters
         SetStyle((wxFontStyle)font.GetStyle());
-        SetWeight((wxFontWeight)font.GetWeight());
+        SetNumericWeight(font.GetNumericWeight());
         SetUnderlined(font.GetUnderlined());
         SetStrikethrough(font.GetStrikethrough());
 #if defined(__WXMSW__)
         if ( font.IsUsingSizeInPixels() )
             SetPixelSize(font.GetPixelSize());
         else
-            SetPointSize(font.GetPointSize());
+            SetFractionalPointSize(font.GetFractionalPointSize());
 #else
-        SetPointSize(font.GetPointSize());
+        SetFractionalPointSize(font.GetFractionalPointSize());
 #endif
 
         // set the family/facename
@@ -260,9 +262,11 @@ public:
 
     // accessors and modifiers for the font elements
     int GetPointSize() const;
+    float GetFractionalPointSize() const;
     wxSize GetPixelSize() const;
     wxFontStyle GetStyle() const;
     wxFontWeight GetWeight() const;
+    int GetNumericWeight() const;
     bool GetUnderlined() const;
     bool GetStrikethrough() const;
     wxString GetFaceName() const;
@@ -270,14 +274,27 @@ public:
     wxFontEncoding GetEncoding() const;
 
     void SetPointSize(int pointsize);
+    void SetFractionalPointSize(float pointsize);
     void SetPixelSize(const wxSize& pixelSize);
     void SetStyle(wxFontStyle style);
+    void SetNumericWeight(int weight);
     void SetWeight(wxFontWeight weight);
     void SetUnderlined(bool underlined);
     void SetStrikethrough(bool strikethrough);
     bool SetFaceName(const wxString& facename);
     void SetFamily(wxFontFamily family);
     void SetEncoding(wxFontEncoding encoding);
+
+    // Helper used in many ports: use the normal font size if the input is
+    // negative, as we handle -1 as meaning this for compatibility.
+    void SetSizeOrDefault(float size)
+    {
+        SetFractionalPointSize
+        (
+            size < 0 ? wxNORMAL_FONT->GetFractionalPointSize()
+                     : size
+        );
+    }
 
     // sets the first facename in the given array which is found
     // to be valid. If no valid facename is given, sets the
