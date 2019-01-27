@@ -20,25 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#pragma once
 
-#include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_ECSManager.h>
+#include <Shibboleth_Defines.h>
+#include <Gaff_Defines.h>
 
-TEST_CASE("shibboleth_ecs_create_entity")
+NS_SHIBBOLETH
+
+struct EntityID
 {
-	Shibboleth::ECSManager ecs_mgr;
+private:
+	void* entity_page = nullptr;
+	int32_t entity_index = -1;
 
-	Shibboleth::ECSArchetype archetype;
-	archetype.add<Shibboleth::Position>();
-	archetype.add<Shibboleth::Rotation>();
+	friend class ECSManager;
+};
 
-	const Gaff::Hash64 archetype_hash = archetype.getHash();
-
-	ecs_mgr.addArchetype(std::move(archetype), "test_archetype");
-
-	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
-
-	Shibboleth::Position::Set(id, glm::vec3(0.0f, 1.0f, 2.0f));
-}
+NS_END

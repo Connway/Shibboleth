@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ECSEntity.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_Math.h>
 #include <simd/geometric.h>
@@ -32,7 +33,7 @@ class Position final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
-	static void Set(const glm::vec3& value);
+	static void Set(EntityID id, const glm::vec3& value);
 	static glm::vec3 Get();
 
 	static glm_vec4 GetX();

@@ -207,6 +207,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSArchetype.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSEntity.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -218,4 +219,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

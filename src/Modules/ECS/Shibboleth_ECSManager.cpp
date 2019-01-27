@@ -66,7 +66,7 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
 	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
 	//data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
-	data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
+	//data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
 	data->archetype = std::move(archetype);
 
 	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
@@ -85,24 +85,24 @@ const ECSArchetype& ECSManager::getArchetype(const char* name) const
 	return getArchetype(Gaff::FNV1aHash64String(name));
 }
 
-ECSManager::EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
+EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
 {
 	const auto it = _archtypes.find(name);
 	GAFF_ASSERT(it != _archtypes.end() && it->first == name);
 	return createEntity(it->second);
 }
 
-ECSManager::EntityID ECSManager::createEntityByName(const char* name)
+EntityID ECSManager::createEntityByName(const char* name)
 {
 	return createEntityByName(Gaff::FNV1aHash64String(name));
 }
 
-ECSManager::EntityID ECSManager::createEntity(const ECSArchetype& archetype)
+EntityID ECSManager::createEntity(const ECSArchetype& archetype)
 {
 	return createEntity(archetype.getHash());
 }
 
-ECSManager::EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
+EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 {
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
@@ -134,19 +134,27 @@ ECSManager::EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 		// All pages are full, allocate another page.
 		} else {
 			ProxyAllocator allocator("ECS");
-			id.entity_page = SHIB_ALLOCT(EntityPage, allocator);
+			EntityPage* const id_page = SHIB_ALLOCT(EntityPage, allocator);
+
+			id.entity_page = id_page;
 			id.entity_index = 0;
 
-			id.entity_page->num_entities = 1;
-			id.entity_page->next_index = 1;
+			id_page->num_entities = 1;
+			id_page->next_index = 1;
 
-			id.entity_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
-			data.pages.emplace_back(id.entity_page);
+			id_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
+			data.pages.emplace_back(id_page);
 		}
 	}
 
 	++data.num_entities;
 	return id;
+}
+
+void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
+{
+	GAFF_REF(id, component);
+	return nullptr;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)

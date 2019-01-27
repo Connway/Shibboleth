@@ -57,8 +57,10 @@ local tests = {
 		{
 			"../Dependencies/EASTL/include",
 			"../Dependencies/doctest",
+			"../Dependencies/glm",
 
 			"../Frameworks/Gaff/include",
+			"../Frameworks/Gleam/include",
 			"../Engine/Engine/include",
 			"../Engine/Memory/include",
 
@@ -67,9 +69,9 @@ local tests = {
 
 		links =
 		{
-			"Gaff", "Memory",
-			"EASTL", "Engine"--,
-			-- "mpack"
+			"Gaff", "Gleam",
+			"Memory", "EASTL",
+			"Engine", "ECS"
 		},
 	}
 	-- {
