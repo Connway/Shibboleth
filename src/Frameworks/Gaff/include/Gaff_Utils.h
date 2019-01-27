@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <cstring>
 #include <ctime>
 
-#define STATIC_FILE_FUNC \
+#define GAFF_STATIC_FILE_FUNC \
 	static void static__file__func(void); \
 	namespace { \
 		struct static__file__func__helper \

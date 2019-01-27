@@ -107,11 +107,45 @@ ECSManager::EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	EntityData& data = *(it->second);
-	
-	EntityID id;
-	id.entity_index = data.num_entities++;
-	id.entity_page = data.entities;
 
+	EntityID id;
+
+	// Look for free indices.
+	// $TODO: Try and optimize this.
+	for (auto& page : data.pages) {
+		if (page->free_indices.empty()) {
+			continue;
+		}
+
+		id.entity_index = page->free_indices.back();
+		id.entity_page = page.get();
+		page->free_indices.pop_back();
+	}
+
+	// Didn't find a free index.
+	if (!id.entity_page) {
+		auto& page = data.pages.back();
+
+		// Take next index on last page.
+		if (page->num_entities < data.num_entities_per_page) {
+			id.entity_index = page->next_index++;
+			id.entity_page = page.get();
+
+		// All pages are full, allocate another page.
+		} else {
+			ProxyAllocator allocator("ECS");
+			id.entity_page = SHIB_ALLOCT(EntityPage, allocator);
+			id.entity_index = 0;
+
+			id.entity_page->num_entities = 1;
+			id.entity_page->next_index = 1;
+
+			id.entity_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
+			data.pages.emplace_back(id.entity_page);
+		}
+	}
+
+	++data.num_entities;
 	return id;
 }
 

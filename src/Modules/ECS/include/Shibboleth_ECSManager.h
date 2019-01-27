@@ -32,12 +32,15 @@ class IFile;
 
 class ECSManager final : public IManager
 {
+private:
+	struct EntityPage;
+
 public:
 	struct EntityID final
 	{
 	private:
-		int32_t entity_index;
-		void* entity_page;
+		EntityPage* entity_page = nullptr;
+		int32_t entity_index = -1;
 
 		friend class ECSManager;
 	};
@@ -56,13 +59,25 @@ public:
 	EntityID createEntity(Gaff::Hash64 archetype);
 
 private:
-	struct alignas(16) EntityPage
+	//struct alignas(16) EntityPage final
+	//{
+	//	int8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
+	//	EntityPage* next_page = nullptr;
+	//};
+
+	struct EntityData;
+
+	struct EntityPage final
 	{
-		int8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
-		EntityPage* next_page = nullptr;
+		int32_t num_entities = 0;
+		int32_t next_index = 0;
+		void* data = nullptr;
+
+		Vector<int32_t> free_indices;
+		EntityData* owner = nullptr;
 	};
 
-	struct EntityData
+	struct EntityData final
 	{
 		ECSArchetype archetype;
 
@@ -70,11 +85,11 @@ private:
 		int32_t num_entities = 0;
 
 		void* shared_components = nullptr;
-		EntityPage* entities = nullptr;
+		Vector< UniquePtr<EntityPage> > pages;
 	};
 
-	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
+	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
 
 	bool loadFile(const char* file_name, IFile* file);
 
