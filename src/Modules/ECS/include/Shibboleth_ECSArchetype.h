@@ -39,6 +39,18 @@ class ECSArchetype final
 	GAFF_NO_COPY(ECSArchetype);
 
 public:
+	template <class T>
+	void addShared(void)
+	{
+		addShared(Reflection<T>::GetReflectionDefinition());
+	}
+
+	template <class T>
+	void add(void)
+	{
+		add(Reflection<T>::GetReflectionDefinition());
+	}
+
 	ECSArchetype(ECSArchetype&& archetype);
 	ECSArchetype(void) = default;
 	~ECSArchetype(void);

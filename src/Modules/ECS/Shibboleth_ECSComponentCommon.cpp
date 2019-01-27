@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSComponentCommon.h"
 #include "Shibboleth_ECSAttributes.h"
+#include "Shibboleth_ECSManager.h"
 
 SHIB_REFLECTION_DEFINE(Position)
 SHIB_REFLECTION_DEFINE(Rotation)
@@ -36,9 +37,9 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Position)
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
-void Position::Set(const glm::vec3& value)
+void Position::Set(EntityID id, const glm::vec3& value)
 {
-	GAFF_REF(value);
+	GAFF_REF(id, value);
 }
 
 glm::vec3 Position::Get()

@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSArchetype.h>
+#include "Shibboleth_ECSArchetype.h"
+#include "Shibboleth_ECSEntity.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 
@@ -32,18 +33,12 @@ class IFile;
 
 class ECSManager final : public IManager
 {
-private:
-	struct EntityPage;
-
 public:
-	struct EntityID final
+	template <class T>
+	void* getComponent(EntityID id)
 	{
-	private:
-		EntityPage* entity_page = nullptr;
-		int32_t entity_index = -1;
-
-		friend class ECSManager;
-	};
+		return getComponent(id, Reflection<T>::GetHash());
+	}
 
 	bool init(void) override;
 
@@ -57,6 +52,8 @@ public:
 
 	EntityID createEntity(const ECSArchetype& archetype);
 	EntityID createEntity(Gaff::Hash64 archetype);
+
+	void* getComponent(EntityID id, Gaff::Hash64 component);
 
 private:
 	//struct alignas(16) EntityPage final
@@ -84,7 +81,6 @@ private:
 		int32_t num_entities_per_page = 0;
 		int32_t num_entities = 0;
 
-		void* shared_components = nullptr;
 		Vector< UniquePtr<EntityPage> > pages;
 	};
 
