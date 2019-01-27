@@ -20,29 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Utilities.h"
-#include <Shibboleth_Memory.h>
-#include <Gaff_Utils.h>
-#include <Gaff_JSON.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 
-NS_SHIBBOLETH
-
-static IApp* gApp = nullptr;
-
-void SetApp(IApp& app)
+TEST_CASE("shibboleth_ecs_create_entity")
 {
-	gApp = &app;
-}
 
-IApp& GetApp(void)
-{
-	GAFF_ASSERT(gApp);
-	return *gApp;
-}
-
-NS_END
-
-GAFF_STATIC_FILE_FUNC
-{
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 }

@@ -2,16 +2,18 @@ local tests = {
 	{
 		name = "AllocatorTest",
 
-		includedirs = {
+		includedirs =
+		{
 			"../Dependencies/EASTL/include",
-			"../Dependencies/CATCH",
+			"../Dependencies/doctest",
 
 			"../Frameworks/Gaff/include",
 			"../Engine/Engine/include",
 			"../Engine/Memory/include"
 		},
 
-		links = {
+		links =
+		{
 			"Gaff", "Memory",
 			"EASTL", "Engine"
 		}
@@ -19,9 +21,10 @@ local tests = {
 	{
 		name = "ReflectionTest",
 
-		includedirs = {
+		includedirs =
+		{
 			"../Dependencies/EASTL/include",
-			"../Dependencies/CATCH",
+			"../Dependencies/doctest",
 			"../Dependencies/mpack",
 			"../Dependencies/rapidjson",
 
@@ -30,7 +33,8 @@ local tests = {
 			"../Engine/Memory/include"
 		},
 
-		links = {
+		links =
+		{
 			"Gaff", "Memory",
 			"EASTL", "Engine",
 			"mpack"
@@ -46,12 +50,35 @@ local tests = {
 			filter {}
 		end
 	},
+	{
+		name = "ECSTest",
+
+		includedirs =
+		{
+			"../Dependencies/EASTL/include",
+			"../Dependencies/doctest",
+
+			"../Frameworks/Gaff/include",
+			"../Engine/Engine/include",
+			"../Engine/Memory/include",
+
+			"../Modules/ECS/include"
+		},
+
+		links =
+		{
+			"Gaff", "Memory",
+			"EASTL", "Engine"--,
+			-- "mpack"
+		},
+	}
 	-- {
 	-- 	name = "ScriptTest",
 
-	-- 	includedirs = {
+	-- 	includedirs =
+	-- {
 	-- 		"../Dependencies/EASTL/include",
-	-- 		"../Dependencies/CATCH",
+	-- 		"../Dependencies/doctest",
 	-- 		"../Dependencies/angelscript/angelscript/include",
 	-- 		"../Dependencies/angelscript/add_on/scriptbuilder",
 	-- 		"../Dependencies/rapidjson",
@@ -62,7 +89,8 @@ local tests = {
 	-- 		"../Modules/Scripting/include"
 	-- 	},
 
-	-- 	links = {
+	-- 	links =
+	-- {
 	-- 		"Gaff", "Memory",
 	-- 		"EASTL", "Engine",
 	-- 		"Scripting", "Entity",

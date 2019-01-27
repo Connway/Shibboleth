@@ -20,8 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#define DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 
 #include <Shibboleth_EnumReflection.h>
 #include <Shibboleth_Reflection.h>
@@ -89,7 +90,7 @@ SHIB_REFLECTION_DEFINE(Foo::NamespaceClass);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Foo::NamespaceClass)
 SHIB_REFLECTION_CLASS_DEFINE_END(Foo::NamespaceClass)
 
-TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
+TEST_CASE("shibboleth_reflection_basic")
 {
 	printf("Reflection POD: %s\n", Shibboleth::Reflection<int8_t>::GetName());
 	printf("Reflection POD: %s\n", Shibboleth::Reflection<int16_t>::GetName());
@@ -114,7 +115,7 @@ TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 	REQUIRE(!strcmp(Shibboleth::Reflection<double>::GetName(), "double"));
 }
 
-TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
+TEST_CASE("shibboleth_reflection_class")
 {
 	Shibboleth::Reflection<Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 	Shibboleth::Reflection<Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
@@ -210,7 +211,7 @@ SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test2, T1, T2)
 	.var("t2", &Test2::t2)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(Test2, T1, T2)
 
-TEST_CASE("reflection template class test", "[shibboleth_reflection_template_class]")
+TEST_CASE("shibboleth_reflection_template_class")
 {
 	Shibboleth::Reflection< Test1<int32_t> >::Init();
 	Shibboleth::Reflection< Test1<double> >::Init();
@@ -247,7 +248,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(VecTest)
 	.var("base", &VecTest::base)
 SHIB_REFLECTION_CLASS_DEFINE_END(VecTest)
 
-TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]")
+TEST_CASE("shibboleth_reflection_array_vector")
 {
 	Shibboleth::Reflection<VecTest>::Init();
 
@@ -372,7 +373,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(CtorTest)
 	.var("a", &CtorTest::a)
 SHIB_REFLECTION_CLASS_DEFINE_END(CtorTest)
 
-TEST_CASE("reflection factory test", "[shibboleth_factory]")
+TEST_CASE("shibboleth_factory")
 {
 	Shibboleth::Reflection<CtorTest>::Init();
 	CtorTest* test_a = Shibboleth::Reflection<CtorTest>::GetReflectionDefinition().create();
@@ -382,7 +383,7 @@ TEST_CASE("reflection factory test", "[shibboleth_factory]")
 	REQUIRE(test_b->a == 100);
 }
 
-TEST_CASE("reflection module test", "[shibboleth_reflection_module]")
+TEST_CASE("shibboleth_reflection_module")
 {
 	Gaff::DynamicModule module;
 	bool ret = module.load("ScriptingModule" BIT_EXTENSION);
@@ -441,7 +442,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AttrTest)
 SHIB_REFLECTION_CLASS_DEFINE_END(AttrTest)
 
 
-TEST_CASE("reflection attribute test", "[shibboleth_attribute]")
+TEST_CASE("shibboleth_attribute")
 {
 	Shibboleth::Reflection<TestAttr>::Init();
 	Shibboleth::Reflection<AttrTest>::Init();
@@ -474,7 +475,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(FuncTest)
 	.func("setIntRef", &FuncTest::setIntRef)
 SHIB_REFLECTION_CLASS_DEFINE_END(FuncTest)
 
-TEST_CASE("reflection func test", "[shibboleth_func]")
+TEST_CASE("shibboleth_func")
 {
 	Shibboleth::Reflection<FuncTest>::Init();
 
@@ -549,7 +550,7 @@ SHIB_ENUM_REFLECTION_DEFINE_BEGIN(TestEnum)
 	.entry("Twenty", TE_TWENTY)
 SHIB_ENUM_REFLECTION_DEFINE_END(TestEnum)
 
-TEST_CASE("reflection enum test", "[shibboleth_enum]")
+TEST_CASE("shibboleth_enum")
 {
 	Shibboleth::EnumReflection<TestEnum>::Init();
 

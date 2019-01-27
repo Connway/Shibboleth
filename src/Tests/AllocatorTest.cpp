@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 
 #include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_DefaultAllocator.h>
@@ -52,13 +52,13 @@ void AllocatorTestHelper(const Allocator& allocator = Allocator())
 	}
 }
 
-TEST_CASE("Gaff Allocator with vector test", "[gaff_vector]")
+TEST_CASE("gaff_allocator_vector")
 {
 	AllocatorTestHelper<Gaff::DefaultAllocator>();
 	AllocatorTestHelper<Gaff::DefaultAlignedAllocator<16> >();
 }
 
-TEST_CASE("Shibboleth Allocator with vector test", "[shibboleth_vector]")
+TEST_CASE("shibboleth_allocator_vector")
 {
 	Shibboleth::ProxyAllocator allocatorA("Pool A");
 	Shibboleth::ProxyAllocator allocatorB("Pool B");
@@ -70,7 +70,7 @@ TEST_CASE("Shibboleth Allocator with vector test", "[shibboleth_vector]")
 	//allocatorB.alloc(4, __FILE__, __LINE__);
 }
 
-TEST_CASE("new/delete overrides test", "[shibboleth_newdelete]")
+TEST_CASE("shibboleth_newdelete_override")
 {
 	AllocatorTestHelper<eastl::allocator>();
 }
