@@ -415,10 +415,10 @@ public:
 
 	virtual Hash64 applyVersioning(Hash64 hash) const { return hash; }
 
-	virtual void finish(const Gaff::IReflectionDefinition* /*ref_def*/) {}
-	virtual void finish(const Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
+	virtual void finish(const Gaff::IReflectionDefinition& /*ref_def*/) {}
+	virtual void finish(const Gaff::IEnumReflectionDefinition& /*ref_def*/) {}
 
-	virtual void instantiated(const Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
+	virtual void instantiated(const Gaff::IReflectionDefinition& /*ref_def*/, void* /*object*/) {}
 
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
 
@@ -435,13 +435,13 @@ public:
 	// Attributes that are applied to variables need to implement these template functions,
 	// or at least the ones they apply to.
 	template <class T, class Var>
-	void apply(IReflectionVar* /*ref_var*/, Var T::* /*var*/) {}
+	void apply(IReflectionVar& /*ref_var*/, Var T::* /*var*/) {}
 	template <class T, class Var, class Ret>
-	void apply(IReflectionVar* /*ref_var*/, Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
+	void apply(IReflectionVar& /*ref_var*/, Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
 	template <class T, class Var, class Vec_Allocator, size_t size>
-	void apply(IReflectionVar* /*ref_var*/, Vector<Var, Vec_Allocator> T::* /*vec*/) {}
+	void apply(IReflectionVar& /*ref_var*/, Vector<Var, Vec_Allocator> T::* /*vec*/) {}
 	template <class T, class Var, size_t size>
-	void apply(IReflectionVar* /*ref_var*/, Var (T::* /*arr*/)[size]) {}
+	void apply(IReflectionVar& /*ref_var*/, Var (T::* /*arr*/)[size]) {}
 };
 
 template <class Ret, class... Args>

@@ -45,10 +45,24 @@ const char* ECSClassAttribute::getName(void) const
 	return _name ? _name : Reflection<ECSClassAttribute>::GetName();
 }
 
+int32_t ECSClassAttribute::size(void) const
+{
+	return _size;
+}
+
 Gaff::IAttribute* ECSClassAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ECSClassAttribute, allocator.getPoolIndex("Reflection"), allocator, _name, _category);
+}
+
+void ECSClassAttribute::finish(const Gaff::IReflectionDefinition& ref_def)
+{
+	const auto attrs = ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+
+	for (const IECSVarAttribute* attr : attrs) {
+		_size += attr->getType().getReflectionInstance().size();
+	}
 }
 
 NS_END

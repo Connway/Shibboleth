@@ -117,27 +117,27 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 			continue;
 		}
 
-		id.entity_index = page->free_indices.back();
-		id.entity_page = page.get();
+		id._entity_index = page->free_indices.back();
+		id._entity_page = page.get();
 		page->free_indices.pop_back();
 	}
 
 	// Didn't find a free index.
-	if (!id.entity_page) {
+	if (!id._entity_page) {
 		auto& page = data.pages.back();
 
 		// Take next index on last page.
 		if (page->num_entities < data.num_entities_per_page) {
-			id.entity_index = page->next_index++;
-			id.entity_page = page.get();
+			id._entity_index = page->next_index++;
+			id._entity_page = page.get();
 
 		// All pages are full, allocate another page.
 		} else {
 			ProxyAllocator allocator("ECS");
 			EntityPage* const id_page = SHIB_ALLOCT(EntityPage, allocator);
 
-			id.entity_page = id_page;
-			id.entity_index = 0;
+			id._entity_page = id_page;
+			id._entity_index = 0;
 
 			id_page->num_entities = 1;
 			id_page->next_index = 1;
@@ -153,8 +153,14 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 {
-	GAFF_REF(id, component);
-	return nullptr;
+	GAFF_ASSERT(id._entity_page);
+	EntityPage* const page = reinterpret_cast<EntityPage*>(id._entity_page);
+	const int32_t entity_offset = (id._entity_index / 4) * page->owner->archetype.size() * 4;
+	const int32_t component_offset = page->owner->archetype.getComponentOffset(component);
+
+	GAFF_ASSERT(component_offset > -1);
+
+	return reinterpret_cast<int8_t*>(page->data) + entity_offset + component_offset;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)

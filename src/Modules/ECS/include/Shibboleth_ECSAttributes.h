@@ -35,12 +35,17 @@ public:
 
 	const char* getCategory(void) const;
 	const char* getName(void) const;
+	int32_t size(void) const;
 
 	Gaff::IAttribute* clone(void) const override;
+
+	void finish(const Gaff::IReflectionDefinition& ref_def) override;
+
 
 private:
 	const char* _category = nullptr;
 	const char* _name = nullptr;
+	int32_t _size = 0;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSClassAttribute);
 };
