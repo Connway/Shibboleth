@@ -29,16 +29,18 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ECSManager;
+
 class Position final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
-	static void Set(EntityID id, const glm::vec3& value);
-	static glm::vec3 Get();
+	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
+	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
+	static glm_vec4 GetX(void* component_begin);
+	static glm_vec4 GetY(void* component_begin);
+	static glm_vec4 GetZ(void* component_begin);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Position);
 };

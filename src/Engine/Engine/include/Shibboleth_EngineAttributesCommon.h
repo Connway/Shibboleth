@@ -33,9 +33,9 @@ public:
 	IAttribute* clone(void) const override;
 
 	template <class T, class Var>
-	void apply(Gaff::IReflectionVar* ref_var, Var T::*) { ref_var->setReadOnly(true);  }
+	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true);  }
 	template <class T, class Var, class Ret>
-	void apply(Gaff::IReflectionVar* ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var->setReadOnly(true); }
+	void apply(Gaff::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
@@ -60,10 +60,10 @@ public:
 		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void instantiated(const Gaff::IReflectionDefinition* ref_def, void* object) override
+	void instantiated(const Gaff::IReflectionDefinition& ref_def, void* object) override
 	{
 		Broadcaster& broadcaster = GetApp().getBroadcaster();
-		T* const instance = ref_def->getInterface<T>(object);
+		T* const instance = ref_def.getInterface<T>(object);
 
 		const BroadcastID id = 
 			(_const_func) ?

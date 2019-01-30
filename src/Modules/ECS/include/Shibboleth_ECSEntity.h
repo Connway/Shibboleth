@@ -27,11 +27,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-struct EntityID
+class EntityID final
 {
+public:
+	int32_t getPageIndex(void) const { return _entity_index; }
+
 private:
-	void* entity_page = nullptr;
-	int32_t entity_index = -1;
+	void* _entity_page = nullptr;
+	int32_t _entity_index = -1;
 
 	friend class ECSManager;
 };

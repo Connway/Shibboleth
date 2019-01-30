@@ -1540,24 +1540,24 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 
 		// Call finish() on attributes first.
 		for (IAttributePtr& attr : _class_attrs) {
-			attr->finish(this);
+			attr->finish(*this);
 		}
 
 		for (auto& it : _var_attrs) {
 			for (IAttributePtr& attr : it.second) {
-				attr->finish(this);
+				attr->finish(*this);
 			}
 		}
 
 		for (auto& it : _func_attrs) {
 			for (IAttributePtr& attr : it.second) {
-				attr->finish(this);
+				attr->finish(*this);
 			}
 		}
 
 		for (auto& it : _static_func_attrs) {
 			for (IAttributePtr& attr : it.second) {
-				attr->finish(this);
+				attr->finish(*this);
 			}
 		}
 
@@ -1594,7 +1594,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(ref_var, var);
+	clone->apply(*ref_var, var);
 	
 	return addAttributes(ref_var, var, attrs, rest...);
 }
@@ -1606,7 +1606,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(ref_var, getter, setter);
+	clone->apply(*ref_var, getter, setter);
 
 	return addAttributes(ref_var, getter, setter, attrs, rest...);
 }
@@ -1710,24 +1710,24 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::instantiated(void* object) const
 {
 	for (const IAttributePtr& attr : _class_attrs) {
-		const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+		const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
 	}
 
 	for (auto& it : _var_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
 		}
 	}
 
 	for (auto& it : _func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
 		}
 	}
 
 	for (auto& it : _static_func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
 		}
 	}
 }

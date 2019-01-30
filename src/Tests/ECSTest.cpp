@@ -40,5 +40,5 @@ TEST_CASE("shibboleth_ecs_create_entity")
 
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 
-	Shibboleth::Position::Set(id, glm::vec3(0.0f, 1.0f, 2.0f));
+	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
 }

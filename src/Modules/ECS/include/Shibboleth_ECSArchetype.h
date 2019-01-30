@@ -51,6 +51,12 @@ public:
 		add(Reflection<T>::GetReflectionDefinition());
 	}
 
+	template <class T>
+	int32_t getComponentOffset(void) const
+	{
+		return getComponentOffset(Reflection<T>::GetHash());
+	}
+
 	ECSArchetype(ECSArchetype&& archetype);
 	ECSArchetype(void) = default;
 	~ECSArchetype(void);
@@ -71,6 +77,8 @@ public:
 	void remove(const Gaff::IReflectionDefinition& ref_def);
 	void remove(int32_t index);
 
+	int32_t getComponentOffset(Gaff::Hash64 component) const;
+
 	int32_t sharedSize(void) const;
 	int32_t size(void) const;
 
@@ -80,8 +88,14 @@ public:
 	bool fromJSON(const Gaff::JSON& json);
 
 private:
-	Vector<const Gaff::IReflectionDefinition*> _shared_vars;
-	Vector<const Gaff::IReflectionDefinition*> _vars;
+	struct RefDefOffset final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		int32_t offset;
+	};
+
+	Vector<RefDefOffset> _shared_vars;
+	Vector<RefDefOffset> _vars;
 
 	mutable Gaff::Hash64 _hash = Gaff::INIT_HASH64;
 
@@ -90,11 +104,11 @@ private:
 
 	void* _shared_instances = nullptr;
 
-	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def);
-	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def);
-	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, int32_t index);
+	void add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
+	void add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
+	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
+	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
+	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32_t index, bool shared);
 };
 
 NS_END
