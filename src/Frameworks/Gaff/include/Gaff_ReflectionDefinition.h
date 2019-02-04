@@ -165,6 +165,9 @@ public:
 
 	ReflectionDefinition& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
 
+	template <class T2>
+	ReflectionDefinition& dependsOn(void);
+
 	void finish(void);
 
 private:
@@ -439,10 +442,12 @@ private:
 
 	mutable Allocator _allocator;
 
-	int32_t _base_classes_remaining = 0;
+	int32_t _dependents_remaining = 0;
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
+
+	static void FinishAfterDependent(void);
 
 	// Variables
 	template <class Var, class First, class... Rest>

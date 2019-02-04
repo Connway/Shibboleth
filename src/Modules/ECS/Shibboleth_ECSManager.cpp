@@ -64,7 +64,7 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 	ProxyAllocator allocator("ECS");
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
+	data->num_entities_per_page = EA_KIBIBYTE(64) / archetype.size();
 	//data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
 	//data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
 	data->archetype = std::move(archetype);
@@ -124,12 +124,12 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 
 	// Didn't find a free index.
 	if (!id._entity_page) {
-		auto& page = data.pages.back();
+		EntityPage* const page = (data.pages.empty()) ? nullptr : data.pages.back().get();
 
 		// Take next index on last page.
-		if (page->num_entities < data.num_entities_per_page) {
+		if (page && page->num_entities < data.num_entities_per_page) {
 			id._entity_index = page->next_index++;
-			id._entity_page = page.get();
+			id._entity_page = page;
 
 		// All pages are full, allocate another page.
 		} else {
@@ -139,10 +139,11 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 			id._entity_page = id_page;
 			id._entity_index = 0;
 
+			id_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
 			id_page->num_entities = 1;
 			id_page->next_index = 1;
+			id_page->owner = &data;
 
-			id_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
 			data.pages.emplace_back(id_page);
 		}
 	}

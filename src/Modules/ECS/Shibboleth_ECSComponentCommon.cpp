@@ -83,10 +83,10 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
 	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + id.getPageIndex() % 4;
-	component[0] = value.x;
-	component[4] = value.y;
-	component[8] = value.z;
-	component[12] = value.w;
+	component[0] = value.w;
+	component[4] = value.x;
+	component[8] = value.y;
+	component[12] = value.z;
 }
 
 glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
@@ -103,22 +103,22 @@ glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
 
 glm_vec4 Rotation::GetX(void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
+	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 4);
 }
 
 glm_vec4 Rotation::GetY(void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 4);
+	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
 }
 
 glm_vec4 Rotation::GetZ(void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
+	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 12);
 }
 
 glm_vec4 Rotation::GetW(void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 12);
+	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
 }
 
 

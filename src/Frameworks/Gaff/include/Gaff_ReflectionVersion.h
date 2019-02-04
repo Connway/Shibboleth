@@ -71,6 +71,9 @@ public:
 
 	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
 
+	template <class T2>
+	ReflectionVersion& dependsOn(void);
+
 	Hash64 getHash(void) const;
 
 	void finish(void);

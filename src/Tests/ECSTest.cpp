@@ -36,7 +36,14 @@ TEST_CASE("shibboleth_ecs_create_entity")
 	//g_app.init(0, nullptr);
 	Shibboleth::SetApp(g_app);
 
-	Gaff::IReflection* head = Gaff::GetReflectionChainHead();
+	Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
+
+	while (head) {
+		head->init();
+		head = head->attr_next;
+	}
+
+	head = Gaff::GetReflectionChainHead();
 
 	while (head) {
 		head->init();
@@ -57,6 +64,10 @@ TEST_CASE("shibboleth_ecs_create_entity")
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 
 	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
-	Shibboleth::Rotation::Set(ecs_mgr, id, glm::quat());
+	Shibboleth::Rotation::Set(ecs_mgr, id, glm::quat(1.0f, glm::vec3(0.0f)));
 	Shibboleth::Scale::Set(ecs_mgr, id, glm::vec3(3.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id), glm::vec3(3.0f));
 }

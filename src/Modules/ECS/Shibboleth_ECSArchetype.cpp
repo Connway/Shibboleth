@@ -281,7 +281,7 @@ void ECSArchetype::add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Ga
 
 	alloc_size += attr->size();
 
-	vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset * size_scalar });
+	vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset });
 
 	dirtyHash();
 }
