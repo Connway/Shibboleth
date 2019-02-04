@@ -1434,8 +1434,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
 		it->second.offset[0] = static_cast<int32_t>(offset_ptr - offset_interface);
-	}
-	else {
+
+	} else {
 		FuncData& func_data = it->second;
 		bool found = false;
 

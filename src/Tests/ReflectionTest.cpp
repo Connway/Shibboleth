@@ -119,9 +119,14 @@ TEST_CASE("shibboleth_reflection_class")
 {
 	Shibboleth::Reflection<Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 	Shibboleth::Reflection<Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
+	Shibboleth::AllocatorThreadInit();
 
 	//g_app.init(0, nullptr);
 	Shibboleth::SetApp(g_app);
+
+	Gaff::InitAttributeReflection();
+	Gaff::InitClassReflection();
+	Gaff::InitEnumReflection();
 
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Derived>::GetName());
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Base>::GetName());
@@ -383,24 +388,25 @@ TEST_CASE("shibboleth_factory")
 	REQUIRE(test_b->a == 100);
 }
 
-TEST_CASE("shibboleth_reflection_module")
-{
-	Gaff::DynamicModule module;
-	bool ret = module.load("ScriptingModule" BIT_EXTENSION);
+//TEST_CASE("shibboleth_reflection_module")
+//{
+//	Shibboleth::App app;
+//	Gaff::DynamicModule module;
+//	bool ret = module.load("ResourceModule" BIT_EXTENSION);
+//
+//	REQUIRE(ret);
+//
+//	if (ret) {
+//		using InitFunc = bool (*)(Shibboleth::IApp*);
+//		InitFunc init = module.getFunc<InitFunc>("InitModule");
+//		init(&app);
+//	}
+//
+//	app.destroy();
+//}
 
-	REQUIRE(ret);
 
-	if (ret) {
-		using InitFunc = bool (*)(Shibboleth::IApp*);
-		InitFunc init = module.getFunc<InitFunc>("InitModule");
-		init(&g_app);
-	}
-
-	g_app.destroy();
-}
-
-
-class AttrTest : public Gaff::IReflectionObject
+class AttrTest final : public Gaff::IReflectionObject
 {
 public:
 	AttrTest(void) {}
@@ -422,8 +428,6 @@ public:
 SHIB_REFLECTION_DECLARE(TestAttr);
 SHIB_REFLECTION_DEFINE(TestAttr);
 SHIB_REFLECTION_CLASS_DEFINE(TestAttr);
-//SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AttrTest)
-//SHIB_REFLECTION_CLASS_DEFINE_END(AttrTest)
 
 
 SHIB_REFLECTION_DECLARE(AttrTest);

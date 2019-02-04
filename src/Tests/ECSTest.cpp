@@ -50,13 +50,22 @@ TEST_CASE("shibboleth_ecs_create_entity")
 
 	ecs_mgr.addArchetype(std::move(archetype), "test_archetype");
 
-	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::EntityID id1 = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::EntityID id2 = ecs_mgr.createEntity(archetype_hash);
 
-	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
-	Shibboleth::Rotation::Set(ecs_mgr, id, glm::quat(1.0f, glm::vec3(0.0f)));
-	Shibboleth::Scale::Set(ecs_mgr, id, glm::vec3(3.0f));
+	Shibboleth::Position::Set(ecs_mgr, id1, glm::vec3(0.0f, 1.0f, 2.0f));
+	Shibboleth::Rotation::Set(ecs_mgr, id1, glm::quat(1.0f, glm::vec3(0.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id1, glm::vec3(3.0f));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
-	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id), glm::vec3(3.0f));
+	Shibboleth::Position::Set(ecs_mgr, id2, glm::vec3(5.0f, 4.0f, 3.0f));
+	Shibboleth::Rotation::Set(ecs_mgr, id2, glm::quat(2.0f, glm::vec3(4.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id2, glm::vec3(5.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id1), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id1), glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id1), glm::vec3(3.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id2), glm::vec3(5.0f, 4.0f, 3.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2), glm::quat(2.0f, glm::vec3(4.0f)));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id2), glm::vec3(5.0f));
 }

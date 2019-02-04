@@ -37,4 +37,14 @@ IEnumReflection* GetEnumReflectionChainHead(void)
 	return g_head;
 }
 
+void InitEnumReflection(void)
+{
+	Gaff::IEnumReflection* head = g_head;
+
+	while (head) {
+		head->init();
+		head = head->next;
+	}
+}
+
 NS_END

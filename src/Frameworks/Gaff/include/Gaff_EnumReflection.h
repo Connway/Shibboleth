@@ -30,6 +30,8 @@ template <class T>
 class EnumReflection final : public Gaff::IEnumReflection
 {
 public:
+	static_assert(std::is_enum<T>::value, "EnumReflection type must be an enum.");
+
 	constexpr static bool HasReflection = false;
 
 	EnumReflection(void)
@@ -78,6 +80,7 @@ NS_REFLECTION \
 	template <> \
 	class EnumReflection<type> final : public Gaff::IEnumReflection \
 	{ \
+		static_assert(std::is_enum<type>::value, "EnumReflection type must be an enum."); \
 	private: \
 		static EnumReflection<type> g_instance; \
 		static bool g_defined; \
@@ -200,5 +203,6 @@ NS_GAFF
 
 void AddToEnumReflectionChain(IEnumReflection* reflection);
 IEnumReflection* GetEnumReflectionChainHead(void);
+void InitEnumReflection(void);
 
 NS_END
