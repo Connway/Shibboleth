@@ -119,14 +119,9 @@ NS_SHIBBOLETH \
 			); \
 			g_defined = true; \
 		} else { \
-			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
-				ShibbolethAllocate( \
-					sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
-					GetPoolIndex("Reflection") \
-				) \
-			); \
-			Gaff::Construct(g_reflection_definition); \
-			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
+			ProxyAllocator allocator("Reflection"); \
+			g_reflection_definition = SHIB_ALLOCT(GAFF_SINGLE_ARG(Gaff::ReflectionDefinition<type, ProxyAllocator>), allocator); \
+			g_reflection_definition->setAllocator(allocator); \
 			BuildReflection(*g_reflection_definition);
 
 #define SHIB_REFLECTION_EXTERNAL_DEFINE_END SHIB_REFLECTION_DEFINE_END

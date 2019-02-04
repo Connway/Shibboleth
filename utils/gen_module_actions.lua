@@ -15,22 +15,17 @@ namespace Gen
 	void InitReflection(void)
 	{
 		// Initialize Enums.
+		Gaff::InitEnumReflection();
+
 %s
-		Gaff::IEnumReflection* enum_head = Gaff::GetEnumReflectionChainHead();
-
-		while (enum_head) {
-			enum_head->init();
-			enum_head = enum_head->next;
-		}
-
 		// Initialize Attributes.
-%s
 		Gaff::InitAttributeReflection();
 
 %s
-		// Initialize any other reflection that we reference, but isn't owned by our module.
+		// Initialize regular classes.
 		Gaff::InitClassReflection();
 
+%s
 		// Register our module as the owners of the reflection.
 %s	}
 }
