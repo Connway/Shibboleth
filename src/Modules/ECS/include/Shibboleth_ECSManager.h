@@ -68,7 +68,7 @@ private:
 	{
 		int32_t num_entities = 0;
 		int32_t next_index = 0;
-		void* data = nullptr;
+		UniquePtr<void> data;
 
 		Vector<int32_t> free_indices;
 		EntityData* owner = nullptr;

@@ -139,7 +139,7 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 			id._entity_page = id_page;
 			id._entity_index = 0;
 
-			id_page->data = SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator);
+			id_page->data.reset(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
 			id_page->num_entities = 1;
 			id_page->next_index = 1;
 			id_page->owner = &data;
@@ -161,7 +161,7 @@ void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 
 	GAFF_ASSERT(component_offset > -1);
 
-	return reinterpret_cast<int8_t*>(page->data) + entity_offset + component_offset;
+	return reinterpret_cast<int8_t*>(page->data.get()) + entity_offset + component_offset;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)
