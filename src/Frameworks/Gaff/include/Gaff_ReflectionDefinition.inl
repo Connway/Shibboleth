@@ -1204,7 +1204,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 	// Register for callback if base class hasn't been defined yet.
 	} else {
-		++_base_classes_remaining;
+		++_dependents_remaining;
 
 		eastl::function<void (void)> cb(&RegisterBaseVariables<Base>);
 		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(std::move(cb));
@@ -1533,9 +1533,21 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::serializ
 }
 
 template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::dependsOn(void)
+{
+	if (!GAFF_REFLECTION_NAMESPACE::Reflection<T2>::g_defined) {
+		eastl::function<void(void)> cb(&FinishAfterDependent);
+		GAFF_REFLECTION_NAMESPACE::Reflection<T2>::g_on_defined_callbacks.emplace_back(std::move(cb));
+	}
+
+	return *this;
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
-	if (!_base_classes_remaining) {
+	if (!_dependents_remaining) {
 		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
 
 		// Call finish() on attributes first.
@@ -1578,10 +1590,23 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 		GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition()
 	);
 
-	--ref_def._base_classes_remaining;
-	GAFF_ASSERT(ref_def._base_classes_remaining >= 0);
+	--ref_def._dependents_remaining;
+	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
 
 	ref_def.base<Base>();
+	ref_def.finish();
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::FinishAfterDependent(void)
+{
+	ReflectionDefinition<T, Allocator>& ref_def = const_cast<ReflectionDefinition<T, Allocator>&>(
+		GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition()
+	);
+
+	--ref_def._dependents_remaining;
+	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
+
 	ref_def.finish();
 }
 

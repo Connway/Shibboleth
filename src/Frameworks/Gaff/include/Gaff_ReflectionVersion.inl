@@ -37,8 +37,12 @@ template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
 	const Gaff::Hash64 version = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetVersion();
-	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
+	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
+
+	_hash = FNV1aHash64T(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash(), _hash);
+	_hash = FNV1aHash64T(offset, _hash);
 	_hash = FNV1aHash64T(version, _hash);
+
 	return *this;
 }
 
@@ -162,6 +166,14 @@ ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, S
 	// Unsure if this is a reliable hashing mechanism.
 	_hash = FNV1aHash64T(serialize_load, _hash);
 	_hash = FNV1aHash64T(serialize_save, _hash);
+	return *this;
+}
+
+template <class T>
+template <class T2>
+ReflectionVersion<T>& ReflectionVersion<T>::dependsOn(void)
+{
+	_hash = FNV1aHash64T(GAFF_REFLECTION_NAMESPACE::Reflection<T2>::GetHash(), _hash);
 	return *this;
 }
 
