@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2018 by Nicholas LaCroix
+Copyright (C) 2019 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -485,5 +485,8 @@ IReflection* GetAttributeReflectionChainHead(void);
 
 void AddToReflectionChain(IReflection* reflection);
 IReflection* GetReflectionChainHead(void);
+
+void InitAttributeReflection(void);
+void InitClassReflection(void);
 
 NS_END

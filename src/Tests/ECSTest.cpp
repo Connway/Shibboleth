@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2018 by Nicholas LaCroix
+Copyright (C) 2019 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,19 +36,8 @@ TEST_CASE("shibboleth_ecs_create_entity")
 	//g_app.init(0, nullptr);
 	Shibboleth::SetApp(g_app);
 
-	Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
-
-	while (head) {
-		head->init();
-		head = head->attr_next;
-	}
-
-	head = Gaff::GetReflectionChainHead();
-
-	while (head) {
-		head->init();
-		head = head->next;
-	}
+	Gaff::InitAttributeReflection();
+	Gaff::InitClassReflection();
 
 	Shibboleth::ECSManager ecs_mgr;
 

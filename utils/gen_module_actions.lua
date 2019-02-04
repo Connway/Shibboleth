@@ -25,21 +25,11 @@ namespace Gen
 
 		// Initialize Attributes.
 %s
-		Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
-
-		while (head) {
-			head->init();
-			head = head->attr_next;
-		}
+		Gaff::InitAttributeReflection();
 
 %s
 		// Initialize any other reflection that we reference, but isn't owned by our module.
-		head = Gaff::GetReflectionChainHead();
-
-		while (head) {
-			head->init();
-			head = head->next;
-		}
+		Gaff::InitClassReflection();
 
 		// Register our module as the owners of the reflection.
 %s	}
@@ -48,7 +38,7 @@ namespace Gen
 
 local gen_entry = [[
 /************************************************************************************
-Copyright (C) 2018 by Nicholas LaCroix
+Copyright (C) 2019 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

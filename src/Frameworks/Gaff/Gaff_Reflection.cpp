@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2018 by Nicholas LaCroix
+Copyright (C) 2019 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,26 @@ void AddToReflectionChain(IReflection* reflection)
 IReflection* GetReflectionChainHead(void)
 {
 	return g_head;
+}
+
+void InitAttributeReflection(void)
+{
+	Gaff::IReflection* head = g_attr_head;
+
+	while (head) {
+		head->init();
+		head = head->attr_next;
+	}
+}
+
+void InitClassReflection(void)
+{
+	Gaff::IReflection* head = g_head;
+
+	while (head) {
+		head->init();
+		head = head->next;
+	}
 }
 
 NS_END
