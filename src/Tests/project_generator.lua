@@ -42,10 +42,11 @@ local tests = {
 
 		extra = function ()
 			filter { "system:windows" }
-				links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
+				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
+				links { "DbgHelp" }
 
-			filter { "action:vs*" }
-				buildoptions { "/bigobj" }
+			-- filter { "action:vs*" }
+			-- 	buildoptions { "/bigobj" }
 
 			filter {}
 		end
@@ -56,6 +57,7 @@ local tests = {
 		includedirs =
 		{
 			"../Dependencies/EASTL/include",
+			"../Dependencies/rapidjson",
 			"../Dependencies/doctest",
 			"../Dependencies/glm",
 
@@ -73,6 +75,18 @@ local tests = {
 			"Memory", "EASTL",
 			"Engine", "ECS"
 		},
+
+		extra = function ()
+			filter { "system:windows" }
+				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
+				links { "DbgHelp" }
+
+			-- filter { "action:vs*" }
+			-- 	buildoptions { "/bigobj" }
+
+			filter {}
+		end
+
 	}
 	-- {
 	-- 	name = "ScriptTest",

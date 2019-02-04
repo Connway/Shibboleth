@@ -25,14 +25,30 @@ THE SOFTWARE.
 
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
+#include <Shibboleth_App.h>
+
+Shibboleth::App g_app;
 
 TEST_CASE("shibboleth_ecs_create_entity")
 {
+	Shibboleth::AllocatorThreadInit();
+
+	//g_app.init(0, nullptr);
+	Shibboleth::SetApp(g_app);
+
+	Gaff::IReflection* head = Gaff::GetReflectionChainHead();
+
+	while (head) {
+		head->init();
+		head = head->next;
+	}
+
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
 	archetype.add<Shibboleth::Position>();
 	archetype.add<Shibboleth::Rotation>();
+	archetype.add<Shibboleth::Scale>();
 
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
 
@@ -41,4 +57,6 @@ TEST_CASE("shibboleth_ecs_create_entity")
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 
 	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
+	Shibboleth::Rotation::Set(ecs_mgr, id, glm::quat());
+	Shibboleth::Scale::Set(ecs_mgr, id, glm::vec3(3.0f));
 }

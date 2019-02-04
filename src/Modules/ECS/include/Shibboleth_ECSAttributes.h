@@ -41,7 +41,6 @@ public:
 
 	void finish(const Gaff::IReflectionDefinition& ref_def) override;
 
-
 private:
 	const char* _category = nullptr;
 	const char* _name = nullptr;
