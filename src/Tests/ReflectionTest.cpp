@@ -120,7 +120,7 @@ TEST_CASE("shibboleth_reflection_class")
 	Shibboleth::Reflection<Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 	Shibboleth::Reflection<Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 
-	g_app.init(0, nullptr);
+	//g_app.init(0, nullptr);
 	Shibboleth::SetApp(g_app);
 
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Derived>::GetName());
