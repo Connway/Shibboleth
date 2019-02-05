@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 Shibboleth::App g_app;
 
-TEST_CASE("shibboleth_ecs_create_entity")
+TEST_CASE("shibboleth_ecs_create_destroy_entity")
 {
 	Shibboleth::AllocatorThreadInit();
 
@@ -68,4 +68,10 @@ TEST_CASE("shibboleth_ecs_create_entity")
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id2), glm::vec3(5.0f, 4.0f, 3.0f));
 	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2), glm::quat(2.0f, glm::vec3(4.0f)));
 	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id2), glm::vec3(5.0f));
+
+	ecs_mgr.destroyEntity(id1);
+	ecs_mgr.destroyEntity(id2);
+
+	REQUIRE_EQ(id1.getPageIndex(), -1);
+	REQUIRE_EQ(id2.getPageIndex(), -1);
 }

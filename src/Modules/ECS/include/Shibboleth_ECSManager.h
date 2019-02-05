@@ -53,25 +53,19 @@ public:
 	EntityID createEntity(const ECSArchetype& archetype);
 	EntityID createEntity(Gaff::Hash64 archetype);
 
+	void destroyEntity(const EntityID& id);
+
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 
 private:
-	//struct alignas(16) EntityPage final
-	//{
-	//	int8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
-	//	EntityPage* next_page = nullptr;
-	//};
-
 	struct EntityData;
 
-	struct EntityPage final
+	struct alignas(16) EntityPage final
 	{
-		int32_t num_entities = 0;
-		int32_t next_index = 0;
-		UniquePtr<void> data;
-
-		Vector<int32_t> free_indices;
-		EntityData* owner = nullptr;
+		int32_t num_entities;
+		int32_t next_index;
+		EntityData* owner;
+		// Data after this.
 	};
 
 	struct EntityData final
@@ -82,6 +76,7 @@ private:
 		int32_t num_entities = 0;
 
 		Vector< UniquePtr<EntityPage> > pages;
+		Vector<EntityID> free_ids;
 	};
 
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
