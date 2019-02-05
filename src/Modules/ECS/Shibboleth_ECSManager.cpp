@@ -64,7 +64,7 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 	ProxyAllocator allocator("ECS");
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = EA_KIBIBYTE(64) / archetype.size();
+	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
 	//data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
 	//data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
 	data->archetype = std::move(archetype);
@@ -110,46 +110,78 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 
 	EntityID id;
 
-	// Look for free indices.
-	// $TODO: Try and optimize this.
-	for (auto& page : data.pages) {
-		if (page->free_indices.empty()) {
-			continue;
-		}
+	// Grab a free ID if available.
+	if (!data.free_ids.empty()) {
+		id = data.free_ids.back();
+		data.free_ids.pop_back();
 
-		id._entity_index = page->free_indices.back();
-		id._entity_page = page.get();
-		page->free_indices.pop_back();
+		++reinterpret_cast<EntityPage*>(id._entity_page)->num_entities;
+		++data.num_entities;
+
+		return id;
 	}
 
-	// Didn't find a free index.
-	if (!id._entity_page) {
-		EntityPage* const page = (data.pages.empty()) ? nullptr : data.pages.back().get();
+	// Try to allocate a new ID on an existing page.
+	if (!data.pages.empty()) {
+		auto& page = data.pages.back();
 
-		// Take next index on last page.
-		if (page && page->num_entities < data.num_entities_per_page) {
+		if (page->next_index < data.num_entities_per_page) {
 			id._entity_index = page->next_index++;
-			id._entity_page = page;
+			id._entity_page = page.get();
+			++page->num_entities;
+			++data.num_entities;
 
-		// All pages are full, allocate another page.
-		} else {
-			ProxyAllocator allocator("ECS");
-			EntityPage* const id_page = SHIB_ALLOCT(EntityPage, allocator);
-
-			id._entity_page = id_page;
-			id._entity_index = 0;
-
-			id_page->data.reset(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
-			id_page->num_entities = 1;
-			id_page->next_index = 1;
-			id_page->owner = &data;
-
-			data.pages.emplace_back(id_page);
+			return id;
 		}
 	}
+
+	// Didn't find a free index. Need to allocate a new page.
+	ProxyAllocator allocator("ECS");
+	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
+
+	id._entity_page = page;
+	id._entity_index = 0;
+
+	page->num_entities = 1;
+	page->next_index = 1;
+	page->owner = &data;
+
+	data.pages.emplace_back(page);
 
 	++data.num_entities;
 	return id;
+}
+
+void ECSManager::destroyEntity(const EntityID& id)
+{
+	GAFF_ASSERT(id._entity_page && id._entity_index > -1);
+
+	EntityPage* const page = reinterpret_cast<EntityPage*>(id._entity_page);
+	--page->owner->num_entities;
+	--page->num_entities;
+
+	if (page->num_entities > 0) {
+		page->owner->free_ids.emplace_back(id);
+
+	} else {
+		int32_t size = static_cast<int32_t>(page->owner->free_ids.size());
+
+		for (int32_t i = 0; i < size;) {
+			if (page->owner->free_ids[i]._entity_page == page) {
+				page->owner->free_ids.erase(page->owner->free_ids.begin() + i);
+				--size;
+			} else {
+				++i;
+			}
+		}
+
+		const auto it = Gaff::Find(page->owner->pages, page, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
+		page->owner->pages.erase(it);
+	}
+
+	EntityID& mutable_id = const_cast<EntityID&>(id);
+	mutable_id._entity_index = -1;
+	mutable_id._entity_page = nullptr;
 }
 
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
@@ -161,7 +193,7 @@ void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 
 	GAFF_ASSERT(component_offset > -1);
 
-	return reinterpret_cast<int8_t*>(page->data.get()) + entity_offset + component_offset;
+	return reinterpret_cast<int8_t*>(page) + sizeof(EntityPage) + entity_offset + component_offset;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)
