@@ -40,12 +40,30 @@ public:
 		return getComponent(id, Reflection<T>::GetHash());
 	}
 
+	//template <class... Components>
+	//void addComponents(EntityID id, Components&&... values)
+	//{
+	//	ECSArchetype archetype;
+	//	archetype.copy(getArchetype(id));
+	//	archetype.add<Components>()...;
+	//}
+
+	template <class... Components>
+	void addComponents(EntityID id)
+	{
+		ECSArchetype archetype;
+		archetype.copy(getArchetype(id));
+		archetype.add<Components>()...;
+		//archetype.finalize();
+	}
+
 	bool init(void) override;
 
 	//void addArchetype(const ECSArchetype& archetype, const char* name);
 	void addArchetype(ECSArchetype&& archetype, const char* name);
 	const ECSArchetype& getArchetype(Gaff::Hash64 name) const;
 	const ECSArchetype& getArchetype(const char* name) const;
+	const ECSArchetype& getArchetype(EntityID id) const;
 
 	EntityID createEntityByName(Gaff::Hash64 name);
 	EntityID createEntityByName(const char* name);

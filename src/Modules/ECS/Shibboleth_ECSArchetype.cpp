@@ -145,6 +145,17 @@ void ECSArchetype::remove(int32_t index)
 	remove(_vars, _alloc_size, index, false);
 }
 
+void ECSArchetype::copy(const ECSArchetype& base)
+{
+	_shared_alloc_size = base._shared_alloc_size;
+	_alloc_size = base._alloc_size;
+
+	_shared_vars = base._shared_vars;
+	_vars = base._vars;
+
+	_hash = Gaff::INIT_HASH64;
+}
+
 int32_t ECSArchetype::getComponentOffset(Gaff::Hash64 component) const
 {
 	const auto it = Gaff::Find(_vars, component, [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool {

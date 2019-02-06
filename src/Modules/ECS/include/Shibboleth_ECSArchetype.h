@@ -77,6 +77,8 @@ public:
 	void remove(const Gaff::IReflectionDefinition& ref_def);
 	void remove(int32_t index);
 
+	void copy(const ECSArchetype& base);
+
 	int32_t getComponentOffset(Gaff::Hash64 component) const;
 
 	int32_t sharedSize(void) const;

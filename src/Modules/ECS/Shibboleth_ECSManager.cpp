@@ -85,6 +85,11 @@ const ECSArchetype& ECSManager::getArchetype(const char* name) const
 	return getArchetype(Gaff::FNV1aHash64String(name));
 }
 
+const ECSArchetype& ECSManager::getArchetype(EntityID id) const
+{
+	return reinterpret_cast<EntityPage*>(id._entity_page)->owner->archetype;
+}
+
 EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
 {
 	const auto it = _archtypes.find(name);
