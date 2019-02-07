@@ -84,40 +84,77 @@ void ECSArchetype::removeShared(int32_t index)
 	remove(_shared_vars, _shared_alloc_size, index, true);
 }
 
-void ECSArchetype::initShared(const Gaff::JSON& json)
+bool ECSArchetype::finalize(const Gaff::JSON& json)
 {
-	if (!_shared_alloc_size) {
-		return;
+	if (!json.isObject()) {
+		// $TODO: Log error.
+		return false;
 	}
 
-	ProxyAllocator allocator("ECS");
-	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	const Gaff::JSON shared_components = json["shared_components"];
+	const Gaff::JSON components = json["components"];
 
-	int32_t offset = 0;
-	int32_t index = 0;
-
-	json.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
+	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
 	{
-		const RefDefOffset& data = _shared_vars[index];
-
-		// Class had an issue and was not added to the archetype.
-		if (data.ref_def->getReflectionInstance().getHash() != Gaff::FNV1aHash64String(component)) {
+		if (!value.isArray()) {
+			// $TODO: Log error
 			return false;
 		}
 
-		++index;
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
 
-		value.forEachInArray([&](int32_t, const Gaff::JSON& ecs_var) -> bool
-		{
-			SerializeReader<Gaff::JSON> reader(ecs_var, allocator);
-			data.ref_def->load(reader, reinterpret_cast<int8_t*>(_shared_instances) + offset);
-
-			offset += data.ref_def->getReflectionInstance().size();
+		if (!ref_def) {
+			// $TODO: Log error
 			return false;
-		});
+		}
 
+		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
+
+		if (!ecs) {
+			// $TODO: Log error
+			return false;
+		}
+
+		addShared(*ref_def);
 		return false;
 	});
+
+	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isString()) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(CLASS_HASH(value.getString()));
+
+		if (!ref_def) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
+
+		if (!ecs) {
+			// $TODO: Log error
+			return false;
+		}
+
+		add(*ref_def);
+		return false;
+	});
+
+	initShared(shared_components);
+	calculateHash();
+	return true;
+}
+
+bool ECSArchetype::finalize(void)
+{
+	initShared();
+	calculateHash();
+	return true;
 }
 
 void ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
@@ -177,97 +214,7 @@ int32_t ECSArchetype::size(void) const
 
 Gaff::Hash64 ECSArchetype::getHash(void) const
 {
-	if (_hash == Gaff::INIT_HASH64) {
-		if (_shared_instances) {
-			_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size));
-		}
-
-		for (const RefDefOffset& data : _shared_vars) {
-			const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
-			_hash = Gaff::FNV1aHash64T(hash, _hash);
-		}
-
-		for (const RefDefOffset& data : _vars) {
-			const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
-			_hash = Gaff::FNV1aHash64T(hash, _hash);
-		}
-	}
-
 	return _hash;
-}
-
-void ECSArchetype::dirtyHash(void)
-{
-	_hash = Gaff::INIT_HASH64;
-}
-
-bool ECSArchetype::fromJSON(const Gaff::JSON& json)
-{
-	if (!json.isObject()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-
-	const Gaff::JSON shared_components = json["SharedComponents"];
-	const Gaff::JSON components = json["Components"];
-
-	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isArray()) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
-
-		if (!ref_def) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-		if (!ecs) {
-			// $TODO: Log error
-			return false;
-		}
-
-		addShared(*ref_def);
-
-		return false;
-	});
-
-	initShared(shared_components);
-
-
-	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isString()) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(CLASS_HASH(value.getString()));
-
-		if (!ref_def) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-		if (!ecs) {
-			// $TODO: Log error
-			return false;
-		}
-
-		add(*ref_def);
-		return false;
-	});
-
-	return true;
 }
 
 void ECSArchetype::add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared)
@@ -286,15 +233,33 @@ void ECSArchetype::add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Ga
 		return;
 	}
 
+	const auto it = Gaff::LowerBound(vars, ref_def, [](const RefDefOffset& lhs, const Gaff::IReflectionDefinition& rhs) -> bool
+	{
+		return lhs.ref_def->getReflectionInstance().getHash() < rhs.getReflectionInstance().getHash();
+	});
+
+	GAFF_ASSERT(it == vars.end() || it->ref_def->getReflectionInstance().getHash() != ref_def.getReflectionInstance().getHash());
 	const int32_t size_scalar = (shared) ? 1 : 4;
-	const int32_t size_offset = (vars.empty()) ? 0 : vars.back().ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar;
-	const int32_t base_offset = (vars.empty()) ? 0 : vars.back().offset;
+
+	// Simple append.
+	if (it == vars.end()) {
+		const int32_t size_offset = (vars.empty()) ? 0 : vars.back().ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar;
+		const int32_t base_offset = (vars.empty()) ? 0 : vars.back().offset;
+
+		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset });
+
+	// Inserting, bump up all the offsets.
+	} else {
+		const int32_t offset = it->offset;
+
+		for (auto begin = it; it != vars.end(); ++begin) {
+			begin->offset += attr->size() * size_scalar;
+		}
+
+		vars.emplace(it, RefDefOffset{ &ref_def, offset });
+	}
 
 	alloc_size += attr->size();
-
-	vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset });
-
-	dirtyHash();
 }
 
 void ECSArchetype::remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared)
@@ -324,15 +289,104 @@ void ECSArchetype::remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32
 	GAFF_ASSERT(index < num_vars );
 
 	const int32_t size_scalar = (shared) ? 1 : 4;
-	const int32_t data_size = vars[index].ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar;
+	const int32_t data_size = vars[index].ref_def->getClassAttr<ECSClassAttribute>()->size();
 	alloc_size -= data_size;
 
+	// Reduce all the offsets.
 	for (int32_t i = index + 1; i < num_vars ; ++i) {
-		vars[i].offset -= data_size;
+		vars[i].offset -= data_size * size_scalar;
 	}
 
 	vars.erase(vars.begin() + index);
-	dirtyHash();
+}
+
+void ECSArchetype::initShared(const Gaff::JSON& json)
+{
+	if (!_shared_alloc_size) {
+		return;
+	}
+
+	ProxyAllocator allocator("ECS");
+	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+
+	int32_t index = 0;
+
+	json.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
+	{
+		const RefDefOffset& data = _shared_vars[index];
+
+		// Class had an issue and was not added to the archetype.
+		if (data.ref_def->getReflectionInstance().getHash() != Gaff::FNV1aHash64String(component)) {
+			return false;
+		}
+
+		const auto vars = data.ref_def->GET_CLASS_ATTRS(IECSVarAttribute, ProxyAllocator);
+		int32_t offset = 0;
+		++index;
+
+		value.forEachInArray([&](int32_t var_index, const Gaff::JSON& ecs_var) -> bool
+		{
+			const Gaff::IReflectionDefinition& ref_def = vars[var_index]->getType();
+			const auto ctor = ref_def.getConstructor<>();
+
+			if (ctor) {
+				ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
+			}
+
+			SerializeReader<Gaff::JSON> reader(ecs_var, allocator);
+			ref_def.load(reader, reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
+
+			offset += ref_def.size();
+			return false;
+		});
+
+		return false;
+	});
+}
+
+void ECSArchetype::initShared(void)
+{
+	if (!_shared_alloc_size) {
+		return;
+	}
+
+	ProxyAllocator allocator("ECS");
+	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+
+	for (const RefDefOffset& data : _shared_vars) {
+		const auto vars = data.ref_def->GET_CLASS_ATTRS(IECSVarAttribute, ProxyAllocator);
+		int32_t offset = 0;
+
+		for (const IECSVarAttribute* ecs_var : vars) {
+			const Gaff::IReflectionDefinition& ref_def = ecs_var->getType();
+			const auto ctor = data.ref_def->getConstructor<>();
+
+			if (ctor) {
+				ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
+			}
+
+			offset += ref_def.size();
+		}
+	}
+}
+
+void ECSArchetype::calculateHash(void)
+{
+	_hash = Gaff::INIT_HASH64;
+
+	if (_shared_instances) {
+		_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);
+	}
+
+	for (const RefDefOffset& data : _shared_vars) {
+		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
+		_hash = Gaff::FNV1aHash64T(hash, _hash);
+	}
+
+	for (const RefDefOffset& data : _vars) {
+		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
+		_hash = Gaff::FNV1aHash64T(hash, _hash);
+	}
 }
 
 NS_END

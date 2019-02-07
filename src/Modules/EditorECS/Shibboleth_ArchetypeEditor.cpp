@@ -348,7 +348,7 @@ void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 		ProxyAllocator allocator("Editor");
 
 		for (const IECSVarAttribute* attr : var_attrs) {
-			const size_t size = static_cast<size_t>(attr->getType().getReflectionInstance().size());
+			const size_t size = static_cast<size_t>(attr->getType().size());
 			void* const instance = SHIB_ALLOC(size, allocator);
 			instances.emplace_back(instance);
 			memset(instance, 0, size);

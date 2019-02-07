@@ -46,6 +46,8 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	archetype.add<Shibboleth::Rotation>();
 	archetype.add<Shibboleth::Scale>();
 
+	REQUIRE(archetype.finalize());
+
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
 
 	ecs_mgr.addArchetype(std::move(archetype), "test_archetype");
@@ -71,7 +73,4 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 
 	ecs_mgr.destroyEntity(id1);
 	ecs_mgr.destroyEntity(id2);
-
-	REQUIRE_EQ(id1.getPageIndex(), -1);
-	REQUIRE_EQ(id2.getPageIndex(), -1);
 }

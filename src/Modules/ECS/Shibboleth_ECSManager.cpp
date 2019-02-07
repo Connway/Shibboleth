@@ -45,19 +45,6 @@ bool ECSManager::init(void)
 	return true;
 }
 
-//void ECSManager::addArchetype(const ECSArchetype& archetype, const char* name)
-//{
-//	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
-//	EntityData& data = _entity_pages[archetype.getHash()];
-//	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
-//	data.archetype = archetype;
-//
-//	ProxyAllocator allocator("ECS");
-//	data.shared_components = SHIB_ALLOC_ALIGNED(archetype.sharedSize(), 16, allocator);
-//
-//	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
-//}
-
 void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
@@ -65,11 +52,24 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
 	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
-	//data.shared_components = SHIB_ALLOC_ALIGNED(data.archetype.sharedSize(), 16, allocator);
-	//data->shared_components = SHIB_ALLOC(archetype.sharedSize(), allocator);
 	data->archetype = std::move(archetype);
 
 	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
+	_entity_pages[archetype.getHash()].reset(data);
+}
+
+void ECSManager::addArchetype(ECSArchetype&& archetype)
+{
+	if (_entity_pages.find(archetype.getHash()) != _entity_pages.end()) {
+		return;
+	}
+
+	ProxyAllocator allocator("ECS");
+
+	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
+	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
+	data->archetype = std::move(archetype);
+
 	_entity_pages[archetype.getHash()].reset(data);
 }
 
@@ -87,7 +87,8 @@ const ECSArchetype& ECSManager::getArchetype(const char* name) const
 
 const ECSArchetype& ECSManager::getArchetype(EntityID id) const
 {
-	return reinterpret_cast<EntityPage*>(id._entity_page)->owner->archetype;
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	return _entities[id].data->archetype;
 }
 
 EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
@@ -113,14 +114,27 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	EntityData& data = *(it->second);
 
-	EntityID id;
+	EntityID id = -1;
+
+	if (_free_ids.empty()) {
+		id = _next_id++;
+	} else {
+		id = _free_ids.back();
+		_free_ids.pop_back();
+	}
+
+	Entity& entity = _entities[id];
+	entity.data = &data;
 
 	// Grab a free ID if available.
-	if (!data.free_ids.empty()) {
-		id = data.free_ids.back();
-		data.free_ids.pop_back();
+	if (!data.free_indices.empty()) {
+		entity.index = data.free_indices.back();
+		data.free_indices.pop_back();
 
-		++reinterpret_cast<EntityPage*>(id._entity_page)->num_entities;
+		const int32_t page = entity.index / data.num_entities_per_page;
+		entity.page = data.pages[page].get();
+
+		++entity.page->num_entities;
 		++data.num_entities;
 
 		return id;
@@ -131,9 +145,10 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 		auto& page = data.pages.back();
 
 		if (page->next_index < data.num_entities_per_page) {
-			id._entity_index = page->next_index++;
-			id._entity_page = page.get();
-			++page->num_entities;
+			entity.index = page->next_index++;
+			entity.page = page.get();
+
+			++entity.page->num_entities;
 			++data.num_entities;
 
 			return id;
@@ -144,12 +159,11 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	ProxyAllocator allocator("ECS");
 	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
 
-	id._entity_page = page;
-	id._entity_index = 0;
+	entity.page = page;
+	entity.index = 0;
 
 	page->num_entities = 1;
 	page->next_index = 1;
-	page->owner = &data;
 
 	data.pages.emplace_back(page);
 
@@ -157,48 +171,60 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	return id;
 }
 
-void ECSManager::destroyEntity(const EntityID& id)
+void ECSManager::destroyEntity(EntityID id)
 {
-	GAFF_ASSERT(id._entity_page && id._entity_index > -1);
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	Entity& entity = _entities[id];
 
-	EntityPage* const page = reinterpret_cast<EntityPage*>(id._entity_page);
-	--page->owner->num_entities;
-	--page->num_entities;
+	--entity.data->num_entities;
+	--entity.page->num_entities;
 
-	if (page->num_entities > 0) {
-		page->owner->free_ids.emplace_back(id);
+	if (entity.page->num_entities > 0) {
+		entity.data->free_indices.emplace_back(entity.index);
 
 	} else {
-		int32_t size = static_cast<int32_t>(page->owner->free_ids.size());
+		const int32_t page_index = entity.index / entity.data->num_entities_per_page;
+		int32_t size = static_cast<int32_t>(entity.data->free_indices.size());
 
 		for (int32_t i = 0; i < size;) {
-			if (page->owner->free_ids[i]._entity_page == page) {
-				page->owner->free_ids.erase(page->owner->free_ids.begin() + i);
+			const int32_t free_index_page_index = entity.data->free_indices[i] / entity.data->num_entities_per_page;
+
+			if (page_index == free_index_page_index) {
+				entity.data->free_indices.erase(entity.data->free_indices.begin() + i);
 				--size;
 			} else {
 				++i;
 			}
 		}
 
-		const auto it = Gaff::Find(page->owner->pages, page, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
-		page->owner->pages.erase(it);
+		const auto it = Gaff::Find(entity.data->pages, entity.page, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
+		entity.data->pages.erase(it);
 	}
 
-	EntityID& mutable_id = const_cast<EntityID&>(id);
-	mutable_id._entity_index = -1;
-	mutable_id._entity_page = nullptr;
+	entity.page = nullptr;
+	entity.data = nullptr;
+	entity.index = -1;
+
+	_free_ids.emplace_back(id);
 }
 
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 {
-	GAFF_ASSERT(id._entity_page);
-	EntityPage* const page = reinterpret_cast<EntityPage*>(id._entity_page);
-	const int32_t entity_offset = (id._entity_index / 4) * page->owner->archetype.size() * 4;
-	const int32_t component_offset = page->owner->archetype.getComponentOffset(component);
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	const Entity& entity = _entities[id];
+
+	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
+	const int32_t component_offset = entity.data->archetype.getComponentOffset(component);
 
 	GAFF_ASSERT(component_offset > -1);
 
-	return reinterpret_cast<int8_t*>(page) + sizeof(EntityPage) + entity_offset + component_offset;
+	return reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset + component_offset;
+}
+
+int32_t ECSManager::getPageIndex(EntityID id) const
+{
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	return _entities[id].index;
 }
 
 bool ECSManager::loadFile(const char*, IFile* file)
@@ -219,8 +245,7 @@ bool ECSManager::loadFile(const char*, IFile* file)
 
 	ECSArchetype archetype;
 
-	if (!archetype.fromJSON(json)) {
-		// $TODO: Log error.
+	if (!archetype.finalize(json)) {
 		return false;
 	}
 

@@ -89,6 +89,7 @@ public:
 	void setAllocator(const Allocator& allocator);
 
 	const IReflection& getReflectionInstance(void) const override;
+	int32_t size(void) const override;
 
 	int32_t getNumVars(void) const override;
 	const char* getVarName(int32_t index) const override;
@@ -114,6 +115,7 @@ public:
 	int32_t getNumStaticFuncAttrs(Hash32 name) const override;
 	const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const override;
 
+	VoidFunc getConstructor(Hash64 ctor_hash) const override;
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
@@ -429,6 +431,7 @@ private:
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<HashString32<Allocator>, StaticFuncData, Allocator> _static_funcs;
+	VectorMap<Hash64, VoidFunc, Allocator> _factories;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 
@@ -493,6 +496,7 @@ private:
 	{ \
 	public: \
 		const IReflection& getReflectionInstance(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<class_type>::GetInstance(); } \
+		int32_t size(void) const override { return sizeof(class_type); } \
 		void load(const ISerializeReader& reader, void* object) const override { load(reader, *reinterpret_cast<class_type*>(object)); } \
 		void save(ISerializeWriter& writer, const void* object) const override { save(writer, *reinterpret_cast<const class_type*>(object)); } \
 		void load(const ISerializeReader& reader, class_type& out) const { out = reader.read##serialize_type(); } \
@@ -517,6 +521,7 @@ private:
 		const IAttribute* getFuncAttr(Hash32, int32_t) const override { return nullptr; } \
 		int32_t getNumStaticFuncAttrs(Hash32) const override { return 0; } \
 		const IAttribute* getStaticFuncAttr(Hash32, int32_t) const override { return nullptr; } \
+		VoidFunc getConstructor(Hash64) const override { return nullptr; } \
 		VoidFunc getFactory(Hash64) const override { return nullptr; } \
 		VoidFunc getStaticFunc(Hash32, Hash64) const override { return nullptr; } \
 		void* getFunc(Hash32, Hash64) const override { return nullptr; } \

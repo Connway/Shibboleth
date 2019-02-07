@@ -61,7 +61,7 @@ void ECSClassAttribute::finish(const Gaff::IReflectionDefinition& ref_def)
 	const auto attrs = ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
 
 	for (const IECSVarAttribute* attr : attrs) {
-		_size += attr->getType().getReflectionInstance().size();
+		_size += attr->getType().size();
 	}
 }
 
