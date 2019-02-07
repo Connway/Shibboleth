@@ -39,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
 void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + id.getPageIndex() % 4;
+	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
@@ -47,7 +47,7 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 glm::vec3 Position::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + id.getPageIndex() % 4;
+	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::vec3(
 		component[0],
@@ -82,7 +82,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
 
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + id.getPageIndex() % 4;
+	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.w;
 	component[4] = value.x;
 	component[8] = value.y;
@@ -91,7 +91,7 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 
 glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + id.getPageIndex() % 4;
+	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::quat(
 		component[0],
@@ -132,7 +132,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Scale)
 
 void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + id.getPageIndex() % 4;
+	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
@@ -140,7 +140,7 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 glm::vec3 Scale::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + id.getPageIndex() % 4;
+	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::vec3(
 		component[0],

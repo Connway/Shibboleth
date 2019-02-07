@@ -40,6 +40,18 @@ class ECSArchetype final
 
 public:
 	template <class T>
+	void removeShared(void)
+	{
+		removeShared(Reflection<T>::GetReflectionDefinition());
+	}
+
+	template <class T>
+	void remove(void)
+	{
+		remove(Reflection<T>::GetReflectionDefinition());
+	}
+
+	template <class T>
 	void addShared(void)
 	{
 		addShared(Reflection<T>::GetReflectionDefinition());
@@ -69,7 +81,8 @@ public:
 	void removeShared(const Gaff::IReflectionDefinition& ref_def);
 	void removeShared(int32_t index);
 
-	void initShared(const Gaff::JSON& json);
+	bool finalize(const Gaff::JSON& json);
+	bool finalize(void);
 
 	void add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void add(const Gaff::IReflectionDefinition& ref_def);
@@ -85,9 +98,6 @@ public:
 	int32_t size(void) const;
 
 	Gaff::Hash64 getHash(void) const;
-	void dirtyHash(void);
-
-	bool fromJSON(const Gaff::JSON& json);
 
 private:
 	struct RefDefOffset final
@@ -111,6 +121,11 @@ private:
 	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
 	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
 	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32_t index, bool shared);
+
+	void initShared(const Gaff::JSON& json);
+	void initShared(void);
+
+	void calculateHash(void);
 };
 
 NS_END

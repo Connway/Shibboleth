@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "Gaff_Hash.h"
 #include <EASTL/array.h>
 
+#define GET_CLASS_ATTRS(T, Allocator) getClassAttrs<T, Allocator>(Gaff::FNV1aHash64Const(#T))
 #define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
 #define GET_FUNC_ATTR(T, func_name) getFuncAttr<T>(func_name, Gaff::FNV1aHash64Const(#T))
@@ -460,6 +461,9 @@ public:
 class IReflectionDefinition
 {
 public:
+	template <class... Args>
+	using ConstructFunc = void (*)(void*, Args&&...);
+
 	template <class... Args>
 	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 
@@ -989,6 +993,13 @@ public:
 	}
 
 	template <class... Args>
+	ConstructFunc<Args...> getConstructor(void) const
+	{
+		constexpr Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
+		return reinterpret_cast<ConstructFunc<Args...>>(getConstructor(ctor_hash));
+	}
+
+	template <class... Args>
 	FactoryFunc<Args...> getFactory(void) const
 	{
 		constexpr Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
@@ -1011,6 +1022,7 @@ public:
 	virtual ~IReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
+	virtual int32_t size(void) const = 0;
 
 	virtual void load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
@@ -1043,6 +1055,7 @@ public:
 	virtual int32_t getNumStaticFuncAttrs(Hash32 name) const = 0;
 	virtual const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const = 0;
 
+	virtual VoidFunc getConstructor(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
 	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
