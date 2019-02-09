@@ -42,9 +42,9 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
-	archetype.add<Shibboleth::Position>();
-	archetype.add<Shibboleth::Rotation>();
-	archetype.add<Shibboleth::Scale>();
+	REQUIRE(archetype.add<Shibboleth::Position>());
+	REQUIRE(archetype.add<Shibboleth::Rotation>());
+	REQUIRE(archetype.add<Shibboleth::Scale>());
 
 	REQUIRE(archetype.finalize());
 
@@ -54,6 +54,9 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 
 	const Shibboleth::EntityID id1 = ecs_mgr.createEntity(archetype_hash);
 	const Shibboleth::EntityID id2 = ecs_mgr.createEntity(archetype_hash);
+
+	REQUIRE_EQ(id1, 0);
+	REQUIRE_EQ(id2, 1);
 
 	Shibboleth::Position::Set(ecs_mgr, id1, glm::vec3(0.0f, 1.0f, 2.0f));
 	Shibboleth::Rotation::Set(ecs_mgr, id1, glm::quat(1.0f, glm::vec3(0.0f)));

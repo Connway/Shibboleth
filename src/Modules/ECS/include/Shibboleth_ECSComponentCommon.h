@@ -42,6 +42,8 @@ public:
 	static glm_vec4 GetY(void* component_begin);
 	static glm_vec4 GetZ(void* component_begin);
 
+	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+
 	SHIB_REFLECTION_CLASS_DECLARE(Position);
 };
 
@@ -57,6 +59,8 @@ public:
 	static glm_vec4 GetZ(void* component_begin);
 	static glm_vec4 GetW(void* component_begin);
 
+	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+
 	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
 };
 
@@ -70,6 +74,8 @@ public:
 	static glm_vec4 GetX(void* component_begin);
 	static glm_vec4 GetY(void* component_begin);
 	static glm_vec4 GetZ(void* component_begin);
+
+	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Scale);
 };

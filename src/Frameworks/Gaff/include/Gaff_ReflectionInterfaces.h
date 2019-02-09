@@ -467,6 +467,9 @@ public:
 	template <class... Args>
 	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 
+	template <class Ret, class... Args>
+	using TemplateFunc = Ret (*)(Args...);
+
 	using VoidFunc = void (*)(void);
 
 	template <class T>
@@ -1014,6 +1017,19 @@ public:
 
 		if (functor) {
 			return reinterpret_cast< IReflectionFunction<Ret, Args...>* >(functor);
+		}
+
+		return nullptr;
+	}
+
+	template <class Ret, class... Args>
+	TemplateFunc<Ret, Args...> getStaticFunc(Hash32 name) const
+	{
+		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		VoidFunc func = getStaticFunc(name, arg_hash);
+		
+		if (func) {
+			return reinterpret_cast< TemplateFunc<Ret, Args...> >(func);
 		}
 
 		return nullptr;
