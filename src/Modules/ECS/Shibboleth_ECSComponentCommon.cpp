@@ -35,6 +35,8 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Position)
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::vec3>()
 	)
+
+	.staticFunc("Copy", &Position::Copy)
 SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
 void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
@@ -71,6 +73,11 @@ glm_vec4 Position::GetZ(void* component_begin)
 	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
 }
 
+void Position::Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+{
+	GAFF_REF(old_begin, old_index, new_begin, new_index);
+}
+
 
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Rotation)
@@ -78,6 +85,8 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Rotation)
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::quat>()
 	)
+
+	.staticFunc("Copy", &Rotation::Copy)
 SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
 
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
@@ -121,6 +130,11 @@ glm_vec4 Rotation::GetW(void* component_begin)
 	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
 }
 
+void Rotation::Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+{
+	GAFF_REF(old_begin, old_index, new_begin, new_index);
+}
+
 
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scale)
@@ -128,6 +142,8 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scale)
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::vec3>()
 	)
+
+	.staticFunc("Copy", &Scale::Copy)
 SHIB_REFLECTION_CLASS_DEFINE_END(Scale)
 
 void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
@@ -162,6 +178,11 @@ glm_vec4 Scale::GetY(void* component_begin)
 glm_vec4 Scale::GetZ(void* component_begin)
 {
 	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
+}
+
+void Scale::Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+{
+	GAFF_REF(old_begin, old_index, new_begin, new_index);
 }
 
 NS_END

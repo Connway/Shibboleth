@@ -127,6 +127,8 @@ public:
 
 	void modify(EntityID& id, ArchetypeModifier modifier)
 	{
+		GAFF_ASSERT(id < _next_id && _entities[id].data);
+
 		ECSArchetype archetype;
 		archetype.copy(getArchetype(id));
 
@@ -149,7 +151,7 @@ public:
 		archetype.finalize();
 		addArchetype(std::move(archetype));
 
-		//migrate(id, old_archetype, archetype)
+		//migrate(id, archetype.getHash());
 	}
 
 	bool init(void) override;
@@ -197,6 +199,7 @@ private:
 
 		int32_t num_entities_per_page = 0;
 		int32_t num_entities = 0;
+		int32_t next_index = 0;
 
 		Vector< UniquePtr<EntityPage> > pages;
 		Vector<int32_t> free_indices;
@@ -217,6 +220,8 @@ private:
 	int32_t _next_id = 0;
 
 	bool loadFile(const char* file_name, IFile* file);
+	void migrate(EntityID id, Gaff::Hash64 new_archetype);
+	int32_t allocateIndex(EntityData& data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };

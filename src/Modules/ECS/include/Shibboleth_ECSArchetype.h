@@ -40,27 +40,27 @@ class ECSArchetype final
 
 public:
 	template <class T>
-	void removeShared(void)
+	bool removeShared(void)
 	{
-		removeShared(Reflection<T>::GetReflectionDefinition());
+		return removeShared(Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
-	void remove(void)
+	bool remove(void)
 	{
-		remove(Reflection<T>::GetReflectionDefinition());
+		return remove(Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
-	void addShared(void)
+	bool addShared(void)
 	{
-		addShared(Reflection<T>::GetReflectionDefinition());
+		return addShared(Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
-	void add(void)
+	bool add(void)
 	{
-		add(Reflection<T>::GetReflectionDefinition());
+		return add(Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
@@ -75,22 +75,29 @@ public:
 
 	ECSArchetype& operator=(ECSArchetype&& rhs);
 
-	void addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void addShared(const Gaff::IReflectionDefinition& ref_def);
-	void removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void removeShared(const Gaff::IReflectionDefinition& ref_def);
-	void removeShared(int32_t index);
+	bool addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	bool addShared(const Gaff::IReflectionDefinition& ref_def);
+	bool removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	bool removeShared(const Gaff::IReflectionDefinition& ref_def);
+	bool removeShared(int32_t index);
 
 	bool finalize(const Gaff::JSON& json);
 	bool finalize(void);
 
-	void add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void add(const Gaff::IReflectionDefinition& ref_def);
-	void remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void remove(const Gaff::IReflectionDefinition& ref_def);
-	void remove(int32_t index);
+	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	bool add(const Gaff::IReflectionDefinition& ref_def);
+	bool remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	bool remove(const Gaff::IReflectionDefinition& ref_def);
+	bool remove(int32_t index);
 
 	void copy(const ECSArchetype& base);
+	void copy(
+		const ECSArchetype& old_archetype,
+		void* old_data,
+		int32_t old_index,
+		void* new_data,
+		int32_t new_index
+	);
 
 	int32_t getComponentOffset(Gaff::Hash64 component) const;
 
@@ -102,8 +109,12 @@ public:
 private:
 	struct RefDefOffset final
 	{
+		using CopyFunc = void (*)(void*, int32_t, void*, int32_t);
+
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;
+
+		CopyFunc copy_func;
 	};
 
 	Vector<RefDefOffset> _shared_vars;
@@ -116,11 +127,11 @@ private:
 
 	void* _shared_instances = nullptr;
 
-	void add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
-	void add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
-	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
-	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
-	void remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32_t index, bool shared);
+	bool add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
+	bool add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
+	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
+	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
+	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32_t index, bool shared);
 
 	void initShared(const Gaff::JSON& json);
 	void initShared(void);
