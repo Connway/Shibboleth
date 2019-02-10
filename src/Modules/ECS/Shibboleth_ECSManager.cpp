@@ -232,11 +232,14 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 	const int32_t page = global_index / data.num_entities_per_page;
 	const int32_t new_index = global_index - page * data.num_entities_per_page;
 
-	EntityPage* const new_page = data.pages[page].get();
-	void* const old_data = reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage);
-	void* const new_data = reinterpret_cast<int8_t*>(new_page) + sizeof(EntityPage);
+	const int32_t old_entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
+	const int32_t new_entity_offset = (new_index / 4) * data.archetype.size() * 4;
 
-	entity.data->archetype.copy(data.archetype, old_data, entity.index, new_data, new_index);
+	EntityPage* const new_page = data.pages[page].get();
+	void* const old_data = reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + old_entity_offset;
+	void* const new_data = reinterpret_cast<int8_t*>(new_page) + sizeof(EntityPage) + new_entity_offset;
+
+	entity.data->archetype.copy(data.archetype, old_data, entity.index % 4, new_data, new_index % 4);
 
 	entity.data = &data;
 	entity.page = new_page;
