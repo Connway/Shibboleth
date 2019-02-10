@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 Shibboleth::App g_app;
 
-TEST_CASE("shibboleth_ecs_create_destroy_entity")
+TEST_CASE("shibboleth_ecs_archetype_hash")
 {
 	Shibboleth::AllocatorThreadInit();
 
@@ -39,6 +39,22 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	Gaff::InitAttributeReflection();
 	Gaff::InitClassReflection();
 
+	Shibboleth::ECSArchetype archetype1;
+	Shibboleth::ECSArchetype archetype2;
+
+	REQUIRE(archetype1.add<Shibboleth::Position>());
+	REQUIRE(archetype1.add<Shibboleth::Rotation>());
+	REQUIRE(archetype1.add<Shibboleth::Scale>());
+
+	REQUIRE(archetype2.add<Shibboleth::Scale>());
+	REQUIRE(archetype2.add<Shibboleth::Rotation>());
+	REQUIRE(archetype2.add<Shibboleth::Position>());
+
+	REQUIRE_EQ(archetype1.getHash(), archetype2.getHash());
+}
+
+TEST_CASE("shibboleth_ecs_create_destroy_entity")
+{
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
