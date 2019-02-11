@@ -457,31 +457,20 @@ private:
 	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 	template <class Var, class Ret, class First, class... Rest>
 	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <class Var>
-	ReflectionDefinition& addAttributes(Gaff::IReflectionVar*, Var T::*, Vector<IAttributePtr, Allocator>&);
-	template <class Var, class Ret>
-	ReflectionDefinition& addAttributes(Gaff::IReflectionVar*, Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&);
 
 	// Functions
 	template <class Ret, class... Args, class First, class... Rest>
 	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 	template <class Ret, class... Args, class First, class... Rest>
 	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <class Ret, class... Args>
-	ReflectionDefinition& addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&);
-	template <class Ret, class... Args>
-	ReflectionDefinition& addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&);
 
 	// Static Functions
 	template <class Ret, class... Args, class First, class... Rest>
 	ReflectionDefinition& addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <class Ret, class... Args>
-	ReflectionDefinition& addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&);
 
 	// Non-apply() call version.
 	template <class First, class... Rest>
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>&);
 
 	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
 	void instantiated(void* object) const override;

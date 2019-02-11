@@ -193,14 +193,12 @@ template <class First, class... Rest>
 Hash64 ReflectionVersion<T>::getAttributeHashes(Hash64 hash, const First& first, const Rest&... rest) const
 {
 	hash = first.applyVersioning(hash);
-	return getAttributeHashes(hash, rest...);
-}
 
-template <class T>
-template <class Attr>
-Hash64 ReflectionVersion<T>::getAttributeHashes(Hash64 hash, const Attr& attr) const
-{
-	return attr.applyVersioning(hash);
+	if constexpr (sizeof...(Rest) > 0) {
+		return getAttributeHashes(hash, rest...);
+	} else {
+		return hash;
+	}
 }
 
 NS_END

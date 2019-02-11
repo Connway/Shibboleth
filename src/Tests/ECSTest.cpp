@@ -93,3 +93,66 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	ecs_mgr.destroyEntity(id1);
 	ecs_mgr.destroyEntity(id2);
 }
+
+TEST_CASE("shibboleth_ecs_add_remove_component")
+{
+	Shibboleth::ECSManager ecs_mgr;
+
+	Shibboleth::ECSArchetype archetype;
+	REQUIRE(archetype.add<Shibboleth::Position>());
+	REQUIRE(archetype.finalize());
+
+	const Gaff::Hash64 archetype_hash = archetype.getHash();
+	ecs_mgr.addArchetype(std::move(archetype), "test_archetype");
+
+	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	REQUIRE_EQ(id, 0);
+
+	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
+
+	ecs_mgr.addComponents<Shibboleth::Rotation, Shibboleth::Scale>(id);
+	Shibboleth::Rotation::Set(ecs_mgr, id, glm::quat(1.0f, glm::vec3(0.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id, glm::vec3(3.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id), glm::vec3(3.0f));
+
+	ecs_mgr.removeComponents<Shibboleth::Position, Shibboleth::Scale>(id);
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
+
+	ecs_mgr.destroyEntity(id);
+}
+
+TEST_CASE("shibboleth_ecs_add_remove_shared_component")
+{
+	Shibboleth::ECSManager ecs_mgr;
+
+	Shibboleth::ECSArchetype archetype;
+	REQUIRE(archetype.add<Shibboleth::Position>());
+	REQUIRE(archetype.addShared<Shibboleth::Rotation>());
+	REQUIRE(archetype.finalize());
+
+	ecs_mgr.addArchetype(std::move(archetype), "test_archetype");
+
+	const Gaff::Hash64 archetype_hash = archetype.getHash();
+	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, glm::quat(1.0f, glm::vec3(0.0f)));
+
+	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	REQUIRE_EQ(id, 0);
+
+	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash), glm::quat(1.0f, glm::vec3(0.0f)));
+
+	ecs_mgr.addSharedComponents<Shibboleth::Scale>(id);
+	Shibboleth::Scale::SetShared(ecs_mgr, id, glm::vec3(3.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Scale::GetShared(ecs_mgr, id), glm::vec3(3.0f));
+
+	ecs_mgr.destroyEntity(id);
+}

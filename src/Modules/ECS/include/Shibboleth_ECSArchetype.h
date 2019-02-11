@@ -64,6 +64,12 @@ public:
 	}
 
 	template <class T>
+	int32_t getComponentSharedOffset(void) const
+	{
+		return getComponentSharedOffset(Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	int32_t getComponentOffset(void) const
 	{
 		return getComponentOffset(Reflection<T>::GetHash());
@@ -99,6 +105,7 @@ public:
 		int32_t new_index
 	);
 
+	int32_t getComponentSharedOffset(Gaff::Hash64 component) const;
 	int32_t getComponentOffset(Gaff::Hash64 component) const;
 
 	int32_t sharedSize(void) const;
@@ -106,14 +113,19 @@ public:
 
 	Gaff::Hash64 getHash(void) const;
 
+	const void* getSharedData(void) const;
+	void* getSharedData(void);
+
 private:
 	struct RefDefOffset final
 	{
-		using CopyFunc = void (*)(void*, int32_t, void*, int32_t);
+		using CopySharedFunc = void (*)(const void*, void*);
+		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
 
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;
 
+		CopySharedFunc copy_shared_func;
 		CopyFunc copy_func;
 	};
 
@@ -127,11 +139,20 @@ private:
 
 	void* _shared_instances = nullptr;
 
-	bool add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
-	bool add(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
-	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool shared);
-	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def, bool shared);
-	bool remove(Vector<RefDefOffset>& vars, int32_t& alloc_size, int32_t index, bool shared);
+	template <bool shared>
+	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+
+	template <bool shared>
+	bool add(const Gaff::IReflectionDefinition& ref_def);
+
+	template <bool shared>
+	bool remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+
+	template <bool shared>
+	bool remove(const Gaff::IReflectionDefinition& ref_def);
+
+	template <bool shared>
+	bool remove(int32_t index);
 
 	void initShared(const Gaff::JSON& json);
 	void initShared(void);

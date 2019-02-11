@@ -83,9 +83,6 @@ private:
 
 	template <class First, class... Rest>
 	Hash64 getAttributeHashes(Hash64 hash, const First& first, const Rest&... rest) const;
-
-	template <class Attr>
-	Hash64 getAttributeHashes(Hash64 hash, const Attr& attr) const;
 };
 
 #define REF_VER_BUILTIN(type) \
