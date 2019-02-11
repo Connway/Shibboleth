@@ -26,14 +26,6 @@ Shibboleth is copyrighted under The MIT License. See LICENSE.txt for the full te
     BUILD INSTRUCTIONS
 ==========================
 
-Includes Visual Studio 2015 and 2017 solution/project files and should compile out of the box.
+Includes Visual Studio 2017 solution/project files and should compile out of the box.
 
-If you wish to generate your own solution files, just run "utils/premake5 [vs2015/vs2017]" or use the "gen_vs" action to generate both supported visual studio solutions.
-
-
-============================
-    KNOWN ISSUES / TODOS
-============================
-
-A lot of data structures' member variables are organized for memory instead of hotness. This could
-have performance implications if cache misses are frequent.
+If you wish to generate your own solution files, just run "utils/premake5 vs2017".
