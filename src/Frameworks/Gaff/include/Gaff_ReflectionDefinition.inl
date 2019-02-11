@@ -1646,8 +1646,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 	attrs.emplace_back(IAttributePtr(clone));
 
 	clone->apply(*ref_var, var);
-	
-	return addAttributes(ref_var, var, attrs, rest...);
+
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(ref_var, var, attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 template <class T, class Allocator>
@@ -1659,21 +1663,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 
 	clone->apply(*ref_var, getter, setter);
 
-	return addAttributes(ref_var, getter, setter, attrs, rest...);
-}
-
-template <class T, class Allocator>
-template <class Var>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar*, Var T::*, Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
-}
-
-template <class T, class Allocator>
-template <class Var, class Ret>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar*, Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(ref_var, getter, setter, attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 // Functions
@@ -1686,7 +1680,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 
 	clone->apply(func);
 	
-	return addAttributes(func, attrs, rest...);
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(func, attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 template <class T, class Allocator>
@@ -1698,21 +1696,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 
 	clone->apply(func);
 
-	return addAttributes(func, attrs, rest...);
-}
-
-template <class T, class Allocator>
-template <class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
-}
-
-template <class T, class Allocator>
-template <class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(func, attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 // Static Functions
@@ -1725,14 +1713,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 
 	clone->apply(func);
 
-	return addAttributes(func, attrs, rest...);
-}
-
-template <class T, class Allocator>
-template <class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(func, attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 // Non-apply() call version.
@@ -1741,13 +1726,12 @@ template <class First, class... Rest>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	attrs.emplace_back(IAttributePtr(first.clone()));
-	return addAttributes(attrs, rest...);
-}
 
-template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 template <class T, class Allocator>

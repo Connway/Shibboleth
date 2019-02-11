@@ -35,14 +35,20 @@ class Position final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
+
+	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
 	static glm_vec4 GetY(void* component_begin);
 	static glm_vec4 GetZ(void* component_begin);
 
-	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyShared(const void* old_value, void* new_value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Position);
 };
@@ -51,7 +57,12 @@ class Rotation final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
+
+	static const glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::quat Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
@@ -59,7 +70,8 @@ public:
 	static glm_vec4 GetZ(void* component_begin);
 	static glm_vec4 GetW(void* component_begin);
 
-	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyShared(const void* old_value, void* new_value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
 };
@@ -68,14 +80,20 @@ class Scale final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
+
+	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
 	static glm_vec4 GetY(void* component_begin);
 	static glm_vec4 GetZ(void* component_begin);
 
-	static void Copy(void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyShared(const void* old_value, void* new_value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Scale);
 };

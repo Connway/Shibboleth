@@ -31,28 +31,44 @@ NS_SHIBBOLETH
 
 class IFile;
 
-template <class... Components>
+template <class First, class... Rest>
 void RemoveSharedComponentHelper(ECSArchetype& archetype)
 {
-	archetype.removeShared<Components>()...;
+	archetype.removeShared<First>();
+
+	if constexpr (sizeof...(Rest) > 0) {
+		RemoveSharedComponentHelper<Rest...>(archetype);
+	}
 }
 
-template <class... Components>
+template <class First, class... Rest>
 void RemoveComponentHelper(ECSArchetype& archetype)
 {
-	archetype.remove<Components>()...;
+	archetype.remove<First>();
+
+	if constexpr (sizeof...(Rest) > 0) {
+		RemoveComponentHelper<Rest...>(archetype);
+	}
 }
 
-template <class... Components>
+template <class First, class... Rest>
 void AddSharedComponentHelper(ECSArchetype& archetype)
 {
-	archetype.addShared<Components>()...;
+	archetype.addShared<First>();
+
+	if constexpr (sizeof...(Rest) > 0) {
+		AddSharedComponentHelper<Rest...>(archetype);
+	}
 }
 
-template <class... Components>
+template <class First, class... Rest>
 void AddComponentHelper(ECSArchetype& archetype)
 {
-	archetype.add<Components>()...;
+	archetype.add<First>();
+
+	if constexpr (sizeof...(Rest) > 0) {
+		AddComponentHelper<Rest...>(archetype);
+	}
 }
 
 
@@ -68,9 +84,81 @@ public:
 	};
 
 	template <class T>
+	void* getComponentShared(Gaff::Hash64 archetype)
+	{
+		return getComponentShared(archetype, Reflection<T>::GetHash());
+	}
+
+	template <class T>
+	void* getComponentShared(EntityID id)
+	{
+		return getComponentShared(id, Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	void* getComponent(EntityID id)
 	{
 		return getComponent(id, Reflection<T>::GetHash());
+	}
+
+	template <class... Components>
+	void removeSharedComponents(Gaff::Hash64 archetype_hash)
+	{
+		GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+		const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
+
+		ECSArchetype archetype;
+		archetype.copy(old_archetype);
+		RemoveSharedComponentHelper<Components...>(archetype);
+		archetype.finalize();
+
+		addArchetype(std::move(archetype));
+		migrate(id, archetype.getHash());
+	}
+
+	template <class... Components>
+	void removeComponents(Gaff::Hash64 archetype_hash)
+	{
+		GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+		const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
+
+		ECSArchetype archetype;
+		archetype.copy(old_archetype);
+		RemoveComponentHelper<Components...>(archetype);
+		archetype.finalize();
+
+		addArchetype(std::move(archetype));
+		migrate(id, archetype.getHash());
+	}
+
+	template <class... Components>
+	void addSharedComponents(Gaff::Hash64 archetype_hash)
+	{
+		GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+		const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
+
+		ECSArchetype archetype;
+		archetype.copy(old_archetype);
+		AddSharedComponentHelper<Components...>(archetype);
+		archetype.finalize();
+
+		addArchetype(std::move(archetype));
+		migrate(id, archetype.getHash());
+	}
+
+	template <class... Components>
+	void addComponents(Gaff::Hash64 archetype_hash)
+	{
+		GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+		const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
+
+		ECSArchetype archetype;
+		archetype.copy(old_archetype);
+		AddComponentHelper<Components...>(archetype);
+		archetype.finalize();
+
+		addArchetype(std::move(archetype));
+		migrate(id, archetype.getHash());
 	}
 
 	template <class... Components>
@@ -78,12 +166,11 @@ public:
 	{
 		ECSArchetype archetype;
 		archetype.copy(getArchetype(id));
-		archetype.removeShared<Components>()...;
+		RemoveSharedComponentHelper<Components...>(archetype);
 		archetype.finalize();
 
 		addArchetype(std::move(archetype));
-
-		// migrate entity.
+		migrate(id, archetype.getHash());
 	}
 
 	template <class... Components>
@@ -91,12 +178,11 @@ public:
 	{
 		ECSArchetype archetype;
 		archetype.copy(getArchetype(id));
-		archetype.remove<Components>()...;
+		RemoveComponentHelper<Components...>(archetype);
 		archetype.finalize();
 
 		addArchetype(std::move(archetype));
-
-		// migrate entity.
+		migrate(id, archetype.getHash());
 	}
 
 	template <class... Components>
@@ -104,12 +190,11 @@ public:
 	{
 		ECSArchetype archetype;
 		archetype.copy(getArchetype(id));
-		archetype.addShared<Components>()...;
+		AddSharedComponentHelper<Components...>(archetype);
 		archetype.finalize();
 
 		addArchetype(std::move(archetype));
-
-		// migrate entity.
+		migrate(id, archetype.getHash());
 	}
 
 	template <class... Components>
@@ -117,12 +202,11 @@ public:
 	{
 		ECSArchetype archetype;
 		archetype.copy(getArchetype(id));
-		archetype.add<Components>()...;
+		AddComponentHelper<Components...>(archetype);
 		archetype.finalize();
 
 		addArchetype(std::move(archetype));
-
-		// migrate entity.
+		migrate(id, archetype.getHash());
 	}
 
 	void modify(EntityID& id, ArchetypeModifier modifier)
@@ -149,9 +233,9 @@ public:
 		}
 
 		archetype.finalize();
-		addArchetype(std::move(archetype));
 
-		//migrate(id, archetype.getHash());
+		addArchetype(std::move(archetype));
+		migrate(id, archetype.getHash());
 	}
 
 	bool init(void) override;
@@ -171,6 +255,8 @@ public:
 
 	void destroyEntity(EntityID id);
 
+	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
+	void* getComponentShared(EntityID id, Gaff::Hash64 component);
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 

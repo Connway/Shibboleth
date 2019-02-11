@@ -178,6 +178,28 @@ void ECSManager::destroyEntity(EntityID id)
 	_free_ids.emplace_back(id);
 }
 
+void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component)
+{
+	GAFF_ASSERT(_entity_pages.find(archetype) != _entity_pages.end());
+	auto& archetype_instance = _entity_pages[archetype]->archetype;
+
+	const int32_t component_offset = archetype_instance.getComponentSharedOffset(component);
+	GAFF_ASSERT(component_offset > -1);
+
+	return reinterpret_cast<int8_t*>(archetype_instance.getSharedData()) + component_offset;
+}
+
+void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
+{
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	const Entity& entity = _entities[id];
+
+	const int32_t component_offset = entity.data->archetype.getComponentSharedOffset(component);
+	GAFF_ASSERT(component_offset > -1);
+
+	return reinterpret_cast<int8_t*>(entity.data->archetype.getSharedData()) + component_offset;
+}
+
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
@@ -239,7 +261,7 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 	void* const old_data = reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + old_entity_offset;
 	void* const new_data = reinterpret_cast<int8_t*>(new_page) + sizeof(EntityPage) + new_entity_offset;
 
-	entity.data->archetype.copy(data.archetype, old_data, entity.index % 4, new_data, new_index % 4);
+	data.archetype.copy(entity.data->archetype, old_data, entity.index % 4, new_data, new_index % 4);
 
 	entity.data = &data;
 	entity.page = new_page;
