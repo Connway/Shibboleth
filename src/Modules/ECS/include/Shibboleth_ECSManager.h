@@ -260,6 +260,8 @@ public:
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 
+	//void registerQuery();
+
 private:
 	struct EntityData;
 
@@ -298,8 +300,15 @@ private:
 		int32_t index = -1;
 	};
 
+	struct QueryResult final
+	{
+
+	};
+
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
 	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
+
+	Vector<QueryResult> _queries;
 
 	Vector<Entity> _entities;
 	Vector<int32_t> _free_ids;

@@ -22,11 +22,102 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include <Gaff_Defines.h>
+#include <Shibboleth_Vector.h>
+#include <Gaff_Function.h>
+
+NS_GAFF
+	class IReflectionDefinition;
+NS_END
 
 NS_SHIBBOLETH
 
 using EntityID = int32_t;
+
+class ECSQuery final
+{
+public:
+	template <class T, class Arg>
+	void addShared(const eastl::function<bool (Arg&)>& filter)
+	{
+		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(func));
+	}
+
+	template <class T, class Arg>
+	void addShared(eastl::function<bool (Arg&)>&& filter)
+	{
+		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(func));
+	}
+
+	template <class T, class Arg>
+	void add(const eastl::function<bool (Arg&)>& filter)
+	{
+		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
+		add(Reflection<T>::GetReflectionDefinition(), std::move(func));
+	}
+
+	template <class T, class Arg>
+	void add(eastl::function<bool (Arg&)>&& filter)
+	{
+		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
+		add(Reflection<T>::GetReflectionDefinition(), std::move(func));
+	}
+
+	template <class T>
+	void addShared(const eastl::function<bool (void*)>& filter)
+	{
+		addShared(Reflection<T>::GetReflectionDefinition(), filter);
+	}
+
+	template <class T>
+	void addShared(eastl::function<bool (void*)>&& filter)
+	{
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(filter));
+	}
+
+	template <class T>
+	void addShared(void)
+	{
+		addShared(Reflection<T>::GetReflectionDefinition());
+	}
+
+	template <class T>
+	void add(const eastl::function<bool (void*)>& filter)
+	{
+		add(Reflection<T>::GetReflectionDefinition(), filter);
+	}
+
+	template <class T>
+	void add(eastl::function<bool (void*)>&& filter)
+	{
+		add(Reflection<T>::GetReflectionDefinition(), std::move(filter));
+	}
+
+	template <class T>
+	void add(void)
+	{
+		add(Reflection<T>::GetReflectionDefinition());
+	}
+
+	void addShared(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool (void*)>& filter);
+	void addShared(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool (void*)>&& filter);
+	void addShared(const Gaff::IReflectionDefinition* ref_def);
+	void add(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool (void*)>& filter);
+	void add(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool (void*)>&& filter);
+	void add(const Gaff::IReflectionDefinition* ref_def);
+
+	//bool filter() const;
+
+private:
+	struct QueryData final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		eastl::function<bool (void*)> filter;
+	};
+
+	Vector<QueryData> _shared_components;
+	Vector<QueryData> _components;
+};
 
 NS_END
