@@ -29,6 +29,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
   </ItemGroup>
 </Project>
