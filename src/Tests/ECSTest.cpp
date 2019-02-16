@@ -148,11 +148,18 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash), glm::quat(1.0f, glm::vec3(0.0f)));
 
 	ecs_mgr.addSharedComponents<Shibboleth::Scale>(id);
-	Shibboleth::Scale::SetShared(ecs_mgr, id, glm::vec3(3.0f));
+
+	Shibboleth::Rotation::Data* rotation = ecs_mgr.getComponentShared<Shibboleth::Rotation>(id);
+	Shibboleth::Scale::Data* scale = ecs_mgr.getComponentShared<Shibboleth::Scale>(id);
+
+	REQUIRE_NE(rotation, nullptr);
+	REQUIRE_NE(scale, nullptr);
+
+	scale->scale = glm::vec3(3.0f);
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id), glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, id), glm::quat(1.0f, glm::vec3(0.0f)));
-	REQUIRE_EQ(Shibboleth::Scale::GetShared(ecs_mgr, id), glm::vec3(3.0f));
+	REQUIRE_EQ(rotation->rotation, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(scale->scale, glm::vec3(3.0f));
 
 	ecs_mgr.destroyEntity(id);
 }

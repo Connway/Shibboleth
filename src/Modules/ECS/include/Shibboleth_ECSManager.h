@@ -84,19 +84,19 @@ public:
 	};
 
 	template <class T>
-	void* getComponentShared(Gaff::Hash64 archetype)
+	typename T::SharedData* getComponentShared(Gaff::Hash64 archetype)
 	{
-		return getComponentShared(archetype, Reflection<T>::GetHash());
+		return reinterpret_cast<T::Data*>(getComponentShared(archetype, Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	void* getComponentShared(EntityID id)
+	typename T::SharedData* getComponentShared(EntityID id)
 	{
-		return getComponentShared(id, Reflection<T>::GetHash());
+		return reinterpret_cast<T::Data*>(getComponentShared(id, Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	void* getComponent(EntityID id)
+	void getComponent(EntityID id)
 	{
 		return getComponent(id, Reflection<T>::GetHash());
 	}
@@ -290,6 +290,7 @@ private:
 		int32_t next_index = 0;
 
 		Vector< UniquePtr<EntityPage> > pages;
+		Vector<EntityID> entity_ids;
 		Vector<int32_t> free_indices;
 	};
 
@@ -300,9 +301,14 @@ private:
 		int32_t index = -1;
 	};
 
-	struct QueryResult final
+	struct QueryData final
 	{
 
+	};
+
+	struct QueryResult final
+	{
+		Vector<QueryData> pages;
 	};
 
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
@@ -316,7 +322,7 @@ private:
 
 	bool loadFile(const char* file_name, IFile* file);
 	void migrate(EntityID id, Gaff::Hash64 new_archetype);
-	int32_t allocateIndex(EntityData& data);
+	int32_t allocateIndex(EntityData& data, EntityID id);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
