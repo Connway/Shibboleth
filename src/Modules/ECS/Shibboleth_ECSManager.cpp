@@ -130,7 +130,7 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 
 	Entity& entity = _entities[id];
 	entity.data = &data;
-	entity.index = allocateIndex(data);
+	entity.index = allocateIndex(data, id);
 
 	const int32_t page = entity.index / data.num_entities_per_page;
 
@@ -150,9 +150,12 @@ void ECSManager::destroyEntity(EntityID id)
 
 	const auto it = Gaff::Find(entity.data->pages, entity.page, [](const auto& lhs, const EntityPage* rhs) -> bool { return lhs.get() == rhs; });
 	const int32_t page_index = static_cast<int32_t>(eastl::distance(entity.data->pages.begin(), it));
+	const int32_t page_ids_start = page_index * entity.data->num_entities_per_page;
+	const int32_t global_index = entity.index + page_ids_start;
 
 	if (entity.page->num_entities > 0) {
-		entity.data->free_indices.emplace_back(entity.index + page_index * entity.data->num_entities_per_page);
+		entity.data->free_indices.emplace_back(global_index);
+		entity.data->entity_ids[global_index] = -1;
 
 	} else {
 		int32_t size = static_cast<int32_t>(entity.data->free_indices.size());
@@ -168,6 +171,9 @@ void ECSManager::destroyEntity(EntityID id)
 			}
 		}
 
+		const auto begin = entity.data->entity_ids.begin() + page_ids_start;
+
+		entity.data->entity_ids.erase(begin, begin + entity.data->num_entities_per_page);
 		entity.data->pages.erase(entity.data->pages.begin() + page_index);
 	}
 
@@ -250,7 +256,7 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 	EntityData& data = *_entity_pages[new_archetype];
 	Entity& entity = _entities[id];
 
-	const int32_t global_index = allocateIndex(data);
+	const int32_t global_index = allocateIndex(data, id);
 	const int32_t page = global_index / data.num_entities_per_page;
 	const int32_t new_index = global_index - page * data.num_entities_per_page;
 
@@ -268,7 +274,7 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 	entity.index = new_index;
 }
 
-int32_t ECSManager::allocateIndex(EntityData& data)
+int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 {
 	// Grab a free ID if available.
 	if (!data.free_indices.empty()) {
@@ -278,6 +284,8 @@ int32_t ECSManager::allocateIndex(EntityData& data)
 		const int32_t page = index / data.num_entities_per_page;
 		++data.pages[page]->num_entities;
 		++data.num_entities;
+
+		data.entity_ids[index] = id;
 
 		return index;
 	}
@@ -291,7 +299,10 @@ int32_t ECSManager::allocateIndex(EntityData& data)
 			++page->num_entities;
 			++data.num_entities;
 
-			return index + static_cast<int32_t>(data.pages.size() - 1) * data.num_entities_per_page;
+			const int32_t global_index = index + static_cast<int32_t>(data.pages.size() - 1) * data.num_entities_per_page;
+			data.entity_ids[global_index] = id;
+
+			return global_index;
 		}
 	}
 
@@ -305,7 +316,11 @@ int32_t ECSManager::allocateIndex(EntityData& data)
 	data.pages.emplace_back(page);
 	++data.num_entities;
 
-	return static_cast<int32_t>(data.pages.size() - 1) * data.num_entities_per_page;
+	const int32_t global_index = static_cast<int32_t>(data.pages.size() - 1) * data.num_entities_per_page;
+	data.entity_ids.resize(data.entity_ids.size() + static_cast<size_t>(data.num_entities_per_page), -1);
+	data.entity_ids[global_index] = id;
+
+	return global_index;
 }
 
 NS_END

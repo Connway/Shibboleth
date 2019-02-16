@@ -34,6 +34,24 @@ class ECSManager;
 class Position final : public Gaff::IReflectionObject
 {
 public:
+	struct SharedData final
+	{
+		glm::vec3 position;
+	};
+
+	class Data final
+	{
+	public:
+		Data(/*ECSManager& ecs_mgr,*/ int32_t entity_offset, int32_t entity_size);
+
+	private:
+		//Vector< UniquePtr<EntityPage> >* _entity_pages;
+		//ECSManager& _ecs_mgr;
+		int32_t _entity_offset;
+		int32_t _entity_size;
+		Vector<EntityID>* _entity_ids;
+	};
+
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
@@ -56,6 +74,11 @@ public:
 class Rotation final : public Gaff::IReflectionObject
 {
 public:
+	struct Data final
+	{
+		glm::quat rotation;
+	};
+
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
@@ -79,6 +102,11 @@ public:
 class Scale final : public Gaff::IReflectionObject
 {
 public:
+	struct Data final
+	{
+		glm::vec3 scale;
+	};
+
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
