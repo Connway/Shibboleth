@@ -27,34 +27,19 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool(void*)>& filter)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list, FilterFunc&& filter)
 {
-	_shared_components.emplace_back(QueryData{ ref_def, filter });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_to_list), std::move(filter) });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool(void*)>&& filter)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list)
 {
-	_shared_components.emplace_back(QueryData{ ref_def, std::move(filter) });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_to_list), nullptr });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def)
+void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list)
 {
-	_shared_components.emplace_back(QueryData{ ref_def, nullptr });
-}
-
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool(void*)>& filter)
-{
-	_components.emplace_back(QueryData{ ref_def, filter });
-}
-
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool(void*)>&& filter)
-{
-	_components.emplace_back(QueryData{ ref_def, std::move(filter) });
-}
-
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def)
-{
-	_components.emplace_back(QueryData{ ref_def, nullptr });
+	_components.emplace_back(QueryData{ ref_def, std::move(push_to_list) });
 }
 
 NS_END

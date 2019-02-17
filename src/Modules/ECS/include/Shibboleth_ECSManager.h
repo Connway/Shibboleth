@@ -86,17 +86,17 @@ public:
 	template <class T>
 	typename T::SharedData* getComponentShared(Gaff::Hash64 archetype)
 	{
-		return reinterpret_cast<T::Data*>(getComponentShared(archetype, Reflection<T>::GetHash()));
+		return reinterpret_cast<T::SharedData*>(getComponentShared(archetype, Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	typename T::SharedData* getComponentShared(EntityID id)
 	{
-		return reinterpret_cast<T::Data*>(getComponentShared(id, Reflection<T>::GetHash()));
+		return reinterpret_cast<T::SharedData*>(getComponentShared(id, Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	void getComponent(EntityID id)
+	void* getComponent(EntityID id)
 	{
 		return getComponent(id, Reflection<T>::GetHash());
 	}

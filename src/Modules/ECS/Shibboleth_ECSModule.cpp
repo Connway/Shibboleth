@@ -30,6 +30,7 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gen::InitReflection();
 
 	app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+	app.getReflectionManager().registerTypeBucket(CLASS_HASH(IECSSystem));
 
 	return true;
 }

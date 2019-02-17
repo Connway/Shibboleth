@@ -34,10 +34,7 @@ class ECSManager;
 class Position final : public Gaff::IReflectionObject
 {
 public:
-	struct SharedData final
-	{
-		glm::vec3 position;
-	};
+	using SharedData = glm::vec3;
 
 	class Data final
 	{
@@ -74,10 +71,7 @@ public:
 class Rotation final : public Gaff::IReflectionObject
 {
 public:
-	struct Data final
-	{
-		glm::quat rotation;
-	};
+	using SharedData = glm::quat;
 
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
@@ -102,10 +96,7 @@ public:
 class Scale final : public Gaff::IReflectionObject
 {
 public:
-	struct Data final
-	{
-		glm::vec3 scale;
-	};
+	using SharedData = glm::vec3;
 
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
