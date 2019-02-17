@@ -209,13 +209,14 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSEntity.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSQuery.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_IECSSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSQuery.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
