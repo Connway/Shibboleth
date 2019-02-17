@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSAttributes.h"
+#include "Shibboleth_IECSSystem.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Gaff_Function.h>
 #include <Gaff_JSON.h>
@@ -40,8 +41,24 @@ bool ECSManager::init(void)
 	// Load all archetypes from config directory
 	auto callback = Gaff::MemberFunc(this, &ECSManager::loadFile);
 	IApp& app = GetApp();
+
 	const char* const archetype_dir = app.getConfigs()["archetype_dir"].getString("Resources/Archetypes");
 	app.getFileSystem().forEachFile(archetype_dir, callback);
+
+	const auto ecs_systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(IECSSystem));
+	ProxyAllocator allocator("ECS");
+
+	for (const Gaff::IReflectionDefinition* ref_def : *ecs_systems) {
+		IECSSystem* const system = ref_def->createT<IECSSystem>(CLASS_HASH(IECSSystem), allocator);
+
+		if (!system) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		system->init(*this);
+	}
+
 	return true;
 }
 

@@ -42,12 +42,12 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
 void Position::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
-	*reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Position>(archetype)) = value;
+	*ecs_mgr.getComponentShared<Position>(archetype) = value;
 }
 
 void Position::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	*reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Position>(id)) = value;
+	*ecs_mgr.getComponentShared<Position>(id) = value;
 }
 
 void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
@@ -60,12 +60,12 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Position>(archetype));
+	return *ecs_mgr.getComponentShared<Position>(archetype);
 }
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Position>(id));
+	return *ecs_mgr.getComponentShared<Position>(id);
 }
 
 glm::vec3 Position::Get(ECSManager& ecs_mgr, EntityID id)
@@ -123,12 +123,12 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
 
 void Rotation::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value)
 {
-	*reinterpret_cast<glm::quat*>(ecs_mgr.getComponentShared<Rotation>(archetype)) = value;
+	*ecs_mgr.getComponentShared<Rotation>(archetype) = value;
 }
 
 void Rotation::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
-	*reinterpret_cast<glm::quat*>(ecs_mgr.getComponentShared<Rotation>(id)) = value;
+	*ecs_mgr.getComponentShared<Rotation>(id) = value;
 }
 
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
@@ -142,12 +142,12 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *reinterpret_cast<glm::quat*>(ecs_mgr.getComponentShared<Rotation>(archetype));
+	return *ecs_mgr.getComponentShared<Rotation>(archetype);
 }
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *reinterpret_cast<glm::quat*>(ecs_mgr.getComponentShared<Rotation>(id));
+	return *ecs_mgr.getComponentShared<Rotation>(id);
 }
 
 glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
@@ -213,12 +213,12 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Scale)
 
 void Scale::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
-	*reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Scale>(archetype)) = value;
+	*ecs_mgr.getComponentShared<Scale>(archetype) = value;
 }
 
 void Scale::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	*reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Scale>(id)) = value;
+	*ecs_mgr.getComponentShared<Scale>(id) = value;
 }
 
 void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
@@ -231,12 +231,12 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Scale>(archetype));
+	return *ecs_mgr.getComponentShared<Scale>(archetype);
 }
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *reinterpret_cast<glm::vec3*>(ecs_mgr.getComponentShared<Scale>(id));
+	return *ecs_mgr.getComponentShared<Scale>(id);
 }
 
 glm::vec3 Scale::Get(ECSManager& ecs_mgr, EntityID id)

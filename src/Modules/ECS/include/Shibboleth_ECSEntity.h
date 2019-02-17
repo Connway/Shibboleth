@@ -36,87 +36,61 @@ using EntityID = int32_t;
 class ECSQuery final
 {
 public:
-	template <class T, class Arg>
-	void addShared(const eastl::function<bool (Arg&)>& filter)
-	{
-		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(func));
-	}
+	template <class T>
+	using TypedFilterFunc = eastl::function<bool (T&)>;
 
-	template <class T, class Arg>
-	void addShared(eastl::function<bool (Arg&)>&& filter)
-	{
-		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(func));
-	}
+	template <class T>
+	using TypedPushToListFunc = eastl::function<void ()>;
+
+	using PushToListFunc = eastl::function<void ()>;
+	using FilterFunc = eastl::function<bool (void*)>;
 
 	template <class T, class Arg>
-	void add(const eastl::function<bool (Arg&)>& filter)
+	void addShared(PushToListFunc&& push_to_list, TypedFilterFunc<Arg>&& filter)
 	{
 		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
-		add(Reflection<T>::GetReflectionDefinition(), std::move(func));
-	}
-
-	template <class T, class Arg>
-	void add(eastl::function<bool (Arg&)>&& filter)
-	{
-		auto func = Gaff::Func([filter](void* data) -> bool { return filter(*reinterpret_cast<Arg*>(data)); });
-		add(Reflection<T>::GetReflectionDefinition(), std::move(func));
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_to_list), std::move(func));
 	}
 
 	template <class T>
-	void addShared(const eastl::function<bool (void*)>& filter)
+	void addShared(PushToListFunc&& push_to_list, FilterFunc&& filter)
 	{
-		addShared(Reflection<T>::GetReflectionDefinition(), filter);
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_to_list), std::move(filter));
 	}
 
 	template <class T>
-	void addShared(eastl::function<bool (void*)>&& filter)
+	void addShared(PushToListFunc&& push_to_list)
 	{
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(filter));
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_to_list));
 	}
 
 	template <class T>
-	void addShared(void)
+	void add(PushToListFunc&& push_to_list)
 	{
-		addShared(Reflection<T>::GetReflectionDefinition());
+		add(Reflection<T>::GetReflectionDefinition(), std::move(push_to_list));
 	}
 
-	template <class T>
-	void add(const eastl::function<bool (void*)>& filter)
-	{
-		add(Reflection<T>::GetReflectionDefinition(), filter);
-	}
-
-	template <class T>
-	void add(eastl::function<bool (void*)>&& filter)
-	{
-		add(Reflection<T>::GetReflectionDefinition(), std::move(filter));
-	}
-
-	template <class T>
-	void add(void)
-	{
-		add(Reflection<T>::GetReflectionDefinition());
-	}
-
-	void addShared(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool (void*)>& filter);
-	void addShared(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool (void*)>&& filter);
-	void addShared(const Gaff::IReflectionDefinition* ref_def);
-	void add(const Gaff::IReflectionDefinition* ref_def, const eastl::function<bool (void*)>& filter);
-	void add(const Gaff::IReflectionDefinition* ref_def, eastl::function<bool (void*)>&& filter);
-	void add(const Gaff::IReflectionDefinition* ref_def);
+	void addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list, FilterFunc&& filter);
+	void addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list);
+	void add(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list);
 
 	//bool filter() const;
 
 private:
+	struct QueryDataShared final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		PushToListFunc push_to_list;
+		FilterFunc filter;
+	};
+
 	struct QueryData final
 	{
 		const Gaff::IReflectionDefinition* ref_def;
-		eastl::function<bool (void*)> filter;
+		PushToListFunc push_to_list;
 	};
 
-	Vector<QueryData> _shared_components;
+	Vector<QueryDataShared> _shared_components;
 	Vector<QueryData> _components;
 };
 
