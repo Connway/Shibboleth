@@ -20,26 +20,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_ECSEntity.h"
+#include "Shibboleth_ECSQuery.h"
+#include "Shibboleth_ECSArchetype.h"
 #include <Shibboleth_ReflectionInterfaces.h>
 
 NS_SHIBBOLETH
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list, FilterFunc&& filter)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, FilterFunc&& filter)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_to_list), std::move(filter) });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(filter) });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_to_list), nullptr });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, nullptr });
 }
 
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, PushToListFunc&& push_to_list)
+void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def)
 {
-	_components.emplace_back(QueryData{ ref_def, std::move(push_to_list) });
+	_components.emplace_back(ref_def);
+}
+
+bool ECSQuery::filter(const ECSArchetype& archetype) const
+{
+	const void* shared_data = archetype.getSharedData();
+
+	if (!shared_data && !_shared_components.empty()) {
+		return false;
+	}
+
+	for (const QueryDataShared& data : _shared_components) {
+		const int32_t offset = archetype.getComponentSharedOffset(data.ref_def->getReflectionInstance().getHash());
+
+		if (offset == -1) {
+			return false;
+		}
+
+		if (data.filter && !data.filter(reinterpret_cast<const int8_t*>(shared_data) + offset)) {
+			return false;
+		}
+	}
+
+	for (const Gaff::IReflectionDefinition* ref_def : _components) {
+		const int32_t offset = archetype.getComponentOffset(ref_def->getReflectionInstance().getHash());
+
+		if (offset == -1) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 NS_END

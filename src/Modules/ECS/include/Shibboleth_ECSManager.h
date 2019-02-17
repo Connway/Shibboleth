@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ECSQuery;
 class IFile;
 
 template <class First, class... Rest>
@@ -260,7 +261,7 @@ public:
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 
-	//void registerQuery();
+	//void registerQuery(const ECSQuery& query, Vector<>& result);
 
 private:
 	struct EntityData;
