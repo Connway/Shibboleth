@@ -44,9 +44,12 @@ void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def)
 bool ECSQuery::filter(const ECSArchetype& archetype) const
 {
 	const void* shared_data = archetype.getSharedData();
+	const int32_t shared_size = archetype.sharedSize();
 
-	if (!shared_data && !_shared_components.empty()) {
-		return false;
+	if (!_shared_components.empty()) {
+		if (shared_size > 0 && !shared_data) {
+			return false;
+		}
 	}
 
 	for (const QueryDataShared& data : _shared_components) {
