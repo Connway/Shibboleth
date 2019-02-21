@@ -34,73 +34,88 @@ NS_SHIBBOLETH
 
 class ECSArchetype;
 
-template <class T>
-class ECSQueryResult final
+struct ECSQueryResult final
 {
-public:
-
-private:
-	void* _archetype_data;
-	int32_t _component_offset;
-
-	friend class ECSManager;
+	int32_t component_offset;
+	void* entity_data;
 };
 
 class ECSQuery final
 {
 public:
-	template <class T>
-	using SharedOutput = Vector<typename T::SharedData*>;
+	using SharedPushToListFunc = eastl::function<void (const void*)>;
 
 	template <class T>
 	using TypedFilterFunc = eastl::function<bool (const T&)>;
 
-	template <class T>
-	using TypedPushToListFunc = eastl::function<void ()>;
-
-	using PushToListFunc = eastl::function<void ()>;
 	using FilterFunc = eastl::function<bool (const void*)>;
 
+	template <class T>
+	using SharedOutput = Vector<const typename T::SharedData*>;
+
+	using Output = Vector<ECSQueryResult>;
+
 	template <class T, class Arg>
-	void addShared(TypedFilterFunc<Arg>&& filter)
+	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T::SharedData>&& filter)
 	{
-		//auto func = Gaff::Func([filter](const void* data) -> bool { return filter(*reinterpret_cast<const Arg*>(data)); });
-		//addShared(Reflection<T>::GetReflectionDefinition(), std::move(func));
+		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
+		auto filter_func = Gaff::Func([filter](const void* data) -> bool { return filter(*reinterpret_cast<typename T::SharedData*>(data)); });
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter_func));
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output, FilterFunc&& filter)
 	{
-		//addShared(Reflection<T>::GetReflectionDefinition(), std::move(filter));
+		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter));
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output)
 	{
-		//addShared(Reflection<T>::GetReflectionDefinition());
+		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func));
+	}
+
+	template <class T>
+	void add(Output& output)
+	{
+		add(Reflection<T>::GetReflectionDefinition(), output);
 	}
 
 	template <class T>
 	void add(void)
 	{
-		//add(Reflection<T>::GetReflectionDefinition());
+		add(Reflection<T>::GetReflectionDefinition());
 	}
 
-	void addShared(const Gaff::IReflectionDefinition* ref_def, FilterFunc&& filter);
+	void addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func);
+	void addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func);
 	void addShared(const Gaff::IReflectionDefinition* ref_def);
+
+	void add(const Gaff::IReflectionDefinition* ref_def, Output& output);
 	void add(const Gaff::IReflectionDefinition* ref_def);
 
-	bool filter(const ECSArchetype& archetype) const;
+	bool filter(const ECSArchetype& archetype, void* entity_data);
 
 private:
 	struct QueryDataShared final
 	{
 		const Gaff::IReflectionDefinition* ref_def;
-		FilterFunc filter;
+		SharedPushToListFunc push_func;
+		FilterFunc filter_func;
+	};
+
+	struct QueryData final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		Output* output;
 	};
 
 	Vector<QueryDataShared> _shared_components;
-	Vector<const Gaff::IReflectionDefinition*> _components;
+	Vector<QueryData> _components;
+
+	friend class ECSManager;
 };
 
 NS_END
