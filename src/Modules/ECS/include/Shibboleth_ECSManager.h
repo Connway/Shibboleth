@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSArchetype.h"
 #include "Shibboleth_ECSEntity.h"
+#include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 
@@ -261,7 +262,7 @@ public:
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 
-	//void registerQuery(const ECSQuery& query, Vector<>& result);
+	void registerQuery(ECSQuery&& query);
 
 private:
 	struct EntityData;
@@ -302,20 +303,10 @@ private:
 		int32_t index = -1;
 	};
 
-	struct QueryData final
-	{
-
-	};
-
-	struct QueryResult final
-	{
-		Vector<QueryData> pages;
-	};
-
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
 	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
 
-	Vector<QueryResult> _queries;
+	Vector<ECSQuery> _queries;
 
 	Vector<Entity> _entities;
 	Vector<int32_t> _free_ids;

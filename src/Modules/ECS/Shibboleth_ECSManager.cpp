@@ -242,6 +242,16 @@ int32_t ECSManager::getPageIndex(EntityID id) const
 	return _entities[id].index;
 }
 
+void ECSManager::registerQuery(ECSQuery&& query)
+{
+	ECSQuery& new_query = _queries.emplace_back(std::move(query));
+
+	for (auto& data : _entity_pages) {
+		EntityData* const entity_data = data.second.get();
+		new_query.filter(entity_data->archetype, entity_data);
+	}
+}
+
 bool ECSManager::loadFile(const char*, IFile* file)
 {
 	Gaff::JSON json;

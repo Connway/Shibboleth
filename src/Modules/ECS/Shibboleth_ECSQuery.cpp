@@ -26,27 +26,38 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, FilterFunc&& filter)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(filter) });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_func), std::move(filter_func) });
+}
+
+void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func)
+{
+	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_func), nullptr });
 }
 
 void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, nullptr });
+	_shared_components.emplace_back(QueryDataShared{ ref_def, nullptr, nullptr });
+}
+
+void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, Output& output)
+{
+	_components.emplace_back(QueryData{ ref_def, &output });
 }
 
 void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def)
 {
-	_components.emplace_back(ref_def);
+	_components.emplace_back(QueryData{ ref_def, nullptr });
 }
 
-bool ECSQuery::filter(const ECSArchetype& archetype) const
+bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 {
 	const void* shared_data = archetype.getSharedData();
 	const int32_t shared_size = archetype.sharedSize();
 
 	if (!_shared_components.empty()) {
+		// If we're checking for shared data that is not a tag, we should have a shared data buffer.
 		if (shared_size > 0 && !shared_data) {
 			return false;
 		}
@@ -59,16 +70,34 @@ bool ECSQuery::filter(const ECSArchetype& archetype) const
 			return false;
 		}
 
-		if (data.filter && !data.filter(reinterpret_cast<const int8_t*>(shared_data) + offset)) {
+		if (data.filter_func && !data.filter_func(reinterpret_cast<const int8_t*>(shared_data) + offset)) {
+			return false;
+		}
+
+	}
+
+	for (const QueryData& data : _components) {
+		const int32_t offset = archetype.getComponentOffset(data.ref_def->getReflectionInstance().getHash());
+
+		if (offset == -1) {
 			return false;
 		}
 	}
 
-	for (const Gaff::IReflectionDefinition* ref_def : _components) {
-		const int32_t offset = archetype.getComponentOffset(ref_def->getReflectionInstance().getHash());
+	// Now that we know this archetype passes the filter, add to the outputs.
+	for (QueryDataShared& data : _shared_components) {
+		const int32_t offset = archetype.getComponentSharedOffset(data.ref_def->getReflectionInstance().getHash());
 
-		if (offset == -1) {
-			return false;
+		if (data.push_func) {
+			data.push_func(reinterpret_cast<const int8_t*>(shared_data) + offset);
+		}
+	}
+
+	for (const QueryData& data : _components) {
+		const int32_t offset = archetype.getComponentOffset(data.ref_def->getReflectionInstance().getHash());
+
+		if (data.output) {
+			data.output->emplace_back(ECSQueryResult{ offset, entity_data });
 		}
 	}
 
