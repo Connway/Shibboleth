@@ -73,6 +73,10 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 
 	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
 	_entity_pages[archetype.getHash()].reset(data);
+
+	for (ECSQuery& query : _queries) {
+		query.filter(data->archetype, data);
+	}
 }
 
 void ECSManager::addArchetype(ECSArchetype&& archetype)
@@ -88,6 +92,10 @@ void ECSManager::addArchetype(ECSArchetype&& archetype)
 	data->archetype = std::move(archetype);
 
 	_entity_pages[archetype.getHash()].reset(data);
+
+	for (ECSQuery& query : _queries) {
+		query.filter(data->archetype, data);
+	}
 }
 
 const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 name) const
@@ -280,6 +288,7 @@ bool ECSManager::loadFile(const char*, IFile* file)
 
 void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 {
+	GAFF_ASSERT(_entity_pages.find(new_archetype) != _entity_pages.end());
 	EntityData& data = *_entity_pages[new_archetype];
 	Entity& entity = _entities[id];
 
