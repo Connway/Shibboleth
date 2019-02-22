@@ -250,6 +250,25 @@ int32_t ECSManager::getPageIndex(EntityID id) const
 	return _entities[id].index;
 }
 
+void* ECSManager::getComponent(ECSQueryResult& query_result, int32_t entity_index)
+{
+	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
+	GAFF_ASSERT(entity_index < data->num_entities);
+
+	const int32_t page_index = entity_index / data->num_entities_per_page;
+	EntityPage* const page = data->pages[page_index].get();
+
+	entity_index -= page_index * data->num_entities_per_page;
+	const int32_t entity_offset = (entity_index / 4) * data->archetype.size() * 4;
+
+	return reinterpret_cast<int8_t*>(page) + sizeof(EntityPage) + entity_offset + query_result.component_offset;
+}
+
+int32_t ECSManager::getNumEntities(const ECSQueryResult& query_result) const
+{
+	return reinterpret_cast<const EntityData*>(query_result.entity_data)->num_entities;
+}
+
 void ECSManager::registerQuery(ECSQuery&& query)
 {
 	ECSQuery& new_query = _queries.emplace_back(std::move(query));

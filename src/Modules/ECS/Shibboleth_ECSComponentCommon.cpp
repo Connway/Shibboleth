@@ -50,9 +50,17 @@ void Position::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& valu
 	*ecs_mgr.getComponentShared<Position>(id) = value;
 }
 
+void Position::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
+{
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	component[0] = value.x;
+	component[4] = value.y;
+	component[8] = value.z;
+}
+
 void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
@@ -68,9 +76,20 @@ const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return *ecs_mgr.getComponentShared<Position>(id);
 }
 
+glm::vec3 Position::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+{
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+
+	return glm::vec3(
+		component[0],
+		component[4],
+		component[8]
+	);
+}
+
 glm::vec3 Position::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::vec3(
 		component[0],
@@ -131,9 +150,18 @@ void Rotation::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& valu
 	*ecs_mgr.getComponentShared<Rotation>(id) = value;
 }
 
+void Rotation::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value)
+{
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	component[0] = value.w;
+	component[4] = value.x;
+	component[8] = value.y;
+	component[12] = value.z;
+}
+
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.w;
 	component[4] = value.x;
 	component[8] = value.y;
@@ -150,9 +178,21 @@ const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return *ecs_mgr.getComponentShared<Rotation>(id);
 }
 
+glm::quat Rotation::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+{
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+
+	return glm::quat(
+		component[0],
+		component[4],
+		component[8],
+		component[12]
+	);
+}
+
 glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::quat(
 		component[0],
@@ -221,9 +261,17 @@ void Scale::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	*ecs_mgr.getComponentShared<Scale>(id) = value;
 }
 
+void Scale::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
+{
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	component[0] = value.x;
+	component[4] = value.y;
+	component[8] = value.z;
+}
+
 void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
@@ -239,9 +287,20 @@ const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return *ecs_mgr.getComponentShared<Scale>(id);
 }
 
+glm::vec3 Scale::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+{
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+
+	return glm::vec3(
+		component[0],
+		component[4],
+		component[8]
+	);
+}
+
 glm::vec3 Scale::Get(ECSManager& ecs_mgr, EntityID id)
 {
-	const float* component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::vec3(
 		component[0],

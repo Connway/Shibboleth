@@ -58,22 +58,34 @@ public:
 	template <class T, class Arg>
 	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T::SharedData>&& filter)
 	{
-		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
-		auto filter_func = Gaff::Func([filter](const void* data) -> bool { return filter(*reinterpret_cast<typename T::SharedData*>(data)); });
+		auto push_func = Gaff::Func<void (const void*)>(
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+		);
+
+		auto filter_func = Gaff::Func<bool (const void*)>(
+			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const typename T::SharedData*>(data)); }
+		);
+
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter_func));
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output, FilterFunc&& filter)
 	{
-		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
+		auto push_func = Gaff::Func<void (const void*)>(
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+		);
+
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter));
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output)
 	{
-		auto push_func = Gaff::Func([&output](const void* data) -> void { output.emplace_back(reinterpret_cast<typename T::SharedData*>(data)); });
+		auto push_func = Gaff::Func<void (const void*)>(
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+		);
+
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func));
 	}
 
@@ -89,12 +101,12 @@ public:
 		add(Reflection<T>::GetReflectionDefinition());
 	}
 
-	void addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func);
-	void addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func);
-	void addShared(const Gaff::IReflectionDefinition* ref_def);
+	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func);
+	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func);
+	void addShared(const Gaff::IReflectionDefinition& ref_def);
 
-	void add(const Gaff::IReflectionDefinition* ref_def, Output& output);
-	void add(const Gaff::IReflectionDefinition* ref_def);
+	void add(const Gaff::IReflectionDefinition& ref_def, Output& output);
+	void add(const Gaff::IReflectionDefinition& ref_def);
 
 	bool filter(const ECSArchetype& archetype, void* entity_data);
 

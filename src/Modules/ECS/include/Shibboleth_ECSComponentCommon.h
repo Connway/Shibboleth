@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+struct ECSQueryResult;
 class ECSManager;
 
 class Position final : public Gaff::IReflectionObject
@@ -36,26 +37,15 @@ class Position final : public Gaff::IReflectionObject
 public:
 	using SharedData = glm::vec3;
 
-	class Data final
-	{
-	public:
-		Data(/*ECSManager& ecs_mgr,*/ int32_t entity_offset, int32_t entity_size);
-
-	private:
-		//Vector< UniquePtr<EntityPage> >* _entity_pages;
-		//ECSManager& _ecs_mgr;
-		int32_t _entity_offset;
-		int32_t _entity_size;
-		Vector<EntityID>* _entity_ids;
-	};
-
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
+	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
@@ -76,10 +66,12 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
+	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
 
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::quat Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::quat Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
@@ -101,10 +93,12 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
+	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(void* component_begin);
