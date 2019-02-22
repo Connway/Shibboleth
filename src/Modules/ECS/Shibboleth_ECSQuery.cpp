@@ -26,29 +26,29 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_func), std::move(filter_func) });
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(filter_func) });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def, SharedPushToListFunc&& push_func)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, std::move(push_func), nullptr });
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), nullptr });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition* ref_def)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def)
 {
-	_shared_components.emplace_back(QueryDataShared{ ref_def, nullptr, nullptr });
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, nullptr, nullptr });
 }
 
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def, Output& output)
+void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def, Output& output)
 {
-	_components.emplace_back(QueryData{ ref_def, &output });
+	_components.emplace_back(QueryData{ &ref_def, &output });
 }
 
-void ECSQuery::add(const Gaff::IReflectionDefinition* ref_def)
+void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def)
 {
-	_components.emplace_back(QueryData{ ref_def, nullptr });
+	_components.emplace_back(QueryData{ &ref_def, nullptr });
 }
 
 bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)

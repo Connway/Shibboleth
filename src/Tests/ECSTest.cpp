@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
+#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_App.h>
 
 Shibboleth::App g_app;
@@ -162,4 +163,42 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	REQUIRE_EQ(*scale, glm::vec3(3.0f));
 
 	ecs_mgr.destroyEntity(id);
+}
+
+TEST_CASE("shibboleth_ecs_query")
+{
+	Shibboleth::ECSManager ecs_mgr;
+
+	Shibboleth::ECSArchetype archetype;
+	REQUIRE(archetype.add<Shibboleth::Position>());
+	REQUIRE(archetype.addShared<Shibboleth::Scale>());
+	REQUIRE(archetype.finalize());
+
+	ecs_mgr.addArchetype(std::move(archetype));
+
+	const Gaff::Hash64 archetype_hash = archetype.getHash();
+	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	REQUIRE_EQ(id, 0);
+
+	Shibboleth::Position::Set(ecs_mgr, id, glm::vec3(0.0f, 1.0f, 2.0f));
+	Shibboleth::Scale::SetShared(ecs_mgr, archetype_hash, glm::vec3(3.0f));
+
+	Shibboleth::Vector<const Shibboleth::Scale::SharedData*> scale_output;
+	Shibboleth::Vector<Shibboleth::ECSQueryResult> position_output;
+	Shibboleth::ECSQuery query;
+
+	query.addShared<Shibboleth::Scale>(scale_output);
+	query.add<Shibboleth::Position>(position_output);
+
+	ecs_mgr.registerQuery(std::move(query));
+
+	REQUIRE_EQ(position_output.size(), 1);
+	REQUIRE_EQ(scale_output.size(), 1);
+
+	REQUIRE_EQ(ecs_mgr.getNumEntities(position_output[0]), 1);
+
+	Shibboleth::Position::Set(ecs_mgr, position_output[0], 0, glm::vec3(0.0f, 1.0f, 2.0f));
+
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, position_output[0], 0), glm::vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(*scale_output[0], glm::vec3(3.0f));
 }

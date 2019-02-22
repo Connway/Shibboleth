@@ -262,6 +262,9 @@ public:
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 
+	void* getComponent(ECSQueryResult& query_result, int32_t entity_index);
+	int32_t getNumEntities(const ECSQueryResult& query_result) const;
+
 	void registerQuery(ECSQuery&& query);
 
 private:
