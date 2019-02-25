@@ -1076,6 +1076,8 @@ public:
 	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
 	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
 
+	virtual void destroyInstance(void* data) const = 0;
+
 private:
 	virtual ptrdiff_t getBasePointerOffset(Hash64 interface_name) const = 0;
 	virtual void instantiated(void* object) const = 0;

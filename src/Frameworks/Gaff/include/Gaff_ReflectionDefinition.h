@@ -120,6 +120,8 @@ public:
 	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
 
+	void destroyInstance(void* data) const override;
+
 	IVar* getVarT(int32_t index) const;
 	IVar* getVarT(Hash32 name) const;
 
@@ -514,6 +516,7 @@ private:
 		VoidFunc getFactory(Hash64) const override { return nullptr; } \
 		VoidFunc getStaticFunc(Hash32, Hash64) const override { return nullptr; } \
 		void* getFunc(Hash32, Hash64) const override { return nullptr; } \
+		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \
 		void setAllocator(const Allocator&) {} \
 		void finish(void) {} \
 	private: \

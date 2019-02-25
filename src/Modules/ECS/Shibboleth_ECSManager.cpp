@@ -98,6 +98,16 @@ void ECSManager::addArchetype(ECSArchetype&& archetype)
 	}
 }
 
+void ECSManager::removeArchetype(Gaff::Hash64 archetype)
+{
+	GAFF_REF(archetype);
+}
+
+void ECSManager::removeArchetype(const char* name)
+{
+	removeArchetype(getArchetype(name).getHash());
+}
+
 const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 name) const
 {
 	const auto it = _archtypes.find(name);
