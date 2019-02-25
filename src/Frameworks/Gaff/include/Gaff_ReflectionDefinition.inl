@@ -1123,6 +1123,13 @@ void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) cons
 }
 
 template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::destroyInstance(void* data) const
+{
+	T* const instance = reinterpret_cast<T*>(data);
+	Gaff::Deconstruct(instance);
+}
+
+template <class T, class Allocator>
 typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVarT(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));

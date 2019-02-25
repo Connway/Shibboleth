@@ -57,7 +57,7 @@ void Deconstruct(T* data)
 {
 	// To get rid of the stupid unreferenced parameter warning in VS.
 #ifdef PLATFORM_WINDOWS
-	(void)(data);
+	GAFF_REF(data);
 #endif
 
 	data->~T();
