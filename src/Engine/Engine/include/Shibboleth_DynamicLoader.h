@@ -25,6 +25,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-typedef Gaff::DynamicLoader<ProxyAllocator> DynamicLoader;
+using DynamicLoader = Gaff::DynamicLoader<ProxyAllocator>;
 
 NS_END

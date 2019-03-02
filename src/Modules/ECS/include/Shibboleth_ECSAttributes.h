@@ -59,7 +59,7 @@ public:
 };
 
 template <class T>
-class ECSVarAttribute : public IECSVarAttribute
+class ECSVarAttribute final : public IECSVarAttribute
 {
 	static_assert(std::is_pod<T>::value, "ECSVarAttribute type T is not a POD type!");
 
@@ -77,6 +77,7 @@ public:
 
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(ECSVarAttribute, T);
 };
+
 
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(ECSVarAttribute, T)
 	.BASE(IECSVarAttribute)

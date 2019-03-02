@@ -317,7 +317,7 @@ private:
 	Vector<int32_t> _free_ids;
 	int32_t _next_id = 0;
 
-	bool loadFile(const char* file_name, IFile* file);
+	//bool loadFile(const char* file_name, IFile* file);
 	void migrate(EntityID id, Gaff::Hash64 new_archetype);
 	int32_t allocateIndex(EntityData& data, EntityID id);
 

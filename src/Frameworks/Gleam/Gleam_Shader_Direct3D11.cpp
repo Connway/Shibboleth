@@ -37,7 +37,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef bool (ShaderD3D11::*ShaderInitFunc)(IRenderDevice&, const char*);
+using ShaderInitSourceFunc = bool (ShaderD3D11::*)(IRenderDevice&, const char*, size_t);
+using ShaderInitFunc = bool (ShaderD3D11::*)(IRenderDevice&, const char*);
+
 static ShaderInitFunc g_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D11::initVertex,
 	&ShaderD3D11::initPixel,
@@ -47,7 +49,6 @@ static ShaderInitFunc g_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D11::initCompute
 };
 
-typedef bool (ShaderD3D11::*ShaderInitSourceFunc)(IRenderDevice&, const char*, size_t);
 static ShaderInitSourceFunc g_source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D11::initVertexSource,
 	&ShaderD3D11::initPixelSource,

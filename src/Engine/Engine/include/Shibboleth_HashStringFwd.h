@@ -23,7 +23,24 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+#include <Gaff_Hash.h>
+
+NS_GAFF
+	template <class T, class HashType, class Allocator>
+	class HashString;
+
+	template <class T, class HashType>
+	class HashStringTemp;
+
+	template <class Allocator>
+	using HashString32 = HashString<char, Hash32, Allocator>;
+
+	template <class Allocator>
+	using HashString64 = HashString<char, Hash64, Allocator>;
+
+	using HashStringTemp32 = HashStringTemp<char, Hash32>;
+	using HashStringTemp64 = HashStringTemp<char, Hash64>;
+NS_END
 
 NS_SHIBBOLETH
 

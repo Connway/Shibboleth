@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include <Gaff_Defines.h>
+#include "Shibboleth_SerializeReaderWrapperFwd.h"
 
 NS_SHIBBOLETH
 
@@ -31,5 +30,7 @@ class IApp;
 
 void SetApp(IApp& app);
 IApp& GetApp(void);
+
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path);
 
 NS_END

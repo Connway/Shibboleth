@@ -22,9 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
+#include "Shibboleth_JobPool.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_JSON.h>
 
@@ -62,7 +64,7 @@ public:
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
 
-	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
+	DynamicLoader& getDynamicLoader(void) override;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
@@ -74,9 +76,9 @@ private:
 	{
 		FileSystemData(void): file_system(nullptr), destroy_func(nullptr), create_func(nullptr) {}
 
-		typedef bool (*InitFileSystemModuleFunc)(IApp&);
-		typedef IFileSystem* (*CreateFileSystemFunc)(void);
-		typedef void (*DestroyFileSystemFunc)(IFileSystem*);
+		using InitFileSystemModuleFunc = bool (*)(IApp&);
+		using CreateFileSystemFunc = IFileSystem* (*)(void);
+		using DestroyFileSystemFunc  = void (*)(IFileSystem*);
 
 		DynamicLoader::ModulePtr file_system_module;
 		IFileSystem* file_system;

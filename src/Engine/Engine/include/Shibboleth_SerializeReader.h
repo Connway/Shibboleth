@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <class Node> using SerializeReader = Gaff::SerializeReader<Node, ProxyAllocator>;
+template <class Node>
+using SerializeReader = Gaff::SerializeReader<Node, ProxyAllocator>;
 
 NS_END

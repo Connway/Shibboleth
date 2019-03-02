@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_Memory.h>
 #include <Shibboleth_IApp.h>
 #include <EASTL/algorithm.h>

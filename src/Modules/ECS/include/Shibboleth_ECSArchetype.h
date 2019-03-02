@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GAFF
 	class IReflectionDefinition;
-	class JSON;
+	class ISerializeReader;
 NS_END
 
 NS_SHIBBOLETH
@@ -87,7 +87,7 @@ public:
 	bool removeShared(const Gaff::IReflectionDefinition& ref_def);
 	bool removeShared(int32_t index);
 
-	bool finalize(const Gaff::JSON& json);
+	bool finalize(const Gaff::ISerializeReader& json);
 	bool finalize(void);
 
 	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
@@ -154,7 +154,7 @@ private:
 	template <bool shared>
 	bool remove(int32_t index);
 
-	void initShared(const Gaff::JSON& json);
+	void initShared(const Gaff::ISerializeReader& reader);
 	void initShared(void);
 
 	void calculateHash(void);

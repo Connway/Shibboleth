@@ -32,6 +32,6 @@ THE SOFTWARE.
 	#include "Gleam_CommandList_OpenGL.h"
 
 	NS_GLEAM
-		typedef CommandListGL CommandList;
+		using CommandList = CommandListGL;
 	NS_END
 #endif
