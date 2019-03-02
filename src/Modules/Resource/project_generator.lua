@@ -59,6 +59,7 @@ project "ResourceModule"
 		"Gaff",
 		"Engine",
 		"EASTL",
+		"mpack",
 		"Resource"
 	}
 

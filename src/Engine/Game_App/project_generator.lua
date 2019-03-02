@@ -28,7 +28,8 @@ project "Game_App"
 		"Engine",
 		"Gaff",
 		"Memory",
-		"EASTL"
+		"EASTL",
+		"mpack"
 	}
 
 	dependson(deps)
