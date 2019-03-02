@@ -23,17 +23,16 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+
+namespace Gaff
+{
+	template <class Node, class Allocator>
+	class SerializeReader;
+}
 
 NS_SHIBBOLETH
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
-
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
-
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+template <class Node>
+using SerializeReader = Gaff::SerializeReader<Node, ProxyAllocator>;
 
 NS_END

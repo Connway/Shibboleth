@@ -53,6 +53,26 @@ public:
 		return false;
 	}
 
+	template <class Callback>
+	bool forEachInArray(Callback&& callback) const
+	{
+		GAFF_ASSERT(isArray());
+		const int32_t len = size();
+
+		for (int32_t i = 0; i < len; ++i) {
+			enterElement(i);
+
+			if (callback(i)) {
+				exitElement();
+				return true;
+			}
+
+			exitElement();
+		}
+
+		return false;
+	}
+
 
 	virtual ~ISerializeReader(void) {}
 

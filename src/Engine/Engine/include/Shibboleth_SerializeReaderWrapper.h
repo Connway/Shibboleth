@@ -20,20 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+#include <Gaff_SerializeReaderWrapper.h>
 
 NS_SHIBBOLETH
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
-
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
-
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+using SerializeReaderWrapper = Gaff::SerializeReaderWrapper<ProxyAllocator>;
 
 NS_END

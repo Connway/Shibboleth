@@ -20,20 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+template <class Allocator>
+SerializeReaderWrapper<Allocator>::SerializeReaderWrapper(const Allocator& allocator):
+	_allocator(allocator)
+{
+}
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+template <class Allocator>
+SerializeReaderWrapper<Allocator>::~SerializeReaderWrapper(void)
+{
+	if (_reader) {
+		Deconstruct(_reader);
+	}
+}
 
-NS_SHIBBOLETH
+template <class Allocator>
+bool SerializeReaderWrapper<Allocator>::parseMPack(const char* buffer, size_t size)
+{
+	if (!_mpack_reader.parse(buffer, size)) {
+		return false;
+	}
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
+	Construct(&_mpack, _mpack_reader.getRoot(), _allocator);
+	_reader = &_mpack;
 
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
+	return true;
+}
 
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+template <class Allocator>
+bool SerializeReaderWrapper<Allocator>::parseJSON(const char* buffer)
+{
+	Gaff::JSON json;
 
-NS_END
+	if (!json.parse(buffer)) {
+		return false;
+	}
+
+	Construct(&_json, json, _allocator);
+	_reader = &_json;
+
+	return true;
+}
+
+template <class Allocator>
+const ISerializeReader* SerializeReaderWrapper<Allocator>::getReader(void) const
+{
+	return _reader;
+}

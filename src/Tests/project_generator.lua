@@ -60,6 +60,7 @@ local tests = {
 			"../Dependencies/rapidjson",
 			"../Dependencies/doctest",
 			"../Dependencies/glm",
+			"../Dependencies/mpack",
 
 			"../Frameworks/Gaff/include",
 			"../Frameworks/Gleam/include",
@@ -73,7 +74,8 @@ local tests = {
 		{
 			"Gaff", "Gleam",
 			"Memory", "EASTL",
-			"Engine", "ECS"
+			"Engine", "ECS",
+			"mpack"
 		},
 
 		extra = function ()

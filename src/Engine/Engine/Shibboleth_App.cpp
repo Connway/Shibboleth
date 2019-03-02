@@ -609,9 +609,9 @@ JobPool& App::getJobPool(void)
 	return _job_pool;
 }
 
-DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
+DynamicLoader& App::getDynamicLoader(void)
 {
-	return _dynamic_loader.loadModule(filename, name);
+	return _dynamic_loader;
 }
 
 bool App::isQuitting(void) const

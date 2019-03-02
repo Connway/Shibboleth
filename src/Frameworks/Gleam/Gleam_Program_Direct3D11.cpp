@@ -34,9 +34,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef void(__stdcall ID3D11DeviceContext::*ShaderSetFunction)(UINT, UINT, ID3D11Buffer* const*);
-typedef void(__stdcall ID3D11DeviceContext::*ShaderResourceViewSetFunction)(UINT, UINT, ID3D11ShaderResourceView* const*);
-typedef void(__stdcall ID3D11DeviceContext::*SamplerSetFunction)(UINT, UINT, ID3D11SamplerState* const*);
+using ShaderSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11Buffer* const*);
+using ShaderResourceViewSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11ShaderResourceView* const*);
+using SamplerSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11SamplerState* const*);
 
 static ShaderSetFunction g_shader_set[IShader::SHADER_TYPE_SIZE] = {
 	&ID3D11DeviceContext::VSSetConstantBuffers,

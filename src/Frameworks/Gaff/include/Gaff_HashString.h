@@ -140,8 +140,12 @@ private:
 
 #include "Gaff_HashString.inl"
 
-template <class Allocator = DefaultAllocator> using HashString32 = HashString<char, Hash32, Allocator>;
-template <class Allocator = DefaultAllocator> using HashString64 = HashString<char, Hash64, Allocator>;
+template <class Allocator = DefaultAllocator>
+using HashString32 = HashString<char, Hash32, Allocator>;
+
+template <class Allocator = DefaultAllocator>
+using HashString64 = HashString<char, Hash64, Allocator>;
+
 using HashStringTemp32 = HashStringTemp<char, Hash32>;
 using HashStringTemp64 = HashStringTemp<char, Hash64>;
 

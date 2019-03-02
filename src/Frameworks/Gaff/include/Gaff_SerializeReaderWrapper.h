@@ -22,18 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+#include "Gaff_SerializeReader.h"
+#include "Gaff_MessagePack.h"
+#include "Gaff_JSON.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
+template <class Allocator>
+class SerializeReaderWrapper final
+{
+public:
+	SerializeReaderWrapper(const Allocator& allocator = Allocator());
+	SerializeReaderWrapper(SerializeReaderWrapper&&) = default;
+	~SerializeReaderWrapper(void);
 
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
+	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&) = default;
 
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+	bool parseMPack(const char* buffer, size_t size);
+	bool parseJSON(const char* buffer);
+
+	const ISerializeReader* getReader(void) const;
+
+private:
+	Allocator _allocator;
+
+	ISerializeReader* _reader = nullptr;
+
+	MessagePackReader _mpack_reader;
+
+	union
+	{
+		SerializeReader<MessagePackNode, Allocator> _mpack;
+		SerializeReader<JSON, Allocator> _json;
+	};
+};
+
+#include "Gaff_SerializeReaderWrapper.inl"
 
 NS_END

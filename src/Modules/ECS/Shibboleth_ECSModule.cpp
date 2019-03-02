@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_MessagePack.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
@@ -31,6 +32,8 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 
 	app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
 	app.getReflectionManager().registerTypeBucket(CLASS_HASH(IECSSystem));
+
+	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
 
 	return true;
 }

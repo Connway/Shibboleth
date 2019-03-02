@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>

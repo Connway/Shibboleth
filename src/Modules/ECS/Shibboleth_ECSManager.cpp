@@ -23,9 +23,9 @@ THE SOFTWARE.
 #include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSAttributes.h"
 #include "Shibboleth_IECSSystem.h"
+#include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Gaff_Function.h>
-#include <Gaff_JSON.h>
 
 SHIB_REFLECTION_DEFINE(ECSManager)
 
@@ -38,26 +38,25 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ECSManager)
 
 bool ECSManager::init(void)
 {
-	// Load all archetypes from config directory
-	auto callback = Gaff::MemberFunc(this, &ECSManager::loadFile);
 	IApp& app = GetApp();
+	const auto* const ecs_systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(IECSSystem));
 
-	const char* const archetype_dir = app.getConfigs()["archetype_dir"].getString("Resources/Archetypes");
-	app.getFileSystem().forEachFile(archetype_dir, callback);
-
-	const auto ecs_systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(IECSSystem));
-	ProxyAllocator allocator("ECS");
-
-	for (const Gaff::IReflectionDefinition* ref_def : *ecs_systems) {
-		IECSSystem* const system = ref_def->createT<IECSSystem>(CLASS_HASH(IECSSystem), allocator);
-
-		if (!system) {
-			// $TODO: Log error.
-			continue;
-		}
-
-		system->init(*this);
+	if (!ecs_systems || ecs_systems->empty()) {
+		return true;
 	}
+
+	ProxyAllocator allocator("ECS");
+	SerializeReaderWrapper readerWrapper(allocator);
+	
+	if (!OpenJSONOrMPackFile(readerWrapper, "cfg/update_phases.cfg")) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+
+	// Setup system operation order.
+	GAFF_REF(reader);
 
 	return true;
 }
@@ -289,31 +288,64 @@ void ECSManager::registerQuery(ECSQuery&& query)
 	}
 }
 
-bool ECSManager::loadFile(const char*, IFile* file)
-{
-	Gaff::JSON json;
-
-	if (!json.parse(file->getBuffer())) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gaff::JSON name = json["name"];
-
-	if (!name.isString()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	ECSArchetype archetype;
-
-	if (!archetype.finalize(json)) {
-		return false;
-	}
-
-	addArchetype(std::move(archetype), name.getString());
-	return false;
-}
+//bool ECSManager::loadFile(const char* file_name, IFile* file)
+//{
+//	ProxyAllocator allocator("ECS");
+//
+//	if (Gaff::EndsWith(file_name, ".archetype.bin")) {
+//		Gaff::MessagePackReader mpack;
+//
+//		if (!mpack.parse(file->getBuffer(), file->size())) {
+//			// $TODO: Log error.
+//			return false;
+//		}
+//
+//		SerializeReader<Gaff::MessagePackNode> reader(mpack.getRoot(), allocator);
+//		ECSArchetype archetype;
+//
+//		if (!archetype.finalize(reader)) {
+//			return false;
+//		}
+//
+//		{
+//			const auto guard = reader.enterElementGuard("name");
+//
+//			if (!reader.isString()) {
+//				// $TODO: Log error.
+//				return false;
+//			}
+//
+//			addArchetype(std::move(archetype), reader.readString());
+//		}
+//
+//	} else {
+//		Gaff::JSON json;
+//
+//		if (!json.parse(file->getBuffer())) {
+//			// $TODO: Log error.
+//			return false;
+//		}
+//
+//		const Gaff::JSON name = json["name"];
+//
+//		if (!name.isString()) {
+//			// $TODO: Log error.
+//			return false;
+//		}
+//
+//		SerializeReader<Gaff::JSON> reader(json, allocator);
+//
+//		ECSArchetype archetype;
+//
+//		if (!archetype.finalize(reader)) {
+//			return false;
+//		}
+//
+//		addArchetype(std::move(archetype), name.getString());
+//	}
+//
+//	return true;
+//}
 
 void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 {

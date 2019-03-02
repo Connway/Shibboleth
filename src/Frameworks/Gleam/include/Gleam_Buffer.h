@@ -32,6 +32,6 @@ THE SOFTWARE.
 	#include "Gleam_Buffer_OpenGL.h"
 
 	NS_GLEAM
-		typedef BufferGL Buffer;
+		using Buffer = BufferGL;
 	NS_END
 #endif

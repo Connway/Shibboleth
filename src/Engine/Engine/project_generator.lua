@@ -26,5 +26,6 @@ project "Engine"
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/mpack",
 		"../../Dependencies/glm"
 	}

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IncludeWindows.h"
-#include  "Gaff_Defines.h"
+#include "Gaff_Defines.h"
 
 NS_GAFF
 

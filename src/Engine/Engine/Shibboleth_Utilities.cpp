@@ -21,9 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Utilities.h"
+#include "Shibboleth_SerializeReaderWrapper.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Memory.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_Utils.h>
-#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -38,6 +40,29 @@ IApp& GetApp(void)
 {
 	GAFF_ASSERT(gApp);
 	return *gApp;
+}
+
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path)
+{
+	IApp& app = GetApp();
+	IFileSystem& fs = app.getFileSystem();
+
+	U8String bin_path = U8String(path) + ".bin";
+
+	IFile* file = fs.openFile(bin_path.c_str());
+
+	if (file) {
+		return wrapper.parseMPack(file->getBuffer(), file->size());
+
+	} else {
+		file = fs.openFile(path);
+
+		if (file) {
+			return wrapper.parseJSON(file->getBuffer());
+		}
+	}
+
+	return false;
 }
 
 NS_END

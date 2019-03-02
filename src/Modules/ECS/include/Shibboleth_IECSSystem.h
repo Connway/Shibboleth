@@ -35,6 +35,7 @@ public:
 	virtual ~IECSSystem(void) {}
 
 	virtual void init(ECSManager& ecs_mgr) = 0;
+	//virtual void update() = 0;
 };
 
 NS_END

@@ -19,6 +19,7 @@ project "ECS"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
+		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include"
 	}
@@ -46,6 +47,7 @@ project "ECSModule"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
+		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include"
 	}
@@ -57,7 +59,8 @@ project "ECSModule"
 		"EASTL",
 		"Gaff",
 		"Gleam",
-		"ECS"
+		"ECS",
+		"mpack"
 	}
 
 	dependson(deps)

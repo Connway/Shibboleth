@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_DynamicLoader.h"
+#include "Shibboleth_DynamicLoaderFwd.h"
+#include "Shibboleth_JobPoolFwd.h"
 #include "Shibboleth_Reflection.h"
-#include "Shibboleth_JobPool.h"
 
 NS_GAFF
 	class IEnumReflectionDefinition;
@@ -93,7 +93,6 @@ public:
 	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
 	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
-
 	virtual IFileSystem& getFileSystem(void) = 0;
 	virtual const Gaff::JSON& getConfigs(void) const = 0;
 	virtual const U8String& getProjectDirectory(void) const = 0;
@@ -104,7 +103,7 @@ public:
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
 
-	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
+	virtual DynamicLoader& getDynamicLoader(void) = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
