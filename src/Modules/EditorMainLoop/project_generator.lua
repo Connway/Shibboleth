@@ -56,7 +56,8 @@ project "EditorMainLoopModule"
 		"Gaff",
 		"Gleam",
 		"Memory",
-		"EASTL"
+		"EASTL",
+		"mpack"
 	}
 
 	dependson(deps)

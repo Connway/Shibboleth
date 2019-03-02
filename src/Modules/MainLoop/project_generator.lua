@@ -57,7 +57,8 @@ project "MainLoopModule"
 		"Engine",
 		"Gaff",
 		"Memory",
-		"EASTL"
+		"EASTL",
+		"mpack"
 	}
 
 	dependson(deps)

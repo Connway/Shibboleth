@@ -75,6 +75,7 @@ project "EditorECSModule"
 		"EASTL",
 		"libpng",
 		"zlib-ng",
+		"mpack",
 		"wxBase",
 		"wxCore",
 		"ECS"

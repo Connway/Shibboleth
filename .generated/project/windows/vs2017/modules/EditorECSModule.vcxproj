@@ -270,6 +270,9 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\dependencies\wxBase.vcxproj">
       <Project>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</Project>
     </ProjectReference>

@@ -80,8 +80,8 @@ function DoGraphicsModule(renderer)
 			"Gleam",
 			"Engine",
 			"EASTL",
+			"mpack"
 			-- "Resource",
-			-- "mpack"
 		}
 
 		dependson(deps)

@@ -78,6 +78,7 @@ project "EditorBasicModule"
 		"EASTL",
 		"libpng",
 		"zlib-ng",
+		"mpack",
 		"wxBase",
 		"wxCore",
 		"wxPropGrid"

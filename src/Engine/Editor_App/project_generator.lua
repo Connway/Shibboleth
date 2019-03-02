@@ -30,6 +30,7 @@ project "Editor_App"
 		"libjpeg",
 		"libpng",
 		"zlib-ng",
+		"mpack",
 		"wxBase",
 		"wxCore",
 		"wxAUI"
