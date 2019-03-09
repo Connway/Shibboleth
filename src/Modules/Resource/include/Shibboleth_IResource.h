@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_HashString.h>
+#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_Vector.h>
-#include <Gaff_IRefCounted.h>
 #include <Gaff_RefPtr.h>
 #include <EASTL/functional.h>
 #include <atomic>

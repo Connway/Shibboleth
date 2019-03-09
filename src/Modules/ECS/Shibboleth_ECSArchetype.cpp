@@ -54,6 +54,12 @@ ECSArchetype& ECSArchetype::operator=(ECSArchetype&& rhs)
 ECSArchetype::~ECSArchetype(void)
 {
 	if (_shared_instances) {
+		for (const RefDefOffset& rdo : _shared_vars) {
+			if (rdo.ref_def->size() > 0) {
+				rdo.ref_def->destroyInstance(reinterpret_cast<int8_t*>(_shared_instances) + rdo.offset);
+			}
+		}
+
 		SHIB_FREE(_shared_instances, GetAllocator());
 	}
 }

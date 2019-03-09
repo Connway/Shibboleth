@@ -31,6 +31,18 @@ SHIB_REFLECTION_DEFINE(ECSManager)
 
 NS_SHIBBOLETH
 
+ECSArchetypeReference::ECSArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
+	_ecs_mgr(ecs_mgr),
+	_archetype(archetype)
+{
+}
+
+ECSArchetypeReference::~ECSArchetypeReference(void)
+{
+	_ecs_mgr.removeArchetype(_archetype);
+}
+
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSManager)
 	.BASE(IManager)
 	.ctor<>()
@@ -99,7 +111,19 @@ void ECSManager::addArchetype(ECSArchetype&& archetype)
 
 void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 {
-	GAFF_REF(archetype);
+	const auto it = _entity_pages.find(archetype);
+
+	if (it == _entity_pages.end()) {
+		return;
+	}
+
+	for (EntityID id : it->second->entity_ids) {
+		if (id != -1) {
+			destroyEntity(id);
+		}
+	}
+
+	_entity_pages.erase(it);
 }
 
 void ECSManager::removeArchetype(const char* name)
