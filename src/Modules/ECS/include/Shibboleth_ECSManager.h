@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSEntity.h"
 #include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
@@ -73,6 +74,18 @@ void AddComponentHelper(ECSArchetype& archetype)
 	}
 }
 
+class ECSArchetypeReference final
+{
+public:
+	ECSArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	~ECSArchetypeReference(void);
+
+private:
+	Gaff::Hash64 _archetype;
+	ECSManager& _ecs_mgr;
+
+	SHIB_REF_COUNTED();
+};
 
 class ECSManager final : public IManager
 {
@@ -314,8 +327,8 @@ private:
 	Vector<ECSQuery> _queries;
 
 	Vector<Entity> _entities;
-	Vector<int32_t> _free_ids;
-	int32_t _next_id = 0;
+	Vector<EntityID> _free_ids;
+	EntityID _next_id = 0;
 
 	//bool loadFile(const char* file_name, IFile* file);
 	void migrate(EntityID id, Gaff::Hash64 new_archetype);
