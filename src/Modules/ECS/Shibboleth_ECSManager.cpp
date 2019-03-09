@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_IECSSystem.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 #include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE(ECSManager)
@@ -61,13 +62,13 @@ bool ECSManager::init(void)
 	SerializeReaderWrapper readerWrapper(allocator);
 	
 	if (!OpenJSONOrMPackFile(readerWrapper, "cfg/update_phases.cfg")) {
-		// $TODO: Log error.
+		LogErrorDefault("Failed to read cfg/update_phases.cfg[.bin].");
 		return false;
 	}
 
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
 
-	// Setup system operation order.
+	// $TODO: Setup system operation order.
 	GAFF_REF(reader);
 
 	return true;
