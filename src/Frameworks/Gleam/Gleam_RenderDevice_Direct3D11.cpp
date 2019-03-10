@@ -53,7 +53,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 			RenderDeviceD3D11::AdapterInfo info;
 			Gaff::COMRefPtr<IDXGIAdapter4> adapter_ptr;
 
-			adapter_ptr.attach(adapter);
+			adapter_ptr.reset(adapter);
 
 			result = adapter->GetDesc3(&adapter_desc);
 
@@ -73,8 +73,8 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 				adapter_output->QueryInterface(&temp);
 				adapter_output->Release();
 
-				output.attach(temp);
-				//out_info.output.attach(adapter_output);
+				output.reset(temp);
+				//out_info.output.reset(adapter_output);
 
 				result = temp->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &num_modes, nullptr);
 
@@ -190,7 +190,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 		return false;
 	}
 
-	_adapter.attach(adapter);
+	_adapter.reset(adapter);
 
 	ID3D11DeviceContext* context = nullptr;
 	ID3D11Device* device = nullptr;
@@ -229,8 +229,8 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	context->Release();
 	device->Release();
 
-	_device.attach(final_device);
-	_context.attach(final_context);
+	_device.reset(final_device);
+	_context.reset(final_context);
 
 	return true;
 
@@ -310,8 +310,8 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //
 //		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
 //		Gaff::COMRefPtr<IDXGISwapChain> sc;
-//		rtv.attach(render_target_view);
-//		sc.attach(swap_chain);
+//		rtv.reset(render_target_view);
+//		sc.reset(swap_chain);
 //
 //		RETURNIFFAILED(result)
 //
@@ -327,8 +327,8 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //		dvc.render_targets.push_back(rtv);
 //		dvc.swap_chains.push_back(sc);
 //		dvc.viewports.push_back(viewport);
-//		dvc.context.attach(device_context);
-//		dvc.device.attach(device);
+//		dvc.context.reset(device_context);
+//		dvc.device.reset(device);
 //		dvc.vsync.push_back(vsync);
 //		dvc.adapter_id = adapter_id;
 //
@@ -378,8 +378,8 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //
 //		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
 //		Gaff::COMRefPtr<IDXGISwapChain> sc;
-//		rtv.attach(render_target_view);
-//		sc.attach(swap_chain);
+//		rtv.reset(render_target_view);
+//		sc.reset(swap_chain);
 //
 //		RETURNIFFAILED(result)
 //
@@ -471,7 +471,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //
 //					viewport.Width = (float)wnd.getWidth();
 //					viewport.Height = (float)wnd.getHeight();
-//					rtv.attach(render_target_view);
+//					rtv.reset(render_target_view);
 //					static_cast<RenderTargetD3D*>(rt.get())->setRTV(render_target_view, viewport);
 //
 //					if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
@@ -534,7 +534,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 	}
 
 	RenderDeviceD3D11* deferred_render_device = GLEAM_ALLOCT(RenderDeviceD3D11);
-	deferred_render_device->_context.attach(deferred_context);
+	deferred_render_device->_context.reset(deferred_context);
 	deferred_render_device->_device = _device;
 	deferred_render_device->_adapter = _adapter;
 	deferred_render_device->_is_deferred = true;

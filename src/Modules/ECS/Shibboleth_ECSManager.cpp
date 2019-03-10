@@ -32,22 +32,37 @@ SHIB_REFLECTION_DEFINE(ECSManager)
 
 NS_SHIBBOLETH
 
-ECSArchetypeReference::ECSArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
+ECSManager::ArchetypeReference::ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
 	_ecs_mgr(ecs_mgr),
 	_archetype(archetype)
 {
 }
 
-ECSArchetypeReference::~ECSArchetypeReference(void)
+ECSManager::ArchetypeReference::~ArchetypeReference(void)
 {
 	_ecs_mgr.removeArchetype(_archetype);
 }
+
+Gaff::Hash64 ECSManager::ArchetypeReference::getArchetype(void) const
+{
+	return _archetype;
+}
+
 
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSManager)
 	.BASE(IManager)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ECSManager)
+
+ECSManager::~ECSManager(void)
+{
+	IAllocator& allocator = GetAllocator();
+
+	for (auto& pages : _entity_pages) {
+		SHIB_FREE(pages.second->arch_ref, allocator);
+	}
+}
 
 bool ECSManager::init(void)
 {
@@ -74,40 +89,14 @@ bool ECSManager::init(void)
 	return true;
 }
 
-void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
+void ECSManager::addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref)
 {
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
-	ProxyAllocator allocator("ECS");
-
-	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
-	data->archetype = std::move(archetype);
-
-	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
-	_entity_pages[archetype.getHash()].reset(data);
-
-	for (ECSQuery& query : _queries) {
-		query.filter(data->archetype, data);
-	}
+	out_ref = addArchetypeInternal(std::move(archetype));
 }
 
 void ECSManager::addArchetype(ECSArchetype&& archetype)
 {
-	if (_entity_pages.find(archetype.getHash()) != _entity_pages.end()) {
-		return;
-	}
-
-	ProxyAllocator allocator("ECS");
-
-	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
-	data->archetype = std::move(archetype);
-
-	_entity_pages[archetype.getHash()].reset(data);
-
-	for (ECSQuery& query : _queries) {
-		query.filter(data->archetype, data);
-	}
+	addArchetypeInternal(std::move(archetype));
 }
 
 void ECSManager::removeArchetype(Gaff::Hash64 archetype)
@@ -118,30 +107,25 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 		return;
 	}
 
-	for (EntityID id : it->second->entity_ids) {
-		if (id != -1) {
-			destroyEntity(id);
+	// Someone is manually calling removeArchetype() call.
+	if (!it->second->entity_ids.empty()) {
+		SHIB_FREE(it->second->arch_ref, GetAllocator());
+
+		for (EntityID id : it->second->entity_ids) {
+			if (id != -1) {
+				destroyEntityInternal(id, false);
+			}
 		}
 	}
 
 	_entity_pages.erase(it);
 }
 
-void ECSManager::removeArchetype(const char* name)
+const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 archetype) const
 {
-	removeArchetype(getArchetype(name).getHash());
-}
-
-const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 name) const
-{
-	const auto it = _archtypes.find(name);
-	GAFF_ASSERT(it != _archtypes.end() && it->first == name);
-	return _entity_pages.find(it->second)->second->archetype;
-}
-
-const ECSArchetype& ECSManager::getArchetype(const char* name) const
-{
-	return getArchetype(Gaff::FNV1aHash64String(name));
+	const auto it = _entity_pages.find(archetype);
+	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
+	return it->second->archetype;
 }
 
 const ECSArchetype& ECSManager::getArchetype(EntityID id) const
@@ -150,16 +134,17 @@ const ECSArchetype& ECSManager::getArchetype(EntityID id) const
 	return _entities[id].data->archetype;
 }
 
-EntityID ECSManager::createEntityByName(Gaff::Hash64 name)
+ECSManager::ArchetypeReferencePtr ECSManager::getArchetypeReference(Gaff::Hash64 archetype)
 {
-	const auto it = _archtypes.find(name);
-	GAFF_ASSERT(it != _archtypes.end() && it->first == name);
-	return createEntity(it->second);
+	const auto it = _entity_pages.find(archetype);
+	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
+	return ArchetypeReferencePtr(it->second->arch_ref);
 }
 
-EntityID ECSManager::createEntityByName(const char* name)
+ECSManager::ArchetypeReferencePtr ECSManager::getArchetypeReference(EntityID id)
 {
-	return createEntityByName(Gaff::FNV1aHash64String(name));
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	return ArchetypeReferencePtr(_entities[id].data->arch_ref);
 }
 
 EntityID ECSManager::createEntity(const ECSArchetype& archetype)
@@ -196,51 +181,14 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	entity.page = data.pages[page].get();
 	entity.index -= page * data.num_entities_per_page;
 
+	data.arch_ref->addRef();
+
 	return id;
 }
 
 void ECSManager::destroyEntity(EntityID id)
 {
-	GAFF_ASSERT(id < _next_id && _entities[id].data);
-	Entity& entity = _entities[id];
-
-	--entity.data->num_entities;
-	--entity.page->num_entities;
-
-	const auto it = Gaff::Find(entity.data->pages, entity.page, [](const auto& lhs, const EntityPage* rhs) -> bool { return lhs.get() == rhs; });
-	const int32_t page_index = static_cast<int32_t>(eastl::distance(entity.data->pages.begin(), it));
-	const int32_t page_ids_start = page_index * entity.data->num_entities_per_page;
-	const int32_t global_index = entity.index + page_ids_start;
-
-	if (entity.page->num_entities > 0) {
-		entity.data->free_indices.emplace_back(global_index);
-		entity.data->entity_ids[global_index] = -1;
-
-	} else {
-		int32_t size = static_cast<int32_t>(entity.data->free_indices.size());
-
-		for (int32_t i = 0; i < size;) {
-			const int32_t free_index_page_index = entity.data->free_indices[i] / entity.data->num_entities_per_page;
-
-			if (page_index == free_index_page_index) {
-				entity.data->free_indices.erase(entity.data->free_indices.begin() + i);
-				--size;
-			} else {
-				++i;
-			}
-		}
-
-		const auto begin = entity.data->entity_ids.begin() + page_ids_start;
-
-		entity.data->entity_ids.erase(begin, begin + entity.data->num_entities_per_page);
-		entity.data->pages.erase(entity.data->pages.begin() + page_index);
-	}
-
-	entity.page = nullptr;
-	entity.data = nullptr;
-	entity.index = -1;
-
-	_free_ids.emplace_back(id);
+	destroyEntityInternal(id, true);
 }
 
 void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component)
@@ -372,6 +320,56 @@ void ECSManager::registerQuery(ECSQuery&& query)
 //	return true;
 //}
 
+void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
+{
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	Entity& entity = _entities[id];
+
+	--entity.data->num_entities;
+	--entity.page->num_entities;
+
+	const auto it = Gaff::Find(entity.data->pages, entity.page, [](const auto& lhs, const EntityPage* rhs) -> bool { return lhs.get() == rhs; });
+	const int32_t page_index = static_cast<int32_t>(eastl::distance(entity.data->pages.begin(), it));
+	const int32_t page_ids_start = page_index * entity.data->num_entities_per_page;
+	const int32_t global_index = entity.index + page_ids_start;
+
+	if (entity.page->num_entities > 0) {
+		entity.data->free_indices.emplace_back(global_index);
+		entity.data->entity_ids[global_index] = -1;
+
+	} else {
+		int32_t size = static_cast<int32_t>(entity.data->free_indices.size());
+
+		for (int32_t i = 0; i < size;) {
+			const int32_t free_index_page_index = entity.data->free_indices[i] / entity.data->num_entities_per_page;
+
+			if (page_index == free_index_page_index) {
+				entity.data->free_indices.erase(entity.data->free_indices.begin() + i);
+				--size;
+			} else {
+				++i;
+			}
+		}
+
+		const auto begin = entity.data->entity_ids.begin() + page_ids_start;
+
+		entity.data->entity_ids.erase(begin, begin + entity.data->num_entities_per_page);
+		entity.data->pages.erase(entity.data->pages.begin() + page_index);
+	}
+
+	EntityData& data = *entity.data;
+
+	entity.page = nullptr;
+	entity.data = nullptr;
+	entity.index = -1;
+
+	_free_ids.emplace_back(id);
+
+	if (change_ref_count) {
+		data.arch_ref->release();
+	}
+}
+
 void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 {
 	GAFF_ASSERT(_entity_pages.find(new_archetype) != _entity_pages.end());
@@ -391,9 +389,18 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 
 	data.archetype.copy(entity.data->archetype, old_data, entity.index % 4, new_data, new_index % 4);
 
+	// Remove the old entity from the old archetype.
+	EntityData& old_entity_data = *entity.data;
+	destroyEntityInternal(id, false);
+
+	_free_ids.pop_back(); // We still want to use this ID.
+
 	entity.data = &data;
 	entity.page = new_page;
 	entity.index = new_index;
+
+	data.arch_ref->addRef();
+	old_entity_data.arch_ref->release();
 }
 
 int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
@@ -443,6 +450,61 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 	data.entity_ids[global_index] = id;
 
 	return global_index;
+}
+
+ECSManager::ArchetypeReference* ECSManager::modifyInternal(EntityID& id, ArchetypeModifier modifier)
+{
+	GAFF_ASSERT(id < _next_id && _entities[id].data);
+
+	ECSArchetype archetype;
+	archetype.copy(getArchetype(id));
+
+	if (modifier.removeShared) {
+		modifier.removeShared(archetype);
+	}
+
+	if (modifier.remove) {
+		modifier.remove(archetype);
+	}
+
+	if (modifier.addShared) {
+		modifier.addShared(archetype);
+	}
+
+	if (modifier.add) {
+		modifier.add(archetype);
+	}
+
+	archetype.finalize();
+
+	ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
+	migrate(id, archetype.getHash());
+
+	return arch_ref;
+}
+
+ECSManager::ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
+{
+	const Gaff::Hash64 archetype_hash = archetype.getHash();
+
+	if (const auto it = _entity_pages.find(archetype_hash); it != _entity_pages.end()) {
+		return it->second->arch_ref;
+	}
+
+	ProxyAllocator allocator("ECS");
+
+	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
+	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
+	data->arch_ref = SHIB_ALLOCT(ArchetypeReference, allocator, *this, archetype_hash);
+	data->archetype = std::move(archetype);
+
+	_entity_pages[archetype_hash].reset(data);
+
+	for (ECSQuery& query : _queries) {
+		query.filter(data->archetype, data);
+	}
+
+	return data->arch_ref;
 }
 
 NS_END
