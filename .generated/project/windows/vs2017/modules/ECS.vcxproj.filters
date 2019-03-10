@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSQuery.h">
       <Filter>include</Filter>
     </ClInclude>

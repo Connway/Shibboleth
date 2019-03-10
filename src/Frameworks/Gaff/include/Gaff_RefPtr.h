@@ -51,6 +51,12 @@ public:
 		}
 	}
 
+	RefPtr(RefPtr<T>&& rhs):
+		_data(rhs._data)
+	{
+		rhs._data = nullptr;
+	}
+
 	~RefPtr(void)
 	{
 		SAFEGAFFRELEASE(_data);
@@ -86,7 +92,7 @@ public:
 		return _data > rhs;
 	}
 
-	const RefPtr<T>& operator=(const RefPtr<T>& rhs)
+	RefPtr<T>& operator=(const RefPtr<T>& rhs)
 	{
 		SAFEGAFFRELEASE(_data);
 		_data = rhs._data;
@@ -94,7 +100,15 @@ public:
 		return *this;
 	}
 
-	const RefPtr<T>& operator=(T* rhs)
+	RefPtr<T>& operator=(RefPtr<T>&& rhs)
+	{
+		SAFEGAFFRELEASE(_data);
+		_data = rhs._data;
+		rhs._data = nullptr;
+		return *this;
+	}
+
+	RefPtr<T>& operator=(T* rhs)
 	{
 		SAFEGAFFRELEASE(_data);
 		_data = rhs;
@@ -138,32 +152,18 @@ public:
 	}
 
 	// Sets the internal pointer without incrementing the reference count.
-	void attach(T* data)
+	void reset(T* data)
 	{
 		SAFEGAFFRELEASE(_data);
 		_data = data;
 	}
 
 	// Relinquishes ownership of the internal pointer.
-	T* detach(void)
+	T* release(void)
 	{
 		T* const temp = _data;
 		_data = nullptr;
 		return temp;
-	}
-
-	RefPtr(RefPtr<T>&& rhs):
-		_data(rhs._data)
-	{
-		rhs._data = nullptr;
-	}
-
-	const RefPtr<T>& operator=(RefPtr<T>&& rhs)
-	{
-		SAFEGAFFRELEASE(_data);
-		_data = rhs._data;
-		rhs._data = nullptr;
-		return *this;
 	}
 
 private:
@@ -176,7 +176,7 @@ template <class T>
 class COMRefPtr
 {
 public:
-	COMRefPtr(T* data, bool add_ref = true):
+	explicit COMRefPtr(T* data, bool add_ref = true):
 		_data(data)
 	{
 		if (_data && add_ref) {
@@ -195,6 +195,12 @@ public:
 		if (_data) {
 			_data->AddRef();
 		}
+	}
+
+	COMRefPtr(COMRefPtr<T>&& rhs):
+		_data(rhs._data)
+	{
+		rhs._data = nullptr;
 	}
 
 	~COMRefPtr(void)
@@ -222,7 +228,7 @@ public:
 		return _data != rhs;
 	}
 
-	const COMRefPtr<T>& operator=(const COMRefPtr<T>& rhs)
+	COMRefPtr<T>& operator=(const COMRefPtr<T>& rhs)
 	{
 		SAFERELEASE(_data);
 		_data = rhs._data;
@@ -230,7 +236,15 @@ public:
 		return *this;
 	}
 
-	const COMRefPtr<T>& operator=(T* rhs)
+	COMRefPtr<T>& operator=(COMRefPtr<T>&& rhs)
+	{
+		SAFERELEASE(_data);
+		_data = rhs._data;
+		rhs._data = nullptr;
+		return *this;
+	}
+
+	COMRefPtr<T>& operator=(T* rhs)
 	{
 		SAFERELEASE(_data);
 		_data = rhs;
@@ -274,32 +288,18 @@ public:
 	}
 
 	// Sets the internal pointer without incrementing the reference count.
-	void attach(T* data)
+	void reset(T* data)
 	{
 		SAFERELEASE(_data);
 		_data = data;
 	}
 
 	// Relinquishes ownership of the internal pointer.
-	T* detach(void)
+	T* release(void)
 	{
 		T* const temp = _data;
 		_data = nullptr;
 		return temp;
-	}
-
-	COMRefPtr(COMRefPtr<T>&& rhs):
-		_data(rhs._data)
-	{
-		rhs._data = nullptr;
-	}
-
-	const COMRefPtr<T>& operator=(COMRefPtr<T>&& rhs)
-	{
-		SAFERELEASE(_data);
-		_data = rhs._data;
-		rhs._data = nullptr;
-		return *this;
 	}
 
 private:

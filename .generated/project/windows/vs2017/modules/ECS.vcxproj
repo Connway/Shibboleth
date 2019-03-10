@@ -209,6 +209,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSEntity.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.inl" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSQuery.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_IECSSystem.h" />
   </ItemGroup>

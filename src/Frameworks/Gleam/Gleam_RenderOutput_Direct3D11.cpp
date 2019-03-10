@@ -139,8 +139,8 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		return false;
 	}
 
-	_render_target_view.attach(render_target_view);
-	_swap_chain.attach(final_swap_chain);
+	_render_target_view.reset(render_target_view);
+	_swap_chain.reset(final_swap_chain);
 
 	D3D11_VIEWPORT viewport;
 	viewport.Width = static_cast<float>(wnd.getWidth());
