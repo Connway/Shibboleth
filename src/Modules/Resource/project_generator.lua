@@ -50,6 +50,7 @@ project "ResourceModule"
 		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
+		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include"
 	}
 

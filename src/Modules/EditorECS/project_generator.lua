@@ -56,6 +56,7 @@ project "EditorECSModule"
 		"include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
+		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Engine/include",

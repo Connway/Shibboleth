@@ -27,9 +27,12 @@ THE SOFTWARE.
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
 	Shibboleth::SetApp(app);
 	Gen::InitReflection();
+
+	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
+
+	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+
 	return true;
 }

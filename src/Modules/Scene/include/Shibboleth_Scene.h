@@ -24,4 +24,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class Scene final : public Gaff::IReflectionObject
+{
+
+	SHIB_REFLECTION_CLASS_DECLARE(Scene);
+};
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(Scene)
