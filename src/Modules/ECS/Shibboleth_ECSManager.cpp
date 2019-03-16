@@ -107,7 +107,7 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 		return;
 	}
 
-	// Someone is manually calling removeArchetype() call.
+	// Someone is manually calling removeArchetype().
 	if (!it->second->entity_ids.empty()) {
 		SHIB_FREE(it->second->arch_ref, GetAllocator());
 
