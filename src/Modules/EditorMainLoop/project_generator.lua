@@ -47,7 +47,8 @@ project "EditorMainLoopModule"
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
-		"../../Dependencies/EASTL/include"
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/mpack"
 	}
 
 	local deps = {

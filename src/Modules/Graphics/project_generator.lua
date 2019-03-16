@@ -67,7 +67,7 @@ function DoGraphicsModule(renderer)
 			"../../Dependencies/EASTL/include",
 			-- -- "../../Dependencies/rapidjson",
 			-- -- "../../Dependencies/glm",
-			-- -- "../../Dependencies/mpack",
+			"../../Dependencies/mpack",
 			"../../Frameworks/Gaff/include",
 			"../../Frameworks/Gleam/include"
 		}

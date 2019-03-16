@@ -49,7 +49,8 @@ project "MainLoopModule"
 		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
-		"../../Dependencies/EASTL/include"
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/mpack"
 	}
 
 	local deps = {

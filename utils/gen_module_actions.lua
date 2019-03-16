@@ -56,7 +56,6 @@ THE SOFTWARE.
 
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
 #include <Gaff_MessagePack.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
@@ -65,6 +64,7 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gen::InitReflection();
 
 	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+
 	return true;
 }
 ]]
@@ -89,7 +89,6 @@ project "%s"
 		"../../Engine/Memory/include",
 		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
-		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include"
 	}
 
@@ -114,6 +113,7 @@ project "%sModule"
 		"../../Engine/Memory/include",
 		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/mpack",
 		"../../Frameworks/Gaff/include"
 	}
 
