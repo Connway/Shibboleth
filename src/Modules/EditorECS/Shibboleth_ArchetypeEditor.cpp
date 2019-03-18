@@ -83,6 +83,8 @@ private:
 		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
 		wxListCtrl* const list = _ui->GetListCtrl();
 
+		int32_t add_count = 0;
+
 		for (int32_t i = 0; i < num_items && items[i]; ++i) {
 			const char* const name = items[i]->getRefDef().getReflectionInstance().getName();
 			const int32_t existing_index = list->FindItem(-1, name);
@@ -93,10 +95,35 @@ private:
 			}
 
 			_editor.addItem(*items[i], *_ui);
+			++add_count;
 		}
 
 		data->Free();
-		return result;
+		return add_count > 0 ? result : wxDragNone;
+	}
+
+	wxDragResult OnEnter(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
+	{
+		wxCustomDataObject* const data = static_cast<wxCustomDataObject*>(m_dataObject);
+		RefDefItem** const items = static_cast<RefDefItem** const>(data->GetData());
+		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
+		wxListCtrl* const list = _ui->GetListCtrl();
+
+		int32_t add_count = 0;
+
+		for (int32_t i = 0; i < num_items && items[i]; ++i) {
+			const char* const name = items[i]->getRefDef().getReflectionInstance().getName();
+			const int32_t existing_index = list->FindItem(-1, name);
+
+			if (!Gaff::InRange(existing_index, 0, list->GetItemCount())) {
+				++add_count;
+			}
+
+		}
+
+		
+
+		return add_count > 0 ? result : wxDragNone;
 	}
 };
 
