@@ -77,16 +77,19 @@ template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void);
 
 template <class T, class R>
-ptrdiff_t OffsetOfMember(R T::*m);
+constexpr ptrdiff_t OffsetOfMember(R T::*m);
 
 template <class Derived, class Base>
-ptrdiff_t OffsetOfClass(void);
+constexpr ptrdiff_t OffsetOfClass(void);
 
 template <typename T, typename M> M GetMemberType(M T::*);
 template <typename T, typename M> T GetClassType(M T::*);
 
 #define OFFSET_OF(x) Gaff::OffsetOfMember<decltype(Gaff::GetClassType(x)), decltype(Gaff::GetMemberType(x)), x>()
 
+
+template <class T>
+constexpr bool InRange(T value, T min, T max);
 
 #include "Gaff_Utils_Common.inl"
 

@@ -61,8 +61,7 @@ private:
 	wxEditableListBox* _archetype_shared_ui = nullptr;
 	wxEditableListBox* _archetype_ui = nullptr;
 
-	// Needs RefDef in here.
-	VectorMap<const Gaff::IReflectionDefinition*, Vector<void*> > _shared_object_instances;
+	ECSArchetype _archetype;
 
 	Broadcaster& _broadcaster;
 	U8String _path;
@@ -76,6 +75,7 @@ private:
 	void onDragBegin(wxTreeEvent& event);
 
 	void onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox& ui);
+	bool hasItem(const RefDefItem& item, wxEditableListBox& ui) const;
 
 	RefDefItem* getItem(const wxTreeItemId& id) const;
 	void addItem(RefDefItem& item, wxEditableListBox& ui);
