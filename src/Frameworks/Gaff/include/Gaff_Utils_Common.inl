@@ -61,13 +61,19 @@ constexpr ptrdiff_t OffsetOfMember(void)
 }
 
 template <class T, class R>
-ptrdiff_t OffsetOfMember(R T::*m)
+constexpr ptrdiff_t OffsetOfMember(R T::*m)
 {
 	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*m));
 }
 
 template <class Derived, class Base>
-ptrdiff_t OffsetOfClass(void)
+constexpr ptrdiff_t OffsetOfClass(void)
 {
 	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;
+}
+
+template <class T>
+constexpr bool InRange(T value, T min, T max)
+{
+	return value >= min && value <= max;
 }

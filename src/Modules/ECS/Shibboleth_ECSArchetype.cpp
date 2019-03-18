@@ -97,8 +97,6 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader)
 	}
 
 	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-	//const Gaff::JSON shared_components = json["shared_components"];
-	//const Gaff::JSON components = json["components"];
 
 	{
 		const auto guard = reader.enterElementGuard("shared_components");
@@ -317,15 +315,7 @@ template <bool shared>
 bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 {
 	Vector<RefDefOffset>& vars = (shared) ? _shared_vars : _vars;
-	Vector<RefDefOffset>& other_vars = (shared) ? _vars : _shared_vars;
 	int32_t& alloc_size = (shared) ? _shared_alloc_size : _alloc_size;
-
-	const auto it_other = Gaff::LowerBound(other_vars, ref_def, [](const RefDefOffset& lhs, const Gaff::IReflectionDefinition& rhs) -> bool
-	{
-		return lhs.ref_def->getReflectionInstance().getHash() < rhs.getReflectionInstance().getHash();
-	});
-
-	GAFF_ASSERT(it_other == other_vars.end() || it_other->ref_def->getReflectionInstance().getHash() != ref_def.getReflectionInstance().getHash());
 
 	const ECSClassAttribute* const attr = ref_def.getClassAttr<ECSClassAttribute>();
 
