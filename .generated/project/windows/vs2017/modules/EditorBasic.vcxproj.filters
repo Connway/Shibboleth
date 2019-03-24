@@ -37,6 +37,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_EditorBasicModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />

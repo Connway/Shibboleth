@@ -7,7 +7,9 @@ project "EditorBasic"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_EditorBasicModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("EditorBasic")
 
 	flags { "FatalWarnings" }
 
@@ -16,6 +18,7 @@ project "EditorBasic"
 		"include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
+		"../../Dependencies/mpack",
 		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
@@ -39,7 +42,6 @@ project "EditorBasicModule"
 
 	files { "Shibboleth_EditorBasicModule.cpp" }
 
-	ModuleGen("EditorBasic")
 	ModuleEditorCopy()
 
 	flags { "FatalWarnings" }
@@ -56,30 +58,18 @@ project "EditorBasicModule"
 	includedirs
 	{
 		"include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../../Engine/Editor/include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include"
+		"../../Frameworks/Gaff/include"
 	}
 
-	IncludeWxWidgets()
+	ModuleIncludesAndLinks("EditorBasic")
+	NewDeleteLinkFix()
 
 	local deps =
 	{
-		"EditorBasic",
 		"Editor",
-		"Engine",
-		"Memory",
-		"Gaff",
 		"Gleam",
-		"EASTL",
 		"libpng",
 		"zlib-ng",
-		"mpack",
 		"wxBase",
 		"wxCore",
 		"wxPropGrid"
@@ -87,5 +77,3 @@ project "EditorBasicModule"
 
 	dependson(deps)
 	links(deps)
-
-	-- NewDeleteLinkFix()

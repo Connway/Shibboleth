@@ -7,7 +7,9 @@ project "Entity"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_EntityModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("Entity")
 
 	flags { "FatalWarnings" }
 
@@ -36,38 +38,18 @@ project "EntityModule"
 
 	files { "Shibboleth_EntityModule.cpp" }
 
-	ModuleGen("Entity")
 	ModuleCopy()
 
 	flags { "FatalWarnings" }
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/glm",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../Resource/include"
-	}
+	ModuleIncludesAndLinks("Entity")
+	NewDeleteLinkFix()
 
 	local deps =
 	{
-		"Memory",
-		"Gaff",
 		"Gleam",
-		"Engine",
-		"EASTL",
-		"Entity",
-		"Resource",
-		"mpack"
+		"Resource"
 	}
 
 	dependson(deps)
 	links(deps)
-
-	NewDeleteLinkFix()

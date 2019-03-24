@@ -7,7 +7,9 @@ project "EditorECS"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_EditorECSModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("EditorECS")
 
 	flags { "FatalWarnings" }
 
@@ -37,7 +39,6 @@ project "EditorECSModule"
 
 	files { "Shibboleth_EditorECSModule.cpp" }
 
-	ModuleGen("EditorECS")
 	ModuleEditorCopy()
 
 	flags { "FatalWarnings" }
@@ -51,32 +52,13 @@ project "EditorECSModule"
 
 	filter {}
 
-	includedirs
-	{
-		"include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Engine/Editor/include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../ECS/include"
-	}
-
-	IncludeWxWidgets()
+	ModuleIncludesAndLinks("EditorECS")
 
 	local deps =
 	{
-		"EditorECS",
 		"Editor",
-		"Engine",
-		"Memory",
-		"Gaff",
-		"EASTL",
 		"libpng",
 		"zlib-ng",
-		"mpack",
 		"wxBase",
 		"wxCore",
 		"ECS"
@@ -84,5 +66,3 @@ project "EditorECSModule"
 
 	dependson(deps)
 	links(deps)
-
-	-- NewDeleteLinkFix()

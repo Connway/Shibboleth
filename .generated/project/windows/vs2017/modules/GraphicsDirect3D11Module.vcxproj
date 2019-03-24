@@ -103,7 +103,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -118,11 +118,6 @@
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Debug\GraphicsDirect3D11Module64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=Graphics</Command>
-      <Message>Generating Gen_ReflectionInit.h for module Graphics!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul)</Command>
@@ -134,7 +129,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -156,11 +151,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Release\GraphicsDirect3D11Module64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=Graphics</Command>
-      <Message>Generating Gen_ReflectionInit.h for module Graphics!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul)</Command>
@@ -172,7 +162,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -194,11 +184,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Profile\GraphicsDirect3D11Module64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=Graphics</Command>
-      <Message>Generating Gen_ReflectionInit.h for module Graphics!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul)</Command>
@@ -210,7 +195,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -232,11 +217,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\GraphicsDirect3D11Module64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=Graphics</Command>
-      <Message>Generating Gen_ReflectionInit.h for module Graphics!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules &gt; nul)</Command>
@@ -246,17 +226,8 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="GraphicsDirect3D11.vcxproj">
-      <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\engine\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
-      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\engine\Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
@@ -264,8 +235,17 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
+      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="GraphicsDirect3D11.vcxproj">
+      <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,7 +7,9 @@ project "Resource"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_ResourceModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("Resource")
 
 	flags { "FatalWarnings" }
 
@@ -31,7 +33,6 @@ project "ResourceModule"
 
 	files { "Shibboleth_ResourceModule.cpp" }
 
-	ModuleGen("Resource")
 	ModuleCopy()
 
 	flags { "FatalWarnings" }
@@ -41,28 +42,5 @@ project "ResourceModule"
 
 	filter {}
 
+	ModuleIncludesAndLinks("Resource")
 	NewDeleteLinkFix()
-
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include"
-	}
-
-	local deps =
-	{
-		"Memory",
-		"Gaff",
-		"Engine",
-		"EASTL",
-		"mpack",
-		"Resource"
-	}
-
-	dependson(deps)
-	links(deps)

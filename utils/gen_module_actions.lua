@@ -3,15 +3,14 @@ local gen_header = [[
 
 #pragma once
 
+#ifdef SHIB_STATIC
 // Includes
 %s
 #include <Shibboleth_Reflection.h>
 #include <Gaff_EnumReflection.h>
 
-namespace Gen
+namespace %s::Gen
 {
-	// Using namespaces.
-%s
 	void InitReflection(void)
 	{
 		// Initialize Enums.
@@ -28,6 +27,17 @@ namespace Gen
 %s
 		// Register our module as the owners of the reflection.
 %s	}
+}
+#endif
+
+namespace Shibboleth
+{
+	class IApp;
+}
+
+namespace %s
+{
+	bool Initialize(Shibboleth::IApp& app);
 }
 ]]
 
@@ -55,18 +65,32 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_Utilities.h>
-#include <Gaff_MessagePack.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-{
-	Shibboleth::SetApp(app);
-	Gen::InitReflection();
+#ifdef SHIB_STATIC
 
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	#include <Shibboleth_Utilities.h>
 
-	return true;
-}
+	namespace %s
+	{
+		bool Initialize(Shibboleth::IApp& app)
+		{
+			Shibboleth::SetApp(app);
+			%s::Gen::InitReflection();
+
+			return true;
+		}
+	}
+
+#else
+
+	#include <Gaff_Defines.h>
+
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	{
+		return %s::Initialize(app);
+	}
+
+#endif
 ]]
 
 local gen_project = [[
@@ -79,7 +103,9 @@ project "%s"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_%sModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("%s")
 
 	flags { "FatalWarnings" }
 
@@ -102,7 +128,6 @@ project "%sModule"
 
 	files { "Shibboleth_%sModule.cpp" }
 
-	ModuleGen("%s")
 	ModuleCopy()
 
 	flags { "FatalWarnings" }
@@ -154,7 +179,10 @@ newaction
 		os.mkdir(path .. "/include")
 
 		-- Make Shibboleth_<module_name>Module.cpp file.
-		io.writefile(path .. "/Shibboleth_" .. module_name .. "Module.cpp", gen_entry)
+		io.writefile(
+			path .. "/Shibboleth_" .. module_name .. "Module.cpp",
+			gen_entry:format(module_name, module_name)
+		)
 
 		-- Make project_generator.lua file.
 		io.writefile(
@@ -173,12 +201,12 @@ newaction
 	trigger = "gen_module_header",
 	description = "Generates the 'Gen_ReflectionInit.h' file for a module.",
 	execute = function()
-		local source_folder = "../src/Modules/" .. _OPTIONS["module"]
+		local module_name = _OPTIONS["module"]
+		local source_folder = "../src/Modules/" .. module_name
 		local include_folder = source_folder .. "/include"
 
 		local file_class_map = {}
 		local file_enum_map = {}
-		local namespaces = {}
 
 		function ParseFile(file)
 			local stripped_file = file:sub(include_folder:len() + 2)
@@ -188,21 +216,14 @@ newaction
 			end
 
 			local lines = io.readfile(file):explode("\n")
+			local last_namespace = ""
 
 			for _, line in next, lines do
 				local match = line:match("NS_(.+)")
 
 				if match then
 					if match:find("END") == nil then
-						local namespace = match:sub(1, 1) .. match:sub(2, -2):lower()
-
-						for _,v in pairs(namespaces) do
-							if v:match(namespace) then
-								goto continue
-							end
-						end
-
-						table.insert(namespaces, namespace)
+						last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
 					end
 
 					goto continue
@@ -216,7 +237,7 @@ newaction
 						file_class_map[stripped_file] = {}
 					end
 
-					table.insert(file_class_map[stripped_file], match)
+					table.insert(file_class_map[stripped_file], last_namespace .. match)
 					goto continue
 				end
 
@@ -228,7 +249,7 @@ newaction
 						file_enum_map[stripped_file] = {}
 					end
 
-					table.insert(file_enum_map[stripped_file], match)
+					table.insert(file_enum_map[stripped_file], last_namespace .. match)
 					goto continue
 				end
 
@@ -261,36 +282,31 @@ newaction
 		table.foreachi(headers, ParseFile)
 
 		local include_files = ""
-		local using_namespaces = ""
 		local init_attr_funcs = ""
 		local init_enum_funcs = ""
 		local init_funcs = ""
 		local module_registers = ""
-
-		for _,n in pairs(namespaces) do
-			using_namespaces = using_namespaces .. "\tusing namespace " .. n .. ";\n"
-		end
 
 		for k,v in pairs(file_class_map) do
 			include_files = include_files .. "#include <" .. k .. ">\n"
 
 			for _,c in pairs(v) do
 				if c:endswith("Attribute") then
-					init_attr_funcs = init_attr_funcs .. "\t\tReflection<" .. c .. ">::Init();\n"
+					init_attr_funcs = init_attr_funcs .. "\t\tShibboleth::Reflection<" .. c .. ">::Init();\n"
 				else
-					init_funcs = init_funcs .. "\t\tReflection<" .. c .. ">::Init();\n"
+					init_funcs = init_funcs .. "\t\tShibboleth::Reflection<" .. c .. ">::Init();\n"
 				end
 
 				if module_registers == "" then
-					module_registers = "\t\tReflectionManager& refl_mgr = GetApp().getReflectionManager();\n\n"
+					module_registers = "\t\tShibboleth::ReflectionManager& refl_mgr = Shibboleth::GetApp().getReflectionManager();\n\n"
 				end
 
-				module_registers = module_registers .. "\t\trefl_mgr.registerOwningModule(Reflection<" .. c .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
+				module_registers = module_registers .. "\t\trefl_mgr.registerOwningModule(Shibboleth::Reflection<" .. c .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
 			end
 		end
 
 		for k,v in pairs(file_enum_map) do
-			if file_class_map[k] == nil then
+			if file_enum_map[k] == nil then
 				include_files = include_files .. "#include <" .. k .. ">\n"
 			end
 
@@ -306,6 +322,17 @@ newaction
 		end
 
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"
-		io.writefile(file_path, gen_header:format(include_files, using_namespaces, init_enum_funcs, init_attr_funcs, init_funcs, module_registers))
+		io.writefile(
+			file_path,
+			gen_header:format(
+				include_files,
+				module_name,
+				init_enum_funcs,
+				init_attr_funcs,
+				init_funcs,
+				module_registers,
+				module_name
+			)
+		)
 	end
 }

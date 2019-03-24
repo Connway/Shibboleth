@@ -26,5 +26,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceExtensionAttribute.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
   </ItemGroup>
 </Project>

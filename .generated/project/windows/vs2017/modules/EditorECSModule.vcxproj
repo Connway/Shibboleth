@@ -102,8 +102,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Editor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -118,11 +118,6 @@
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Debug\EditorECSModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=EditorECS</Command>
-      <Message>Generating Gen_ReflectionInit.h for module EditorECS!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
@@ -133,8 +128,8 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Editor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -156,11 +151,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Release\EditorECSModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=EditorECS</Command>
-      <Message>Generating Gen_ReflectionInit.h for module EditorECS!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
@@ -171,8 +161,8 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Editor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -194,11 +184,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Profile\EditorECSModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=EditorECS</Command>
-      <Message>Generating Gen_ReflectionInit.h for module EditorECS!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
@@ -209,8 +194,8 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Editor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\EditorECS\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -232,11 +217,6 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\EditorECSModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PreBuildEvent>
-      <Command>cd ../../../../../utils
-premake5 gen_module_header --module=EditorECS</Command>
-      <Message>Generating Gen_ReflectionInit.h for module EditorECS!</Message>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
@@ -246,32 +226,32 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_EditorECSModule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\engine\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\engine\Engine.vcxproj">
+      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
+      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
+      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
     <ProjectReference Include="EditorECS.vcxproj">
       <Project>{87CDAF4A-F337-64C1-3C76-1567A81F4216}</Project>
     </ProjectReference>
     <ProjectReference Include="..\engine\Editor.vcxproj">
       <Project>{8C1A20B0-78BC-4A86-6177-5EDA4DB8D1D6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\engine\Engine.vcxproj">
-      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\engine\Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
-      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\libpng.vcxproj">
       <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\mpack.vcxproj">
-      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\wxBase.vcxproj">
       <Project>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</Project>

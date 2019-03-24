@@ -7,14 +7,11 @@ project "MainLoop"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_MainLoopModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("MainLoop")
 
 	flags { "FatalWarnings" }
-
-	filter { "system:windows" }
-		includedirs { "../../Dependencies/dirent" }
-
-	filter {}
 
 	includedirs
 	{
@@ -43,27 +40,5 @@ project "MainLoopModule"
 
 	filter {}
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/mpack"
-	}
-
-	local deps = {
-		"MainLoop",
-		"Engine",
-		"Gaff",
-		"Memory",
-		"EASTL",
-		"mpack"
-	}
-
-	dependson(deps)
-	links(deps)
-
-	ModuleGen("MainLoop")
+	ModuleIncludesAndLinks("MainLoop")
 	ModuleCopy()

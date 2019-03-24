@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
   </ItemGroup>
 </Project>

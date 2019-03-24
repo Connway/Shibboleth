@@ -1,3 +1,24 @@
+function ModuleIncludesAndLinks(module_name)
+	includedirs
+	{
+		"include",
+		"../../Frameworks/Gaff/include",
+	}
+
+	local deps =
+	{
+		"Memory",
+		"Engine",
+		"EASTL",
+		"Gaff",
+		"mpack",
+		module_name
+	}
+
+	dependson(deps)
+	links(deps)
+end
+
 function ModuleGen(module_name)
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
 	prebuildcommands

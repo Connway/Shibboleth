@@ -7,7 +7,9 @@ project "EditorMainLoop"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_EditorMainLoopModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("EditorMainLoop")
 
 	flags { "FatalWarnings" }
 
@@ -32,37 +34,16 @@ project "EditorMainLoopModule"
 
 	files { "Shibboleth_EditorMainLoopModule.cpp" }
 
+	ModuleEditorCopy()
+
 	flags { "FatalWarnings" }
 
-	-- filter { "system:windows" }
-	-- 	links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-	-- 	includedirs { "../../Dependencies/dirent" }
+	ModuleIncludesAndLinks("EditorMainLoop")
 
-	-- filter {}
-
-	includedirs
+	local deps =
 	{
-		"include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/mpack"
-	}
-
-	local deps = {
-		"EditorMainLoop",
-		"Engine",
-		"Gaff",
-		"Gleam",
-		"Memory",
-		"EASTL",
-		"mpack"
+		"Gleam"
 	}
 
 	dependson(deps)
 	links(deps)
-
-	ModuleGen("EditorMainLoop")
-	ModuleEditorCopy()

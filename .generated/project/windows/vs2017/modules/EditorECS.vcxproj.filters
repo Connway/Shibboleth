@@ -18,5 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_ArchetypeEditor.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_EditorECSModule.cpp" />
   </ItemGroup>
 </Project>
