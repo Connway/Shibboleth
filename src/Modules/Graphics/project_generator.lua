@@ -1,5 +1,7 @@
 function DoGraphicsModule(renderer)
-	project("Graphics" .. renderer)
+	local project_name = "Graphics" .. renderer
+
+	project(project_name)
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -8,7 +10,9 @@ function DoGraphicsModule(renderer)
 		language "C++"
 
 		files { "**.h", "**.cpp", "**.inl" }
-		removefiles { "Shibboleth_GraphicsModule.cpp" }
+		defines { "SHIB_STATIC" }
+
+		ModuleGen("Graphics")
 
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
@@ -32,7 +36,7 @@ function DoGraphicsModule(renderer)
 		}
 
 
-	project("Graphics" .. renderer .. "Module")
+	project(project_name .. "Module")
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -42,7 +46,6 @@ function DoGraphicsModule(renderer)
 
 		files { "Shibboleth_GraphicsModule.cpp" }
 
-		ModuleGen("Graphics")
 		ModuleCopy()
 
 		if renderer == "Direct3D11" then
@@ -59,35 +62,16 @@ function DoGraphicsModule(renderer)
 
 		filter {}
 
-		includedirs
-		{
-			"include",
-			"../../Engine/Memory/include",
-			"../../Engine/Engine/include",
-			"../../Dependencies/EASTL/include",
-			-- -- "../../Dependencies/rapidjson",
-			-- -- "../../Dependencies/glm",
-			"../../Dependencies/mpack",
-			"../../Frameworks/Gaff/include",
-			"../../Frameworks/Gleam/include"
-		}
+		ModuleIncludesAndLinks(project_name)
 
 		local deps =
 		{
-			"Graphics" .. renderer,
-			"Memory",
-			"Gaff",
 			"Gleam",
-			"Engine",
-			"EASTL",
-			"mpack"
 			-- "Resource",
 		}
 
 		dependson(deps)
 		links(deps)
-
-		-- NewDeleteLinkFix()
 end
 
 DoGraphicsModule("Direct3D11")

@@ -15,5 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorMainLoop\Shibboleth_EditorMainLoop.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorMainLoop\Shibboleth_EditorMainLoopModule.cpp" />
   </ItemGroup>
 </Project>

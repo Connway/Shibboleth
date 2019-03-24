@@ -21,18 +21,34 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_MessagePack.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-{
-	Shibboleth::SetApp(app);
-	Gen::InitReflection();
+#ifdef SHIB_STATIC
 
-	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
+	#include <Shibboleth_Utilities.h>
+	#include <Shibboleth_IApp.h>
 
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	namespace Entity
+	{
 
-	return true;
-}
+		bool Initialize(Shibboleth::IApp& app)
+		{
+			Shibboleth::SetApp(app);
+			Gen::InitReflection();
+
+			app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
+
+			return true;
+		}
+
+	}
+
+#else
+
+	#include <Gaff_Defines.h>
+
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	{
+		return Entity::Initialize(app);
+	}
+
+#endif

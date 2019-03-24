@@ -21,19 +21,35 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_MessagePack.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-{
-	Shibboleth::SetApp(app);
-	Gen::InitReflection();
+#ifdef SHIB_STATIC
 
-	app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
-	app.getReflectionManager().registerTypeBucket(CLASS_HASH(IECSSystem));
+	#include <Shibboleth_Utilities.h>
+	#include <Shibboleth_IApp.h>
 
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	namespace ECS
+	{
 
-	return true;
-}
+		bool Initialize(Shibboleth::IApp& app)
+		{
+			Shibboleth::SetApp(app);
+			ECS::Gen::InitReflection();
+
+			app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+			app.getReflectionManager().registerTypeBucket(CLASS_HASH(IECSSystem));
+
+			return true;
+		}
+
+	}
+
+#else
+
+	#include <Gaff_Defines.h>
+
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	{
+		return ECS::Initialize(app);
+	}
+
+#endif

@@ -21,18 +21,35 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_Memory.h>
-#include <Gaff_MessagePack.h>
-#include <Gleam_Global.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-{
-	Shibboleth::SetApp(app);
-	Gen::InitReflection();
+#ifdef SHIB_STATIC
 
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
-	Gleam::SetAllocator(&Shibboleth::ProxyAllocator::GetGlobal());
+	#include <Shibboleth_ProxyAllocator.h>
+	#include <Shibboleth_Utilities.h>
+	#include <Gleam_Global.h>
 
-	return true;
-}
+	namespace Graphics
+	{
+
+		bool Initialize(Shibboleth::IApp& app)
+		{
+			Shibboleth::SetApp(app);
+			Gen::InitReflection();
+
+			Gleam::SetAllocator(&Shibboleth::ProxyAllocator::GetGlobal());
+
+			return true;
+		}
+
+	}
+
+#else
+
+	#include <Gaff_Defines.h>
+
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	{
+		return Graphics::Initialize(app);
+	}
+
+#endif

@@ -21,16 +21,31 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_MessagePack.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-{
-	Shibboleth::SetApp(app);
-	Gen::InitReflection();
+#ifdef SHIB_STATIC
 
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	#include <Shibboleth_Utilities.h>
 
-	return true;
-}
+	namespace Scene
+	{
+
+		bool Initialize(Shibboleth::IApp& app)
+		{
+			Shibboleth::SetApp(app);
+			Scene::Gen::InitReflection();
+
+			return true;
+		}
+
+	}
+
+#else
+
+	#include <Gaff_Defines.h>
+
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	{
+		return Scene::Initialize(app);
+	}
+
+#endif

@@ -7,7 +7,9 @@ project "ECS"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_ECSModule.cpp" }
+	defines { "SHIB_STATIC" }
+
+	ModuleGen("ECS")
 
 	flags { "FatalWarnings" }
 
@@ -34,36 +36,18 @@ project "ECSModule"
 
 	files { "Shibboleth_ECSModule.cpp" }
 
-	ModuleGen("ECS")
 	ModuleCopy()
 
 	flags { "FatalWarnings" }
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/glm",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include"
-	}
+	ModuleIncludesAndLinks("ECS")
+	NewDeleteLinkFix()
 
 	local deps =
 	{
-		"Memory",
-		"Engine",
-		"EASTL",
-		"Gaff",
-		"Gleam",
-		"ECS",
-		"mpack"
+		"Gleam"
 	}
 
 	dependson(deps)
 	links(deps)
 
-	NewDeleteLinkFix()
