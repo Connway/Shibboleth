@@ -18,3 +18,5 @@ project "Editor"
 	}
 
 	flags { "FatalWarnings" }
+
+	SetupConfigMap()

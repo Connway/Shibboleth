@@ -51,6 +51,8 @@ function PhysXProject(proj_name, lib_type)
 			"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 		}
 	end
+
+	SetupConfigMap()
 end
 
 

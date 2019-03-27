@@ -39,11 +39,14 @@ project "Game_App"
 
 	filter { "system:windows" }
 		links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-		includedirs { "../../Dependencies/dirent" }
 		links { "Dbghelp" }
 
 	filter { "system:not windows" }
 		linkoptions { "-Wl,-rpath,./bin" }
+
+	filter { "configurations:Static_*" }
+		defines { "SHIB_STATIC" }
+		StaticLinks()
 
 	filter {}
 

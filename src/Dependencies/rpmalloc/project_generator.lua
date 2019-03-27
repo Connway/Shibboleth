@@ -8,3 +8,5 @@ project "rpmalloc"
 	warnings "Default"
 
 	files { "**.cpp", "**.h", "**.inl", "**.hpp" }
+
+	SetupConfigMap()

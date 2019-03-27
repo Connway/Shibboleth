@@ -17,3 +17,5 @@ project "minizip"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	filter {}
+
+	SetupConfigMap()

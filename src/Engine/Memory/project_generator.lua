@@ -15,8 +15,7 @@ project "Memory"
 		"../Engine/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rpmalloc",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/dirent"
+		"../../Dependencies/EASTL/include"
 	}
 
 	dependson { "Gaff", "EASTL", "rpmalloc" }
@@ -38,3 +37,5 @@ project "Memory"
 		"{MKDIR} ../../../../../workingdir/bin",
 		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
+
+	SetupConfigMap()

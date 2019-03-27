@@ -94,68 +94,94 @@ THE SOFTWARE.
 ]]
 
 local gen_project = [[
-project "%s"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("%s")
 
-	kind "StaticLib"
-	language "C++"
+	project "%s"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("%s")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		SetupConfigMap()
+		ModuleGen("%s")
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Frameworks/Gaff/include"
-	}
+		flags { "FatalWarnings" }
 
-project "%sModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Frameworks/Gaff/include"
+		}
 
-	kind "SharedLib"
-	language "C++"
+	project "%sModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "Shibboleth_%sModule.cpp" }
+		kind "SharedLib"
+		language "C++"
 
-	ModuleCopy()
+		files { base_dir .. "Shibboleth_%sModule.cpp" }
 
-	flags { "FatalWarnings" }
+		ModuleCopy()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include"
-	}
+		flags { "FatalWarnings" }
 
-	local deps =
-	{
-		"Memory",
-		"Engine",
-		"EASTL",
-		"mpack",
-		"Gaff",
-		"%s"
-	}
+		ModuleIncludesAndLinks("%s")
+		SetupConfigMap()
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("%s")
 
 	dependson(deps)
 	links(deps)
+end
+]]
 
-	NewDeleteLinkFix()
+local gen_static = [[
+// This file is generated! Any modifications will be lost in subsequent builds!
+
+#pragma once
+
+// Includes
+#undef SHIB_STATIC
+
+#ifdef SHIB_EDITOR
+%s
+#endif
+
+%s
+#include "Shibboleth_Utilities.h"
+#include <Gaff_Defines.h>
+
+#define SHIB_STATIC
+
+namespace Gen
+{
+	bool LoadModulesStatic(void)
+	{
+		Shibboleth::IApp& app = Shibboleth::GetApp();
+
+		// Editor Modules
+#ifdef SHIB_EDITOR
+%s
+#endif
+
+		// Regular Modules
+%s
+		return true;
+	}
+}
 ]]
 
 
@@ -190,7 +216,8 @@ newaction
 			gen_project:format(
 				module_name, module_name,
 				module_name, module_name,
-				module_name, module_name
+				module_name, module_name,
+				module_name
 			)
 		)
 	end
@@ -332,6 +359,56 @@ newaction
 				init_funcs,
 				module_registers,
 				module_name
+			)
+		)
+	end
+}
+
+newaction
+{
+	trigger = "gen_static_header",
+	description = "Generates the 'Gen_ReflectionInit.h' file for a static build.",
+	execute = function()
+		local editor_modules = {}
+		local modules = {}
+
+		local module_generators = os.matchdirs("../src/Modules/*")
+		table.foreachi(module_generators, function(dir)
+			if not os.isfile(dir .. "/project_generator.lua") then
+				return
+			end
+
+			if dir:find("Editor") then
+				table.insert(editor_modules, dir)
+			else
+				table.insert(modules, dir)
+			end
+		end)
+
+		local editor_includes = ""
+		local editor_inits = ""
+		local includes = ""
+		local inits = ""
+
+		table.foreachi(editor_modules, function(dir)
+			local module_name = dir:sub(16)
+			editor_includes = editor_includes .. "#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+			editor_inits = editor_inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+		end)
+
+		table.foreachi(modules, function(dir)
+			local module_name = dir:sub(16)
+			includes = includes .. "#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+			inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+		end)
+
+		io.writefile(
+			"../src/Engine/Engine/include/Gen_ReflectionInit.h",
+			gen_static:format(
+				editor_includes,
+				includes,
+				editor_inits,
+				inits
 			)
 		)
 	end

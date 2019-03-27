@@ -23,3 +23,5 @@ project "EASTL"
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
 
 	filter {}
+
+	SetupConfigMap()

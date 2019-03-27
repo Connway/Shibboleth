@@ -25,6 +25,10 @@ THE SOFTWARE.
 #include <Shibboleth_EditorFrame.h>
 #include <Shibboleth_Utilities.h>
 
+#ifdef SHIB_STATIC
+	#include <Gen_ReflectionInit.h>
+#endif
+
 wxIMPLEMENT_APP(Shibboleth::Editor);
 
 NS_SHIBBOLETH
@@ -37,14 +41,18 @@ bool Editor::OnInit(void)
 	refl_mgr.registerAttributeBucket(Gaff::FNV1aHash64Const("IEditorInspectorAttribute"));
 	refl_mgr.registerAttributeBucket(Gaff::FNV1aHash64Const("EditorWindowAttribute"));
 
+	_engine_instance.setEditor(this);
+
 	const char* args[] = { "cfg/editor.cfg" };
+#ifdef SHIB_STATIC
+	const bool success = _engine_instance.init(1, args, Gen::LoadModulesStatic);
+#else
 	const bool success = _engine_instance.init(1, args);
+#endif
 
 	if (!success) {
 		return false;
 	}
-
-	_engine_instance.setEditor(this);
 
 	_frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(1024, 768));
 	return _frame && _frame->Show(true);

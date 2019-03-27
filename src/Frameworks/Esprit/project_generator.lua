@@ -18,3 +18,5 @@ project "Esprit"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm"
 	}
+
+	SetupConfigMap()

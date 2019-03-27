@@ -47,3 +47,5 @@ project "libjpeg"
 		buildoptions { "-fPIC" }
 
 	filter {}
+
+	SetupConfigMap()

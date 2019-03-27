@@ -59,7 +59,7 @@ App::~App(void)
 }
 
 // Still single-threaded at this point, so ok that we're not locking.
-bool App::init(int argc, const char** argv)
+bool App::init(int argc, const char** argv, bool (*static_init)(void))
 {
 	// If we can't load the initial config, then create an empty object.
 	if (!_configs.parseFile("cfg/app.cfg")) {
@@ -86,12 +86,12 @@ bool App::init(int argc, const char** argv)
 		}
 	}
 
-	return initInternal();
+	return initInternal(static_init);
 }
 
 #ifdef PLATFORM_WINDOWS
 // Still single-threaded at this point, so ok that we're not locking.
-bool App::init(void)
+bool App::init(bool (*static_init)(void))
 {
 	// If we can't load the initial config, then create an empty object.
 	if (!_configs.parseFile("cfg/app.cfg")) {
@@ -117,11 +117,11 @@ bool App::init(void)
 		});
 	}
 
-	return initInternal();
+	return initInternal(static_init);
 }
 #endif
 
-bool App::initInternal(void)
+bool App::initInternal(bool (*static_init)(void))
 {
 	if (!initApp()) {
 		return false;
@@ -172,6 +172,10 @@ bool App::initInternal(void)
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+
+	if (static_init && !static_init()) {
+		return false;
+	}
 
 	if (!loadModules()) {
 		return false;

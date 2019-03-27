@@ -1,46 +1,56 @@
-project "Resource"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("Resource")
 
-	kind "StaticLib"
-	language "C++"
+	project "Resource"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("Resource")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("Resource")
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Frameworks/Gaff/include"
-	}
+		flags { "FatalWarnings" }
+
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Frameworks/Gaff/include"
+		}
 
 
-project "ResourceModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+	project "ResourceModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	kind "SharedLib"
-	language "C++"
+		kind "SharedLib"
+		language "C++"
 
-	files { "Shibboleth_ResourceModule.cpp" }
+		files { base_dir .. "Shibboleth_ResourceModule.cpp" }
 
-	ModuleCopy()
+		ModuleCopy()
 
-	flags { "FatalWarnings" }
+		flags { "FatalWarnings" }
 
-	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
+		ModuleIncludesAndLinks("Resource")
+		NewDeleteLinkFix()
+		SetupConfigMap()
+end
 
-	filter {}
+local LinkDependencies = function()
+	local deps = ModuleDependencies("Resource")
 
-	ModuleIncludesAndLinks("Resource")
-	NewDeleteLinkFix()
+	dependson(deps)
+	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

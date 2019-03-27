@@ -1,12 +1,5 @@
-function ModuleIncludesAndLinks(module_name)
-	includedirs
-	{
-		"include",
-		"../../Frameworks/Gaff/include",
-	}
-
-	local deps =
-	{
+function ModuleDependencies(module_name)
+	return {
 		"Memory",
 		"Engine",
 		"EASTL",
@@ -14,9 +7,65 @@ function ModuleIncludesAndLinks(module_name)
 		"mpack",
 		module_name
 	}
+end
 
+function ModuleIncludesAndLinks(module_name, base_name)
+	local base_dir = ""
+
+	if base_name then
+		base_dir = GetModulesDirectory(base_name)
+	else
+		base_dir = GetModulesDirectory(module_name)
+	end
+
+	includedirs
+	{
+		base_dir .. "include",
+		base_dir .. "../../Frameworks/Gaff/include",
+	}
+
+	local deps = ModuleDependencies(module_name)
 	dependson(deps)
 	links(deps)
+end
+
+function StaticHeaderGen()
+	prebuildmessage("Generating Gen_ReflectionInit.h for static build!")
+	prebuildcommands
+	{
+		"cd ../../../../../utils",
+		"premake5 gen_static_header"
+	}
+end
+
+function StaticLinks()
+	local filter_deps = {}
+
+	local ProcessModule = function(dir)
+		if not os.isfile(dir .. "/project_generator.lua") then
+			return
+		end
+
+		local funcs = dofile(dir .. "/project_generator.lua")
+		funcs.LinkDependencies()
+
+		if funcs.FilterDependencies then
+			table.insert(filter_deps, funcs.FilterDependencies)
+		end
+	end
+
+	local module_generators = os.matchdirs("../../Modules/*")
+	table.foreachi(module_generators, ProcessModule)
+
+	table.foreachi(filter_deps, function(func) func() end)
+
+	-- filter { "configurations:Static_*_D3D11" }
+	-- 	dependson("GraphicsDirect3D11")
+	-- 	links("GraphicsDirect3D11")
+
+	-- -- filter { "configurations:Static_*_Vulkan" }
+	-- -- 	dependson("GraphicsVulkan")
+	-- -- 	links("GraphicsVulkan")
 end
 
 function ModuleGen(module_name)
@@ -55,28 +104,28 @@ function NewDeleteLinkFix()
 	filter { "system:windows", "configurations:Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Release*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
 	filter { "system:windows", "configurations:Optimized_Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Profile*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
@@ -100,7 +149,7 @@ function GetFrameworkLocation()
 end
 
 function GetModulesLocation()
-	return GetActionLocation() .. "/modules"
+	return "../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
 end
 
 function GetEngineLocation()
@@ -115,12 +164,22 @@ function GetTestsLocation()
 	end
 end
 
+function GetModulesDirectory(module_name)
+	return "../src/Modules/" .. module_name .. "/"
+end
+
 function RunFile(file)
 	dofile(file)
 end
 
-function IncludeWxWidgets()
-	includedirs { "../../Dependencies/wxWidgets/include" }
+function IncludeWxWidgets(is_not_module)
+	local base_dir = "../src/"
+
+	if is_not_module then
+		base_dir = "../../"
+	end
+
+	includedirs { base_dir .. "Dependencies/wxWidgets/include" }
 	defines
 	{
 		"NOPCH",
@@ -132,8 +191,15 @@ function IncludeWxWidgets()
 	}
 
 	filter { "system:windows" }
-		includedirs { "../../Dependencies/wxWidgets/include/msvc" }
+		includedirs { base_dir .. "Dependencies/wxWidgets/include/msvc" }
 		defines { "__WXMSW__" }
 
 	filter {}
+end
+
+function SetupConfigMap()
+	configmap {
+		["Static_Debug_D3D11"] = "Debug",
+		["Static_Release_D3D11"] = "Release"
+	}
 end

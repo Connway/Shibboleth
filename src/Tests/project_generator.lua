@@ -154,6 +154,8 @@ function GenTest(settings)
 
 		includedirs(settings.includedirs)
 		links(settings.links)
+
+		SetupConfigMap()
 end
 
 table.foreachi(tests, GenTest)

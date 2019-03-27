@@ -13,12 +13,17 @@ if _ACTION == "vs2017" then
 			"Debug_Clang", "Release_Clang",
 			"Profile", "Profile_Clang",
 			"Optimized_Debug", "Optimized_Debug_Clang"
+			-- add static versions here
 		}
 	else
 		configs =
 		{
 			"Debug", "Release",
-			"Profile", "Optimized_Debug"
+			"Profile", "Optimized_Debug",
+			"Static_Debug_D3D11",
+			-- "Static_Debug_Vulkan",
+			"Static_Release_D3D11",
+			-- "Static_Release_Vulkan"
 		}
 	end
 else
@@ -28,6 +33,7 @@ else
 		"Debug_Clang", "Release_Clang",
 		"Profile", "Profile_Clang",
 		"Optimized_Debug", "Optimized_Debug_Clang"
+		-- add static versions here
 	}
 end
 

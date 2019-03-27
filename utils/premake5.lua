@@ -5,6 +5,11 @@ dofile("options.lua")
 local actions = os.matchfiles("../**/*actions.lua")
 table.foreachi(actions, RunFile)
 
+function GenerateModules(file)
+	local funcs = dofile(file)
+	funcs.GenerateProject()
+end
+
 solution "Shibboleth"
 	if _ACTION then
 		location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
@@ -29,7 +34,7 @@ solution "Shibboleth"
 	table.foreachi(engine_generators, RunFile)
 
 	group "Modules"
-	table.foreachi(module_generators, RunFile)
+	table.foreachi(module_generators, GenerateModules)
 
 	group "Tests"
 	dofile("../src/Tests/project_generator.lua")

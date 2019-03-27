@@ -22,3 +22,5 @@ project "libtiff"
 		buildoptions { "-fPIC" }
 
 	filter {}
+
+	SetupConfigMap()

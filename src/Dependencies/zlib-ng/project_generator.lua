@@ -21,3 +21,5 @@ project "zlib-ng"
 	-- 	buildoptions { "-fPIC" }
 
 	filter {}
+
+	SetupConfigMap()

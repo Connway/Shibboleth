@@ -10,15 +10,15 @@ newoption
 	description = "Generates the 'App' project to be a ConsoleApp instead of a WindowApp"
 }
 
-newoption
-{
-	trigger = "fmod_path",
-	value = "path",
-	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories. (Windows Only)"
-}
+-- newoption
+-- {
+-- 	trigger = "fmod_path",
+-- 	value = "path",
+-- 	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories. (Windows Only)"
+-- }
 
-newoption
-{
-	trigger = "gen-clang",
-	description = "Generate Clang configurations for Visual Studio projects."
-}
+-- newoption
+-- {
+-- 	trigger = "gen-clang",
+-- 	description = "Generate Clang configurations for Visual Studio projects."
+-- }
