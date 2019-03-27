@@ -22,12 +22,20 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
+#ifdef SHIB_STATIC
+	#include <Gen_ReflectionInit.h>
+#endif
+
 #ifdef PLATFORM_WINDOWS
 int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
 	Shibboleth::App app;
 
+#ifdef SHIB_STATIC
+	if (!app.init(Gen::LoadModulesStatic)) {
+#else
 	if (!app.init()) {
+#endif
 		app.destroy();
 		return -1;
 	}

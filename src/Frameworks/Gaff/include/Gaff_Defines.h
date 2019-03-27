@@ -70,7 +70,9 @@ THE SOFTWARE.
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-#define FLAG_BIT(index) (1 << index)
+#define GAFF_FLAG_BIT(index) (1 << index)
+
+#define GAFF_FAIL_RETURN(expr, return_value) if (!(expr)) { return return_value; }
 
 #ifdef _DEBUG
 	#define GAFF_ASSERT_ENABLED

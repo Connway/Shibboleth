@@ -31,3 +31,5 @@ project "easy_profiler"
 		characterset "MBCS"
 
 	filter {}
+
+	SetupConfigMap()

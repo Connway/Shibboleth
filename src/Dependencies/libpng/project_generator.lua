@@ -20,3 +20,5 @@ project "libpng"
 		buildoptions { "-fPIC" }
 
 	filter {}
+
+	SetupConfigMap()

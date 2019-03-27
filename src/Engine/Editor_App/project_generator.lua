@@ -36,7 +36,7 @@ project "Editor_App"
 		"wxAUI"
 	}
 
-	IncludeWxWidgets()
+	IncludeWxWidgets(true)
 
 	dependson(deps)
 	links(deps)
@@ -44,7 +44,6 @@ project "Editor_App"
 	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
-		includedirs { "../../Dependencies/dirent" }
 		links
 		{
 			"comctl32",
@@ -54,6 +53,10 @@ project "Editor_App"
 
 	filter { "system:not windows" }
 		linkoptions { "-Wl,-rpath,./bin" }
+
+	filter { "configurations:Static_*" }
+		defines { "SHIB_STATIC", "SHIB_EDITOR" }
+		StaticLinks()
 
 	filter {}
 

@@ -1,44 +1,53 @@
-project "MainLoop"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("MainLoop")
 
-	kind "StaticLib"
-	language "C++"
+	project "MainLoop"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("MainLoop")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("MainLoop")
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/EASTL/include"
-	}
+		flags { "FatalWarnings" }
 
-project "MainLoopModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Dependencies/EASTL/include"
+		}
 
-	kind "SharedLib"
-	language "C++"
+	project "MainLoopModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "Shibboleth_MainLoopModule.cpp" }
+		kind "SharedLib"
+		language "C++"
 
-	flags { "FatalWarnings" }
+		files { base_dir .. "Shibboleth_MainLoopModule.cpp" }
 
-	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-		includedirs { "../../Dependencies/dirent" }
+		flags { "FatalWarnings" }
 
-	filter {}
+		ModuleIncludesAndLinks("MainLoop")
+		SetupConfigMap()
+		ModuleCopy()
+end
 
-	ModuleIncludesAndLinks("MainLoop")
-	ModuleCopy()
+local LinkDependencies = function()
+	local deps = ModuleDependencies("MainLoop")
+
+	dependson(deps)
+	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

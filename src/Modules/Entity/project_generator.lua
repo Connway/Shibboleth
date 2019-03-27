@@ -1,55 +1,72 @@
-project "Entity"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("Entity")
 
-	kind "StaticLib"
-	language "C++"
+	project "Entity"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("Entity")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("Entity")
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/glm",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../Resource/include"
-	}
+		flags { "FatalWarnings" }
+
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/glm",
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../Resource/include"
+		}
 
 
-project "EntityModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+	project "EntityModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	kind "SharedLib"
-	language "C++"
+		kind "SharedLib"
+		language "C++"
 
-	files { "Shibboleth_EntityModule.cpp" }
+		files { base_dir .. "Shibboleth_EntityModule.cpp" }
 
-	ModuleCopy()
+		SetupConfigMap()
+		ModuleCopy()
 
-	flags { "FatalWarnings" }
+		flags { "FatalWarnings" }
 
-	ModuleIncludesAndLinks("Entity")
-	NewDeleteLinkFix()
+		ModuleIncludesAndLinks("Entity")
+		NewDeleteLinkFix()
 
-	local deps =
-	{
-		"Gleam",
-		"Resource"
-	}
+		local deps =
+		{
+			"Gleam",
+			"Resource"
+		}
+
+		dependson(deps)
+		links(deps)
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("Entity")
+	table.insert(deps, "Gleam")
+	table.insert(deps, "Resource")
 
 	dependson(deps)
 	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

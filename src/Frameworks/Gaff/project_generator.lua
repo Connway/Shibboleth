@@ -19,8 +19,9 @@ project "Gaff"
 	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
-		includedirs { "../../Dependencies/dirent" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 		excludes { "**/*_Linux.*", "*_Linux.*" }
 
 	filter {}
+
+	SetupConfigMap()

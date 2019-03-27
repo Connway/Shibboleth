@@ -8,14 +8,6 @@ project "Engine"
 
 	flags { "FatalWarnings" }
 
-	filter { "system:windows", "action:not vs*", "configurations:*Clang" }
-		includedirs { "../../Dependencies/dirent" }
-
-	filter { "system:windows", "action:vs*" }
-		includedirs { "../../Dependencies/dirent" }
-
-	filter {}
-
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
@@ -29,3 +21,10 @@ project "Engine"
 		"../../Dependencies/mpack",
 		"../../Dependencies/glm"
 	}
+
+	filter { "configurations:Static_*" }
+		StaticHeaderGen()
+
+	filter {}
+
+	SetupConfigMap()

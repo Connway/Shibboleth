@@ -1,49 +1,65 @@
-project "EditorMainLoop"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("EditorMainLoop")
 
-	kind "StaticLib"
-	language "C++"
+	project "EditorMainLoop"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("EditorMainLoop")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("EditorMainLoop")
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../../Dependencies/EASTL/include",
-		"../Graphics/include"
-	}
+		flags { "FatalWarnings" }
 
-project "EditorMainLoopModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../Graphics/include"
+		}
 
-	kind "SharedLib"
-	language "C++"
+	project "EditorMainLoopModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "Shibboleth_EditorMainLoopModule.cpp" }
+		kind "SharedLib"
+		language "C++"
 
-	ModuleEditorCopy()
+		files { base_dir .. "Shibboleth_EditorMainLoopModule.cpp" }
 
-	flags { "FatalWarnings" }
+		ModuleEditorCopy()
 
-	ModuleIncludesAndLinks("EditorMainLoop")
+		flags { "FatalWarnings" }
 
-	local deps =
-	{
-		"Gleam"
-	}
+		ModuleIncludesAndLinks("EditorMainLoop")
+		SetupConfigMap()
+
+		local deps =
+		{
+			"Gleam"
+		}
+
+		dependson(deps)
+		links(deps)
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("EditorMainLoop")
+	table.insert(deps, "Gleam")
 
 	dependson(deps)
 	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

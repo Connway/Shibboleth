@@ -1,79 +1,86 @@
-project "EditorBasic"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("EditorBasic")
 
-	kind "StaticLib"
-	language "C++"
+	project "EditorBasic"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("EditorBasic")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("EditorBasic")
 
-	includedirs
-	{
-		"include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/mpack",
-		"../../Dependencies/glm",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include",
-		"../../Engine/Editor/include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../Graphics/include"
-	}
+		flags { "FatalWarnings" }
 
-	IncludeWxWidgets()
-
-
-
-project "EditorBasicModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
-
-	kind "SharedLib"
-	language "C++"
-
-	files { "Shibboleth_EditorBasicModule.cpp" }
-
-	ModuleEditorCopy()
-
-	flags { "FatalWarnings" }
-
-	filter { "system:windows" }
-		links
+		includedirs
 		{
-			"comctl32",
-			"Rpcrt4"
+			base_dir .. "include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/glm",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Engine/Editor/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../Graphics/include"
 		}
 
-	filter {}
+		IncludeWxWidgets()
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Frameworks/Gaff/include"
-	}
 
-	ModuleIncludesAndLinks("EditorBasic")
-	NewDeleteLinkFix()
 
-	local deps =
-	{
-		"Editor",
-		"Gleam",
-		"libpng",
-		"zlib-ng",
-		"wxBase",
-		"wxCore",
-		"wxPropGrid"
-	}
+	project "EditorBasicModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
+
+		kind "SharedLib"
+		language "C++"
+
+		files { base_dir .. "Shibboleth_EditorBasicModule.cpp" }
+
+		ModuleEditorCopy()
+
+		flags { "FatalWarnings" }
+
+		ModuleIncludesAndLinks("EditorBasic")
+		NewDeleteLinkFix()
+		SetupConfigMap()
+
+		local deps =
+		{
+			"Editor",
+			"Gleam",
+			"libpng",
+			"zlib-ng",
+			"wxBase",
+			"wxCore",
+			"wxPropGrid"
+		}
+
+		dependson(deps)
+		links(deps)
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("EditorBasic")
+	table.insert(deps, "Editor")
+	table.insert(deps, "Gleam")
+	table.insert(deps, "libpng")
+	table.insert(deps, "zlib-ng")
+	table.insert(deps, "wxBase")
+	table.insert(deps, "wxCore")
+	table.insert(deps, "wxPropGrid")
 
 	dependson(deps)
 	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

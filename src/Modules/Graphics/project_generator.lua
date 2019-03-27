@@ -1,5 +1,6 @@
 function DoGraphicsModule(renderer)
 	local project_name = "Graphics" .. renderer
+	local base_dir = GetModulesDirectory("Graphics")
 
 	project(project_name)
 		if _ACTION then
@@ -9,10 +10,11 @@ function DoGraphicsModule(renderer)
 		kind "StaticLib"
 		language "C++"
 
-		files { "**.h", "**.cpp", "**.inl" }
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
 		ModuleGen("Graphics")
+		SetupConfigMap()
 
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
@@ -24,15 +26,15 @@ function DoGraphicsModule(renderer)
 
 		includedirs
 		{
-			"include",
-			"../../Engine/Memory/include",
-			"../../Engine/Engine/include",
-			"../../Dependencies/EASTL/include",
-			-- "../../Dependencies/rapidjson",
-			-- "../../Dependencies/glm",
-			-- "../../Dependencies/mpack",
-			"../../Frameworks/Gaff/include",
-			"../../Frameworks/Gleam/include"
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			-- base_dir .. "../../Dependencies/rapidjson",
+			-- base_dir .. "../../Dependencies/glm",
+			-- base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
 
@@ -44,7 +46,7 @@ function DoGraphicsModule(renderer)
 		kind "SharedLib"
 		language "C++"
 
-		files { "Shibboleth_GraphicsModule.cpp" }
+		files { base_dir .. "Shibboleth_GraphicsModule.cpp" }
 
 		ModuleCopy()
 
@@ -57,12 +59,8 @@ function DoGraphicsModule(renderer)
 
 		flags { "FatalWarnings" }
 
-		filter { "system:windows" }
-			links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-
-		filter {}
-
-		ModuleIncludesAndLinks(project_name)
+		ModuleIncludesAndLinks(project_name, "Graphics")
+		SetupConfigMap()
 
 		local deps =
 		{
@@ -74,5 +72,30 @@ function DoGraphicsModule(renderer)
 		links(deps)
 end
 
-DoGraphicsModule("Direct3D11")
--- DoGraphicsModule("Vulkan")
+local GenerateProject = function()
+	DoGraphicsModule("Direct3D11")
+	-- DoGraphicsModule("Vulkan")
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("")
+	table.remove(deps) -- remove module name dependency
+	table.insert(deps, "Gleam")
+
+	dependson(deps)
+	links(deps)
+end
+
+local FilterDependencies = function()
+	filter { "configurations:Static_*_D3D11" }
+		dependson("GraphicsDirect3D11")
+		links { "GraphicsDirect3D11", "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+
+	-- filter { "configurations:Static_*_Vulkan" }
+	-- 	dependson("GraphicsVulkan")
+	-- 	links("GraphicsVulkan")
+
+	filter {}
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies, FilterDependencies = FilterDependencies }

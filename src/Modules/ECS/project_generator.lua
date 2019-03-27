@@ -1,53 +1,68 @@
-project "ECS"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("ECS")
 
-	kind "StaticLib"
-	language "C++"
+	project "ECS"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("ECS")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		SetupConfigMap()
+		ModuleGen("ECS")
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/glm",
-		"../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		"../../Frameworks/Gleam/include"
-	}
+		flags { "FatalWarnings" }
 
-project "ECSModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/glm",
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include"
+		}
 
-	kind "SharedLib"
-	language "C++"
+	project "ECSModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "Shibboleth_ECSModule.cpp" }
+		kind "SharedLib"
+		language "C++"
 
-	ModuleCopy()
+		files { base_dir .. "Shibboleth_ECSModule.cpp" }
 
-	flags { "FatalWarnings" }
+		ModuleCopy()
 
-	ModuleIncludesAndLinks("ECS")
-	NewDeleteLinkFix()
+		flags { "FatalWarnings" }
 
-	local deps =
-	{
-		"Gleam"
-	}
+		ModuleIncludesAndLinks("ECS")
+		NewDeleteLinkFix()
+		SetupConfigMap()
+
+		local deps =
+		{
+			"Gleam"
+		}
+
+		dependson(deps)
+		links(deps)
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("ECS")
+	table.insert(deps, "Gleam")
 
 	dependson(deps)
 	links(deps)
+end
 
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

@@ -23,3 +23,5 @@ project "Gleam"
 		"../../Dependencies/vulkan",
 		"../../Dependencies/glm"
 	}
+
+	SetupConfigMap()

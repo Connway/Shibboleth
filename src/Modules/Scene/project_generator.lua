@@ -1,44 +1,58 @@
-project "Scene"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+local GenerateProject = function()
+	local base_dir = GetModulesDirectory("Scene")
 
-	kind "StaticLib"
-	language "C++"
+	project "Scene"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "**.h", "**.cpp", "**.inl" }
-	defines { "SHIB_STATIC" }
+		kind "StaticLib"
+		language "C++"
 
-	ModuleGen("Scene")
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		defines { "SHIB_STATIC" }
 
-	flags { "FatalWarnings" }
+		ModuleGen("Scene")
+		SetupConfigMap()
 
-	includedirs
-	{
-		"include",
-		"../../Engine/Memory/include",
-		"../../Engine/Engine/include",
-		"../../Dependencies/EASTL/include",
-		-- "../../Dependencies/rapidjson",
-		-- "../../Dependencies/glm",
-		-- "../../Dependencies/mpack",
-		"../../Frameworks/Gaff/include",
-		-- "../../Frameworks/Gleam/include"
-	}
+		flags { "FatalWarnings" }
 
-project "SceneModule"
-	if _ACTION then
-		location(GetModulesLocation())
-	end
+		includedirs
+		{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			-- base_dir .. "../../Dependencies/rapidjson",
+			-- base_dir .. "../../Dependencies/glm",
+			-- base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Frameworks/Gaff/include",
+			-- base_dir .. "../../Frameworks/Gleam/include"
+		}
 
-	kind "SharedLib"
-	language "C++"
+	project "SceneModule"
+		if _ACTION then
+			location(GetModulesLocation())
+		end
 
-	files { "Shibboleth_SceneModule.cpp" }
+		kind "SharedLib"
+		language "C++"
 
-	ModuleCopy()
+		files { base_dir .. "Shibboleth_SceneModule.cpp" }
 
-	flags { "FatalWarnings" }
+		ModuleCopy()
 
-	ModuleIncludesAndLinks("Scene")
-	-- NewDeleteLinkFix()
+		flags { "FatalWarnings" }
+
+		ModuleIncludesAndLinks("Scene")
+		SetupConfigMap()
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("Scene")
+
+	dependson(deps)
+	links(deps)
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

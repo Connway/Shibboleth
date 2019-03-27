@@ -58,6 +58,8 @@ function wxWidgetsProject(proj_name, lib_type)
 	end
 
 	dofile(string.lower(proj_name) .. "_files.lua")
+
+	SetupConfigMap()
 end
 
 group "Dependencies/wxWidgets"

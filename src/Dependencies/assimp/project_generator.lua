@@ -54,3 +54,5 @@ project "assimp"
 		buildoptions { "/bigobj" }
 
 	filter {}
+
+	SetupConfigMap()

@@ -40,10 +40,11 @@ public:
 	App(void);
 	~App(void);
 
-	bool init(int argc, const char** argv);
+	bool init(int argc, const char** argv, bool (*static_init)(void) = nullptr);
 #ifdef PLATFORM_WINDOWS
-	bool init(void);
+	bool init(bool (*static_init)(void) = nullptr);
 #endif
+
 	void run(void);
 	void destroy(void);
 
@@ -107,7 +108,7 @@ private:
 
 	IEditor* _editor = nullptr;
 
-	bool initInternal(void);
+	bool initInternal(bool (*static_init)(void));
 	bool loadFileSystem(void);
 	bool loadMainLoop(void);
 	bool loadModules(void);
