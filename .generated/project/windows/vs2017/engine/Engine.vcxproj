@@ -114,6 +114,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>cd ../../../../../utils
+premake5 gen_static_header</Command>
+      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -143,6 +148,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>cd ../../../../../utils
+premake5 gen_static_header</Command>
+      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -172,6 +182,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>cd ../../../../../utils
+premake5 gen_static_header</Command>
+      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
@@ -201,6 +216,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>cd ../../../../../utils
+premake5 gen_static_header</Command>
+      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Gen_ReflectionInit.h" />
