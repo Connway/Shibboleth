@@ -22,9 +22,5 @@ project "Engine"
 		"../../Dependencies/glm"
 	}
 
-	filter { "configurations:Static_*" }
-		StaticHeaderGen()
-
-	filter {}
-
+	StaticHeaderGen()
 	SetupConfigMap()
