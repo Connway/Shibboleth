@@ -78,7 +78,7 @@ private:
 	bool hasItem(const RefDefItem& item, wxEditableListBox& ui) const;
 
 	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void addItem(RefDefItem& item, wxEditableListBox& ui);
+	bool addItem(RefDefItem& item, wxEditableListBox& ui);
 	void initComponentList(void);
 
 	void save(void);

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
 #include <Shibboleth_SerializeReader.h>
+#include <Shibboleth_LogManager.h>
 #include <Gaff_JSON.h>
 
 #include <wx/listctrl.h>
@@ -94,8 +95,9 @@ private:
 				continue;
 			}
 
-			_editor.addItem(*items[i], *_ui);
-			++add_count;
+			if (_editor.addItem(*items[i], *_ui)) {
+				++add_count;
+			}
 		}
 
 		data->Free();
@@ -397,7 +399,7 @@ RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 	return item;
 }
 
-void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
+bool ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 {
 	wxListCtrl* const list = ui.GetListCtrl();
 	const int32_t index = static_cast<int32_t>(list->GetItemCount());
@@ -406,15 +408,22 @@ void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 	const char* const name = ref_def.getReflectionInstance().getName();
 
 	if (hasItem(item, ui)) {
-		return;
+		return false;
 	}
 
 	list->InsertItem(index, name);
 
 	if (&ui == _archetype_shared_ui) {
-		_archetype.addShared(ref_def);
+		if (!_archetype.addShared(ref_def)) {
+			LogErrorDefault("Failed to add shared component '%s'.", name);
+			return false;
+		}
+
 	} else {
-		_archetype.add(ref_def);
+		if (!_archetype.add(ref_def)) {
+			LogErrorDefault("Failed to add component '%s'.", name);
+			return false;
+		}
 	}
 
 	item.increment();
@@ -424,6 +433,8 @@ void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 	}
 
 	//save();
+
+	return true;
 }
 
 void ArchetypeEditor::initComponentList(void)
@@ -529,6 +540,7 @@ void ArchetypeEditor::load(void)
 
 		RefDefItem ref_def_item(*ref_def);
 		addItem(ref_def_item, *_archetype_ui);
+
 		return false;
 	});
 
