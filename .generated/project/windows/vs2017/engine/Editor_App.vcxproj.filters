@@ -17,4 +17,7 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor_App\Shibboleth_Editor.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor_App\Shibboleth_EditorFrame.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Engine\Editor_App\project_generator.lua" />
+  </ItemGroup>
 </Project>

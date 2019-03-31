@@ -45,4 +45,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_VectorInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\EditorBasic\project_generator.lua" />
+  </ItemGroup>
 </Project>

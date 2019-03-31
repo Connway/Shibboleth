@@ -9,7 +9,7 @@ local GenerateProject = function()
 		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl", base_dir .. "**.lua" }
 		defines { "SHIB_STATIC" }
 
 		ModuleGen("EditorECS")
@@ -25,6 +25,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Editor/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../EditorBasic/include",
 			base_dir .. "../ECS/include"
 		}
 
@@ -58,6 +59,7 @@ local GenerateProject = function()
 			"zlib-ng",
 			"wxBase",
 			"wxCore",
+			"EditorBasic",
 			"ECS"
 		}
 
@@ -72,6 +74,7 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "wxBase")
 	table.insert(deps, "wxCore")
+	table.insert(deps, "EditorBasic")
 	table.insert(deps, "ECS")
 
 	dependson(deps)

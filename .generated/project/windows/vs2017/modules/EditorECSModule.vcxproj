@@ -263,6 +263,9 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\wxCore.vcxproj">
       <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
     </ProjectReference>
+    <ProjectReference Include="EditorBasic.vcxproj">
+      <Project>{2E0BB4B5-9AC0-2CAB-23B5-26828F6923AF}</Project>
+    </ProjectReference>
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>

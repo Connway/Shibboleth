@@ -7,7 +7,7 @@ project "Memory"
 	language "C++"
 	defines { "IS_MEMORY" }
 
-	files { "**.h", "**.cpp" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

@@ -12,7 +12,7 @@ project "Game_App"
 	debugdir "../../../workingdir"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

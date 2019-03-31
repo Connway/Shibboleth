@@ -47,12 +47,6 @@ public:
 		wxWindow* parent
 	);
 
-	NumberInspector(
-		void* value,
-		const Gaff::IReflectionDefinition& ref_def,
-		wxWindow* parent = nullptr
-	);
-
 private:
 	wxTextCtrl* _text = nullptr;
 	void* _value = nullptr;

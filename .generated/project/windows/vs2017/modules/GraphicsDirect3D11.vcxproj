@@ -234,6 +234,9 @@ premake5 gen_module_header --module=Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
