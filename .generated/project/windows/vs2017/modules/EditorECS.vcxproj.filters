@@ -18,6 +18,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_ArchetypeEditor.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_ArchetypeInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorECS\Shibboleth_EditorECSModule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\EditorECS\project_generator.lua" />
   </ItemGroup>
 </Project>

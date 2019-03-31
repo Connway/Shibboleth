@@ -9,7 +9,7 @@ local GenerateProject = function()
 		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl", base_dir .. "**.lua" }
 		defines { "SHIB_STATIC" }
 
 		ModuleGen("EditorBasic")

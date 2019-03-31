@@ -7,7 +7,7 @@ project "Editor_App"
 	kind "WindowedApp"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

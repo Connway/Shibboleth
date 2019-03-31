@@ -31,4 +31,7 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorItemSelectedMessage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Engine\Editor\project_generator.lua" />
+  </ItemGroup>
 </Project>

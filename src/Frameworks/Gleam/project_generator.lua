@@ -13,7 +13,7 @@ project "Gleam"
 
 	filter {}
 
-	files { "**.h", "**.cpp" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

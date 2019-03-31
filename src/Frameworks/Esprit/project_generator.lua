@@ -8,7 +8,7 @@ project "Esprit"
 
 	flags { "FatalWarnings" }
 
-	files { "**.h", "**.cpp" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

@@ -20,33 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ArchetypeInspector.h"
+#include "Shibboleth_ArchetypeEditor.h"
+#include <Shibboleth_EditorInspectorAttribute.h>
+#include <Shibboleth_Inspector.h>
 
-#include <Shibboleth_Reflection.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
+SHIB_REFLECTION_DEFINE(ArchetypeInspector)
 
 NS_SHIBBOLETH
 
-class ArchetypeInspector final : public Gaff::IReflectionObject, public wxPanel
-{
-public:
-	ArchetypeInspector(
-		void* value,
-		const Gaff::IReflectionDefinition& ref_def,
-		const Gaff::IReflectionDefinition* parent_ref_def,
-		int32_t var_index,
-		wxWindow* parent
-	);
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeInspector)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, int32_t, wxWindow*)
 
-private:
-	SHIB_REFLECTION_CLASS_DECLARE(ArchetypeInspector);
-};
+	.BASE(Gaff::IReflectionObject)
+	.BASE(wxWindow)
+
+	.classAttrs(EditorInspectorAttribute<ArchetypeEditor>())
+SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeInspector)
+
+ArchetypeInspector::ArchetypeInspector(
+	void* value,
+	const Gaff::IReflectionDefinition& ref_def,
+	const Gaff::IReflectionDefinition* parent_ref_def,
+	int32_t var_index,
+	wxWindow* parent
+):
+	wxPanel(parent)
+{
+	GAFF_REF(value, ref_def, parent_ref_def, var_index);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ArchetypeInspector);

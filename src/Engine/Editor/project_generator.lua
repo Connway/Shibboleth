@@ -6,7 +6,7 @@ project "Editor"
 	kind "StaticLib"
 	language "C++"
 
-	files { "**.h", "**.cpp" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

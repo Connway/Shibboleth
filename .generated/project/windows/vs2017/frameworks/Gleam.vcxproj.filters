@@ -295,4 +295,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Window_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Window_Windows.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Frameworks\Gleam\project_generator.lua" />
+  </ItemGroup>
 </Project>

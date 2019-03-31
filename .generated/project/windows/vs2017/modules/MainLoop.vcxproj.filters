@@ -21,4 +21,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_SetupFunctions.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\MainLoop\project_generator.lua" />
+  </ItemGroup>
 </Project>

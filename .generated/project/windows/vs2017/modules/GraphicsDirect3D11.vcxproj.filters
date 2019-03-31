@@ -27,4 +27,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />
+  </ItemGroup>
 </Project>

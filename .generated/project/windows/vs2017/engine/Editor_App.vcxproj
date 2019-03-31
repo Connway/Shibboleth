@@ -323,6 +323,9 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor_App\Shibboleth_EditorFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Engine\Editor_App\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
     </ProjectReference>
@@ -359,14 +362,14 @@
     <ProjectReference Include="..\dependencies\wxAui.vcxproj">
       <Project>{9355AB10-FF69-D3C1-C8EB-762134BFCFF2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\EditorBasic.vcxproj">
-      <Project>{2E0BB4B5-9AC0-2CAB-23B5-26828F6923AF}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\wxPropGrid.vcxproj">
       <Project>{5B1AEED7-47D2-2F25-B0D9-08819CB0CA15}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\EditorECS.vcxproj">
       <Project>{87CDAF4A-F337-64C1-3C76-1567A81F4216}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\EditorBasic.vcxproj">
+      <Project>{2E0BB4B5-9AC0-2CAB-23B5-26828F6923AF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>

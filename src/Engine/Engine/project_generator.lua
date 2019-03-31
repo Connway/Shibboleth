@@ -8,7 +8,7 @@ project "Engine"
 
 	flags { "FatalWarnings" }
 
-	files { "**.h", "**.cpp", "**.inl" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

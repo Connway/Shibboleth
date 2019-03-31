@@ -6,7 +6,7 @@ project "Gaff"
 	kind "StaticLib"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
+	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs
 	{

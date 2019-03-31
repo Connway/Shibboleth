@@ -42,4 +42,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSQuery.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\ECS\project_generator.lua" />
+  </ItemGroup>
 </Project>
