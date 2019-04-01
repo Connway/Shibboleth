@@ -299,6 +299,17 @@ void* ECSArchetype::getSharedData(void)
 	return _shared_instances;
 }
 
+const Gaff::IReflectionDefinition& ECSArchetype::getSharedComponentRefDef(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_shared_vars.size()));
+	return *_shared_vars[index].ref_def;
+}
+
+int32_t ECSArchetype::getNumSharedComponents(void) const
+{
+	return static_cast<int32_t>(_shared_vars.size());
+}
+
 template <bool shared>
 bool ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {

@@ -56,6 +56,9 @@ public:
 
 	~ArchetypeEditor(void);
 
+	const ECSArchetype& getArchetype(void) const;
+	ECSArchetype& getArchetype(void);
+
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
 	wxEditableListBox* _archetype_shared_ui = nullptr;

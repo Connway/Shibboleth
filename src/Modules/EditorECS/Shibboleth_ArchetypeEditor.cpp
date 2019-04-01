@@ -205,6 +205,16 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
+const ECSArchetype& ArchetypeEditor::getArchetype(void) const
+{
+	return _archetype;
+}
+
+ECSArchetype& ArchetypeEditor::getArchetype(void)
+{
+	return _archetype;
+}
+
 void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
 	const U8String& path = message.getPath();
@@ -224,7 +234,7 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 	_path = path;
 	load();
 
-	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(*this));
 }
 
 void ArchetypeEditor::onRemoveSharedComponents(wxListEvent& event)
@@ -263,7 +273,7 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 		}
 	}
 
-	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(*this));
 }
 
 void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
@@ -371,7 +381,7 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 		id = _ecs_components->GetNextSibling(id);
 	}
 
-	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(*this));
 }
 
 bool ArchetypeEditor::hasItem(const RefDefItem& item, wxEditableListBox& ui) const

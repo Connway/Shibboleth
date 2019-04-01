@@ -40,6 +40,15 @@ class Inspector final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	Inspector(
+		const Gaff::IReflectionDefinition& ref_def,
+		void* data,
+		wxWindow* parent,
+		wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize
+	);
+
+	Inspector(
 		wxWindow* parent,
 		wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
@@ -49,6 +58,9 @@ public:
 	~Inspector(void);
 
 private:
+	bool _embedded = false;
+
+	void onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data);
 	void onItemSelected(const EditorItemSelectedMessage& message);
 
 	const Gaff::IReflectionDefinition* getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const;

@@ -135,6 +135,7 @@ static wxWindow* CreateInspector(
 
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Inspector)
+	.CTOR(const Gaff::IReflectionDefinition&, void*, wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
@@ -153,6 +154,20 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Inspector)
 		GlobalMessageAttribute<Inspector, EditorItemSelectedMessage>()
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(Inspector)
+
+Inspector::Inspector(
+	const Gaff::IReflectionDefinition& ref_def,
+	void* data,
+	wxWindow* parent,
+	wxWindowID id,
+	const wxPoint& pos,
+	const wxSize& size
+):
+	Inspector(parent, id, pos, size)
+{
+	onItemSelectedInternal(ref_def, data);
+	_embedded = true;
+}
 
 Inspector::Inspector(
 	wxWindow* parent,
@@ -174,22 +189,18 @@ Inspector::~Inspector(void)
 {
 }
 
-void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
+void Inspector::onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data)
 {
 	wxSizer* const sizer = GetSizer();
 	sizer->Clear();
 
-	Gaff::IReflectionObject* const item = message.getItem();
-
-	if (!item) {
+	if (!data) {
 		return;
 	}
 
-	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
-
 	// Check if we have an property editor for this object.
 	if (const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def)) {
-		wxWindow* const inspector = CreateInspector(item->getBasePointer(), *inspector_ref_def, ref_def, nullptr, -1, this);
+		wxWindow* const inspector = CreateInspector(data, *inspector_ref_def, ref_def, nullptr, -1, this);
 
 		if (!inspector) {
 			// $TODO: Log error.
@@ -198,12 +209,21 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 
 		sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
-	// Iteratively create all the properties.
+		// Iteratively create all the properties.
 	} else {
-		createEditors(item->getBasePointer(), ref_def, sizer, 0);
+		createEditors(data, ref_def, sizer, 0);
 	}
 
 	Layout();
+}
+
+void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
+{
+	if (_embedded) {
+		return;
+	}
+
+	onItemSelectedInternal(message.getRefDef(), message.getData());
 }
 
 const Gaff::IReflectionDefinition* Inspector::getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const

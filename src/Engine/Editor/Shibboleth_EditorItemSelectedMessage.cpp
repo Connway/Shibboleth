@@ -28,14 +28,24 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(EditorItemSelectedMessage)
 
-EditorItemSelectedMessage::EditorItemSelectedMessage(Gaff::IReflectionObject* item):
-	_item(item)
+EditorItemSelectedMessage::EditorItemSelectedMessage(const Gaff::IReflectionDefinition& ref_def, void* data):
+	_ref_def(ref_def), _data(data)
 {
 }
 
-Gaff::IReflectionObject* EditorItemSelectedMessage::getItem(void) const
+EditorItemSelectedMessage::EditorItemSelectedMessage(Gaff::IReflectionObject& item):
+	_ref_def(item.getReflectionDefinition()), _data(item.getBasePointer())
 {
-	return _item;
+}
+
+const Gaff::IReflectionDefinition& EditorItemSelectedMessage::getRefDef(void) const
+{
+	return _ref_def;
+}
+
+void* EditorItemSelectedMessage::getData(void) const
+{
+	return _data;
 }
 
 NS_END

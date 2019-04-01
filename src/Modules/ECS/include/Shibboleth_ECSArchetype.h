@@ -116,6 +116,9 @@ public:
 	const void* getSharedData(void) const;
 	void* getSharedData(void);
 
+	const Gaff::IReflectionDefinition& getSharedComponentRefDef(int32_t index) const;
+	int32_t getNumSharedComponents(void) const;
+
 private:
 	struct RefDefOffset final
 	{
