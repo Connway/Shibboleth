@@ -40,14 +40,24 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeInspector)
 
 ArchetypeInspector::ArchetypeInspector(
 	void* value,
-	const Gaff::IReflectionDefinition& ref_def,
-	const Gaff::IReflectionDefinition* parent_ref_def,
-	int32_t var_index,
+	const Gaff::IReflectionDefinition& /*ref_def*/,
+	const Gaff::IReflectionDefinition* /*parent_ref_def*/,
+	int32_t /*var_index*/,
 	wxWindow* parent
 ):
-	wxPanel(parent)
+	wxPanel(parent),
+	_editor(reinterpret_cast<ArchetypeEditor*>(value))
 {
-	GAFF_REF(value, ref_def, parent_ref_def, var_index);
+	ECSArchetype& archetype = _editor->getArchetype();
+
+	int8_t* shared_data = reinterpret_cast<int8_t*>(archetype.getSharedData());
+	const int32_t shared_count = archetype.getNumSharedComponents();
+
+	for (int32_t i = 0; i < shared_count; ++i) {
+		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
+
+		shared_data += ref_def.size();
+	}
 }
 
 NS_END

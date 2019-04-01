@@ -32,6 +32,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ArchetypeEditor;
+
 class ArchetypeInspector final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
@@ -44,6 +46,13 @@ public:
 	);
 
 private:
+	ArchetypeEditor* _editor = nullptr;
+
+	struct ComponentData final
+	{
+
+	};
+
 	SHIB_REFLECTION_CLASS_DECLARE(ArchetypeInspector);
 };
 

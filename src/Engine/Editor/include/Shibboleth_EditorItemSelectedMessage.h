@@ -29,12 +29,15 @@ NS_SHIBBOLETH
 class EditorItemSelectedMessage final : public Gaff::IReflectionObject
 {
 public:
-	EditorItemSelectedMessage(Gaff::IReflectionObject* item);
+	EditorItemSelectedMessage(const Gaff::IReflectionDefinition& ref_def, void* data);
+	EditorItemSelectedMessage(Gaff::IReflectionObject& item);
 
-	Gaff::IReflectionObject* getItem(void) const;
+	const Gaff::IReflectionDefinition& getRefDef(void) const;
+	void* getData(void) const;
 
 private:
-	Gaff::IReflectionObject* _item;
+	const Gaff::IReflectionDefinition& _ref_def;
+	void* const _data = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EditorItemSelectedMessage);
 };
