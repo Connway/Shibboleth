@@ -23,7 +23,9 @@ THE SOFTWARE.
 #include "Shibboleth_ArchetypeInspector.h"
 #include "Shibboleth_ArchetypeEditor.h"
 #include <Shibboleth_EditorInspectorAttribute.h>
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_Inspector.h>
+#include <wx/sizer.h>
 
 SHIB_REFLECTION_DEFINE(ArchetypeInspector)
 
@@ -48,15 +50,40 @@ ArchetypeInspector::ArchetypeInspector(
 	wxPanel(parent),
 	_editor(reinterpret_cast<ArchetypeEditor*>(value))
 {
+	_sizer = new wxBoxSizer(wxVERTICAL);
+	_sizer->SetSizeHints(this);
+
+	SetSizer(_sizer);
+
 	ECSArchetype& archetype = _editor->getArchetype();
 
 	int8_t* shared_data = reinterpret_cast<int8_t*>(archetype.getSharedData());
 	const int32_t shared_count = archetype.getNumSharedComponents();
+	const int32_t count = archetype.getNumComponents();
 
 	for (int32_t i = 0; i < shared_count; ++i) {
 		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
+		Inspector* const inspector = new Inspector(ref_def, shared_data, this);
+
+		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
 		shared_data += ref_def.size();
+	}
+
+	ProxyAllocator allocator("Editor");
+
+	for (int32_t i = 0; i < count; ++i) {
+		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
+		void* const instance = ref_def.create(allocator);
+
+		if (!instance) {
+			LogErrorDefault("Failed to create component instance.");
+			continue;
+		}
+
+		Inspector* const inspector = new Inspector(ref_def, instance, this);
+
+		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
 	}
 }
 

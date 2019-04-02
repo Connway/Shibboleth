@@ -113,11 +113,17 @@ public:
 
 	Gaff::Hash64 getHash(void) const;
 
+	const void* getSharedData(int32_t index) const;
+	void* getSharedData(int32_t index);
+
 	const void* getSharedData(void) const;
 	void* getSharedData(void);
 
 	const Gaff::IReflectionDefinition& getSharedComponentRefDef(int32_t index) const;
 	int32_t getNumSharedComponents(void) const;
+
+	const Gaff::IReflectionDefinition& getComponentRefDef(int32_t index) const;
+	int32_t getNumComponents(void) const;
 
 private:
 	struct RefDefOffset final

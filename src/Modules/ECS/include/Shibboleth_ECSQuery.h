@@ -51,19 +51,19 @@ public:
 	using FilterFunc = eastl::function<bool (const void*)>;
 
 	template <class T>
-	using SharedOutput = Vector<const typename T::SharedData*>;
+	using SharedOutput = Vector<const typename T*>;
 
 	using Output = Vector<ECSQueryResult>;
 
 	template <class T, class Arg>
-	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T::SharedData>&& filter)
+	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T>&& filter)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
 		auto filter_func = Gaff::Func<bool (const void*)>(
-			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const typename T::SharedData*>(data)); }
+			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const typename T*>(data)); }
 		);
 
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter_func));
@@ -73,7 +73,7 @@ public:
 	void addShared(SharedOutput<T>& output, FilterFunc&& filter)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter));
@@ -83,7 +83,7 @@ public:
 	void addShared(SharedOutput<T>& output)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T::SharedData*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
 		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func));

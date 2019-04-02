@@ -24,13 +24,13 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 #include "Shibboleth_ECSManager.h"
 
-SHIB_REFLECTION_DEFINE(Position)
-SHIB_REFLECTION_DEFINE(Rotation)
-SHIB_REFLECTION_DEFINE(Scale)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Position)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Rotation)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Scale)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Position)
+SHIB_REFLECTION_BUILDER_BEGIN(Position)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::vec3>()
@@ -38,16 +38,19 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Position)
 
 	.staticFunc("CopyShared", &Position::CopyShared)
 	.staticFunc("Copy", &Position::Copy)
-SHIB_REFLECTION_CLASS_DEFINE_END(Position)
+
+	.var("Position", &Position::value)
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Position)
 
 void Position::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
-	*ecs_mgr.getComponentShared<Position>(archetype) = value;
+	ecs_mgr.getComponentShared<Position>(archetype)->value = value;
 }
 
 void Position::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	*ecs_mgr.getComponentShared<Position>(id) = value;
+	ecs_mgr.getComponentShared<Position>(id)->value = value;
 }
 
 void Position::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
@@ -68,12 +71,12 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *ecs_mgr.getComponentShared<Position>(archetype);
+	return ecs_mgr.getComponentShared<Position>(archetype)->value;
 }
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *ecs_mgr.getComponentShared<Position>(id);
+	return ecs_mgr.getComponentShared<Position>(id)->value;
 }
 
 glm::vec3 Position::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
@@ -125,12 +128,12 @@ void Position::Copy(const void* old_begin, int32_t old_index, void* new_begin, i
 
 void Position::CopyShared(const void* old_value, void* new_value)
 {
-	*reinterpret_cast<glm::vec3*>(new_value) = *reinterpret_cast<const glm::vec3*>(old_value);
+	reinterpret_cast<Position*>(new_value)->value = reinterpret_cast<const Position*>(old_value)->value;
 }
 
 
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Rotation)
+SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::quat>()
@@ -138,16 +141,19 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Rotation)
 
 	.staticFunc("CopyShared", &Rotation::CopyShared)
 	.staticFunc("Copy", &Rotation::Copy)
-SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
+
+	.var("Rotation", &Rotation::value)
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Rotation)
 
 void Rotation::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value)
 {
-	*ecs_mgr.getComponentShared<Rotation>(archetype) = value;
+	ecs_mgr.getComponentShared<Rotation>(archetype)->value = value;
 }
 
 void Rotation::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
-	*ecs_mgr.getComponentShared<Rotation>(id) = value;
+	ecs_mgr.getComponentShared<Rotation>(id)->value = value;
 }
 
 void Rotation::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value)
@@ -170,12 +176,12 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *ecs_mgr.getComponentShared<Rotation>(archetype);
+	return ecs_mgr.getComponentShared<Rotation>(archetype)->value;
 }
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *ecs_mgr.getComponentShared<Rotation>(id);
+	return ecs_mgr.getComponentShared<Rotation>(id)->value;
 }
 
 glm::quat Rotation::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
@@ -235,13 +241,13 @@ void Rotation::Copy(const void* old_begin, int32_t old_index, void* new_begin, i
 
 void Rotation::CopyShared(const void* old_value, void* new_value)
 {
-	*reinterpret_cast<glm::quat*>(new_value) = *reinterpret_cast<const glm::quat*>(old_value);
+	reinterpret_cast<Rotation*>(new_value)->value = reinterpret_cast<const Rotation*>(old_value)->value;
 }
 
 
 
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scale)
+SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Transform"),
 		ECSVarAttribute<glm::vec3>()
@@ -249,16 +255,19 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scale)
 
 	.staticFunc("CopyShared", &Scale::CopyShared)
 	.staticFunc("Copy", &Scale::Copy)
-SHIB_REFLECTION_CLASS_DEFINE_END(Scale)
+
+	.var("Scale", &Scale::value)
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Scale)
 
 void Scale::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
-	*ecs_mgr.getComponentShared<Scale>(archetype) = value;
+	ecs_mgr.getComponentShared<Scale>(archetype)->value = value;
 }
 
 void Scale::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 {
-	*ecs_mgr.getComponentShared<Scale>(id) = value;
+	ecs_mgr.getComponentShared<Scale>(id)->value = value;
 }
 
 void Scale::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
@@ -279,12 +288,12 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return *ecs_mgr.getComponentShared<Scale>(archetype);
+	return ecs_mgr.getComponentShared<Scale>(archetype)->value;
 }
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *ecs_mgr.getComponentShared<Scale>(id);
+	return ecs_mgr.getComponentShared<Scale>(id)->value;
 }
 
 glm::vec3 Scale::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
@@ -336,7 +345,7 @@ void Scale::Copy(const void* old_begin, int32_t old_index, void* new_begin, int3
 
 void Scale::CopyShared(const void* old_value, void* new_value)
 {
-	*reinterpret_cast<glm::vec3*>(new_value) = *reinterpret_cast<const glm::vec3*>(old_value);
+	reinterpret_cast<Scale*>(new_value)->value = reinterpret_cast<const Scale*>(old_value)->value;
 }
 
 NS_END

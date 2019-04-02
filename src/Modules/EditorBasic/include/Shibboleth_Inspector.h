@@ -57,7 +57,12 @@ public:
 
 	~Inspector(void);
 
+	// Inspector will own user data and call delete on it.
+	void setUserData(void* user_data);
+	void* getUserData(void) const;
+
 private:
+	void* _user_data = nullptr;
 	bool _embedded = false;
 
 	void onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data);

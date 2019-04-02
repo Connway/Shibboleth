@@ -32,11 +32,9 @@ NS_SHIBBOLETH
 struct ECSQueryResult;
 class ECSManager;
 
-class Position final : public Gaff::IReflectionObject
+class Position final
 {
 public:
-	using SharedData = glm::vec3;
-
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
@@ -55,14 +53,12 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	SHIB_REFLECTION_CLASS_DECLARE(Position);
+	glm::vec3 value;
 };
 
-class Rotation final : public Gaff::IReflectionObject
+class Rotation final
 {
 public:
-	using SharedData = glm::quat;
-
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
@@ -82,14 +78,12 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
+	glm::quat value;
 };
 
-class Scale final : public Gaff::IReflectionObject
+class Scale final
 {
 public:
-	using SharedData = glm::vec3;
-
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
@@ -108,7 +102,7 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	SHIB_REFLECTION_CLASS_DECLARE(Scale);
+	glm::vec3 value;
 };
 
 NS_END
