@@ -53,7 +53,7 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	glm::vec3 value;
+	glm::vec3 value = glm::zero<glm::vec3>();
 };
 
 class Rotation final
@@ -78,7 +78,7 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	glm::quat value;
+	glm::quat value = glm::identity<glm::quat>();
 };
 
 class Scale final
@@ -102,7 +102,7 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
 
-	glm::vec3 value;
+	glm::vec3 value = glm::one<glm::vec3>();
 };
 
 NS_END
