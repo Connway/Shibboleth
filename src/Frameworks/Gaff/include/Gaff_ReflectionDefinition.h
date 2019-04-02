@@ -481,6 +481,13 @@ private:
 	friend class ReflectionDefinition;
 };
 
+
+template <class T, class... Args>
+void ConstructFunc(void* obj, Args&&... args);
+
+template <class T, class... Args>
+void* FactoryFunc(IAllocator& allocator, Args&&... args);
+
 #define REF_DEF_BUILTIN(class_type, serialize_type) \
 	template <class Allocator> \
 	class ReflectionDefinition<class_type, Allocator> final : public IReflectionDefinition \
@@ -512,8 +519,28 @@ private:
 		const IAttribute* getFuncAttr(Hash32, int32_t) const override { return nullptr; } \
 		int32_t getNumStaticFuncAttrs(Hash32) const override { return 0; } \
 		const IAttribute* getStaticFuncAttr(Hash32, int32_t) const override { return nullptr; } \
-		VoidFunc getConstructor(Hash64) const override { return nullptr; } \
-		VoidFunc getFactory(Hash64) const override { return nullptr; } \
+		VoidFunc getConstructor(Hash64 ctor_hash) const override \
+		{ \
+			if (ctor_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
+				ConstructFunc<class_type> construct_func = Gaff::ConstructFunc<class_type, class_type>; \
+				return reinterpret_cast<VoidFunc>(construct_func); \
+			} else if (ctor_hash == CalcTemplateHash<>(INIT_HASH64)) { \
+				ConstructFunc<> construct_func = Gaff::ConstructFunc<class_type>; \
+				return reinterpret_cast<VoidFunc>(construct_func); \
+			} \
+			return nullptr; \
+		} \
+		VoidFunc getFactory(Hash64 factory_hash) const override \
+		{ \
+			if (factory_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
+				FactoryFunc<class_type> factory_func = Gaff::FactoryFunc<class_type, class_type>; \
+				return reinterpret_cast<VoidFunc>(factory_func); \
+			} else if (factory_hash == CalcTemplateHash<>(INIT_HASH64)) { \
+				FactoryFunc<> factory_func = Gaff::FactoryFunc<class_type>; \
+				return reinterpret_cast<VoidFunc>(factory_func); \
+			} \
+			return nullptr; \
+		} \
 		VoidFunc getStaticFunc(Hash32, Hash64) const override { return nullptr; } \
 		void* getFunc(Hash32, Hash64) const override { return nullptr; } \
 		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \

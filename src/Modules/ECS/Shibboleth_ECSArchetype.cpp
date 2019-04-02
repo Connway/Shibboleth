@@ -289,6 +289,18 @@ Gaff::Hash64 ECSArchetype::getHash(void) const
 	return _hash;
 }
 
+const void* ECSArchetype::getSharedData(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_shared_vars.size()));
+	return reinterpret_cast<int8_t*>(_shared_instances) + _shared_vars[index].offset;
+}
+
+void* ECSArchetype::getSharedData(int32_t index)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_shared_vars.size()));
+	return reinterpret_cast<int8_t*>(_shared_instances) + _shared_vars[index].offset;
+}
+
 const void* ECSArchetype::getSharedData(void) const
 {
 	return _shared_instances;
@@ -308,6 +320,17 @@ const Gaff::IReflectionDefinition& ECSArchetype::getSharedComponentRefDef(int32_
 int32_t ECSArchetype::getNumSharedComponents(void) const
 {
 	return static_cast<int32_t>(_shared_vars.size());
+}
+
+const Gaff::IReflectionDefinition& ECSArchetype::getComponentRefDef(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	return *_vars[index].ref_def;
+}
+
+int32_t ECSArchetype::getNumComponents(void) const
+{
+	return static_cast<int32_t>(_vars.size());
 }
 
 template <bool shared>

@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 #include <wx/panel.h>
 
+class wxBoxSizer;
+
 NS_SHIBBOLETH
 
 class ArchetypeEditor;
@@ -47,6 +49,7 @@ public:
 
 private:
 	ArchetypeEditor* _editor = nullptr;
+	wxBoxSizer* _sizer = nullptr;
 
 	struct ComponentData final
 	{
