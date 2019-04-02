@@ -187,19 +187,6 @@ Inspector::Inspector(
 
 Inspector::~Inspector(void)
 {
-	if (_user_data) {
-		delete _user_data;
-	}
-}
-
-void Inspector::setUserData(void* user_data)
-{
-	_user_data = user_data;
-}
-
-void* Inspector::getUserData(void) const
-{
-	return _user_data;
 }
 
 void Inspector::onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data)
