@@ -42,7 +42,6 @@ public:
 	Inspector(
 		const Gaff::IReflectionDefinition& ref_def,
 		void* data,
-		bool create_top_level_pane,
 		wxWindow* parent,
 		wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
@@ -58,11 +57,7 @@ public:
 
 	~Inspector(void);
 
-	void SetCreateTopLevelPane(bool create);
-	bool CreatesTopLevelPane(void) const;
-
 private:
-	bool _create_top_level_pane = false;
 	bool _embedded = false;
 
 	void onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data);

@@ -25,11 +25,31 @@ THE SOFTWARE.
 #include <Shibboleth_EditorInspectorAttribute.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Inspector.h>
+#include <wx/collpane.h>
 #include <wx/sizer.h>
 
 SHIB_REFLECTION_DEFINE(ArchetypeInspector)
 
 NS_SHIBBOLETH
+
+static wxCollapsiblePane* CreateCollapsiblePane(wxWindow* parent, const char* label)
+{
+	wxCollapsiblePane* const coll_pane = new wxCollapsiblePane(
+		parent,
+		wxID_ANY,
+		label,
+		wxDefaultPosition,
+		wxDefaultSize,
+		wxCP_DEFAULT_STYLE | wxCP_NO_TLW_RESIZE
+	);
+
+	wxBoxSizer* const sizer = new wxBoxSizer(wxVERTICAL);
+	wxWindow* const window = coll_pane->GetPane();
+	sizer->SetSizeHints(window);
+	window->SetSizer(sizer);
+
+	return coll_pane;
+}
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeInspector)
 	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, int32_t, wxWindow*)
@@ -61,11 +81,20 @@ ArchetypeInspector::ArchetypeInspector(
 	const int32_t shared_count = archetype.getNumSharedComponents();
 	const int32_t count = archetype.getNumComponents();
 
+	wxCollapsiblePane* const shared_coll_pane = CreateCollapsiblePane(this, "Shared Components");
+	wxCollapsiblePane* const coll_pane = CreateCollapsiblePane(this, "Components");
+
+	wxSizer* const shared_sizer = shared_coll_pane->GetPane()->GetSizer();
+	wxSizer* const sizer = coll_pane->GetPane()->GetSizer();
+
+	_sizer->Add(shared_coll_pane, 1, wxEXPAND/* | wxALL*/);
+	_sizer->Add(coll_pane, 1, wxEXPAND/* | wxALL*/);
+
 	for (int32_t i = 0; i < shared_count; ++i) {
 		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
-		Inspector* const inspector = new Inspector(ref_def, shared_data, true, this);
+		Inspector* const inspector = new Inspector(ref_def, shared_data, this);
 
-		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
+		shared_sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
 		shared_data += ref_def.size();
 	}
@@ -73,7 +102,7 @@ ArchetypeInspector::ArchetypeInspector(
 	ProxyAllocator allocator("Editor");
 
 	for (int32_t i = 0; i < count; ++i) {
-		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
+		const Gaff::IReflectionDefinition& ref_def = archetype.getComponentRefDef(i);
 		void* const instance = ref_def.create(allocator);
 
 		if (!instance) {
@@ -81,10 +110,11 @@ ArchetypeInspector::ArchetypeInspector(
 			continue;
 		}
 
-		Inspector* const inspector = new Inspector(ref_def, instance, true, this);
-
-		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
+		Inspector* const inspector = new Inspector(ref_def, instance, this);
+		sizer->Add(inspector, 1, wxEXPAND | wxALL);
 	}
+
+	Layout();
 }
 
 NS_END
