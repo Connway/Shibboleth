@@ -135,7 +135,11 @@ static wxWindow* CreateInspector(
 
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Inspector)
-	.CTOR(const Gaff::IReflectionDefinition&, void*, wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
+	.CTOR(const Gaff::IReflectionDefinition&, void*, bool, wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
+	.CTOR(const Gaff::IReflectionDefinition&, void*, bool, wxWindow*, wxWindowID, const wxPoint&)
+	.CTOR(const Gaff::IReflectionDefinition&, void*, bool, wxWindow*, wxWindowID)
+	.CTOR(const Gaff::IReflectionDefinition&, void*, bool, wxWindow*)
+
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
@@ -158,15 +162,22 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Inspector)
 Inspector::Inspector(
 	const Gaff::IReflectionDefinition& ref_def,
 	void* data,
+	bool create_top_level_pane,
 	wxWindow* parent,
 	wxWindowID id,
 	const wxPoint& pos,
 	const wxSize& size
 ):
-	Inspector(parent, id, pos, size)
+	wxPanel(parent, id, pos, size),
+	_create_top_level_pane(create_top_level_pane),
+	_embedded(true)
 {
+	// $TODO: Think about using a flex grid sizer or something.
+	wxBoxSizer* const sizer = new wxBoxSizer(wxVERTICAL);
+	sizer->SetSizeHints(this);
+	SetSizer(sizer);
+
 	onItemSelectedInternal(ref_def, data);
-	_embedded = true;
 }
 
 Inspector::Inspector(
@@ -189,13 +200,37 @@ Inspector::~Inspector(void)
 {
 }
 
+void Inspector::SetCreateTopLevelPane(bool create)
+{
+	_create_top_level_pane = create;
+}
+
+bool Inspector::CreatesTopLevelPane(void) const
+{
+	return _create_top_level_pane;
+}
+
 void Inspector::onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data)
 {
-	wxSizer* const sizer = GetSizer();
+	wxSizer* sizer = GetSizer();
 	sizer->Clear();
 
 	if (!data) {
 		return;
+	}
+
+	if (_create_top_level_pane) {
+		wxCollapsiblePane* const coll_pane = CreateCollapsiblePane(this, ref_def.getReflectionInstance().getName());
+		wxBoxSizer* const coll_sizer = new wxBoxSizer(wxVERTICAL);
+		wxWindow* const window = coll_pane->GetPane();
+		coll_sizer->SetSizeHints(window);
+		window->SetSizer(coll_sizer);
+
+		sizer->Add(coll_pane, 1, wxEXPAND);
+		coll_sizer->AddSpacer(15);
+		sizer = coll_sizer;
+
+		Bind(wxEVT_COLLAPSIBLEPANE_CHANGED, &Inspector::paneChanged, this, coll_pane->GetId());
 	}
 
 	// Check if we have an property editor for this object.
@@ -209,7 +244,7 @@ void Inspector::onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_de
 
 		sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
-		// Iteratively create all the properties.
+	// Iteratively create all the properties.
 	} else {
 		createEditors(data, ref_def, sizer, 0);
 	}
