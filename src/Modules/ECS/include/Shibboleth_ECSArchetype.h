@@ -96,7 +96,7 @@ public:
 	bool remove(const Gaff::IReflectionDefinition& ref_def);
 	bool remove(int32_t index);
 
-	void copy(const ECSArchetype& base);
+	void copy(const ECSArchetype& base, bool copy_shared_instance_data = false);
 	void copy(
 		const ECSArchetype& old_archetype,
 		void* old_data,
@@ -166,6 +166,8 @@ private:
 	void initShared(const Gaff::ISerializeReader& reader);
 	void initShared(void);
 
+	void copySharedInstanceData(const ECSArchetype& old_archetype);
+	void destroySharedData(void);
 	void calculateHash(void);
 };
 

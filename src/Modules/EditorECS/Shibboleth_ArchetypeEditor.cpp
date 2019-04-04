@@ -101,7 +101,13 @@ private:
 		}
 
 		data->Free();
-		return add_count > 0 ? result : wxDragNone;
+
+		if (add_count > 0) {
+			_editor._broadcaster.broadcastSync(EditorItemSelectedMessage(_editor));
+			return result;
+		}
+
+		return wxDragNone;
 	}
 
 	//wxDragResult OnEnter(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override

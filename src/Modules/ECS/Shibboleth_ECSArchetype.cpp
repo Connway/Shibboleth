@@ -53,15 +53,7 @@ ECSArchetype& ECSArchetype::operator=(ECSArchetype&& rhs)
 
 ECSArchetype::~ECSArchetype(void)
 {
-	if (_shared_instances) {
-		for (const RefDefOffset& rdo : _shared_vars) {
-			if (rdo.ref_def->size() > 0) {
-				rdo.ref_def->destroyInstance(reinterpret_cast<int8_t*>(_shared_instances) + rdo.offset);
-			}
-		}
-
-		SHIB_FREE(_shared_instances, GetAllocator());
-	}
+	destroySharedData();
 }
 
 bool ECSArchetype::addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
@@ -167,6 +159,7 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader)
 
 bool ECSArchetype::finalize(void)
 {
+	destroySharedData();
 	initShared();
 	calculateHash();
 	return true;
@@ -197,7 +190,7 @@ bool ECSArchetype::remove(int32_t index)
 	return remove<false>(index);
 }
 
-void ECSArchetype::copy(const ECSArchetype& base)
+void ECSArchetype::copy(const ECSArchetype& base, bool copy_shared_instance_data)
 {
 	_shared_alloc_size = base._shared_alloc_size;
 	_alloc_size = base._alloc_size;
@@ -206,6 +199,10 @@ void ECSArchetype::copy(const ECSArchetype& base)
 	_vars = base._vars;
 
 	_hash = Gaff::INIT_HASH64;
+
+	if (copy_shared_instance_data) {
+		copySharedInstanceData(base);
+	}
 }
 
 void ECSArchetype::copy(
@@ -216,24 +213,7 @@ void ECSArchetype::copy(
 	int32_t new_index
 )
 {
-	const auto end_shared = _shared_vars.end();
-	auto it_shared = _shared_vars.begin();
-
-	for (const RefDefOffset& rdo : old_archetype._shared_vars) {
-		const auto it_pos = eastl::find(it_shared, end_shared, rdo.ref_def, [](const auto& lhs, const auto* rhs) -> bool { return lhs.ref_def == rhs; });
-
-		// Component was deleted.
-		if (it_pos == end_shared) {
-			continue;
-		}
-
-		it_shared = it_pos;
-
-		const void* const old_component = reinterpret_cast<int8_t*>(old_archetype._shared_instances) + rdo.offset;
-		void* const new_component = reinterpret_cast<int8_t*>(_shared_instances) + it_shared->offset;
-
-		rdo.copy_shared_func(old_component, new_component);
-	}
+	copySharedInstanceData(old_archetype);
 
 	const auto end = _vars.end();
 	auto it = _vars.begin();
@@ -519,6 +499,42 @@ void ECSArchetype::initShared(void)
 
 			offset += ref_def.size();
 		}
+	}
+}
+
+void ECSArchetype::copySharedInstanceData(const ECSArchetype& old_archetype)
+{
+	const auto end_shared = _shared_vars.end();
+	auto it_shared = _shared_vars.begin();
+
+	for (const RefDefOffset& rdo : old_archetype._shared_vars) {
+		const auto it_pos = eastl::find(it_shared, end_shared, rdo.ref_def, [](const auto& lhs, const auto* rhs) -> bool { return lhs.ref_def == rhs; });
+
+		// Component was deleted.
+		if (it_pos == end_shared) {
+			continue;
+		}
+
+		it_shared = it_pos;
+
+		const void* const old_component = reinterpret_cast<int8_t*>(old_archetype._shared_instances) + rdo.offset;
+		void* const new_component = reinterpret_cast<int8_t*>(_shared_instances) + it_shared->offset;
+
+		rdo.copy_shared_func(old_component, new_component);
+	}
+}
+
+void ECSArchetype::destroySharedData(void)
+{
+	if (_shared_instances) {
+		for (const RefDefOffset& rdo : _shared_vars) {
+			if (rdo.ref_def->size() > 0) {
+				rdo.ref_def->destroyInstance(reinterpret_cast<int8_t*>(_shared_instances) + rdo.offset);
+			}
+		}
+
+		SHIB_FREE(_shared_instances, GetAllocator());
+		_shared_instances = nullptr;
 	}
 }
 
