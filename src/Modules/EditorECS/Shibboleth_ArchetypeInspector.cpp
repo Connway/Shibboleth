@@ -63,7 +63,7 @@ ArchetypeInspector::ArchetypeInspector(
 
 	for (int32_t i = 0; i < shared_count; ++i) {
 		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
-		Inspector* const inspector = new Inspector(ref_def, shared_data, this);
+		Inspector* const inspector = new Inspector(ref_def, shared_data, true, this);
 
 		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
@@ -81,7 +81,7 @@ ArchetypeInspector::ArchetypeInspector(
 			continue;
 		}
 
-		Inspector* const inspector = new Inspector(ref_def, instance, this);
+		Inspector* const inspector = new Inspector(ref_def, instance, true, this);
 
 		_sizer->Add(inspector, 1, wxEXPAND | wxALL);
 	}
