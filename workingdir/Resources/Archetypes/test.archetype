@@ -3,11 +3,11 @@
 
 	"shared_components": {
 		//"Model": {},
-		"Scale": [{ "x": 0, "y": 1, "z": 2 }]
+		"Scale": { "x": 0, "y": 1, "z": 2 }
 	}
 
 	"components": {
-		"Position": [{ "x": 0, "y": 0, "z": 0 }],
-		"Rotation": [{ "x": 0, "y": 0, "z": 0 }]
+		"Position": { "x": 0, "y": 0, "z": 0 },
+		"Rotation": { "x": 0, "y": 0, "z": 0 }
 	}
 }

@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_EditorInspectorAttribute.h>
-#include <Shibboleth_ECSArchetype.h>
 #include <Shibboleth_Broadcaster.h>
 #include <Shibboleth_Reflection.h>
 
@@ -56,15 +55,28 @@ public:
 
 	~ArchetypeEditor(void);
 
-	const ECSArchetype& getArchetype(void) const;
-	ECSArchetype& getArchetype(void);
+	int32_t getNumSharedComponents(void) const;
+	int32_t getNumComponents(void) const;
+
+	const Gaff::IReflectionDefinition& getSharedComponentRefDef(int32_t index) const;
+	const Gaff::IReflectionDefinition& getComponentRefDef(int32_t index) const;
+
+	void* getSharedComponentInstance(int32_t index) const;
+	void* getComponentInstance(int32_t index) const;
 
 private:
+	struct ComponentData final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		void* instance;
+	};
+
 	wxTreeCtrl* _ecs_components = nullptr;
 	wxEditableListBox* _archetype_shared_ui = nullptr;
 	wxEditableListBox* _archetype_ui = nullptr;
 
-	ECSArchetype _archetype;
+	Vector<ComponentData> _shared_components;
+	Vector<ComponentData> _components;
 
 	Broadcaster& _broadcaster;
 	U8String _path;
@@ -79,6 +91,8 @@ private:
 
 	void onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox& ui);
 	bool hasItem(const RefDefItem& item, wxEditableListBox& ui) const;
+
+	Vector<ComponentData>::iterator findComponent(Vector<ComponentData>& components, const Gaff::IReflectionDefinition& ref_def);
 
 	RefDefItem* getItem(const wxTreeItemId& id) const;
 	bool addItem(RefDefItem& item, wxEditableListBox& ui);

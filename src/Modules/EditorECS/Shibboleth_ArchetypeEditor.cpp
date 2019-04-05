@@ -109,28 +109,6 @@ private:
 
 		return wxDragNone;
 	}
-
-	//wxDragResult OnEnter(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
-	//{
-	//	wxCustomDataObject* const data = static_cast<wxCustomDataObject*>(m_dataObject);
-	//	RefDefItem** const items = static_cast<RefDefItem** const>(data->GetData());
-	//	const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
-	//	wxListCtrl* const list = _ui->GetListCtrl();
-
-	//	int32_t add_count = 0;
-
-	//	for (int32_t i = 0; i < num_items && items[i]; ++i) {
-	//		const char* const name = items[i]->getRefDef().getReflectionInstance().getName();
-	//		const int32_t existing_index = list->FindItem(-1, name);
-
-	//		if (!Gaff::InRange(existing_index, 0, list->GetItemCount())) {
-	//			++add_count;
-	//		}
-
-	//	}
-
-	//	return add_count > 0 ? result : wxDragNone;
-	//}
 };
 
 
@@ -211,14 +189,38 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
-const ECSArchetype& ArchetypeEditor::getArchetype(void) const
+int32_t ArchetypeEditor::getNumSharedComponents(void) const
 {
-	return _archetype;
+	return static_cast<int32_t>(_shared_components.size());
 }
 
-ECSArchetype& ArchetypeEditor::getArchetype(void)
+int32_t ArchetypeEditor::getNumComponents(void) const
 {
-	return _archetype;
+	return static_cast<int32_t>(_components.size());
+}
+
+const Gaff::IReflectionDefinition& ArchetypeEditor::getSharedComponentRefDef(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_shared_components.size()));
+	return *_shared_components[index].ref_def;
+}
+
+const Gaff::IReflectionDefinition& ArchetypeEditor::getComponentRefDef(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
+	return *_components[index].ref_def;
+}
+
+void* ArchetypeEditor::getSharedComponentInstance(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_shared_components.size()));
+	return _shared_components[index].instance;
+}
+
+void* ArchetypeEditor::getComponentInstance(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
+	return _components[index].instance;
 }
 
 void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
@@ -358,9 +360,17 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 
 			if (_ecs_components->GetItemText(item_id) == name) {
 				if (&ui == _archetype_shared_ui) {
-					_archetype.removeShared(item->getRefDef());
+					const auto it = findComponent(_shared_components, item->getRefDef());
+
+					if (it != _shared_components.end()) {
+						_shared_components.erase_unsorted(it);
+					}
 				} else {
-					_archetype.remove(item->getRefDef());
+					const auto it = findComponent(_components, item->getRefDef());
+
+					if (it != _components.end()) {
+						_components.erase_unsorted(it);
+					}
 				}
 
 				item->decrement();
@@ -400,6 +410,16 @@ bool ArchetypeEditor::hasItem(const RefDefItem& item, wxEditableListBox& ui) con
 	return Gaff::InRange(existing_index, 0, list->GetItemCount());
 }
 
+Vector<ArchetypeEditor::ComponentData>::iterator ArchetypeEditor::findComponent(Vector<ComponentData>& components, const Gaff::IReflectionDefinition& ref_def)
+{
+	return eastl::find(
+		components.begin(),
+		components.end(),
+		ref_def,
+		[](const ComponentData& lhs, const Gaff::IReflectionDefinition& rhs) -> bool { return lhs.ref_def == &rhs; }
+	);
+}
+
 RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 {
 	if (_ecs_components->HasChildren(id)) {
@@ -429,17 +449,33 @@ bool ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 
 	list->InsertItem(index, name);
 
+	ProxyAllocator allocator("Editor");
+
 	if (&ui == _archetype_shared_ui) {
-		if (!_archetype.addShared(ref_def)) {
+		if (!ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"))) {
 			LogErrorDefault("Failed to add shared component '%s'.", name);
 			return false;
 		}
 
+		_shared_components.emplace_back(ComponentData{ &ref_def, ref_def.create(allocator) });
+
+		//if (!_archetype.addShared(ref_def)) {
+		//	LogErrorDefault("Failed to add shared component '%s'.", name);
+		//	return false;
+		//}
+
 	} else {
-		if (!_archetype.add(ref_def)) {
+		if (!ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"))) {
 			LogErrorDefault("Failed to add component '%s'.", name);
 			return false;
 		}
+
+		_components.emplace_back(ComponentData{ &ref_def, ref_def.create(allocator) });
+
+		//if (!_archetype.add(ref_def)) {
+		//	LogErrorDefault("Failed to add component '%s'.", name);
+		//	return false;
+		//}
 	}
 
 	item.increment();
@@ -504,10 +540,11 @@ void ArchetypeEditor::load(void)
 	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const Gaff::JSON shared_components = json["shared_components"];
 	const Gaff::JSON components = json["components"];
+	const ProxyAllocator allocator("Editor");
 
 	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
 	{
-		if (!value.isArray()) {
+		if (!value.isObject()) {
 			// $TODO: Log error
 			return false;
 		}
@@ -528,19 +565,26 @@ void ArchetypeEditor::load(void)
 
 		// Add to shared components list.
 		RefDefItem ref_def_item(*ref_def);
-		addItem(ref_def_item, *_archetype_shared_ui);
+		
+		if (!addItem(ref_def_item, *_archetype_shared_ui)) {
+			// $TODO: Log error
+			return false;
+		}
+
+		SerializeReader<Gaff::JSON> reader(value, allocator);
+		ref_def->load(reader, _shared_components.back().instance);
 
 		return false;
 	});
 
-	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
 	{
-		if (!value.isString()) {
+		if (!value.isObject()) {
 			// $TODO: Log error.
 			return false;
 		}
 
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
 
 		if (!ref_def) {
 			// $TODO: Log error
@@ -554,16 +598,19 @@ void ArchetypeEditor::load(void)
 			return false;
 		}
 
+		// Add to components list.
 		RefDefItem ref_def_item(*ref_def);
-		addItem(ref_def_item, *_archetype_ui);
+
+		if (!addItem(ref_def_item, *_archetype_ui)) {
+			// $TODO: Log error
+			return false;
+		}
+
+		SerializeReader<Gaff::JSON> reader(value, allocator);
+		ref_def->load(reader, _components.back().instance);
 
 		return false;
 	});
-
-	ProxyAllocator allocator("Editor");
-	SerializeReader<Gaff::JSON> reader(json, allocator);
-
-	_archetype.finalize(reader);
 }
 
 NS_END
