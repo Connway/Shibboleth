@@ -75,12 +75,6 @@ ArchetypeInspector::ArchetypeInspector(
 
 	SetSizer(_sizer);
 
-	ECSArchetype& archetype = _editor->getArchetype();
-
-	int8_t* shared_data = reinterpret_cast<int8_t*>(archetype.getSharedData());
-	const int32_t shared_count = archetype.getNumSharedComponents();
-	const int32_t count = archetype.getNumComponents();
-
 	wxCollapsiblePane* const shared_coll_pane = CreateCollapsiblePane(this, "Shared Components");
 	wxCollapsiblePane* const coll_pane = CreateCollapsiblePane(this, "Components");
 
@@ -90,27 +84,18 @@ ArchetypeInspector::ArchetypeInspector(
 	_sizer->Add(shared_coll_pane, 1, wxEXPAND/* | wxALL*/);
 	_sizer->Add(coll_pane, 1, wxEXPAND/* | wxALL*/);
 
+	const int32_t shared_count = _editor->getNumSharedComponents();
+	const int32_t count = _editor->getNumComponents();
+
 	for (int32_t i = 0; i < shared_count; ++i) {
-		const Gaff::IReflectionDefinition& ref_def = archetype.getSharedComponentRefDef(i);
-		Inspector* const inspector = new Inspector(ref_def, shared_data, this);
-
+		const Gaff::IReflectionDefinition& ref_def = _editor->getSharedComponentRefDef(i);
+		Inspector* const inspector = new Inspector(ref_def, _editor->getSharedComponentInstance(i), this);
 		shared_sizer->Add(inspector, 1, wxEXPAND | wxALL);
-
-		shared_data += ref_def.size();
 	}
 
-	ProxyAllocator allocator("Editor");
-
 	for (int32_t i = 0; i < count; ++i) {
-		const Gaff::IReflectionDefinition& ref_def = archetype.getComponentRefDef(i);
-		void* const instance = ref_def.create(allocator);
-
-		if (!instance) {
-			LogErrorDefault("Failed to create component instance.");
-			continue;
-		}
-
-		Inspector* const inspector = new Inspector(ref_def, instance, this);
+		const Gaff::IReflectionDefinition& ref_def = _editor->getComponentRefDef(i);
+		Inspector* const inspector = new Inspector(ref_def, _editor->getComponentInstance(i), this);
 		sizer->Add(inspector, 1, wxEXPAND | wxALL);
 	}
 

@@ -201,25 +201,11 @@ Inspector::~Inspector(void)
 void Inspector::onItemSelectedInternal(const Gaff::IReflectionDefinition& ref_def, void* data)
 {
 	wxSizer* sizer = GetSizer();
-	sizer->Clear();
+	sizer->Clear(true);
 
 	if (!data) {
 		return;
 	}
-
-	//if (_create_top_level_pane) {
-	//	wxCollapsiblePane* const coll_pane = CreateCollapsiblePane(this, ref_def.getReflectionInstance().getName());
-	//	wxBoxSizer* const coll_sizer = new wxBoxSizer(wxVERTICAL);
-	//	wxWindow* const window = coll_pane->GetPane();
-	//	coll_sizer->SetSizeHints(window);
-	//	window->SetSizer(coll_sizer);
-
-	//	sizer->Add(coll_pane, 1, wxEXPAND);
-	//	coll_sizer->AddSpacer(15);
-	//	sizer = coll_sizer;
-
-	//	Bind(wxEVT_COLLAPSIBLEPANE_CHANGED, &Inspector::paneChanged, this, coll_pane->GetId());
-	//}
 
 	// Check if we have an property editor for this object.
 	if (const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def)) {
