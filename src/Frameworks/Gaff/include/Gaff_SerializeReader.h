@@ -81,6 +81,8 @@ public:
 	void freeString(const char* str) const override { _stack.back().freeString(str); }
 	int32_t size(void) const override { return _stack.back().size(); }
 
+	bool exists(const char* key) const override { return !_stack.back()[key].isNull(); };
+
 	const char* readString(char* buffer, size_t buf_size, const char* default_value) const override { return _stack.back().getString(buffer, buf_size, default_value); }
 	const char* readString(const char* default_value) const override { return _stack.back().getString(default_value); }
 	int8_t readInt8(int8_t default_value) const override { return _stack.back().getInt8(default_value); }

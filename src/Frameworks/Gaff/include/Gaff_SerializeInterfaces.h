@@ -101,6 +101,8 @@ public:
 	virtual void freeString(const char* str) const = 0;
 	virtual int32_t size(void) const = 0;
 
+	virtual bool exists(const char* key) const = 0;
+
 	virtual const char* getKey(char* buffer, size_t buf_size, int32_t index) const = 0;
 	virtual const char* getKey(int32_t index) const = 0;
 
@@ -184,7 +186,9 @@ public:
 class ScopeGuard
 {
 public:
-	GAFF_COPY_DEFAULT(ScopeGuard);
+	//GAFF_COPY_DEFAULT(ScopeGuard);
+	GAFF_MOVE_DEFAULT(ScopeGuard);
+	GAFF_NO_COPY(ScopeGuard);
 
 	ScopeGuard(const ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
 	ScopeGuard(const ISerializeReader& reader, int32_t index): _reader(reader) { _reader.enterElement(index); }

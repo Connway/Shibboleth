@@ -34,7 +34,7 @@ template <class T>
 class ReflectionVersion final
 {
 public:
-	using LoadFunc = void (*)(const ISerializeReader&, T&);
+	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
 
 	template <class Base>
