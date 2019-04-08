@@ -780,9 +780,9 @@ T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, void* object) const
+bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, void* object) const
 {
-	load(reader, *reinterpret_cast<T*>(object));
+	return load(reader, *reinterpret_cast<T*>(object));
 }
 
 template <class T, class Allocator>
@@ -792,19 +792,35 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const vo
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
+bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
 {
 	if (_serialize_load) {
-		_serialize_load(reader, object);
+		return _serialize_load(reader, object);
 
 	} else {
 		for (auto& entry : _vars) {
 			if (!entry.second->isReadOnly()) {
-				ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+				const char* const name = entry.first.getBuffer();
+
+				if (!reader.exists(name)) {
+					// Not sure why I need to cast this to get access to the template function. :/
+					const auto* const ref_def = static_cast<const IReflectionDefinition*>(this);
+					const auto* const attr = ref_def->getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("Optional"));
+
+					if (!attr) {
+						return false;
+					}
+
+					continue;
+				}
+
+				ScopeGuard scope = reader.enterElementGuard(name);
 				entry.second->load(reader, object);
 			}
 		}
 	}
+
+	return true;
 }
 
 template <class T, class Allocator>
@@ -966,6 +982,12 @@ int32_t ReflectionDefinition<T, Allocator>::getNumClassAttrs(void) const
 }
 
 template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttr(Hash64 attr_name) const
+{
+	return getAttribute(_class_attrs, attr_name);
+}
+
+template <class T, class Allocator>
 const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttr(int32_t index) const
 {
 	GAFF_ASSERT(index < getNumClassAttrs());
@@ -977,6 +999,15 @@ int32_t ReflectionDefinition<T, Allocator>::getNumVarAttrs(Hash32 name) const
 {
 	const auto it = _var_attrs.find(name);
 	return (it != _var_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttr(Hash32 name, Hash64 attr_name) const
+{
+	const auto it = _var_attrs.find(name);
+	GAFF_ASSERT(it != _var_attrs.end());
+
+	return getAttribute(it->second, attr_name);
 }
 
 template <class T, class Allocator>
@@ -1007,6 +1038,15 @@ int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttrs(Hash32 name) const
 	}
 
 	return 0;
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash32 name, Hash64 attr_name) const
+{
+	const auto it = _func_attrs.find(name);
+	GAFF_ASSERT(it != _func_attrs.end());
+
+	return getAttribute(it->second, attr_name);
 }
 
 template <class T, class Allocator>
@@ -1051,6 +1091,15 @@ int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncAttrs(Hash32 name) c
 	}
 
 	return 0;
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash32 name, Hash64 attr_name) const
+{
+	const auto it = _static_func_attrs.find(name);
+	GAFF_ASSERT(it != _static_func_attrs.end());
+
+	return getAttribute(it->second, attr_name);
 }
 
 template <class T, class Allocator>
@@ -1217,6 +1266,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		// Base class funcs
 		for (auto& it : base_ref_def._funcs) {
 			GAFF_REF(it);
+			// $TODO: Implement this
 		}
 
 		// Base class static funcs
@@ -1772,6 +1822,18 @@ void ReflectionDefinition<T, Allocator>::instantiated(void* object) const
 			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
 		}
 	}
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const
+{
+	for (const auto& attr : attributes) {
+		if (attr->getReflectionDefinition().hasInterface(attr_name)) {
+			return attr.get();
+		}
+	}
+
+	return nullptr;
 }
 
 NS_END

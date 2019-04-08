@@ -574,145 +574,53 @@ public:
 	template <class T>
 	const T* getClassAttr(Hash64 attr_name) const
 	{
-		const int32_t size = getNumClassAttrs();
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getClassAttr(i);
-			const void* attr = attribute->getReflectionDefinition().getInterface(
-				attr_name, attribute->getBasePointer()
-			);
-
-			if (attr) {
-				return reinterpret_cast<const T*>(attr);
-			}
-		}
-
-		return nullptr;
+		const auto* const attr = getClassAttr(attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
 	const T* getVarAttr(Hash32 var_name, Hash64 attr_name) const
 	{
-		const int32_t size = getNumVarAttrs(var_name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getVarAttr(var_name, i);
-			const void* attr = attribute->getReflectionDefinition().getInterface(
-				attr_name, attribute->getBasePointer()
-			);
-
-			if (attr) {
-				return reinterpret_cast<const T*>(attr);
-			}
-		}
-
-		return nullptr;
+		const auto* const attr = getVarAttr(var_name, attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
 	const T* getFuncAttr(Hash32 func_name, Hash64 attr_name) const
 	{
-		const int32_t size = getNumFuncAttrs(func_name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getFuncAttr(func_name, i);
-			const void* attr = attribute->getReflectionDefinition().getInterface(
-				attr_name, attribute->getBasePointer()
-			);
-
-			if (attr) {
-				return reinterpret_cast<const T*>(attr);
-			}
-		}
-
-		return nullptr;
+		const auto* const attr = getFuncAttr(func_name, attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
 	const T* getStaticFuncAttr(Hash32 static_func_name, Hash64 attr_name) const
 	{
-		const int32_t size = getNumStaticFuncAttrs(static_func_name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getStaticFuncAttr(static_func_name, i);
-			const void* attr = attribute->getReflectionDefinition().getInterface(
-				attr_name, attribute->getBasePointer()
-			);
-
-			if (attr) {
-				return reinterpret_cast<const T*>(attr);
-			}
-		}
-
-		return nullptr;
+		const auto* const attr = getStaticFuncAttr(static_func_name, attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
 	const T* getClassAttr(void) const
 	{
-		const int32_t size = getNumClassAttrs();
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getClassAttr(i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
+		return getClassAttr<T>( GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getVarAttr(Hash32 name) const
 	{
-		const int32_t size = getNumVarAttrs(name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getVarAttr(name, i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
+		return getVarAttr<T>(name, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getFuncAttr(Hash32 name) const
 	{
-		const int32_t size = getNumFuncAttrs(name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getFuncAttr(name, i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
+		return getFuncAttr<T>(name, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getStaticFuncAttr(Hash32 name) const
 	{
-		const int32_t size = getNumStaticFuncAttrs(name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getStaticFuncAttr(name, i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
+		return getStaticFuncAttr<T>(name, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
@@ -1040,7 +948,7 @@ public:
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual void load(const ISerializeReader& reader, void* object) const = 0;
+	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
@@ -1060,15 +968,19 @@ public:
 	virtual Hash32 getStaticFuncHash(int32_t index) const = 0;
 
 	virtual int32_t getNumClassAttrs(void) const = 0;
+	virtual const IAttribute* getClassAttr(Hash64 attr_name) const = 0;
 	virtual const IAttribute* getClassAttr(int32_t index) const = 0;
 
 	virtual int32_t getNumVarAttrs(Hash32 name) const = 0;
+	virtual const IAttribute* getVarAttr(Hash32 name, Hash64 attr_name) const = 0;
 	virtual const IAttribute* getVarAttr(Hash32 name, int32_t index) const = 0;
 
 	virtual int32_t getNumFuncAttrs(Hash32 name) const = 0;
+	virtual const IAttribute* getFuncAttr(Hash32 name, Hash64 attr_name) const = 0;
 	virtual const IAttribute* getFuncAttr(Hash32 name, int32_t index) const = 0;
 
 	virtual int32_t getNumStaticFuncAttrs(Hash32 name) const = 0;
+	virtual const IAttribute* getStaticFuncAttr(Hash32 name, Hash64 attr_name) const = 0;
 	virtual const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const = 0;
 
 	virtual VoidFunc getConstructor(Hash64 ctor_hash) const = 0;

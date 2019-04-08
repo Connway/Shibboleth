@@ -41,7 +41,7 @@ SHIB_REFLECTION_EXTERNAL_DEFINE(U8String)
 
 NS_SHIBBOLETH
 
-static void LoadString(const Gaff::ISerializeReader& reader, U8String& out) { out = reader.readString(); }
+static bool LoadString(const Gaff::ISerializeReader& reader, U8String& out) { out = reader.readString(); return true; }
 static void SaveString(Gaff::ISerializeWriter& writer, const U8String& value) { writer.writeString(value.data()); }
 
 SHIB_REFLECTION_BUILDER_BEGIN(int8_t)

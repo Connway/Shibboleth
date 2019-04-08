@@ -227,6 +227,8 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
 	const U8String& path = message.getPath();
 
+	save();
+
 	if (!Gaff::EndsWith(path.c_str(), path.size(), ".archetype")) {
 		_ecs_components->Disable();
 		_archetype_shared_ui->Disable();
@@ -238,7 +240,6 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 	_archetype_shared_ui->Enable();
 	_archetype_ui->Enable();
 
-	save();
 	_path = path;
 	load();
 

@@ -40,7 +40,7 @@ class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
-	using LoadFunc = void (*)(const ISerializeReader&, T&);
+	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
 
 	class IVar : public IReflectionVar
@@ -77,9 +77,9 @@ public:
 	template <class... Args>
 	T* create(Args&&... args) const;
 
-	void load(const ISerializeReader& reader, void* object) const override;
+	bool load(const ISerializeReader& reader, void* object) const override;
 	void save(ISerializeWriter& writer, const void* object) const override;
-	void load(const ISerializeReader& reader, T& object) const;
+	bool load(const ISerializeReader& reader, T& object) const;
 	void save(ISerializeWriter& writer, const T& object) const;
 
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
@@ -104,15 +104,19 @@ public:
 	Hash32 getStaticFuncHash(int32_t index) const override;
 
 	int32_t getNumClassAttrs(void) const override;
+	const IAttribute* getClassAttr(Hash64 attr_name) const override;
 	const IAttribute* getClassAttr(int32_t index) const override;
 
 	int32_t getNumVarAttrs(Hash32 name) const override;
+	const IAttribute* getVarAttr(Hash32 name, Hash64 attr_name) const override;
 	const IAttribute* getVarAttr(Hash32 name, int32_t index) const override;
 
 	int32_t getNumFuncAttrs(Hash32 name) const override;
+	const IAttribute* getFuncAttr(Hash32 name, Hash64 attr_name) const override;
 	const IAttribute* getFuncAttr(Hash32 name, int32_t index) const override;
 
 	int32_t getNumStaticFuncAttrs(Hash32 name) const override;
+	const IAttribute* getStaticFuncAttr(Hash32 name, Hash64 attr_name) const override;
 	const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const override;
 
 	VoidFunc getConstructor(Hash64 ctor_hash) const override;
@@ -437,10 +441,12 @@ private:
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 
-	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
-	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _func_attrs;
-	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _static_func_attrs;
-	Vector<IAttributePtr, Allocator> _class_attrs;
+	using AttributeList = Vector<IAttributePtr, Allocator>;
+
+	VectorMap<Hash32, AttributeList, Allocator> _var_attrs;
+	VectorMap<Hash32, AttributeList, Allocator> _func_attrs;
+	VectorMap<Hash32, AttributeList, Allocator> _static_func_attrs;
+	AttributeList _class_attrs;
 
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
@@ -477,6 +483,8 @@ private:
 	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
 	void instantiated(void* object) const override;
 
+	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
+
 	template <class RefT, class AllocatorT>
 	friend class ReflectionDefinition;
 };
@@ -495,9 +503,9 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 	public: \
 		const IReflection& getReflectionInstance(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<class_type>::GetInstance(); } \
 		int32_t size(void) const override { return sizeof(class_type); } \
-		void load(const ISerializeReader& reader, void* object) const override { load(reader, *reinterpret_cast<class_type*>(object)); } \
+		bool load(const ISerializeReader& reader, void* object) const override { return load(reader, *reinterpret_cast<class_type*>(object)); } \
 		void save(ISerializeWriter& writer, const void* object) const override { save(writer, *reinterpret_cast<const class_type*>(object)); } \
-		void load(const ISerializeReader& reader, class_type& out) const { out = reader.read##serialize_type(); } \
+		bool load(const ISerializeReader& reader, class_type& out) const { out = reader.read##serialize_type(); return true; } \
 		void save(ISerializeWriter& writer, const class_type& value) const { writer.write##serialize_type(value); } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
@@ -512,12 +520,16 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		int32_t getNumStaticFuncs(void) const override { return 0; } \
 		Hash32 getStaticFuncHash(int32_t) const override { return 0; } \
 		int32_t getNumClassAttrs(void) const override { return 0; } \
+		const IAttribute* getClassAttr(Hash64) const override { return nullptr; } \
 		const IAttribute* getClassAttr(int32_t) const override { return nullptr; } \
 		int32_t getNumVarAttrs(Hash32) const override { return 0; } \
+		const IAttribute* getVarAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getVarAttr(Hash32, int32_t) const override { return nullptr; } \
 		int32_t getNumFuncAttrs(Hash32) const override { return 0; } \
+		const IAttribute* getFuncAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getFuncAttr(Hash32, int32_t) const override { return nullptr; } \
 		int32_t getNumStaticFuncAttrs(Hash32) const override { return 0; } \
+		const IAttribute* getStaticFuncAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getStaticFuncAttr(Hash32, int32_t) const override { return nullptr; } \
 		VoidFunc getConstructor(Hash64 ctor_hash) const override \
 		{ \
