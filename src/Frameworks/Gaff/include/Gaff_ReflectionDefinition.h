@@ -319,6 +319,56 @@ private:
 		virtual ~VirtualDestructor(void) {}
 	};
 
+	//template <class Base, class Ret, class... Args>
+	//class ReflectionBaseFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
+	//{
+	//public:
+	//	using MemFuncConst = Ret (Base::*)(Args...) const;
+	//	using MemFunc = Ret (Base::*)(Args...);
+
+	//	ReflectionFunction(MemFuncConst func, bool is_const) :
+	//		_is_const(is_const)
+	//	{
+	//		_func.const_func = func;
+	//	}
+
+	//	ReflectionFunction(MemFunc func, bool is_const) :
+	//		_is_const(is_const)
+	//	{
+	//		_func.non_const_func = func;
+	//	}
+
+	//	Ret call(const void* obj, Args... args) const override
+	//	{
+	//		GAFF_ASSERT(_is_const);
+	//		const T* const object = reinterpret_cast<const T*>(obj);
+	//		return (object->*_func.const_func)(args...);
+	//	}
+
+	//	Ret call(void* obj, Args... args) const override
+	//	{
+	//		T* const object = reinterpret_cast<T*>(obj);
+
+	//		if (_is_const) {
+	//			return (object->*_func.const_func)(args...);
+	//		}
+
+	//		return (object->*_func.non_const_func)(args...);
+	//	}
+
+	//	bool isConst(void) const override { return _is_const; }
+
+	//private:
+	//	union Func
+	//	{
+	//		MemFuncConst const_func;
+	//		MemFunc non_const_func;
+	//	};
+
+	//	Func _func;
+	//	bool _is_const;
+	//};
+
 	template <class Ret, class... Args>
 	class ReflectionFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
 	{
