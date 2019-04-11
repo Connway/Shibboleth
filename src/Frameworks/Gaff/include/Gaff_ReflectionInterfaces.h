@@ -445,15 +445,25 @@ public:
 	void apply(IReflectionVar& /*ref_var*/, Var (T::* /*arr*/)[size]) {}
 };
 
+class IReflectionFunctionBase
+{
+public:
+	IReflectionFunctionBase(void) {}
+	virtual ~IReflectionFunctionBase(void) {}
+
+	virtual bool isConst(void) const = 0;
+	virtual bool isBase(void) const { return false; }
+	virtual const IReflectionDefinition& getBaseRefDef(void) const = 0;
+};
+
 template <class Ret, class... Args>
-class IReflectionFunction
+class IReflectionFunction : public IReflectionFunctionBase
 {
 public:
 	virtual ~IReflectionFunction(void) {}
 
 	virtual Ret call(const void* obj, Args... args) const = 0;
 	virtual Ret call(void* obj, Args... args) const = 0;
-	virtual bool isConst(void) const = 0;
 };
 
 #define CREATET(Class, allocator, ...) template createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator ##__VA_ARGS__)
@@ -472,18 +482,16 @@ public:
 
 	using VoidFunc = void (*)(void);
 
-	template <class T>
-	const void* getBasePointer(const T* object, Hash64 interface_name) const
+	const void* getBasePointer(const void* object, Hash64 interface_name) const
 	{
 		const ptrdiff_t offset = getBasePointerOffset(interface_name);
-		return reinterpret_cast<const char*>(object) - offset;
+		return reinterpret_cast<const int8_t*>(object) + offset;
 	}
 
-	template <class T>
-	void* getBasePointer(T* object, Hash64 interface_name) const
+	void* getBasePointer(void* object, Hash64 interface_name) const
 	{
 		const ptrdiff_t offset = getBasePointerOffset(interface_name);
-		return reinterpret_cast<int8_t*>(object) - offset;
+		return reinterpret_cast<int8_t*>(object) + offset;
 	}
 
 	template <class T>

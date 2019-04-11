@@ -313,76 +313,22 @@ private:
 		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
 	};
 
-	class VirtualDestructor
-	{
-	public:
-		virtual ~VirtualDestructor(void) {}
-	};
-
-	//template <class Base, class Ret, class... Args>
-	//class ReflectionBaseFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
-	//{
-	//public:
-	//	using MemFuncConst = Ret (Base::*)(Args...) const;
-	//	using MemFunc = Ret (Base::*)(Args...);
-
-	//	ReflectionFunction(MemFuncConst func, bool is_const) :
-	//		_is_const(is_const)
-	//	{
-	//		_func.const_func = func;
-	//	}
-
-	//	ReflectionFunction(MemFunc func, bool is_const) :
-	//		_is_const(is_const)
-	//	{
-	//		_func.non_const_func = func;
-	//	}
-
-	//	Ret call(const void* obj, Args... args) const override
-	//	{
-	//		GAFF_ASSERT(_is_const);
-	//		const T* const object = reinterpret_cast<const T*>(obj);
-	//		return (object->*_func.const_func)(args...);
-	//	}
-
-	//	Ret call(void* obj, Args... args) const override
-	//	{
-	//		T* const object = reinterpret_cast<T*>(obj);
-
-	//		if (_is_const) {
-	//			return (object->*_func.const_func)(args...);
-	//		}
-
-	//		return (object->*_func.non_const_func)(args...);
-	//	}
-
-	//	bool isConst(void) const override { return _is_const; }
-
-	//private:
-	//	union Func
-	//	{
-	//		MemFuncConst const_func;
-	//		MemFunc non_const_func;
-	//	};
-
-	//	Func _func;
-	//	bool _is_const;
-	//};
+	using IRefFuncPtr = UniquePtr<IReflectionFunctionBase, Allocator>;
 
 	template <class Ret, class... Args>
-	class ReflectionFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
+	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
 	{
 	public:
-		using MemFuncConst = Ret (T::*)(Args...) const;
-		using MemFunc = Ret (T::*)(Args...);
+		using MemFuncConst = Ret(T::*)(Args...) const;
+		using MemFunc = Ret(T::*)(Args...);
 
-		ReflectionFunction(MemFuncConst func, bool is_const):
+		ReflectionFunction(MemFuncConst func, bool is_const) :
 			_is_const(is_const)
 		{
 			_func.const_func = func;
 		}
 
-		ReflectionFunction(MemFunc func, bool is_const):
+		ReflectionFunction(MemFunc func, bool is_const) :
 			_is_const(is_const)
 		{
 			_func.non_const_func = func;
@@ -407,6 +353,7 @@ private:
 		}
 
 		bool isConst(void) const override { return _is_const; }
+		const IReflectionDefinition& getBaseRefDef(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition(); }
 
 	private:
 		union Func
@@ -419,7 +366,50 @@ private:
 		bool _is_const;
 	};
 
-	using IRefFuncPtr = UniquePtr<VirtualDestructor, Allocator>;
+	class ReflectionBaseFunction final : public IReflectionFunctionBase
+	{
+	public:
+		ReflectionBaseFunction(const IReflectionDefinition& base_ref_def, const IReflectionFunctionBase* ref_func):
+			_base_ref_def(base_ref_def), _func(ref_func)
+		{
+		}
+
+		bool isConst(void) const override { return _func->isConst(); }
+		bool isBase(void) const override { return true; }
+		const IReflectionDefinition& getBaseRefDef(void) const override { return _base_ref_def; }
+
+
+		template <class Ret, class... Args>
+		Ret call(const void* obj, Args... args) const
+		{
+			GAFF_ASSERT(isConst());
+
+			const void* const object = getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+
+			if (_func->isBase()) {
+				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
+			} else {
+				return reinterpret_cast<const ReflectionFunction<Ret, Args...>*>(_func)->call(object, args...);
+			}
+		}
+
+		template <class Ret, class... Args>
+		Ret call(void* obj, Args... args) const
+		{
+			void* const object = getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+
+			if (_func->isBase()) {
+				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
+			} else {
+				return reinterpret_cast< const ReflectionFunction<Ret, Args...>* >(_func)->call(object, args...);
+			}
+		}
+
+	private:
+		const Gaff::IReflectionDefinition& _base_ref_def;
+		const IReflectionFunctionBase* const _func;
+	};
+
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
 	struct FuncData
@@ -440,14 +430,12 @@ private:
 			}
 
 			memcpy(hash, rhs.hash, sizeof(Hash64) * NUM_OVERLOADS);
-			memcpy(offset, rhs.offset, sizeof(int32_t) * NUM_OVERLOADS);
 			return *this;
 		}
 
 		constexpr static int32_t NUM_OVERLOADS = 8;
-		Hash64 hash[NUM_OVERLOADS];
+		Hash64 hash[NUM_OVERLOADS] = { 0 };
 		IRefFuncPtr func[NUM_OVERLOADS];
-		int32_t offset[NUM_OVERLOADS];
 	};
 
 	struct StaticFuncData
@@ -479,8 +467,8 @@ private:
 		}
 
 		constexpr static int32_t NUM_OVERLOADS = 8;
-		Hash64 hash[NUM_OVERLOADS];
-		VoidFunc func[NUM_OVERLOADS];
+		Hash64 hash[NUM_OVERLOADS] = { 0 };
+		VoidFunc func[NUM_OVERLOADS] = { nullptr };
 	};
 
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
