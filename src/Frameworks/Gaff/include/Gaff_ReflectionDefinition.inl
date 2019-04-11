@@ -895,10 +895,12 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 	_ctors.set_allocator(allocator);
 	_vars.set_allocator(allocator);
 	_funcs.set_allocator(allocator);
+	_static_funcs.set_allocator(allocator);
 
 	_var_attrs.set_allocator(allocator);
 	_func_attrs.set_allocator(allocator);
 	_class_attrs.set_allocator(allocator);
+	_static_func_attrs.set_allocator(allocator);
 
 	_allocator = allocator;
 }
@@ -1135,7 +1137,7 @@ void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) cons
 	if (it != _funcs.end()) {
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
 			if (it->second.hash[i] == args) {
-				return reinterpret_cast<int8_t*>(it->second.func[i].get()) - it->second.offset[i];
+				return it->second.func[i].get();
 			}
 		}
 	}
@@ -1238,14 +1240,30 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class funcs
 		for (auto& it : base_ref_def._funcs) {
-			GAFF_REF(it);
-			// $TODO: Implement this
+			FuncData& func_data = _funcs[it.first];
+			bool found = false;
 
-			// $TODO: Pretty sure we don't need this.
-			const ptrdiff_t offset_interface = OffsetOfClass< ReflectionBaseFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-			const ptrdiff_t offset_ptr = OffsetOfClass<ReflectionBaseFunction<Ret, Args...>, VirtualDestructor>();
-			constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+			for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+				GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != it.first);
 
+				if (!func_data.func[i]) {
+					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
+						ReflectionBaseFunction,
+						_allocator,
+						base_ref_def,
+						it.second.func[i].get()
+					);
+
+					func_data.hash[i] = it.second.hash[i];
+					func_data.func[i].reset(ref_func);
+					found = true;
+					break;
+				}
+			}
+
+			GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+
+			// Copy attributes.
 		}
 
 		// Base class static funcs
@@ -1426,10 +1444,8 @@ template <class T, class Allocator>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
-	auto it = _funcs.find(FNV1aHash32Const(name));
-
-	const ptrdiff_t offset_ptr = OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
@@ -1447,7 +1463,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		it = _funcs.insert(std::move(pair)).first;
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
-		it->second.offset[0] = static_cast<int32_t>(offset_ptr);
 
 	} else {
 		FuncData& func_data = it->second;
@@ -1456,7 +1471,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
-			if (!func_data.func[i]) {
+			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 					_allocator,
@@ -1465,7 +1480,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 
 				func_data.func[i].reset(ref_func);
 				func_data.hash[i] = arg_hash;
-				func_data.offset[i] = static_cast<int32_t>(offset_ptr);
 				found = true;
 				break;
 			}
@@ -1487,11 +1501,8 @@ template <class T, class Allocator>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
-	auto it = _funcs.find(FNV1aHash32Const(name));
-
-	const ptrdiff_t offset_interface = OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-	const ptrdiff_t offset_ptr = OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
@@ -1508,7 +1519,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
-		it->second.offset[0] = static_cast<int32_t>(offset_ptr - offset_interface);
 
 	} else {
 		FuncData& func_data = it->second;
@@ -1517,7 +1527,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
-			if (!func_data.func[i]) {
+			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 					_allocator,
@@ -1526,7 +1536,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 
 				func_data.func[i].reset(ref_func);
 				func_data.hash[i] = arg_hash;
-				func_data.offset[i] = static_cast<int32_t>(offset_ptr - offset_interface);
 				found = true;
 				break;
 			}
