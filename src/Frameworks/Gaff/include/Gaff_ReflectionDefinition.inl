@@ -1228,6 +1228,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 			// Base class var attrs
 			const auto attr_it = base_ref_def._var_attrs.find(pair.first.getHash());
 
+			// Copy attributes
 			if (attr_it != base_ref_def._var_attrs.end()) {
 				auto& attrs = _var_attrs[pair.first.getHash()];
 				attrs.set_allocator(_allocator);
@@ -1240,7 +1241,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class funcs
 		for (auto& it : base_ref_def._funcs) {
-			FuncData& func_data = _funcs[it.first];
+			FuncData& func_data = _funcs[it.first.getHash()];
 			bool found = false;
 
 			for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
@@ -1250,20 +1251,32 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
 						ReflectionBaseFunction,
 						_allocator,
-						base_ref_def,
+						it.second.func[i]->getBaseRefDef(),
 						it.second.func[i].get()
 					);
 
 					func_data.hash[i] = it.second.hash[i];
 					func_data.func[i].reset(ref_func);
 					found = true;
+
+					// Copy attributes
+					const Hash64 attr_hash = FNV1aHash64T(func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
+					const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
+
+					if (attr_it != base_ref_def._func_attrs.end()) {
+						auto& attrs = _func_attrs[attr_hash];
+						attrs.set_allocator(_allocator);
+
+						for (const IAttributePtr& attr : attr_it->second) {
+							attrs.emplace_back(attr->clone());
+						}
+					}
+
 					break;
 				}
 			}
 
 			GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
-
-			// Copy attributes.
 		}
 
 		// Base class static funcs
@@ -1272,15 +1285,24 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 			_static_funcs.emplace(it.first, it.second.template toDerived<T, Allocator>());
 
-			// Base class static funcs attrs
-			const auto attr_it = base_ref_def._static_func_attrs.find(it.first.getHash());
+			// Copy attributes
+			StaticFuncData& static_func_data = _static_funcs[it.first.getHash()];
 
-			if (attr_it != base_ref_def._static_func_attrs.end()) {
-				auto& attrs = _static_func_attrs[it.first.getHash()];
-				attrs.set_allocator(_allocator);
+			for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
+				if (!static_func_data.func[i]) {
+					break;
+				}
 
-				for (const IAttributePtr& attr : attr_it->second) {
-					attrs.emplace_back(attr->clone());
+				const Hash64 attr_hash = FNV1aHash64T(static_func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
+				const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
+
+				if (attr_it != base_ref_def._static_func_attrs.end()) {
+					auto& attrs = _static_func_attrs[attr_hash];
+					attrs.set_allocator(_allocator);
+
+					for (const IAttributePtr& attr : attr_it->second) {
+						attrs.emplace_back(attr->clone());
+					}
 				}
 			}
 		}
@@ -1489,7 +1511,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	}
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
+		const Hash32 name_hash = FNV1aHash32Const(name);
+		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+
+		auto& attrs = _func_attrs[attr_hash];
 		attrs.set_allocator(_allocator);
 		addAttributes(ptr, attrs, attributes...);
 	}
@@ -1545,7 +1570,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	}
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
+		const Hash32 name_hash = FNV1aHash32Const(name);
+		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+
+		auto& attrs = _func_attrs[attr_hash];
 		attrs.set_allocator(_allocator);
 		addAttributes(ptr, attrs, attributes...);
 	}
@@ -1587,7 +1615,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 	}
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
+		const Hash32 name_hash = FNV1aHash32Const(name);
+		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+
+		auto& attrs = _static_func_attrs[attr_hash];
 		attrs.set_allocator(_allocator);
 		addAttributes(func, attrs, attributes...);
 	}

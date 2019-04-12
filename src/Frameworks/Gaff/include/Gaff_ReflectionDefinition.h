@@ -378,13 +378,13 @@ private:
 		bool isBase(void) const override { return true; }
 		const IReflectionDefinition& getBaseRefDef(void) const override { return _base_ref_def; }
 
-
 		template <class Ret, class... Args>
 		Ret call(const void* obj, Args... args) const
 		{
 			GAFF_ASSERT(isConst());
 
-			const void* const object = getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
+			const void* const object = ref_def.getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
@@ -396,7 +396,8 @@ private:
 		template <class Ret, class... Args>
 		Ret call(void* obj, Args... args) const
 		{
-			void* const object = getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
+			void* const object = ref_def.getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
@@ -482,8 +483,8 @@ private:
 	using AttributeList = Vector<IAttributePtr, Allocator>;
 
 	VectorMap<Hash32, AttributeList, Allocator> _var_attrs;
-	VectorMap<Hash32, AttributeList, Allocator> _func_attrs;
-	VectorMap<Hash32, AttributeList, Allocator> _static_func_attrs;
+	VectorMap<Hash64, AttributeList, Allocator> _func_attrs;
+	VectorMap<Hash64, AttributeList, Allocator> _static_func_attrs;
 	AttributeList _class_attrs;
 
 	LoadFunc _serialize_load = nullptr;
