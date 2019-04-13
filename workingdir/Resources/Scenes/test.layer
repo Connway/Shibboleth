@@ -1,34 +1,15 @@
 [
 	{
-		"Children": [],
-		"Object File": "Resources/Objects/test.object",
-		"Object": null,
-		"Scale": [1, 1, 1],
-		"Rotation": [0, 0, 0, 1],
-		"Position": [-2.5, 0, 0]
+		"archetype": "Resources/Archetypes/test.archetype",
+
+		"overrides":
+		{
+			"shared_components": {}
+			"components":
+			{
+				"Rotation": { "Rotation": {"x": 0, "y": 0, "z": 0, "w": 1} },
+				"Position": { "Position: {"x": -2.5, "y": 0, "z": 0} }
+			}
+		}
 	},
-	{
-		"Children": [],
-		"Object File": "Resources/Objects/test.object",
-		"Object": null,
-		"Scale": [1, 1, 1],
-		"Rotation": [0, 0, 0, 1],
-		"Position": [2.5, 0, 0]
-	},
-	{
-		"Children": [],
-		"Object File": "Resources/Objects/floor.object",
-		"Object": null,
-		"Scale": [1, 1, 1],
-		"Rotation": [0, 0, 0, 1],
-		"Position": [0, 0, 0]
-	},
-	{
-		"Children": [],
-		"Object File": "Resources/Objects/test_camera.object",
-		"Object": null,
-		"Scale": [1, 1, 1],
-		"Rotation": [0, 0, 0, 1],
-		"Position": [0, 5, -50]
-	}
 ]

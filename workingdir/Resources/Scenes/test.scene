@@ -1,8 +1,3 @@
-{
-	"Name": "Test Scene",
-
-	"Layers":
-	[
-		{ "Name": "Test Layer", "Layer File": "Resources/Scenes/test.layer", "Active": true }
-	]
-}
+[
+	{ "Name": "Test Layer", "Layer File": "Resources/Scenes/test.layer", "Active": true }
+]

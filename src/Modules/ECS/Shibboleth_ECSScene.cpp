@@ -20,16 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Scene.h"
+#include "Shibboleth_ECSScene.h"
 
-SHIB_REFLECTION_DEFINE(Scene)
+SHIB_REFLECTION_DEFINE(ECSScene)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scene)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSScene)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(Scene)
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSScene)
 
+ECSScene::ECSScene(void)
+{
+}
+
+ECSScene::~ECSScene(void)
+{
+}
+
+void ECSScene::load(const Gaff::ISerializeReader& reader)
+{
+	GAFF_REF(reader);
+}
+
+void ECSScene::save(Gaff::ISerializeWriter& writer)
+{
+	GAFF_REF(writer);
+}
 
 NS_END
 
