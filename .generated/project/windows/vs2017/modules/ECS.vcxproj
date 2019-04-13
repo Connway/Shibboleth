@@ -231,6 +231,7 @@ premake5 gen_module_header --module=ECS</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.inl" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSQuery.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSScene.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_IECSSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +241,7 @@ premake5 gen_module_header --module=ECS</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSQuery.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\ECS\project_generator.lua" />

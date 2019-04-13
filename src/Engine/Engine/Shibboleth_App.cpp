@@ -313,6 +313,11 @@ bool App::loadModules(void)
 
 			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
 
+			// Skip modules that begin with Editor if we're not the editor.
+			if (!_editor && path.find("Editor") == 0) {
+				continue;
+			}
+
 			if (!loadModule(path.data())) {
 				LogErrorDefault("Failed to load module '%s'!", path.data());
 				return false;
@@ -335,6 +340,11 @@ bool App::loadModules(void)
 
 				const wchar_t* name = dir_entry.path().c_str();
 				CONVERT_STRING(char, temp, name);
+
+				// Skip modules that begin with Editor if we're not the editor.
+				if (!_editor && Gaff::FindFirstOf(temp, "Editor") == 0) {
+					continue;
+				}
 
 				if (!(_dynamic_loader.getModule(temp) || loadModule(temp))) {
 					return false;

@@ -20,32 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#include <Shibboleth_Reflection.h>
 
-#ifdef SHIB_STATIC
+NS_SHIBBOLETH
 
-	#include <Shibboleth_Utilities.h>
+class ECSScene final : public Gaff::IReflectionObject
+{
+public:
+	ECSScene(void);
+	~ECSScene(void);
 
-	namespace Scene
-	{
+	void load(const Gaff::ISerializeReader& reader);
+	void save(Gaff::ISerializeWriter& writer);
 
-		bool Initialize(Shibboleth::IApp& app)
-		{
-			Shibboleth::SetApp(app);
-			Scene::Gen::InitReflection();
+private:
 
-			return true;
-		}
 
-	}
+	SHIB_REFLECTION_CLASS_DECLARE(ECSScene);
+};
 
-#else
+NS_END
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
-	{
-		return Scene::Initialize(app);
-	}
-
-#endif
+SHIB_REFLECTION_DECLARE(ECSScene)

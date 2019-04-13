@@ -389,9 +389,6 @@
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\Scene.vcxproj">
-      <Project>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsDirect3D11.vcxproj">
       <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
     </ProjectReference>
