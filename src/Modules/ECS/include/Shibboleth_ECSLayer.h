@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ECSScene final : public Gaff::IReflectionObject
+class ECSLayer final : public Gaff::IReflectionObject
 {
 public:
-	ECSScene(void);
-	~ECSScene(void);
+	ECSLayer(void);
+	~ECSLayer(void);
 
 	void load(const Gaff::ISerializeReader& reader);
 	void save(Gaff::ISerializeWriter& writer);
@@ -38,9 +38,9 @@ public:
 private:
 
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSScene);
+	SHIB_REFLECTION_CLASS_DECLARE(ECSLayer);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSScene)
+SHIB_REFLECTION_DECLARE(ECSLayer)
