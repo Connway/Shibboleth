@@ -30,17 +30,28 @@ THE SOFTWARE.
 #include <EASTL/functional.h>
 #include <atomic>
 
-#define LOG_RES_ERROR(msg, ...) LogError(LOG_CHANNEL_RESOURCE, msg, ##__VA_ARGS__)
+#define LogErrorResource(msg, ...) LogError(LOG_CHANNEL_RESOURCE, msg, ##__VA_ARGS__)
 
 #define RES_FAIL_MSG(cond, msg, ...) \
 	if (cond) { \
-		LOG_RES_ERROR(msg, ##__VA_ARGS__); \
+		LogErrorResource(msg, ##__VA_ARGS__); \
 		failed(); \
 		return; \
 	}
 
-
 NS_SHIBBOLETH
+
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4307)
+#endif
+
+constexpr Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif
+
 
 class ResourceManager;
 class IFile;

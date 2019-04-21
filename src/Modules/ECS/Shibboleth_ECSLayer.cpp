@@ -20,27 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_Reflection.h>
+#include "Shibboleth_ECSLayer.h"
+#include <Gaff_SerializeInterfaces.h>
 
 NS_SHIBBOLETH
 
-class ECSScene final : public Gaff::IReflectionObject
+ECSLayer::ECSLayer(void)
 {
-public:
-	ECSScene(void);
-	~ECSScene(void);
+}
 
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+ECSLayer::~ECSLayer(void)
+{
+}
 
-private:
+void ECSLayer::load(const Gaff::ISerializeReader& reader)
+{
+	GAFF_REF(reader);
+}
 
-
-	SHIB_REFLECTION_CLASS_DECLARE(ECSScene);
-};
+void ECSLayer::save(Gaff::ISerializeWriter& writer)
+{
+	GAFF_REF(writer);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ECSScene)

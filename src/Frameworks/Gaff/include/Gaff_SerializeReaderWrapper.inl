@@ -38,6 +38,7 @@ template <class Allocator>
 bool SerializeReaderWrapper<Allocator>::parseMPack(const char* buffer, size_t size)
 {
 	if (!_mpack_reader.parse(buffer, size)) {
+		_error_text = _mpack_reader.getErrorText();
 		return false;
 	}
 
@@ -53,6 +54,7 @@ bool SerializeReaderWrapper<Allocator>::parseJSON(const char* buffer)
 	Gaff::JSON json;
 
 	if (!json.parse(buffer)) {
+		_error_text = json.getErrorText();
 		return false;
 	}
 
@@ -66,4 +68,10 @@ template <class Allocator>
 const ISerializeReader* SerializeReaderWrapper<Allocator>::getReader(void) const
 {
 	return _reader;
+}
+
+template <class Allocator>
+const char* SerializeReaderWrapper<Allocator>::getErrorText(void) const
+{
+	return _error_text;
 }

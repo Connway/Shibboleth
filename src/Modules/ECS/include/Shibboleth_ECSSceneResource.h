@@ -22,26 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-
-namespace Gaff
-{
-	class ISerializeReader;
-	class ISerializeWriter;
-}
+#include <Shibboleth_ECSLayerResource.h>
 
 NS_SHIBBOLETH
 
-class ECSLayer final
+class ECSLayerResource;
+using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+
+class ECSSceneResource final : public IResource
 {
 public:
-	ECSLayer(void);
-	~ECSLayer(void);
+	ECSSceneResource(void);
+	~ECSSceneResource(void);
 
 	void load(const Gaff::ISerializeReader& reader);
 	void save(Gaff::ISerializeWriter& writer);
 
 private:
+	struct LayerData final
+	{
+		ECSLayerResourcePtr layer;
+		HashString64 layer_name;
+		U8String path;
+	};
+
+	Vector<LayerData> _layers;
+
+	void loadScene(IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(ECSSceneResource);
 };
 
+using ECSSceneResourcePtr = Gaff::RefPtr<ECSSceneResource>;
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(ECSSceneResource)

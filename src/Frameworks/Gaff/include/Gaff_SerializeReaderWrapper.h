@@ -42,6 +42,7 @@ public:
 	bool parseJSON(const char* buffer);
 
 	const ISerializeReader* getReader(void) const;
+	const char* getErrorText(void) const;
 
 private:
 	Allocator _allocator;
@@ -55,6 +56,8 @@ private:
 		SerializeReader<MessagePackNode, Allocator> _mpack;
 		SerializeReader<JSON, Allocator> _json;
 	};
+
+	const char* _error_text = nullptr;
 };
 
 #include "Gaff_SerializeReaderWrapper.inl"

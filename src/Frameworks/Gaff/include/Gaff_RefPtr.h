@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
-class RefPtr
+class RefPtr final
 {
 public:
 	explicit RefPtr(T* data, bool add_ref = true):

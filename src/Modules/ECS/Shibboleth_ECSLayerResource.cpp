@@ -20,28 +20,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ECSLayerResource.h"
+#include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_LoadFileCallbackAttribute.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_LogManager.h>
+#include <Shibboleth_Utilities.h>
 
-#include <Shibboleth_Defines.h>
-
-namespace Gaff
-{
-	class ISerializeReader;
-	class ISerializeWriter;
-}
+SHIB_REFLECTION_DEFINE(ECSLayerResource)
 
 NS_SHIBBOLETH
 
-class ECSLayer final
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSLayerResource)
+	.classAttrs(
+		ResExtAttribute(".layer.bin"),
+		ResExtAttribute(".layer"),
+		MakeLoadFileCallbackAttribute(&ECSLayerResource::loadLayer)
+	)
+
+	.BASE(IResource)
+	.ctor<>()
+
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSLayerResource)
+
+ECSLayerResource::ECSLayerResource(void)
 {
-public:
-	ECSLayer(void);
-	~ECSLayer(void);
+}
 
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+ECSLayerResource::~ECSLayerResource(void)
+{
+}
 
-private:
-};
+void ECSLayerResource::loadLayer(IFile* file)
+{
+	SerializeReaderWrapper readerWrapper;
+	
+	if (OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
+		_layer.load(*readerWrapper.getReader());
+		succeeded();
+	} else {
+		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+		failed();
+	}
+}
 
 NS_END
