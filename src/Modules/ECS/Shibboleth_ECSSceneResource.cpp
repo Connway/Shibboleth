@@ -20,32 +20,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ECSScene.h"
+#include "Shibboleth_ECSSceneResource.h"
+#include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_LoadFileCallbackAttribute.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_LogManager.h>
+#include <Shibboleth_Utilities.h>
 
-SHIB_REFLECTION_DEFINE(ECSScene)
+SHIB_REFLECTION_DEFINE(ECSSceneResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSScene)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSSceneResource)
+	.classAttrs(
+		ResExtAttribute(".scene.bin"),
+		ResExtAttribute(".scene"),
+		MakeLoadFileCallbackAttribute(&ECSSceneResource::loadScene)
+	)
+
+	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ECSScene)
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSSceneResource)
 
-ECSScene::ECSScene(void)
+ECSSceneResource::ECSSceneResource(void)
 {
 }
 
-ECSScene::~ECSScene(void)
+ECSSceneResource::~ECSSceneResource(void)
 {
 }
 
-void ECSScene::load(const Gaff::ISerializeReader& reader)
+void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 {
 	GAFF_REF(reader);
 }
 
-void ECSScene::save(Gaff::ISerializeWriter& writer)
+void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
 {
 	GAFF_REF(writer);
+}
+
+void ECSSceneResource::loadScene(IFile* file)
+{
+	SerializeReaderWrapper readerWrapper;
+
+	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
+		LogErrorResource("Failed to load scene '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+		failed();
+	}
+
+	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+
+	GAFF_REF(reader);
+	//_layer.load(*readerWrapper.getReader());
+	succeeded();
 }
 
 NS_END

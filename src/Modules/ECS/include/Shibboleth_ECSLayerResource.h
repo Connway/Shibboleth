@@ -22,26 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-
-namespace Gaff
-{
-	class ISerializeReader;
-	class ISerializeWriter;
-}
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_ECSLayer.h>
 
 NS_SHIBBOLETH
 
-class ECSLayer final
+class ECSLayerResource final : public IResource
 {
 public:
-	ECSLayer(void);
-	~ECSLayer(void);
-
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+	ECSLayerResource(void);
+	~ECSLayerResource(void);
 
 private:
+	ECSLayer _layer;
+
+	void loadLayer(IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);
 };
 
+using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(ECSLayerResource)

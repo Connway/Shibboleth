@@ -496,6 +496,19 @@ const char* MessagePackNode::getErrorText(void) const
 
 
 
+MessagePackReader::MessagePackReader(void)
+{
+}
+
+MessagePackReader::~MessagePackReader(void)
+{
+	if (!_owns_buffer) {
+		_tree.buffer = nullptr;
+	}
+
+	mpack_tree_destroy(&_tree);
+}
+
 bool MessagePackReader::parse(const char* buffer, size_t size)
 {
 	mpack_tree_init(&_tree, buffer, size);
@@ -529,6 +542,7 @@ bool MessagePackReader::openFile(const char* file)
 	}
 
 	_root._node = mpack_tree_root(&_tree);
+	_owns_buffer = true;
 
 	return _tree.error == mpack_ok;
 }

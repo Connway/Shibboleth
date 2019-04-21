@@ -42,6 +42,15 @@ IApp& GetApp(void)
 	return *gApp;
 }
 
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, IFile* file)
+{
+	if (Gaff::EndsWith(path, ".bin")) {
+		return wrapper.parseMPack(file->getBuffer(), file->size());
+	} else {
+		return wrapper.parseJSON(file->getBuffer());
+	}
+}
+
 bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path)
 {
 	IApp& app = GetApp();

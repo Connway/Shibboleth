@@ -26,11 +26,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IFile;
 class IApp;
 
 void SetApp(IApp& app);
 IApp& GetApp(void);
 
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, IFile* file);
 bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path);
 
 NS_END

@@ -158,9 +158,11 @@ private:
 class MessagePackReader
 {
 public:
-	GAFF_STRUCTORS_DEFAULT(MessagePackReader);
 	GAFF_MOVE_DEFAULT(MessagePackReader);
 	GAFF_NO_COPY(MessagePackReader);
+
+	MessagePackReader(void);
+	~MessagePackReader(void);
 
 	bool parse(const char* buffer, size_t size);
 	bool openFile(const char* file);
@@ -172,6 +174,7 @@ public:
 private:
 	mpack_tree_t _tree;
 	MessagePackNode _root;
+	bool _owns_buffer = false;
 };
 
 class MessagePackWriter
