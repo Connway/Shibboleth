@@ -56,7 +56,7 @@ bool PrefabResource::loadJSON(IFile* file, const ProxyAllocator& allocator)
 {
 	Gaff::JSON json;
 	
-	if (!json.parse(file->getBuffer())) {
+	if (!json.parse(reinterpret_cast<char*>(file->getBuffer()))) {
 		// $TODO: Log error
 		return false;
 	}
@@ -69,7 +69,7 @@ bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 {
 	Gaff::MessagePackReader mpack;
 
-	if (!mpack.parse(file->getBuffer(), file->size())) {
+	if (!mpack.parse(reinterpret_cast<char*>(file->getBuffer()), file->size())) {
 		// $TODO: Log error
 		return false;
 	}

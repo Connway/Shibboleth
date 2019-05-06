@@ -38,11 +38,11 @@ public:
 
 	size_t size(void) const;
 
-	const char* getBuffer(void) const;
-	char* getBuffer(void);
+	const int8_t* getBuffer(void) const;
+	int8_t* getBuffer(void);
 
 private:
-	char* _file_buffer;
+	int8_t* _file_buffer;
 	size_t _file_size;
 
 	friend class LooseFileSystem;

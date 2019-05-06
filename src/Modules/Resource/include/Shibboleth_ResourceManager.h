@@ -39,8 +39,8 @@ public:
 	template <class T>
 	Gaff::RefPtr<T> requestResourceT(const char* name)
 	{
-		Gaff::RefPtr<T> ptr(static_cast<T*>(requestResource(name).get()));
-		return ptr;
+		IResourcePtr old_ptr = requestResource(name);
+		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
 	}
 
 	template <size_t size>
@@ -55,7 +55,6 @@ public:
 	}
 
 	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
-
 	void waitForResource(const IResource& resource) const;
 
 private:

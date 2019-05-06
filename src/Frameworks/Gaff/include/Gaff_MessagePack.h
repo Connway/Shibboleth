@@ -81,13 +81,14 @@ public:
 		return false;
 	}
 
+	GAFF_MOVE_DEFAULT(MessagePackNode);
+	GAFF_COPY_DEFAULT(MessagePackNode);
+
 	bool operator==(const MessagePackNode& rhs) const;
 	bool operator!=(const MessagePackNode& rhs) const;
 
 	MessagePackNode operator[](const char* key) const;
 	MessagePackNode operator[](int32_t index) const;
-
-	MessagePackNode& operator=(const MessagePackNode& rhs);
 
 	bool isObject(void) const;
 	bool isArray(void) const;
@@ -164,7 +165,7 @@ public:
 	MessagePackReader(void);
 	~MessagePackReader(void);
 
-	bool parse(const char* buffer, size_t size);
+	bool parse(const char* buffer, size_t size, bool take_ownership = false);
 	bool openFile(const char* file);
 
 	MessagePackNode getRoot(void) const;

@@ -36,9 +36,9 @@ public:
 	SerializeReaderWrapper(SerializeReaderWrapper&&) = default;
 	~SerializeReaderWrapper(void);
 
-	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&) = default;
+	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&);
 
-	bool parseMPack(const char* buffer, size_t size);
+	bool parseMPack(const char* buffer, size_t size, bool take_ownership = false);
 	bool parseJSON(const char* buffer);
 
 	const ISerializeReader* getReader(void) const;
@@ -58,6 +58,7 @@ private:
 	};
 
 	const char* _error_text = nullptr;
+	bool _is_mpack = false;
 };
 
 #include "Gaff_SerializeReaderWrapper.inl"

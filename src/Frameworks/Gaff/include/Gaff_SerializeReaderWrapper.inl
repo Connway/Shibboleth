@@ -35,15 +35,43 @@ SerializeReaderWrapper<Allocator>::~SerializeReaderWrapper(void)
 }
 
 template <class Allocator>
-bool SerializeReaderWrapper<Allocator>::parseMPack(const char* buffer, size_t size)
+SerializeReaderWrapper<Allocator>& SerializeReaderWrapper<Allocator>::operator=(SerializeReaderWrapper&& readerWrapper)
 {
-	if (!_mpack_reader.parse(buffer, size)) {
+	if (_reader) {
+		Deconstruct(_reader);
+	}
+
+	_allocator = readerWrapper._allocator;
+	_is_mpack = readerWrapper._is_mpack;
+	_error_text = readerWrapper._error_text;
+
+	if (readerWrapper._reader) {
+		if (_is_mpack) {
+			_mpack_reader = std::move(readerWrapper._mpack_reader);
+
+			Construct(&_mpack, _mpack_reader.getRoot(), _allocator);
+			_reader = &_mpack;
+
+		} else {
+			Construct(&_json, std::move(readerWrapper._json));
+			_reader = &_json;
+		}
+	}
+
+	return *this;
+}
+
+template <class Allocator>
+bool SerializeReaderWrapper<Allocator>::parseMPack(const char* buffer, size_t size, bool take_ownership)
+{
+	if (!_mpack_reader.parse(buffer, size, take_ownership)) {
 		_error_text = _mpack_reader.getErrorText();
 		return false;
 	}
 
 	Construct(&_mpack, _mpack_reader.getRoot(), _allocator);
 	_reader = &_mpack;
+	_is_mpack = true;
 
 	return true;
 }
