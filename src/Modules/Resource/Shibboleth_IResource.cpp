@@ -88,14 +88,14 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
-int32_t IResource::addLoadedCallback(const eastl::function<void (IResource*)>& callback)
+int32_t IResource::addLoadedCallback(const eastl::function<void (IResource&)>& callback)
 {
 	const int32_t id = _next_id++;
 	_callbacks.emplace(id, callback);
 	return id;
 }
 
-int32_t IResource::addLoadedCallback(eastl::function<void (IResource*)>&& callback)
+int32_t IResource::addLoadedCallback(eastl::function<void (IResource&)>&& callback)
 {
 	const int32_t id = _next_id++;
 	_callbacks.emplace(id, std::move(callback));
@@ -168,7 +168,7 @@ void IResource::failed(void)
 void IResource::callCallbacks(void)
 {
 	for (auto& cb : _callbacks) {
-		cb.second(this);
+		cb.second(*this);
 	}
 
 	_callbacks.clear();

@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IResource.h>
-#include <Shibboleth_ECSLayer.h>
+#include <Shibboleth_ECSArchetypeResource.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
 
 NS_SHIBBOLETH
 
@@ -35,8 +34,11 @@ public:
 	~ECSLayerResource(void);
 
 private:
-	ECSLayer _layer;
+	Vector<ECSArchetypeResourcePtr> _archetypes;
+	Vector<ECSManager::ArchetypeReferencePtr> _modified_archetypes;
+	SerializeReaderWrapper _reader_wrapper;
 
+	void archetypeLoaded(IResource&);
 	void loadLayer(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);

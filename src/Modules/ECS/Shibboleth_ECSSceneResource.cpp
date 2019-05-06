@@ -24,8 +24,10 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceExtensionAttribute.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE(ECSSceneResource)
 
@@ -52,12 +54,65 @@ ECSSceneResource::~ECSSceneResource(void)
 
 void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 {
-	GAFF_REF(reader);
+	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+
+	reader.forEachInArray([&](int32_t) -> bool
+	{
+		char name[256];
+		char path[256];
+		bool delay_load = false;
+
+		{
+			const auto guard = reader.enterElementGuard("name");
+			reader.readString(name, ARRAY_SIZE(name));
+		}
+
+		{
+			const auto guard = reader.enterElementGuard("layer_file");
+			reader.readString(path, ARRAY_SIZE(path));
+		}
+
+		{
+			const auto guard = reader.enterElementGuard("delay_load");
+			delay_load = reader.readBool(false);
+		}
+
+		_layers.emplace_back(LayerData{ ECSLayerResourcePtr(), HashString64(name), U8String(path) });
+
+		if (!delay_load) {
+			LayerData& data = _layers.back();
+			data.layer = res_mgr.requestResourceT<ECSLayerResource>(path);
+		}
+
+		return false;
+	});
+
+	for (LayerData& layer_data : _layers) {
+		if (layer_data.layer) {
+			layer_data.layer->addLoadedCallback(Gaff::MemberFunc(this, &ECSSceneResource::layerLoaded));
+		}
+	}
 }
 
 void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
 {
 	GAFF_REF(writer);
+}
+
+void ECSSceneResource::layerLoaded(IResource&)
+{
+	if (getState() == IResource::RS_PENDING) {
+		for (const LayerData& layer : _layers) {
+			const auto state = layer.layer->getState();
+
+			if (state == IResource::RS_PENDING) {
+				return;
+			}
+		}
+
+		// Even if we have a failed layer, consider us loaded.
+		succeeded();
+	}
 }
 
 void ECSSceneResource::loadScene(IFile* file)
@@ -67,13 +122,10 @@ void ECSSceneResource::loadScene(IFile* file)
 	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
 		LogErrorResource("Failed to load scene '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
 		failed();
+		return;
 	}
 
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
-
-	GAFF_REF(reader);
-	//_layer.load(*readerWrapper.getReader());
-	succeeded();
+	load(*readerWrapper.getReader());
 }
 
 NS_END

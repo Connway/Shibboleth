@@ -1,15 +1,19 @@
-[
-	{
-		"archetype": "Resources/Archetypes/test.archetype",
+{
+	"name": "test",
 
-		"overrides":
+	"objects": [
 		{
-			"shared_components": {}
-			"components":
+			"archetype": "Resources/Archetypes/test.archetype",
+
+			"overrides":
 			{
-				"Rotation": { "Rotation": {"x": 0, "y": 0, "z": 0, "w": 1} },
-				"Position": { "Position: {"x": -2.5, "y": 0, "z": 0} }
+				"shared_components": {}
+				"components":
+				{
+					"Rotation": { "Rotation": {"x": 0, "y": 0, "z": 0, "w": 1} },
+					"Position": { "Position: {"x": -2.5, "y": 0, "z": 0} }
+				}
 			}
 		}
-	},
+	]
 ]

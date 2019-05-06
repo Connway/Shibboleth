@@ -65,7 +65,7 @@ void ResourceManager::allModulesLoaded(void)
 		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
 		GAFF_ASSERT_MSG(!ext_attrs.empty(), "Resource '%s' does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());
 
-		for (const ResExtAttribute * ext_attr : ext_attrs) {
+		for (const ResExtAttribute* ext_attr : ext_attrs) {
 			GAFF_ASSERT_MSG(
 				_resource_factories.find(ext_attr->getExtension().getHash()) == _resource_factories.end(),
 				"File extension '%s' already has a resource associated with it!",

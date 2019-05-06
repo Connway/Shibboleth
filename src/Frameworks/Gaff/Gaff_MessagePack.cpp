@@ -509,9 +509,10 @@ MessagePackReader::~MessagePackReader(void)
 	mpack_tree_destroy(&_tree);
 }
 
-bool MessagePackReader::parse(const char* buffer, size_t size)
+bool MessagePackReader::parse(const char* buffer, size_t size, bool take_ownership)
 {
-	mpack_tree_init(&_tree, buffer, size);
+	mpack_tree_init_data(&_tree, buffer, size);
+	_owns_buffer = take_ownership;
 
 	if (_tree.error != mpack_ok) {
 		return false;

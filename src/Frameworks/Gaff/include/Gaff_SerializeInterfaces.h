@@ -186,7 +186,6 @@ public:
 class ScopeGuard
 {
 public:
-	//GAFF_COPY_DEFAULT(ScopeGuard);
 	GAFF_MOVE_DEFAULT(ScopeGuard);
 	GAFF_NO_COPY(ScopeGuard);
 

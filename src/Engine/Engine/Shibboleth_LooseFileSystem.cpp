@@ -44,12 +44,12 @@ size_t LooseFile::size(void) const
 	return _file_size;
 }
 
-const char* LooseFile::getBuffer(void) const
+const int8_t* LooseFile::getBuffer(void) const
 {
 	return _file_buffer;
 }
 
-char* LooseFile::getBuffer(void)
+int8_t* LooseFile::getBuffer(void)
 {
 	return _file_buffer;
 }
@@ -97,14 +97,14 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 	}
 
 	file->_file_size= loose_file.getFileSize();
-	file->_file_buffer = SHIB_ALLOC_CAST(char*, file->_file_size + 1, GetAllocator());
+	file->_file_buffer = SHIB_ALLOC_CAST(int8_t*, file->_file_size + 1, GetAllocator());
 
 	if (!file->_file_buffer) {
 		SHIB_FREET(it->file, GetAllocator());
 		return nullptr;
 	}
 
-	if (!loose_file.readEntireFile(file->_file_buffer)) {
+	if (!loose_file.readEntireFile(reinterpret_cast<char*>(file->_file_buffer))) {
 		SHIB_FREET(it->file, GetAllocator());
 		return nullptr;
 	}

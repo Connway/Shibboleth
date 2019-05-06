@@ -87,7 +87,7 @@ public:
 	bool removeShared(const Gaff::IReflectionDefinition& ref_def);
 	bool removeShared(int32_t index);
 
-	bool finalize(const Gaff::ISerializeReader& json);
+	bool finalize(const Gaff::ISerializeReader& reader);
 	bool finalize(void);
 
 	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);

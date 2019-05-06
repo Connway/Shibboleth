@@ -23,9 +23,10 @@ THE SOFTWARE.
 #include "Shibboleth_ECSLayerResource.h"
 #include <Shibboleth_ResourceExtensionAttribute.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Gaff_SerializeInterfaces.h>
 
 SHIB_REFLECTION_DEFINE(ECSLayerResource)
 
@@ -40,10 +41,10 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSLayerResource)
 
 	.BASE(IResource)
 	.ctor<>()
-
 SHIB_REFLECTION_CLASS_DEFINE_END(ECSLayerResource)
 
-ECSLayerResource::ECSLayerResource(void)
+ECSLayerResource::ECSLayerResource(void):
+	_reader_wrapper(ProxyAllocator("Resource"))
 {
 }
 
@@ -51,16 +52,88 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
-void ECSLayerResource::loadLayer(IFile* file)
+void ECSLayerResource::archetypeLoaded(IResource&)
 {
-	SerializeReaderWrapper readerWrapper;
-	
-	if (OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		_layer.load(*readerWrapper.getReader());
-		succeeded();
-	} else {
-		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+	for (const auto& arch_res : _archetypes) {
+		if (arch_res->getState() == IResource::RS_PENDING) {
+			return;
+		}
+	}
+
+	_reader_wrapper = SerializeReaderWrapper();
+}
+
+void ECSLayerResource::loadLayer(IFile* file)
+{	
+	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true)) {
+		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
 		failed();
+		return;
+	}
+
+	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
+	const auto& reader = *_reader_wrapper.getReader();
+
+	GAFF_REF(ecs_mgr);
+
+	char name[256] = { 0 };
+
+	{
+		const auto guard = reader.enterElementGuard("name");
+
+		if (!reader.isString()) {
+			LogErrorDefault("Failed to load layer '%s'. Invalid name.", getFilePath().getBuffer());
+			return;
+		}
+
+		reader.readString(name, ARRAY_SIZE(name));
+	}
+
+	{
+		const auto guard = reader.enterElementGuard("objects");
+
+		if (!reader.isArray()) {
+			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : "<invalid_name>");
+			return;
+		}
+
+		reader.forEachInArray([&](int32_t index) -> bool
+		{
+			char archetype[256] = { 0 };
+
+			{
+				const auto guard = reader.enterElementGuard("archetype");
+
+				if (!reader.isString()) {
+					LogErrorDefault("Failed to load object at index %i. Malformed object definition.", index);
+					return false;
+				}
+
+				reader.readString(archetype, ARRAY_SIZE(archetype));
+			}
+
+			_archetypes.emplace_back(res_mgr.requestResourceT<ECSArchetypeResource>(archetype));
+
+			//{
+			//	const auto guard = reader.enterElementGuard("overrides");
+
+			//	if (reader.isNull()) {
+			//		return false;
+			//	} else if (!reader.isObject()) {
+			//		LogErrorDefault("Failed to load object at index %i. Overrides field is not an object.", index);
+			//		return false;
+			//	}
+
+			//	//loadOverrides(reader, archetype_instance);
+			//}
+
+			return false;
+		});
+	}
+
+	for (auto& arch_res : _archetypes) {
+		arch_res->addLoadedCallback(Gaff::MemberFunc(this, &ECSLayerResource::archetypeLoaded));
 	}
 }
 

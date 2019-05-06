@@ -36,8 +36,8 @@ public:
 	// Only used for files opened for read
 	virtual size_t size(void) const = 0;
 
-	virtual const char* getBuffer(void) const = 0;
-	virtual char* getBuffer(void) = 0;
+	virtual const int8_t* getBuffer(void) const = 0;
+	virtual int8_t* getBuffer(void) = 0;
 
 	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
 };

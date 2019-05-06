@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_String.h>
 
 namespace Gaff
 {
@@ -41,7 +41,11 @@ public:
 	void load(const Gaff::ISerializeReader& reader);
 	void save(Gaff::ISerializeWriter& writer);
 
+	const U8String& getName(void) const;
+	void setName(const char* name);
+
 private:
+	U8String _name;
 };
 
 NS_END
