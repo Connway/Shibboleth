@@ -37,24 +37,24 @@ public:
 	void allModulesLoaded(void) override;
 
 	template <class T>
-	Gaff::RefPtr<T> requestResourceT(const char* name)
+	Gaff::RefPtr<T> requestResourceT(const char* name, bool delay_load = false)
 	{
-		IResourcePtr old_ptr = requestResource(name);
+		IResourcePtr old_ptr = requestResource(name, delay_load);
 		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
 	}
 
 	template <size_t size>
-	IResourcePtr requestResource(const char (&name)[size])
+	IResourcePtr requestResource(const char (&name)[size], bool delay_load = false)
 	{
-		return requestResource(Gaff::HashStringTemp64(name, size - 1));
+		return requestResource(Gaff::HashStringTemp64(name, size - 1), delay_load);
 	}
 
-	IResourcePtr requestResource(const char* name)
+	IResourcePtr requestResource(const char* name, bool delay_load = false)
 	{
-		return requestResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+		return requestResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)), delay_load);
 	}
 
-	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
+	IResourcePtr requestResource(Gaff::HashStringTemp64 name, bool delay_load = false);
 	void waitForResource(const IResource& resource) const;
 
 private:
@@ -65,7 +65,8 @@ private:
 	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories;
 	ProxyAllocator _allocator = ProxyAllocator("Resource");
 
-	void removeResource(const IResource* resource);
+	void removeResource(const IResource& resource);
+	void requestLoad(IResource& resource);
 
 	static void ResourceFileLoadJob(void* data);
 

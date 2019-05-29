@@ -44,6 +44,15 @@ static void LoadJob(void* data)
 	SHIB_FREET(job_data, GetAllocator());
 }
 
+void IResource::requestLoad(void)
+{
+	if (_state != RS_DELAYED) {
+		return;
+	}
+
+	_res_mgr->requestLoad(*this);
+}
+
 void IResource::load(void)
 {
 	if (!readsFromDisk()) {
@@ -78,7 +87,7 @@ void IResource::release(void) const
 	int32_t new_count = --_count;
 
 	if (!new_count) {
-		_res_mgr->removeResource(this);
+		_res_mgr->removeResource(*this);
 		SHIB_FREET(this, GetAllocator());
 	}
 }

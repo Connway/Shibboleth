@@ -77,18 +77,19 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 			delay_load = reader.readBool(false);
 		}
 
-		_layers.emplace_back(LayerData{ ECSLayerResourcePtr(), HashString64(name), U8String(path) });
+		_layers.emplace_back(LayerData{
+			res_mgr.requestResourceT<ECSLayerResource>(path, delay_load),
+			HashString64(name),
+		});
 
-		if (!delay_load) {
-			LayerData& data = _layers.back();
-			data.layer = res_mgr.requestResourceT<ECSLayerResource>(path);
-		}
+		LayerData& data = _layers.back();
+		data.layer = res_mgr.requestResourceT<ECSLayerResource>(path, delay_load);
 
 		return false;
 	});
 
 	for (LayerData& layer_data : _layers) {
-		if (layer_data.layer) {
+		if (layer_data.layer->getState() != IResource::RS_DELAYED) {
 			layer_data.layer->addLoadedCallback(Gaff::MemberFunc(this, &ECSSceneResource::layerLoaded));
 		}
 	}
