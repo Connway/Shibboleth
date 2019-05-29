@@ -66,8 +66,11 @@ public:
 	{
 		RS_PENDING = 0,
 		RS_FAILED,
-		RS_LOADED
+		RS_LOADED,
+		RS_DELAYED
 	};
+
+	void requestLoad(void);
 
 	virtual void load(void);
 	virtual bool readsFromDisk(void) const { return true; }

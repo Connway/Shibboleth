@@ -22,39 +22,30 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSLayerResource.h>
+#include "Shibboleth_ECSManager.h"
+#include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
 
-class ECSLayerResource;
-using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
-
-class ECSSceneResource final : public IResource
+class ECSArchetypeResource final : public IResource
 {
 public:
-	ECSSceneResource(void);
-	~ECSSceneResource(void);
+	ECSArchetypeResource(void);
+	~ECSArchetypeResource(void);
 
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+	//void load(const Gaff::ISerializeReader& reader);
+	//void save(Gaff::ISerializeWriter& writer);
 
 private:
-	struct LayerData final
-	{
-		ECSLayerResourcePtr layer;
-		HashString64 layer_name;
-	};
+	void loadArchetype(IFile* file);
 
-	Vector<LayerData> _layers;
+	ECSManager::ArchetypeReferencePtr _archetype_ref;
 
-	void layerLoaded(IResource&);
-	void loadScene(IFile* file);
-
-	SHIB_REFLECTION_CLASS_DECLARE(ECSSceneResource);
+	SHIB_REFLECTION_CLASS_DECLARE(ECSArchetypeResource);
 };
 
-using ECSSceneResourcePtr = Gaff::RefPtr<ECSSceneResource>;
+using ECSArchetypeResourcePtr = Gaff::RefPtr<ECSArchetypeResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSSceneResource)
+SHIB_REFLECTION_DECLARE(ECSArchetypeResource)

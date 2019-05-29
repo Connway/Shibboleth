@@ -79,7 +79,7 @@ void ResourceManager::allModulesLoaded(void)
 	}
 }
 
-IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
+IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool delay_load)
 {
 	std::lock_guard<std::mutex> lock(_res_lock);
 
@@ -120,9 +120,11 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 
 	_resources.insert(it_res, res);
 
-	// Create and add resource load job.
-	Gaff::JobData job_data = { ResourceFileLoadJob, res };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JPI_READ_FILE : 0);
+	if (delay_load) {
+		res->_state = IResource::RS_DELAYED;
+	} else {
+		requestLoad(*res);
+	}
 
 	return IResourcePtr(res);
 }
@@ -135,15 +137,21 @@ void ResourceManager::waitForResource(const IResource& resource) const
 	}
 }
 
-void ResourceManager::removeResource(const IResource* resource)
+void ResourceManager::removeResource(const IResource& resource)
 {
 	std::lock_guard<std::mutex> lock(_res_lock);
 
-	auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), resource);
+	auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
 
-	if (it_res != _resources.end() && *it_res == resource) {
+	if (it_res != _resources.end() && *it_res == &resource) {
 		_resources.erase(it_res);
 	}
+}
+
+void ResourceManager::requestLoad(IResource& resource)
+{
+	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (resource.readsFromDisk()) ? JPI_READ_FILE : 0);
 }
 
 void ResourceManager::ResourceFileLoadJob(void* data)
