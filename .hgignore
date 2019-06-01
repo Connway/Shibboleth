@@ -16,3 +16,5 @@ workingdir/logs/*
 workingdir/bin/*
 src/Dependencies/PhysX/PhysX_3.4/*
 src/Dependencies/PhysX/PxShared/*
+src/Engine/Editor_App/bin/*
+src/Engine/Editor_App/obj/*

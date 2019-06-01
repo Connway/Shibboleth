@@ -82,6 +82,7 @@ private:
 
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map;
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
+
 	TypeBucketMap _attr_buckets;
 	TypeBucketMap _type_buckets;
 

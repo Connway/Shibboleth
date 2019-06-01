@@ -53,6 +53,8 @@ void ReflectionManager::destroy(void)
 
 	_enum_reflection_map.clear();
 	_reflection_map.clear();
+
+	_attr_buckets.clear();
 	_type_buckets.clear();
 }
 
