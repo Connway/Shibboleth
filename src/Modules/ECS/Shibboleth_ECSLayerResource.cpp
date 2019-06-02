@@ -52,10 +52,10 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
-void ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
+bool ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
 {
 	ECSArchetype new_archetype;
-	new_archetype.finalize(reader, &base_archetype);
+	return new_archetype.finalize(reader, &base_archetype);
 }
 
 void ECSLayerResource::archetypeLoaded(IResource&)
@@ -78,9 +78,9 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 			continue;
 		}
 
-		/*if (!*/loadOverrides(reader, arch_res->getArchetype());/*) {*/
-			//LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
-		//}
+		if (!loadOverrides(reader, arch_res->getArchetype())) {
+			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
+		}
 
 		++index;
 	}
