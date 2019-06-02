@@ -84,7 +84,8 @@ public:
 		ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 		~ArchetypeReference(void);
 
-		Gaff::Hash64 getArchetype(void) const;
+		const ECSArchetype& getArchetype(void) const;
+		Gaff::Hash64 getArchetypeHash(void) const;
 
 	private:
 		Gaff::Hash64 _archetype;

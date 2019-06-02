@@ -5,10 +5,18 @@
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <ApplicationIcon />
     <StartupObject />
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|x64'">
+    <BaseIntermediateOutputPath>../../../.generated/build/windows/vs2017/intermediate/x64/Debug/Editor_App</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>../../../.generated/build/windows/vs2017/intermediate/x64/Debug/Editor_App</IntermediateOutputPath>
+    <OutputPath>../../../.generated/build/windows/vs2017/output/x64/Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|x64'">
+    <BaseIntermediateOutputPath>../../../.generated/build/windows/vs2017/intermediate/x64/Release/Editor_App</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>../../../.generated/build/windows/vs2017/intermediate/x64/Release/Editor_App</IntermediateOutputPath>
+    <OutputPath>../../../.generated/build/windows/vs2017/output/x64/Release</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">

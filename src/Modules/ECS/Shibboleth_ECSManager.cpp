@@ -43,7 +43,12 @@ ECSManager::ArchetypeReference::~ArchetypeReference(void)
 	_ecs_mgr.removeArchetype(_archetype);
 }
 
-Gaff::Hash64 ECSManager::ArchetypeReference::getArchetype(void) const
+const ECSArchetype& ECSManager::ArchetypeReference::getArchetype(void) const
+{
+	return _ecs_mgr.getArchetype(_archetype);
+}
+
+Gaff::Hash64 ECSManager::ArchetypeReference::getArchetypeHash(void) const
 {
 	return _archetype;
 }

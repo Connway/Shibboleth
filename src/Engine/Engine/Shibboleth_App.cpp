@@ -264,7 +264,7 @@ bool App::loadMainLoop(void)
 
 	const Gaff::IReflectionDefinition* refl = bucket->front();
 
-	if (_configs["editor_mode"].getBool(false)) {
+	if (inEditorMode()) {
 		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
 			if (ref_def->getClassAttr<EditorAttribute>()) {
 				refl = ref_def;
@@ -314,7 +314,7 @@ bool App::loadModules(void)
 			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
 
 			// Skip modules that begin with Editor if we're not the editor.
-			if (!_editor && path.find("Editor") == 0) {
+			if (!inEditorMode() && path.find("Editor") == 0) {
 				continue;
 			}
 
@@ -342,7 +342,7 @@ bool App::loadModules(void)
 				CONVERT_STRING(char, temp, name);
 
 				// Skip modules that begin with Editor if we're not the editor.
-				if (!_editor && Gaff::FindFirstOf(temp, "Editor") == 0) {
+				if (!inEditorMode() && Gaff::FindFirstOf(temp, "Editor") == 0) {
 					continue;
 				}
 
@@ -549,21 +549,6 @@ void App::destroy(void)
 #endif
 }
 
-const IEditor* App::getEditor(void) const
-{
-	return _editor;
-}
-
-IEditor* App::getEditor(void)
-{
-	return _editor;
-}
-
-void App::setEditor(IEditor* editor)
-{
-	_editor = editor;
-}
-
 const IManager* App::getManager(Gaff::Hash64 name) const
 {
 	auto it = _manager_map.find(name);
@@ -636,6 +621,11 @@ bool App::isQuitting(void) const
 void App::quit(void)
 {
 	_running = false;
+}
+
+bool App::inEditorMode(void) const
+{
+	return _configs["editor_mode"].getBool(false);
 }
 
 NS_END
