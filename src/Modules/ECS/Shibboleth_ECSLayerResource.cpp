@@ -52,9 +52,44 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
-void ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
+bool ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
 {
-	GAFF_REF(reader, base_archetype);
+	ECSArchetype new_archetype;
+	bool success = true;
+
+	new_archetype.copy(base_archetype, true);
+
+	{
+		const auto guard = reader.enterElementGuard("shared_components");
+
+		if (!reader.isNull()) {
+			if (reader.isObject()) {
+				// Add shared components not present in archetype.
+				// Set values for shared components.
+			} else {
+				LogErrorResource("'shared_components' field is not an object.");
+				success = false;
+			}
+		}
+	}
+
+	{
+		const auto guard = reader.enterElementGuard("components");
+
+		if (!reader.isNull()) {
+			if (reader.isObject()) {
+				// Add components not present in archetype. [loop 1]
+				// Instantiate instance of entity.
+				// Set component values of entity instance. [loop 2]
+			}
+			else {
+				LogErrorResource("'components' field is not an object.");
+				success = false;
+			}
+		}
+	}
+
+	return success;
 }
 
 void ECSLayerResource::archetypeLoaded(IResource&)
@@ -65,7 +100,27 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 		}
 	}
 
-	_reader_wrapper = SerializeReaderWrapper();
+	const auto& reader = *_reader_wrapper.getReader();
+	const auto objects_guard = reader.enterElementGuard("objects");
+	int32_t index = 0;
+
+	for (const auto& arch_res : _archetypes) {
+		const auto element_guard = reader.enterElementGuard(index);
+		const auto override_guard = reader.enterElementGuard("overrides");
+
+		if (reader.isNull() || !reader.isObject()) {
+			continue;
+		}
+
+		if (!loadOverrides(reader, arch_res->getArchetype())) {
+			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
+		}
+
+		++index;
+	}
+
+	// Always mark succeeded, even if an object failed to load.
+	succeeded();
 }
 
 void ECSLayerResource::loadLayer(IFile* file)
@@ -129,11 +184,6 @@ void ECSLayerResource::loadLayer(IFile* file)
 					LogErrorDefault("Failed to load object at index %i. Overrides field is not an object.", index);
 					return false;
 				}
-
-				const auto& archetype_res = _archetypes.back();
-				res_mgr.waitForResource(*archetype_res);
-
-				loadOverrides(reader, archetype_res->getArchetype());
 			}
 
 			return false;
