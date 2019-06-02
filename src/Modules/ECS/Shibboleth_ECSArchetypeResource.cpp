@@ -23,30 +23,60 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetypeResource.h>
+#include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ECSManager.h>
+#include <Shibboleth_LogManager.h>
+
+SHIB_REFLECTION_DEFINE(ECSArchetypeResource)
 
 NS_SHIBBOLETH
 
-class ECSLayerResource final : public IResource
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSArchetypeResource)
+	.classAttrs(
+		ResExtAttribute(".archetype.bin"),
+		ResExtAttribute(".archetype"),
+		MakeLoadFileCallbackAttribute(&ECSArchetypeResource::loadArchetype)
+	)
+
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSArchetypeResource)
+
+ECSArchetypeResource::ECSArchetypeResource(void)
 {
-public:
-	ECSLayerResource(void);
-	~ECSLayerResource(void);
+}
 
-private:
-	Vector<ECSArchetypeResourcePtr> _archetypes;
-	Vector<ECSManager::ArchetypeReferencePtr> _modified_archetypes;
-	SerializeReaderWrapper _reader_wrapper;
+ECSArchetypeResource::~ECSArchetypeResource(void)
+{
+}
 
-	void loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype);
-	void archetypeLoaded(IResource&);
-	void loadLayer(IFile* file);
+const ECSArchetype& ECSArchetypeResource::getArchetype(void) const
+{
+	return _archetype_ref->getArchetype();
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);
-};
+void ECSArchetypeResource::loadArchetype(IFile* file)
+{
+	SerializeReaderWrapper readerWrapper;
 
-using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
+		LogErrorResource("Failed to load archetype '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+		failed();
+	}
+
+	ECSArchetype archetype;
+
+	if (!archetype.finalize(*readerWrapper.getReader())) {
+		LogErrorResource("Failed to load archetype '%s'.", getFilePath().getBuffer());
+		failed();
+		return;
+	}
+
+	GetApp().getManagerTFast<ECSManager>().addArchetype(std::move(archetype), _archetype_ref);
+
+	succeeded();
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ECSLayerResource)

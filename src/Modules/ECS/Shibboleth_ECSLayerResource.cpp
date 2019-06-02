@@ -52,6 +52,11 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
+void ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
+{
+	GAFF_REF(reader, base_archetype);
+}
+
 void ECSLayerResource::archetypeLoaded(IResource&)
 {
 	for (const auto& arch_res : _archetypes) {
@@ -115,18 +120,21 @@ void ECSLayerResource::loadLayer(IFile* file)
 
 			_archetypes.emplace_back(res_mgr.requestResourceT<ECSArchetypeResource>(archetype));
 
-			//{
-			//	const auto guard = reader.enterElementGuard("overrides");
+			{
+				const auto guard = reader.enterElementGuard("overrides");
 
-			//	if (reader.isNull()) {
-			//		return false;
-			//	} else if (!reader.isObject()) {
-			//		LogErrorDefault("Failed to load object at index %i. Overrides field is not an object.", index);
-			//		return false;
-			//	}
+				if (reader.isNull()) {
+					return false;
+				} else if (!reader.isObject()) {
+					LogErrorDefault("Failed to load object at index %i. Overrides field is not an object.", index);
+					return false;
+				}
 
-			//	//loadOverrides(reader, archetype_instance);
-			//}
+				const auto& archetype_res = _archetypes.back();
+				res_mgr.waitForResource(*archetype_res);
+
+				loadOverrides(reader, archetype_res->getArchetype());
+			}
 
 			return false;
 		});

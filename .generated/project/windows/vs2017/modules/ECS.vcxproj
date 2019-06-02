@@ -238,7 +238,7 @@ premake5 gen_module_header --module=ECS</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_IECSSystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\ECSArchetypeResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetypeResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />

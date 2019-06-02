@@ -336,30 +336,6 @@
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\wxPropGrid.vcxproj">
-      <Project>{5B1AEED7-47D2-2F25-B0D9-08819CB0CA15}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\EditorECS.vcxproj">
-      <Project>{87CDAF4A-F337-64C1-3C76-1567A81F4216}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Editor.vcxproj">
-      <Project>{8C1A20B0-78BC-4A86-6177-5EDA4DB8D1D6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libpng.vcxproj">
-      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
-      <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\wxBase.vcxproj">
-      <Project>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\wxCore.vcxproj">
-      <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\EditorBasic.vcxproj">
-      <Project>{2E0BB4B5-9AC0-2CAB-23B5-26828F6923AF}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>

@@ -48,10 +48,6 @@ public:
 	void run(void);
 	void destroy(void);
 
-	const IEditor* getEditor(void) const override;
-	IEditor* getEditor(void) override;
-	void setEditor(IEditor* editor) override;
-
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
 
@@ -69,6 +65,8 @@ public:
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
+
+	bool inEditorMode(void) const override;
 
 private:
 	using InitModuleFunc = bool (*)(IApp&);
@@ -105,8 +103,6 @@ private:
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	Gaff::JSON _configs;
 	U8String _project_dir = ".";
-
-	IEditor* _editor = nullptr;
 
 	bool initInternal(bool (*static_init)(void));
 	bool loadFileSystem(void);
