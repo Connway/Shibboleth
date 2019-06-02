@@ -94,11 +94,11 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 		copy(*base_archetype);
 	}
 
-	finalize<true>(reader, base_archetype);
-	finalize<false>(reader, base_archetype);
+	bool success = finalize<true>(reader, base_archetype);
+	success = success && finalize<false>(reader, base_archetype);
 	calculateHash();
 
-	return true;
+	return success;
 }
 
 bool ECSArchetype::finalize(void)
@@ -396,7 +396,7 @@ bool ECSArchetype::remove(int32_t index)
 }
 
 template <bool shared>
-void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
+bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
 {
 	const auto guard = (shared) ?
 		reader.enterElementGuard("shared_components") :
@@ -415,6 +415,8 @@ void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 		read_data = false;
 	}
 
+	bool success = read_data;
+
 	if (read_data) {
 		const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 
@@ -422,6 +424,7 @@ void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 		{
 			if (!reader.isObject()) {
 				// $TODO: Log error
+				success = false;
 				return false;
 			}
 
@@ -430,6 +433,7 @@ void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 
 			if (!ref_def) {
 				// $TODO: Log error
+				success = false;
 				return false;
 			}
 
@@ -437,6 +441,7 @@ void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 
 			if (!ecs) {
 				// $TODO: Log error
+				success = false;
 				return false;
 			}
 
@@ -457,6 +462,8 @@ void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 			initShared(reader, base_archetype);
 		}
 	}
+
+	return success;
 }
 
 void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)

@@ -167,7 +167,7 @@ private:
 	bool remove(int32_t index);
 
 	template <bool shared>
-	void finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
+	bool finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
 
 	void initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
 	void initShared(void);
