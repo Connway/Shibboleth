@@ -81,78 +81,22 @@ bool ECSArchetype::removeShared(int32_t index)
 	return remove<true>(index);
 }
 
-bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader)
+bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
 {
 	if (!reader.isObject()) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	destroySharedData();
 
-	{
-		const auto guard = reader.enterElementGuard("shared_components");
-
-		reader.forEachInObject([&](const char* component) -> bool
-		{
-			if (!reader.isArray()) {
-				// $TODO: Log error
-				return false;
-			}
-
-			const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
-
-			if (!ref_def) {
-				// $TODO: Log error
-				return false;
-			}
-
-			const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-			if (!ecs) {
-				// $TODO: Log error
-				return false;
-			}
-
-			addShared(*ref_def);
-			return false;
-		});
+	if (base_archetype) {
+		copy(*base_archetype);
 	}
 
-	{
-		const auto guard = reader.enterElementGuard("components");
-
-		reader.forEachInArray([&](int32_t) -> bool
-		{
-			if (!reader.isString()) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(CLASS_HASH(reader.readString()));
-
-			if (!ref_def) {
-				// $TODO: Log error
-				return false;
-			}
-
-			const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-			if (!ecs) {
-				// $TODO: Log error
-				return false;
-			}
-
-			add(*ref_def);
-			return false;
-		});
-	}
-
-	{
-		const auto guard = reader.enterElementGuard("shared_components");
-		initShared(reader);
-		calculateHash();
-	}
+	finalize<true>(reader, base_archetype);
+	finalize<false>(reader, base_archetype);
+	calculateHash();
 
 	return true;
 }
@@ -252,6 +196,24 @@ int32_t ECSArchetype::getComponentOffset(Gaff::Hash64 component) const
 	});
 
 	return (it != _vars.end()) ? it->offset : -1;
+}
+
+bool ECSArchetype::hasSharedComponent(Gaff::Hash64 component) const
+{
+	const auto it = Gaff::Find(_shared_vars, component, [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool {
+		return lhs.ref_def->getReflectionInstance().getHash() == rhs;
+	});
+
+	return it != _shared_vars.end();
+}
+
+bool ECSArchetype::hasComponent(Gaff::Hash64 component) const
+{
+	const auto it = Gaff::Find(_vars, component, [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool {
+		return lhs.ref_def->getReflectionInstance().getHash() == rhs;
+	});
+
+	return it != _vars.end();
 }
 
 int32_t ECSArchetype::sharedSize(void) const
@@ -433,7 +395,71 @@ bool ECSArchetype::remove(int32_t index)
 	return true;
 }
 
-void ECSArchetype::initShared(const Gaff::ISerializeReader& reader)
+template <bool shared>
+void ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
+{
+	const auto guard = (shared) ?
+		reader.enterElementGuard("shared_components") :
+		reader.enterElementGuard("components");
+
+	GAFF_REF(base_archetype); // Silence warning in non-shared version.
+	bool read_data = true;
+
+	// Not gonna lie, this would probably be easier to read with a goto.
+	if (!reader.isNull()) {
+		if (!reader.isObject()) {
+			// $TODO: Log error
+			read_data = false;
+		}
+	} else {
+		read_data = false;
+	}
+
+	if (read_data) {
+		const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+
+		reader.forEachInObject([&](const char* component_name) -> bool
+		{
+			if (!reader.isObject()) {
+				// $TODO: Log error
+				return false;
+			}
+
+			const Gaff::Hash64 component_hash = Gaff::FNV1aHash64String(component_name);
+			const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(component_hash);
+
+			if (!ref_def) {
+				// $TODO: Log error
+				return false;
+			}
+
+			const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
+
+			if (!ecs) {
+				// $TODO: Log error
+				return false;
+			}
+
+			if constexpr (shared) {
+				if (!hasSharedComponent(component_hash)) {
+					addShared(*ref_def);
+				}
+			} else {
+				if (!hasComponent(component_hash)) {
+					add(*ref_def);
+				}
+			}
+
+			return false;
+		});
+
+		if constexpr (shared) {
+			initShared(reader, base_archetype);
+		}
+	}
+}
+
+void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
 {
 	if (!_shared_alloc_size) {
 		return;
@@ -441,6 +467,11 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader)
 
 	ProxyAllocator allocator("ECS");
 	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+
+	// Copy base archetype shared data so that our overrides will not be stomped.
+	if (base_archetype) {
+		copySharedInstanceData(*base_archetype);
+	}
 
 	int32_t index = 0;
 

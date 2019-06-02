@@ -87,7 +87,7 @@ public:
 	bool removeShared(const Gaff::IReflectionDefinition& ref_def);
 	bool removeShared(int32_t index);
 
-	bool finalize(const Gaff::ISerializeReader& reader);
+	bool finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype = nullptr);
 	bool finalize(void);
 
 	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
@@ -107,6 +107,9 @@ public:
 
 	int32_t getComponentSharedOffset(Gaff::Hash64 component) const;
 	int32_t getComponentOffset(Gaff::Hash64 component) const;
+
+	bool hasSharedComponent(Gaff::Hash64 component) const;
+	bool hasComponent(Gaff::Hash64 component) const;
 
 	int32_t sharedSize(void) const;
 	int32_t size(void) const;
@@ -163,7 +166,10 @@ private:
 	template <bool shared>
 	bool remove(int32_t index);
 
-	void initShared(const Gaff::ISerializeReader& reader);
+	template <bool shared>
+	void finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
+
+	void initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
 	void initShared(void);
 
 	void copySharedInstanceData(const ECSArchetype& old_archetype);

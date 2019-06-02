@@ -38,7 +38,7 @@ private:
 	Vector<ECSManager::ArchetypeReferencePtr> _modified_archetypes;
 	SerializeReaderWrapper _reader_wrapper;
 
-	bool loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype);
+	void loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype);
 	void archetypeLoaded(IResource&);
 	void loadLayer(IFile* file);
 

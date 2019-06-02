@@ -52,44 +52,10 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
-bool ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
+void ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
 {
 	ECSArchetype new_archetype;
-	bool success = true;
-
-	new_archetype.copy(base_archetype, true);
-
-	{
-		const auto guard = reader.enterElementGuard("shared_components");
-
-		if (!reader.isNull()) {
-			if (reader.isObject()) {
-				// Add shared components not present in archetype.
-				// Set values for shared components.
-			} else {
-				LogErrorResource("'shared_components' field is not an object.");
-				success = false;
-			}
-		}
-	}
-
-	{
-		const auto guard = reader.enterElementGuard("components");
-
-		if (!reader.isNull()) {
-			if (reader.isObject()) {
-				// Add components not present in archetype. [loop 1]
-				// Instantiate instance of entity.
-				// Set component values of entity instance. [loop 2]
-			}
-			else {
-				LogErrorResource("'components' field is not an object.");
-				success = false;
-			}
-		}
-	}
-
-	return success;
+	new_archetype.finalize(reader, &base_archetype);
 }
 
 void ECSLayerResource::archetypeLoaded(IResource&)
@@ -112,9 +78,9 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 			continue;
 		}
 
-		if (!loadOverrides(reader, arch_res->getArchetype())) {
-			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
-		}
+		/*if (!*/loadOverrides(reader, arch_res->getArchetype());/*) {*/
+			//LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
+		//}
 
 		++index;
 	}
