@@ -70,10 +70,11 @@ public:
 		RS_DELAYED
 	};
 
+	static constexpr bool Creatable = false;
+
 	void requestLoad(void);
 
 	virtual void load(void);
-	virtual bool readsFromDisk(void) const { return true; }
 
 	void addRef(void) const override;
 	void release(void) const override;
@@ -103,7 +104,7 @@ protected:
 private:
 	mutable std::atomic_int32_t _count = 0;
 
-	ResourceState _state = RS_PENDING;
+	ResourceState _state = RS_DELAYED;
 	HashString64 _file_path;
 
 	ResourceManager* _res_mgr = nullptr;

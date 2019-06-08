@@ -46,9 +46,9 @@ public:
 	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
-	static glm_vec4 GetX(void* component_begin);
-	static glm_vec4 GetY(void* component_begin);
-	static glm_vec4 GetZ(void* component_begin);
+	static glm_vec4 GetX(const void* component_begin);
+	static glm_vec4 GetY(const void* component_begin);
+	static glm_vec4 GetZ(const void* component_begin);
 
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
@@ -70,10 +70,10 @@ public:
 	static glm::quat Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::quat Get(ECSManager& ecs_mgr, EntityID id);
 
-	static glm_vec4 GetX(void* component_begin);
-	static glm_vec4 GetY(void* component_begin);
-	static glm_vec4 GetZ(void* component_begin);
-	static glm_vec4 GetW(void* component_begin);
+	static glm_vec4 GetX(const void* component_begin);
+	static glm_vec4 GetY(const void* component_begin);
+	static glm_vec4 GetZ(const void* component_begin);
+	static glm_vec4 GetW(const void* component_begin);
 
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
@@ -95,9 +95,9 @@ public:
 	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
-	static glm_vec4 GetX(void* component_begin);
-	static glm_vec4 GetY(void* component_begin);
-	static glm_vec4 GetZ(void* component_begin);
+	static glm_vec4 GetX(const void* component_begin);
+	static glm_vec4 GetY(const void* component_begin);
+	static glm_vec4 GetZ(const void* component_begin);
 
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void CopyShared(const void* old_value, void* new_value);
@@ -105,8 +105,31 @@ public:
 	glm::vec3 value = glm::one<glm::vec3>();
 };
 
+class Layer final
+{
+public:
+	// Slow versions for posterity.
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Gaff::Hash32 value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
+	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value);
+	static void Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
+
+	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, EntityID id);
+	static Gaff::Hash32 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
+	static Gaff::Hash32 Get(ECSManager& ecs_mgr, EntityID id);
+
+	static glm_uvec4 Get(const void* component_begin);
+
+	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyShared(const void* old_value, void* new_value);
+
+	Gaff::Hash32 value;
+};
+
 NS_END
 
 SHIB_REFLECTION_DECLARE(Position)
 SHIB_REFLECTION_DECLARE(Rotation)
 SHIB_REFLECTION_DECLARE(Scale)
+SHIB_REFLECTION_DECLARE(Layer)

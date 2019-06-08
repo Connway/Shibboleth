@@ -43,18 +43,44 @@ public:
 		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
 	}
 
-	template <size_t size>
-	IResourcePtr requestResource(const char (&name)[size], bool delay_load = false)
-	{
-		return requestResource(Gaff::HashStringTemp64(name, size - 1), delay_load);
-	}
-
 	IResourcePtr requestResource(const char* name, bool delay_load = false)
 	{
 		return requestResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)), delay_load);
 	}
 
+	template <class T>
+	Gaff::RefPtr<T> createResourceT(const char* name)
+	{
+		return createResource<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+	}
+
+	template <class T>
+	Gaff::RefPtr<T> createResourceT(Gaff::HashStringTemp64 name)
+	{
+		static_assert(T::Creatable, "Resource is not a creatable type.");
+		IResourcePtr old_ptr = createResource(name, Reflection<T>::GetReflectionDefinition());
+		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+	}
+
+	IResourcePtr createResource(const char* name, const Gaff::IReflectionDefinition& ref_def)
+	{
+		return createResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)), ref_def);
+	}
+
+	template <class T>
+	Gaff::RefPtr<T> getResource(const char* name)
+	{
+		return getResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+	}
+
+	IResourcePtr getResource(const char* name)
+	{
+		return getResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+	}
+
+	IResourcePtr createResource(Gaff::HashStringTemp64 name, const Gaff::IReflectionDefinition& ref_def);
 	IResourcePtr requestResource(Gaff::HashStringTemp64 name, bool delay_load = false);
+	IResourcePtr getResource(Gaff::HashStringTemp64 name);
 	void waitForResource(const IResource& resource) const;
 
 private:

@@ -55,10 +55,6 @@ void IResource::requestLoad(void)
 
 void IResource::load(void)
 {
-	if (!readsFromDisk()) {
-		return;
-	}
-
 	IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {

@@ -34,6 +34,7 @@ public:
 
 	template <class T, class Var>
 	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true);  }
+
 	template <class T, class Var, class Ret>
 	void apply(Gaff::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
 
@@ -41,6 +42,7 @@ public:
 };
 
 
+// Marks a class to only be loaded when we are running the Editor.
 class EditorAttribute final : public Gaff::IAttribute
 {
 public:
@@ -50,6 +52,38 @@ public:
 };
 
 
+class RangeAttribute final : public Gaff::IAttribute
+{
+public:
+	RangeAttribute(double min = eastl::numeric_limits<double>::min(), double max = eastl::numeric_limits<double>::max(), double step = 1.0);
+
+	double getStep(void) const;
+	double getMin(void) const;
+	double getMax(void) const;
+
+	IAttribute* clone(void) const override;
+
+private:
+	double _step;
+	double _min;
+	double _max;
+
+	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
+};
+
+
+// Gaff::Hash32 and Gaff::Hash64 are just typedefs for uint32_t and uint64_t respectively.
+// Use this attribute on vars using those types to denote that it is a string hash and not a normal integer. 
+class HashStringAttribute final : public Gaff::IAttribute
+{
+public:
+	IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(HashStringAttribute);
+};
+
+
+// Template Attributes
 template <class T, class Msg>
 class GlobalMessageAttribute final : public Gaff::IAttribute
 {
@@ -102,34 +136,17 @@ private:
 template <class T, class Msg>
 VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
 
-
-class RangeAttribute final : public Gaff::IAttribute
-{
-public:
-	RangeAttribute(double min = eastl::numeric_limits<double>::min(), double max = eastl::numeric_limits<double>::max(), double step = 1.0);
-
-	double getStep(void) const;
-	double getMin(void) const;
-	double getMax(void) const;
-
-	IAttribute* clone(void) const override;
-
-private:
-	double _step;
-	double _min;
-	double _max;
-
-	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
-};
-
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
 	.BASE(Gaff::IAttribute)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(GlobalMessageAttribute, T, Msg)
 
 NS_END
 
+
 SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(EditorAttribute)
 SHIB_REFLECTION_DECLARE(RangeAttribute)
+SHIB_REFLECTION_DECLARE(HashStringAttribute)
+
 SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
 SHIB_TEMPLATE_REFLECTION_DEFINE(GlobalMessageAttribute, T, Msg)

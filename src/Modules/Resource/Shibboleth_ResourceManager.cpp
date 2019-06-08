@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ResourceManager.h"
-#include "Shibboleth_ResourceExtensionAttribute.h"
+#include "Shibboleth_CommonResourceAttributes.h"
 #include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -79,6 +79,43 @@ void ResourceManager::allModulesLoaded(void)
 	}
 }
 
+IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const Gaff::IReflectionDefinition& ref_def)
+{
+	if (ref_def.getClassAttr<CreatableAttribute>()) {
+		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
+		return IResourcePtr();
+	}
+
+	std::lock_guard<std::mutex> lock(_res_lock);
+
+	auto it_res = eastl::lower_bound(
+		_resources.begin(),
+		_resources.end(),
+		name.getHash(),
+		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
+		{
+			return lhs->getFilePath().getHash() < rhs;
+		}
+	);
+
+	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+		return IResourcePtr(*it_res);
+	}
+
+	// create instance
+	const auto factory = ref_def.getFactory<>();
+
+	if (!factory) {
+		LogErrorResource("Resource type '%s' does not have a default constructor.", ref_def.getReflectionInstance().getName());
+		return IResourcePtr();
+	}
+
+	void* const data = factory(_allocator);
+	IResource* resource = ref_def.GET_INTERFACE(IResource, data);
+
+	return IResourcePtr(resource);
+}
+
 IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool delay_load)
 {
 	std::lock_guard<std::mutex> lock(_res_lock);
@@ -120,13 +157,32 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool 
 
 	_resources.insert(it_res, res);
 
-	if (delay_load) {
-		res->_state = IResource::RS_DELAYED;
-	} else {
+	if (!delay_load) {
 		requestLoad(*res);
 	}
 
 	return IResourcePtr(res);
+}
+
+IResourcePtr ResourceManager::getResource(Gaff::HashStringTemp64 name)
+{
+	std::lock_guard<std::mutex> lock(_res_lock);
+
+	auto it_res = eastl::lower_bound(
+		_resources.begin(),
+		_resources.end(),
+		name.getHash(),
+		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
+	{
+		return lhs->getFilePath().getHash() < rhs;
+	}
+	);
+
+	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+		return IResourcePtr(*it_res);
+	}
+
+	return IResourcePtr();
 }
 
 void ResourceManager::waitForResource(const IResource& resource) const
@@ -150,8 +206,18 @@ void ResourceManager::removeResource(const IResource& resource)
 
 void ResourceManager::requestLoad(IResource& resource)
 {
+	if (resource._state != IResource::RS_DELAYED) {
+		LogErrorResource(
+			"Call to ResourceManager::requestLoad() called on resource '%s' and is not marked for delayed load.",
+			resource._file_path.getBuffer()
+		);
+
+		return;
+	}
+
+	resource._state = IResource::RS_PENDING;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (resource.readsFromDisk()) ? JPI_READ_FILE : 0);
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_READ_FILE);
 }
 
 void ResourceManager::ResourceFileLoadJob(void* data)

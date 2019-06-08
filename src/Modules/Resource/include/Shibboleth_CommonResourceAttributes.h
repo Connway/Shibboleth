@@ -20,30 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ResourceExtensionAttribute.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE(ResExtAttribute)
+#include <Shibboleth_Reflection.h>
+#include <Gaff_HashString.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResExtAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(ResExtAttribute)
-
-ResExtAttribute::ResExtAttribute(const char* extension):
-	_extension(extension, eastl::CharStrlen(extension))
+class CreatableAttribute final : public Gaff::IAttribute
 {
-}
+public:
+	Gaff::IAttribute* clone(void) const override;
 
-const HashStringTemp32& ResExtAttribute::getExtension(void) const
-{
-	return _extension;
-}
+	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
+};
 
-Gaff::IAttribute* ResExtAttribute::clone(void) const
+class ResExtAttribute final : public Gaff::IAttribute
 {
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ResExtAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
-}
+public:
+	ResExtAttribute(const char* extension);
+
+	const HashStringTemp32& getExtension(void) const;
+
+	Gaff::IAttribute* clone(void) const override;
+
+private:
+	HashStringTemp32 _extension;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(CreatableAttribute)
+SHIB_REFLECTION_DECLARE(ResExtAttribute)

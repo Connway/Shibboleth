@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_PrefabResource.h"
 #include "Shibboleth_ObjectManager.h"
-#include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_CommonResourceAttributes.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Gaff_SerializeReader.h>

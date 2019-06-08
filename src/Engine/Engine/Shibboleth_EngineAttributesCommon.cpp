@@ -27,10 +27,11 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_DEFINE(EditorAttribute)
 SHIB_REFLECTION_DEFINE(RangeAttribute)
+SHIB_REFLECTION_DEFINE(HashStringAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(ReadOnlyAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(ReadOnlyAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 {
@@ -39,7 +40,7 @@ Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(EditorAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(EditorAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* EditorAttribute::clone(void) const
 {
@@ -48,7 +49,7 @@ Gaff::IAttribute* EditorAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(RangeAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(RangeAttribute, Gaff::IAttribute)
 
 RangeAttribute::RangeAttribute(double min, double max, double step):
 	_step(step), _min(min), _max(max)
@@ -74,6 +75,15 @@ Gaff::IAttribute* RangeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(RangeAttribute, allocator.getPoolIndex("Reflection"), allocator, _min, _max);
+}
+
+
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(HashStringAttribute, Gaff::IAttribute)
+
+Gaff::IAttribute* HashStringAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(HashStringAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END
