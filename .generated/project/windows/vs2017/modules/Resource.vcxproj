@@ -226,12 +226,12 @@ premake5 gen_module_header --module=Resource</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceExtensionAttribute.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_CommonResourceAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceExtensionAttribute.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_CommonResourceAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
   </ItemGroup>

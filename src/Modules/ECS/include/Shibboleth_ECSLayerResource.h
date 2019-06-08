@@ -30,6 +30,8 @@ NS_SHIBBOLETH
 class ECSLayerResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
+
 	ECSLayerResource(void);
 	~ECSLayerResource(void);
 

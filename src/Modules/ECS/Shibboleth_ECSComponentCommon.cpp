@@ -23,10 +23,12 @@ THE SOFTWARE.
 #include "Shibboleth_ECSComponentCommon.h"
 #include "Shibboleth_ECSAttributes.h"
 #include "Shibboleth_ECSManager.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Position)
 SHIB_REFLECTION_EXTERNAL_DEFINE(Rotation)
 SHIB_REFLECTION_EXTERNAL_DEFINE(Scale)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Layer)
 
 NS_SHIBBOLETH
 
@@ -101,19 +103,19 @@ glm::vec3 Position::Get(ECSManager& ecs_mgr, EntityID id)
 	);
 }
 
-glm_vec4 Position::GetX(void* component_begin)
+glm_vec4 Position::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
 }
 
-glm_vec4 Position::GetY(void* component_begin)
+glm_vec4 Position::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 4);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
 }
 
-glm_vec4 Position::GetZ(void* component_begin)
+glm_vec4 Position::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
 void Position::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -208,24 +210,24 @@ glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
 	);
 }
 
-glm_vec4 Rotation::GetX(void* component_begin)
+glm_vec4 Rotation::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 4);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
 }
 
-glm_vec4 Rotation::GetY(void* component_begin)
+glm_vec4 Rotation::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
-glm_vec4 Rotation::GetZ(void* component_begin)
+glm_vec4 Rotation::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 12);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 }
 
-glm_vec4 Rotation::GetW(void* component_begin)
+glm_vec4 Rotation::GetW(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
 }
 
 void Rotation::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -243,7 +245,6 @@ void Rotation::CopyShared(const void* old_value, void* new_value)
 {
 	reinterpret_cast<Rotation*>(new_value)->value = reinterpret_cast<const Rotation*>(old_value)->value;
 }
-
 
 
 
@@ -318,19 +319,19 @@ glm::vec3 Scale::Get(ECSManager& ecs_mgr, EntityID id)
 	);
 }
 
-glm_vec4 Scale::GetX(void* component_begin)
+glm_vec4 Scale::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin));
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
 }
 
-glm_vec4 Scale::GetY(void* component_begin)
+glm_vec4 Scale::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 4);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
 }
 
-glm_vec4 Scale::GetZ(void* component_begin)
+glm_vec4 Scale::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<float*>(component_begin) + 8);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
 void Scale::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -346,6 +347,81 @@ void Scale::Copy(const void* old_begin, int32_t old_index, void* new_begin, int3
 void Scale::CopyShared(const void* old_value, void* new_value)
 {
 	reinterpret_cast<Scale*>(new_value)->value = reinterpret_cast<const Scale*>(old_value)->value;
+}
+
+
+
+SHIB_REFLECTION_BUILDER_BEGIN(Layer)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Scene"),
+		ECSVarAttribute<Gaff::Hash32>()
+	)
+
+	.staticFunc("CopyShared", &Layer::CopyShared)
+	.staticFunc("Copy", &Layer::Copy)
+
+	.var("Name", &Layer::value, HashStringAttribute())
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Layer)
+
+void Layer::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Gaff::Hash32 value)
+{
+	ecs_mgr.getComponentShared<Layer>(archetype)->value = value;
+}
+
+void Layer::SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
+{
+	ecs_mgr.getComponentShared<Layer>(id)->value = value;
+}
+
+void Layer::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value)
+{
+	HashString32* const component = reinterpret_cast<HashString32*>(ecs_mgr.getComponent(query_result, entity_index));
+	*component = value;
+}
+
+void Layer::Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
+{
+	HashString32* const component = reinterpret_cast<HashString32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	*component = value;
+}
+
+Gaff::Hash32 Layer::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+{
+	return ecs_mgr.getComponentShared<Layer>(archetype)->value;
+}
+
+Gaff::Hash32 Layer::GetShared(ECSManager& ecs_mgr, EntityID id)
+{
+	return ecs_mgr.getComponentShared<Layer>(id)->value;
+}
+
+Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+{
+	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
+}
+
+Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, EntityID id)
+{
+	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+}
+
+glm_uvec4 Layer::Get(const void* component_begin)
+{
+	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
+}
+
+void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+{
+	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
+	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
+
+	*new_value = *old_value;
+}
+
+void Layer::CopyShared(const void* old_value, void* new_value)
+{
+	reinterpret_cast<Layer*>(new_value)->value = reinterpret_cast<const Layer*>(old_value)->value;
 }
 
 NS_END

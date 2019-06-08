@@ -20,28 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_CommonResourceAttributes.h"
 
-#include <Shibboleth_Reflection.h>
-#include <Gaff_HashString.h>
+SHIB_REFLECTION_DEFINE(CreatableAttribute)
+SHIB_REFLECTION_DEFINE(ResExtAttribute)
 
 NS_SHIBBOLETH
 
-class ResExtAttribute final : public Gaff::IAttribute
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(CreatableAttribute, Gaff::IAttribute)
+
+Gaff::IAttribute* CreatableAttribute::clone(void) const
 {
-public:
-	ResExtAttribute(const char* extension);
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(CreatableAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
 
-	const HashStringTemp32& getExtension(void) const;
 
-	Gaff::IAttribute* clone(void) const override;
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(ResExtAttribute, Gaff::IAttribute)
 
-private:
-	HashStringTemp32 _extension;
+ResExtAttribute::ResExtAttribute(const char* extension):
+	_extension(extension, eastl::CharStrlen(extension))
+{
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
-};
+const HashStringTemp32& ResExtAttribute::getExtension(void) const
+{
+	return _extension;
+}
+
+Gaff::IAttribute* ResExtAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ResExtAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ResExtAttribute)
