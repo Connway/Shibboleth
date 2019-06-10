@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_CommonResourceAttributes.h"
+#include "Shibboleth_ResourceAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE(CreatableAttribute)
 SHIB_REFLECTION_DEFINE(ResExtAttribute)

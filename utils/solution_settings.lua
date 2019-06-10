@@ -105,6 +105,7 @@ filter { "action:vs*" }
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
 	systemversion "latest"
+	disablewarnings "4307" -- For hash functions.
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }

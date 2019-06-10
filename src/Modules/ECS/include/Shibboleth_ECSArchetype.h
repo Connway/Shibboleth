@@ -88,6 +88,7 @@ public:
 	bool removeShared(int32_t index);
 
 	bool finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype = nullptr);
+	bool finalize(const ECSArchetype& base_archetype);
 	bool finalize(void);
 
 	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
@@ -115,6 +116,7 @@ public:
 	int32_t size(void) const;
 
 	Gaff::Hash64 getHash(void) const;
+	void calculateHash(void);
 
 	const void* getSharedData(int32_t index) const;
 	void* getSharedData(int32_t index);
@@ -174,7 +176,6 @@ private:
 
 	void copySharedInstanceData(const ECSArchetype& old_archetype);
 	void destroySharedData(void);
-	void calculateHash(void);
 };
 
 NS_END

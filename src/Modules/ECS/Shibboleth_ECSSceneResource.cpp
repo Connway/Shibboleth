@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSSceneResource.h"
-#include <Shibboleth_CommonResourceAttributes.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>

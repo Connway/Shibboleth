@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetypeResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSLayer.cpp" />
@@ -56,7 +57,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSQuery.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSSceneResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetypeResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\ECS\project_generator.lua" />

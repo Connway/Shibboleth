@@ -15,18 +15,18 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceAttributesCommon.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_CommonResourceAttributes.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_CommonResourceAttributes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Resource\project_generator.lua" />

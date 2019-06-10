@@ -37,10 +37,16 @@ public:
 
 private:
 	Vector<ECSArchetypeResourcePtr> _archetypes;
-	Vector<ECSManager::ArchetypeReferencePtr> _modified_archetypes;
+	Vector<ECSManager::ArchetypeReferencePtr> _archetype_refs;
 	SerializeReaderWrapper _reader_wrapper;
 
-	bool loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype);
+	bool loadOverrides(
+		const Gaff::ISerializeReader& reader,
+		ECSManager& ecs_mgr,
+		const ECSArchetype& base_archetype,
+		Gaff::Hash32 layer_name
+	);
+
 	void archetypeLoaded(IResource&);
 	void loadLayer(IFile* file);
 

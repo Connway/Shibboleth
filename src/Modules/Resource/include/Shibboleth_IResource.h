@@ -41,16 +41,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4307)
-#endif
-
 constexpr Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
 
 
 class ResourceManager;

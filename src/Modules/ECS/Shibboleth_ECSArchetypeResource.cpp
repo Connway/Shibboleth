@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetypeResource.h>
-#include <Shibboleth_CommonResourceAttributes.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ECSManager.h>

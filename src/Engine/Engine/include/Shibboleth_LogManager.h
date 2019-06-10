@@ -100,16 +100,7 @@ private:
 	GAFF_NO_MOVE(LogManager);
 };
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4307)
-#endif
-
 constexpr Gaff::Hash32 LOG_CHANNEL_DEFAULT = Gaff::FNV1aHash32Const("Default");
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
 
 NS_END
 

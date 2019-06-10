@@ -20,11 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4307)
-#endif
-
 NS_GAFF
 
 template <bool is_pointer>
@@ -1869,7 +1864,3 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getAttribute(const Attribu
 }
 
 NS_END
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
