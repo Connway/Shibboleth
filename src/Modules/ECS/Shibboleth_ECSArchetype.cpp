@@ -101,11 +101,22 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 	return success;
 }
 
+bool ECSArchetype::finalize(const ECSArchetype& base_archetype)
+{
+	destroySharedData();
+	initShared();
+	copySharedInstanceData(base_archetype);
+	calculateHash();
+
+	return true;
+}
+
 bool ECSArchetype::finalize(void)
 {
 	destroySharedData();
 	initShared();
 	calculateHash();
+
 	return true;
 }
 
@@ -229,6 +240,25 @@ int32_t ECSArchetype::size(void) const
 Gaff::Hash64 ECSArchetype::getHash(void) const
 {
 	return _hash;
+}
+
+void ECSArchetype::calculateHash(void)
+{
+	_hash = Gaff::INIT_HASH64;
+
+	if (_shared_instances) {
+		_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);
+	}
+
+	for (const RefDefOffset& data : _shared_vars) {
+		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
+		_hash = Gaff::FNV1aHash64T(hash, _hash);
+	}
+
+	for (const RefDefOffset& data : _vars) {
+		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
+		_hash = Gaff::FNV1aHash64T(hash, _hash);
+	}
 }
 
 const void* ECSArchetype::getSharedData(int32_t index) const
@@ -573,25 +603,6 @@ void ECSArchetype::destroySharedData(void)
 
 		SHIB_FREE(_shared_instances, GetAllocator());
 		_shared_instances = nullptr;
-	}
-}
-
-void ECSArchetype::calculateHash(void)
-{
-	_hash = Gaff::INIT_HASH64;
-
-	if (_shared_instances) {
-		_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);
-	}
-
-	for (const RefDefOffset& data : _shared_vars) {
-		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
-		_hash = Gaff::FNV1aHash64T(hash, _hash);
-	}
-
-	for (const RefDefOffset& data : _vars) {
-		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
-		_hash = Gaff::FNV1aHash64T(hash, _hash);
 	}
 }
 

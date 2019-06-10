@@ -38,11 +38,6 @@ THE SOFTWARE.
 
 #define INTERFACE_CAST(interface_type, object) Gaff::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable: 4307)
-#endif
-
 #ifndef GAFF_REFLECTION_NAMESPACE
 	#define GAFF_REFLECTION_NAMESPACE Gaff
 #endif
@@ -1115,7 +1110,3 @@ Derived* InterfaceCast(Base& object, Hash64 interface_name)
 }
 
 NS_END
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif

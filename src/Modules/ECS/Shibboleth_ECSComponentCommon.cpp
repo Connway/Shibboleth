@@ -358,7 +358,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Layer)
 	)
 
 	.staticFunc("CopyShared", &Layer::CopyShared)
-	.staticFunc("Copy", &Layer::Copy)
+	//.staticFunc("Copy", &Layer::Copy)
 
 	.var("Name", &Layer::value, HashStringAttribute())
 	.ctor<>()
@@ -374,17 +374,17 @@ void Layer::SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
 	ecs_mgr.getComponentShared<Layer>(id)->value = value;
 }
 
-void Layer::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value)
-{
-	HashString32* const component = reinterpret_cast<HashString32*>(ecs_mgr.getComponent(query_result, entity_index));
-	*component = value;
-}
-
-void Layer::Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
-{
-	HashString32* const component = reinterpret_cast<HashString32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	*component = value;
-}
+//void Layer::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value)
+//{
+//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
+//	*component = value;
+//}
+//
+//void Layer::Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
+//{
+//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+//	*component = value;
+//}
 
 Gaff::Hash32 Layer::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
@@ -396,28 +396,28 @@ Gaff::Hash32 Layer::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return ecs_mgr.getComponentShared<Layer>(id)->value;
 }
 
-Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
-{
-	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
-}
+//Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+//{
+//	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
+//}
+//
+//Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, EntityID id)
+//{
+//	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+//}
 
-Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, EntityID id)
-{
-	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-}
+//glm_uvec4 Layer::Get(const void* component_begin)
+//{
+//	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
+//}
 
-glm_uvec4 Layer::Get(const void* component_begin)
-{
-	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
-}
-
-void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
-{
-	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
-	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
-
-	*new_value = *old_value;
-}
+//void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+//{
+//	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
+//	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
+//
+//	*new_value = *old_value;
+//}
 
 void Layer::CopyShared(const void* old_value, void* new_value)
 {

@@ -29,7 +29,7 @@ ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff:
 	ECSArchetype archetype;
 	archetype.copy(old_archetype);
 	RemoveSharedComponentHelper<Components...>(archetype);
-	archetype.finalize();
+	archetype.finalize(old_archetype);
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
 	migrate(id, archetype.getHash());
@@ -44,7 +44,7 @@ ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash6
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
-	archetype.copy(old_archetype);
+	archetype.copy(old_archetype, true);
 	RemoveComponentHelper<Components...>(archetype);
 	archetype.finalize();
 
@@ -63,7 +63,7 @@ ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Ha
 	ECSArchetype archetype;
 	archetype.copy(old_archetype);
 	AddSharedComponentHelper<Components...>(archetype);
-	archetype.finalize();
+	archetype.finalize(old_archetype);
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
 	migrate(id, archetype.getHash());
@@ -78,7 +78,7 @@ ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 a
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
-	archetype.copy(old_archetype);
+	archetype.copy(old_archetype, true);
 	AddComponentHelper<Components...>(archetype);
 	archetype.finalize();
 
@@ -91,10 +91,12 @@ ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 a
 template <class... Components>
 ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
 {
+	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id));
+
+	archetype.copy(base_archetype);
 	RemoveSharedComponentHelper<Components...>(archetype);
-	archetype.finalize();
+	archetype.finalize(base_archetype);
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
 	migrate(id, archetype.getHash());
@@ -106,11 +108,11 @@ template <class... Components>
 ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
 {
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id));
+	archetype.copy(getArchetype(id), true);
 	RemoveComponentHelper<Components...>(archetype);
 	archetype.finalize();
 
-	ECSManager::ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
+	const auto arch_ref = addArchetypeInternal(std::move(archetype));
 	migrate(id, archetype.getHash());
 
 	return arch_ref;
@@ -119,10 +121,12 @@ ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id
 template <class... Components>
 ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID id)
 {
+	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id));
+
+	archetype.copy(base_archetype);
 	AddSharedComponentHelper<Components...>(archetype);
-	archetype.finalize();
+	archetype.finalize(base_archetype);
 
 	ECSManager::ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
 	migrate(id, archetype.getHash());
@@ -134,7 +138,7 @@ template <class... Components>
 ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 {
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id));
+	archetype.copy(getArchetype(id), true);
 	AddComponentHelper<Components...>(archetype);
 	archetype.finalize();
 

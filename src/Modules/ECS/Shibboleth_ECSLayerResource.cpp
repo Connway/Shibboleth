@@ -21,8 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSLayerResource.h"
+#include "Shibboleth_ECSComponentCommon.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_CommonResourceAttributes.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
@@ -52,10 +53,30 @@ ECSLayerResource::~ECSLayerResource(void)
 {
 }
 
-bool ECSLayerResource::loadOverrides(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
+bool ECSLayerResource::loadOverrides(
+	const Gaff::ISerializeReader& reader,
+	ECSManager& ecs_mgr,
+	const ECSArchetype& base_archetype,
+	Gaff::Hash32 layer_name
+)
 {
 	ECSArchetype new_archetype;
-	return new_archetype.finalize(reader, &base_archetype);
+	new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
+
+	const bool success = new_archetype.finalize(reader, &base_archetype);
+
+	if (success) {
+		const int32_t offset = new_archetype.getComponentSharedOffset(Reflection<Layer>::GetHash());
+		Layer* const layer = reinterpret_cast<Layer*>(reinterpret_cast<int8_t*>(new_archetype.getSharedData()) + offset);
+
+		layer->value = layer_name;
+		new_archetype.calculateHash();
+
+		ecs_mgr.addArchetype(std::move(new_archetype), _archetype_refs.emplace_back());
+		return true;
+	}
+
+	return false;
 }
 
 void ECSLayerResource::archetypeLoaded(IResource&)
@@ -66,9 +87,28 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 		}
 	}
 
-	const auto& reader = *_reader_wrapper.getReader();
-	const auto objects_guard = reader.enterElementGuard("objects");
+	Gaff::Hash32 layer_name = Gaff::FNV1aHash32Const("<default>");
 	int32_t index = 0;
+
+	const auto& reader = *_reader_wrapper.getReader();
+
+	{
+		const auto name_guard = reader.enterElementGuard("name");
+
+		if (!reader.isNull() && !reader.isString()) {
+			LogErrorResource("ECSLayerResource - 'name' field is not a string.");
+		}
+
+		if (reader.isString()) {
+			char name_temp[256] = { 0 };
+			reader.readString(name_temp, sizeof(name_temp), "<default>");
+
+			layer_name = Gaff::FNV1aHash32String(name_temp);
+		}
+	}
+
+	const auto objects_guard = reader.enterElementGuard("objects");
+	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
 
 	for (const auto& arch_res : _archetypes) {
 		const auto element_guard = reader.enterElementGuard(index);
@@ -78,7 +118,7 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 			continue;
 		}
 
-		if (!loadOverrides(reader, arch_res->getArchetype())) {
+		if (!loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name)) {
 			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
 		}
 

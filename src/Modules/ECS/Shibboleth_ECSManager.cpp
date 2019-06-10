@@ -461,8 +461,10 @@ ECSManager::ArchetypeReference* ECSManager::modifyInternal(EntityID& id, Archety
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 
+	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id));
+
+	archetype.copy(base_archetype);
 
 	if (modifier.removeShared) {
 		modifier.removeShared(archetype);
@@ -480,7 +482,7 @@ ECSManager::ArchetypeReference* ECSManager::modifyInternal(EntityID& id, Archety
 		modifier.add(archetype);
 	}
 
-	archetype.finalize();
+	archetype.finalize(base_archetype);
 
 	ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
 	migrate(id, archetype.getHash());
