@@ -498,6 +498,11 @@ const char* MessagePackNode::getErrorText(void) const
 
 MessagePackReader::MessagePackReader(void)
 {
+	mpack_memset(&_tree, 0, sizeof(_tree));
+	_tree.nil_node.type = mpack_type_nil;
+	_tree.missing_node.type = mpack_type_missing;
+	_tree.max_size = SIZE_MAX;
+	_tree.max_nodes = SIZE_MAX;
 }
 
 MessagePackReader::~MessagePackReader(void)

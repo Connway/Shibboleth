@@ -342,9 +342,6 @@
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
       <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
     </ProjectReference>
@@ -356,6 +353,9 @@
     </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\ECS.vcxproj">
+      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
