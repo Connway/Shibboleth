@@ -428,6 +428,7 @@ bool ECSArchetype::remove(int32_t index)
 template <bool shared>
 bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
 {
+	// Not doing a move?
 	const auto guard = (shared) ?
 		reader.enterElementGuard("shared_components") :
 		reader.enterElementGuard("components");

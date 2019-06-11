@@ -186,15 +186,23 @@ public:
 class ScopeGuard
 {
 public:
-	GAFF_MOVE_DEFAULT(ScopeGuard);
 	GAFF_NO_COPY(ScopeGuard);
 
-	ScopeGuard(const ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
-	ScopeGuard(const ISerializeReader& reader, int32_t index): _reader(reader) { _reader.enterElement(index); }
-	~ScopeGuard(void) { _reader.exitElement(); }
+	ScopeGuard(const ISerializeReader& reader, const char* key): _reader(&reader) { _reader->enterElement(key); }
+	ScopeGuard(const ISerializeReader& reader, int32_t index): _reader(&reader) { _reader->enterElement(index); }
+	~ScopeGuard(void) { if (_reader) _reader->exitElement(); }
+
+	ScopeGuard(ScopeGuard&& guard): _reader(guard._reader) { guard._reader = nullptr; }
+
+	ScopeGuard& operator=(ScopeGuard&& rhs)
+	{
+		_reader = rhs._reader;
+		rhs._reader = nullptr;
+		return *this;
+	}
 
 private:
-	const ISerializeReader& _reader;
+	const ISerializeReader* _reader = nullptr;
 };
 
 NS_END

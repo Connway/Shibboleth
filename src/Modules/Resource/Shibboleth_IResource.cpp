@@ -70,6 +70,9 @@ void IResource::load(void)
 
 		Gaff::JobData job_data = { LoadJob, res_data };
 		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, cb_attr->getPool());
+
+	} else {
+		failed();
 	}
 }
 
@@ -95,6 +98,11 @@ int32_t IResource::getRefCount(void) const
 
 int32_t IResource::addLoadedCallback(const eastl::function<void (IResource&)>& callback)
 {
+	if (_state != IResource::RS_DELAYED && _state != IResource::RS_PENDING) {
+		callback(*this);
+		return -1;
+	}
+
 	const int32_t id = _next_id++;
 	_callbacks.emplace(id, callback);
 	return id;
@@ -102,6 +110,11 @@ int32_t IResource::addLoadedCallback(const eastl::function<void (IResource&)>& c
 
 int32_t IResource::addLoadedCallback(eastl::function<void (IResource&)>&& callback)
 {
+	if (_state != IResource::RS_DELAYED && _state != IResource::RS_PENDING) {
+		callback(*this);
+		return -1;
+	}
+
 	const int32_t id = _next_id++;
 	_callbacks.emplace(id, std::move(callback));
 	return id;
@@ -161,13 +174,14 @@ IFile* IResource::loadFile(const char* file_path)
 
 void IResource::succeeded(void)
 {
-	callCallbacks();
 	_state = RS_LOADED;
+	callCallbacks();
 }
 
 void IResource::failed(void)
 {
 	_state = RS_FAILED;
+	callCallbacks();
 }
 
 void IResource::callCallbacks(void)

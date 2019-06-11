@@ -35,7 +35,8 @@ THE SOFTWARE.
 
 //#include <Shibboleth_ICameraComponent.h>
 
-//#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_ECSSceneResource.h>
 //#include <Shibboleth_PrefabResource.h>
 
 SHIB_REFLECTION_DEFINE(MainLoop)
@@ -155,22 +156,16 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	//ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
-	//PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");
+	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	//res_mgr.waitForResource(*prefab);
+	auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
 
-	//if (prefab->hasFailed()) {
-	//	GetApp().quit();
-	//	return;
-	//}
+	res_mgr.waitForResource(*scene_res);
 
-	//const Object* const object = prefab->getPrefab();
-
-	//const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();
-	//const AngelScriptResourcePtr& script = asc->getScript();
-
-	//res_mgr.waitForResource(*script);
+	if (scene_res->hasFailed()) {
+		GetApp().quit();
+		return;
+	}
 
 	GetApp().quit();
 }

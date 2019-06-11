@@ -111,6 +111,10 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
 
 	for (const auto& arch_res : _archetypes) {
+		if (!arch_res->isLoaded()) {
+			continue;
+		}
+
 		const auto element_guard = reader.enterElementGuard(index);
 		const auto override_guard = reader.enterElementGuard("overrides");
 

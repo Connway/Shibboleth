@@ -82,9 +82,6 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 			HashString64(name),
 		});
 
-		LayerData& data = _layers.back();
-		data.layer = res_mgr.requestResourceT<ECSLayerResource>(path, delay_load);
-
 		return false;
 	});
 
@@ -102,18 +99,16 @@ void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
 
 void ECSSceneResource::layerLoaded(IResource&)
 {
-	if (getState() == IResource::RS_PENDING) {
-		for (const LayerData& layer : _layers) {
-			const auto state = layer.layer->getState();
+	for (const LayerData& layer : _layers) {
+		const auto state = layer.layer->getState();
 
-			if (state == IResource::RS_PENDING) {
-				return;
-			}
+		if (state == IResource::RS_PENDING) {
+			return;
 		}
-
-		// Even if we have a failed layer, consider us loaded.
-		succeeded();
 	}
+
+	// Even if we have a failed layer, consider us loaded.
+	succeeded();
 }
 
 void ECSSceneResource::loadScene(IFile* file)

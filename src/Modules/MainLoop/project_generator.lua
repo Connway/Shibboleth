@@ -24,6 +24,11 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Dependencies/EASTL/include"
+
+			, base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/ECS/include",
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/rapidjson"
 		}
 
 	project "MainLoopModule"
@@ -41,10 +46,24 @@ local GenerateProject = function()
 		ModuleIncludesAndLinks("MainLoop")
 		SetupConfigMap()
 		ModuleCopy()
+		NewDeleteLinkFix()
+
+		local deps =
+		{
+			"Resource",
+			"ECS"
+		}
+
+		dependson(deps)
+		links(deps)
 end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("MainLoop")
+
+	-- temp
+	table.insert(deps, "Resource")
+	table.insert(deps, "ECS")
 
 	dependson(deps)
 	links(deps)
