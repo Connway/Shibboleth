@@ -57,19 +57,21 @@ bool ECSLayerResource::loadOverrides(
 	const Gaff::ISerializeReader& reader,
 	ECSManager& ecs_mgr,
 	const ECSArchetype& base_archetype,
-	Gaff::Hash32 layer_name
-)
+	Gaff::Hash32 layer_name)
 {
 	ECSArchetype new_archetype;
-	new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
+	new_archetype.copy(base_archetype);
 
-	const bool success = new_archetype.finalize(reader, &base_archetype);
+	if (!new_archetype.hasSharedComponent<Layer>()) {
+		new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
+	}
+
+	const bool success = new_archetype.finalize(reader, base_archetype);
 
 	if (success) {
-		const int32_t offset = new_archetype.getComponentSharedOffset(Reflection<Layer>::GetHash());
-		Layer* const layer = reinterpret_cast<Layer*>(reinterpret_cast<int8_t*>(new_archetype.getSharedData()) + offset);
-
+		Layer* const layer = new_archetype.getSharedComponent<Layer>();
 		layer->value = layer_name;
+
 		new_archetype.calculateHash();
 
 		ecs_mgr.addArchetype(std::move(new_archetype), _archetype_refs.emplace_back());

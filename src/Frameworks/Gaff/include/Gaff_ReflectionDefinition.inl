@@ -798,9 +798,7 @@ bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 				const char* const name = entry.first.getBuffer();
 
 				if (!reader.exists(name)) {
-					// Not sure why I need to cast this to get access to the template function. :/
-					const auto* const ref_def = static_cast<const IReflectionDefinition*>(this);
-					const auto* const attr = ref_def->getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("Optional"));
+					const auto* const attr = getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("Optional"));
 
 					if (!attr) {
 						return false;
@@ -1362,9 +1360,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
-		attrs.set_allocator(_allocator);
 		addAttributes(pair.second.get(), ptr, attrs, attributes...);
 	}
 
@@ -1399,9 +1398,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
-		attrs.set_allocator(_allocator);
 		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
 	}
 
@@ -1423,9 +1423,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
-		attrs.set_allocator(_allocator);
 		addAttributes(pair.second.get(), vec, attrs, attributes...);
 	}
 
@@ -1447,9 +1448,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
 	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
-		attrs.set_allocator(_allocator);
 		addAttributes(pair.second.get(), arr, attrs, attributes...);
 	}
 
@@ -1505,12 +1507,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	if constexpr (sizeof...(Attrs) > 0) {
-		const Hash32 name_hash = FNV1aHash32Const(name);
-		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Hash32 name_hash = FNV1aHash32Const(name);
+	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
 
-		auto& attrs = _func_attrs[attr_hash];
-		attrs.set_allocator(_allocator);
+	auto& attrs = _func_attrs[attr_hash];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(ptr, attrs, attributes...);
 	}
 
@@ -1564,12 +1567,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	if constexpr (sizeof...(Attrs) > 0) {
-		const Hash32 name_hash = FNV1aHash32Const(name);
-		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Hash32 name_hash = FNV1aHash32Const(name);
+	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
 
-		auto& attrs = _func_attrs[attr_hash];
-		attrs.set_allocator(_allocator);
+	auto& attrs = _func_attrs[attr_hash];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(ptr, attrs, attributes...);
 	}
 
@@ -1609,12 +1613,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	if constexpr (sizeof...(Attrs) > 0) {
-		const Hash32 name_hash = FNV1aHash32Const(name);
-		const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Hash32 name_hash = FNV1aHash32Const(name);
+	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
 
-		auto& attrs = _static_func_attrs[attr_hash];
-		attrs.set_allocator(_allocator);
+	auto& attrs = _static_func_attrs[attr_hash];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(func, attrs, attributes...);
 	}
 

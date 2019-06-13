@@ -81,7 +81,7 @@ bool ECSArchetype::removeShared(int32_t index)
 	return remove<true>(index);
 }
 
-bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
+bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
 {
 	if (!reader.isObject()) {
 		// $TODO: Log error.
@@ -90,12 +90,24 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 
 	destroySharedData();
 
-	if (base_archetype) {
-		copy(*base_archetype);
+	bool success = finalize<true>(reader, &base_archetype);
+	success = success && finalize<false>(reader, &base_archetype);
+	calculateHash();
+
+	return success;
+}
+
+bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader)
+{
+	if (!reader.isObject()) {
+		// $TODO: Log error.
+		return false;
 	}
 
-	bool success = finalize<true>(reader, base_archetype);
-	success = success && finalize<false>(reader, base_archetype);
+	destroySharedData();
+
+	bool success = finalize<true>(reader, nullptr);
+	success = success && finalize<false>(reader, nullptr);
 	calculateHash();
 
 	return success;
@@ -143,6 +155,21 @@ bool ECSArchetype::remove(const Gaff::IReflectionDefinition& ref_def)
 bool ECSArchetype::remove(int32_t index)
 {
 	return remove<false>(index);
+}
+
+void ECSArchetype::append(const ECSArchetype& base)
+{
+	for (const RefDefOffset& rdo : base._shared_vars) {
+		if (!hasSharedComponent(rdo.ref_def->getReflectionInstance().getHash())) {
+			addShared(*rdo.ref_def);
+		}
+	}
+
+	for (const RefDefOffset& rdo : base._vars) {
+		if (!hasSharedComponent(rdo.ref_def->getReflectionInstance().getHash())) {
+			add(*rdo.ref_def);
+		}
+	}
 }
 
 void ECSArchetype::copy(const ECSArchetype& base, bool copy_shared_instance_data)
@@ -197,7 +224,7 @@ int32_t ECSArchetype::getComponentSharedOffset(Gaff::Hash64 component) const
 		return lhs.ref_def->getReflectionInstance().getHash() == rhs;
 	});
 
-	return (it != _vars.end()) ? it->offset : -1;
+	return (it != _shared_vars.end()) ? it->offset : -1;
 }
 
 int32_t ECSArchetype::getComponentOffset(Gaff::Hash64 component) const
@@ -303,6 +330,17 @@ const Gaff::IReflectionDefinition& ECSArchetype::getComponentRefDef(int32_t inde
 int32_t ECSArchetype::getNumComponents(void) const
 {
 	return static_cast<int32_t>(_vars.size());
+}
+
+const void* ECSArchetype::getSharedComponent(Gaff::Hash64 component) const
+{
+	return const_cast<ECSArchetype*>(this)->getSharedComponent(component);
+}
+
+void* ECSArchetype::getSharedComponent(Gaff::Hash64 component)
+{
+	const int32_t offset = getComponentSharedOffset(component);
+	return (offset >= 0) ? reinterpret_cast<int8_t*>(_shared_instances) + offset : nullptr;
 }
 
 template <bool shared>
@@ -522,25 +560,16 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArc
 			return false;
 		}
 
-		const auto vars = data.ref_def->GET_CLASS_ATTRS(IECSVarAttribute, ProxyAllocator);
-		int32_t offset = 0;
 		++index;
 
-		reader.forEachInArray([&](int32_t var_index) -> bool
-		{
-			const Gaff::IReflectionDefinition& ref_def = vars[var_index]->getType();
-			const auto ctor = ref_def.getConstructor<>();
+		const auto ctor = data.ref_def->getConstructor<>();
+		void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + data.offset;
 
-			if (ctor) {
-				ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
-			}
+		if (ctor) {
+			ctor(instance);
+		}
 
-			ref_def.load(reader, reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
-
-			offset += ref_def.size();
-			return false;
-		});
-
+		data.ref_def->load(reader, instance);
 		return false;
 	});
 }
@@ -555,18 +584,10 @@ void ECSArchetype::initShared(void)
 	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
 
 	for (const RefDefOffset& data : _shared_vars) {
-		const auto vars = data.ref_def->GET_CLASS_ATTRS(IECSVarAttribute, ProxyAllocator);
-		int32_t offset = 0;
+		const auto ctor = data.ref_def->getConstructor<>();
 
-		for (const IECSVarAttribute* ecs_var : vars) {
-			const Gaff::IReflectionDefinition& ref_def = ecs_var->getType();
-			const auto ctor = data.ref_def->getConstructor<>();
-
-			if (ctor) {
-				ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset + offset);
-			}
-
-			offset += ref_def.size();
+		if (ctor) {
+			ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset);
 		}
 	}
 }

@@ -39,6 +39,9 @@ template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
+	// Add to this list as needed.
+	using IReflectionDefinition::getVarAttr;
+
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
 	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
