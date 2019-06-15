@@ -224,6 +224,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Function.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hashable.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h" />

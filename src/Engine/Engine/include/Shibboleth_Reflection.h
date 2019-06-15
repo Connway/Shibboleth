@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Utilities.h"
+#include "Shibboleth_Hashable.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_Reflection.h>
 
@@ -73,12 +74,14 @@ THE SOFTWARE.
 	};
 
 #define SHIB_REFLECTION_DECLARE(type) \
-NS_SHIBBOLETH \
-	GAFF_CLASS_HASHABLE(type) \
-	template <> \
-	GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
-	SHIB_REFLECTION_DECLARE_BASE(type) \
-NS_END
+	NS_HASHABLE \
+		GAFF_CLASS_HASHABLE(type) \
+	NS_END \
+	NS_SHIBBOLETH \
+		template <> \
+		GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
+		SHIB_REFLECTION_DECLARE_BASE(type) \
+	NS_END
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) GAFF_REFLECTION_CLASS_DECLARE(type, Shibboleth::ProxyAllocator)
 
@@ -159,12 +162,14 @@ NS_END
 
 // Temlate Reflection
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
-NS_SHIBBOLETH \
-	GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
-	SHIB_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
-NS_END
+	NS_HASHABLE \
+		GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
+	NS_END \
+	NS_SHIBBOLETH \
+		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+		GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
+		SHIB_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
+	NS_END
 
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 

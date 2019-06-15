@@ -236,6 +236,7 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Hashable.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashStringFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h" />
@@ -255,7 +256,6 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapper.h" />
