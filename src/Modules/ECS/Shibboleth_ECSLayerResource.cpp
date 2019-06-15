@@ -68,17 +68,23 @@ bool ECSLayerResource::loadOverrides(
 
 	const bool success = new_archetype.finalize(reader, base_archetype);
 
-	if (success) {
-		Layer* const layer = new_archetype.getSharedComponent<Layer>();
-		layer->value = layer_name;
-
-		new_archetype.calculateHash();
-
-		ecs_mgr.addArchetype(std::move(new_archetype), _archetype_refs.emplace_back());
-		return true;
+	if (!success) {
+		return false;
 	}
 
-	return false;
+	Layer* const layer = new_archetype.getSharedComponent<Layer>();
+	layer->value = layer_name;
+
+	new_archetype.calculateHash();
+	const Gaff::Hash64 hash = new_archetype.getHash();
+
+	ecs_mgr.addArchetype(std::move(new_archetype), _archetype_refs.emplace_back());
+
+	const auto id = ecs_mgr.createEntity(hash);
+
+
+
+	return true;
 }
 
 void ECSLayerResource::archetypeLoaded(IResource&)

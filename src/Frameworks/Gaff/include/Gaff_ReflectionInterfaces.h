@@ -145,16 +145,6 @@ constexpr int32_t GetNumArgs(void)
 	return sizeof...(T);
 }
 
-template <class T>
-constexpr const char* GetTypeName(void)
-{
-	if constexpr (std::is_void<T>::value) {
-		return "void";
-	} else {
-		return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName();
-	}
-}
-
 constexpr const char* GetTypeNameBegin(const char* type_name)
 {
 	const char* const const_string = "const";
@@ -268,9 +258,9 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 	using V = typename std::remove_const<NoRef>::type;
 
 	if constexpr (sizeof...(Rest) == 0) {
-		return CalcTypeHash<First>(init, GetTypeName<V>());
+		return CalcTypeHash<First>(init, GAFF_REFLECTION_NAMESPACE::GetName<V>());
 	} else {
-		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GetTypeName<V>()));
+		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GAFF_REFLECTION_NAMESPACE::GetName<V>()));
 	}
 }
 

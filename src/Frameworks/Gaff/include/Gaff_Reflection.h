@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_SerializeInterfaces.h"
 #include "Gaff_ReflectionDefinition.h"
 #include "Gaff_ReflectionVersion.h"
+#include "Gaff_Utils.h"
 
 #ifndef GAFF_REFLECTION_NAMESPACE
 	#define GAFF_REFLECTION_NAMESPACE Gaff
@@ -34,7 +35,50 @@ THE SOFTWARE.
 	#define NS_REFLECTION namespace GAFF_REFLECTION_NAMESPACE {
 #endif
 
-#define GAFF_TEMPLATE_GET_NAME(x) GAFF_REFLECTION_NAMESPACE::Reflection<x>::GetName()
+#define GAFF_CLASS_HASHABLE(type) \
+	template <> \
+	constexpr const char* GetName<type>(void) \
+	{ \
+		return #type; \
+	} \
+	template <> \
+	constexpr Gaff::Hash64 GetHash<type>(void) \
+	{ \
+		return Gaff::FNV1aHash64Const(#type); \
+	}
+
+#define GAFF_TEMPLATE_CLASS_HASHABLE(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	struct TemplateClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>) > final \
+	{ \
+		static constexpr const char* GetName(void) \
+		{ \
+			static char s_name[128] = { 0 }; \
+			if (!s_name[0]) { \
+				char format[64] = { 0 }; \
+				int32_t index = snprintf(format, 32, "%s<", #type); \
+				for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
+					if (i > 0) { \
+						format[index++] = ','; \
+						format[index++] = ' '; \
+					} \
+					format[index++] = '%'; \
+					format[index++] = 's'; \
+				} \
+				format[index++] = '>'; \
+				snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
+			} \
+			return s_name; \
+		} \
+		static constexpr Gaff::Hash64 GetHash(void) \
+		{ \
+			return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
+		} \
+	};
+
+
+//#define GAFF_TEMPLATE_GET_NAME(x) GAFF_REFLECTION_NAMESPACE::Reflection<x>::GetName()
+#define GAFF_TEMPLATE_GET_NAME(x) GAFF_REFLECTION_NAMESPACE::GetName<x>()
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
 
 #define GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
@@ -81,6 +125,14 @@ THE SOFTWARE.
 		void init(void) override \
 		{ \
 			Init(); \
+		} \
+		constexpr static Gaff::Hash64 GetHash(void) \
+		{ \
+			return GAFF_REFLECTION_NAMESPACE::GetHash<type>(); \
+		} \
+		constexpr static const char* GetName(void) \
+		{ \
+			return GAFF_REFLECTION_NAMESPACE::GetName<type>(); \
 		} \
 		static Reflection<type>& GetInstance(void) \
 		{ \
@@ -148,16 +200,9 @@ THE SOFTWARE.
 
 #define GAFF_REFLECTION_DECLARE(type, allocator) \
 namespace GAFF_REFLECTION_NAMESPACE { \
+	GAFF_CLASS_HASHABLE(type) \
 	template <> \
 	GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
-	constexpr static Gaff::Hash64 GetHash(void) \
-	{ \
-		return Gaff::FNV1aHash64Const(#type); \
-	} \
-	constexpr static const char* GetName(void) \
-	{ \
-		return #type; \
-	} \
 	GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 NS_END
 
@@ -267,31 +312,9 @@ NS_END
 // Template Reflection
 #define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 namespace GAFF_REFLECTION_NAMESPACE { \
+	GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator, __VA_ARGS__) \
-	constexpr static Gaff::Hash64 GetHash(void) \
-	{ \
-		return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
-	} \
-	static const char* GetName(void) \
-	{ \
-		static char s_name[128] = { 0 }; \
-		if (!s_name[0]) { \
-			char format[64] = { 0 }; \
-			int32_t index = snprintf(format, 32, "%s<", #type); \
-			for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
-				if (i) { \
-					format[index++] = ','; \
-					format[index++] = ' '; \
-				} \
-				format[index++] = '%'; \
-				format[index++] = 's'; \
-			} \
-			format[index++] = '>'; \
-			snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
-		} \
-		return s_name; \
-	} \
 	GAFF_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator) \
 NS_END
 
@@ -449,6 +472,38 @@ NS_END
 #define REFLECTION_CAST_NAME(T, name, object) *REFLECTION_CAST_PTR_NAME(T, name, &object)
 #define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
+
+NS_REFLECTION
+	template <class... T>
+	struct TemplateClassHashableHelper final
+	{
+		static constexpr const char* GetName(void)
+		{
+			static_assert(false, "Did not overload GetName() for type.");
+			return "ERROR: No Class Name";
+		}
+
+		static constexpr Gaff::Hash64 GetHash(void)
+		{
+			static_assert(false, "Did not overload GetHash() for type.");
+			return Gaff::INIT_HASH64;
+		}
+	};
+
+	template <class T>
+	constexpr const char* GetName(void)
+	{
+		return TemplateClassHashableHelper<T>::GetName();
+	}
+
+	template <class T>
+	constexpr Gaff::Hash64 GetHash(void)
+	{
+		return TemplateClassHashableHelper<T>::GetHash();
+	}
+
+	GAFF_CLASS_HASHABLE(void)
+NS_END
 
 NS_GAFF
 
