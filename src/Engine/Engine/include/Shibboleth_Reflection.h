@@ -74,16 +74,9 @@ THE SOFTWARE.
 
 #define SHIB_REFLECTION_DECLARE(type) \
 NS_SHIBBOLETH \
+	GAFF_CLASS_HASHABLE(type) \
 	template <> \
 	GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
-	constexpr static Gaff::Hash64 GetHash(void) \
-	{ \
-		return Gaff::FNV1aHash64Const(#type); \
-	} \
-	constexpr static const char* GetName(void) \
-	{ \
-		return #type; \
-	} \
 	SHIB_REFLECTION_DECLARE_BASE(type) \
 NS_END
 
@@ -167,31 +160,9 @@ NS_END
 // Temlate Reflection
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 NS_SHIBBOLETH \
+	GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
-	constexpr static Gaff::Hash64 GetHash(void) \
-	{ \
-		return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
-	} \
-	static const char* GetName(void) \
-	{ \
-		static char s_name[128] = { 0 }; \
-		if (!s_name[0]) { \
-			char format[64] = { 0 }; \
-			int32_t index = snprintf(format, 32, "%s<", #type); \
-			for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
-				if (i) { \
-					format[index++] = ','; \
-					format[index++] = ' '; \
-				} \
-				format[index++] = '%'; \
-				format[index++] = 's'; \
-			} \
-			format[index++] = '>'; \
-			snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
-		} \
-		return s_name; \
-	} \
 	SHIB_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
 NS_END
 

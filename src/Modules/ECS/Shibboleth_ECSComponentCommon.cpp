@@ -41,12 +41,15 @@ SHIB_REFLECTION_BUILDER_BEGIN(Position)
 	.staticFunc("CopyShared", &Position::CopyShared)
 	.staticFunc("Copy", &Position::Copy)
 
+	//.staticFunc("Load", &Position::Load)
+
 	.var("Position", &Position::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Position)
 
 void Position::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
+
 	ecs_mgr.getComponentShared<Position>(archetype)->value = value;
 }
 
@@ -69,6 +72,18 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
+}
+
+void Position::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+{
+	glm::vec3 value;
+
+	{
+		const auto guard = reader.enterElementGuard("Position");
+		Reflection<glm::vec3>::Load(reader, value);
+	}
+
+	Set(ecs_mgr, id, value);
 }
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
@@ -144,6 +159,8 @@ SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 	.staticFunc("CopyShared", &Rotation::CopyShared)
 	.staticFunc("Copy", &Rotation::Copy)
 
+	//.staticFunc("Load", &Rotation::Load)
+
 	.var("Rotation", &Rotation::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Rotation)
@@ -174,6 +191,18 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 	component[4] = value.x;
 	component[8] = value.y;
 	component[12] = value.z;
+}
+
+void Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+{
+	glm::quat value;
+
+	{
+		const auto guard = reader.enterElementGuard("Rotation");
+		Reflection<glm::quat>::Load(reader, value);
+	}
+
+	Set(ecs_mgr, id, value);
 }
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
@@ -257,6 +286,8 @@ SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 	.staticFunc("CopyShared", &Scale::CopyShared)
 	.staticFunc("Copy", &Scale::Copy)
 
+	//.staticFunc("Load", &Scale::Load)
+
 	.var("Scale", &Scale::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Scale)
@@ -285,6 +316,18 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	component[0] = value.x;
 	component[4] = value.y;
 	component[8] = value.z;
+}
+
+void Scale::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+{
+	glm::vec3 value;
+
+	{
+		const auto guard = reader.enterElementGuard("Scale");
+		Reflection<glm::vec3>::Load(reader, value);
+	}
+
+	Set(ecs_mgr, id, value);
 }
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)

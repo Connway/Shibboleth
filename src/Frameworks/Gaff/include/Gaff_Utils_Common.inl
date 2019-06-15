@@ -72,6 +72,44 @@ constexpr ptrdiff_t OffsetOfClass(void)
 	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;
 }
 
+template <size_t SizeA, size_t SizeB>
+constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const eastl::array<char, SizeA>& lhs, const char(&rhs)[SizeB])
+{
+	// Leave room for null terminator.
+	eastl::array<char, SizeA + SizeB - 1> result{};
+	size_t outIndex = 0;
+
+	for (size_t index = 0; index < (SizeA - 1); ++index, ++outIndex) {
+		result[outIndex] = lhs[index];
+	}
+
+	for (size_t index = 0; index < (SizeB - 1); ++index, ++outIndex) {
+		result[outIndex] = rhs[index];
+	}
+
+	result[outIndex] = 0;
+	return result;
+}
+
+template <size_t SizeA, size_t SizeB>
+constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const char (&lhs)[SizeA], const char (&rhs)[SizeB])
+{
+	// Leave room for null terminator.
+	eastl::array<char, SizeA + SizeB - 1> result{};
+	size_t outIndex = 0;
+
+	for (size_t index = 0; index < (SizeA - 1); ++index, ++outIndex) {
+		result[outIndex] = lhs[index];
+	}
+
+	for (size_t index = 0; index < (SizeB - 1); ++index, ++outIndex) {
+		result[outIndex] = rhs[index];
+	}
+
+	result[outIndex] = 0;
+	return result;
+}
+
 template <class T>
 constexpr bool InRange(T value, T min, T max)
 {
