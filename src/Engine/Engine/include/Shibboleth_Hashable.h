@@ -22,13 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_SerializeInterfaces.h>
-#include <Gaff_Reflection.h>
+#ifndef GAFF_HASHABLE_NAMESPACE
+	#define GAFF_HASHABLE_NAMESPACE Shibboleth
+#endif
 
-NS_SHIBBOLETH
+#include <Gaff_Hashable.h>
 
-GAFF_CLASS_HASHABLE(Gaff::ISerializeReader)
-GAFF_CLASS_HASHABLE(Gaff::ISerializeWriter)
+NS_GAFF
+	class ISerializeReader;
+	class ISerializeWriter;
+NS_END
 
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Gaff::ISerializeReader)
+	GAFF_CLASS_HASHABLE(Gaff::ISerializeWriter)
 NS_END
