@@ -236,9 +236,9 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflection.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Hashable.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashStringFwd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Hashable.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IMainLoop.h" />

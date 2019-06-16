@@ -57,8 +57,20 @@ bool ECSLayerResource::loadOverrides(
 	const Gaff::ISerializeReader& reader,
 	ECSManager& ecs_mgr,
 	const ECSArchetype& base_archetype,
-	Gaff::Hash32 layer_name)
+	Gaff::Hash32 layer_name,
+	Gaff::Hash64& outArchetype)
 {
+	if (reader.isNull()) {
+		outArchetype = base_archetype.getHash();
+		return true;
+	}
+
+	if (!reader.isObject()) {
+		LogErrorResource("Overrides field is malformed.");
+		return false;
+	}
+
+
 	ECSArchetype new_archetype;
 	new_archetype.copy(base_archetype);
 
@@ -76,13 +88,9 @@ bool ECSLayerResource::loadOverrides(
 	layer->value = layer_name;
 
 	new_archetype.calculateHash();
-	const Gaff::Hash64 hash = new_archetype.getHash();
+	outArchetype = new_archetype.getHash();
 
 	ecs_mgr.addArchetype(std::move(new_archetype), _archetype_refs.emplace_back());
-
-	const auto id = ecs_mgr.createEntity(hash);
-
-
 
 	return true;
 }
@@ -125,12 +133,13 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 
 		const auto element_guard = reader.enterElementGuard(index);
 		const auto override_guard = reader.enterElementGuard("overrides");
+		Gaff::Hash64 archetype = 0;
 
-		if (reader.isNull() || !reader.isObject()) {
-			continue;
-		}
+		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, archetype)) {
+			const auto id = ecs_mgr.createEntity(archetype);
+			// set instance data.
 
-		if (!loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name)) {
+		} else {
 			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
 		}
 

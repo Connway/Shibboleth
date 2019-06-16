@@ -44,7 +44,8 @@ private:
 		const Gaff::ISerializeReader& reader,
 		ECSManager& ecs_mgr,
 		const ECSArchetype& base_archetype,
-		Gaff::Hash32 layer_name
+		Gaff::Hash32 layer_name,
+		Gaff::Hash64& outArchetype
 	);
 
 	void archetypeLoaded(IResource&);
