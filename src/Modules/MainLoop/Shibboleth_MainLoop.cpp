@@ -167,8 +167,6 @@ void MainLoop::update(void)
 		return;
 	}
 
-
-
 	GetApp().quit();
 }
 

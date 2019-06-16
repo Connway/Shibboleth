@@ -41,7 +41,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Position)
 	.staticFunc("CopyShared", &Position::CopyShared)
 	.staticFunc("Copy", &Position::Copy)
 
-	//.staticFunc("Load", &Position::Load)
+	.staticFunc("Load", &Position::Load)
 
 	.var("Position", &Position::value)
 	.ctor<>()
@@ -159,7 +159,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 	.staticFunc("CopyShared", &Rotation::CopyShared)
 	.staticFunc("Copy", &Rotation::Copy)
 
-	//.staticFunc("Load", &Rotation::Load)
+	.staticFunc("Load", &Rotation::Load)
 
 	.var("Rotation", &Rotation::value)
 	.ctor<>()
@@ -286,7 +286,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 	.staticFunc("CopyShared", &Scale::CopyShared)
 	.staticFunc("Copy", &Scale::Copy)
 
-	//.staticFunc("Load", &Scale::Load)
+	.staticFunc("Load", &Scale::Load)
 
 	.var("Scale", &Scale::value)
 	.ctor<>()
