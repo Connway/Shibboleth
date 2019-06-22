@@ -199,10 +199,10 @@ bool App::loadFileSystem(void)
 		fs = U8String(lfs.getString()) + BIT_EXTENSION;
 		fs += DYNAMIC_EXTENSION;
 
-		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "File System");
+		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "FileSystem");
 
 		if (!_fs.file_system_module) {
-			LogInfoDefault("Failed to find filesystem '%s'.", fs.data());
+			LogInfoDefault("Failed to find file system '%s'.", fs.data());
 			return false;
 		}
 
@@ -311,15 +311,13 @@ bool App::loadModules(void)
 			const Gaff::JSON& module = module_load_order[i];
 			GAFF_ASSERT(module.isString());
 
-			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
-
 			// Skip modules that begin with Editor if we're not the editor.
-			if (!inEditorMode() && path.find("Editor") == 0) {
+			if (!inEditorMode() && Gaff::FindFirstOf(module.getString(), "Editor") == 0) {
 				continue;
 			}
 
-			if (!loadModule(path.data())) {
-				LogErrorDefault("Failed to load module '%s'!", path.data());
+			if (!loadModule(module.getString())) {
+				LogErrorDefault("Failed to load module '%s'!", module.getString());
 				return false;
 			}
 		}
@@ -346,7 +344,16 @@ bool App::loadModules(void)
 					continue;
 				}
 
-				if (!(_dynamic_loader.getModule(temp) || loadModule(temp))) {
+				if (!Gaff::File::CheckExtension(temp, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+					continue;
+				}
+
+				eastl::string_view module_name_view(temp + 8);
+				module_name_view = module_name_view.substr(0, module_name_view.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION));
+
+				const U8String module_name(module_name_view);
+
+				if (!(_dynamic_loader.getModule(module_name.data()) || loadModule(temp, module_name.data()))) {
 					return false;
 				}
 			}
@@ -431,23 +438,16 @@ bool App::initApp(void)
 	return true;
 }
 
-bool App::loadModule(const char* module_path)
+bool App::loadModule(const char* module_path, const char* module_name)
 {
-	// If it's not a dynamic module,
-	// or if it is not compiled for our architecture and build mode,
-	// then just skip over it.
-	if (!Gaff::File::CheckExtension(module_path, BIT_EXTENSION DYNAMIC_EXTENSION)) {
-		return true;
-	}
-
 #ifdef PLATFORM_WINDOWS
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("..\\") + module_path).data(), module_path);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("..\\") + module_path).data(), module_name);
 #else
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, module_path);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(path.data(), module_name);
 #endif
 
 	if (!module) {
-		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_path);
+		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name);
 		return false;
 	}
 
@@ -458,15 +458,21 @@ bool App::loadModule(const char* module_path)
 	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 	if (!init_func) {
-		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_path);
+		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_name);
 		return false;
 	}
 	else if (!init_func(*this)) {
-		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_path);
+		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name);
 		return false;
 	}
 
 	return true;
+}
+
+bool App::loadModule(const char* module_name)
+{
+	const U8String path = U8String(module_name) + BIT_EXTENSION DYNAMIC_EXTENSION;
+	return loadModule(path.data(), module_name);
 }
 
 void App::removeExtraLogs(void)
@@ -518,13 +524,48 @@ void App::destroy(void)
 	}
 
 	_job_pool.destroy();
-
-	_reflection_mgr.destroy();
 	_manager_map.clear();
-	_log_mgr.destroy();
 
-	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr module) -> bool
+	const Gaff::JSON module_unload_order = _configs["module_unload_order"];
+	Vector<Gaff::Hash32> module_hashes;
+
+	if (!module_unload_order.isNull()) {
+		if (module_unload_order.isArray()) {
+			module_unload_order.forEachInArray([&](int32_t index, const Gaff::JSON& value) -> bool {
+				if (!value.isString()) {
+					LogErrorDefault("module_unload_order[%i] is not a string!", index);
+					return false;
+				}
+
+				DynamicLoader::ModulePtr module = _dynamic_loader.getModule(value.getString());
+
+				if (!module) {
+					LogErrorDefault("module_unload_order[%i] module '%s' was not found!", value.getString());
+					return false;
+				}
+
+				void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
+
+				if (shutdown_func) {
+					module_hashes.emplace_back(Gaff::FNV1aHash32String(value.getString()));
+					shutdown_func();
+				}
+
+				return false;
+			});
+		} else {
+			LogErrorDefault("'module_unload_order' config option is not an array of strings!");
+		}
+	}
+
+	_dynamic_loader.forEachModule([&](const HashString32& module_name, DynamicLoader::ModulePtr module) -> bool
 	{
+		const auto it = Gaff::Find(module_hashes, module_name.getHash());
+
+		if (it != module_hashes.end()) {
+			return false;
+		}
+
 		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
 
 		if (shutdown_func) {
@@ -534,6 +575,7 @@ void App::destroy(void)
 		return false;
 	});
 
+	_reflection_mgr.destroy();
 	_dynamic_loader.clear();
 
 	// Destroy the file system
@@ -547,6 +589,8 @@ void App::destroy(void)
 #ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::Destroy();
 #endif
+
+	_log_mgr.destroy();
 }
 
 const IManager* App::getManager(Gaff::Hash64 name) const

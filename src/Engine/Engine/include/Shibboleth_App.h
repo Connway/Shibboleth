@@ -110,6 +110,7 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
+	bool loadModule(const char* module_path, const char* module_name);
 	bool loadModule(const char* module_name);
 	void removeExtraLogs(void);
 
