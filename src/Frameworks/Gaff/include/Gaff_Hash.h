@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Math.h"
+#include <EASTL/string_view.h>
 #include <EASTL/string.h>
 
 NS_GAFF
@@ -189,6 +190,26 @@ template <size_t size>
 constexpr Hash32 FNV1Hash32Const(const char (&key)[size], Hash32 init = INIT_HASH32)
 {
 	return FNV1Hash32Const(key, size - 1, init);
+}
+
+constexpr Hash64 FNV1aHash64Const(eastl::string_view key, Hash64 init = INIT_HASH64)
+{
+	return FNV1aHash64Const(key.data(), key.size(), init);
+}
+
+constexpr Hash64 FNV1Hash64Const(eastl::string_view key, Hash64 init = INIT_HASH64)
+{
+	return FNV1Hash64Const(key.data(), key.size(), init);
+}
+
+constexpr Hash32 FNV1aHash32Const(eastl::string_view key, Hash32 init = INIT_HASH32)
+{
+	return FNV1aHash32Const(key.data(), key.size(), init);
+}
+
+constexpr Hash32 FNV1Hash32Const(eastl::string_view key, Hash32 init = INIT_HASH32)
+{
+	return FNV1Hash32Const(key.data(), key.size(), init);
 }
 
 template <class T>
