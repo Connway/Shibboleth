@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSArchetype.h"
 #include "Shibboleth_ECSAttributes.h"
+#include "Shibboleth_ECSManager.h"
 #include <Gaff_SerializeInterfaces.h>
 
 NS_SHIBBOLETH
@@ -83,11 +84,6 @@ bool ECSArchetype::removeShared(int32_t index)
 
 bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype)
 {
-	if (!reader.isObject()) {
-		// $TODO: Log error.
-		return false;
-	}
-
 	destroySharedData();
 
 	bool success = finalize<true>(reader, &base_archetype);
@@ -343,6 +339,40 @@ void* ECSArchetype::getSharedComponent(Gaff::Hash64 component)
 	return (offset >= 0) ? reinterpret_cast<int8_t*>(_shared_instances) + offset : nullptr;
 }
 
+void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const
+{
+	GAFF_ASSERT(ValidEntityID(id));
+
+	for (const RefDefOffset& rdo : _vars) {
+		if (rdo.ref_def->getReflectionInstance().getHash() == component) {
+			if (!rdo.load_func) {
+				// $TODO: Log error
+				return;
+			}
+
+			rdo.load_func(ecs_mgr, id, reader);
+			return;
+		}
+	}
+
+	// $TODO: Log error
+}
+
+void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(ValidEntityID(id));
+
+	const RefDefOffset& rdo = _vars[index];
+
+	if (!rdo.load_func) {
+		// $TODO: Log error
+		return;
+	}
+
+	rdo.load_func(ecs_mgr, id, reader);
+}
+
 template <bool shared>
 bool ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {
@@ -370,6 +400,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 
 	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
+	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<void, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log warning.
@@ -378,6 +409,12 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 
 	if (!copy_func && !shared) {
 		// $TODO: Log warning.
+		return false;
+	}
+
+	if (copy_func && !shared && !load_func)
+	{
+		// $TODO: Log error.
 		return false;
 	}
 
@@ -394,7 +431,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 		const int32_t size_offset = (vars.empty()) ? 0 : vars.back().ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar;
 		const int32_t base_offset = (vars.empty()) ? 0 : vars.back().offset;
 
-		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_shared_func, copy_func });
+		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_shared_func, copy_func, load_func });
 
 	// Inserting, bump up all the offsets.
 	} else {
@@ -404,7 +441,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 			begin->offset += attr->size() * size_scalar;
 		}
 
-		vars.emplace(it, RefDefOffset{ &ref_def, offset, copy_shared_func, copy_func });
+		vars.emplace(it, RefDefOffset{ &ref_def, offset, copy_shared_func, copy_func, load_func });
 	}
 
 	alloc_size += attr->size();

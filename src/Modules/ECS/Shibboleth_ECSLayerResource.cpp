@@ -66,10 +66,27 @@ bool ECSLayerResource::loadOverrides(
 	}
 
 	if (!reader.isObject()) {
-		LogErrorResource("Overrides field is malformed.");
+		LogErrorResource("ECSLayerResource - 'overrides' is not an object.");
 		return false;
 	}
 
+	{
+		const auto guard = reader.enterElementGuard("shared_components");
+
+		if (!reader.isNull() && !reader.isObject()) {
+			LogErrorResource("ECSLayerResource - 'overrides:shared_components' is not an object.");
+			return false;
+		}
+	}
+
+	{
+		const auto guard = reader.enterElementGuard("components");
+
+		if (!reader.isNull() && !reader.isObject()) {
+			LogErrorResource("ECSLayerResource - 'overrides:components' is not an object.");
+			return false;
+		}
+	}
 
 	ECSArchetype new_archetype;
 	new_archetype.copy(base_archetype);
@@ -136,11 +153,16 @@ void ECSLayerResource::archetypeLoaded(IResource&)
 		Gaff::Hash64 archetype = 0;
 
 		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, archetype)) {
-			const auto id = ecs_mgr.createEntity(archetype);
-			// set instance data.
+			const auto comps_guard = reader.enterElementGuard("components");
+
+			if (reader.isNull()) {
+				ecs_mgr.createEntity(archetype);
+			} else {
+				ecs_mgr.loadEntity(archetype, reader);
+			}
 
 		} else {
-			LogErrorResource("Failed to load archetype overrides for object at index %i.", index);
+			LogErrorResource("ECSLayerResource - Failed to load archetype overrides for object at index %i.", index);
 		}
 
 		++index;
