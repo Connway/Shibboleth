@@ -247,6 +247,9 @@ public:
 	EntityID createEntity(const ECSArchetype& archetype);
 	EntityID createEntity(Gaff::Hash64 archetype);
 
+	EntityID loadEntity(const ECSArchetype& archetype, const Gaff::ISerializeReader& reader);
+	EntityID loadEntity(Gaff::Hash64 archetype, const Gaff::ISerializeReader& reader);
+
 	void destroyEntity(EntityID id);
 
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);

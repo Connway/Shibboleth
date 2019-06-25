@@ -28,5 +28,11 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 using EntityID = int32_t;
+constexpr EntityID EntityID_None = -1;
+
+constexpr bool ValidEntityID(EntityID id)
+{
+	return id > EntityID_None;
+}
 
 NS_END

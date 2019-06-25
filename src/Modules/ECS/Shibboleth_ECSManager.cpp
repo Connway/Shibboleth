@@ -135,7 +135,7 @@ const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 archetype) const
 
 const ECSArchetype& ECSManager::getArchetype(EntityID id) const
 {
-	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	GAFF_ASSERT(ValidEntityID(id) && id < _next_id && _entities[id].data);
 	return _entities[id].data->archetype;
 }
 
@@ -163,7 +163,7 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	EntityData& data = *(it->second);
 
-	EntityID id = -1;
+	EntityID id = EntityID_None;
 
 	if (_free_ids.empty()) {
 		id = _next_id++;
@@ -189,6 +189,31 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	data.arch_ref->addRef();
 
 	return id;
+}
+
+EntityID ECSManager::loadEntity(const ECSArchetype& archetype, const Gaff::ISerializeReader& reader)
+{
+	if (!reader.isObject()) {
+		// $TODO: Log error
+		return EntityID_None;
+	}
+
+	const EntityID id = createEntity(archetype);
+
+	if (ValidEntityID(id)) {
+		reader.forEachInObject([&](const char* component) -> bool {
+			const Gaff::Hash64 comp_hash = Gaff::FNV1aHash64String(component);
+			archetype.loadComponent(*this, id, reader, comp_hash);
+			return false;
+		});
+	}
+
+	return id;
+}
+
+EntityID ECSManager::loadEntity(Gaff::Hash64 archetype_hash, const Gaff::ISerializeReader& reader)
+{
+	return loadEntity(getArchetype(archetype_hash), reader);
 }
 
 void ECSManager::destroyEntity(EntityID id)
@@ -233,7 +258,7 @@ void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 
 int32_t ECSManager::getPageIndex(EntityID id) const
 {
-	GAFF_ASSERT(id < _next_id && _entities[id].data);
+	GAFF_ASSERT(ValidEntityID(id) && id < _next_id && _entities[id].data);
 	return _entities[id].index;
 }
 
@@ -265,65 +290,6 @@ void ECSManager::registerQuery(ECSQuery&& query)
 		new_query.filter(entity_data->archetype, entity_data);
 	}
 }
-
-//bool ECSManager::loadFile(const char* file_name, IFile* file)
-//{
-//	ProxyAllocator allocator("ECS");
-//
-//	if (Gaff::EndsWith(file_name, ".archetype.bin")) {
-//		Gaff::MessagePackReader mpack;
-//
-//		if (!mpack.parse(file->getBuffer(), file->size())) {
-//			// $TODO: Log error.
-//			return false;
-//		}
-//
-//		SerializeReader<Gaff::MessagePackNode> reader(mpack.getRoot(), allocator);
-//		ECSArchetype archetype;
-//
-//		if (!archetype.finalize(reader)) {
-//			return false;
-//		}
-//
-//		{
-//			const auto guard = reader.enterElementGuard("name");
-//
-//			if (!reader.isString()) {
-//				// $TODO: Log error.
-//				return false;
-//			}
-//
-//			addArchetype(std::move(archetype), reader.readString());
-//		}
-//
-//	} else {
-//		Gaff::JSON json;
-//
-//		if (!json.parse(file->getBuffer())) {
-//			// $TODO: Log error.
-//			return false;
-//		}
-//
-//		const Gaff::JSON name = json["name"];
-//
-//		if (!name.isString()) {
-//			// $TODO: Log error.
-//			return false;
-//		}
-//
-//		SerializeReader<Gaff::JSON> reader(json, allocator);
-//
-//		ECSArchetype archetype;
-//
-//		if (!archetype.finalize(reader)) {
-//			return false;
-//		}
-//
-//		addArchetype(std::move(archetype), name.getString());
-//	}
-//
-//	return true;
-//}
 
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 {
