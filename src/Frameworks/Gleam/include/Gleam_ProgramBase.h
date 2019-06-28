@@ -23,8 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IProgram.h"
-#include "Gleam_RefCounted.h"
-#include <Gaff_RefPtr.h>
 
 NS_GLEAM
 
@@ -33,8 +31,6 @@ class ProgramBuffersBase : public IProgramBuffers
 public:
 	ProgramBuffersBase(void);
 	~ProgramBuffersBase(void);
-
-	void clear(void) override;
 
 	const Vector<IBuffer*>& getConstantBuffers(IShader::ShaderType type) const override;
 	const IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) const override;
@@ -70,8 +66,6 @@ protected:
 	Vector<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];
 	Vector<ISamplerState*> _sampler_states[IShader::SHADER_TYPE_SIZE];
 	Vector<IBuffer*> _constant_buffers[IShader::SHADER_TYPE_SIZE];
-
-	GLEAM_REF_COUNTED_OVERRIDE(ProgramBuffersBase);
 };
 
 class ProgramBase : public IProgram
@@ -80,15 +74,11 @@ public:
 	ProgramBase(void);
 	~ProgramBase(void);
 
-	void destroy(void) override;
-
 	const IShader* getAttachedShader(IShader::ShaderType type) const override;
 	IShader* getAttachedShader(IShader::ShaderType type) override;
 
 protected:
-	Gaff::RefPtr<IShader> _attached_shaders[IShader::SHADER_TYPE_SIZE];
-
-	GLEAM_REF_COUNTED_OVERRIDE(ProgramBase);
+	IShader* _attached_shaders[IShader::SHADER_TYPE_SIZE];
 };
 
 NS_END

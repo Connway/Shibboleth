@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IncludeD3D11.h"
-#include "Gleam_RefCounted.h"
 #include "Gleam_IShader.h"
 
 NS_GLEAM
@@ -82,8 +81,6 @@ private:
 
 	bool loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const;
 	ID3DBlob* compileShader(const char* shader, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target);
-
-	GLEAM_REF_COUNTED(ShaderD3D11);
 };
 
 NS_END

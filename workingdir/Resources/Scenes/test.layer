@@ -10,8 +10,8 @@
 				"shared_components": {},
 				"components":
 				{
-					"Rotation": { "Rotation": {"x": 0, "y": 0, "z": 0, "w": 1} },
-					"Position": { "Position": {"x": -2.5, "y": 0, "z": 0} }
+					"Rotation": { "value": {"x": 0, "y": 0, "z": 0, "w": 1} },
+					"Position": { "value": {"x": -2.5, "y": 0, "z": 0} }
 				}
 			}
 		}

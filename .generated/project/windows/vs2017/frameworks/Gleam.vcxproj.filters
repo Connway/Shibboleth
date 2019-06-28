@@ -180,9 +180,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RawInputRegisterFunction.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RefCounted.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderDevice.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -220,6 +217,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Shader_Direct3D11.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_String.h">

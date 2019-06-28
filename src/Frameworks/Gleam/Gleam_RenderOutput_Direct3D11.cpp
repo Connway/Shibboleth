@@ -152,7 +152,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		
 	RenderTargetD3D11* rt = GLEAM_ALLOCT(RenderTargetD3D11);
 	rt->setRTV(_render_target_view.get(), viewport);
-	_render_target = rt;
+	_render_target.reset(rt);
 
 	return true;
 }

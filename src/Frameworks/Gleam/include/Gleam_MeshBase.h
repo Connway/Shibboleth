@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
 #include "Gleam_Vector.h"
 #include "Gleam_IMesh.h"
 
@@ -33,8 +32,6 @@ class MeshBase : public IMesh
 public:
 	MeshBase(void);
 	~MeshBase(void);
-
-	void destroy(void) override;
 
 	void addBuffer(IBuffer* buffer) override;
 	const IBuffer* getBuffer(int32_t index) const override;
@@ -63,8 +60,6 @@ protected:
 
 private:
 	int32_t _index_count;
-
-	GLEAM_REF_COUNTED_OVERRIDE(MeshBase);
 };
 
 NS_END

@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
 #include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_SmartPtrs.h>
 

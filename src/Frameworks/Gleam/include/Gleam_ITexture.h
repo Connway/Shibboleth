@@ -23,13 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_RefCounted.h>
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class ITexture : public Gaff::IRefCounted
+class ITexture
 {
 public:
 	enum Type { ONED = 0, TWOD, THREED, CUBE, DEPTH, DEPTH_STENCIL, TYPE_SIZE };

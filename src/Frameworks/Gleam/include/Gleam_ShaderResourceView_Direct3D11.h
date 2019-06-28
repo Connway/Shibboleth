@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IShaderResourceView.h"
-#include "Gleam_RefCounted.h"
 
 struct ID3D11ShaderResourceView;
 
@@ -45,8 +44,6 @@ public:
 
 private:
 	ID3D11ShaderResourceView* _resource_view;
-
-	GLEAM_REF_COUNTED(ShaderResourceViewD3D11);
 };
 
 NS_END

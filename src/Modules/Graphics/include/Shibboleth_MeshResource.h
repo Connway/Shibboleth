@@ -22,33 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include <Shibboleth_Component.h>
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Gleam_IMesh.h>
 
 NS_SHIBBOLETH
 
-class IRenderManager;
-
-class CameraComponent final /*: public Component*/ : public Gaff::IReflectionObject
+class MeshResource final : public IResource
 {
 public:
-	//void onAddToWorld(void) override;
+	const Gleam::IMesh& getMesh(void) const;
+	Gleam::IMesh& getMesh(void);
 
 private:
-	IRenderManager* _render_mgr = nullptr;
+	Vector< UniquePtr<Gleam::IBuffer> > _buffers;
+	UniquePtr<Gleam::IMesh> _mesh;
 
-	U8String _display_tag{ "Default" };
-	float _fov = 90.0f;
+	void loadMesh(IFile* file);
 
-	// cull mask
-	// shader
-	// render output (null == display)
-
-	bool _start_active = true;
-
-	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(MeshResource);
 };
+
+using MeshResourcePtr = Gaff::RefPtr<MeshResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(CameraComponent)
+SHIB_REFLECTION_DECLARE(MeshResource)

@@ -23,15 +23,14 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
-#include <Gaff_RefPtr.h>
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 class ITexture;
 
-class IRenderTarget : public Gaff::IRefCounted
+class IRenderTarget
 {
 public:
 	enum ClearFlags
@@ -66,7 +65,5 @@ public:
 
 	GAFF_NO_COPY(IRenderTarget);
 };
-
-using IRenderTargetPtr = Gaff::RefPtr<IRenderTarget>;
 
 NS_END

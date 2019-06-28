@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
 #include "Gleam_Vector.h"
 #include "Gleam_IModel.h"
 
@@ -33,8 +32,6 @@ class ModelBase : public IModel
 public:
 	ModelBase(void);
 	~ModelBase(void);
-
-	void destroy(void) override;
 
 	const ILayout* getLayout(int32_t index) const override;
 	ILayout* getLayout(int32_t index) override;
@@ -55,8 +52,6 @@ public:
 private:
 	Vector<ILayout*> _layouts;
 	Vector<IMesh*> _meshes;
-
-	GLEAM_REF_COUNTED_OVERRIDE(ModelBase);
 };
 
 NS_END

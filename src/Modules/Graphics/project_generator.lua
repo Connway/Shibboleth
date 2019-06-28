@@ -30,11 +30,13 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			-- base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/rapidjson",
 			-- base_dir .. "../../Dependencies/glm",
-			-- base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Frameworks/Gaff/include",
-			base_dir .. "../../Frameworks/Gleam/include"
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/ECS/include"
 		}
 
 
@@ -65,11 +67,15 @@ function DoGraphicsModule(renderer)
 		local deps =
 		{
 			"Gleam",
-			-- "Resource",
+			"Resource",
+			"ECS",
+			"mpack"
 		}
 
 		dependson(deps)
 		links(deps)
+
+		NewDeleteLinkFix()
 end
 
 local GenerateProject = function()
@@ -81,6 +87,9 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("")
 	table.remove(deps) -- remove module name dependency
 	table.insert(deps, "Gleam")
+	table.insert(deps, "Resource")
+	table.insert(deps, "ECS")
+	table.insert(deps, "mpack")
 
 	dependson(deps)
 	links(deps)

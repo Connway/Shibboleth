@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_RefCounted.h>
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
@@ -31,7 +31,7 @@ class IRenderDevice;
 class ITexture;
 class IBuffer;
 
-class IShaderResourceView : public Gaff::IRefCounted
+class IShaderResourceView
 {
 public:
 	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0, VIEW_BUFFER };

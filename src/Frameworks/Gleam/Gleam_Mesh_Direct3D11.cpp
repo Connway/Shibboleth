@@ -48,7 +48,6 @@ MeshD3D11::MeshD3D11(void)
 
 MeshD3D11::~MeshD3D11(void)
 {
-	destroy();
 }
 
 bool MeshD3D11::addVertData(

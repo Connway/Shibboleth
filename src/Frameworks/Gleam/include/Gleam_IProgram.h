@@ -35,13 +35,11 @@ class ISamplerState;
 class IRenderDevice;
 class IBuffer;
 
-class IProgramBuffers : public Gaff::IRefCounted
+class IProgramBuffers
 {
 public:
 	IProgramBuffers(void) {}
 	virtual ~IProgramBuffers(void) {}
-
-	virtual void clear(void) = 0;
 
 	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::ShaderType type) const = 0;
 	virtual const IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) const = 0;
@@ -108,14 +106,11 @@ struct ProgramReflection
 	int32_t total_structured_buffers = 0;
 };
 
-class IProgram : public Gaff::IRefCounted
+class IProgram
 {
 public:
 	IProgram(void) {}
 	virtual ~IProgram(void) {}
-
-	virtual bool init(void) = 0;
-	virtual void destroy(void) = 0;
 
 	virtual void attach(IShader* shader) = 0;
 	virtual void detach(IShader::ShaderType shader) = 0;

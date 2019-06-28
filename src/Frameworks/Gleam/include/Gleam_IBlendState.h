@@ -23,13 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class IBlendState : public Gaff::IRefCounted
+class IBlendState
 {
 public:
 	enum BlendFactor

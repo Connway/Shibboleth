@@ -61,7 +61,7 @@ struct LayoutDescription
 	PerDataType per_data_type;
 };
 
-class ILayout : public Gaff::IRefCounted
+class ILayout
 {
 public:
 	ILayout(void) {}
@@ -74,6 +74,8 @@ public:
 	virtual void unsetLayout(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
+
+	GAFF_NO_COPY(ILayout);
 };
 
 NS_END

@@ -22,26 +22,54 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include <Gleam_Transform.h>
-#include <Gaff_Math.h>
+#include "Shibboleth_MeshResource.h"
+#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_LoadFileCallbackAttribute.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_LogManager.h>
+#include <Shibboleth_Utilities.h>
+
+SHIB_REFLECTION_DEFINE(MeshResource)
 
 NS_SHIBBOLETH
 
-class Camera final
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MeshResource)
+	.classAttrs(
+		ResExtAttribute(".mesh.bin"),
+		ResExtAttribute(".mesh"),
+		MakeLoadFileCallbackAttribute(&MeshResource::loadMesh)
+	)
+
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(MeshResource)
+
+const Gleam::IMesh& MeshResource::getMesh(void) const
 {
-public:
-	const Gleam::TransformRT& getTransform(void) const { return _transform; }
-	Gleam::TransformRT& getTransform(void) { return _transform; }
-	void setTransform(const Gleam::TransformRT& transform) { _transform = transform; }
+	return *_mesh;
+}
 
-	float getHFOVRadians(void) const { return _h_fov * Gaff::RadToDeg; }
-	float getHFOV(void) const { return _h_fov; }
-	void setHFOV(float h_fov) { _h_fov = h_fov; }
+Gleam::IMesh& MeshResource::getMesh(void)
+{
+	return *_mesh;
+}
 
-private:
-	Gleam::TransformRT _transform;
-	float _h_fov = 90.0f;
-};
+void MeshResource::loadMesh(IFile* file)
+{
+	SerializeReaderWrapper readerWrapper;
+
+	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
+		LogErrorResource("Failed to load mesh '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+		failed();
+		return;
+	}
+
+	const RenderManager& render_mgr = GetApp().getManagerTFast<RenderManager>();
+	_mesh.reset(render_mgr.createMesh());
+
+	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	GAFF_REF(reader);
+}
 
 NS_END

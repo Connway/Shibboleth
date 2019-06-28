@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
 #include "Gleam_ILayout.h"
 
 struct ID3D11InputLayout;
@@ -45,8 +44,6 @@ public:
 
 private:
 	ID3D11InputLayout* _layout;
-
-	GLEAM_REF_COUNTED_OVERRIDE(LayoutD3D11);
 };
 
 NS_END

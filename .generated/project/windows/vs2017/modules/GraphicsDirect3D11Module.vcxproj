@@ -115,9 +115,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;..\..\..\..\build\windows\vs2017\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Debug\GraphicsDirect3D11Module64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
@@ -149,9 +150,10 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;..\..\..\..\build\windows\vs2017\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Release\GraphicsDirect3D11Module64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
@@ -183,9 +185,10 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;..\..\..\..\build\windows\vs2017\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Profile\GraphicsDirect3D11Module64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
@@ -217,9 +220,10 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;..\..\..\..\build\windows\vs2017\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\GraphicsDirect3D11Module64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
@@ -242,14 +246,20 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\mpack.vcxproj">
-      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
-    </ProjectReference>
     <ProjectReference Include="GraphicsDirect3D11.vcxproj">
       <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Resource.vcxproj">
+      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
+    </ProjectReference>
+    <ProjectReference Include="ECS.vcxproj">
+      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

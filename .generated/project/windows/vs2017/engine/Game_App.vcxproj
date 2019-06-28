@@ -345,9 +345,6 @@
     <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
       <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\Entity.vcxproj">
-      <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>

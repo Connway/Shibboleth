@@ -44,15 +44,11 @@ ILayout* ModelD3D11::createLayout(IRenderDevice& rd, const LayoutDescription* la
 		return nullptr;
 	}
 
-	layout->addRef();
-
 	if (!layout->init(rd, layout_desc, desc_size, shader)) {
-		layout->release();
 		return nullptr;
 	}
 
 	addLayout(layout);
-	layout->release();
 
 	return layout;
 }
