@@ -33,21 +33,6 @@ ModelBase::ModelBase(void)
 
 ModelBase::~ModelBase(void)
 {
-	destroy();
-}
-
-void ModelBase::destroy(void)
-{
-	for (int32_t i = 0; i < static_cast<int32_t>(_layouts.size()); ++i) {
-		_layouts[i]->release();
-	}
-
-	for (int32_t i = 0; i < static_cast<int32_t>(_meshes.size()); ++i) {
-		_meshes[i]->release();
-	}
-
-	_layouts.clear();
-	_meshes.clear();
 }
 
 const ILayout* ModelBase::getLayout(int32_t index) const
@@ -73,7 +58,6 @@ int32_t ModelBase::addLayout(ILayout* layout)
 {
 	GAFF_ASSERT(layout);
 	_layouts.emplace_back(layout);
-	layout->addRef();
 	return static_cast<int32_t>(_layouts.size() - 1);
 }
 
@@ -105,7 +89,6 @@ int32_t ModelBase::addMesh(IMesh* mesh)
 {
 	GAFF_ASSERT(mesh);
 	_meshes.emplace_back(mesh);
-	mesh->addRef();
 	return static_cast<int32_t>(_meshes.size() - 1);
 }
 

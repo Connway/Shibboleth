@@ -80,8 +80,6 @@ public:
 	ProgramD3D11(void);
 	~ProgramD3D11(void);
 
-	bool init(void);
-
 	void attach(IShader* shader);
 	void detach(IShader::ShaderType shader);
 

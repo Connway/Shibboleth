@@ -35,22 +35,9 @@ MeshBase::~MeshBase(void)
 {
 }
 
-void MeshBase::destroy(void)
-{
-	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
-		_vert_data[i]->release();
-	}
-
-	SAFEGAFFRELEASE(_indices);
-	_index_count = 0;
-
-	_vert_data.clear();
-}
-
 void MeshBase::addBuffer(IBuffer* buffer)
 {
 	_vert_data.emplace_back(buffer);
-	buffer->addRef();
 }
 
 const IBuffer* MeshBase::getBuffer(int32_t index) const
@@ -73,9 +60,7 @@ int32_t MeshBase::getBufferCount(void) const
 void MeshBase::setIndiceBuffer(IBuffer* buffer)
 {
 	GAFF_ASSERT(buffer);
-	SAFEGAFFRELEASE(_indices);
 	_indices = buffer;
-	buffer->addRef();
 }
 
 const IBuffer* MeshBase::getIndiceBuffer(void) const

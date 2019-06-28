@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ISamplerState.h"
-#include "Gleam_RefCounted.h"
 
 struct ID3D11SamplerState;
 
@@ -52,8 +51,6 @@ public:
 
 private:
 	ID3D11SamplerState* _sampler_state;
-
-	GLEAM_REF_COUNTED(SamplerStateD3D11);
 };
 
 NS_END

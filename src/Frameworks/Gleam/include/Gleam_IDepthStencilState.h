@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
 
 #if _MSC_VER
 	#pragma warning(push)
@@ -34,7 +33,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IDepthStencilState : public Gaff::IRefCounted
+class IDepthStencilState
 {
 public:
 	enum ComparisonFunc

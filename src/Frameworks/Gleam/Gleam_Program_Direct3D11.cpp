@@ -145,17 +145,14 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 
 		for (size_t j = 0; j < _resource_views[i].size(); ++j) {
 			pb->_resource_views[i][j] = _resource_views[i][j];
-			pb->_resource_views[i][j]->addRef();
 		}
 
 		for (size_t j = 0; j < _sampler_states[i].size(); ++j) {
 			pb->_sampler_states[i][j] = _sampler_states[i][j];
-			pb->_sampler_states[i][j]->addRef();
 		}
 
 		for (size_t j = 0; j < _constant_buffers[i].size(); ++j) {
 			pb->_constant_buffers[i][j] = _constant_buffers[i][j];
-			pb->_constant_buffers[i][j]->addRef();
 		}
 
 		pb->cacheResViews(static_cast<IShader::ShaderType>(i));
@@ -232,12 +229,6 @@ ProgramD3D11::ProgramD3D11(void):
 
 ProgramD3D11::~ProgramD3D11(void)
 {
-	destroy();
-}
-
-bool ProgramD3D11::init(void)
-{
-	return true;
 }
 
 void ProgramD3D11::attach(IShader* shader)
@@ -358,7 +349,7 @@ ProgramReflection ProgramD3D11::getReflectionData(void) const
 
 	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
 		if (_attached_shaders[i]) {
-			reflection.shader_reflection[i] = getShaderReflectionData(_attached_shaders[i].get(), reflection);
+			reflection.shader_reflection[i] = getShaderReflectionData(_attached_shaders[i], reflection);
 		}
 	}
 

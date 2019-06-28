@@ -22,36 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_ProxyAllocator.h"
+#include <Gaff_SmartPtrs.h>
 
 NS_GLEAM
 
-class IRenderDevice;
-
-class IRasterState
-{
-public:
-	struct RasterStateSettings
-	{
-		float slope_scale_depth_bias = 0.0f;
-		float depth_bias_clamp = 0.0f;
-		int depth_bias = 0;
-		bool front_face_counter_clockwise = false;
-		bool scissor_enabled = false;
-		bool two_sided = false;
-		bool wireframe = false;
-	};
-
-	IRasterState(void) {}
-	virtual ~IRasterState(void) {}
-
-	virtual bool init(IRenderDevice& rd, const RasterStateSettings& settings) = 0;
-	virtual void destroy(void) = 0;
-
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
-
-	virtual RendererType getRendererType(void) const = 0;
-};
+template <class T>
+using UniquePtr = Gaff::UniquePtr<T, ProxyAllocator>;
 
 NS_END

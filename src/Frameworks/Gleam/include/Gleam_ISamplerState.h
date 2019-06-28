@@ -23,13 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class ISamplerState : public Gaff::IRefCounted
+class ISamplerState
 {
 public:
 	enum Wrap

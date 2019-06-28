@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
@@ -34,13 +33,11 @@ class ILayout;
 class IShader;
 class IMesh;
 
-class IModel : public Gaff::IRefCounted
+class IModel
 {
 public:
 	IModel(void) {}
 	~IModel(void) {}
-
-	virtual void destroy(void) = 0;
 
 	virtual const ILayout* getLayout(int32_t index) const = 0;
 	virtual ILayout* getLayout(int32_t index) = 0;

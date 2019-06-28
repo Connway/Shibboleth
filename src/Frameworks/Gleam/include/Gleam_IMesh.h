@@ -23,14 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 class IBuffer;
 
-class IMesh : public Gaff::IRefCounted
+class IMesh
 {
 public:
 	enum TopologyType {
@@ -50,8 +49,6 @@ public:
 
 	IMesh(void) {}
 	virtual ~IMesh(void) {}
-
-	virtual void destroy(void) = 0;
 
 	template <class Vertex>
 	bool addVertData(

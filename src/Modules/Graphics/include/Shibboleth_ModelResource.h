@@ -22,15 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ProxyAllocator.h"
-#include <Gaff_RefCounted.h>
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Gleam_IModel.h>
 
-NS_GLEAM
+NS_SHIBBOLETH
 
+class ModelResource final : public IResource
+{
+public:
 
-#define GLEAM_REF_COUNTED_OVERRIDE(Class) GAFF_REF_COUNTED_OVERRIDE(Class, *Gleam::GetAllocator())
-#define GLEAM_REF_COUNTED(Class) GAFF_REF_COUNTED(Class, *Gleam::GetAllocator())
+private:
+	//void meshLoaded(IResource&);
 
-using RefCounted = Gaff::RefCounted<Gleam::ProxyAllocator>;
+	//Vector<MeshResourcePtr> _meshes;
+
+	UniquePtr<Gleam::IModel> _model;
+};
+
+using ModelResourcePtr = Gaff::RefPtr<ModelResource>;
 
 NS_END

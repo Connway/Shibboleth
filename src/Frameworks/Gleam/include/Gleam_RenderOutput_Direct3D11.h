@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 #include "Gleam_RenderTarget_Direct3D11.h"
 #include "Gleam_IRenderOutput.h"
+#include "Gleam_SmartPtrs.h"
+#include <Gaff_RefPtr.h>
 
 struct IDXGISwapChain1;
 
@@ -41,7 +43,7 @@ public:
 	bool isVSync(void) const;
 
 private:
-	Gaff::RefPtr<RenderTargetD3D11> _render_target;
+	UniquePtr<RenderTargetD3D11> _render_target;
 
 	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
 	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;

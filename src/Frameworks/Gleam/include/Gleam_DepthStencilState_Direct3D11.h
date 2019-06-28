@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IDepthStencilState.h"
-#include "Gleam_RefCounted.h"
 
 struct ID3D11DepthStencilState;
 
@@ -46,8 +45,6 @@ public:
 private:
 	ID3D11DepthStencilState* _depth_stencil_state;
 	unsigned int _stencil_ref;
-
-	GLEAM_REF_COUNTED_OVERRIDE(DepthStencilStateD3D11);
 };
 
 NS_END

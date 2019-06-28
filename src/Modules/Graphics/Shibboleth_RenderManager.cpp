@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManager.h"
-#include "Shibboleth_CameraComponent.h"
 
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_DepthStencilState.h>
@@ -48,26 +47,6 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
 	.BASE(IRenderManager)
 	.BASE(IManager)
 	.ctor<>()
-
-	//.func("createShaderResourceView", &RenderManager::createShaderResourceView)
-	//.func("createDepthStencilState", &RenderManager::createDepthStencilState)
-	//.func("createRenderDevice", &RenderManager::createRenderDevice)
-	//.func("createRenderOutput", &RenderManager::createRenderOutput)
-	//.func("createRenderTarget", &RenderManager::createRenderTarget)
-	//.func("createSamplerState", &RenderManager::createSamplerState)
-	//.func("createCommandList", &RenderManager::createCommandList)
-	//.func("createRasterState", &RenderManager::createRasterState)
-	//.func("createBlendState", &RenderManager::createBlendState)
-	//.func("createTexture", &RenderManager::createTexture)
-	//.func("createProgramBuffers", &RenderManager::createProgramBuffers)
-	//.func("createProgram", &RenderManager::createProgram)
-	//.func("createShader", &RenderManager::createShader)
-	//.func("createBuffer", &RenderManager::createBuffer)
-	//.func("createLayout", &RenderManager::createLayout)
-	//.func("createModel", &RenderManager::createModel)
-	//.func("createMesh", &RenderManager::createMesh)
-
-	//.func("setActiveCamera", &RenderManager::setActiveCamera)
 SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
@@ -168,10 +147,5 @@ Gleam::IRenderDevice* RenderManager::getRenderDevice(const char* name)
 	const auto it = _render_devices.find(Gaff::FNV1aHash32String(name));
 	return it == _render_devices.end() ? nullptr : it->second.get();
 }
-
-//void RenderManager::setActiveCamera(CameraComponent* camera)
-//{
-//	GAFF_REF(camera);
-//}
 
 NS_END

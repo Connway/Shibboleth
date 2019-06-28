@@ -20,32 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_CameraComponent.h"
-#include "Shibboleth_IRenderManager.h"
-#include <Shibboleth_IManager.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE(CameraComponent)
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ECSEntity.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(CameraComponent)
-	//.BASE(Component)
-	.ctor<>()
+class ECSManager;
 
-	.var("display_tag", &CameraComponent::_display_tag)
-	.var("fov", &CameraComponent::_fov)
+class Model final
+{
+public:
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Gaff::Hash32 value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
 
-	.var("start_active", &CameraComponent::_start_active)
+	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, EntityID id);
 
-SHIB_REFLECTION_CLASS_DEFINE_END(CameraComponent)
-
-//void CameraComponent::onAddToWorld(void)
-//{
-//	_render_mgr = INTERFACE_CAST(IRenderManager, *GetApp().getManager(Gaff::FNV1aHash64Const("IRenderManager")));
-//
-//	if (_start_active) {
-//		//_render_mgr->setActiveCamera(this);
-//	}
-//}
+	static void CopyShared(const void* old_value, void* new_value);
+};
 
 NS_END

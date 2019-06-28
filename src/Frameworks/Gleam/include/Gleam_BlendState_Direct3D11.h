@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IBlendState.h"
-#include "Gleam_RefCounted.h"
 
 struct ID3D11BlendState;
 
@@ -46,8 +45,6 @@ public:
 
 private:
 	ID3D11BlendState* _blend_state;
-
-	GLEAM_REF_COUNTED_OVERRIDE(BlendStateD3D11);
 };
 
 NS_END

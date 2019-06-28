@@ -43,7 +43,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Position)
 
 	.staticFunc("Load", &Position::Load)
 
-	.var("Position", &Position::value)
+	.var("value", &Position::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Position)
 
@@ -79,7 +79,7 @@ void Position::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeRead
 	glm::vec3 value;
 
 	{
-		const auto guard = reader.enterElementGuard("Position");
+		const auto guard = reader.enterElementGuard("value");
 		Reflection<glm::vec3>::Load(reader, value);
 	}
 
@@ -161,7 +161,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 
 	.staticFunc("Load", &Rotation::Load)
 
-	.var("Rotation", &Rotation::value)
+	.var("value", &Rotation::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Rotation)
 
@@ -178,19 +178,19 @@ void Rotation::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& valu
 void Rotation::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
-	component[0] = value.w;
-	component[4] = value.x;
-	component[8] = value.y;
-	component[12] = value.z;
+	component[0] = value.x;
+	component[4] = value.y;
+	component[8] = value.z;
+	component[12] = value.w;
 }
 
 void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	component[0] = value.w;
-	component[4] = value.x;
-	component[8] = value.y;
-	component[12] = value.z;
+	component[0] = value.x;
+	component[4] = value.y;
+	component[8] = value.z;
+	component[12] = value.w;
 }
 
 void Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
@@ -198,7 +198,7 @@ void Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeRead
 	glm::quat value;
 
 	{
-		const auto guard = reader.enterElementGuard("Rotation");
+		const auto guard = reader.enterElementGuard("value");
 		Reflection<glm::quat>::Load(reader, value);
 	}
 
@@ -220,10 +220,10 @@ glm::quat Rotation::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32
 	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 
 	return glm::quat(
+		component[12],
 		component[0],
 		component[4],
-		component[8],
-		component[12]
+		component[8]
 	);
 }
 
@@ -232,31 +232,31 @@ glm::quat Rotation::Get(ECSManager& ecs_mgr, EntityID id)
 	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	return glm::quat(
+		component[12],
 		component[0],
 		component[4],
-		component[8],
-		component[12]
+		component[8]
 	);
 }
 
 glm_vec4 Rotation::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
 }
 
 glm_vec4 Rotation::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
 }
 
 glm_vec4 Rotation::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
 glm_vec4 Rotation::GetW(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
+	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 }
 
 void Rotation::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -288,7 +288,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 
 	.staticFunc("Load", &Scale::Load)
 
-	.var("Scale", &Scale::value)
+	.var("value", &Scale::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Scale)
 
@@ -323,7 +323,7 @@ void Scale::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader&
 	glm::vec3 value;
 
 	{
-		const auto guard = reader.enterElementGuard("Scale");
+		const auto guard = reader.enterElementGuard("value");
 		Reflection<glm::vec3>::Load(reader, value);
 	}
 
