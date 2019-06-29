@@ -51,7 +51,7 @@ public:
 	template <class T>
 	Gaff::RefPtr<T> createResourceT(const char* name)
 	{
-		return createResource<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+		return createResourceT<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
 	}
 
 	template <class T>

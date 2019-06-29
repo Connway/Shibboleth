@@ -20,15 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_MeshResource.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
+
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
 
 SHIB_REFLECTION_DEFINE(MeshResource)
 
@@ -36,8 +38,8 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MeshResource)
 	.classAttrs(
-		ResExtAttribute(".mesh.bin"),
-		ResExtAttribute(".mesh"),
+		CreatableAttribute(),
+		ResExtAttribute(".model"),
 		MakeLoadFileCallbackAttribute(&MeshResource::loadMesh)
 	)
 
@@ -57,19 +59,46 @@ Gleam::IMesh& MeshResource::getMesh(void)
 
 void MeshResource::loadMesh(IFile* file)
 {
-	SerializeReaderWrapper readerWrapper;
+	Assimp::Importer importer;
 
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load mesh '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+	// Only load mesh data.
+	importer.SetPropertyInteger(
+		AI_CONFIG_PP_RVC_FLAGS,
+		aiComponent_ANIMATIONS | aiComponent_COLORS | aiComponent_TEXTURES |
+		aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS
+	);
+
+	const aiScene* const scene = importer.ReadFileFromMemory(
+		file->getBuffer(),
+		file->size(),
+		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded
+	);
+
+	if (!scene) {
+		LogErrorResource("Failed to load mesh '%s' with error '%s'", getFilePath().getBuffer(), importer.GetErrorString());
+		failed();
+		return;
+	}
+
+	if (!scene->HasMeshes()) {
+		LogErrorResource("Failed to load mesh '%s'. Assimp scene has no meshes.", getFilePath().getBuffer());
 		failed();
 		return;
 	}
 
 	const RenderManager& render_mgr = GetApp().getManagerTFast<RenderManager>();
+	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+
 	_mesh.reset(render_mgr.createMesh());
 
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
-	GAFF_REF(reader);
+	_buffers.resize(scene->mNumMeshes);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(scene->mNumMeshes); ++i) {
+		const U8String res_name = getFilePath().getString() + ":" + scene->mMeshes[i]->mName.C_Str();		
+		_buffers[i] = res_mgr.createResourceT<BufferResource>(res_name.data());
+
+
+	}
 }
 
 NS_END

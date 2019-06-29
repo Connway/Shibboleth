@@ -31,6 +31,7 @@ NS_SHIBBOLETH
 class ModelResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
 
 private:
 	//void meshLoaded(IResource&);

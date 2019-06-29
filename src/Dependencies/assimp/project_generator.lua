@@ -28,6 +28,7 @@ project "assimp"
 		"contrib/openddlparser/include",
 		"contrib/irrXML",
 		"include",
+		"code",
 		"../rapidjson",
 		"../minizip",
 		"../zlib-ng"

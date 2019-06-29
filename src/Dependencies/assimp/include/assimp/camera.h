@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2019, assimp team
 
 
 
@@ -161,7 +161,6 @@ struct aiCamera
      * inaccuracies which could lead to z-fighting.
      */
     float mClipPlaneFar;
-
 
     /** Screen aspect ratio.
      *
