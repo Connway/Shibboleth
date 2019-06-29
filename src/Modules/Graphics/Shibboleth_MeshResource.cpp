@@ -39,7 +39,7 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MeshResource)
 	.classAttrs(
 		CreatableAttribute(),
-		ResExtAttribute(".model"),
+		ResExtAttribute(".mesh"),
 		MakeLoadFileCallbackAttribute(&MeshResource::loadMesh)
 	)
 
@@ -64,8 +64,9 @@ void MeshResource::loadMesh(IFile* file)
 	// Only load mesh data.
 	importer.SetPropertyInteger(
 		AI_CONFIG_PP_RVC_FLAGS,
-		aiComponent_ANIMATIONS | aiComponent_COLORS | aiComponent_TEXTURES |
-		aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS
+		aiComponent_ANIMATIONS | aiComponent_TEXTURES |
+		aiComponent_LIGHTS | aiComponent_CAMERAS |
+		aiComponent_MATERIALS
 	);
 
 	const aiScene* const scene = importer.ReadFileFromMemory(
@@ -89,6 +90,10 @@ void MeshResource::loadMesh(IFile* file)
 	const RenderManager& render_mgr = GetApp().getManagerTFast<RenderManager>();
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
+	// Get render device list.
+
+	// If returned zero render devices,
+
 	_mesh.reset(render_mgr.createMesh());
 
 	_buffers.resize(scene->mNumMeshes);
@@ -97,7 +102,37 @@ void MeshResource::loadMesh(IFile* file)
 		const U8String res_name = getFilePath().getString() + ":" + scene->mMeshes[i]->mName.C_Str();		
 		_buffers[i] = res_mgr.createResourceT<BufferResource>(res_name.data());
 
+		Gleam::IBuffer& buffer = _buffers[i]->getBuffer();
+		const aiMesh* const mesh = scene->mMeshes[i];
 
+		Gleam::IBuffer::BufferSettings settings { nullptr, 0, 0, Gleam::IBuffer::BT_VERTEX_DATA, Gleam::IBuffer::MT_NONE, true, 0 };
+
+		// Options for packing here?
+
+		// Calculate total buffer size.
+		if (mesh->HasPositions()) {
+			settings.size += 3 * sizeof(float) * mesh->mNumVertices;
+		}
+
+		if (mesh->HasNormals()) {
+			settings.size += 3 * sizeof(float) * mesh->mNumVertices;
+		}
+
+		if (mesh->HasTangentsAndBitangents()) {
+			settings.size += 6 * sizeof(float) * mesh->mNumVertices;
+		}
+
+		for (int32_t j = 0; j < static_cast<int32_t>(mesh->GetNumUVChannels()); ++j) {
+			settings.size += mesh->mNumUVComponents[j] * sizeof(float) * mesh->mNumVertices;
+		}
+
+		for (int32_t j = 0; j < static_cast<int32_t>(mesh->GetNumColorChannels()); ++j) {
+			settings.size += 4 * sizeof(float) * mesh->mNumVertices;
+		}
+
+		//buffer.init(rd, settings);
+
+		_mesh->addBuffer(&buffer);
 	}
 }
 

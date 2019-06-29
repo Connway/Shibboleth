@@ -69,21 +69,21 @@ bool BufferD3D11::init(
 	desc.BindFlags = _type_map[buffer_type];
 	desc.ByteWidth = static_cast<UINT>(size);
 	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = (buffer_type == STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
+	desc.MiscFlags = (buffer_type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 	desc.StructureByteStride = static_cast<UINT>(structure_byte_stride);
-	desc.Usage = (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+	desc.Usage = (gpu_read_only && (cpu_access == MT_WRITE || cpu_access == MT_WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
 	switch (cpu_access) {
-		case READ:
+		case MT_READ:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 			break;
 
-		case WRITE_NO_OVERWRITE:
-		case WRITE:
+		case MT_WRITE_NO_OVERWRITE:
+		case MT_WRITE:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			break;
 
-		case READ_WRITE:
+		case MT_READ_WRITE:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 			break;
 
@@ -126,7 +126,7 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 
 void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != NONE);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != MT_NONE);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
