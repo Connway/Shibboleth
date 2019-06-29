@@ -33,19 +33,21 @@ class IBuffer
 {
 public:
 	enum BufferType {
-		VERTEX_DATA = 0,
-		INDEX_DATA,
-		SHADER_DATA,
-		STRUCTURED_DATA,
+		BT_VERTEX_DATA = 0,
+		BT_INDEX_DATA,
+		BT_SHADER_DATA,
+		BT_STRUCTURED_DATA,
+		
 		BUFFER_TYPE_SIZE
 	};
 
 	enum MapType {
-		NONE = 0,
-		READ,
-		WRITE,
-		READ_WRITE,
-		WRITE_NO_OVERWRITE,
+		MT_NONE = 0,
+		MT_READ,
+		MT_WRITE,
+		MT_READ_WRITE,
+		MT_WRITE_NO_OVERWRITE,
+
 		MAP_TYPE_SIZE
 	};
 
@@ -85,14 +87,14 @@ public:
 	}
 
 	virtual bool init(
-		IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = SHADER_DATA,
-		int32_t stride = 0, MapType cpu_access = NONE, bool gpu_read_only = true,
+		IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = BT_SHADER_DATA,
+		int32_t stride = 0, MapType cpu_access = MT_NONE, bool gpu_read_only = true,
 		int32_t structure_byte_stride = 0
 	) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) = 0;
-	virtual void* map(IRenderDevice& rd, MapType map_type = WRITE) = 0;
+	virtual void* map(IRenderDevice& rd, MapType map_type = MT_WRITE) = 0;
 	virtual void unmap(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
