@@ -30,9 +30,10 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/assimp/include",
 			-- base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/Resource/include",
@@ -69,7 +70,10 @@ function DoGraphicsModule(renderer)
 			"Gleam",
 			"Resource",
 			"ECS",
-			"mpack"
+			"assimp",
+			"mpack",
+			"minizip",
+			"zlib-ng"
 		}
 
 		dependson(deps)
@@ -89,7 +93,10 @@ local LinkDependencies = function()
 	table.insert(deps, "Gleam")
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
+	table.insert(deps, "assimp")
 	table.insert(deps, "mpack")
+	table.insert(deps, "minizip")
+	table.insert(deps, "zlib-ng")
 
 	dependson(deps)
 	links(deps)

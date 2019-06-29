@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
+#include "Shibboleth_BufferResource.h"
 #include <Shibboleth_SmartPtrs.h>
 #include <Gleam_IMesh.h>
 
@@ -31,11 +31,13 @@ NS_SHIBBOLETH
 class MeshResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
+
 	const Gleam::IMesh& getMesh(void) const;
 	Gleam::IMesh& getMesh(void);
 
 private:
-	Vector< UniquePtr<Gleam::IBuffer> > _buffers;
+	Vector<BufferResourcePtr> _buffers;
 	UniquePtr<Gleam::IMesh> _mesh;
 
 	void loadMesh(IFile* file);

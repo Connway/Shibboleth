@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2019, assimp team
 
 
 All rights reserved.
@@ -52,7 +52,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tuple>
 
 #ifndef ASSIMP_BUILD_NO_COMPRESSED_IFC
-#   include <unzip.h>
+#  ifdef ASSIMP_USE_HUNTER
+#    include <minizip/unzip.h>
+#  else
+#    include <unzip.h>
+#  endif
 #endif
 
 #include "IFCLoader.h"
