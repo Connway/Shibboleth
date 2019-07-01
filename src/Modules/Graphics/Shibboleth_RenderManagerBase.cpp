@@ -46,13 +46,11 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	_render_devices.emplace_back(device);
 }
 
-const Vector<Gleam::IRenderDevice*>& RenderManagerBase::getDevicesByTag(const char* tag) const
+const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char* tag) const
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
 	const auto it = _render_device_tags.find(hash);
-	GAFF_ASSERT(it != _render_device_tags.end());
-
-	return it->second;
+	return (it == _render_device_tags.end()) ? nullptr : &it->second;
 }
 
 Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const

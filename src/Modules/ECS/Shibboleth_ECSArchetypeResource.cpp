@@ -64,6 +64,7 @@ void ECSArchetypeResource::loadArchetype(IFile* file)
 	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
 		LogErrorResource("Failed to load archetype '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
 		failed();
+		return;
 	}
 
 	ECSArchetype archetype;
