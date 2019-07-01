@@ -47,7 +47,8 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"Gleam"
+			"Gleam",
+			"GraphicsBase"
 		}
 
 		dependson(deps)
@@ -57,6 +58,8 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("EditorMainLoop")
 	table.insert(deps, "Gleam")
+
+	table.insert(deps, "GraphicsBase")
 
 	dependson(deps)
 	links(deps)

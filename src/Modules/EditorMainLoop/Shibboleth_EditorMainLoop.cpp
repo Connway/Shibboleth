@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_EditorMainLoop.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_IManager.h>
+#include <Gleam_IRenderDevice.h>
 
 SHIB_REFLECTION_DEFINE(EditorMainLoop)
 
@@ -38,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)
 
 bool EditorMainLoop::init(void)
 {
-	IRenderManager& rm = GetApp().GETMANAGERT(RenderManager);
+	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase);
 	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
 
 	// Initialize to the main graphics adapter.
@@ -48,7 +49,8 @@ bool EditorMainLoop::init(void)
 		return false;
 	}
 
-	rm.manageRenderDevice(rd, "main");
+	rm.manageRenderDevice(rd);
+	rm.addRenderDeviceTag(rd, "main");
 
 	return true;
 }

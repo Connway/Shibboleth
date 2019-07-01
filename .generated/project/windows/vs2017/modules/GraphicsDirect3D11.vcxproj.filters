@@ -6,35 +6,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MeshResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ModelComponent.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ModelResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_BufferResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />
   </ItemGroup>
 </Project>

@@ -20,40 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_RenderManagerBase.h"
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+#include <Gleam_IRenderDevice.h>
+#include <Gaff_Assert.h>
 
 NS_SHIBBOLETH
 
-class Camera;
-
-class RenderManager final : public IManager, public RenderManagerBase
+RenderManagerBase::~RenderManagerBase(void)
 {
-public:
-	Gleam::IShaderResourceView* createShaderResourceView(void) const override;
-	Gleam::IDepthStencilState* createDepthStencilState(void) const override;
-	Gleam::IRenderDevice* createRenderDevice(void) const override;
-	Gleam::IRenderOutput* createRenderOutput(void) const override;
-	Gleam::IRenderTarget* createRenderTarget(void) const override;
-	Gleam::ISamplerState* createSamplerState(void) const override;
-	Gleam::ICommandList* createCommandList(void) const override;
-	Gleam::IRasterState* createRasterState(void) const override;
-	Gleam::IBlendState* createBlendState(void) const override;
-	Gleam::ITexture* createTexture(void) const override;
-	Gleam::IProgramBuffers* createProgramBuffers(void) const override;
-	Gleam::IProgram* createProgram(void) const override;
-	Gleam::IShader* createShader(void) const override;
-	Gleam::IBuffer* createBuffer(void) const override;
-	Gleam::ILayout* createLayout(void) const override;
-	Gleam::IModel* createModel(void) const override;
-	Gleam::IMesh* createMesh(void) const override;
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
-};
+void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
+{
+	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
+	auto& devices = _render_device_tags[hash];
+
+	GAFF_ASSERT(Gaff::Find(devices, device) == devices.end());
+	devices.emplace_back(device);
+}
+
+void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
+{
+	const auto it = Gaff::Find(_render_devices, device, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
+	GAFF_ASSERT(it == _render_devices.end());
+	_render_devices.emplace_back(device);
+}
+
+const Vector<Gleam::IRenderDevice*>& RenderManagerBase::getDevicesByTag(const char* tag) const
+{
+	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
+	const auto it = _render_device_tags.find(hash);
+	GAFF_ASSERT(it != _render_device_tags.end());
+
+	return it->second;
+}
+
+Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_render_devices.size()));
+	return *_render_devices[index];
+}
+
+int32_t RenderManagerBase::getNumDevices(void) const
+{
+	return static_cast<int32_t>(_render_devices.size());
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(RenderManager)
