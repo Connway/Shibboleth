@@ -22,31 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IDepthStencilState.h>
-#include <Gleam_IRenderDevice.h>
-#include <Gleam_IRenderOutput.h>
-#include <Gleam_IRenderTarget.h>
-#include <Gleam_ISamplerState.h>
-#include <Gleam_ICommandList.h>
-#include <Gleam_IRasterState.h>
-#include <Gleam_IBlendState.h>
-#include <Gleam_ITexture.h>
-#include <Gleam_IProgram.h>
-#include <Gleam_IShader.h>
-#include <Gleam_IBuffer.h>
-#include <Gleam_ILayout.h>
-#include <Gleam_IModel.h>
-#include <Gleam_IMesh.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_Vector.h>
+#include <Gaff_Hash.h>
+
+namespace Gleam
+{
+	class IShaderResourceView;
+	class IDepthStencilState;
+	class IProgramBuffers;
+	class IRenderDevice;
+	class IRenderOutput;
+	class IRenderTarget;
+	class ISamplerState;
+	class ICommandList;
+	class IRasterState;
+	class IBlendState;
+	class ITexture;
+	class IProgram;
+	class IShader;
+	class IBuffer;
+	class ILayout;
+	class IModel;
+	class IMesh;
+}
 
 NS_SHIBBOLETH
 
 // Only reason this exists is to force create*() code to run through the module DLL.
-class IRenderManager
+class RenderManagerBase
 {
 public:
-	virtual ~IRenderManager(void) {}
+	virtual ~RenderManagerBase(void);
 
 	virtual Gleam::IShaderResourceView* createShaderResourceView(void) const = 0;
 	virtual Gleam::IDepthStencilState* createDepthStencilState(void) const = 0;
@@ -66,8 +74,16 @@ public:
 	virtual Gleam::IModel* createModel(void) const = 0;
 	virtual Gleam::IMesh* createMesh(void) const = 0;
 
-	virtual void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) = 0;
-	virtual Gleam::IRenderDevice* getRenderDevice(const char* name) = 0;
+	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
+	void manageRenderDevice(Gleam::IRenderDevice* device);
+
+	const Vector<Gleam::IRenderDevice*>& getDevicesByTag(const char* tag) const;
+	Gleam::IRenderDevice& getDevice(int32_t index) const;
+	int32_t getNumDevices(void) const;
+
+private:
+	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags;
+	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices;
 };
 
 NS_END

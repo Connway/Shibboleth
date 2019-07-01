@@ -44,7 +44,7 @@ SHIB_REFLECTION_DEFINE(RenderManager)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
-	.BASE(IRenderManager)
+	.BASE(RenderManagerBase)
 	.BASE(IManager)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
@@ -132,20 +132,6 @@ Gleam::IModel* RenderManager::createModel(void) const
 Gleam::IMesh* RenderManager::createMesh(void) const
 {
 	return SHIB_ALLOCT(Gleam::Mesh, GetAllocator());
-}
-
-void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device, const char* name)
-{
-	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
-	GAFF_ASSERT(_render_devices.find(hash) == _render_devices.end());
-
-	_render_devices[hash].reset(device);
-}
-
-Gleam::IRenderDevice* RenderManager::getRenderDevice(const char* name)
-{
-	const auto it = _render_devices.find(Gaff::FNV1aHash32String(name));
-	return it == _render_devices.end() ? nullptr : it->second.get();
 }
 
 NS_END

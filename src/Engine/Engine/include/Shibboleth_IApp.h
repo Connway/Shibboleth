@@ -108,4 +108,4 @@ public:
 
 NS_END
 
-#define GETMANAGERT(mgr_class) getManagerT<I##mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(GAFF_STR(I##mgr_class)))
+#define GETMANAGERT(mgr_class) getManagerT<mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(#mgr_class))
