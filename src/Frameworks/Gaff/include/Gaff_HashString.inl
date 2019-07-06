@@ -229,6 +229,14 @@ HashString<T, HashType, Allocator>::HashString(HashFunc hash_func, const Allocat
 }
 
 template <class T, class HashType, class Allocator>
+HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(const HashStringTemp<T, HashType>& rhs)
+{
+	_string = rhs.getBuffer();
+	_hash_value = rhs.getHash();
+	return *this;
+}
+
+template <class T, class HashType, class Allocator>
 HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(const String<T, Allocator>& rhs)
 {
 	_string = rhs;

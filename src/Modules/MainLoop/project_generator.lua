@@ -27,6 +27,8 @@ local GenerateProject = function()
 
 			, base_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Modules/ECS/include",
+			base_dir .. "../../Modules/Graphics/include",
+			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson"
 		}
@@ -51,7 +53,9 @@ local GenerateProject = function()
 		local deps =
 		{
 			"Resource",
-			"ECS"
+			"ECS",
+			"GraphicsBase",
+			"Gleam"
 		}
 
 		dependson(deps)
@@ -64,6 +68,8 @@ local LinkDependencies = function()
 	-- temp
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
+	table.insert(deps, "GraphicsBase")
+	table.insert(deps, "Gleam")
 
 	dependson(deps)
 	links(deps)

@@ -52,7 +52,6 @@ private:
 
 	Vector<ID3D11Buffer*> _buffers;
 	Vector<UINT> _strides;
-	Vector<UINT> _offsets;
 
 	void cacheBuffers(void);
 };

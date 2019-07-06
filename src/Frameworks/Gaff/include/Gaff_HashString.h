@@ -104,6 +104,7 @@ public:
 
 	HashString<T, HashType, Allocator>& operator=(const HashString<T, HashType, Allocator>& rhs) = default;
 	HashString<T, HashType, Allocator>& operator=(HashString<T, HashType, Allocator>&& rhs) = default;
+	HashString<T, HashType, Allocator>& operator=(const HashStringTemp<T, HashType>& rhs);
 	HashString<T, HashType, Allocator>& operator=(const String<T, Allocator>& rhs);
 	HashString<T, HashType, Allocator>& operator=(String<T, Allocator>&& rhs);
 	HashString<T, HashType, Allocator>& operator=(const T* rhs);

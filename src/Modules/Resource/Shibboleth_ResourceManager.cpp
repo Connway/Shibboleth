@@ -36,6 +36,29 @@ SHIB_REFLECTION_DEFINE(ResourceManager)
 
 NS_SHIBBOLETH
 
+struct RawJobData final
+{
+	const char* file_path;
+	IFile* out_file;
+};
+
+static void ResourceFileLoadRawJob(void* data)
+{
+	RawJobData* job_data = reinterpret_cast<RawJobData*>(data);
+
+	char temp[1024] = { 0 };
+	snprintf(temp, 1024, "Resources/%s", job_data->file_path);
+
+	job_data->out_file = GetApp().getFileSystem().openFile(temp);
+}
+
+static void ResourceFileLoadJob(void* data)
+{
+	IResource* res = reinterpret_cast<IResource*>(data);
+	res->load();
+}
+
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResourceManager)
 	.BASE(IManager)
 	.ctor<>()
@@ -56,14 +79,16 @@ void ResourceManager::allModulesLoaded(void)
 	GAFF_ASSERT(type_bucket);
 
 	Vector<const ResExtAttribute*> ext_attrs;
+	const CreatableAttribute* creatable = nullptr;
 
 	for (const Gaff::IReflectionDefinition* ref_def : *type_bucket) {
 		FactoryFunc factory_func = ref_def->template getFactory<>();
 
+		creatable = ref_def->getClassAttr<CreatableAttribute>();
 		ref_def->getClassAttrs(ext_attrs);
 
 		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
-		GAFF_ASSERT_MSG(!ext_attrs.empty(), "Resource '%s' does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());
+		GAFF_ASSERT_MSG(creatable || !ext_attrs.empty(), "Resource '%s' is not creatable and does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());
 
 		for (const ResExtAttribute* ext_attr : ext_attrs) {
 			GAFF_ASSERT_MSG(
@@ -75,13 +100,14 @@ void ResourceManager::allModulesLoaded(void)
 			_resource_factories[ext_attr->getExtension().getHash()] = factory_func;
 		}
 
+		creatable = nullptr;
 		ext_attrs.clear();
 	}
 }
 
 IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const Gaff::IReflectionDefinition& ref_def)
 {
-	if (ref_def.getClassAttr<CreatableAttribute>()) {
+	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
 		return IResourcePtr();
 	}
@@ -112,6 +138,10 @@ IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const 
 
 	void* const data = factory(_allocator);
 	IResource* resource = ref_def.GET_INTERFACE(IResource, data);
+	resource->_file_path = name;
+	resource->_res_mgr = this;
+
+	_resources.insert(it_res, resource);
 
 	return IResourcePtr(resource);
 }
@@ -152,7 +182,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool 
 
 	// Assume all resources always inherit from IResource first.
 	IResource* res = reinterpret_cast<IResource*>(it_fact->second(_allocator));
-	res->_file_path = HashString64(name);
+	res->_file_path = name;
 	res->_res_mgr = this;
 
 	_resources.insert(it_res, res);
@@ -188,9 +218,22 @@ IResourcePtr ResourceManager::getResource(Gaff::HashStringTemp64 name)
 void ResourceManager::waitForResource(const IResource& resource) const
 {
 	while (resource._state == IResource::RS_PENDING) {
-		// Help out.
+		// $TODO: Help out?
 		std::this_thread::yield();
 	}
+}
+
+IFile* ResourceManager::loadFileAndWait(const char* file_path)
+{
+	RawJobData data = { file_path, nullptr };
+	Gaff::JobData job_data = { ResourceFileLoadRawJob, &data };
+	Gaff::Counter counter = 0;
+	auto& job_pool = GetApp().getJobPool();
+
+	job_pool.addJobs(&job_data, 1, counter, JPI_READ_FILE);
+	job_pool.helpWhileWaiting(&counter);
+
+	return data.out_file;
 }
 
 void ResourceManager::removeResource(const IResource& resource)
@@ -218,12 +261,6 @@ void ResourceManager::requestLoad(IResource& resource)
 	resource._state = IResource::RS_PENDING;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
 	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_READ_FILE);
-}
-
-void ResourceManager::ResourceFileLoadJob(void* data)
-{
-	IResource* res = reinterpret_cast<IResource*>(data);
-	res->load();
 }
 
 NS_END

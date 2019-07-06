@@ -35,9 +35,10 @@ MeshBase::~MeshBase(void)
 {
 }
 
-void MeshBase::addBuffer(IBuffer* buffer)
+void MeshBase::addBuffer(IBuffer* buffer, uint32_t offset)
 {
 	_vert_data.emplace_back(buffer);
+	_offsets.emplace_back(offset);
 }
 
 const IBuffer* MeshBase::getBuffer(int32_t index) const
@@ -55,6 +56,11 @@ IBuffer* MeshBase::getBuffer(int32_t index)
 int32_t MeshBase::getBufferCount(void) const
 {
 	return static_cast<int32_t>(_vert_data.size());
+}
+
+uint32_t MeshBase::getBufferOffset(int32_t index) const
+{
+	return _offsets[index];
 }
 
 void MeshBase::setIndiceBuffer(IBuffer* buffer)

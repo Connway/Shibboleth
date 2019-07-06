@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
-#include <Shibboleth_SmartPtrs.h>
+#include "Shibboleth_MeshResource.h"
 #include <Gleam_IModel.h>
 
 NS_SHIBBOLETH
@@ -34,13 +33,17 @@ public:
 	static constexpr bool Creatable = true;
 
 private:
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IModel> > _models;
+	Vector<MeshResourcePtr> _meshes;
+
 	//void meshLoaded(IResource&);
+	void loadModel(IFile* file);
 
-	//Vector<MeshResourcePtr> _meshes;
-
-	UniquePtr<Gleam::IModel> _model;
+	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };
 
 using ModelResourcePtr = Gaff::RefPtr<ModelResource>;
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ModelResource)

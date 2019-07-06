@@ -83,6 +83,8 @@ public:
 	IResourcePtr getResource(Gaff::HashStringTemp64 name);
 	void waitForResource(const IResource& resource) const;
 
+	IFile* loadFileAndWait(const char* file_path);
+
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 
@@ -93,8 +95,6 @@ private:
 
 	void removeResource(const IResource& resource);
 	void requestLoad(IResource& resource);
-
-	static void ResourceFileLoadJob(void* data);
 
 	friend class IResource;
 

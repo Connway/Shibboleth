@@ -237,6 +237,7 @@ premake5 gen_module_header --module=Graphics</Command>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp" />
   </ItemGroup>
   <ItemGroup>

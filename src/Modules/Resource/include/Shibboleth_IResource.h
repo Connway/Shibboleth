@@ -83,7 +83,6 @@ public:
 	bool isLoaded(void) const;
 
 protected:
-	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
 	VectorMap<int32_t, eastl::function<void (IResource&)> > _callbacks;
 	int32_t _next_id = 0;
 

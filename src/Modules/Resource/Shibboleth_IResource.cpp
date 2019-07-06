@@ -166,7 +166,7 @@ IFile* IResource::loadFile(const char* file_path)
 
 	if (!file) {
 		// $TODO: Log error.
-		_state = RS_FAILED;
+		failed();
 	}
 
 	return file;
