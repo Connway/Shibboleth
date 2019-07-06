@@ -345,12 +345,6 @@
     <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
       <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\GraphicsBase.vcxproj">
-      <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
-      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\assimp.vcxproj">
       <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
@@ -365,6 +359,12 @@
     </ProjectReference>
     <ProjectReference Include="..\modules\ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\GraphicsBase.vcxproj">
+      <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>

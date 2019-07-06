@@ -142,16 +142,14 @@ void MeshD3D11::cacheBuffers(void)
 {
 	_buffers.clear();
 	_strides.clear();
-	_offsets.clear();
 
 	IBuffer* temp = nullptr;
 
-	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
 		temp = _vert_data[i];
 		GAFF_ASSERT(temp && temp->getRendererType() == RENDERER_DIRECT3D11);
 		_buffers.emplace_back(static_cast<BufferD3D11*>(temp)->getBuffer());
 		_strides.emplace_back(temp->getStride());
-		_offsets.emplace_back(0);
 	}
 }
 

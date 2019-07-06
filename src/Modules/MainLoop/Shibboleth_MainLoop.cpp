@@ -29,15 +29,13 @@ THE SOFTWARE.
 //#include <Shibboleth_IUpdateManager.h>
 //#include <Shibboleth_ISceneManager.h>
 #include <Shibboleth_Utilities.h>
-//#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
-//#include <Gaff_Image.h>
 
-//#include <Shibboleth_ICameraComponent.h>
-
+#include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ECSSceneResource.h>
-//#include <Shibboleth_PrefabResource.h>
+#include <Shibboleth_ModelResource.h>
+#include <Gleam_IRenderDevice.h>
 
 SHIB_REFLECTION_DEFINE(MainLoop)
 
@@ -116,6 +114,19 @@ bool MainLoop::init(void)
 	//	}
 	//}
 
+	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
+
+	// Initialize to the main graphics adapter.
+	if (!rd->init(0)) {
+		// $TODO: Log error
+		SHIB_FREET(rd, GetAllocator());
+		return false;
+	}
+
+	rm.manageRenderDevice(rd);
+	rm.addRenderDeviceTag(rd, "main");
+
 	return true;
 }
 
@@ -163,6 +174,15 @@ void MainLoop::update(void)
 	res_mgr.waitForResource(*scene_res);
 
 	if (scene_res->hasFailed()) {
+		GetApp().quit();
+		return;
+	}
+
+	auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
+
+	res_mgr.waitForResource(*model_res);
+
+	if (model_res->hasFailed()) {
 		GetApp().quit();
 		return;
 	}

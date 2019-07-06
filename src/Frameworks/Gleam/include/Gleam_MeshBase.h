@@ -33,10 +33,11 @@ public:
 	MeshBase(void);
 	~MeshBase(void);
 
-	void addBuffer(IBuffer* buffer) override;
+	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
 	const IBuffer* getBuffer(int32_t index) const override;
 	IBuffer* getBuffer(int32_t index) override;
 	int32_t getBufferCount(void) const override;
+	uint32_t getBufferOffset(int32_t index) const override;
 
 	void setIndiceBuffer(IBuffer* buffer) override;
 	const IBuffer* getIndiceBuffer(void) const override;
@@ -51,6 +52,8 @@ protected:
 	Vector<IBuffer*> _vert_data;
 	IBuffer* _indices;
 	TopologyType _topology;
+
+	Vector<uint32_t> _offsets;
 
 	bool addVertDataHelper(
 		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,

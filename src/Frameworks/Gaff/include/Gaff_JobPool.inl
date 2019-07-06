@@ -105,6 +105,27 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 }
 
 template <class Allocator>
+void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool)
+{
+	GAFF_ASSERT(pool < _job_pools.size());
+	GAFF_ASSERT(num_jobs);
+
+	counter += static_cast<int32_t>(num_jobs);
+
+	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];
+
+	job_queue.read_write_lock->lock();
+	//job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
+
+	for (size_t i = 0; i < num_jobs; ++i) {
+		GAFF_ASSERT(jobs[i].job_func);
+		job_queue.jobs.emplace_back(JobPair(jobs[i], &counter));
+	}
+
+	job_queue.read_write_lock->unlock();
+}
+
+template <class Allocator>
 void JobPool<Allocator>::waitForAndFreeCounter(Counter* counter)
 {
 	waitForCounter(counter);

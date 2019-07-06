@@ -29,14 +29,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static D3D11_BIND_FLAG _type_map[IBuffer::BUFFER_TYPE_SIZE] = {
+static const D3D11_BIND_FLAG g_type_map[IBuffer::BUFFER_TYPE_SIZE] = {
 	D3D11_BIND_VERTEX_BUFFER,
 	D3D11_BIND_INDEX_BUFFER,
 	D3D11_BIND_CONSTANT_BUFFER,
 	D3D11_BIND_SHADER_RESOURCE
 };
 
-static D3D11_MAP _map_map[IBuffer::MAP_TYPE_SIZE] = {
+static const D3D11_MAP g_map_map[IBuffer::MAP_TYPE_SIZE] = {
 	D3D11_MAP_READ,
 	D3D11_MAP_READ,
 	D3D11_MAP_WRITE_DISCARD,
@@ -66,7 +66,7 @@ bool BufferD3D11::init(
 	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = _type_map[buffer_type];
+	desc.BindFlags = g_type_map[buffer_type];
 	desc.ByteWidth = static_cast<UINT>(size);
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = (buffer_type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
@@ -131,7 +131,7 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
-	HRESULT result = context->Map(_buffer, 0, _map_map[map_type], 0, &mapped_resource);
+	HRESULT result = context->Map(_buffer, 0, g_map_map[map_type], 0, &mapped_resource);
 	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 

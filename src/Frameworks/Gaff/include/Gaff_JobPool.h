@@ -57,6 +57,7 @@ public:
 	void destroy(void);
 
 	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
+	void addJobs(JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool = 0);
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter* counter);
 	void freeCounter(Counter* counter);

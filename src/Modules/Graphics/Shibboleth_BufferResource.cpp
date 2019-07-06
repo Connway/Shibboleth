@@ -21,21 +21,28 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_BufferResource.h"
-#include "Shibboleth_RenderManager.h"
+#include "Shibboleth_RenderManagerBase.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
+#include <Shibboleth_IManager.h>
 
 SHIB_REFLECTION_DEFINE(BufferResource)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BufferResource)
-	.classAttrs(
-		CreatableAttribute()
-	)
+	.classAttrs(CreatableAttribute())
 
 	.BASE(IResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(BufferResource)
+
+Gleam::IBuffer& BufferResource::createBuffer(void)
+{
+	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_buffer.reset(render_mgr.createBuffer());
+
+	return *_buffer;
+}
 
 const Gleam::IBuffer& BufferResource::getBuffer(void) const
 {

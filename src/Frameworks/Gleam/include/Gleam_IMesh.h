@@ -63,10 +63,11 @@ public:
 		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
 	) = 0;
 
-	virtual void addBuffer(IBuffer* buffer) = 0;
+	virtual void addBuffer(IBuffer* buffer, uint32_t offset = 0) = 0;
 	virtual const IBuffer* getBuffer(int32_t index) const = 0;
 	virtual IBuffer* getBuffer(int32_t index) = 0;
 	virtual int32_t getBufferCount(void) const = 0;
+	virtual uint32_t getBufferOffset(int32_t index) const = 0;
 
 	virtual void setIndiceBuffer(IBuffer* buffer) = 0;
 	virtual const IBuffer* getIndiceBuffer(void) const = 0;

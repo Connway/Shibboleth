@@ -26,6 +26,8 @@ THE SOFTWARE.
 #include <Shibboleth_SmartPtrs.h>
 #include <Gleam_IMesh.h>
 
+struct aiMesh;
+
 NS_SHIBBOLETH
 
 class MeshResource final : public IResource
@@ -36,9 +38,11 @@ public:
 	const Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd) const;
 	Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd);
 
+	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh);
+
 private:
-	VectorMap<const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes;
-	VectorMap<const Gleam::IRenderDevice*, Vector<BufferResourcePtr> > _buffers;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes;
+	VectorMap< const Gleam::IRenderDevice*, BufferResourcePtr > _buffers;
 
 	void loadMesh(IFile* file);
 

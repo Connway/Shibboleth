@@ -1,27 +1,15 @@
 {
-	"mesh_file": "Resources/Models/ninja.b3d",
+	"model_file": "Models/ninja.b3d",
 
-	"verts": true,
-	"normals": true,
-	"uvs": true,
-	"tangents": true,
-	"blend_indices_weights": true,
-	"vertex_color": false,
-
-	"generate_smooth_normals": false,
-	"join_identical_verts": false,
-	"make_left_handed": false,
-	"triangulate": false,
-	"fix_in_facing_normals": false,
-	"optimize_meshes": false,
-	"optimize_graph": false,
-	"flip_uvs": true,
-	"flip_winding": false,
-	"remove_degenerates": true,
+	//"verts": true,
+	//"normals": true,
+	//"uvs": true,
+	//"tangents": true,
+	//"blend_indices_weights": true,
+	//"vertex_color": false,
 
 	"skeleton_root": "Joint1",
 	"bone_tag": "Joint",
 
-	"display_tags": ["DISPLAY_GAMEPLAY"],
-	"any_display_with_tags": false
+	//"device_tag": "main",
 }

@@ -39,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)
 
 bool EditorMainLoop::init(void)
 {
-	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase);
+	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
 
 	// Initialize to the main graphics adapter.

@@ -33,6 +33,8 @@ class BufferResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Gleam::IBuffer& createBuffer(void);
+
 	const Gleam::IBuffer& getBuffer(void) const;
 	Gleam::IBuffer& getBuffer(void);
 
