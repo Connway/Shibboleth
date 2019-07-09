@@ -87,6 +87,18 @@ void ShaderResource::loadShader(IFile* file)
 		return;
 	}
 
+	{
+		const auto guard = reader.enterElementGuard("shader_type");
+
+		if (!reader.isString()) {
+			LogErrorResource("Malformed shader '%s'. 'shader_type' element is not a string.", getFilePath().getBuffer());
+			failed();
+			return;
+		}
+
+		Reflection<Gleam::IShader::ShaderType>::Load(reader, shader_type);
+	}
+
 	// Should we put out a read job instead of loading here?
 	// Or just assume nowadays most people have SSDs or decent speed hard drives?
 	{
@@ -112,29 +124,16 @@ void ShaderResource::loadShader(IFile* file)
 		return;
 	}
 
-	{
-		const auto guard = reader.enterElementGuard("shader_type");
-
-		if (!reader.isString()) {
-			LogErrorResource("Malformed shader '%s'. 'shader_type' element is not a string.", getFilePath().getBuffer());
-			failed();
-			return;
-		}
-
-		Reflection<Gleam::IShader::ShaderType>::Load(reader, shader_type);
-	}
-
 	for (Gleam::IRenderDevice* rd : *devices) {
 		Gleam::IShader* const shader = render_mgr.createShader();
 
 		if (!shader->initSource(*rd, reinterpret_cast<const char*>(shader_file->getBuffer()), shader_file->size(), shader_type)) {
-			LogErrorResource("Malformed shader '%s'. 'shader_type' element is not a string.", getFilePath().getBuffer());
+			LogErrorResource("Failed to load shader '%s'. Shader compilation failed.", getFilePath().getBuffer());
 			failed();
 		}
 
 		_shaders[rd].reset(shader);
 	}
-
 }
 
 NS_END
