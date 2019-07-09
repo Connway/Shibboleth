@@ -39,10 +39,12 @@ public:
 	GAFF_NO_COPY(EnumReflectionDefinition);
 	GAFF_NO_MOVE(EnumReflectionDefinition);
 
-	const IEnumReflection& getReflectionInstance(void) const override;
+	const IReflection& getReflectionInstance(void) const override;
 
-	void load(ISerializeReader& reader, void* object) const override;
-	void save(ISerializeWriter& writer, const void* object) const override;
+	bool load(const ISerializeReader& reader, void* value) const override;
+	void save(ISerializeWriter& writer, const void* value) const override;
+	bool load(const ISerializeReader& reader, Enum& value) const;
+	void save(ISerializeWriter& writer, Enum value) const;
 
 	int32_t getNumEntries(void) const override;
 	const char* getEntryNameFromValue(int32_t value) const override;
@@ -67,9 +69,6 @@ public:
 
 	template <class... Attrs>
 	EnumReflectionDefinition& enumAttrs(const Attrs&... attrs);
-
-	template <size_t size, class... Attrs>
-	EnumReflectionDefinition& entryAttrs(const char (&name)[size], const Attrs&... attrs);
 
 	void finish(void);
 

@@ -580,6 +580,16 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArc
 
 	ProxyAllocator allocator("ECS");
 	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+	//std::memset(_shared_instances, 0, _shared_alloc_size);
+
+	// Should we prefer memset over this?
+	for (const RefDefOffset& data : _shared_vars) {
+		const auto ctor = data.ref_def->getConstructor<>();
+
+		if (ctor) {
+			ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset);
+		}
+	}
 
 	// Copy base archetype shared data so that our overrides will not be stomped.
 	if (base_archetype) {
@@ -619,7 +629,9 @@ void ECSArchetype::initShared(void)
 
 	ProxyAllocator allocator("ECS");
 	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
+	//std::memset(_shared_instances, 0, _shared_alloc_size);
 
+	// Should we prefer memset over this?
 	for (const RefDefOffset& data : _shared_vars) {
 		const auto ctor = data.ref_def->getConstructor<>();
 

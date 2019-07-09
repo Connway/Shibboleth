@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_AABB.h"
 #include "Gleam_Transform.h"
-#include <limits>
 
 NS_GLEAM
 

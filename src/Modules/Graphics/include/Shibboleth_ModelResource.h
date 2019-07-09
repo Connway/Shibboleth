@@ -32,6 +32,9 @@ class ModelResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	const Gleam::IModel* getModel(const Gleam::IRenderDevice& rd) const;
+	Gleam::IModel* getModel(const Gleam::IRenderDevice& rd);
+
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IModel> > _models;
 	Vector<MeshResourcePtr> _meshes;

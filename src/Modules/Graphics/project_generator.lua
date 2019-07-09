@@ -79,7 +79,8 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Modules/Resource/include"
+			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/ECS/include"
 		}
 
 

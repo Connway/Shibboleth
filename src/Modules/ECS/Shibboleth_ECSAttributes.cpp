@@ -58,10 +58,22 @@ Gaff::IAttribute* ECSClassAttribute::clone(void) const
 
 void ECSClassAttribute::finish(const Gaff::IReflectionDefinition& ref_def)
 {
-	const auto attrs = ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+	const bool shared = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared")) != nullptr;
+	const bool regular = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy")) != nullptr;
 
-	for (const IECSVarAttribute* attr : attrs) {
-		_size += attr->getType().size();
+	if (shared && !regular) {
+		const int32_t num_vars = ref_def.getNumVars();
+
+		for (int32_t i = 0; i < num_vars; ++i) {
+			_size += ref_def.getVar(i)->sizeOfT();
+		}
+
+	} else {
+		const auto attrs = ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+
+		for (const IECSVarAttribute* attr : attrs) {
+			_size += attr->getType().size();
+		}
 	}
 }
 

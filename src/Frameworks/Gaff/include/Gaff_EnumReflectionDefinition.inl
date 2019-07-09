@@ -23,27 +23,41 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class Enum, class Allocator>
-const IEnumReflection& EnumReflectionDefinition<Enum, Allocator>::getReflectionInstance(void) const
+const IReflection& EnumReflectionDefinition<Enum, Allocator>::getReflectionInstance(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::EnumReflection<Enum>::GetInstance();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::GetInstance();
 }
 
 template <class Enum, class Allocator>
-void EnumReflectionDefinition<Enum, Allocator>::load(ISerializeReader& reader, void* object) const
+bool EnumReflectionDefinition<Enum, Allocator>::load(const ISerializeReader& reader, void* value) const
+{
+	return load(reader, *reinterpret_cast<Enum*>(value));
+}
+
+template <class Enum, class Allocator>
+void EnumReflectionDefinition<Enum, Allocator>::save(ISerializeWriter& writer, const void* value) const
+{
+	save(writer, *reinterpret_cast<const Enum*>(value));
+}
+
+template <class Enum, class Allocator>
+bool EnumReflectionDefinition<Enum, Allocator>::load(const ISerializeReader& reader, Enum& value) const
 {
 	const char* const name = reader.readString();
 	const int32_t intValue = getEntryValue(name);
-	GAFF_ASSERT(intValue != INT_MIN);
 
-	Enum* const value = reinterpret_cast<Enum*>(object);
-	*value = static_cast<Enum>(intValue);
+	if (intValue == std::numeric_limits<int32_t>::min()) {
+		return false;
+	}
+
+	value = static_cast<Enum>(intValue);
+	return true;
 }
 
 template <class Enum, class Allocator>
-void EnumReflectionDefinition<Enum, Allocator>::save(ISerializeWriter& writer, const void* object) const
+void EnumReflectionDefinition<Enum, Allocator>::save(ISerializeWriter& writer, Enum value) const
 {
-	const Enum* const value = reinterpret_cast<const Enum*>(object);
-	const char* const name = getEntryName(*value);
+	const char* const name = getEntryName(value);
 	GAFF_ASSERT(name);
 
 	writer.writeString(name);
@@ -89,7 +103,7 @@ int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(Hash32 name) co
 		return lhs.getHash() < rhs;
 	});
 
-	return (it == _entries.end()) ? INT_MIN : static_cast<int32_t>(it->second);
+	return (it == _entries.end()) ? std::numeric_limits<int32_t>::min() : static_cast<int32_t>(it->second);
 }
 
 template <class Enum, class Allocator>
@@ -178,18 +192,9 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 }
 
 template <class Enum, class Allocator>
-template <size_t size, class... Attrs>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entryAttrs(const char (&name)[size], const Attrs&... attrs)
-{
-	auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];
-	attrs_list.set_allocator(_allocator);
-	return addAttributes(attrs_list, attrs...);
-}
-
-template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
-	GAFF_REFLECTION_NAMESPACE::EnumReflection<Enum>::g_defined = true;
+	GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::g_defined = true;
 }
 
 template <class Enum, class Allocator>

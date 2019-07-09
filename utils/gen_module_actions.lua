@@ -7,7 +7,6 @@ local gen_header = [[
 // Includes
 %s
 #include <Shibboleth_Reflection.h>
-#include <Gaff_EnumReflection.h>
 
 namespace %s::Gen
 {
@@ -272,6 +271,7 @@ newaction
 				match = line:match("SHIB_ENUM_REFLECTION_DECLARE%((.+)%)")
 
 				if match then
+					print(stripped_file)
 					if not file_enum_map[stripped_file] then
 						file_enum_map[stripped_file] = {}
 					end
@@ -333,19 +333,17 @@ newaction
 		end
 
 		for k,v in pairs(file_enum_map) do
-			if file_enum_map[k] == nil then
-				include_files = include_files .. "#include <" .. k .. ">\n"
-			end
+			include_files = include_files .. "#include <" .. k .. ">\n"
 
-			for _,e in pairs(enums) do
-				init_enum_funcs = init_enum_funcs .. "\t\tEnumReflection<" .. e .. ">::Init();\n"
-			end
+			for _,e in pairs(v) do
+				init_enum_funcs = init_enum_funcs .. "\t\tShibboleth::Reflection<" .. e .. ">::Init();\n"
 
-			if module_registers == "" then
-				module_registers = "\t\tReflectionManager& refl_mgr = GetApp().getReflectionManager();\n\n"
-			end
+				if module_registers == "" then
+					module_registers = "\t\tShibboleth::ReflectionManager& refl_mgr = Shibboleth::GetApp().getReflectionManager();\n\n"
+				end
 
-			module_registers = module_registers .. "\t\trefl_mgr.registerEnumOwningModule(EnumReflection<" .. e .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
+				module_registers = module_registers .. "\t\trefl_mgr.registerEnumOwningModule(Shibboleth::Reflection<" .. e .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
+			end
 		end
 
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"

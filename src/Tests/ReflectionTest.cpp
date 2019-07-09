@@ -24,7 +24,6 @@ THE SOFTWARE.
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-#include <Shibboleth_EnumReflection.h>
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
 #include <Gaff_MessagePackSerializeWriter.h>
@@ -386,6 +385,9 @@ TEST_CASE("shibboleth_factory")
 
 	REQUIRE(test_a->a == 200);
 	REQUIRE(test_b->a == 100);
+
+	SHIB_FREE(test_a, Shibboleth::GetAllocator());
+	SHIB_FREE(test_b, Shibboleth::GetAllocator());
 }
 
 //TEST_CASE("shibboleth_reflection_module")
@@ -545,20 +547,21 @@ enum TestEnum
 };
 
 SHIB_ENUM_REFLECTION_DECLARE(TestEnum)
+SHIB_ENUM_REFLECTION_DEFINE(TestEnum)
 
-SHIB_ENUM_REFLECTION_DEFINE_BEGIN(TestEnum)
+SHIB_ENUM_REFLECTION_BEGIN(TestEnum)
 	.entry("MinusOne", TE_MINUS_ONE)
 	.entry("Zero", TE_ZERO)
 	.entry("One", TE_ONE)
 	.entry("Two", TE_TWO)
 	.entry("Twenty", TE_TWENTY)
-SHIB_ENUM_REFLECTION_DEFINE_END(TestEnum)
+SHIB_ENUM_REFLECTION_END(TestEnum)
 
 TEST_CASE("shibboleth_enum")
 {
-	Shibboleth::EnumReflection<TestEnum>::Init();
+	Shibboleth::Reflection<TestEnum>::Init();
 
-	const Gaff::IEnumReflectionDefinition& ref_def = Shibboleth::EnumReflection<TestEnum>::GetReflectionDefinition();
+	const Gaff::IEnumReflectionDefinition& ref_def = Shibboleth::Reflection<TestEnum>::GetReflectionDefinition();
 	REQUIRE(ref_def.getNumEntries() == 5);
 
 	printf("Enum Name Index 0: %s\n", ref_def.getEntryNameFromIndex(0));

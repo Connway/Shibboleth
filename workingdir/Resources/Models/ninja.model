@@ -1,12 +1,11 @@
 {
 	"model_file": "Models/ninja.b3d",
 
-	//"verts": true,
-	//"normals": true,
-	//"uvs": true,
-	//"tangents": true,
-	//"blend_indices_weights": true,
-	//"vertex_color": false,
+	//"ignore_normals": false,
+	//"ignore_uvs": false,
+	//"ignore_tangents": false,
+	//"ignore_blend_weights": false,
+	//"ignore_colors": false,
 
 	"skeleton_root": "Joint1",
 	"bone_tag": "Joint",

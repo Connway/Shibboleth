@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelResource.h"
 #include "Shibboleth_RenderManagerBase.h"
-#include "Shibboleth_ResourceManager.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
@@ -36,6 +36,13 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE(ModelResource)
 
 NS_SHIBBOLETH
+
+template <int32_t flag, size_t size>
+static int32_t GetIgnoreFlag(const char (&field)[size], const Gaff::ISerializeReader& reader)
+{
+	const auto guard = reader.enterElementGuard(field);
+	return (reader.readBool(false)) ? flag : 0;
+}
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
 	.classAttrs(
@@ -49,6 +56,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ModelResource)
 
+const Gleam::IModel* ModelResource::getModel(const Gleam::IRenderDevice& rd) const
+{
+	const auto it = _models.find(&rd);
+	return (it != _models.end()) ? it->second.get() : nullptr;
+}
+
+Gleam::IModel* ModelResource::getModel(const Gleam::IRenderDevice& rd)
+{
+	const auto it = _models.find(&rd);
+	return (it != _models.end()) ? it->second.get() : nullptr;
+}
+
 void ModelResource::loadModel(IFile* file)
 {
 	SerializeReaderWrapper readerWrapper;
@@ -58,7 +77,7 @@ void ModelResource::loadModel(IFile* file)
 		failed();
 		return;
 	}
-	
+
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
@@ -100,9 +119,10 @@ void ModelResource::loadModel(IFile* file)
 		}
 	
 		const char* const path = reader.readString();
+
 		model_file_path = path;
-		//model_file = GetApp().getFileSystem().openFile(path);
 		model_file = res_mgr.loadFileAndWait(path);
+
 		reader.freeString(path);
 	}
 
@@ -112,6 +132,16 @@ void ModelResource::loadModel(IFile* file)
 		return;
 	}
 
+	const int32_t ignore_flags =	aiComponent_ANIMATIONS | aiComponent_CAMERAS |
+									aiComponent_LIGHTS | aiComponent_MATERIALS |
+									aiComponent_TEXTURES |
+									GetIgnoreFlag<aiComponent_BONEWEIGHTS>("ignore_blend_weights", reader) |
+									GetIgnoreFlag<aiComponent_COLORS>("ignore_colors", reader) |
+									GetIgnoreFlag<aiComponent_NORMALS>("ignore_normals", reader) |
+									GetIgnoreFlag<aiComponent_TANGENTS_AND_BITANGENTS>("ignore_tangents", reader) |
+									GetIgnoreFlag<aiComponent_TEXCOORDS>("ignore_uvs", reader);
+
+
 	const size_t index = model_file_path.find_last_of('.');
 	
 	Assimp::Importer importer;
@@ -119,9 +149,7 @@ void ModelResource::loadModel(IFile* file)
 	// Only load mesh data.
 	importer.SetPropertyInteger(
 		AI_CONFIG_PP_RVC_FLAGS,
-		aiComponent_ANIMATIONS | aiComponent_TEXTURES |
-		aiComponent_LIGHTS | aiComponent_CAMERAS |
-		aiComponent_MATERIALS
+		ignore_flags
 	);
 	
 	const aiScene* const scene = importer.ReadFileFromMemory(

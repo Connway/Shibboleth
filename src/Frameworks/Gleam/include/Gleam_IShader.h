@@ -32,6 +32,12 @@ class IRenderDevice;
 class IShader
 {
 public:
+	// Key is RendererType.
+	static constexpr const char* g_shader_extensions[] = {
+		".hlsl",
+		".glsl"
+	};
+
 	enum ShaderType
 	{
 		SHADER_VERTEX = 0,

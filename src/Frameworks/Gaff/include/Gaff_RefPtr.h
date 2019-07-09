@@ -167,7 +167,7 @@ public:
 	}
 
 private:
-	T* _data;
+	T* _data = nullptr;
 };
 
 
@@ -303,7 +303,7 @@ public:
 	}
 
 private:
-	T* _data;
+	T* _data = nullptr;
 };
 
 NS_END

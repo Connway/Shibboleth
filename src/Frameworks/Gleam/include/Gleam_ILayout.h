@@ -70,8 +70,8 @@ public:
 	virtual bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) = 0;
-	virtual void unsetLayout(IRenderDevice& rd) = 0;
+	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) const = 0;
+	virtual void unsetLayout(IRenderDevice& rd) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

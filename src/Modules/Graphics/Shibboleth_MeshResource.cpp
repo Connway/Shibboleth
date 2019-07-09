@@ -144,39 +144,39 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 			continue;
 		}
 
-		_meshes[rd].reset(render_mgr.createMesh());
-		Gleam::IMesh& gpu_mesh = *_meshes[rd];
+		Gleam::IMesh* const gpu_mesh = render_mgr.createMesh();
+		_meshes[rd].reset(gpu_mesh);
 
-		gpu_mesh.setTopologyType(Gleam::IMesh::TRIANGLE_LIST);
+		gpu_mesh->setTopologyType(Gleam::IMesh::TRIANGLE_LIST);
 
 		// Add the buffer with all the offsets to the mesh.
 		uint32_t offset = 0;
 
 		if (mesh.HasPositions()) {
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(PosSize);
 		}
 
 		if (mesh.HasNormals()) {
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(NrmSize);
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(UVSize * mesh.mNumUVComponents[k]);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumColorChannels()); ++k) {
-			gpu_mesh.addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(&buffer, offset);
 			offset += static_cast<uint32_t>(ClrSize);
 		}
 	}

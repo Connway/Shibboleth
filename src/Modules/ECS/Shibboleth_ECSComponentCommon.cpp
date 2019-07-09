@@ -396,8 +396,8 @@ void Scale::CopyShared(const void* old_value, void* new_value)
 
 SHIB_REFLECTION_BUILDER_BEGIN(Layer)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Scene"),
-		ECSVarAttribute<Gaff::Hash32>()
+		ECSClassAttribute(nullptr, "Scene")//,
+		//ECSVarAttribute<Gaff::Hash32>()
 	)
 
 	.staticFunc("CopyShared", &Layer::CopyShared)

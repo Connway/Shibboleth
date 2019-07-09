@@ -92,7 +92,7 @@ int32_t ModelBase::addMesh(IMesh* mesh)
 	return static_cast<int32_t>(_meshes.size() - 1);
 }
 
-void ModelBase::renderInstanced(IRenderDevice& rd, int32_t index, int32_t count)
+void ModelBase::renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) const
 {
 	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < static_cast<int32_t>(_meshes.size()));
 	GAFF_ASSERT(_meshes[index] && _layouts[index]);
@@ -102,7 +102,7 @@ void ModelBase::renderInstanced(IRenderDevice& rd, int32_t index, int32_t count)
 	mesh->renderInstanced(rd, count);
 }
 
-void ModelBase::render(IRenderDevice& rd, int32_t index)
+void ModelBase::render(IRenderDevice& rd, int32_t index) const
 {
 	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < static_cast<int32_t>(_meshes.size()));
 	GAFF_ASSERT(_meshes[index] && _layouts[index]);

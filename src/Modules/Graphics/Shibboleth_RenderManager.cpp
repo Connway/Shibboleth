@@ -49,6 +49,17 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
 
+Gleam::RendererType RenderManager::getRendererType(void) const
+{
+#ifdef USE_D3D11
+	return Gleam::RENDERER_DIRECT3D11;
+#elif defined(USE_D3D12)
+	return Gleam::RENDERER_DIRECT3D12;
+#elif defined(USE_VULKAN)
+	return Gleam::RENDERER_VULKAN;
+#endif
+}
+
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
 {
 	return SHIB_ALLOCT(Gleam::ShaderResourceView, GetAllocator());
