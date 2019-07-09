@@ -55,7 +55,7 @@ public:
 class RangeAttribute final : public Gaff::IAttribute
 {
 public:
-	RangeAttribute(double min = eastl::numeric_limits<double>::min(), double max = eastl::numeric_limits<double>::max(), double step = 1.0);
+	RangeAttribute(double min = std::numeric_limits<double>::min(), double max = std::numeric_limits<double>::max(), double step = 1.0);
 
 	double getStep(void) const;
 	double getMin(void) const;

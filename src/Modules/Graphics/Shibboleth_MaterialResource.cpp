@@ -20,31 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_ReflectionInterfaces.h"
+#include "Shibboleth_MaterialResource.h"
+#include <Shibboleth_LoadFileCallbackAttribute.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 
-NS_GAFF
+SHIB_REFLECTION_DEFINE(MaterialResource)
 
-static IEnumReflection* g_head = nullptr;
+NS_SHIBBOLETH
 
-void AddToEnumReflectionChain(IEnumReflection* reflection)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MaterialResource)
+	.classAttrs(
+		//CreatableAttribute(),
+		ResExtAttribute(".material.bin"),
+		ResExtAttribute(".material"),
+		MakeLoadFileCallbackAttribute(&MaterialResource::loadMaterial)
+	)
+
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(MaterialResource)
+
+void MaterialResource::loadMaterial(IFile* file)
 {
-	reflection->next = g_head;
-	g_head = reflection;
-}
-
-IEnumReflection* GetEnumReflectionChainHead(void)
-{
-	return g_head;
-}
-
-void InitEnumReflection(void)
-{
-	Gaff::IEnumReflection* head = g_head;
-
-	while (head) {
-		head->init();
-		head = head->next;
-	}
+	GAFF_REF(file);
 }
 
 NS_END

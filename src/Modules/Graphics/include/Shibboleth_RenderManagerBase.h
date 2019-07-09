@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
+#include <Gleam_Defines.h>
 #include <Gaff_Hash.h>
 
 namespace Gleam
@@ -55,6 +56,8 @@ class RenderManagerBase
 {
 public:
 	virtual ~RenderManagerBase(void);
+
+	virtual Gleam::RendererType getRendererType(void) const = 0;
 
 	virtual Gleam::IShaderResourceView* createShaderResourceView(void) const = 0;
 	virtual Gleam::IDepthStencilState* createDepthStencilState(void) const = 0;

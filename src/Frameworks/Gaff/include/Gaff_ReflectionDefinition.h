@@ -194,6 +194,8 @@ private:
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
+		int32_t sizeOfT(void) const override;
+
 		void load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
@@ -215,6 +217,8 @@ private:
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
+
+		int32_t sizeOfT(void) const override;
 
 		void load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
@@ -240,6 +244,7 @@ private:
 
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
+		int32_t sizeOfT(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -270,6 +275,7 @@ private:
 
 		bool isFixedArray(void) const override { return true; }
 		bool isVector(void) const override { return false; }
+		int32_t sizeOfT(void) const override { return sizeof(Var); }
 		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -300,6 +306,7 @@ private:
 
 		bool isFixedArray(void) const override { return false; }
 		bool isVector(void) const override { return true; }
+		int32_t sizeOfT(void) const override { return sizeof(Var); }
 		int32_t size(const void* object) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;

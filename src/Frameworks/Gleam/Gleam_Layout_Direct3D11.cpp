@@ -81,7 +81,7 @@ void LayoutD3D11::destroy(void)
 	SAFERELEASE(_layout)
 }
 
-void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*)
+void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -89,7 +89,7 @@ void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*)
 	context->IASetInputLayout(_layout);
 }
 
-void LayoutD3D11::unsetLayout(IRenderDevice& rd)
+void LayoutD3D11::unsetLayout(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);

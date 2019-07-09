@@ -57,6 +57,8 @@ class IReflection
 public:
 	virtual ~IReflection(void) {}
 
+	virtual bool isEnum(void) const = 0;
+
 	virtual void init(void) = 0;
 
 	virtual void load(const ISerializeReader& reader, void* object) const = 0;
@@ -65,7 +67,20 @@ public:
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
-	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const = 0;
+
+	virtual const Gaff::IEnumReflectionDefinition& getEnumReflectionDefinition(void) const
+	{
+		GAFF_ASSERT_MSG(false, "Is a class reflected type!");
+		const Gaff::IEnumReflectionDefinition* const ptr = nullptr;
+		return *ptr;
+	}
+
+	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const
+	{
+		GAFF_ASSERT_MSG(false, "Is an enum reflected type!");
+		const Gaff::IReflectionDefinition* const ptr = nullptr;
+		return *ptr;
+	}
 
 	IReflection* attr_next = nullptr;
 	IReflection* next = nullptr;
@@ -80,8 +95,16 @@ class Reflection final : public Gaff::IReflection
 {
 public:
 	constexpr static bool HasReflection = false;
-	constexpr static bool HasClassReflection = false;
 	Reflection(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+	bool isEnum(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return false;
+	}
+	void init(void) override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
@@ -110,13 +133,16 @@ public:
 	}
 	static bool IsDefined(void)
 	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return false;
 	}
 	static void RegisterOnDefinedCallback(const eastl::function<void (void)>&)
 	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 	static void RegisterOnDefinedCallback(eastl::function<void (void)>&&)
 	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 };
 
@@ -348,6 +374,8 @@ public:
 
 	virtual bool isFixedArray(void) const { return false; }
 	virtual bool isVector(void) const { return false; }
+
+	virtual int32_t sizeOfT(void) const { return 0; }
 
 	virtual int32_t size(const void*) const
 	{
@@ -988,22 +1016,6 @@ private:
 	virtual void instantiated(void* object) const = 0;
 };
 
-class IEnumReflection
-{
-public:
-	virtual ~IEnumReflection(void) {}
-
-	virtual void init(void) = 0;
-
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
-	virtual const char* getName(void) const = 0;;
-	virtual Hash64 getHash(void) const = 0;
-	virtual Hash64 getVersion(void) const = 0;
-
-	IEnumReflection* next = nullptr;
-};
-
 class IEnumReflectionDefinition
 {
 public:
@@ -1056,9 +1068,9 @@ public:
 
 	virtual ~IEnumReflectionDefinition(void) {}
 
-	virtual const IEnumReflection& getReflectionInstance(void) const = 0;
+	virtual const IReflection& getReflectionInstance(void) const = 0;
 
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
 	virtual int32_t getNumEntries(void) const = 0;

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_SerializeInterfaces.h"
+#include "Gaff_EnumReflectionDefinition.h"
 #include "Gaff_ReflectionDefinition.h"
 #include "Gaff_ReflectionVersion.h"
 #include "Gaff_Hashable.h"
@@ -48,10 +49,11 @@ THE SOFTWARE.
 		static bool g_defined; \
 		static Gaff::Vector<eastl::function<void (void)>, allocator> g_on_defined_callbacks; \
 		template <class RefT, class RefAllocator> \
+		friend class Gaff::EnumReflectionDefinition; \
+		template <class RefT, class RefAllocator> \
 		friend class Gaff::ReflectionDefinition; \
 	public: \
 		constexpr static bool HasReflection = true; \
-		constexpr static bool HasClassReflection = Gaff::IsClassReflected<type>::value; \
 		Reflection(void) \
 		{ \
 			if (std::is_base_of<Gaff::IAttribute, type>::value) { \
@@ -59,6 +61,10 @@ THE SOFTWARE.
 			} else { \
 				Gaff::AddToReflectionChain(this); \
 			} \
+		} \
+		bool isEnum(void) const override \
+		{ \
+			return std::is_enum<type>::value; \
 		} \
 		const char* getName(void) const override \
 		{ \
@@ -76,9 +82,21 @@ THE SOFTWARE.
 		{ \
 			return sizeof(type); \
 		} \
+		const Gaff::IEnumReflectionDefinition& getEnumReflectionDefinition(void) const override \
+		{ \
+			if constexpr (std::is_enum<type>::value) { \
+				return reinterpret_cast<const Gaff::IEnumReflectionDefinition&>(GetReflectionDefinition()); /* To calm the compiler, even though this should be compiled out ... */ \
+			} else { \
+				return IReflection::getEnumReflectionDefinition(); \
+			} \
+		} \
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
 		{ \
-			return GetReflectionDefinition(); \
+			if constexpr (std::is_enum<type>::value) { \
+				return IReflection::getReflectionDefinition(); \
+			} else { \
+				return reinterpret_cast<const Gaff::IReflectionDefinition&>(GetReflectionDefinition()); /* To calm the compiler, even though this should be compiled out ... */ \
+			} \
 		} \
 		void init(void) override \
 		{ \
@@ -138,7 +156,7 @@ THE SOFTWARE.
 		{ \
 			g_reflection_definition.save(writer, object); \
 		} \
-		static const Gaff::ReflectionDefinition<type, allocator>& GetReflectionDefinition(void) \
+		static const typename Gaff::RefDefType<type, allocator>& GetReflectionDefinition(void) \
 		{ \
 			return g_reflection_definition; \
 		} \
@@ -153,7 +171,7 @@ THE SOFTWARE.
 			BuildReflection(g_reflection_definition); \
 		} \
 	private: \
-		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
+		static typename Gaff::RefDefType<type, allocator> g_reflection_definition; \
 	};
 
 #define GAFF_REFLECTION_DECLARE(type, allocator) \
@@ -165,6 +183,11 @@ THE SOFTWARE.
 		GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
 		GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 	NS_END
+
+#define GAFF_ENUM_REFLECTION_DECLARE GAFF_REFLECTION_DECLARE
+#define GAFF_ENUM_REFLECTION_DEFINE GAFF_REFLECTION_EXTERNAL_DEFINE
+#define GAFF_ENUM_REFLECTION_BEGIN GAFF_REFLECTION_BUILDER_BEGIN
+#define GAFF_ENUM_REFLECTION_END GAFF_REFLECTION_BUILDER_END
 
 #define GAFF_REFLECTION_CLASS_DECLARE(type, allocator) \
 	public: \
@@ -189,7 +212,7 @@ THE SOFTWARE.
 		{ \
 			return this; \
 		} \
-		static const Gaff::ReflectionDefinition<type, allocator>& GetReflectionDefinition(void); \
+		static const Gaff::IReflectionDefinition& GetReflectionDefinition(void); \
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder)
 
@@ -204,7 +227,7 @@ THE SOFTWARE.
 	GAFF_REFLECTION_EXTERNAL_DEFINE_END(type, allocator)
 
 #define GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator) \
-	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
+	typename Gaff::RefDefType<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
 	GAFF_REFLECTION_DEFINE_BASE(type, allocator); \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init() \
 	{ \
@@ -248,7 +271,7 @@ THE SOFTWARE.
 	GAFF_REFLECTION_CLASS_DEFINE_END(type, allocator)
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
-	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
+	const Gaff::IReflectionDefinition& type::GetReflectionDefinition(void) \
 	{ \
 		return GAFF_REFLECTION_NAMESPACE::Reflection<type>::GetReflectionDefinition(); \
 	} \
@@ -258,7 +281,7 @@ THE SOFTWARE.
 		builder
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator) \
-	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
+	const Gaff::IReflectionDefinition& type::GetReflectionDefinition(void) \
 	{ \
 		return GAFF_REFLECTION_NAMESPACE::Reflection<type>::GetReflectionDefinition(); \
 	} \
@@ -465,13 +488,41 @@ public:
 	constexpr static bool value = sizeof(Test<C>(0)) == sizeof(char);
 };
 
+template <class T, class Allocator, bool is_enum>
+struct RefDefTypeHelper;
+
+template <class T, class Allocator>
+struct RefDefTypeHelper<T, Allocator, true> final
+{
+	using Type = EnumReflectionDefinition<T, Allocator>;
+	using Interface = IEnumReflectionDefinition;
+};
+
+template <class T, class Allocator>
+struct RefDefTypeHelper<T, Allocator, false> final
+{
+	using Type = ReflectionDefinition<T, Allocator>;
+	using Interface = IReflectionDefinition;
+};
+
+template <class T, class Allocator>
+using RefDefInterface = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Interface;
+
+template <class T, class Allocator>
+using RefDefType = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Type;
+
+
 void AddToAttributeReflectionChain(IReflection* reflection);
 IReflection* GetAttributeReflectionChainHead(void);
 
 void AddToReflectionChain(IReflection* reflection);
 IReflection* GetReflectionChainHead(void);
 
+void AddToEnumReflectionChain(IReflection* reflection);
+IReflection* GetEnumReflectionChainHead(void);
+
 void InitAttributeReflection(void);
 void InitClassReflection(void);
+void InitEnumReflection(void);
 
 NS_END

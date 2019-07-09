@@ -74,6 +74,13 @@ public:
 	template <class T2>
 	ReflectionVersion& dependsOn(void);
 
+	// Enum
+	template <size_t size, class... Attrs>
+	ReflectionVersion& entry(const char(&name)[size], T value, const Attrs&... attrs);
+
+	template <class... Attrs>
+	ReflectionVersion& enumAttrs(const Attrs&... attrs);
+
 	Hash64 getHash(void) const;
 
 	void finish(void);

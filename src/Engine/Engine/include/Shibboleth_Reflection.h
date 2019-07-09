@@ -56,7 +56,7 @@ THE SOFTWARE.
 			GAFF_ASSERT(g_reflection_definition); \
 			g_reflection_definition->save(writer, object); \
 		} \
-		static const Gaff::ReflectionDefinition<type, ProxyAllocator>& GetReflectionDefinition(void) \
+		static const typename Gaff::RefDefType<type, ProxyAllocator>& GetReflectionDefinition(void) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			return *g_reflection_definition; \
@@ -70,7 +70,7 @@ THE SOFTWARE.
 		} \
 		static void Init(void); \
 	private: \
-		static Gaff::ReflectionDefinition<type, ProxyAllocator>* g_reflection_definition; \
+		static typename Gaff::RefDefType<type, ProxyAllocator>* g_reflection_definition; \
 	};
 
 #define SHIB_REFLECTION_DECLARE(type) \
@@ -82,6 +82,11 @@ THE SOFTWARE.
 		GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
 		SHIB_REFLECTION_DECLARE_BASE(type) \
 	NS_END
+
+#define SHIB_ENUM_REFLECTION_DECLARE SHIB_REFLECTION_DECLARE
+#define SHIB_ENUM_REFLECTION_DEFINE SHIB_REFLECTION_EXTERNAL_DEFINE
+#define SHIB_ENUM_REFLECTION_BEGIN SHIB_REFLECTION_BUILDER_BEGIN
+#define SHIB_ENUM_REFLECTION_END SHIB_REFLECTION_BUILDER_END
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) GAFF_REFLECTION_CLASS_DECLARE(type, Shibboleth::ProxyAllocator)
 
@@ -95,17 +100,21 @@ THE SOFTWARE.
 
 #define SHIB_REFLECTION_EXTERNAL_DEFINE_BEGIN(type) \
 NS_SHIBBOLETH \
-	Gaff::ReflectionDefinition<type, ProxyAllocator>* Reflection<type>::g_reflection_definition = nullptr; \
+	typename Gaff::RefDefType<type, ProxyAllocator>* Reflection<type>::g_reflection_definition = nullptr; \
 	GAFF_REFLECTION_DEFINE_BASE(type, ProxyAllocator); \
 	void Reflection<type>::Init() \
 	{ \
 		if (g_reflection_definition) { \
 			return; \
 		} \
-		g_reflection_definition = static_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
-			const_cast< Gaff::IReflectionDefinition* >( \
-				GetApp().getReflectionManager().getReflection(GetHash()) \
-			) \
+		const typename Gaff::RefDefInterface<type, ProxyAllocator>* ref_def_interface = nullptr; \
+		if constexpr (std::is_enum<type>::value) { \
+			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<type, ProxyAllocator>* >(GetApp().getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+		} else { \
+			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<type, ProxyAllocator>* >(GetApp().getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+		} \
+		g_reflection_definition = static_cast< typename Gaff::RefDefType<type, ProxyAllocator>* >( \
+			const_cast< typename Gaff::RefDefInterface<type, ProxyAllocator>* >(ref_def_interface) \
 		); \
 		if (g_reflection_definition) { \
 			BuildReflection(g_version); \
@@ -116,7 +125,7 @@ NS_SHIBBOLETH \
 			g_defined = true; \
 		} else { \
 			ProxyAllocator allocator("Reflection"); \
-			g_reflection_definition = SHIB_ALLOCT(GAFF_SINGLE_ARG(Gaff::ReflectionDefinition<type, ProxyAllocator>), allocator); \
+			g_reflection_definition = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<type, ProxyAllocator>), allocator); \
 			g_reflection_definition->setAllocator(allocator); \
 			BuildReflection(*g_reflection_definition);
 

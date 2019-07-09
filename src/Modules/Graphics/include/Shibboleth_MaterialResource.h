@@ -20,72 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_ReflectionInterfaces.h"
+#pragma once
 
-NS_GAFF
+#include <Shibboleth_IResource.h>
+#include <Gleam_IProgram.h>
 
-static IReflection* g_enum_head = nullptr;
-static IReflection* g_attr_head = nullptr;
-static IReflection* g_head = nullptr;
+NS_SHIBBOLETH
 
-static void AddToChain(IReflection*& head, IReflection* reflection)
+class MaterialResource final : public IResource
 {
-	reflection->attr_next = head;
-	head = reflection;
-}
+public:
 
-static void InitChain(IReflection* head)
-{
-	while (head) {
-		head->init();
-		head = head->attr_next;
-	}
-}
+private:
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs;
 
+	void loadMaterial(IFile* file);
 
-void AddToAttributeReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_attr_head, reflection);
-}
+	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
+};
 
-void AddToReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_head, reflection);
-}
-
-void AddToEnumReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_enum_head, reflection);
-}
-
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
-}
-
-void InitAttributeReflection(void)
-{
-	InitChain(g_attr_head);
-}
-
-void InitClassReflection(void)
-{
-	InitChain(g_head);
-}
-
-void InitEnumReflection(void)
-{
-	InitChain(g_enum_head);
-}
+using MaterialResourcePtr = Gaff::RefPtr<MaterialResource>;
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(MaterialResource)

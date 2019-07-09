@@ -54,8 +54,8 @@ public:
 	virtual IMesh* createMesh(void) = 0;
 	virtual int32_t addMesh(IMesh* mesh) = 0;
 
-	virtual void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) = 0;
-	virtual void render(IRenderDevice& rd, int32_t index) = 0;
+	virtual void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) const = 0;
+	virtual void render(IRenderDevice& rd, int32_t index) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

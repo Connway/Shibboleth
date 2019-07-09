@@ -66,11 +66,10 @@ template <class T>
 template <class Var, size_t size, class... Attrs>
 ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
-	_hash = FNV1aHash64(name, size ,_hash);
+	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(ptr, _hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
 		_hash = getAttributeHashes(_hash, attributes...);
 	}
@@ -86,7 +85,6 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T
 	_hash = CalcTemplateHash<Ret, Var>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
 		_hash = getAttributeHashes(_hash, attributes...);
 	}
@@ -102,7 +100,6 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 	_hash = CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
 		_hash = getAttributeHashes(_hash, attributes...);
 	}
@@ -118,7 +115,6 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 	_hash = CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
 		_hash = getAttributeHashes(_hash, attributes...);
 	}
@@ -134,7 +130,6 @@ ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size],
 	_hash = CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
 		_hash = getAttributeHashes(_hash, attributes...);
 	}
@@ -146,6 +141,7 @@ template <class T>
 template <class... Attrs>
 ReflectionVersion<T>& ReflectionVersion<T>::classAttrs(const Attrs&... attributes)
 {
+	static_assert(sizeof...(Attrs) > 0, "classAttrs() called with no arguments.");
 	_hash = FNV1aHash64String("class", _hash);
 	_hash = CalcTemplateHash<Attrs...>(_hash);
 	_hash = getAttributeHashes(_hash, attributes...);
@@ -174,6 +170,32 @@ template <class T2>
 ReflectionVersion<T>& ReflectionVersion<T>::dependsOn(void)
 {
 	_hash = FNV1aHash64T(GAFF_REFLECTION_NAMESPACE::Reflection<T2>::GetHash(), _hash);
+	return *this;
+}
+
+template <class T>
+template <size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::entry(const char(&name)[size], T value, const Attrs&... attrs)
+{
+	_hash = FNV1aHash64(name, size - 1, _hash);
+	_hash = FNV1aHash64T(value, _hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		_hash = CalcTemplateHash<Attrs...>(_hash);
+		_hash = getAttributeHashes(_hash, attributes...);
+	}
+
+	return *this;
+}
+
+template <class T>
+template <class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::enumAttrs(const Attrs&... attrs)
+{
+	static_assert(sizeof...(Attrs) > 0, "enumAttrs() called with no arguments.");
+	_hash = FNV1aHash64String("enum", _hash);
+	_hash = CalcTemplateHash<Attrs...>(_hash);
+	_hash = getAttributeHashes(_hash, attributes...);
 	return *this;
 }
 

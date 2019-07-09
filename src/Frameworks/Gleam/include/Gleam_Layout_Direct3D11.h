@@ -37,8 +37,8 @@ public:
 	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader) override;
 	void destroy(void) override;
 
-	void setLayout(IRenderDevice& rd, const IMesh*) override;
-	void unsetLayout(IRenderDevice& rd) override;
+	void setLayout(IRenderDevice& rd, const IMesh*) const override;
+	void unsetLayout(IRenderDevice& rd) const override;
 
 	RendererType getRendererType(void) const override;
 

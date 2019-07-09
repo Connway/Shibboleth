@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ModelResource.h>
 #include <Shibboleth_ECSEntity.h>
 
 NS_SHIBBOLETH
@@ -32,13 +32,19 @@ class ECSManager;
 class Model final
 {
 public:
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Gaff::Hash32 value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ModelResourcePtr& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ModelResourcePtr&& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const ModelResourcePtr& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, ModelResourcePtr&& value);
 
-	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, EntityID id);
+	static const ModelResourcePtr& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const ModelResourcePtr& GetShared(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyShared(const void* old_value, void* new_value);
+
+	ModelResourcePtr value;
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Model)

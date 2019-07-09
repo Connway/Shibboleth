@@ -46,8 +46,8 @@ public:
 
 	int32_t addMesh(IMesh* mesh) override;
 
-	void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) override;
-	void render(IRenderDevice& rd, int32_t index) override;
+	void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) const override;
+	void render(IRenderDevice& rd, int32_t index) const override;
 
 private:
 	Vector<ILayout*> _layouts;

@@ -33,6 +33,8 @@ class Camera;
 class RenderManager final : public IManager, public RenderManagerBase
 {
 public:
+	Gleam::RendererType getRendererType(void) const override;
+
 	Gleam::IShaderResourceView* createShaderResourceView(void) const override;
 	Gleam::IDepthStencilState* createDepthStencilState(void) const override;
 	Gleam::IRenderDevice* createRenderDevice(void) const override;

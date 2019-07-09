@@ -161,6 +161,13 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, 
 
 template <class T, class Allocator>
 template <class Var>
+int32_t ReflectionDefinition<T, Allocator>::VarPtr<Var>::sizeOfT(void) const
+{
+	return sizeof(Var);
+}
+
+template <class T, class Allocator>
+template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
 {
 	Var* const var = &(object.*_ptr);
@@ -252,6 +259,18 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 
 	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_setter)(*reinterpret_cast<RetType*>(data));
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+int32_t ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::sizeOfT(void) const
+{
+	using RetNoRef = typename std::remove_reference<Ret>::type;
+	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
+	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
+	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::template type<RetNoConst>;
+
+	return sizeof(RetFinal);
 }
 
 template <class T, class Allocator>
@@ -354,6 +373,13 @@ template <class Base>
 bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isVector(void) const
 {
 	return _base_var->isVector();
+}
+
+template <class T, class Allocator>
+template <class Base>
+int32_t ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::sizeOfT(void) const
+{
+	return _base_var->sizeOfT();
 }
 
 template <class T, class Allocator>

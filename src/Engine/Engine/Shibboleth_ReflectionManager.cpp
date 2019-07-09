@@ -82,6 +82,11 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* 
 	module_bucket.insert(it, it_enum->second.get());
 }
 
+void ReflectionManager::registerReflection(Gaff::IEnumReflectionDefinition* ref_def)
+{
+	registerEnumReflection(ref_def);
+}
+
 const Gaff::IReflectionDefinition* ReflectionManager::getReflection(Gaff::Hash64 name) const
 {
 	auto it = _reflection_map.find(name);
