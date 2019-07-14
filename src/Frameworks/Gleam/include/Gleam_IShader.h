@@ -22,12 +22,43 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_ITexture.h"
+#include "Gleam_String.h"
 #include <Gaff_Defines.h>
+
+#define MAX_SHADER_VAR 16
 
 NS_GLEAM
 
 class IRenderDevice;
+
+struct ConstBufferReflection final
+{
+	U8String name;
+	size_t size_bytes = 0;
+};
+
+struct InputParamReflection final
+{
+	U8String semantic_name;
+	uint32_t semantic_index;
+	ITexture::Format format;
+};
+
+struct ShaderReflection final
+{
+	InputParamReflection input_params_reflection[MAX_SHADER_VAR];
+	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
+	U8String textures[MAX_SHADER_VAR];
+	U8String samplers[MAX_SHADER_VAR];
+	U8String structured_buffers[MAX_SHADER_VAR];
+
+	int32_t num_inputs = 0;
+	int32_t num_constant_buffers = 0;
+	int32_t num_textures = 0;
+	int32_t num_samplers = 0;
+	int32_t num_structured_buffers = 0;
+};
 
 class IShader
 {
@@ -71,6 +102,8 @@ public:
 	virtual bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
 
 	virtual void destroy(void) = 0;
+
+	virtual ShaderReflection getReflectionData(void) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

@@ -53,6 +53,8 @@ public:
 
 	void destroy(void);
 
+	ShaderReflection getReflectionData(void) const override;
+
 	RendererType getRendererType(void) const;
 
 	void* getShader(void) const;

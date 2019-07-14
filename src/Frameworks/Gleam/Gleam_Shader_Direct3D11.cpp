@@ -58,6 +58,50 @@ static ShaderInitSourceFunc g_source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D11::initComputeSource
 };
 
+static ITexture::Format GetFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
+{
+	constexpr uint8_t xyzw = D3D_COMPONENT_MASK_X | D3D_COMPONENT_MASK_Y | D3D_COMPONENT_MASK_Z | D3D_COMPONENT_MASK_W;
+	constexpr uint8_t xyz = D3D_COMPONENT_MASK_X | D3D_COMPONENT_MASK_Y | D3D_COMPONENT_MASK_Z;
+	constexpr uint8_t xy = D3D_COMPONENT_MASK_X | D3D_COMPONENT_MASK_Y;
+	constexpr uint8_t x = D3D_COMPONENT_MASK_X;
+
+	if (desc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) {
+		if (desc.Mask & xyzw) {
+			return ITexture::RGBA_32_UI;
+		} else if (desc.Mask & xyz) {
+			return ITexture::RGB_32_UI;
+		} else if (desc.Mask & xy) {
+			return ITexture::RG_32_UI;
+		} else if (desc.Mask & x) {
+			return ITexture::R_32_UI;
+		}
+
+	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) {
+		if (desc.Mask & xyzw) {
+			return ITexture::RGBA_32_I;
+		} else if (desc.Mask & xyz) {
+			return ITexture::RGB_32_I;
+		} else if (desc.Mask & xy) {
+			return ITexture::RG_32_I;
+		} else if (desc.Mask & x) {
+			return ITexture::R_32_I;
+		}
+
+	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) {
+		if (desc.Mask & xyzw) {
+			return ITexture::RGBA_32_F;
+		} else if (desc.Mask & xyz) {
+			return ITexture::RGB_32_F;
+		} else if (desc.Mask & xy) {
+			return ITexture::RG_32_F;
+		} else if (desc.Mask & x) {
+			return ITexture::R_32_F;
+		}
+	}
+
+	return ITexture::FORMAT_SIZE;
+}
+
 ShaderD3D11::ShaderD3D11(void):
 	_shader(nullptr), _shader_buffer(nullptr)
 {
@@ -415,6 +459,98 @@ void ShaderD3D11::destroy(void)
 	}
 
 	SAFERELEASE(_shader_buffer)
+}
+
+ShaderReflection ShaderD3D11::getReflectionData(void) const
+{
+	ShaderReflection reflection;
+
+	ID3D11ShaderReflection* refl = nullptr;
+
+	HRESULT result = D3DReflect(
+		_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(),
+		IID_ID3D11ShaderReflection, reinterpret_cast<void**>(&refl)
+	);
+
+	if (FAILED(result)) {
+		return reflection;
+	}
+
+	D3D11_SHADER_DESC shader_desc;
+	result = refl->GetDesc(&shader_desc);
+
+	if (FAILED(result)) {
+		refl->Release();
+		return reflection;
+	}
+
+	reflection.num_inputs = static_cast<int32_t>(shader_desc.InputParameters);
+	reflection.num_constant_buffers = static_cast<int32_t>(shader_desc.ConstantBuffers);
+
+	for (uint32_t i = 0; i < shader_desc.InputParameters; ++i) {
+		D3D11_SIGNATURE_PARAMETER_DESC input_desc;
+		result = refl->GetInputParameterDesc(i, &input_desc);
+
+		if (FAILED(result)) {
+			refl->Release();
+			return reflection;
+		}
+
+		auto& input_refl = reflection.input_params_reflection[i];
+		input_refl.semantic_name = input_desc.SemanticName;
+		input_refl.semantic_index = input_desc.SemanticIndex;
+		input_refl.format = GetFormat(input_desc);
+	}
+
+	for (unsigned int i = 0; i < shader_desc.ConstantBuffers; ++i) {
+		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
+
+		D3D11_SHADER_BUFFER_DESC cb_desc;
+		result = cb_refl->GetDesc(&cb_desc);
+
+		if (FAILED(result)) {
+			refl->Release();
+			return reflection;
+		}
+
+		reflection.const_buff_reflection[i].name = cb_desc.Name;
+		reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
+	}
+
+	for (uint32_t i = 0; i < shader_desc.BoundResources; ++i) {
+		D3D11_SHADER_INPUT_BIND_DESC res_desc;
+		result = refl->GetResourceBindingDesc(i, &res_desc);
+
+		if (FAILED(result)) {
+			refl->Release();
+			return reflection;
+		}
+
+		switch (res_desc.Type) {
+		case D3D_SIT_TEXTURE:
+			reflection.textures[reflection.num_textures] = res_desc.Name;
+			++reflection.num_textures;
+			break;
+
+		case D3D_SIT_SAMPLER:
+			reflection.samplers[reflection.num_samplers] = res_desc.Name;
+			++reflection.num_samplers;
+			break;
+
+		case D3D_SIT_STRUCTURED:
+			reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
+			++reflection.num_structured_buffers;
+			break;
+
+		default:
+			// $TODO: Handle other reflection data.
+			break;
+		}
+	}
+
+	refl->Release();
+
+	return reflection;
 }
 
 RendererType ShaderD3D11::getRendererType(void) const
