@@ -72,9 +72,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMesh.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IModel.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMouse.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -136,15 +133,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_OpenGL.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Model.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ModelBase.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Model_Direct3D11.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse.h">
@@ -271,8 +259,6 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_ModelBase.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Model_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_OBB.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Plane.cpp" />

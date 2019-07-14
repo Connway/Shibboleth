@@ -229,7 +229,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IKeyboard.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ILayout.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMesh.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IModel.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMouse.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IProgram.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRasterState.h" />
@@ -251,9 +250,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_OpenGL.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Model.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ModelBase.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Model_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse_MessagePump.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_OBB.h" />
@@ -304,8 +300,6 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_ModelBase.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Model_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_OBB.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Plane.cpp" />

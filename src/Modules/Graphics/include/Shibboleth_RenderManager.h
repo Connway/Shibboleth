@@ -50,7 +50,6 @@ public:
 	Gleam::IShader* createShader(void) const override;
 	Gleam::IBuffer* createBuffer(void) const override;
 	Gleam::ILayout* createLayout(void) const override;
-	Gleam::IModel* createModel(void) const override;
 	Gleam::IMesh* createMesh(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);

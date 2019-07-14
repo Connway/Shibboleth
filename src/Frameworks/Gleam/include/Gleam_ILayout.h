@@ -67,7 +67,8 @@ public:
 	ILayout(void) {}
 	virtual ~ILayout(void) {}
 
-	virtual bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader) = 0;
+	virtual bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader& shader) = 0;
+	virtual bool init(IRenderDevice& rd, const IShader& shader) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) const = 0;

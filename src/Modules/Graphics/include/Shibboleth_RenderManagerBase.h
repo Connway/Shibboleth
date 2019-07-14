@@ -74,7 +74,6 @@ public:
 	virtual Gleam::IShader* createShader(void) const = 0;
 	virtual Gleam::IBuffer* createBuffer(void) const = 0;
 	virtual Gleam::ILayout* createLayout(void) const = 0;
-	virtual Gleam::IModel* createModel(void) const = 0;
 	virtual Gleam::IMesh* createMesh(void) const = 0;
 
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);

@@ -500,6 +500,8 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		input_refl.semantic_name = input_desc.SemanticName;
 		input_refl.semantic_index = input_desc.SemanticIndex;
 		input_refl.format = GetFormat(input_desc);
+
+		input_refl.instance_data = input_desc.SystemValueType == D3D_NAME_INSTANCE_ID;
 	}
 
 	for (unsigned int i = 0; i < shader_desc.ConstantBuffers; ++i) {
@@ -527,24 +529,24 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		}
 
 		switch (res_desc.Type) {
-		case D3D_SIT_TEXTURE:
-			reflection.textures[reflection.num_textures] = res_desc.Name;
-			++reflection.num_textures;
-			break;
+			case D3D_SIT_TEXTURE:
+				reflection.textures[reflection.num_textures] = res_desc.Name;
+				++reflection.num_textures;
+				break;
 
-		case D3D_SIT_SAMPLER:
-			reflection.samplers[reflection.num_samplers] = res_desc.Name;
-			++reflection.num_samplers;
-			break;
+			case D3D_SIT_SAMPLER:
+				reflection.samplers[reflection.num_samplers] = res_desc.Name;
+				++reflection.num_samplers;
+				break;
 
-		case D3D_SIT_STRUCTURED:
-			reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
-			++reflection.num_structured_buffers;
-			break;
+			case D3D_SIT_STRUCTURED:
+				reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
+				++reflection.num_structured_buffers;
+				break;
 
-		default:
-			// $TODO: Handle other reflection data.
-			break;
+			default:
+				// $TODO: Handle other reflection data.
+				break;
 		}
 	}
 

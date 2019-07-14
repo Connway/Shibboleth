@@ -31,6 +31,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 class IRenderDevice;
+class ILayout;
 
 struct ConstBufferReflection final
 {
@@ -43,6 +44,7 @@ struct InputParamReflection final
 	U8String semantic_name;
 	uint32_t semantic_index;
 	ITexture::Format format;
+	bool instance_data;
 };
 
 struct ShaderReflection final
@@ -107,9 +109,13 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual ShaderType getType(void) const { return _type; }
+	void setLayout(const ILayout* layout) { _layout = layout; }
+	const ILayout* getLayout(void) const { return _layout; }
+
+	ShaderType getType(void) const { return _type; }
 
 protected:
+	const ILayout* _layout = nullptr;
 	ShaderType _type;
 };
 

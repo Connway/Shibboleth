@@ -36,7 +36,8 @@ THE SOFTWARE.
 			Shibboleth::SetApp(app);
 			Gen::InitReflection();
 
-			Gleam::SetAllocator(&Shibboleth::ProxyAllocator::GetGlobal());
+			static Shibboleth::ProxyAllocator allocator("Graphics");
+			Gleam::SetAllocator(&allocator);
 
 			return true;
 		}
