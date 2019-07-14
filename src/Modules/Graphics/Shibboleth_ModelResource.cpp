@@ -56,16 +56,15 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ModelResource)
 
-const Gleam::IModel* ModelResource::getModel(const Gleam::IRenderDevice& rd) const
+const MeshResourcePtr& ModelResource::getMesh(int32_t index) const
 {
-	const auto it = _models.find(&rd);
-	return (it != _models.end()) ? it->second.get() : nullptr;
+	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
+	return _meshes[index];
 }
 
-Gleam::IModel* ModelResource::getModel(const Gleam::IRenderDevice& rd)
+int32_t ModelResource::getNumMeshes(void) const
 {
-	const auto it = _models.find(&rd);
-	return (it != _models.end()) ? it->second.get() : nullptr;
+	return static_cast<int32_t>(_meshes.size());
 }
 
 void ModelResource::loadModel(IFile* file)
@@ -191,18 +190,6 @@ void ModelResource::loadModel(IFile* file)
 				failed();
 			}
 		}
-	}
-
-	_models.reserve(devices->size());
-
-	for (const Gleam::IRenderDevice* rd : *devices) {
-		Gleam::IModel* const model = render_mgr.createModel();
-
-		for (MeshResourcePtr& mesh : _meshes) {
-			model->addMesh(mesh->getMesh(*rd));
-		}
-
-		_models[rd].reset(model);
 	}
 
 	if (!hasFailed()) {

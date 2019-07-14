@@ -34,7 +34,8 @@ public:
 	LayoutD3D11(void);
 	~LayoutD3D11(void);
 
-	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader) override;
+	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader& shader) override;
+	bool init(IRenderDevice& rd, const IShader& shader) override;
 	void destroy(void) override;
 
 	void setLayout(IRenderDevice& rd, const IMesh*) const override;

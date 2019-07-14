@@ -52,9 +52,9 @@ LayoutD3D11::~LayoutD3D11(void)
 	destroy();
 }
 
-bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader)
+bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader& shader)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && shader->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && shader.getRendererType() == RENDERER_DIRECT3D11);
 
 	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
@@ -68,11 +68,39 @@ bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, 
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 
-	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
+	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11&>(shader).getByteCodeBuffer();
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
+	return SUCCEEDED(result);
+}
+
+bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
+{
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && shader.getRendererType() == RENDERER_DIRECT3D11);
+
+	const ShaderReflection reflection = shader.getReflectionData();
+
+	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(reflection.num_inputs, D3D11_INPUT_ELEMENT_DESC());
+
+	for (int32_t i = 0; i < reflection.num_inputs; ++i) {
+		const InputParamReflection& input_ref = reflection.input_params_reflection[i];
+
+		input_desc[i].SemanticName = input_ref.semantic_name.data();
+		input_desc[i].SemanticIndex = input_ref.semantic_index;
+		input_desc[i].Format = TextureD3D11::GetD3DFormat(input_ref.format);
+		input_desc[i].InputSlot = static_cast<UINT>(i);
+		input_desc[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		input_desc[i].InputSlotClass = (input_ref.instance_data) ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
+		input_desc[i].InstanceDataStepRate = 0;
+	}
+
+	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11&>(shader).getByteCodeBuffer();
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
+
+	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.num_inputs), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 

@@ -154,11 +154,26 @@ void ShaderResource::loadShader(IFile* file)
 		if (!shader->initSource(*rd, reinterpret_cast<const char*>(shader_file->getBuffer()), shader_file->size(), shader_type)) {
 			LogErrorResource("Failed to load shader '%s'. Shader compilation failed.", getFilePath().getBuffer());
 			failed();
+
+			SHIB_FREET(shader, GetAllocator());
+			continue;
+		}
+
+		// Generate default layout from shader reflection.
+		Gleam::ILayout* const layout = render_mgr.createLayout();
+
+		if (!layout->init(*rd, *shader)) {
+			LogErrorResource("Failed to create default layout for shader '%s'. Shader creation failed.", getFilePath().getBuffer());
+			failed();
+
+			SHIB_FREET(shader, GetAllocator());
+			SHIB_FREET(layout, GetAllocator());
+			continue;
 		}
 
 		auto& sd = _shader_data[rd];
 		sd.first.reset(shader);
-		//sd.second.reset(layout);
+		sd.second.reset(layout);
 	}
 }
 

@@ -36,12 +36,13 @@ THE SOFTWARE.
 #include <Gleam_Shader.h>
 #include <Gleam_Buffer.h>
 #include <Gleam_Layout.h>
-#include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
 SHIB_REFLECTION_DEFINE(RenderManager)
 
 NS_SHIBBOLETH
+
+static ProxyAllocator g_allocator("Graphics");
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
 	.BASE(RenderManagerBase)
@@ -62,87 +63,82 @@ Gleam::RendererType RenderManager::getRendererType(void) const
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
 {
-	return SHIB_ALLOCT(Gleam::ShaderResourceView, GetAllocator());
+	return SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
 }
 
 Gleam::IDepthStencilState* RenderManager::createDepthStencilState(void) const
 {
-	return SHIB_ALLOCT(Gleam::DepthStencilState, GetAllocator());
+	return SHIB_ALLOCT(Gleam::DepthStencilState, g_allocator);
 }
 
 Gleam::IRenderDevice* RenderManager::createRenderDevice(void) const
 {
-	return SHIB_ALLOCT(Gleam::RenderDevice, GetAllocator());
+	return SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
 }
 
 Gleam::IRenderOutput* RenderManager::createRenderOutput(void) const
 {
-	return SHIB_ALLOCT(Gleam::RenderOutput, GetAllocator());
+	return SHIB_ALLOCT(Gleam::RenderOutput, g_allocator);
 }
 
 Gleam::IRenderTarget* RenderManager::createRenderTarget(void) const
 {
-	return SHIB_ALLOCT(Gleam::RenderTarget, GetAllocator());
+	return SHIB_ALLOCT(Gleam::RenderTarget, g_allocator);
 }
 
 Gleam::ISamplerState* RenderManager::createSamplerState(void) const
 {
-	return SHIB_ALLOCT(Gleam::SamplerState, GetAllocator());
+	return SHIB_ALLOCT(Gleam::SamplerState, g_allocator);
 }
 
 Gleam::ICommandList* RenderManager::createCommandList(void) const
 {
-	return SHIB_ALLOCT(Gleam::CommandList, GetAllocator());
+	return SHIB_ALLOCT(Gleam::CommandList, g_allocator);
 }
 
 Gleam::IRasterState* RenderManager::createRasterState(void) const
 {
-	return SHIB_ALLOCT(Gleam::RasterState, GetAllocator());
+	return SHIB_ALLOCT(Gleam::RasterState, g_allocator);
 }
 
 Gleam::IBlendState* RenderManager::createBlendState(void) const
 {
-	return SHIB_ALLOCT(Gleam::BlendState, GetAllocator());
+	return SHIB_ALLOCT(Gleam::BlendState, g_allocator);
 }
 
 Gleam::ITexture* RenderManager::createTexture(void) const
 {
-	return SHIB_ALLOCT(Gleam::Texture, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Texture, g_allocator);
 }
 
 Gleam::IProgramBuffers* RenderManager::createProgramBuffers(void) const
 {
-	return SHIB_ALLOCT(Gleam::ProgramBuffers, GetAllocator());
+	return SHIB_ALLOCT(Gleam::ProgramBuffers, g_allocator);
 }
 
 Gleam::IProgram* RenderManager::createProgram(void) const
 {
-	return SHIB_ALLOCT(Gleam::Program, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Program, g_allocator);
 }
 
 Gleam::IShader* RenderManager::createShader(void) const
 {
-	return SHIB_ALLOCT(Gleam::Shader, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Shader, g_allocator);
 }
 
 Gleam::IBuffer* RenderManager::createBuffer(void) const
 {
-	return SHIB_ALLOCT(Gleam::Buffer, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Buffer, g_allocator);
 }
 
 Gleam::ILayout* RenderManager::createLayout(void) const
 {
-	return SHIB_ALLOCT(Gleam::Layout, GetAllocator());
-}
-
-Gleam::IModel* RenderManager::createModel(void) const
-{
-	return SHIB_ALLOCT(Gleam::Model, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Layout, g_allocator);
 }
 
 Gleam::IMesh* RenderManager::createMesh(void) const
 {
-	return SHIB_ALLOCT(Gleam::Mesh, GetAllocator());
+	return SHIB_ALLOCT(Gleam::Mesh, g_allocator);
 }
 
 NS_END
