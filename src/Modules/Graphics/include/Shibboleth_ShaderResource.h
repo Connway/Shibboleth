@@ -24,15 +24,23 @@ THE SOFTWARE.
 
 #include <Shibboleth_IResource.h>
 #include <Gleam_IShader.h>
+#include <Gleam_ILayout.h>
 
 NS_SHIBBOLETH
 
 class ShaderResource final : public IResource
 {
 public:
+	const Gleam::IShader* getShader(const Gleam::IRenderDevice& rd) const;
+	Gleam::IShader* getShader(const Gleam::IRenderDevice& rd);
+
+	const Gleam::ILayout* getLayout(const Gleam::IRenderDevice& rd) const;
+	Gleam::ILayout* getLayout(const Gleam::IRenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShader> > _shaders;
+	using ShaderLayoutPair = eastl::pair< UniquePtr<Gleam::IShader>, UniquePtr<Gleam::ILayout> >;
+
+	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data;
 
 	void loadShader(IFile* file);
 

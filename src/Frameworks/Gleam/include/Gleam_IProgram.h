@@ -26,8 +26,6 @@ THE SOFTWARE.
 #include "Gleam_Vector.h"
 #include "Gleam_String.h"
 
-#define MAX_SHADER_VAR 16
-
 NS_GLEAM
 
 class IShaderResourceView;
@@ -78,34 +76,6 @@ public:
 	virtual RendererType getRendererType(void) const = 0;
 };
 
-struct ConstBufferReflection
-{
-	U8String name;
-	size_t size_bytes = 0;
-};
-
-struct ShaderReflection
-{
-	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
-	U8String textures[MAX_SHADER_VAR];
-	U8String samplers[MAX_SHADER_VAR];
-	U8String structured_buffers[MAX_SHADER_VAR];
-
-	int32_t num_constant_buffers = 0;
-	int32_t num_textures = 0;
-	int32_t num_samplers = 0;
-	int32_t num_structured_buffers = 0;
-};
-
-struct ProgramReflection
-{
-	ShaderReflection shader_reflection[IShader::SHADER_TYPE_SIZE - 1];
-	int32_t total_constant_buffers = 0;
-	int32_t total_textures = 0;
-	int32_t total_samplers = 0;
-	int32_t total_structured_buffers = 0;
-};
-
 class IProgram
 {
 public:
@@ -117,8 +87,6 @@ public:
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
-
-	virtual ProgramReflection getReflectionData(void) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

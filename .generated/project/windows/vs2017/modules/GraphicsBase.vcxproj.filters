@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_BufferResource.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MaterialResource.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -30,19 +33,16 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ShaderResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsReflection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />

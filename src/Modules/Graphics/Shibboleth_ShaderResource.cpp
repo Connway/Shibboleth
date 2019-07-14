@@ -46,6 +46,30 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ShaderResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ShaderResource)
 
+const Gleam::IShader* ShaderResource::getShader(const Gleam::IRenderDevice& rd) const
+{
+	const auto it = _shader_data.find(&rd);
+	return (it != _shader_data.end()) ? it->second.first.get() : nullptr;
+}
+
+Gleam::IShader* ShaderResource::getShader(const Gleam::IRenderDevice& rd)
+{
+	const auto it = _shader_data.find(&rd);
+	return (it != _shader_data.end()) ? it->second.first.get() : nullptr;
+}
+
+const Gleam::ILayout* ShaderResource::getLayout(const Gleam::IRenderDevice& rd) const
+{
+	const auto it = _shader_data.find(&rd);
+	return (it != _shader_data.end()) ? it->second.second.get() : nullptr;
+}
+
+Gleam::ILayout* ShaderResource::getLayout(const Gleam::IRenderDevice& rd)
+{
+	const auto it = _shader_data.find(&rd);
+	return (it != _shader_data.end()) ? it->second.second.get() : nullptr;
+}
+
 void ShaderResource::loadShader(IFile* file)
 {
 	SerializeReaderWrapper readerWrapper;
@@ -132,7 +156,9 @@ void ShaderResource::loadShader(IFile* file)
 			failed();
 		}
 
-		_shaders[rd].reset(shader);
+		auto& sd = _shader_data[rd];
+		sd.first.reset(shader);
+		//sd.second.reset(layout);
 	}
 }
 
