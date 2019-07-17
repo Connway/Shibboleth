@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include <Gleam_Shader.h>
 #include <Gleam_Buffer.h>
 #include <Gleam_Layout.h>
+#include <Gleam_Window.h>
 #include <Gleam_Mesh.h>
 
 SHIB_REFLECTION_DEFINE(RenderManager)
@@ -50,7 +51,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
 
-Gleam::RendererType RenderManager::getRendererType(void) const
+static constexpr Gleam::RendererType GetRendererType(void)
 {
 #ifdef USE_D3D11
 	return Gleam::RENDERER_DIRECT3D11;
@@ -59,6 +60,11 @@ Gleam::RendererType RenderManager::getRendererType(void) const
 #elif defined(USE_VULKAN)
 	return Gleam::RENDERER_VULKAN;
 #endif
+}
+
+Gleam::RendererType RenderManager::getRendererType(void) const
+{
+	return GetRendererType();
 }
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
@@ -139,6 +145,21 @@ Gleam::ILayout* RenderManager::createLayout(void) const
 Gleam::IMesh* RenderManager::createMesh(void) const
 {
 	return SHIB_ALLOCT(Gleam::Mesh, g_allocator);
+}
+
+Gleam::IRenderDevice::AdapterList RenderManager::getDisplayModes(void) const
+{
+	return Gleam::GetDisplayModes<GetRendererType()>();
+}
+
+Gleam::IWindow* RenderManager::createWindow(void) const
+{
+	return SHIB_ALLOCT(Gleam::Window, g_allocator);
+}
+
+void RenderManager::updateWindows(void)
+{
+	Gleam::Window::HandleWindowMessages();
 }
 
 NS_END

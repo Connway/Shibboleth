@@ -229,12 +229,10 @@ premake5 gen_module_header --module=MainLoop</Command>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_SetupFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_SetupFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\MainLoop\project_generator.lua" />

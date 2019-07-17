@@ -120,7 +120,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 	return file;
 }
 
-void LooseFileSystem::closeFile(IFile* file)
+void LooseFileSystem::closeFile(const IFile* file)
 {
 	GAFF_ASSERT(file);
 	std::lock_guard<std::mutex> lock(_file_lock);

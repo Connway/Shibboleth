@@ -86,7 +86,7 @@ protected:
 	VectorMap<int32_t, eastl::function<void (IResource&)> > _callbacks;
 	int32_t _next_id = 0;
 
-	IFile* loadFile(const char* file_path);
+	const IFile* loadFile(const char* file_path);
 
 	void succeeded(void);
 	void failed(void);
