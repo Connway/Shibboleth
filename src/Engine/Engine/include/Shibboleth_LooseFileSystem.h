@@ -55,7 +55,7 @@ public:
 	~LooseFileSystem(void);
 
 	IFile* openFile(const char* file_name) override;
-	void closeFile(IFile* file) override;
+	void closeFile(const IFile* file) override;
 
 	bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive = false) override;
 

@@ -61,60 +61,9 @@ SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
 
 bool MainLoop::init(void)
 {
-	//_render_mgr = &GetApp().getManagerT<IRenderManager>();
-	//_update_mgr = &GetApp().getManagerT<IUpdateManager>();
-
-	//g_image_pool_index = GetPoolIndex("Images");
-	//Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);
-	//Gaff::Image::SysInit();
-
-	//if (!LoadGraphicsModule()) {
-	//	return false;
-	//}
-
-	//if (!CreateResourceLoaders()) {
-	//	return false;
-	//}
-
-	//if (!SetupDevices()) {
-	//	return false;
-	//}
-
-	//// Block until loaded.
-	//IApp& app = GetApp();
-	//app.getManagerT<IResourceManager>().addRequestAddedCallback(Gaff::Bind(this, &MainLoop::ResReq));
-	//app.getManagerT<ISceneManager>().loadScene("Resources/Scenes/test.scene");
-
-	//bool all_loaded = true;
-
-	//do {
-	//	all_loaded = true;
-
-	//	std::lock_guard<std::mutex> lock(_res_lock);
-
-	//	for (size_t i = 0; i < _resources.size(); ++i) {
-	//		all_loaded &= _resources[i]->isLoaded();
-
-	//		if (_resources[i]->hasFailed()) {
-	//			all_loaded = true;
-	//			app.quit();
-	//			return false;
-	//		}
-	//	}
-	//} while (!all_loaded || _resources.empty());
-
-	//// Set the camera
-	//Object* camera = app.getManagerT<IObjectManager>().findObject("Test Camera");
-
-	//if (camera) {
-	//	ICameraComponent* camera_cmp = camera->getFirstComponentWithInterface<ICameraComponent>();
-
-	//	if (camera_cmp) {
-	//		app.getManagerT<IRenderPipelineManager>().setOutputCamera(camera_cmp);
-	//	}
-	//}
-
 	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &rm;
+
 	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
 
 	// Initialize to the main graphics adapter.
@@ -127,42 +76,21 @@ bool MainLoop::init(void)
 	rm.manageRenderDevice(rd);
 	rm.addRenderDeviceTag(rd, "main");
 
+	//const auto adapter_list = rm.getDisplayModes();
+
+	//for (auto adapter : adapter_list) {
+	//}
+
 	return true;
 }
 
 void MainLoop::destroy(void)
 {
-	//IApp& app = GetApp();
-	//auto& occ_mgr = GetApp().getManagerT<IOcclusionManager>();
-	//auto& obj_mgr = GetApp().getManagerT<IObjectManager>();
-
-	//if (_object) {
-	//	occ_mgr.removeObject(_object);
-	//	obj_mgr.removeObject(_object->getID());
-	//}
-
-	//if (_object2) {
-	//	occ_mgr.removeObject(_object2);
-	//	obj_mgr.removeObject(_object2->getID());
-	//}
-
-	//if (_camera) {
-	//	obj_mgr.removeObject(_camera->getID());
-	//}
-
-	//if (_floor) {
-	//	obj_mgr.removeObject(_floor->getID());
-	//}
-
-	//app.getManagerT<IResourceManager>().removeRequestAddedCallback(Gaff::Bind(this, &MainLoop::ResReq));
-	//_resources.clear();
-
-	//Gaff::Image::SysShutdown();
 }
 
 void MainLoop::update(void)
 {
-	//_render_mgr->updateWindows(); // This has to happen in the main thread.
+	_render_mgr->updateWindows(); // This has to happen in the main thread.
 	//_update_mgr->update();
 
 	//std::this_thread::yield();
@@ -189,11 +117,5 @@ void MainLoop::update(void)
 
 	GetApp().quit();
 }
-
-//void MainLoop::ResReq(ResourcePtr& res)
-//{
-//	std::lock_guard<std::mutex> lock(_res_lock);
-//	_resources.emplacePush(res);
-//}
 
 NS_END

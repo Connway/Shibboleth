@@ -24,16 +24,18 @@ THE SOFTWARE.
 
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
+#include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>
-#include <Gleam_Defines.h>
+#include <Gleam_IRenderDevice.h>
+#include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
 
-namespace Gleam
-{
+constexpr const char* g_supported_displays[] = { "main" };
+
+NS_GLEAM
 	class IShaderResourceView;
 	class IDepthStencilState;
 	class IProgramBuffers;
-	class IRenderDevice;
 	class IRenderOutput;
 	class IRenderTarget;
 	class ISamplerState;
@@ -47,15 +49,17 @@ namespace Gleam
 	class ILayout;
 	class IModel;
 	class IMesh;
-}
+NS_END
 
 NS_SHIBBOLETH
 
-// Only reason this exists is to force create*() code to run through the module DLL.
-class RenderManagerBase
+class RenderManagerBase : public IManager
 {
 public:
+	RenderManagerBase(void);
 	virtual ~RenderManagerBase(void);
+
+	bool init(void) override;
 
 	virtual Gleam::RendererType getRendererType(void) const = 0;
 
@@ -76,6 +80,11 @@ public:
 	virtual Gleam::ILayout* createLayout(void) const = 0;
 	virtual Gleam::IMesh* createMesh(void) const = 0;
 
+	virtual Gleam::IRenderDevice::AdapterList getDisplayModes(void) const = 0;
+	virtual Gleam::IWindow* createWindow(void) const = 0;
+
+	virtual void updateWindows(void) = 0;
+
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);
 
@@ -84,8 +93,9 @@ public:
 	int32_t getNumDevices(void) const;
 
 private:
-	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags;
-	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices;
+	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
+	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices{ ProxyAllocator("Graphics") };
+	Vector< UniquePtr<Gleam::IWindow> > _windows{ ProxyAllocator("Graphics") };
 };
 
 NS_END

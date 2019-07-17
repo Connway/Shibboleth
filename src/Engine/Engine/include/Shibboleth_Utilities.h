@@ -32,7 +32,7 @@ class IApp;
 void SetApp(IApp& app);
 IApp& GetApp(void);
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, IFile* file, bool copy_buffer = false);
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, const IFile* file, bool copy_buffer = false);
 bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path);
 
 NS_END

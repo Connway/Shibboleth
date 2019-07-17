@@ -55,14 +55,14 @@ void IResource::requestLoad(void)
 
 void IResource::load(void)
 {
-	IFile* const file = loadFile(getFilePath().getBuffer());
+	const IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {
 		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
 		GAFF_ASSERT(cb_attr);
 
-		eastl::pair<IResource*, IFile*>* const res_data = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(eastl::pair<IResource*, IFile*>),
+		eastl::pair<IResource*, const IFile*>* const res_data = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(eastl::pair<IResource*, const IFile*>),
 			ProxyAllocator("Resource"),
 			this,
 			file
@@ -157,12 +157,12 @@ bool IResource::isLoaded(void) const
 	return _state == RS_LOADED;
 }
 
-IFile* IResource::loadFile(const char* file_path)
+const IFile* IResource::loadFile(const char* file_path)
 {
 	char temp[1024] = { 0 };
 	snprintf(temp, 1024, "Resources/%s", file_path);
 
-	IFile* file = GetApp().getFileSystem().openFile(temp);
+	const IFile* file = GetApp().getFileSystem().openFile(temp);
 
 	if (!file) {
 		// $TODO: Log error.

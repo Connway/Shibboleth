@@ -81,7 +81,7 @@ void ModelResource::loadModel(IFile* file)
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
-	IFile* model_file = nullptr;
+	const IFile* model_file = nullptr;
 	U8String model_file_path;
 	U8String device_tag;
 

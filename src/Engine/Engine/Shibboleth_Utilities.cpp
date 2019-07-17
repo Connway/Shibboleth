@@ -42,7 +42,7 @@ IApp& GetApp(void)
 	return *gApp;
 }
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, IFile* file, bool copy_buffer)
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, const IFile* file, bool copy_buffer)
 {
 	if (Gaff::EndsWith(path, ".bin")) {
 		if (copy_buffer) {
@@ -52,10 +52,10 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, IFil
 			return wrapper.parseMPack(reinterpret_cast<char*>(buffer), file->size(), true);
 
 		} else {
-			return wrapper.parseMPack(reinterpret_cast<char*>(file->getBuffer()), file->size(), false);
+			return wrapper.parseMPack(reinterpret_cast<const char*>(file->getBuffer()), file->size(), false);
 		}
 	} else {
-		return wrapper.parseJSON(reinterpret_cast<char*>(file->getBuffer()));
+		return wrapper.parseJSON(reinterpret_cast<const char*>(file->getBuffer()));
 	}
 }
 
@@ -64,7 +64,7 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path)
 	IFileSystem& fs = GetApp().getFileSystem();
 
 	U8String bin_path = U8String(path) + ".bin";
-	IFile* file = fs.openFile(bin_path.c_str());
+	const IFile* file = fs.openFile(bin_path.c_str());
 
 	if (!file) {
 		file = fs.openFile(path);

@@ -51,7 +51,7 @@ public:
 	virtual ~IFileSystem(void) {}
 
 	virtual IFile* openFile(const char* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(IFile* file) = 0;
+	virtual void closeFile(const IFile* file) = 0;
 
 	// This function circumvents the file cache. If a file is already open, it will open it again and allocate another buffer.
 	// Should be used during initialization/loading phases only.

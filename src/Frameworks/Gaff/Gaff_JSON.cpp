@@ -332,7 +332,18 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 		memcpy_s(buf, size, keyword_error, size);
 	}
 
-	return _error.IsError();
+	if (_error.IsError()) {
+		return false;
+	}
+
+	// Shouldn't be an error. Any error should be caught be cauht in the validation stage.
+	JSONDocument document;
+	document.ParseStream(stream);
+
+	JSONValue& value = document;
+	_value = std::move(value);
+
+	return true;
 }
 
 bool JSON::parseFile(const char* filename, const char* schema_input)
@@ -400,7 +411,18 @@ bool JSON::parse(const char* input, const JSON& schema)
 		memcpy_s(buffer, size, keyword_error, size);
 	}
 
-	return _error.IsError();
+	if (_error.IsError()) {
+		return false;
+	}
+
+	// Shouldn't be an error. Any error should be caught be cauht in the validation stage.
+	JSONDocument document;
+	document.Parse(input);
+
+	JSONValue& value = document;
+	_value = std::move(value);
+
+	return true;
 }
 
 bool JSON::parse(const char* input, const char* schema_input)

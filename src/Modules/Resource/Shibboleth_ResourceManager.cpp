@@ -39,7 +39,7 @@ NS_SHIBBOLETH
 struct RawJobData final
 {
 	const char* file_path;
-	IFile* out_file;
+	const IFile* out_file;
 };
 
 static void ResourceFileLoadRawJob(void* data)
@@ -223,7 +223,7 @@ void ResourceManager::waitForResource(const IResource& resource) const
 	}
 }
 
-IFile* ResourceManager::loadFileAndWait(const char* file_path)
+const IFile* ResourceManager::loadFileAndWait(const char* file_path)
 {
 	RawJobData data = { file_path, nullptr };
 	Gaff::JobData job_data = { ResourceFileLoadRawJob, &data };

@@ -21,13 +21,108 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManagerBase.h"
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_Assert.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
+const char* const g_graphics_cfg_schema =
+R"({
+	"type": "object",
+
+	"properties":
+	{
+		"icon": { "type": "string" },
+		"initial_pipeline": { "type": "string" },
+
+		"windows":
+		{
+			"type": "object",
+			"additionalProperties":
+			{
+				"type": "object",
+				"properties":
+				{
+					"x": { "type": "number" },
+					"y": { "type": "number" },
+					"width": { "type": "number" },
+					"height": { "type": "number" },
+					"refresh_rate": { "type": "number" },
+					"window_mode": { "type": "string" /*, "enum": ["windowed", "fullscreen", "borderless_windowed"]*/ },
+					"adapter_id": { "type": "number" },
+					"display_id": { "type": "number" },
+					"vsync": { "type": "boolean" }
+				},
+
+				"requires": ["x", "y", "width", "height", "refresh_rate", "window_mode", "adapter_id", "display_id", "vsync"],
+				"additionalProperties": false
+			}
+		},
+
+		"required": ["initial_pipeline", "windows"]
+	}
+})";
+
+static Gleam::IWindow* CreateWindow(RenderManagerBase& rm, const char* window_tag, const Gaff::JSON& config)
+{
+	GAFF_REF(rm, window_tag, config);
+	return nullptr;
+}
+
+RenderManagerBase::RenderManagerBase(void)
+{
+	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays));
+	
+	const ProxyAllocator allocator("Graphics");
+
+	for (const char* tag : g_supported_displays) {
+		_render_device_tags[Gaff::FNV1aHash32StringConst(tag)] = Vector<Gleam::IRenderDevice*>(allocator);
+	}
+}
+
 RenderManagerBase::~RenderManagerBase(void)
 {
+}
+
+bool RenderManagerBase::init(void)
+{
+	IFileSystem& fs = GetApp().getFileSystem();
+	const IFile* const file = fs.openFile("cfg/graphics.cfg");
+
+	if (!file) {
+		// $TODO: Generate default config file.
+		return false;
+	}
+
+	Gaff::JSON config;
+
+	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
+		const char* const error = config.getErrorText();
+		GAFF_REF(error);
+		// $TODO: Log error.
+		fs.closeFile(file);
+		return false;
+	}
+
+	const Gaff::JSON windows = config["windows"];
+
+	windows.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool
+	{
+		Gleam::IWindow* const window = CreateWindow(*this, key, value);
+
+		if (window) {
+			_windows.emplace_back(window);
+		}
+
+		return false;
+	});
+
+	fs.closeFile(file);
+	return true;
 }
 
 void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)

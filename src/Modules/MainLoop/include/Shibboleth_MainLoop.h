@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-//class IRenderManager;
+class RenderManagerBase;
 //class IUpdateManager;
 //class Object;
 
@@ -40,7 +40,7 @@ public:
 	void update(void) override;
 
 private:
-	//IRenderManager* _render_mgr = nullptr;
+	RenderManagerBase* _render_mgr = nullptr;
 	//IUpdateManager* _update_mgr = nullptr;
 	//Object* _object = nullptr;
 	//Object* _object2 = nullptr;

@@ -112,4 +112,7 @@ IRenderDevice::AdapterList GetDisplayModes(void)
 	return IRenderDevice::AdapterList();
 }
 
+template <>
+IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void);
+
 NS_END

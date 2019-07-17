@@ -24,13 +24,12 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderManagerBase.h"
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
 class Camera;
 
-class RenderManager final : public IManager, public RenderManagerBase
+class RenderManager final : public RenderManagerBase
 {
 public:
 	Gleam::RendererType getRendererType(void) const override;
@@ -51,6 +50,11 @@ public:
 	Gleam::IBuffer* createBuffer(void) const override;
 	Gleam::ILayout* createLayout(void) const override;
 	Gleam::IMesh* createMesh(void) const override;
+
+	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const override;
+	Gleam::IWindow* createWindow(void) const override;
+
+	void updateWindows(void) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 };

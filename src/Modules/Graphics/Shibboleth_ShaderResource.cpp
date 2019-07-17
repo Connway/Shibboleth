@@ -86,7 +86,7 @@ void ShaderResource::loadShader(IFile* file)
 
 	Gleam::IShader::ShaderType shader_type = Gleam::IShader::SHADER_TYPE_SIZE;
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
-	IFile* shader_file = nullptr;
+	const IFile* shader_file = nullptr;
 	U8String shader_file_path;
 
 	GAFF_REF(shader_type);
