@@ -156,12 +156,6 @@ void EnumReflectionDefinition<Enum, Allocator>::setAllocator(const Allocator& al
 }
 
 template <class Enum, class Allocator>
-Hash64 EnumReflectionDefinition<Enum, Allocator>::getVersion(void) const
-{
-	return _version;
-}
-
-template <class Enum, class Allocator>
 template <size_t size, class... Attrs>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value, const Attrs&... attrs)
 {
@@ -172,8 +166,6 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 
 	GAFF_ASSERT(_entries.find(pair.first) == _entries.end());
 	_entries.insert(std::move(pair));
-
-	_version = FNV1aHash64(name, size - 1, _version);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];

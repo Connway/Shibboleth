@@ -45,7 +45,7 @@ public:
 
 	bool init(HWND hwnd);
 
-	bool init(const char* app_name, WindowMode window_mode = WM_FULLSCREEN,
+	bool init(const char* window_name, WindowMode window_mode = WM_FULLSCREEN,
 				int32_t width = 0, int32_t height = 0,
 				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
 	void destroy(void) override;
@@ -89,7 +89,7 @@ private:
 	bool _cursor_visible = true;
 	bool _contain = false;
 
-	U8String _application_name;
+	U8String _window_name;
 	HINSTANCE _hinstance = nullptr;
 	HWND _hwnd = nullptr;
 	bool _owns_window = true;

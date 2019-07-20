@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsReflection.h"
 
 SHIB_ENUM_REFLECTION_DEFINE(Gleam::IShader::ShaderType)
+SHIB_ENUM_REFLECTION_DEFINE(Gleam::IWindow::WindowMode)
 
 SHIB_ENUM_REFLECTION_BEGIN(Gleam::IShader::ShaderType)
 	.entry("Vertex", Gleam::IShader::SHADER_VERTEX)
@@ -32,3 +33,9 @@ SHIB_ENUM_REFLECTION_BEGIN(Gleam::IShader::ShaderType)
 	.entry("Hull", Gleam::IShader::SHADER_HULL)
 	.entry("Compute", Gleam::IShader::SHADER_COMPUTE)
 SHIB_ENUM_REFLECTION_END(Gleam::IShader::ShaderType)
+
+SHIB_ENUM_REFLECTION_BEGIN(Gleam::IWindow::WindowMode)
+	.entry("Fullscreen", Gleam::IWindow::WM_FULLSCREEN)
+	.entry("Windowed", Gleam::IWindow::WM_WINDOWED)
+	.entry("Borderless Windowed", Gleam::IWindow::WM_BORDERLESS_WINDOWED)
+SHIB_ENUM_REFLECTION_END(Gleam::IWindow::WindowMode)

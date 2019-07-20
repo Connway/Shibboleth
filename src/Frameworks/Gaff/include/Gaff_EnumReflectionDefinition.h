@@ -62,7 +62,6 @@ public:
 	const IAttribute* getEntryAttr(Hash32 name, int32_t index) const override;
 
 	void setAllocator(const Allocator& allocator);
-	Hash64 getVersion(void) const;
 
 	template <size_t size, class... Attrs>
 	EnumReflectionDefinition& entry(const char (&name)[size], Enum value, const Attrs&... attrs);
@@ -77,7 +76,6 @@ private:
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _entry_attrs;
 	Vector<IAttributePtr, Allocator> _enum_attrs;
 
-	Hash64 _version = INIT_HASH64;
 	Allocator _allocator;
 
 	template <class First, class... Rest>

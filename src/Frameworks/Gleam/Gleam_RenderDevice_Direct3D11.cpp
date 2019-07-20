@@ -232,6 +232,8 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	_device.reset(final_device);
 	_context.reset(final_context);
 
+	_adapter_id = adapter_id;
+
 	return true;
 
 	//const DXGI_MODE_DESC& mode = adapter.output_info[display_id].display_mode_list[display_mode_id];

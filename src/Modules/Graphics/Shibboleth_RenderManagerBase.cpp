@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_GraphicsReflection.h"
+#include <Shibboleth_SerializeReader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -29,6 +31,14 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
+
+// Change this if the game supports more than one monitor.
+// "main" display is implicit. Not necessary to explicitly reference it.
+constexpr const char* g_supported_displays[] = { nullptr };
+
+const VectorMap< Gaff::Hash32, Vector<const char*> > g_display_tags = {
+	{ Gaff::FNV1aHash32Const("gameplay"), { "main" } }
+};
 
 const char* const g_graphics_cfg_schema =
 R"({
@@ -58,7 +68,7 @@ R"({
 					"vsync": { "type": "boolean" }
 				},
 
-				"requires": ["x", "y", "width", "height", "refresh_rate", "window_mode", "adapter_id", "display_id", "vsync"],
+				"requires": ["width", "height", "refresh_rate", "window_mode", "adapter_id", "display_id", "vsync"],
 				"additionalProperties": false
 			}
 		},
@@ -67,20 +77,46 @@ R"({
 	}
 })";
 
-static Gleam::IWindow* CreateWindow(RenderManagerBase& rm, const char* window_tag, const Gaff::JSON& config)
+static Gleam::IWindow* CreateWindow(RenderManagerBase& rm, const char* window_name, const Gaff::JSON& config)
 {
-	GAFF_REF(rm, window_tag, config);
-	return nullptr;
+	const int32_t x = Gaff::Max(0, config["x"].getInt32(0));
+	const int32_t y = Gaff::Max(0, config["y"].getInt32(0));
+	const int32_t width = config["width"].getInt32(0);
+	const int32_t height = config["height"].getInt32(0);
+	Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_FULLSCREEN;
+
+	SerializeReader<Gaff::JSON> reader(config["window_mode"], ProxyAllocator("Graphics"));
+	Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode);
+
+	Gleam::IWindow* const window = rm.createWindow();
+
+	// Calculate x and y absolute positions.
+
+	if (!window->init(window_name, window_mode, width, height, x, y)) {
+		// $TODO: Log error
+		return nullptr;
+	}
+
+	return window;
 }
 
 RenderManagerBase::RenderManagerBase(void)
 {
-	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays));
+	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays) + g_display_tags.size());
 	
 	const ProxyAllocator allocator("Graphics");
 
-	for (const char* tag : g_supported_displays) {
-		_render_device_tags[Gaff::FNV1aHash32StringConst(tag)] = Vector<Gleam::IRenderDevice*>(allocator);
+	if constexpr (g_supported_displays[0]) {
+		for (const char* tag : g_supported_displays) {
+			_render_device_tags[Gaff::FNV1aHash32StringConst(tag)] = Vector<Gleam::IRenderDevice*>(allocator);
+		}
+	}
+
+	// Always have a main window. Even if not specified.
+	_render_device_tags[Gaff::FNV1aHash32StringConst("main")] = Vector<Gleam::IRenderDevice*>(allocator);
+
+	for (auto entry : g_display_tags) {
+		_render_device_tags[entry.first] = Vector<Gleam::IRenderDevice*>(allocator);
 	}
 }
 
@@ -112,12 +148,69 @@ bool RenderManagerBase::init(void)
 
 	windows.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool
 	{
-		Gleam::IWindow* const window = CreateWindow(*this, key, value);
+		const int32_t adapter_id = value["adapter_id"].getInt32();
+		const int32_t output_id = value["display_id"].getInt32();
+		const bool vsync = value["vsync"].getBool();
 
-		if (window) {
-			_windows.emplace_back(window);
+		Gleam::IRenderDevice* rd = nullptr;
+
+		// Check if we've already created this device.
+		for (const auto& render_device : _render_devices) {
+			if (render_device->getAdapterID() == adapter_id) {
+				rd = render_device.get();
+				break;
+			}
 		}
 
+		// Creat it if we don't already have it.
+		if (!rd) {
+			rd = createRenderDevice();
+			
+			if (!rd->init(adapter_id)) {
+				// $TODO: Log error
+				return false;
+			}
+
+			_render_devices.emplace_back(rd);
+		}
+
+		Gleam::IWindow* const window = CreateWindow(*this, key, value);
+
+		if (!window) {
+			return false;
+		}
+
+		// Add the device to the window tag.
+		_render_device_tags[Gaff::FNV1aHash32String(key)].emplace_back(rd);
+
+		// Add render device to tag list if not already present.
+		for (const auto& entry : g_display_tags) {
+			const auto it = Gaff::Find(entry.second, key, [](const char* lhs, const char* rhs) -> bool
+			{
+				return eastl::string_view(lhs) == eastl::string_view(rhs);
+			});
+
+			if (it == entry.second.end()) {
+				continue;
+			}
+
+			auto& render_devices = _render_device_tags[entry.first];
+
+			if (Gaff::Find(render_devices, rd) == render_devices.end()) {
+				render_devices.emplace_back(rd);
+			}
+		}
+
+		Gleam::IRenderOutput* const output = createRenderOutput();
+
+		if (!output->init(*rd, *window, output_id, vsync)) {
+			// $TODO: Log error
+			SHIB_FREET(output, GetAllocator());
+			SHIB_FREET(window, GetAllocator());
+			return false;
+		}
+
+		_windows_output.emplace_back(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
 		return false;
 	});
 
