@@ -23,6 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
+#include <Gleam_IWindow.h>
 #include <Gleam_IShader.h>
 
 SHIB_ENUM_REFLECTION_DECLARE(Gleam::IShader::ShaderType)
+SHIB_ENUM_REFLECTION_DECLARE(Gleam::IWindow::WindowMode)

@@ -189,11 +189,11 @@ bool Window::init(HWND hwnd)
 	return true;
 }
 
-bool Window::init(const char* app_name, WindowMode window_mode,
+bool Window::init(const char* window_name, WindowMode window_mode,
 					int32_t width, int32_t height,
 					int32_t pos_x, int32_t pos_y, const char*)
 {
-	GAFF_ASSERT(app_name);
+	GAFF_ASSERT(window_name);
 
 	if (g_first_init) {
 		g_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
@@ -217,10 +217,10 @@ bool Window::init(const char* app_name, WindowMode window_mode,
 		return false;
 	}
 
-	_application_name = app_name;
+	_window_name = window_name;
 	_window_mode = window_mode;
 
-	CONVERT_STRING(wchar_t, temp, app_name);
+	CONVERT_STRING(wchar_t, temp, window_name);
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
@@ -351,11 +351,11 @@ void Window::destroy(void)
 	}
 
 	if (_hinstance) {
-		const char8_t* app_name = _application_name.data();
-		CONVERT_STRING(wchar_t, temp, app_name);
+		const char8_t* window_name = _window_name.data();
+		CONVERT_STRING(wchar_t, temp, window_name);
 		UnregisterClass(temp, _hinstance);
 
-		_application_name.clear();
+		_window_name.clear();
 		_hinstance = nullptr;
 	}
 }

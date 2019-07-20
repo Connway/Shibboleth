@@ -31,7 +31,7 @@ NS_GLEAM
 bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
-	GAFF_ASSERT(output_id > -1 || window.getWindowMode() != IWindow::WM_FULLSCREEN);
+	GAFF_ASSERT(output_id > -1 || window.getWindowMode() == IWindow::WM_WINDOWED);
 	_vsync = output_id > -1 && vsync;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);

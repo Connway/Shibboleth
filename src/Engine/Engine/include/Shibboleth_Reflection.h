@@ -127,7 +127,8 @@ NS_SHIBBOLETH \
 			ProxyAllocator allocator("Reflection"); \
 			g_reflection_definition = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<type, ProxyAllocator>), allocator); \
 			g_reflection_definition->setAllocator(allocator); \
-			BuildReflection(*g_reflection_definition);
+			BuildReflection(*g_reflection_definition); \
+			BuildReflection(g_version);
 
 #define SHIB_REFLECTION_EXTERNAL_DEFINE_END SHIB_REFLECTION_DEFINE_END
 
@@ -214,15 +215,11 @@ NS_SHIBBOLETH \
 				GetName() \
 			); \
 		} else { \
-			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
-				ShibbolethAllocate( \
-					sizeof(Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>), \
-					GetPoolIndex("Reflection") \
-				) \
-			); \
-			Gaff::Construct(g_reflection_definition); \
-			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
-			BuildReflection(*g_reflection_definition);
+			ProxyAllocator allocator("Reflection"); \
+			g_reflection_definition = SHIB_ALLOCT(GAFF_SINGLE_ARG(Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>), allocator); \
+			g_reflection_definition->setAllocator(allocator); \
+			BuildReflection(*g_reflection_definition); \
+			BuildReflection(g_version);
 
 #define SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END SHIB_REFLECTION_DEFINE_END
 

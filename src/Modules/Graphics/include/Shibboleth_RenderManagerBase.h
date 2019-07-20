@@ -26,11 +26,10 @@ THE SOFTWARE.
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>
+#include <Gleam_IRenderOutput.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
-
-constexpr const char* g_supported_displays[] = { "main" };
 
 NS_GLEAM
 	class IShaderResourceView;
@@ -93,9 +92,13 @@ public:
 	int32_t getNumDevices(void) const;
 
 private:
+	using WindowPtr = UniquePtr<Gleam::IWindow>;
+	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
+	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
+
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices{ ProxyAllocator("Graphics") };
-	Vector< UniquePtr<Gleam::IWindow> > _windows{ ProxyAllocator("Graphics") };
+	Vector<WindowOutputPair> _windows_output{ ProxyAllocator("Graphics") };
 };
 
 NS_END
