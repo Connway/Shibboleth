@@ -34,13 +34,16 @@ NS_GLEAM
 class RenderOutputD3D11 : public IRenderOutput
 {
 public:
-	bool init(IRenderDevice& device, const IWindow& window, int32_t output_id = -1, bool vsync = false) override;
+	bool init(IRenderDevice& device, const IWindow& window, int32_t output_id, int32_t width, int32_t height, bool vsync) override;
+	bool init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync) override;
 
 	RendererType getRendererType(void) const override;
 
 	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
 	D3D11_VIEWPORT getViewport(void) const;
 	bool isVSync(void) const;
+
+	void present(void);
 
 private:
 	UniquePtr<RenderTargetD3D11> _render_target;
@@ -50,7 +53,9 @@ private:
 	Gaff::COMRefPtr<ID3D11Device5> _device;
 
 	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;
-	bool _vsync;
+
+	UINT _present_flags = 0;
+	bool _vsync = false;
 };
 
 NS_END

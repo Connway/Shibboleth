@@ -203,6 +203,9 @@ bool RenderManagerBase::init(void)
 
 		Gleam::IRenderOutput* const output = createRenderOutput();
 
+		const auto foo = getDisplayModes();
+		GAFF_REF(foo);
+
 		if (!output->init(*rd, *window, output_id, vsync)) {
 			// $TODO: Log error
 			SHIB_FREET(output, GetAllocator());

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{89654ECC-751D-9019-DE24-6975CAFB2A0A}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SceneQuery</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Debug\SceneQuery\</IntDir>
+    <TargetName>SceneQuery</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Release\SceneQuery\</IntDir>
+    <TargetName>SceneQuery</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Profile\SceneQuery\</IntDir>
+    <TargetName>SceneQuery</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Optimized_Debug\SceneQuery\</IntDir>
+    <TargetName>SceneQuery</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\buffering;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;PX_SUPPORT_PVD=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\buffering;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\buffering;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\buffering;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPrunerMergeData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPruningStructure.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqSceneQueryManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTree.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTreeUpdateMap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBounds.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBucketPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruningPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqExtendedBucketPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPruner.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPrunerCore.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBTree.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqTypedef.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBPruner.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTreeUpdateMap.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBounds.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBucketPruner.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruner.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruningPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqExtendedBucketPruner.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPruner.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPrunerCore.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqMetaData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningStructure.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqSceneQueryManager.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

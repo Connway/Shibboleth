@@ -1,7 +1,7 @@
 struct PixelInputType
 {
-	float4 position : SV_POSITION;
-	float4 normal : NORMAL0;
+	float3 position : SV_POSITION;
+	float3 normal : NORMAL0;
 	float2 uv : TEXCOORD0;
 };
 
@@ -10,7 +10,7 @@ struct PixelOutputType
 	float4 diffuse : SV_TARGET0;
 	float4 specular : SV_TARGET1;
 	float4 normal : SV_TARGET2;
-	float4 position : SV_TARGET3;
+	float3 position : SV_TARGET3;
 	//float depth : SV_DEPTH;
 };
 

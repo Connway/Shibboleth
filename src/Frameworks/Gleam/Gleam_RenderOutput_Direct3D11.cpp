@@ -28,11 +28,10 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync)
+bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, int32_t width, int32_t height, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
-	GAFF_ASSERT(output_id > -1 || window.getWindowMode() == IWindow::WM_WINDOWED);
-	_vsync = output_id > -1 && vsync;
+	_vsync = vsync && window.getWindowMode() != IWindow::WM_FULLSCREEN;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
 	const Window& wnd = static_cast<const Window&>(window);
@@ -62,8 +61,8 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	}
 
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc;
-	swap_chain_desc.Width = 0;
-	swap_chain_desc.Height = 0;
+	swap_chain_desc.Width = static_cast<UINT>(width);
+	swap_chain_desc.Height = static_cast<UINT>(height);
 	swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swap_chain_desc.Stereo = FALSE;
 	swap_chain_desc.SampleDesc.Count = 1;
@@ -75,18 +74,24 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	if (output_id > -1 && wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
+	if (wnd.getWindowMode() != IWindow::WM_FULLSCREEN) {
+		swap_chain_desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+		_present_flags |= DXGI_PRESENT_ALLOW_TEARING;
+	}
+
+	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN || wnd.getWindowMode() == IWindow::WM_BORDERLESS_WINDOWED) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swap_chain_fullscreen_desc.Windowed = wnd.isFullScreen() ? FALSE : TRUE;
 
-		if (!vsync) {
+		if (!_vsync) {
 			swap_chain_fullscreen_desc.RefreshRate.Numerator = 0;
 			swap_chain_fullscreen_desc.RefreshRate.Denominator = 0;
 		}
 
 		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
+		_present_flags |= DXGI_PRESENT_RESTRICT_TO_OUTPUT;
 
 	} else {
 		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, NULL, NULL, &swap_chain);
@@ -105,9 +110,10 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	swap_chain->Release();
 
-	if (output_id > -1 && window.getWindowMode() == IWindow::WM_FULLSCREEN) {
+	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
-	} else {
+	}
+	else {
 		result = final_swap_chain->SetFullscreenState(FALSE, NULL);
 	}
 
@@ -121,7 +127,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	ID3D11Texture2D1* back_buffer_ptr = nullptr;
 	result = final_swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_ptr));
-	
+
 	if (FAILED(result)) {
 		// Log error
 		final_swap_chain->Release();
@@ -130,9 +136,9 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	ID3D11RenderTargetView1* render_target_view = nullptr;
 	result = rd3d.getDevice()->CreateRenderTargetView1(back_buffer_ptr, nullptr, &render_target_view);
-	
+
 	back_buffer_ptr->Release();
-	
+
 	if (FAILED(result)) {
 		// Log error
 		final_swap_chain->Release();
@@ -149,12 +155,17 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
-		
+
 	RenderTargetD3D11* rt = GLEAM_ALLOCT(RenderTargetD3D11);
 	rt->setRTV(_render_target_view.get(), viewport);
 	_render_target.reset(rt);
 
 	return true;
+}
+
+bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync)
+{
+	return init(device, window, output_id, 0, 0, vsync);
 }
 
 RendererType RenderOutputD3D11::getRendererType(void) const
@@ -175,6 +186,14 @@ D3D11_VIEWPORT RenderOutputD3D11::getViewport(void) const
 bool RenderOutputD3D11::isVSync(void) const
 {
 	return _vsync;
+}
+
+void RenderOutputD3D11::present(void)
+{
+	static DXGI_PRESENT_PARAMETERS present_params = { 0, nullptr, nullptr, nullptr };
+	const UINT interval = (_vsync) ? 1 : 0;
+
+	_swap_chain->Present1(interval, _present_flags, &present_params);
 }
 
 NS_END

@@ -36,7 +36,8 @@ public:
 	IRenderOutput(void) {}
 	virtual ~IRenderOutput(void) {}
 
-	virtual bool init(IRenderDevice& device, const IWindow& window, int32_t output_id = -1, bool vsync = false) = 0;
+	virtual bool init(IRenderDevice& device, const IWindow& window, int32_t output_id, int32_t width, int32_t height, bool vsync) = 0;
+	virtual bool init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

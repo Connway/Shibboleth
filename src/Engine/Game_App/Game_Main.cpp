@@ -27,6 +27,14 @@ THE SOFTWARE.
 #endif
 
 #ifdef PLATFORM_WINDOWS
+// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
+// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
+extern "C"
+{
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
 int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
 	Shibboleth::App app;

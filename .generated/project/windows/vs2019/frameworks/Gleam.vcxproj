@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Gleam</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Debug\Gleam\</IntDir>
+    <TargetName>Gleam</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Release\Gleam\</IntDir>
+    <TargetName>Gleam</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Profile\Gleam\</IntDir>
+    <TargetName>Gleam</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Optimized_Debug\Gleam\</IntDir>
+    <TargetName>Gleam</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\vulkan;..\..\..\..\..\src\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\vulkan;..\..\..\..\..\src\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\vulkan;..\..\..\..\..\src\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\vulkan;..\..\..\..\..\src\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_AABB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_BitVector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_BlendState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_BlendState_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Buffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Buffer_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Color.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_CommandList.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_CommandList_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Defines.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_DepthStencilState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_DepthStencilState_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Frustum.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Global.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IBlendState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ICommandList.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IDepthStencilState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IInputDevice.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IKeyboard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ILayout.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IMouse.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IProgram.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRasterState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderDevice.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderOutput.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderTarget.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ISamplerState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IShader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IShaderResourceView.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ITexture.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IWindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeD3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeVulkan.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Keyboard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Keyboard_MessagePump.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_OpenGL.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse_MessagePump.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_OBB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Plane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProxyAllocator.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RasterState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RasterState_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RawInputRegisterFunction.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderDevice.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderDevice_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderOutput.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderOutput_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderTarget.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RenderTarget_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_SamplerState.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_SamplerState_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Shader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ShaderInclude.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ShaderResourceView.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ShaderResourceView_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Shader_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_SmartPtrs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_String.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Texture.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Texture_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Transform.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_VectorMap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_VulkanWrangler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_WindowHelpers_Windows.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window_Defines.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window_Linux.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window_Windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_BlendState_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Buffer_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_CommandList_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_DepthStencilState_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Frustum.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Global.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_OBB.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Plane.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_ProgramBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Program_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RasterState_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RawInputRegisterFunction_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RawInputRegisterFunction_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RenderDevice_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RenderOutput_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_RenderTarget_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_SamplerState_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_ShaderInclude.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_ShaderResourceView_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Shader_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Texture_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Transform.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_VulkanWrangler.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_WindowHelpers_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Window_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Window_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Frameworks\Gleam\project_generator.lua" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

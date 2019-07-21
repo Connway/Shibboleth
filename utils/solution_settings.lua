@@ -10,21 +10,17 @@ function SetIntermediateAndTargetDirs(configuration)
 	end
 end
 
--- if os.ishost("windows") then
--- 	platforms { "x86", "x64" }
--- else
-	platforms { "x64" }
--- end
+startproject "Game_App"
+defaultplatform "x64"
 
-warnings "Extra"
-characterset "Unicode"
 exceptionhandling "SEH"
-rtti "Off"
-
+characterset "Unicode"
 nativewchar "Default"
 floatingpoint "Fast"
-startproject "Game_App"
+cppdialect "C++17"
+warnings "Extra"
 symbols "On"
+rtti "Off"
 
 defines
 {
@@ -36,11 +32,7 @@ defines
 
 -- vectorextensions "SSE4.2"
 
-filter { "action:not vs*" }
-	cppdialect "C++17"
-
-filter { "action:vs*" }
-	buildoptions { "/std:c++17" }
+platforms { "x64" }
 
 filter { "platforms:x64" }
 	architecture "x64"
