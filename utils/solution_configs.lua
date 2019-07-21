@@ -5,7 +5,7 @@ function AddConfigOption(config)
 	table.insert(config_options, { config, config })
 end
 
-if _ACTION == "vs2017" then
+if _ACTION == "vs2017" or _ACTION == "vs2019" then
 	if _OPTIONS["gen-clang"] then
 		configs =
 		{

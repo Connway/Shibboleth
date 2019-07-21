@@ -74,7 +74,6 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 				adapter_output->Release();
 
 				output.reset(temp);
-				//out_info.output.reset(adapter_output);
 
 				result = temp->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &num_modes, nullptr);
 
@@ -114,7 +113,24 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 				info.output_info.emplace_back(out_info);
 			}
 
-			RenderDeviceD3D11::g_display_info.emplace_back(info);
+			// Not returning display device for non-integrated graphics units.
+			//DISPLAY_DEVICE display_device;
+			//display_device.cb = sizeof(DISPLAY_DEVICE);
+
+			//for (DWORD index = 0; EnumDisplayDevices(NULL, index, &display_device, 0) == TRUE; ++index) {
+			//	DEVMODE dev_mode;
+			//	memset(&dev_mode, 0, sizeof(DEVMODE));
+			//	dev_mode.dmSize = sizeof(DEVMODE);
+
+			//	if (EnumDisplaySettings(display_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode) == TRUE) {
+			//		int a = 0;
+			//		a += 5;
+			//	}
+			//}
+
+			if (!info.output_info.empty()) {
+				RenderDeviceD3D11::g_display_info.emplace_back(info);
+			}
 		}
 
 		factory->Release();
@@ -161,7 +177,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 			adpt.displays.push_back(display);
 		}
 
-		out.push_back(adpt);
+		out[i] = std::move(adpt);
 	}
 
 	return out;
@@ -426,7 +442,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 {
 	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
 	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
-	out.getSwapChain()->Present(out.isVSync(), 0);
+	out.present();
 }
 
 //void RenderDeviceD3D11::beginFrame(void)

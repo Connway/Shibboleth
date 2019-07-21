@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gaff_Assert.h"
 #include <cstdarg>
+#include <cstdio>
 
 #define FINAL_ASSERT_MSG_LEN 2048
 
