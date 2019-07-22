@@ -243,8 +243,6 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 
 	switch (window_mode) {
 		case WM_BORDERLESS_WINDOWED:
-			break;
-
 		case WM_FULLSCREEN:
 			flags = WS_POPUP;
 			break;

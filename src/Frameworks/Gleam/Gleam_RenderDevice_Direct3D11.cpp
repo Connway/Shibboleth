@@ -42,7 +42,13 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 		IDXGIOutput* adapter_output = nullptr;
 		DXGI_ADAPTER_DESC3 adapter_desc;
 
-		HRESULT result = CreateDXGIFactory(IID_PPV_ARGS(&factory));
+	#ifdef _DEBUG
+		constexpr UINT factory_flags = DXGI_CREATE_FACTORY_DEBUG;
+	#else
+		constexpr UINT factory_flags = 0;
+	#endif
+
+		HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 		IRenderDevice::AdapterList adapters;
 
 		if (FAILED(result)) {
@@ -125,9 +131,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 				info.output_info.emplace_back(out_info);
 			}
 
-			if (!info.output_info.empty()) {
-				RenderDeviceD3D11::g_display_info.emplace_back(info);
-			}
+			RenderDeviceD3D11::g_display_info.emplace_back(info);
 		}
 
 		factory->Release();
@@ -189,11 +193,11 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	IDXGIFactory6* factory = nullptr;
 	IDXGIAdapter4* adapter = nullptr;
 
-//#ifdef _DEBUG
-//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
-//#else
+#ifdef _DEBUG
+	constexpr UINT factory_flags = DXGI_CREATE_FACTORY_DEBUG;
+#else
 	constexpr UINT factory_flags = 0;
-//#endif
+#endif
 
 	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
@@ -212,12 +216,11 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	ID3D11DeviceContext* context = nullptr;
 	ID3D11Device* device = nullptr;
 
-	// Apparently trying to make the device as debug/debuggable causes it to fail. :/
-//#ifdef _DEBUG
-//	constexpr UINT flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
-//#else
+#ifdef _DEBUG
+	constexpr UINT device_flags = D3D11_CREATE_DEVICE_DEBUG /*| D3D11_CREATE_DEVICE_DEBUGGABLE*/;
+#else
 	constexpr UINT device_flags = 0;
-//#endif
+#endif
 
 	D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_1;
 	result = D3D11CreateDevice(

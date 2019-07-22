@@ -230,19 +230,21 @@ void WindowSetFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 
 void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 {
-	if (window->_window_mode == IWindow::WM_FULLSCREEN) {
-		DEVMODE dm_screen_settings;
-		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
-		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-		dm_screen_settings.dmPelsWidth  = window->_original_width;
-		dm_screen_settings.dmPelsHeight = window->_original_height;
-		dm_screen_settings.dmBitsPerPel = 32;
-		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	GAFF_REF(message, window);
 
-		ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
-	}
+	//if (window->_window_mode == IWindow::WM_FULLSCREEN) {
+	//	DEVMODE dm_screen_settings;
+	//	memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
+	//	dm_screen_settings.dmSize = sizeof(dm_screen_settings);
+	//	dm_screen_settings.dmPelsWidth  = window->_original_width;
+	//	dm_screen_settings.dmPelsHeight = window->_original_height;
+	//	dm_screen_settings.dmBitsPerPel = 32;
+	//	dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-	message.base.type = WND_LOSTFOCUS;
+	//	ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
+	//}
+
+	//message.base.type = WND_LOSTFOCUS;
 }
 
 NS_END

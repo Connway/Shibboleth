@@ -130,19 +130,19 @@ bool RenderManagerBase::init(void)
 
 		const auto display_modes = getDisplayModes();
 
-		if (adapter_id > static_cast<int32_t>(display_modes.size())) {
+		if (adapter_id >= static_cast<int32_t>(display_modes.size())) {
 			// $TODO: Log error
 			return false;
 		}
 
-		const auto adapter_info = display_modes[adapter_id];
+		const auto& adapter_info = display_modes[adapter_id];
 
-		if (display_id < static_cast<int32_t>(adapter_info.displays.size())) {
+		if (display_id >= static_cast<int32_t>(adapter_info.displays.size())) {
 			// $TODO: Log error
 			return false;
 		}
 
-		const auto display_info = adapter_info.displays[display_id];
+		const auto& display_info = adapter_info.displays[display_id];
 
 		Gleam::IRenderDevice* rd = nullptr;
 
@@ -166,14 +166,15 @@ bool RenderManagerBase::init(void)
 			_render_devices.emplace_back(rd);
 		}
 
-		int32_t x = Gaff::Max(0, config["x"].getInt32(0));
-		int32_t y = Gaff::Max(0, config["y"].getInt32(0));
-		int32_t width = config["width"].getInt32(0);
-		int32_t height = config["height"].getInt32(0);
+		int32_t x = Gaff::Max(0, value["x"].getInt32(0));
+		int32_t y = Gaff::Max(0, value["y"].getInt32(0));
+		int32_t width = value["width"].getInt32(0);
+		int32_t height = value["height"].getInt32(0);
+		const int32_t refresh_rate = value["refresh_rate"].getInt32(0);
 		const bool vsync = value["vsync"].getBool();
 		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_FULLSCREEN;
 
-		SerializeReader<Gaff::JSON> reader(config["window_mode"], ProxyAllocator("Graphics"));
+		SerializeReader<Gaff::JSON> reader(value["window_mode"], ProxyAllocator("Graphics"));
 		Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode);
 
 		if (width == 0 || height == 0) {
@@ -220,7 +221,7 @@ bool RenderManagerBase::init(void)
 
 		Gleam::IRenderOutput* const output = createRenderOutput();
 
-		if (!output->init(*rd, *window, display_id, vsync)) {
+		if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
 			// $TODO: Log error
 			SHIB_FREET(output, GetAllocator());
 			SHIB_FREET(window, GetAllocator());
