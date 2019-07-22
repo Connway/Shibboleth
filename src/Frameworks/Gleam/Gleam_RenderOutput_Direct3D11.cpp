@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, int32_t width, int32_t height, bool vsync)
+bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
 	_vsync = vsync && window.getWindowMode() != IWindow::WM_FULLSCREEN;
@@ -39,56 +39,53 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	IDXGISwapChain1* swap_chain = nullptr;
 	IDXGIFactory6* factory = nullptr;
 
-	//#ifdef _DEBUG
-	//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
-	//#else
-	constexpr UINT factory_flags = 0;
-	//#endif
+	#ifdef _DEBUG
+		constexpr UINT factory_flags = DXGI_CREATE_FACTORY_DEBUG;
+	#else
+		constexpr UINT factory_flags = 0;
+	#endif
 
 	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
 	if (FAILED(result)) {
-		// Log error
+		// $TODO: Log error
 		return false;
 	}
 
 	IDXGIOutput* adapter_output = nullptr;
 
-	if (rd3d.getAdapter()->EnumOutputs(static_cast<DWORD>(output_id), &adapter_output) == DXGI_ERROR_NOT_FOUND) {
-		// Log error
+	if (rd3d.getAdapter()->EnumOutputs(static_cast<DWORD>(display_id), &adapter_output) == DXGI_ERROR_NOT_FOUND) {
+		// $TODO: Log error
 		factory->Release();
 		return false;
 	}
 
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc;
-	swap_chain_desc.Width = static_cast<UINT>(width);
-	swap_chain_desc.Height = static_cast<UINT>(height);
+	swap_chain_desc.Width = static_cast<UINT>(wnd.getWidth());
+	swap_chain_desc.Height = static_cast<UINT>(wnd.getHeight());
 	swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swap_chain_desc.Stereo = FALSE;
 	swap_chain_desc.SampleDesc.Count = 1;
 	swap_chain_desc.SampleDesc.Quality = 0;
 	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swap_chain_desc.BufferCount = 2; // Double-buffering
-	swap_chain_desc.Scaling = DXGI_SCALING_ASPECT_RATIO_STRETCH;
+	swap_chain_desc.Scaling = DXGI_SCALING_NONE;
 	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
 	if (wnd.getWindowMode() != IWindow::WM_FULLSCREEN) {
-		swap_chain_desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 		_present_flags |= DXGI_PRESENT_ALLOW_TEARING;
 	}
 
-	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN || wnd.getWindowMode() == IWindow::WM_BORDERLESS_WINDOWED) {
+	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swap_chain_fullscreen_desc.Windowed = wnd.isFullScreen() ? FALSE : TRUE;
 
-		if (!_vsync) {
-			swap_chain_fullscreen_desc.RefreshRate.Numerator = 0;
-			swap_chain_fullscreen_desc.RefreshRate.Denominator = 0;
-		}
+		swap_chain_fullscreen_desc.RefreshRate.Numerator = refresh_rate;
+		swap_chain_fullscreen_desc.RefreshRate.Denominator = 1;
 
 		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
 		_present_flags |= DXGI_PRESENT_RESTRICT_TO_OUTPUT;
@@ -161,11 +158,6 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	_render_target.reset(rt);
 
 	return true;
-}
-
-bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync)
-{
-	return init(device, window, output_id, 0, 0, vsync);
 }
 
 RendererType RenderOutputD3D11::getRendererType(void) const
