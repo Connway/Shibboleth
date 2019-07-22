@@ -84,8 +84,6 @@ private:
 	int32_t _width, _height;
 
 	WindowMode _window_mode = WM_FULLSCREEN;
-	int32_t _original_width = 0;
-	int32_t _original_height = 0;
 	bool _cursor_visible = true;
 	bool _contain = false;
 

@@ -110,23 +110,20 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 					++k;
 				}
 
+				DXGI_OUTPUT_DESC1 out_desc;
+				result = temp->GetDesc1(&out_desc);
+
+				if (SUCCEEDED(result)) {
+					MONITORINFO monitor_info;
+					monitor_info.cbSize = sizeof(MONITORINFO);
+
+					if (GetMonitorInfo(out_desc.Monitor, &monitor_info) == TRUE) {
+						out_info.curr_rect = monitor_info.rcMonitor;
+					}
+				}
+
 				info.output_info.emplace_back(out_info);
 			}
-
-			// Not returning display device for non-integrated graphics units.
-			//DISPLAY_DEVICE display_device;
-			//display_device.cb = sizeof(DISPLAY_DEVICE);
-
-			//for (DWORD index = 0; EnumDisplayDevices(NULL, index, &display_device, 0) == TRUE; ++index) {
-			//	DEVMODE dev_mode;
-			//	memset(&dev_mode, 0, sizeof(DEVMODE));
-			//	dev_mode.dmSize = sizeof(DEVMODE);
-
-			//	if (EnumDisplaySettings(display_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode) == TRUE) {
-			//		int a = 0;
-			//		a += 5;
-			//	}
-			//}
 
 			if (!info.output_info.empty()) {
 				RenderDeviceD3D11::g_display_info.emplace_back(info);
@@ -160,6 +157,11 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 			display.display_modes.reserve(out_info.display_mode_list.size());
 			display.id = j;
 
+			display.curr_x = out_info.curr_rect.left;
+			display.curr_y = out_info.curr_rect.top;
+			display.curr_width = out_info.curr_rect.right - out_info.curr_rect.left;
+			display.curr_height = out_info.curr_rect.bottom - out_info.curr_rect.top;
+
 			for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size()); ++k) {
 				const DXGI_MODE_DESC1& mode_desc = out_info.display_mode_list[k];
 
@@ -167,8 +169,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 					static_cast<int32_t>(mode_desc.RefreshRate.Numerator / mode_desc.RefreshRate.Denominator),
 					static_cast<int32_t>(mode_desc.Width),
 					static_cast<int32_t>(mode_desc.Height),
-					k,
-					0, 0
+					k
 				};
 
 				display.display_modes.push_back(mode);

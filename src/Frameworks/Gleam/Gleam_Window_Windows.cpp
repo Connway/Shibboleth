@@ -241,33 +241,15 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 
 	DWORD flags = 0;
 
-	_original_width = GetSystemMetrics(SM_CXSCREEN);
-	_original_height = GetSystemMetrics(SM_CYSCREEN);
-
 	switch (window_mode) {
 		case WM_BORDERLESS_WINDOWED:
-			pos_x = pos_y = 0;
-			width = _original_width;
-			height = _original_height;
 			break;
 
 		case WM_FULLSCREEN:
-			pos_x = pos_y = 0;
-
-			if (!width || !height) {
-				width = _original_width;
-				height = _original_height;
-			}
-
 			flags = WS_POPUP;
 			break;
 
 		case WM_WINDOWED:
-			if (!width || !height) {
-				width = 800;
-				height = 600;
-			}
-
 			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
 			break;
 	}

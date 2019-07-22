@@ -57,6 +57,7 @@ private:
 	struct OutputInfo
 	{
 		Vector<DXGI_MODE_DESC1> display_mode_list;
+		RECT curr_rect;
 	};
 
 	struct AdapterInfo

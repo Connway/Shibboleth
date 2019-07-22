@@ -40,14 +40,17 @@ public:
 		int32_t width;
 		int32_t height;
 		int32_t id;
-		int32_t x;
-		int32_t y;
 	};
 	
 	struct Display
 	{
 		Vector<DisplayMode> display_modes;
 		int32_t id;
+
+		int32_t curr_x;
+		int32_t curr_y;
+		int32_t curr_width;
+		int32_t curr_height;
 	};
 
 	struct Adapter

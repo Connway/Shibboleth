@@ -77,29 +77,6 @@ R"({
 	}
 })";
 
-static Gleam::IWindow* CreateWindow(RenderManagerBase& rm, const char* window_name, const Gaff::JSON& config)
-{
-	const int32_t x = Gaff::Max(0, config["x"].getInt32(0));
-	const int32_t y = Gaff::Max(0, config["y"].getInt32(0));
-	const int32_t width = config["width"].getInt32(0);
-	const int32_t height = config["height"].getInt32(0);
-	Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_FULLSCREEN;
-
-	SerializeReader<Gaff::JSON> reader(config["window_mode"], ProxyAllocator("Graphics"));
-	Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode);
-
-	Gleam::IWindow* const window = rm.createWindow();
-
-	// Calculate x and y absolute positions.
-
-	if (!window->init(window_name, window_mode, width, height, x, y)) {
-		// $TODO: Log error
-		return nullptr;
-	}
-
-	return window;
-}
-
 RenderManagerBase::RenderManagerBase(void)
 {
 	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays) + g_display_tags.size());
@@ -149,8 +126,23 @@ bool RenderManagerBase::init(void)
 	windows.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool
 	{
 		const int32_t adapter_id = value["adapter_id"].getInt32();
-		const int32_t output_id = value["display_id"].getInt32();
-		const bool vsync = value["vsync"].getBool();
+		const int32_t display_id = value["display_id"].getInt32();
+
+		const auto display_modes = getDisplayModes();
+
+		if (adapter_id > static_cast<int32_t>(display_modes.size())) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const auto adapter_info = display_modes[adapter_id];
+
+		if (display_id < static_cast<int32_t>(adapter_info.displays.size())) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const auto display_info = adapter_info.displays[display_id];
 
 		Gleam::IRenderDevice* rd = nullptr;
 
@@ -162,7 +154,7 @@ bool RenderManagerBase::init(void)
 			}
 		}
 
-		// Creat it if we don't already have it.
+		// Create it if we don't already have it.
 		if (!rd) {
 			rd = createRenderDevice();
 			
@@ -174,9 +166,34 @@ bool RenderManagerBase::init(void)
 			_render_devices.emplace_back(rd);
 		}
 
-		Gleam::IWindow* const window = CreateWindow(*this, key, value);
+		int32_t x = Gaff::Max(0, config["x"].getInt32(0));
+		int32_t y = Gaff::Max(0, config["y"].getInt32(0));
+		int32_t width = config["width"].getInt32(0);
+		int32_t height = config["height"].getInt32(0);
+		const bool vsync = value["vsync"].getBool();
+		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_FULLSCREEN;
 
-		if (!window) {
+		SerializeReader<Gaff::JSON> reader(config["window_mode"], ProxyAllocator("Graphics"));
+		Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode);
+
+		if (width == 0 || height == 0) {
+			width = display_info.curr_width;
+			height = display_info.curr_height;
+		}
+
+		if (window_mode == Gleam::IWindow::WM_FULLSCREEN) {
+			x = 0;
+			y = 0;
+		}
+
+		x += display_info.curr_x;
+		y += display_info.curr_y;
+
+		Gleam::IWindow* const window = createWindow();
+
+		if (!window->init(key, window_mode, width, height, x, y)) {
+			// $TODO: Log error
+			SHIB_FREET(window, GetAllocator());
 			return false;
 		}
 
@@ -203,10 +220,7 @@ bool RenderManagerBase::init(void)
 
 		Gleam::IRenderOutput* const output = createRenderOutput();
 
-		const auto foo = getDisplayModes();
-		GAFF_REF(foo);
-
-		if (!output->init(*rd, *window, output_id, vsync)) {
+		if (!output->init(*rd, *window, display_id, vsync)) {
 			// $TODO: Log error
 			SHIB_FREET(output, GetAllocator());
 			SHIB_FREET(window, GetAllocator());
