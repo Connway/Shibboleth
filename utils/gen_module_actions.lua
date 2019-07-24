@@ -37,6 +37,7 @@ namespace Shibboleth
 namespace %s
 {
 	bool Initialize(Shibboleth::IApp& app);
+	%s
 }
 ]]
 
@@ -180,6 +181,16 @@ namespace Gen
 %s
 		return true;
 	}
+
+	bool ShutdownModulesStatic(void)
+	{
+#ifdef SHIB_EDITOR
+%s
+#endif
+
+		// Regular Modules
+%s
+	}
 }
 ]]
 
@@ -313,6 +324,7 @@ newaction
 		local init_enum_funcs = ""
 		local init_funcs = ""
 		local module_registers = ""
+		local shutdown_func = ""
 
 		for k,v in pairs(file_class_map) do
 			include_files = include_files .. "#include <" .. k .. ">\n"
@@ -346,6 +358,14 @@ newaction
 			end
 		end
 
+		local module_file = source_folder .. "/Shibboleth_" .. module_name .. "Module.cpp"
+		local match = io.readfile(module_file):match("ShutdownModule")
+
+		if match then
+			shutdown_func = "void Shutdown(void);"
+		end
+
+
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"
 		io.writefile(
 			file_path,
@@ -356,7 +376,8 @@ newaction
 				init_attr_funcs,
 				init_funcs,
 				module_registers,
-				module_name
+				module_name,
+				shutdown_func
 			)
 		)
 	end
@@ -383,22 +404,54 @@ newaction
 			end
 		end)
 
+		local editor_shutdowns = ""
 		local editor_includes = ""
 		local editor_inits = ""
+		local shutdowns = ""
 		local includes = ""
 		local inits = ""
 
+		-- Will want to read module unload order and order Shutdown() calls.
+
 		table.foreachi(editor_modules, function(dir)
 			local module_name = dir:sub(16)
-			editor_includes = editor_includes .. "#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+			editor_includes = editor_includes .. "\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
 			editor_inits = editor_inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+
+			local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
+
+			if match then
+				editor_shutdowns = editor_shutdowns .. "\t\t" .. module_name .. "::Shutdown();\n"
+			end
 		end)
 
 		table.foreachi(modules, function(dir)
 			local module_name = dir:sub(16)
 			includes = includes .. "#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
 			inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+
+			local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
+
+			if match then
+				shutdowns = shutdowns .. "\t\t" .. module_name .. "::Shutdown();\n"
+			end
 		end)
+
+		if editor_shutdowns:len() > 0 then
+			editor_shutdowns = editor_shutdowns:sub(1, -2)
+		end
+
+		if editor_includes:len() > 0 then
+			editor_includes = editor_includes:sub(1, -2)
+		end
+
+		if editor_inits:len() > 0 then
+			editor_inits = editor_inits:sub(1, -2)
+		end
+
+		if shutdowns:len() > 0 then
+			shutdowns = shutdowns:sub(1, -2)
+		end
 
 		io.writefile(
 			"../src/Engine/Engine/include/Gen_ReflectionInit.h",
@@ -406,7 +459,9 @@ newaction
 				editor_includes,
 				includes,
 				editor_inits,
-				inits
+				inits,
+				editor_shutdowns,
+				shutdowns
 			)
 		)
 	end

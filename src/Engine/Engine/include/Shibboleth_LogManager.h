@@ -42,7 +42,7 @@ enum LogType
 	LOG_ERROR
 };
 
-class LogManager
+class LogManager final
 {
 public:
 	using LogCallback = eastl::function<void (const char*, LogType)>;
@@ -56,7 +56,6 @@ public:
 	int32_t addLogCallback(const LogCallback& callback);
 	int32_t addLogCallback(LogCallback&& callback);
 	bool removeLogCallback(int32_t id);
-	void notifyLogCallbacks(const char* message, LogType type);
 
 	void addChannel(Gaff::HashStringTemp32 channel, const char* file);
 	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
@@ -65,11 +64,11 @@ private:
 	struct LogTask
 	{
 		LogTask(Gaff::File& f, U8String&& m, LogType t):
-			file(f), message(std::move(m)), type(t)
+			file(f.getFile()), message(std::move(m)), type(t)
 		{
 		}
 
-		Gaff::File& file;
+		FILE* const file;
 		U8String message;
 		LogType type;
 	};
@@ -93,6 +92,7 @@ private:
 
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);
+	void notifyLogCallbacks(const char* message, LogType type);
 
 	static void LogThread(LogManager& lm);
 

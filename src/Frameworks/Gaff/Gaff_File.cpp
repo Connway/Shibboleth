@@ -83,21 +83,24 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 #endif
 }
 
-File::File(const char* file_name, OpenMode mode):
-	_file(nullptr)
+File::File(const char* file_name, OpenMode mode)
 {
 	GAFF_ASSERT(file_name);
 	open(file_name, mode);
 }
 
-File::File(File&& rhs):
-	_file(rhs._file), _mode(rhs._mode)
+File::File(File&& file):
+	_file(file._file), _mode(file._mode)
 {
-	rhs._file = nullptr;
+	file._file = nullptr;
 }
 
-File::File(void):
-	_file(nullptr)
+File::File(FILE* file):
+	_file(file)
+{
+}
+
+File::File(void)
 {
 }
 
@@ -122,6 +125,13 @@ const FILE* File::getFile(void) const
 FILE* File::getFile(void)
 {
 	return _file;
+}
+
+FILE* File::release(void)
+{
+	FILE* const file = _file;
+	_file = nullptr;
+	return file;
 }
 
 File::OpenMode File::getMode(void) const
@@ -278,7 +288,7 @@ int32_t File::getFilePos(void) const
 	return static_cast<int32_t>(ftell(_file));
 }
 
-bool File::seek(long offset, SEEK_ORIGIN origin)
+bool File::seek(long offset, SeekOrigin origin)
 {
 	GAFF_ASSERT(_file);
 	return !fseek(_file, offset, origin);
@@ -302,7 +312,7 @@ int32_t File::getFileSize(void)
 	GAFF_ASSERT(_file);
 	long size;
 
-	if (fseek(_file, 0, Gaff::File::END)) {
+	if (fseek(_file, 0, Gaff::File::SO_END)) {
 		return -1;
 	}
 

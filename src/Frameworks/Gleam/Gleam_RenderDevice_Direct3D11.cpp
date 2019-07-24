@@ -188,6 +188,12 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 	return out;
 }
 
+void RenderDeviceD3D11::Cleanup(void)
+{
+	g_display_info.clear();
+	g_display_info.shrink_to_fit();
+}
+
 bool RenderDeviceD3D11::init(int32_t adapter_id)
 {
 	IDXGIFactory6* factory = nullptr;
@@ -255,188 +261,13 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	_adapter_id = adapter_id;
 
 	return true;
-
-	//const DXGI_MODE_DESC& mode = adapter.output_info[display_id].display_mode_list[display_mode_id];
-
-	//DXGI_SWAP_CHAIN_DESC swap_chain_desc;
-	//ZeroMemory(&swap_chain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	//swap_chain_desc.BufferCount = 2; // Double-buffering
-	//swap_chain_desc.BufferDesc = mode;
-	//swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	//swap_chain_desc.OutputWindow = wnd.getHWnd();
-	//swap_chain_desc.SampleDesc.Count = 1;
-	//swap_chain_desc.SampleDesc.Quality = 0;
-	//swap_chain_desc.Windowed = TRUE;
-	//swap_chain_desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	//swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	//swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	//swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-	//if (!vsync) {
-	//	swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0;
-	//	swap_chain_desc.BufferDesc.RefreshRate.Denominator = 0;
-	//}
-
-	//auto it = eastl::find(_devices.begin(), _devices.end(), adapter_id, [](const Device& lhs, int32_t rhs) -> bool
-	//{
-	//	return lhs.adapter_id == rhs;
-	//});
-
-	// We didn't find the device, so just make it and add it to the list
-//	if (it == _devices.end())
-//	{
-//		ID3D11DeviceContext* device_context = nullptr;
-//		IDXGISwapChain* swap_chain = nullptr;
-//		ID3D11Device* device = nullptr;
-//
-//// Apparently trying to make the device as debug/debuggable causes it to fail. :/
-////#ifdef _DEBUG
-////		UINT flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
-////#else
-//		UINT flags = 0;
-////#endif
-//
-//		D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_0;
-//		HRESULT result = D3D11CreateDeviceAndSwapChain(adapter.adapter.get(), D3D_DRIVER_TYPE_UNKNOWN, 0, flags, &feature_level, 1, D3D11_SDK_VERSION,
-//														&swap_chain_desc, &swap_chain, &device, 0, &device_context);
-//
-//		RETURNIFFAILED(result)
-//
-//		ID3D11Texture2D* back_buffer_ptr = nullptr;
-//		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
-//
-//		if (FAILED(result)) {
-//			swap_chain->Release();
-//			device_context->Release();
-//			device->Release();
-//			return false;
-//		}
-//
-//		ID3D11RenderTargetView* render_target_view = nullptr;
-//		result = device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
-//
-//		back_buffer_ptr->Release();
-//
-//		if (FAILED(result)) {
-//			swap_chain->Release();
-//			device_context->Release();
-//			device->Release();
-//			return false;
-//		}
-//
-//		if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
-//			result = swap_chain->SetFullscreenState(TRUE, g_display_info[adapter_id].output_info[display_id].output.get());
-//		} else {
-//			result = swap_chain->SetFullscreenState(FALSE, nullptr);
-//		}
-//
-//		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
-//		Gaff::COMRefPtr<IDXGISwapChain> sc;
-//		rtv.reset(render_target_view);
-//		sc.reset(swap_chain);
-//
-//		RETURNIFFAILED(result)
-//
-//		D3D11_VIEWPORT viewport;
-//		viewport.Width = static_cast<float>(wnd.getWidth());
-//		viewport.Height = static_cast<float>(wnd.getHeight());
-//		viewport.MinDepth = 0.0f;
-//		viewport.MaxDepth = 1.0f;
-//		viewport.TopLeftX = 0.0f;
-//		viewport.TopLeftY = 0.0f;
-//
-//		Device dvc;
-//		dvc.render_targets.push_back(rtv);
-//		dvc.swap_chains.push_back(sc);
-//		dvc.viewports.push_back(viewport);
-//		dvc.context.reset(device_context);
-//		dvc.device.reset(device);
-//		dvc.vsync.push_back(vsync);
-//		dvc.adapter_id = adapter_id;
-//
-//		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
-//		rt->setRTV(rtv.get(), viewport);
-//
-//		dvc.gleam_rts.emplace_back(rt);
-//
-//		_devices.push_back(dvc);
-//
-//	// We found the device already made, so make a new swap chain and render target and add them to the list
-//	} else {
-//		IDXGISwapChain* swap_chain = nullptr;
-//		IDXGIFactory* factory = nullptr;
-//
-//		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-//		RETURNIFFAILED(result)
-//
-//		result = factory->CreateSwapChain(it->device.get(), &swap_chain_desc, &swap_chain);
-//
-//		factory->Release();
-//		RETURNIFFAILED(result)
-//
-//		ID3D11Texture2D* back_buffer_ptr = nullptr;
-//		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
-//
-//		if (FAILED(result)) {
-//			swap_chain->Release();
-//			return false;
-//		}
-//
-//		ID3D11RenderTargetView* render_target_view = nullptr;
-//		result = it->device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
-//
-//		back_buffer_ptr->Release();
-//
-//		if (FAILED(result)) {
-//			swap_chain->Release();
-//			return false;
-//		}
-//
-//		if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
-//			result = swap_chain->SetFullscreenState(TRUE, g_display_info[adapter_id].output_info[display_id].output.get());
-//		} else {
-//			result = swap_chain->SetFullscreenState(FALSE, nullptr);
-//		}
-//
-//		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
-//		Gaff::COMRefPtr<IDXGISwapChain> sc;
-//		rtv.reset(render_target_view);
-//		sc.reset(swap_chain);
-//
-//		RETURNIFFAILED(result)
-//
-//		it->render_targets.push_back(rtv);
-//		it->swap_chains.push_back(sc);
-//		it->vsync.push_back(vsync);
-//
-//		D3D11_VIEWPORT viewport;
-//		viewport.Width = static_cast<float>(wnd.getWidth());
-//		viewport.Height = static_cast<float>(wnd.getHeight());
-//		viewport.MinDepth = 0.0f;
-//		viewport.MaxDepth = 1.0f;
-//		viewport.TopLeftX = 0.0f;
-//		viewport.TopLeftY = 0.0f;
-//
-//		it->viewports.push_back(viewport);
-//
-//		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
-//		rt->setRTV(rtv.get(), viewport);
-//
-//		it->gleam_rts.push_back(IRenderTargetPtr(rt));
-//	}
-//
-//	if (!_active_device) {
-//		setCurrentDevice(0);
-//	}
-//
-//	return true;
 }
 
 void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 {
 	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
 	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
-	D3D11_VIEWPORT viewport = out.getViewport();
+	const D3D11_VIEWPORT viewport = out.getViewport();
 
 	resetRenderState();
 	_context->RSSetViewports(1, &viewport);
@@ -448,17 +279,6 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
 	out.present();
 }
-
-//void RenderDeviceD3D11::beginFrame(void)
-//{
-//	resetRenderState();
-//	_active_context->RSSetViewports(1, &_active_viewport);
-//}
-
-//void RenderDeviceD3D11::endFrame(void)
-//{
-//	_active_swap_chain->Present(_active_vsync, 0);
-//}
 
 //bool RenderDeviceD3D11::resize(const IWindow& window)
 //{

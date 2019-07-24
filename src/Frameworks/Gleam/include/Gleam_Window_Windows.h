@@ -39,6 +39,7 @@ public:
 	static bool RemoveGlobalMessageHandler(int32_t id);
 
 	static void HandleWindowMessages(void);
+	static void Cleanup(void);
 
 	Window(void);
 	~Window(void);

@@ -49,9 +49,11 @@ void LogManager::LogThread(LogManager& lm)
 
 			lm._log_queue_lock.unlock();
 
-			task.file.writeString(task.message.data());
-			task.file.writeChar('\n');
-			task.file.flush();
+			Gaff::File file(task.file);
+			file.writeString(task.message.data());
+			file.writeChar('\n');
+			file.flush();
+			file.release();
 
 			lm.notifyLogCallbacks(task.message.data(), task.type);
 		}
@@ -63,9 +65,11 @@ void LogManager::LogThread(LogManager& lm)
 		LogTask task = std::move(lm._logs.front());
 		lm._logs.pop();
 
-		task.file.writeString(task.message.data());
-		task.file.writeChar('\n');
-		task.file.flush();
+		Gaff::File file(task.file);
+		file.writeString(task.message.data());
+		file.writeChar('\n');
+		file.flush();
+		file.release();
 
 		lm.notifyLogCallbacks(task.message.data(), task.type);
 	}
@@ -141,15 +145,6 @@ bool LogManager::removeLogCallback(int32_t id)
 	return false;
 }
 
-void LogManager::notifyLogCallbacks(const char* message, LogType type)
-{
-	std::lock_guard<std::mutex> lock(_log_callback_lock);
-
-	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
-		it->second(message, type);
-	}
-}
-
 void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 {
 	auto it = Gaff::Find(_channels, channel);
@@ -167,7 +162,7 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 
 		auto pair = eastl::make_pair<HashString32, Gaff::File>(HashString32(channel), Gaff::File());
 
-		if (pair.second.open(file_name, Gaff::File::WRITE)) {
+		if (pair.second.open(file_name, Gaff::File::OM_WRITE)) {
 			_channels.insert(std::move(pair));
 
 		} else {
@@ -226,6 +221,15 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 
 	_log_event.notify_all();
 	return true;
+}
+
+void LogManager::notifyLogCallbacks(const char* message, LogType type)
+{
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+
+	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
+		it->second(message, type);
+	}
 }
 
 NS_END

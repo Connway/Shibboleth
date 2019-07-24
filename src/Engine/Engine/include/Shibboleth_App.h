@@ -46,7 +46,7 @@ public:
 #endif
 
 	void run(void);
-	void destroy(void);
+	void destroy(void (*static_shutdown)(void) = nullptr);
 
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
