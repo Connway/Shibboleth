@@ -106,6 +106,19 @@ void Window::HandleWindowMessages(void)
 	}
 }
 
+void Window::Cleanup(void)
+{
+	g_window_helpers.clear();
+	g_right_keys.clear();
+	g_left_keys.clear();
+	g_windows.clear();
+
+	g_window_helpers.shrink_to_fit();
+	g_right_keys.shrink_to_fit();
+	g_left_keys.shrink_to_fit();
+	g_windows.shrink_to_fit();
+}
+
 LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
 	bool handled = false;

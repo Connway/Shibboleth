@@ -34,6 +34,8 @@ NS_GLEAM
 class RenderDeviceD3D11 : public IRenderDevice
 {
 public:
+	static void Cleanup(void);
+
 	bool init(int32_t adapter_id) override;
 
 	void frameBegin(IRenderOutput& output) override;

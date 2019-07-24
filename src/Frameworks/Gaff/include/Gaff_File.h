@@ -39,29 +39,30 @@ public:
 
 	enum OpenMode
 	{
-		READ = 0, // Open a file for read-only.
-		WRITE, // Open a file for write-only. Deletes existing content.
-		APPEND, // Open a file and append to already existing content.
-		READ_EXT, // Open's a file for read/write. Errors if file doesn't exist.
-		WRITE_EXT, // Open's a file for read/write. Delete's existing content.
-		APPEND_EXT, // Open's a file for read/write. Appends to already existing content.
-		READ_BINARY, // Same as READ, but in binary mode instead of text mode.
-		WRITE_BINARY, // Same as WRITE, but in binary mode instead of text mode.
-		APPEND_BINARY, // Same as APPEND, but in binary mode instead of text mode.
-		READ_EXT_BINARY, // Same as READ_EXT, but in binary mode instead of text mode.
-		WRITE_EXT_BINARY, // Same as WRITE_EXT, but in binary mode instead of text mode.
-		APPEND_EXT_BINARY // Same as APPEND_EXT, but in binary mode instead of text mode.
+		OM_READ = 0, // Open a file for read-only.
+		OM_WRITE, // Open a file for write-only. Deletes existing content.
+		OM_APPEND, // Open a file and append to already existing content.
+		OM_READ_EXT, // Open's a file for read/write. Errors if file doesn't exist.
+		OM_WRITE_EXT, // Opens a file for read/write. Delete's existing content.
+		OM_APPEND_EXT, // Opens a file for read/write. Appends to already existing content.
+		OM_READ_BINARY, // Same as READ, but in binary mode instead of text mode.
+		OM_WRITE_BINARY, // Same as WRITE, but in binary mode instead of text mode.
+		OM_APPEND_BINARY, // Same as APPEND, but in binary mode instead of text mode.
+		OM_READ_EXT_BINARY, // Same as READ_EXT, but in binary mode instead of text mode.
+		OM_WRITE_EXT_BINARY, // Same as WRITE_EXT, but in binary mode instead of text mode.
+		OM_APPEND_EXT_BINARY // Same as APPEND_EXT, but in binary mode instead of text mode.
 	};
 
-	enum SEEK_ORIGIN
+	enum SeekOrigin
 	{
-		BEGINNING = SEEK_SET, // Starts seeking from the beginning of the file.
-		CURRENT = SEEK_CUR, // Starts seeking from the current position in the file.
-		END = SEEK_END // Starts seeking from the end of the file.
+		SO_BEGINNING = SEEK_SET, // Starts seeking from the beginning of the file.
+		SO_CURRENT = SEEK_CUR, // Starts seeking from the current position in the file.
+		SO_END = SEEK_END // Starts seeking from the end of the file.
 	};
 
-	File(const char* file_name, OpenMode mode = READ);
+	File(const char* file_name, OpenMode mode = OM_READ);
 	File(File&& rhs);
+	File(FILE* rhs);
 	File(void);
 	~File(void);
 
@@ -69,6 +70,8 @@ public:
 
 	const FILE* getFile(void) const;
 	FILE* getFile(void);
+
+	FILE* release(void);
 
 	OpenMode getMode(void) const;
 
@@ -84,10 +87,10 @@ public:
 		return write(&data, sizeof(T), 1);
 	}
 
-	bool open(const char* file_name, OpenMode mode = READ);
+	bool open(const char* file_name, OpenMode mode = OM_READ);
 
-	bool redirect(FILE* file, const char* file_name, OpenMode mode = WRITE);
-	bool redirect(const char* file_name, OpenMode mode = WRITE);
+	bool redirect(FILE* file, const char* file_name, OpenMode mode = OM_WRITE);
+	bool redirect(const char* file_name, OpenMode mode = OM_WRITE);
 
 	bool close(void);
 	bool isOpen(void) const;
@@ -110,7 +113,7 @@ public:
 	bool readString(char* buffer, int32_t max_byte_count);
 
 	int32_t getFilePos(void) const;
-	bool seek(long offset, SEEK_ORIGIN origin = BEGINNING);
+	bool seek(long offset, SeekOrigin origin = SO_BEGINNING);
 	void rewind(void);
 
 	bool openTempFile(void);
@@ -120,8 +123,8 @@ public:
 	bool readEntireFile(char* buffer);
 
 private:
-	FILE* _file;
-	OpenMode _mode;
+	FILE* _file = nullptr;
+	OpenMode _mode = OM_READ;
 
 	GAFF_NO_COPY(File);
 };

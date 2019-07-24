@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 	#include <Shibboleth_ProxyAllocator.h>
 	#include <Shibboleth_Utilities.h>
+	#include <Gleam_RenderDevice.h>
+	#include <Gleam_Window.h>
 	#include <Gleam_Global.h>
 
 	namespace Graphics
@@ -42,6 +44,11 @@ THE SOFTWARE.
 			return true;
 		}
 
+		void Shutdown(void)
+		{
+			Gleam::RenderDevice::Cleanup();
+			Gleam::Window::Cleanup();
+		}
 	}
 
 #else
@@ -51,6 +58,11 @@ THE SOFTWARE.
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	{
 		return Graphics::Initialize(app);
+	}
+
+	DYNAMICEXPORT_C void ShutdownModule()
+	{
+		Graphics::Shutdown();
 	}
 
 #endif

@@ -515,7 +515,7 @@ void App::run(void)
 	}
 }
 
-void App::destroy(void)
+void App::destroy(void (*static_shutdown)(void))
 {
 	if (_main_loop) {
 		_main_loop->destroy();
@@ -574,6 +574,10 @@ void App::destroy(void)
 
 		return false;
 	});
+
+	if (static_shutdown) {
+		static_shutdown();
+	}
 
 	_reflection_mgr.destroy();
 	_dynamic_loader.clear();

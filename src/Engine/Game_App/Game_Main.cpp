@@ -49,7 +49,12 @@ int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR
 	}
 
 	app.run();
+
+#ifdef SHIB_STATIC
+	app.destroy(Gen::ShutdownModulesStatic);
+#else
 	app.destroy();
+#endif
 
 	return 0;
 }
