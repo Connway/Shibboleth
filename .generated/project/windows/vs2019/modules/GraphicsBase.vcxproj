@@ -238,6 +238,7 @@ premake5 gen_module_header --module=Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MeshResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ModelComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ModelResource.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RasterStateResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ShaderResource.h" />
   </ItemGroup>
@@ -248,6 +249,7 @@ premake5 gen_module_header --module=Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RasterStateResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp" />
   </ItemGroup>

@@ -49,7 +49,7 @@ bool RasterStateD3D11::init(IRenderDevice& rd, const RasterStateSettings& settin
 	raster_desc.CullMode = (settings.two_sided) ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	raster_desc.DepthBias = settings.depth_bias;
 	raster_desc.DepthBiasClamp = settings.depth_bias_clamp;
-	raster_desc.DepthClipEnable = true;
+	raster_desc.DepthClipEnable = settings.depth_clip_enabled;
 	raster_desc.FillMode = (settings.wireframe) ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID;
 	raster_desc.FrontCounterClockwise = settings.front_face_counter_clockwise;
 	raster_desc.MultisampleEnable = false;

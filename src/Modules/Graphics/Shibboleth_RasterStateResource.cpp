@@ -20,39 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_RasterStateResource.h"
+#include <Shibboleth_LoadFileCallbackAttribute.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 
-#include "Gleam_Defines.h"
+SHIB_REFLECTION_DEFINE(RasterStateResource)
 
-NS_GLEAM
+NS_SHIBBOLETH
 
-class IRenderDevice;
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RasterStateResource)
+.classAttrs(
+	//CreatableAttribute(),
+	ResExtAttribute(".raster_state.bin"),
+	ResExtAttribute(".raster_state"),
+	MakeLoadFileCallbackAttribute(&RasterStateResource::loadRasterState)
+)
 
-class IRasterState
+.BASE(IResource)
+.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(RasterStateResource)
+
+void RasterStateResource::loadRasterState(IFile* file)
 {
-public:
-	struct RasterStateSettings
-	{
-		float slope_scale_depth_bias = 0.0f;
-		float depth_bias_clamp = 0.0f;
-		int depth_bias = 0;
-		bool depth_clip_enabled = true;
-		bool front_face_counter_clockwise = false;
-		bool scissor_enabled = false;
-		bool two_sided = false;
-		bool wireframe = false;
-	};
-
-	IRasterState(void) {}
-	virtual ~IRasterState(void) {}
-
-	virtual bool init(IRenderDevice& rd, const RasterStateSettings& settings) = 0;
-	virtual void destroy(void) = 0;
-
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
-
-	virtual RendererType getRendererType(void) const = 0;
-};
+	GAFF_REF(file);
+}
 
 NS_END
