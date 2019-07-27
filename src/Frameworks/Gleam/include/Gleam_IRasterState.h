@@ -31,7 +31,7 @@ class IRenderDevice;
 class IRasterState
 {
 public:
-	struct RasterStateSettings
+	struct RasterStateSettings final
 	{
 		float slope_scale_depth_bias = 0.0f;
 		float depth_bias_clamp = 0.0f;
