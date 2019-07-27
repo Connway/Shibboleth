@@ -22,37 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include <Shibboleth_IResource.h>
+#include <Gleam_IRasterState.h>
 
-NS_GLEAM
+NS_SHIBBOLETH
 
-class IRenderDevice;
-
-class IRasterState
+class RasterStateResource final : public IResource
 {
 public:
-	struct RasterStateSettings
-	{
-		float slope_scale_depth_bias = 0.0f;
-		float depth_bias_clamp = 0.0f;
-		int depth_bias = 0;
-		bool depth_clip_enabled = true;
-		bool front_face_counter_clockwise = false;
-		bool scissor_enabled = false;
-		bool two_sided = false;
-		bool wireframe = false;
-	};
+	static constexpr bool Creatable = true;
 
-	IRasterState(void) {}
-	virtual ~IRasterState(void) {}
+	const Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd) const;
+	Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd);
 
-	virtual bool init(IRenderDevice& rd, const RasterStateSettings& settings) = 0;
-	virtual void destroy(void) = 0;
+private:
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states;
 
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
+	void loadRasterState(IFile* file);
 
-	virtual RendererType getRendererType(void) const = 0;
+	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };
 
+using RasterStateResourcePtr = Gaff::RefPtr<RasterStateResource>;
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(RasterStateResource)

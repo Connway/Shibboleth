@@ -61,26 +61,6 @@ SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
 
 bool MainLoop::init(void)
 {
-	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	_render_mgr = &rm;
-
-	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
-
-	// Initialize to the main graphics adapter.
-	if (!rd->init(0)) {
-		// $TODO: Log error
-		SHIB_FREET(rd, GetAllocator());
-		return false;
-	}
-
-	rm.manageRenderDevice(rd);
-	rm.addRenderDeviceTag(rd, "main");
-
-	//const auto adapter_list = rm.getDisplayModes();
-
-	//for (auto adapter : adapter_list) {
-	//}
-
 	return true;
 }
 
