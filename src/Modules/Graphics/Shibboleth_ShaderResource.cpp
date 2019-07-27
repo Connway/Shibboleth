@@ -89,8 +89,6 @@ void ShaderResource::loadShader(IFile* file)
 	const IFile* shader_file = nullptr;
 	U8String shader_file_path;
 
-	GAFF_REF(shader_type);
-
 	{
 		const auto guard = reader.enterElementGuard("devices_tag");
 
@@ -175,6 +173,8 @@ void ShaderResource::loadShader(IFile* file)
 		sd.first.reset(shader);
 		sd.second.reset(layout);
 	}
+
+	succeeded();
 }
 
 NS_END

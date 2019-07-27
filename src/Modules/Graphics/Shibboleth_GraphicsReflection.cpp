@@ -22,9 +22,19 @@ THE SOFTWARE.
 
 #include "Shibboleth_GraphicsReflection.h"
 
-SHIB_ENUM_REFLECTION_DEFINE(Gleam::IShader::ShaderType)
-SHIB_ENUM_REFLECTION_DEFINE(Gleam::IWindow::WindowMode)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::IRasterState::RasterStateSettings)
+SHIB_REFLECTION_BUILDER_BEGIN(Gleam::IRasterState::RasterStateSettings)
+	.var("slope_scale_depth_bias", &Gleam::IRasterState::RasterStateSettings::slope_scale_depth_bias)
+	.var("depth_bias_clamp", &Gleam::IRasterState::RasterStateSettings::depth_bias_clamp)
+	.var("depth_bias", &Gleam::IRasterState::RasterStateSettings::depth_bias)
+	.var("depth_clip_enabled", &Gleam::IRasterState::RasterStateSettings::depth_clip_enabled)
+	.var("front_face_counter_clockwise", &Gleam::IRasterState::RasterStateSettings::front_face_counter_clockwise)
+	.var("scissor_enabled", &Gleam::IRasterState::RasterStateSettings::scissor_enabled)
+	.var("two_sided", &Gleam::IRasterState::RasterStateSettings::two_sided)
+	.var("wireframe", &Gleam::IRasterState::RasterStateSettings::wireframe)
+SHIB_REFLECTION_BUILDER_END(Gleam::IRasterState::RasterStateSettings)
 
+SHIB_ENUM_REFLECTION_DEFINE(Gleam::IShader::ShaderType)
 SHIB_ENUM_REFLECTION_BEGIN(Gleam::IShader::ShaderType)
 	.entry("Vertex", Gleam::IShader::SHADER_VERTEX)
 	.entry("Pixel", Gleam::IShader::SHADER_PIXEL)
@@ -34,6 +44,7 @@ SHIB_ENUM_REFLECTION_BEGIN(Gleam::IShader::ShaderType)
 	.entry("Compute", Gleam::IShader::SHADER_COMPUTE)
 SHIB_ENUM_REFLECTION_END(Gleam::IShader::ShaderType)
 
+SHIB_ENUM_REFLECTION_DEFINE(Gleam::IWindow::WindowMode)
 SHIB_ENUM_REFLECTION_BEGIN(Gleam::IWindow::WindowMode)
 	.entry("Fullscreen", Gleam::IWindow::WM_FULLSCREEN)
 	.entry("Windowed", Gleam::IWindow::WM_WINDOWED)
