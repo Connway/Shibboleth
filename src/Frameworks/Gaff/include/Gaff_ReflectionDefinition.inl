@@ -57,7 +57,13 @@ template <class DataType>
 const DataType& ReflectionDefinition<T, Allocator>::IVar::getDataT(const T& object) const
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+
 	return *reinterpret_cast<const DataType*>(getData(&object));
 }
 
@@ -66,7 +72,13 @@ template <class DataType>
 void ReflectionDefinition<T, Allocator>::IVar::setDataT(T& object, const DataType& data)
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+
 	setData(&object, &data);
 }
 
@@ -75,7 +87,13 @@ template <class DataType>
 void ReflectionDefinition<T, Allocator>::IVar::setDataMoveT(T& object, DataType&& data)
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+
 	setDataMove(&object, &data);
 }
 
@@ -84,7 +102,18 @@ template <class DataType>
 const DataType& ReflectionDefinition<T, Allocator>::IVar::getElementT(const T& object, int32_t index) const
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+	if constexpr (std::is_enum<Type>::value) {
+		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+	} else {
+		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+	}
+
 	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
 	return *reinterpret_cast<const DataType*>(getElement(&object, index));
 }
@@ -94,7 +123,18 @@ template <class DataType>
 void ReflectionDefinition<T, Allocator>::IVar::setElementT(T& object, int32_t index, const DataType& data)
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+	if constexpr (std::is_enum<Type>::value) {
+		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+	} else {
+		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+	}
+
 	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
 	setElement(&object, index, &data);
 }
@@ -104,7 +144,18 @@ template <class DataType>
 void ReflectionDefinition<T, Allocator>::IVar::setElementMoveT(T& object, int32_t index, DataType&& data)
 {
 	using Type = std::remove_reference<DataType>::type;
-	GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+
+	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+	const auto& refl = getReflection();
+
+	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+	if constexpr (std::is_enum<Type>::value) {
+		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+	} else {
+		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+	}
+
 	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
 	setElementMove(&object, index, &data);
 }
@@ -122,9 +173,9 @@ ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr):
 
 template <class T, class Allocator>
 template <class Var>
-const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VarPtr<Var>::getReflectionDefinition(void) const
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VarPtr<Var>::getReflection(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetInstance();
 }
 
 template <class T, class Allocator>
@@ -195,9 +246,9 @@ ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::VarFuncPtr(Getter gett
 
 template <class T, class Allocator>
 template <class Ret, class Var>
-const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getReflectionDefinition(void) const
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getReflection(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetInstance();
 }
 
 template <class T, class Allocator>
@@ -318,9 +369,9 @@ ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::BaseVarPtr(typename Reflec
 
 template <class T, class Allocator>
 template <class Base>
-const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getReflectionDefinition(void) const
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getReflection(void) const
 {
-	return _base_var->getReflectionDefinition();
+	return _base_var->getReflection();
 }
 
 template <class T, class Allocator>
@@ -480,9 +531,9 @@ ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::
 
 template <class T, class Allocator>
 template <class Var, size_t array_size>
-const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getReflectionDefinition(void) const
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getReflection(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetInstance();
 }
 
 template <class T, class Allocator>
@@ -635,9 +686,9 @@ ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vec
 
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator>
-const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getReflectionDefinition(void) const
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getReflection(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetInstance();
 }
 
 template <class T, class Allocator>

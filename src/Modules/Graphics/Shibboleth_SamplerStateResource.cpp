@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_RasterStateResource.h"
+#include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_RenderManagerBase.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
@@ -30,50 +30,50 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE(RasterStateResource)
+SHIB_REFLECTION_DEFINE(SamplerStateResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RasterStateResource)
-	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".raster_state.bin"),
-		ResExtAttribute(".raster_state"),
-		MakeLoadFileCallbackAttribute(&RasterStateResource::loadRasterState)
-	)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(SamplerStateResource)
+.classAttrs(
+	CreatableAttribute(),
+	ResExtAttribute(".sampler_state.bin"),
+	ResExtAttribute(".sampler_state"),
+	MakeLoadFileCallbackAttribute(&SamplerStateResource::loadSamplerState)
+)
 
-	.BASE(IResource)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(RasterStateResource)
+.BASE(IResource)
+.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(SamplerStateResource)
 
-Gleam::IRasterState* RasterStateResource::getOrCreateRasterState(const Gleam::IRenderDevice& rd)
+Gleam::ISamplerState* SamplerStateResource::getOrCreateSamplerState(const Gleam::IRenderDevice& rd)
 {
-	const auto it = _raster_states.find(&rd);
-	
-	if (it != _raster_states.end()) {
+	const auto it = _sampler_states.find(&rd);
+
+	if (it != _sampler_states.end()) {
 		return it->second.get();
 	}
 
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
+	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
 
-	_raster_states[&rd].reset(raster_state);
-	return raster_state;
+	_sampler_states[&rd].reset(sampler_state);
+	return sampler_state;
 }
 
-const Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDevice& rd) const
+const Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRenderDevice& rd) const
 {
-	const auto it = _raster_states.find(&rd);
-	return (it != _raster_states.end()) ? it->second.get() : nullptr;
+	const auto it = _sampler_states.find(&rd);
+	return (it != _sampler_states.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDevice& rd)
+Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRenderDevice& rd)
 {
-	const auto it = _raster_states.find(&rd);
-	return (it != _raster_states.end()) ? it->second.get() : nullptr;
+	const auto it = _sampler_states.find(&rd);
+	return (it != _sampler_states.end()) ? it->second.get() : nullptr;
 }
 
-void RasterStateResource::loadRasterState(IFile* file)
+void SamplerStateResource::loadSamplerState(IFile* file)
 {
 	SerializeReaderWrapper readerWrapper;
 
@@ -107,21 +107,21 @@ void RasterStateResource::loadRasterState(IFile* file)
 		return;
 	}
 
-	Gleam::IRasterState::RasterSettings raster_state_settings;
-	Reflection<Gleam::IRasterState::RasterSettings>::Load(reader, raster_state_settings);
+	Gleam::ISamplerState::SamplerSettings sampler_state_settings;
+	Reflection<Gleam::ISamplerState::SamplerSettings>::Load(reader, sampler_state_settings);
 
 	for (Gleam::IRenderDevice* rd : *devices) {
-		Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
+		Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
 
-		if (!raster_state->init(*rd, raster_state_settings)) {
-			LogErrorResource("Failed to create raster state '%s'.", getFilePath().getBuffer());
+		if (!sampler_state->init(*rd, sampler_state_settings)) {
+			LogErrorResource("Failed to create sampler state '%s'.", getFilePath().getBuffer());
 			failed();
 
-			SHIB_FREET(raster_state, GetAllocator());
+			SHIB_FREET(sampler_state, GetAllocator());
 			continue;
 		}
 
-		_raster_states[rd].reset(raster_state);
+		_sampler_states[rd].reset(sampler_state);
 	}
 
 	if (!hasFailed()) {

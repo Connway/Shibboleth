@@ -165,7 +165,7 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 
 void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -182,7 +182,7 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 
 RendererType ProgramBuffersD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 void ProgramBuffersD3D11::cacheResViews(IShader::ShaderType type)
@@ -233,7 +233,7 @@ ProgramD3D11::~ProgramD3D11(void)
 
 void ProgramD3D11::attach(IShader* shader)
 {
-	GAFF_ASSERT(shader->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(shader->getRendererType() == RendererType::DIRECT3D11);
 	GAFF_ASSERT(shader->getType() < IShader::SHADER_TYPE_SIZE);
 
 	_attached_shaders[shader->getType()] = shader;
@@ -317,7 +317,7 @@ void ProgramD3D11::detach(IShader::ShaderType shader)
 
 void ProgramD3D11::bind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -331,7 +331,7 @@ void ProgramD3D11::bind(IRenderDevice& rd)
 
 void ProgramD3D11::unbind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -345,7 +345,7 @@ void ProgramD3D11::unbind(IRenderDevice& rd)
 
 RendererType ProgramD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 NS_END

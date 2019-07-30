@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
+#include <Gaff_Utils.h>
 
 NS_GLEAM
 
@@ -51,31 +52,24 @@ SamplerStateD3D11::~SamplerStateD3D11(void)
 	destroy();
 }
 
-bool SamplerStateD3D11::init(
-	IRenderDevice& rd, Filter filter,
-	Wrap wrap_u, Wrap wrap_v, Wrap wrap_w,
-	float min_lod, float max_lod, float lod_bias,
-	int32_t max_anisotropy,
-	//IRenderState::COMPARISON_FUNC compare_func,
-	float border_r, float border_g, float border_b, float border_a)
+bool SamplerStateD3D11::init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && max_anisotropy <= 16);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && Gaff::Between(sampler_settings.max_anisotropy, 1, 16));
 
 	D3D11_SAMPLER_DESC desc;
-	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_u);
-	desc.AddressV = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_v);
-	desc.AddressW = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_w);
-	desc.BorderColor[0] = border_r;
-	desc.BorderColor[1] = border_g;
-	desc.BorderColor[2] = border_b;
-	desc.BorderColor[3] = border_a;
-	//desc.ComparisonFunc = (D3D11_COMPARISON_FUNC)compare_func;
-	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	desc.Filter = g_filter_map[filter];
-	desc.MaxAnisotropy = static_cast<UINT>(max_anisotropy);
-	desc.MaxLOD = max_lod;
-	desc.MinLOD = min_lod;
-	desc.MipLODBias = lod_bias;
+	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(sampler_settings.wrap_u);
+	desc.AddressV = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(sampler_settings.wrap_v);
+	desc.AddressW = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(sampler_settings.wrap_w);
+	desc.BorderColor[0] = sampler_settings.border_color.r;
+	desc.BorderColor[1] = sampler_settings.border_color.g;
+	desc.BorderColor[2] = sampler_settings.border_color.b;
+	desc.BorderColor[3] = sampler_settings.border_color.a;
+	desc.ComparisonFunc = static_cast<D3D11_COMPARISON_FUNC>(sampler_settings.compare_func);
+	desc.Filter = g_filter_map[sampler_settings.filter];
+	desc.MaxAnisotropy = static_cast<UINT>(sampler_settings.max_anisotropy);
+	desc.MaxLOD = sampler_settings.max_lod;
+	desc.MinLOD = sampler_settings.min_lod;
+	desc.MipLODBias = sampler_settings.lod_bias;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
@@ -89,7 +83,7 @@ void SamplerStateD3D11::destroy(void)
 
 RendererType SamplerStateD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 ID3D11SamplerState* SamplerStateD3D11::getSamplerState(void) const

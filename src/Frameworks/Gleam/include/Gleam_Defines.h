@@ -25,8 +25,6 @@ THE SOFTWARE.
 #include <Gaff_Platform.h>
 #include <cstdint> // For (u)int*_t and size_t
 
-#define OPENGL_MULTITHREAD
-
 #define NS_GLEAM namespace Gleam {
 #ifndef NS_END
 	#define NS_END }
@@ -50,10 +48,38 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-enum RendererType
+enum class StencilOp
 {
-	RENDERER_DIRECT3D11 = 0,
-	RENDERER_VULKAN
+	KEEP = 1,
+	ZERO,
+	REPLACE,
+	INCREMENT_CLAMP,
+	DECREMENT_CLAMP,
+	INVERT,
+	INCREMENT_WRAP,
+	DECREMENT_WRAP,
+	
+	SIZE = DECREMENT_WRAP
+};
+
+enum class ComparisonFunc
+{
+	NEVER = 1,
+	LESS,
+	EQUAL,
+	LESS_EQUAL,
+	GREATER,
+	NOT_EQUAL,
+	GREATER_EQUAL,
+	ALWAYS,
+
+	SIZE = ALWAYS
+};
+
+enum class RendererType
+{
+	DIRECT3D11 = 0,
+	VULKAN
 };
 
 NS_END

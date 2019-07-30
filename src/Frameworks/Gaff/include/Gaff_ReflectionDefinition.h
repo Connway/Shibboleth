@@ -188,7 +188,7 @@ private:
 	public:
 		VarPtr(Var T::*ptr);
 
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
+		const Gaff::IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -212,7 +212,7 @@ private:
 
 		VarFuncPtr(Getter getter, Setter setter);
 
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
+		const Gaff::IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -236,7 +236,7 @@ private:
 	public:
 		BaseVarPtr(typename ReflectionDefinition<Base, Allocator>::IVar* base_var);
 
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
+		const Gaff::IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -267,7 +267,7 @@ private:
 	public:
 		ArrayPtr(Var (T::*ptr)[array_size]);
 
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
+		const Gaff::IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -298,7 +298,7 @@ private:
 	public:
 		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
 
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
+		const Gaff::IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;

@@ -121,6 +121,6 @@ IRenderDevice::AdapterList GetDisplayModes(void)
 }
 
 template <>
-IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void);
+IRenderDevice::AdapterList GetDisplayModes<RendererType::DIRECT3D11>(void);
 
 NS_END

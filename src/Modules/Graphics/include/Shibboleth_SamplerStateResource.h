@@ -22,27 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ISamplerState.h"
+#include <Shibboleth_IResource.h>
+#include <Gleam_ISamplerState.h>
 
-struct ID3D11SamplerState;
+NS_SHIBBOLETH
 
-NS_GLEAM
-
-class SamplerStateD3D11 : public ISamplerState
+class SamplerStateResource final : public IResource
 {
 public:
-	SamplerStateD3D11(void);
-	~SamplerStateD3D11(void);
+	static constexpr bool Creatable = true;
 
-	bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings) override;
-	void destroy(void) override;
+	Gleam::ISamplerState* getOrCreateSamplerState(const Gleam::IRenderDevice& rd);
 
-	RendererType getRendererType(void) const;
-
-	ID3D11SamplerState* getSamplerState(void) const;
+	const Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd) const;
+	Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd);
 
 private:
-	ID3D11SamplerState* _sampler_state;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states;
+
+	void loadSamplerState(IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };
 
+using SamplerStateResourcePtr = Gaff::RefPtr<SamplerStateResource>;
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(SamplerStateResource)

@@ -36,45 +36,19 @@ class IRenderDevice;
 class IDepthStencilState
 {
 public:
-	enum ComparisonFunc
-	{
-		COMPARE_NEVER = 1,
-		COMPARE_LESS,
-		COMPARE_EQUAL,
-		COMPARE_LESS_EQUAL,
-		COMPARE_GREATER,
-		COMPARE_NOT_EQUAL,
-		COMPARE_GREATER_EQUAL,
-		COMPARE_ALWAYS,
-		COMPARE_SIZE
-	};
-
-	enum StencilOp
-	{
-		STENCIL_KEEP = 1,
-		STENCIL_ZERO,
-		STENCIL_REPLACE,
-		STENCIL_INCREMENT_CLAMP,
-		STENCIL_DECREMENT_CLAMP,
-		STENCIL_INVERT,
-		STENCIL_INCREMENT_WRAP,
-		STENCIL_DECREMENT_WRAP,
-		STENCIL_OP_SIZE = STENCIL_DECREMENT_WRAP
-	};
-
 	struct StencilData
 	{
-		StencilOp stencil_depth_fail = STENCIL_KEEP;
-		StencilOp stencil_pass_depth_fail = STENCIL_KEEP;
-		StencilOp stencil_depth_pass = STENCIL_KEEP;
-		ComparisonFunc comp_func = COMPARE_ALWAYS;
+		StencilOp stencil_depth_fail = StencilOp::KEEP;
+		StencilOp stencil_pass_depth_fail = StencilOp::KEEP;
+		StencilOp stencil_depth_pass = StencilOp::KEEP;
+		ComparisonFunc comp_func = ComparisonFunc::ALWAYS;
 	};
 
 	struct DepthStencilStateSettings
 	{
 		StencilData front_face, back_face;
 		unsigned int stencil_ref = 0;
-		ComparisonFunc depth_func = COMPARE_LESS;
+		ComparisonFunc depth_func = ComparisonFunc::LESS;
 		char stencil_read_mask = 0xFF;
 		char stencil_write_mask = 0xFF;
 		bool stencil_test = false;

@@ -326,24 +326,57 @@ public:
 	template <class DataType>
 	void setDataT(void* object, const DataType& data)
 	{
-		using Type = std::remove_reference<DataType>::type;
-		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+		using Type = typename std::remove_reference<DataType>::type;
+
+		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+		const auto& refl = getReflection();
+
+		GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+		if constexpr (std::is_enum<Type>::value) {
+			GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+		} else {
+			GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+		}
+
 		setData(object, &data);
 	}
 
 	template <class DataType>
 	void setDataMoveT(void* object, DataType&& data)
 	{
-		using Type = std::remove_reference<DataType>::type;
-		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+		using Type = typename std::remove_reference<DataType>::type;
+
+		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+		const auto& refl = getReflection();
+
+		GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+		if constexpr (std::is_enum<Type>::value) {
+			GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+		} else {
+			GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+		}
+
 		setDataMove(object, &data);
 	}
 
 	template <class DataType>
 	const DataType& getElementT(const void* object, int32_t index) const
 	{
-		using Type = std::remove_reference<DataType>::type;
-		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+		using Type = typename std::remove_reference<DataType>::type;
+
+		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+		const auto& refl = getReflection();
+
+		GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+		if constexpr (std::is_enum<Type>::value) {
+			GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+		} else {
+			GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+		}
+
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
 		return *reinterpret_cast<const DataType*>(getElement(object, index));
 	}
@@ -351,8 +384,19 @@ public:
 	template <class DataType>
 	void setElementT(void* object, int32_t index, const DataType& data)
 	{
-		using Type = std::remove_reference<DataType>::type;
-		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+		using Type = typename std::remove_reference<DataType>::type;
+
+		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+		const auto& refl = getReflection();
+
+		GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+		if constexpr (std::is_enum<Type>::value) {
+			GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+		} else {
+			GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+		}
+
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
 		setElement(object, index, &data);
 	}
@@ -360,13 +404,24 @@ public:
 	template <class DataType>
 	void setElementMoveT(void* object, int32_t index, DataType&& data)
 	{
-		using Type = std::remove_reference<DataType>::type;
-		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
+		using Type = typename std::remove_reference<DataType>::type;
+
+		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
+		const auto& refl = getReflection();
+
+		GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
+
+		if constexpr (std::is_enum<Type>::value) {
+			GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
+		} else {
+			GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
+		}
+
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
 		setElementMove(object, index, &data);
 	}
 
-	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const = 0;
+	virtual const Gaff::IReflection& getReflection(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;
 	virtual void* getData(void* object) = 0;
 	virtual void setData(void* object, const void* data) = 0;

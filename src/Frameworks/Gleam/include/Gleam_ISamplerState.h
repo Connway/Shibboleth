@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_Color.h"
 #include <Gaff_Defines.h>
 
 NS_GLEAM
@@ -63,30 +63,14 @@ public:
 		float min_lod, max_lod;
 		float lod_bias;
 		int32_t max_anisotropy;
-		float border_r, border_g, border_b, border_a;
+		Color border_color = COLOR_BLACK;
+		ComparisonFunc compare_func = ComparisonFunc::NEVER;
 	};
 
 	ISamplerState(void) {}
 	virtual ~ISamplerState(void) {}
 
-	bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
-	{
-		return init(
-			rd, sampler_settings.filter, sampler_settings.wrap_u, sampler_settings.wrap_v, sampler_settings.wrap_w,
-			sampler_settings.min_lod, sampler_settings.max_lod, sampler_settings.lod_bias, sampler_settings.max_anisotropy,
-			sampler_settings.border_r, sampler_settings.border_b, sampler_settings.border_b, sampler_settings.border_a
-		);
-	}
-
-	virtual bool init(
-		IRenderDevice& rd,
-		Filter filter, Wrap wrap_u, Wrap wrap_v, Wrap wrap_w,
-		float min_lod, float max_lod, float lod_bias,
-		int32_t max_anisotropy,
-		//IRenderState::COMPARISON_FUNC compare_func,
-		float border_r, float border_g, float border_b, float border_a
-	) = 0;
-
+	virtual bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;

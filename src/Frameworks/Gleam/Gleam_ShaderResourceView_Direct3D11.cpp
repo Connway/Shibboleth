@@ -102,7 +102,7 @@ void ShaderResourceViewD3D11::destroy(void)
 
 RendererType ShaderResourceViewD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 ID3D11ShaderResourceView* ShaderResourceViewD3D11::getResourceView(void) const
