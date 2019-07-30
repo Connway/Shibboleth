@@ -31,7 +31,7 @@ class IRenderDevice;
 class IRasterState
 {
 public:
-	struct RasterStateSettings final
+	struct RasterSettings final
 	{
 		float slope_scale_depth_bias = 0.0f;
 		float depth_bias_clamp = 0.0f;
@@ -46,7 +46,7 @@ public:
 	IRasterState(void) {}
 	virtual ~IRasterState(void) {}
 
-	virtual bool init(IRenderDevice& rd, const RasterStateSettings& settings) = 0;
+	virtual bool init(IRenderDevice& rd, const RasterSettings& settings) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual void set(IRenderDevice& rd) const = 0;

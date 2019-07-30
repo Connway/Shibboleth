@@ -33,6 +33,8 @@ THE SOFTWARE.
 
 #include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_SamplerStateResource.h>
+#include <Shibboleth_RasterStateResource.h>
 #include <Shibboleth_ECSSceneResource.h>
 #include <Shibboleth_ModelResource.h>
 #include <Gleam_IRenderDevice.h>
@@ -61,6 +63,9 @@ SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
 
 bool MainLoop::init(void)
 {
+	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &rm;
+
 	return true;
 }
 
@@ -75,25 +80,37 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	static auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
+	static auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
+	//static auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
+	static auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	static auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
 
+	res_mgr.waitForResource(*raster_state_res);
 	res_mgr.waitForResource(*scene_res);
+	res_mgr.waitForResource(*model_res);
+
+	if (raster_state_res->hasFailed()) {
+		GetApp().quit();
+		return;
+	}
 
 	if (scene_res->hasFailed()) {
 		GetApp().quit();
 		return;
 	}
 
-	auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
-
-	res_mgr.waitForResource(*model_res);
-
 	if (model_res->hasFailed()) {
 		GetApp().quit();
 		return;
 	}
+
+	auto& rd = _render_mgr->getDevice(0);
+
+	raster_state_res->getRasterState(rd)->set(rd);
+
 
 	GetApp().quit();
 }

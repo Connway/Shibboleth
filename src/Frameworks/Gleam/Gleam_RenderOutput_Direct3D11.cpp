@@ -30,7 +30,7 @@ NS_GLEAM
 
 bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
-	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(device.getRendererType() == RendererType::DIRECT3D11);
 	_vsync = vsync && window.getWindowMode() != IWindow::WM_FULLSCREEN;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
@@ -162,7 +162,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 RendererType RenderOutputD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)

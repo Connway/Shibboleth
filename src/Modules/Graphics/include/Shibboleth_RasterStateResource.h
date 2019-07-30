@@ -32,6 +32,8 @@ class RasterStateResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Gleam::IRasterState* getOrCreateRasterState(const Gleam::IRenderDevice& rd);
+
 	const Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd) const;
 	Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd);
 

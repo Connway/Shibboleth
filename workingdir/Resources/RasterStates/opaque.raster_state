@@ -1,0 +1,10 @@
+{
+	"slope_scale_depth_bias": 0.0,
+	"depth_bias_clamp": 0.0,
+	"depth_bias": 0,
+	"depth_clip_enabled": true,
+	"front_face_counter_clockwise": false,
+	"scissor_enabled": false,
+	"two_sided": false,
+	"wireframe": false
+}

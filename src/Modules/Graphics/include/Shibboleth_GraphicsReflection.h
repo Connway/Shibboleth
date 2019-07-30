@@ -23,11 +23,17 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
+#include <Gleam_ISamplerState.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IWindow.h>
 #include <Gleam_IShader.h>
 
-SHIB_REFLECTION_DECLARE(Gleam::IRasterState::RasterStateSettings)
-
+SHIB_ENUM_REFLECTION_DECLARE(Gleam::ISamplerState::Filter)
+SHIB_ENUM_REFLECTION_DECLARE(Gleam::ISamplerState::Wrap)
 SHIB_ENUM_REFLECTION_DECLARE(Gleam::IShader::ShaderType)
 SHIB_ENUM_REFLECTION_DECLARE(Gleam::IWindow::WindowMode)
+SHIB_ENUM_REFLECTION_DECLARE(Gleam::ComparisonFunc)
+SHIB_ENUM_REFLECTION_DECLARE(Gleam::StencilOp)
+
+SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::SamplerSettings)
+SHIB_REFLECTION_DECLARE(Gleam::IRasterState::RasterSettings)

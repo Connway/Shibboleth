@@ -57,8 +57,8 @@ void RenderTargetD3D11::destroy(void)
 
 bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face)
 {
-	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RENDERER_DIRECT3D11);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	ID3D11RenderTargetView1* render_target_view = nullptr;
 
@@ -103,8 +103,8 @@ void RenderTargetD3D11::popTexture(void)
 
 bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture)
 {
-	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_DIRECT3D11);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	if (_depth_stencil_view) {
 		_depth_stencil_view->Release();
@@ -123,7 +123,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 
 void RenderTargetD3D11::bind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -134,14 +134,14 @@ void RenderTargetD3D11::bind(IRenderDevice& rd)
 
 void RenderTargetD3D11::unbind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	rd3d.getDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetD3D11::clear(IRenderDevice& rd, uint32_t clear_flags, float clear_depth, uint8_t clear_stencil, float* clear_color)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -164,7 +164,7 @@ bool RenderTargetD3D11::isComplete(void) const
 
 RendererType RenderTargetD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 D3D11_VIEWPORT RenderTargetD3D11::getViewport(void) const

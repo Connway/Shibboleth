@@ -36,6 +36,16 @@ SHIB_REFLECTION_BUILDER_BEGIN(glm::vec4)
 	.var("y", &glm::vec4::y)
 	.var("z", &glm::vec4::z)
 	.var("w", &glm::vec4::w)
+
+	.var("r", &glm::vec4::r)
+	.var("g", &glm::vec4::g)
+	.var("b", &glm::vec4::b)
+	.var("a", &glm::vec4::a)
+
+	.var("s", &glm::vec4::s)
+	.var("t", &glm::vec4::t)
+	.var("p", &glm::vec4::p)
+	.var("q", &glm::vec4::q)
 SHIB_REFLECTION_BUILDER_END(glm::vec4)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec3)
@@ -43,12 +53,26 @@ SHIB_REFLECTION_BUILDER_BEGIN(glm::vec3)
 	.var("x", &glm::vec3::x)
 	.var("y", &glm::vec3::y)
 	.var("z", &glm::vec3::z)
+
+	.var("r", &glm::vec3::r)
+	.var("g", &glm::vec3::g)
+	.var("b", &glm::vec3::b)
+
+	.var("s", &glm::vec3::s)
+	.var("t", &glm::vec3::t)
+	.var("p", &glm::vec3::p)
 SHIB_REFLECTION_BUILDER_END(glm::vec3)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec2)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec2)
 	.var("x", &glm::vec2::x)
 	.var("y", &glm::vec2::y)
+
+	.var("r", &glm::vec2::r)
+	.var("g", &glm::vec2::g)
+
+	.var("s", &glm::vec2::s)
+	.var("t", &glm::vec2::t)
 SHIB_REFLECTION_BUILDER_END(glm::vec2)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::Transform)

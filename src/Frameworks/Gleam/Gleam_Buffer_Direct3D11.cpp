@@ -58,7 +58,7 @@ bool BufferD3D11::init(
 	IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type,
 	int32_t stride, MapType cpu_access, bool gpu_read_only, int32_t structure_byte_stride)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && !_buffer);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && !_buffer);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -110,7 +110,7 @@ void BufferD3D11::destroy(void)
 
 bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && data && size);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && data && size);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -126,7 +126,7 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 
 void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != MT_NONE);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && map_type != MT_NONE);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -137,7 +137,7 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 
 void BufferD3D11::unmap(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->Unmap(_buffer, 0);
@@ -145,7 +145,7 @@ void BufferD3D11::unmap(IRenderDevice& rd)
 
 RendererType BufferD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 ID3D11Buffer* BufferD3D11::getBuffer(void) const

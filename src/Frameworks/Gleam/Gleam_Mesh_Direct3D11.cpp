@@ -97,7 +97,7 @@ void MeshD3D11::setTopologyType(TopologyType topology)
 
 void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -109,7 +109,7 @@ void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t 
 
 void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t count)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -122,7 +122,7 @@ void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t count)
 
 void MeshD3D11::render(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -135,7 +135,7 @@ void MeshD3D11::render(IRenderDevice& rd)
 
 RendererType MeshD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 void MeshD3D11::cacheBuffers(void)
@@ -147,7 +147,7 @@ void MeshD3D11::cacheBuffers(void)
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
 		temp = _vert_data[i];
-		GAFF_ASSERT(temp && temp->getRendererType() == RENDERER_DIRECT3D11);
+		GAFF_ASSERT(temp && temp->getRendererType() == RendererType::DIRECT3D11);
 		_buffers.emplace_back(static_cast<BufferD3D11*>(temp)->getBuffer());
 		_strides.emplace_back(temp->getStride());
 	}

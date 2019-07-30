@@ -34,7 +34,7 @@ NS_GLEAM
 Vector<RenderDeviceD3D11::AdapterInfo> RenderDeviceD3D11::g_display_info;
 
 template <>
-IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
+IRenderDevice::AdapterList GetDisplayModes<RendererType::DIRECT3D11>(void)
 {
 	if (RenderDeviceD3D11::g_display_info.empty()) {
 		IDXGIFactory6* factory = nullptr;
@@ -265,7 +265,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 
 void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 {
-	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(output.getRendererType() == RendererType::DIRECT3D11);
 	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
 	const D3D11_VIEWPORT viewport = out.getViewport();
 
@@ -275,7 +275,7 @@ void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 
 void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 {
-	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(output.getRendererType() == RendererType::DIRECT3D11);
 	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
 	out.present();
 }
@@ -364,7 +364,7 @@ bool RenderDeviceD3D11::isDeferred(void) const
 
 RendererType RenderDeviceD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D11;
+	return RendererType::DIRECT3D11;
 }
 
 IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
@@ -386,7 +386,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 
 void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
 {
-	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
+	GAFF_ASSERT(command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
 	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
 	GAFF_ASSERT(cmd_list->getCommandList());
 	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
@@ -394,7 +394,7 @@ void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
 
 bool RenderDeviceD3D11::finishCommandList(ICommandList* command_list)
 {
-	GAFF_ASSERT(_is_deferred && command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
+	GAFF_ASSERT(_is_deferred && command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
 
 	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
 	ID3D11CommandList* cl = nullptr;

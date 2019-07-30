@@ -54,11 +54,11 @@ SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
 static constexpr Gleam::RendererType GetRendererType(void)
 {
 #ifdef USE_D3D11
-	return Gleam::RENDERER_DIRECT3D11;
+	return Gleam::RendererType::DIRECT3D11;
 #elif defined(USE_D3D12)
-	return Gleam::RENDERER_DIRECT3D12;
+	return Gleam::RendererType::DIRECT3D12;
 #elif defined(USE_VULKAN)
-	return Gleam::RENDERER_VULKAN;
+	return Gleam::RendererType::VULKAN;
 #endif
 }
 
