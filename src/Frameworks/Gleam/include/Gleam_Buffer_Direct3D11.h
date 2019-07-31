@@ -34,16 +34,14 @@ public:
 	BufferD3D11(void);
 	~BufferD3D11(void);
 
-	bool init(IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = BT_SHADER_DATA,
-				int32_t stride = 0, MapType cpu_access = MT_NONE, bool gpu_read_only = true,
-				int32_t structure_byte_stride = 0);
-	void destroy(void);
+	bool init(IRenderDevice& rd, const BufferSettings& buffer_settings) override;
+	void destroy(void) override;
 
-	bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0);
-	void* map(IRenderDevice& rd, MapType map_type = MT_WRITE);
-	void unmap(IRenderDevice& rd);
+	bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) override;
+	void* map(IRenderDevice& rd, MapType map_type = MT_WRITE) override;
+	void unmap(IRenderDevice& rd) override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
 	ID3D11Buffer* getBuffer(void) const;
 

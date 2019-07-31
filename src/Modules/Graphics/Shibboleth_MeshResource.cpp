@@ -39,24 +39,11 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MeshResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(MeshResource)
 
-const Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd) const
-{
-	const auto it = _meshes.find(&rd);
-	return (it != _meshes.end()) ? it->second.get() : nullptr;
-}
-
-Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd)
-{
-	const auto it = _meshes.find(&rd);
-	return (it != _meshes.end()) ? it->second.get() : nullptr;
-}
-
 bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	_buffers.reserve(devices.size());
 	_meshes.reserve(devices.size());
 
 	Gleam::IBuffer::BufferSettings settings{ nullptr, 0, 0, Gleam::IBuffer::BT_VERTEX_DATA, Gleam::IBuffer::MT_NONE, true, 0 };
@@ -129,18 +116,19 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	bool succeeded = true;
 
+	const U8String res_name = getFilePath().getString() + ":mesh_buffer";
+	_buffers = res_mgr.createResourceT<BufferResource>(res_name.data());
+
+	if (!_buffers->createBuffer(devices, settings)) {
+		LogErrorResource("Failed to load mesh '%s'.", getFilePath().getBuffer());
+		succeeded = false;
+	}
+
 	for (int32_t j = 0; j < static_cast<int32_t>(devices.size()); ++j) {
 		Gleam::IRenderDevice* const rd = devices[j];
-		auto& buffer_res = _buffers[rd];
+		Gleam::IBuffer* const buffer = _buffers->getBuffer(*rd);
 
-		const U8String res_name = getFilePath().getString() + ":" + ('0' + static_cast<char>(j));
-		buffer_res = res_mgr.createResourceT<BufferResource>(res_name.data());
-
-		Gleam::IBuffer& buffer = buffer_res->createBuffer();
-
-		if (!buffer.init(*rd, settings)) {
-			LogErrorResource("Failed to load mesh '%s'. Failed to create buffer '%s'.", mesh.mName.C_Str(), getFilePath().getBuffer());
-			succeeded = false;
+		if (!buffer) {
 			continue;
 		}
 
@@ -153,36 +141,54 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		uint32_t offset = 0;
 
 		if (mesh.HasPositions()) {
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(PosSize);
 		}
 
 		if (mesh.HasNormals()) {
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(NrmSize);
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(UVSize * mesh.mNumUVComponents[k]);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumColorChannels()); ++k) {
-			gpu_mesh->addBuffer(&buffer, offset);
+			gpu_mesh->addBuffer(buffer, offset);
 			offset += static_cast<uint32_t>(ClrSize);
 		}
 	}
 
 	SHIB_FREE(data, GetAllocator());
 	return succeeded;
+}
+
+bool MeshResource::createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh)
+{
+	Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	return createMesh(devices, mesh);
+}
+
+const Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd) const
+{
+	const auto it = _meshes.find(&rd);
+	return (it != _meshes.end()) ? it->second.get() : nullptr;
+}
+
+Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd)
+{
+	const auto it = _meshes.find(&rd);
+	return (it != _meshes.end()) ? it->second.get() : nullptr;
 }
 
 NS_END

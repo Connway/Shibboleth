@@ -65,32 +65,19 @@ public:
 
 	struct BufferSettings
 	{
-		const void* data;
-		size_t size;
-		int32_t stride;
-		BufferType type;
-		MapType cpu_access;
-		bool gpu_read_only;
-		int32_t structure_byte_stride;
+		const void* data = nullptr;
+		size_t size = 0;
+		int32_t stride = 0;
+		BufferType type = BT_SHADER_DATA;
+		MapType cpu_access = MT_NONE;
+		bool gpu_read_only = true;
+		int32_t structure_byte_stride = 0;
 	};
 
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
-	bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
-	{
-		return init(
-			rd, buffer_settings.data, buffer_settings.size, buffer_settings.type,
-			buffer_settings.stride, buffer_settings.cpu_access,
-			buffer_settings.gpu_read_only, buffer_settings.structure_byte_stride
-		);
-	}
-
-	virtual bool init(
-		IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = BT_SHADER_DATA,
-		int32_t stride = 0, MapType cpu_access = MT_NONE, bool gpu_read_only = true,
-		int32_t structure_byte_stride = 0
-	) = 0;
+	virtual bool init(IRenderDevice& rd, const BufferSettings& buffer_settings) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) = 0;

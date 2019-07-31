@@ -33,13 +33,14 @@ class BufferResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
-	Gleam::IBuffer& createBuffer(void);
+	bool createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings);
+	bool createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings);
 
-	const Gleam::IBuffer& getBuffer(void) const;
-	Gleam::IBuffer& getBuffer(void);
+	const Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd) const;
+	Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd);
 
 private:
-	UniquePtr<Gleam::IBuffer> _buffer;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IBuffer> > _buffers;
 
 	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
 };
