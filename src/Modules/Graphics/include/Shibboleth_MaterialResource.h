@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ShaderResource.h"
 #include <Shibboleth_IResource.h>
 #include <Gleam_IProgram.h>
 
@@ -30,9 +31,35 @@ NS_SHIBBOLETH
 class MaterialResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
+
+	bool createProgram(
+		const Vector<Gleam::IRenderDevice*>& devices,
+		ShaderResourcePtr& vertex,
+		ShaderResourcePtr& pixel,
+		ShaderResourcePtr& domain,
+		ShaderResourcePtr& geometry,
+		ShaderResourcePtr& hull
+	);
+
+	bool createProgram(
+		Gleam::IRenderDevice& device,
+		ShaderResourcePtr& vertex,
+		ShaderResourcePtr& pixel,
+		ShaderResourcePtr& domain,
+		ShaderResourcePtr& geometry,
+		ShaderResourcePtr& hull
+	);
+
+	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel);
+	bool createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel);
+
+	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute);
+	bool createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute);
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs;
+	ShaderResourcePtr _shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 
 	void loadMaterial(IFile* file);
 

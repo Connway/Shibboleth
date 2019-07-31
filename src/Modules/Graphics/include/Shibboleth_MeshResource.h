@@ -35,14 +35,15 @@ class MeshResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh);
+	bool createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh);
+
 	const Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd) const;
 	Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd);
 
-	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh);
-
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes;
-	VectorMap< const Gleam::IRenderDevice*, BufferResourcePtr > _buffers;
+	BufferResourcePtr _buffers;
 
 	void loadMesh(IFile* file);
 

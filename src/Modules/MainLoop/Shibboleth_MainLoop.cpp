@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SamplerStateResource.h>
 #include <Shibboleth_RasterStateResource.h>
+#include <Shibboleth_MaterialResource.h>
 #include <Shibboleth_ECSSceneResource.h>
 #include <Shibboleth_ModelResource.h>
 #include <Gleam_IRenderDevice.h>
@@ -84,13 +85,18 @@ void MainLoop::update(void)
 
 	static auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
 	static auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
-	//static auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
+	static auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
 	static auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
 	static auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
 
 	res_mgr.waitForResource(*raster_state_res);
 	res_mgr.waitForResource(*scene_res);
 	res_mgr.waitForResource(*model_res);
+
+	if (sampler_state_res->hasFailed()) {
+		GetApp().quit();
+		return;
+	}
 
 	if (raster_state_res->hasFailed()) {
 		GetApp().quit();

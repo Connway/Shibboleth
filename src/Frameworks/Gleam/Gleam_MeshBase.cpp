@@ -103,11 +103,33 @@ bool MeshBase::addVertDataHelper(
 	GAFF_ASSERT(vert_data && vert_count && vert_size && indices && index_count &&
 			index_buffer && vert_buffer);
 
-	if (!vert_buffer->init(rd, vert_data, vert_count * vert_size, IBuffer::BT_VERTEX_DATA, vert_size)) {
+	IBuffer::BufferSettings vert_settings
+	{
+		vert_data,
+		static_cast<size_t>(vert_count) * vert_size,
+		vert_size,
+		IBuffer::BT_VERTEX_DATA,
+		IBuffer::MT_NONE,
+		true,
+		0
+	};
+
+	if (!vert_buffer->init(rd, vert_settings)) {
 		return false;
 	}
 
-	if (!index_buffer->init(rd, indices, sizeof(int32_t) * index_count, IBuffer::BT_INDEX_DATA, sizeof(int32_t))) {
+	IBuffer::BufferSettings index_settings
+	{
+		indices,
+		sizeof(int32_t) * index_count,
+		sizeof(int32_t),
+		IBuffer::BT_INDEX_DATA,
+		IBuffer::MT_NONE,
+		true,
+		0
+	};
+
+	if (!index_buffer->init(rd, index_settings)) {
 		return false;
 	}
 

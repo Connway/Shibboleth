@@ -54,9 +54,7 @@ BufferD3D11::~BufferD3D11(void)
 	destroy();
 }
 
-bool BufferD3D11::init(
-	IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type,
-	int32_t stride, MapType cpu_access, bool gpu_read_only, int32_t structure_byte_stride)
+bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && !_buffer);
 
@@ -66,14 +64,14 @@ bool BufferD3D11::init(
 	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = g_type_map[buffer_type];
-	desc.ByteWidth = static_cast<UINT>(size);
+	desc.BindFlags = g_type_map[buffer_settings.type];
+	desc.ByteWidth = static_cast<UINT>(buffer_settings.size);
 	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = (buffer_type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
-	desc.StructureByteStride = static_cast<UINT>(structure_byte_stride);
-	desc.Usage = (gpu_read_only && (cpu_access == MT_WRITE || cpu_access == MT_WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+	desc.MiscFlags = (buffer_settings.type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
+	desc.StructureByteStride = static_cast<UINT>(buffer_settings.structure_byte_stride);
+	desc.Usage = (buffer_settings.gpu_read_only && (buffer_settings.cpu_access == MT_WRITE || buffer_settings.cpu_access == MT_WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
-	switch (cpu_access) {
+	switch (buffer_settings.cpu_access) {
 		case MT_READ:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 			break;
@@ -91,16 +89,16 @@ bool BufferD3D11::init(
 			break;
 	}
 
-	subres_data.pSysMem = data;
+	subres_data.pSysMem = buffer_settings.data;
 	subres_data.SysMemPitch = 0;
 	subres_data.SysMemSlicePitch = 0;
 
-	_buffer_type = buffer_type;
-	_structure_stride = structure_byte_stride;
-	_stride = stride;
-	_size = size;
+	_buffer_type = buffer_settings.type;
+	_structure_stride = buffer_settings.structure_byte_stride;
+	_stride = buffer_settings.stride;
+	_size = buffer_settings.size;
 
-	return SUCCEEDED(device->CreateBuffer(&desc, (data) ? &subres_data : nullptr, &_buffer));
+	return SUCCEEDED(device->CreateBuffer(&desc, (buffer_settings.data) ? &subres_data : nullptr, &_buffer));
 }
 
 void BufferD3D11::destroy(void)

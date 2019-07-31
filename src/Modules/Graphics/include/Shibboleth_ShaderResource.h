@@ -31,6 +31,11 @@ NS_SHIBBOLETH
 class ShaderResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
+
+	bool createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::ShaderType shader_type);
+	bool createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::ShaderType shader_type);
+
 	const Gleam::IShader* getShader(const Gleam::IRenderDevice& rd) const;
 	Gleam::IShader* getShader(const Gleam::IRenderDevice& rd);
 

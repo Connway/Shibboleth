@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_BufferResource.h"
 #include "Shibboleth_RenderManagerBase.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IManager.h>
+#include <Shibboleth_LogManager.h>
 
 SHIB_REFLECTION_DEFINE(BufferResource)
 
@@ -36,22 +36,42 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BufferResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(BufferResource)
 
-Gleam::IBuffer& BufferResource::createBuffer(void)
+bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings)
+{
+	bool success = true;
+
+	for (Gleam::IRenderDevice* device : devices) {
+		success = success || createBuffer(*device, buffer_settings);
+	}
+
+	return success;
+}
+
+bool BufferResource::createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	_buffer.reset(render_mgr.createBuffer());
+	Gleam::IBuffer* const buffer = render_mgr.createBuffer();
 
-	return *_buffer;
+	if (!buffer->init(device, buffer_settings)) {
+		LogErrorResource("Failed to create buffer '%s'.", getFilePath().getBuffer());
+		SHIB_FREET(buffer, GetAllocator());
+		return false;
+	}
+
+	_buffers[&device].reset(buffer);
+	return true;
 }
 
-const Gleam::IBuffer& BufferResource::getBuffer(void) const
+const Gleam::IBuffer* BufferResource::getBuffer(const Gleam::IRenderDevice& rd) const
 {
-	return *_buffer;
+	const auto it = _buffers.find(&rd);
+	return (it != _buffers.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IBuffer& BufferResource::getBuffer(void)
+Gleam::IBuffer* BufferResource::getBuffer(const Gleam::IRenderDevice& rd)
 {
-	return *_buffer;
+	const auto it = _buffers.find(&rd);
+	return (it != _buffers.end()) ? it->second.get() : nullptr;
 }
 
 NS_END
