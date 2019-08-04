@@ -83,40 +83,54 @@ void MainLoop::update(void)
 
 	static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	static auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
-	static auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
-	static auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
-	static auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
-	static auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
+	static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
+	static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
+	static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
+	static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
+	static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
+	static auto* const program_buffers = _render_mgr->createProgramBuffers();
+	static bool first_run = true;
 
-	res_mgr.waitForResource(*raster_state_res);
-	res_mgr.waitForResource(*scene_res);
-	res_mgr.waitForResource(*model_res);
+	if (first_run) {
+		res_mgr.waitForResource(*raster_state_res);
+		res_mgr.waitForResource(*scene_res);
+		res_mgr.waitForResource(*model_res);
 
-	if (sampler_state_res->hasFailed()) {
-		GetApp().quit();
-		return;
-	}
+		if (sampler_state_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	if (raster_state_res->hasFailed()) {
-		GetApp().quit();
-		return;
-	}
+		if (raster_state_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	if (scene_res->hasFailed()) {
-		GetApp().quit();
-		return;
-	}
+		if (scene_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	if (model_res->hasFailed()) {
-		GetApp().quit();
-		return;
+		if (model_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 	}
 
 	auto& rd = _render_mgr->getDevice(0);
 
 	raster_state_res->getRasterState(rd)->set(rd);
 
+
+
+	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
+		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
+	}
+
+	camera_material_res->getProgram(rd)->bind(rd);
+	rd.resetRenderState();
+	rd.renderNoVertexInput(6);
 
 	GetApp().quit();
 }

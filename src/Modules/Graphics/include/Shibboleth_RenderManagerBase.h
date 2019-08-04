@@ -91,6 +91,19 @@ public:
 	Gleam::IRenderDevice& getDevice(int32_t index) const;
 	int32_t getNumDevices(void) const;
 
+	Gleam::IRenderOutput* getOutput(const char* tag) const
+	{
+		return getOutput(Gaff::FNV1aHash32String(tag));
+	}
+
+	Gleam::IWindow* getWindow(const char* tag) const
+	{
+		return getWindow(Gaff::FNV1aHash32String(tag));
+	}
+
+	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
+	Gleam::IWindow* getWindow(Gaff::Hash32 tag) const;
+
 private:
 	using WindowPtr = UniquePtr<Gleam::IWindow>;
 	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
@@ -98,7 +111,7 @@ private:
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices{ ProxyAllocator("Graphics") };
-	Vector<WindowOutputPair> _windows_output{ ProxyAllocator("Graphics") };
+	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
 };
 
 NS_END

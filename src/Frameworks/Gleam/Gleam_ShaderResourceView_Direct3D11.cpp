@@ -43,7 +43,6 @@ static D3D11_SRV_DIMENSION g_dimension_map[ITexture::TYPE_SIZE] = {
 ShaderResourceViewD3D11::ShaderResourceViewD3D11(void):
 	_resource_view(nullptr)
 {
-
 }
 
 ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
@@ -109,7 +108,6 @@ ID3D11ShaderResourceView* ShaderResourceViewD3D11::getResourceView(void) const
 {
 	return _resource_view;
 }
-
 
 NS_END
 

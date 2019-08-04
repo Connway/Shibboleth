@@ -177,6 +177,18 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 	return true;
 }
 
+const Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device) const
+{
+	const auto it = _programs.find(&device);
+	return (it != _programs.end()) ? it->second.get() : nullptr;
+}
+
+Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device)
+{
+	const auto it = _programs.find(&device);
+	return (it != _programs.end()) ? it->second.get() : nullptr;
+}
+
 void MaterialResource::loadMaterial(IFile* file)
 {
 	SerializeReaderWrapper readerWrapper;
