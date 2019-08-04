@@ -57,6 +57,9 @@ public:
 	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute);
 	bool createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute);
 
+	const Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device) const;
+	Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device);
+
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs;
 	ShaderResourcePtr _shaders[Gleam::IShader::SHADER_TYPE_SIZE];

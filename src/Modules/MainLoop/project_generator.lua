@@ -56,7 +56,10 @@ local GenerateProject = function()
 			"Resource",
 			"ECS",
 			"GraphicsBase",
-			"Gleam"
+			"Gleam",
+			"Assimp",
+			"zlib-ng",
+			"minizip"
 		}
 
 		dependson(deps)
@@ -71,6 +74,9 @@ local LinkDependencies = function()
 	table.insert(deps, "ECS")
 	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "Gleam")
+	table.insert(deps, "Assimp")
+	table.insert(deps, "zlib-ng")
+	table.insert(deps, "minizip")
 
 	dependson(deps)
 	links(deps)

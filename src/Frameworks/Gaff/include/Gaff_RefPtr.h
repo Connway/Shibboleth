@@ -116,22 +116,22 @@ public:
 		return *this;
 	}
 
-	const T* operator->(void) const
+	//const T* operator->(void) const
+	//{
+	//	return _data;
+	//}
+
+	T* operator->(void) const
 	{
 		return _data;
 	}
 
-	T* operator->(void)
-	{
-		return _data;
-	}
+	//const T& operator*(void) const
+	//{
+	//	return *_data;
+	//}
 
-	const T& operator*(void) const
-	{
-		return *_data;
-	}
-
-	T& operator*(void)
+	T& operator*(void) const
 	{
 		return *_data;
 	}
@@ -141,12 +141,12 @@ public:
 		return _data != nullptr;
 	}
 
-	const T* get(void) const
-	{
-		return _data;
-	}
+	//const T* get(void) const
+	//{
+	//	return _data;
+	//}
 
-	T* get(void)
+	T* get(void) const
 	{
 		return _data;
 	}
@@ -252,22 +252,22 @@ public:
 		return *this;
 	}
 
-	const T* operator->(void) const
+	//const T* operator->(void) const
+	//{
+	//	return _data;
+	//}
+
+	T* operator->(void) const
 	{
 		return _data;
 	}
 
-	T* operator->(void)
-	{
-		return _data;
-	}
+	//const T& operator*(void) const
+	//{
+	//	return *_data;
+	//}
 
-	const T& operator*(void) const
-	{
-		return *_data;
-	}
-
-	T& operator*(void)
+	T& operator*(void) const
 	{
 		return *_data;
 	}

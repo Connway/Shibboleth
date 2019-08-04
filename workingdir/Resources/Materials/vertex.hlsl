@@ -28,8 +28,8 @@ struct VertexInputType
 
 struct PixelInputType
 {
-	float3 position : SV_POSITION;
-	float3 normal : NORMAL0;
+	float4 position : SV_POSITION;
+	float4 normal : NORMAL0;
 	//float3 tangent : TANGENT0;
 	//float3 bitangent : BINORMAL0;
 	float2 uv : TEXCOORD0;

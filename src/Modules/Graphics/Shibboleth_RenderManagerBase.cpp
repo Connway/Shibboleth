@@ -199,7 +199,8 @@ bool RenderManagerBase::init(void)
 		}
 
 		// Add the device to the window tag.
-		_render_device_tags[Gaff::FNV1aHash32String(key)].emplace_back(rd);
+		const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
+		_render_device_tags[window_hash].emplace_back(rd);
 
 		// Add render device to tag list if not already present.
 		for (const auto& entry : g_display_tags) {
@@ -228,7 +229,7 @@ bool RenderManagerBase::init(void)
 			return false;
 		}
 
-		_windows_output.emplace_back(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
+		_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
 		return false;
 	});
 
@@ -268,6 +269,18 @@ Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const
 int32_t RenderManagerBase::getNumDevices(void) const
 {
 	return static_cast<int32_t>(_render_devices.size());
+}
+
+Gleam::IRenderOutput* RenderManagerBase::getOutput(Gaff::Hash32 tag) const
+{
+	const auto it = _window_outputs.find(tag);
+	return (it == _window_outputs.end()) ? nullptr : it->second.second.get();
+}
+
+Gleam::IWindow* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
+{
+	const auto it = _window_outputs.find(tag);
+	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
 NS_END
