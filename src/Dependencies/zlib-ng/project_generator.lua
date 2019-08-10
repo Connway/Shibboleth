@@ -8,11 +8,11 @@ project "zlib-ng"
 	warnings "Default"
 
 	files { "**.h", "**.c" }
-	excludes { "arch/aarch64/*.*", "arch/arm/*.*" }
+	excludes { "arch/aarch64/*.*", "arch/arm/*.*", "arch/s390/*.*" }
 
 	includedirs { "." }
 
-	defines { "WITH_GZFILEOP", "Z_LARGE64" }
+	defines { "WITH_GZFILEOP", "Z_LARGE64", "MY_ZCALLOC" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }

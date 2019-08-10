@@ -19,7 +19,8 @@ project "Engine"
 		"../../Frameworks/Gleam/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/mpack",
-		"../../Dependencies/glm"
+		"../../Dependencies/glm",
+		"../../Dependencies/zlib-ng"
 	}
 
 	StaticHeaderGen()

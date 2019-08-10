@@ -42,7 +42,7 @@ public:
 	Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
 	BufferResourcePtr _buffers;
 
 	void loadMesh(IFile* file);

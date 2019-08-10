@@ -68,7 +68,7 @@ bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	desc.ByteWidth = static_cast<UINT>(buffer_settings.size);
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = (buffer_settings.type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
-	desc.StructureByteStride = static_cast<UINT>(buffer_settings.structure_byte_stride);
+	desc.StructureByteStride = (buffer_settings.type == BT_STRUCTURED_DATA) ? static_cast<UINT>(buffer_settings.stride) : 0;
 	desc.Usage = (buffer_settings.gpu_read_only && (buffer_settings.cpu_access == MT_WRITE || buffer_settings.cpu_access == MT_WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
 	switch (buffer_settings.cpu_access) {
@@ -94,7 +94,6 @@ bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	subres_data.SysMemSlicePitch = 0;
 
 	_buffer_type = buffer_settings.type;
-	_structure_stride = buffer_settings.structure_byte_stride;
 	_stride = buffer_settings.stride;
 	_size = buffer_settings.size;
 

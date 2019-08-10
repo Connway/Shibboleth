@@ -40,6 +40,9 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
+	virtual int32_t getWidth(void) const = 0;
+	virtual int32_t getHeight(void) const = 0;
+
 	GAFF_NO_COPY(IRenderOutput);
 };
 

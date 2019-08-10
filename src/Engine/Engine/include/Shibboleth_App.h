@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_LogManager.h"
@@ -96,13 +97,15 @@ private:
 	DynamicLoader _dynamic_loader;
 	Broadcaster _broadcaster;
 	LogManager _log_mgr;
-	JobPool _job_pool;
+	JobPool _job_pool{ ProxyAllocator("Job Pool") };
 
 	FileSystemData _fs;
 
-	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
+	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
 	Gaff::JSON _configs;
 	U8String _project_dir = ".";
+
+	ThreadAllocator _thread_allocator;
 
 	bool initInternal(bool (*static_init)(void));
 	bool loadFileSystem(void);

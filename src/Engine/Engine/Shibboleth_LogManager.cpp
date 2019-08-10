@@ -26,28 +26,30 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
-#include <mutex>
 
 NS_SHIBBOLETH
 
-void LogManager::LogThread(LogManager& lm)
+intptr_t LogManager::LogThread(void* args)
 {
+	LogManager& lm = *reinterpret_cast<LogManager*>(args);
+
 	AllocatorThreadInit();
-	std::unique_lock<std::mutex> unique_lock(lm._log_condition_lock);
+
+	EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {
-		lm._log_event.wait(unique_lock);
+		lm._log_event.Wait(&lm._log_condition_lock);
 
-		lm._log_queue_lock.lock();
+		lm._log_queue_lock.Lock();
 
 		if (lm._logs.empty()) {
-			lm._log_queue_lock.unlock();
+			lm._log_queue_lock.Unlock();
 
 		} else {
 			LogTask task = std::move(lm._logs.front());
 			lm._logs.pop();
 
-			lm._log_queue_lock.unlock();
+			lm._log_queue_lock.Unlock();
 
 			Gaff::File file(task.file);
 			file.writeString(task.message.data());
@@ -59,7 +61,7 @@ void LogManager::LogThread(LogManager& lm)
 		}
 	}
 
-	lm._log_queue_lock.lock();
+	EA::Thread::AutoMutex queue_lock(lm._log_queue_lock);
 
 	while (!lm._logs.empty()) {
 		LogTask task = std::move(lm._logs.front());
@@ -74,7 +76,7 @@ void LogManager::LogThread(LogManager& lm)
 		lm.notifyLogCallbacks(task.message.data(), task.type);
 	}
 
-	lm._log_queue_lock.unlock();
+	return 0;
 }
 
 LogManager::LogManager(void):
@@ -93,19 +95,25 @@ bool LogManager::init(const char* log_dir)
 
 	addChannel("Default", "Log");
 
-	std::thread log_thread(LogThread, std::ref(*this));
-	_log_thread.swap(log_thread);
+	EA::Thread::ThreadParameters thread_params;
+	thread_params.mbDisablePriorityBoost = false;
+	thread_params.mnAffinityMask = EA::Thread::kThreadAffinityMaskAny;
+	thread_params.mnPriority = EA::Thread::kThreadPriorityDefault;
+	thread_params.mnProcessor = EA::Thread::kProcessorDefault;
+	thread_params.mnStackSize = 0;
+	thread_params.mpName = "Log Thread";
+	thread_params.mpStack = nullptr;
 
-	return _log_thread.joinable();
+	return _log_thread.Begin(LogThread, this, &thread_params) != EA::Thread::kThreadIdInvalid;
 }
 
 void LogManager::destroy(void)
 {
 	_shutdown = true;
 
-	if (_log_thread.joinable()) {
-		_log_event.notify_all();
-		_log_thread.join();
+	if (_log_thread.GetId() != EA::Thread::kThreadIdInvalid) {
+		_log_event.Signal(true);
+		_log_thread.WaitForEnd();
 	}
 
 	_shutdown = false;
@@ -116,7 +124,7 @@ void LogManager::destroy(void)
 
 int32_t LogManager::addLogCallback(const LogCallback& callback)
 {
-	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	EA::Thread::AutoMutex lock(_log_callback_lock);
 	const int32_t id = _next_id++;
 	_log_callbacks.emplace(id, callback);
 
@@ -125,7 +133,7 @@ int32_t LogManager::addLogCallback(const LogCallback& callback)
 
 int32_t LogManager::addLogCallback(LogCallback&& callback)
 {
-	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	EA::Thread::AutoMutex lock(_log_callback_lock);
 	const int32_t id = _next_id++;
 	_log_callbacks.emplace(id, std::move(callback));
 
@@ -134,7 +142,7 @@ int32_t LogManager::addLogCallback(LogCallback&& callback)
 
 bool LogManager::removeLogCallback(int32_t id)
 {
-	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	EA::Thread::AutoMutex lock(_log_callback_lock);
 	const auto it = _log_callbacks.find(id);
 
 	if (it != _log_callbacks.end()) {
@@ -215,17 +223,17 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 	}
 
 	{
-		std::lock_guard<std::mutex> lock(_log_queue_lock);
+		EA::Thread::AutoMutex lock(_log_queue_lock);
 		_logs.emplace_back(it->second, U8String(time_string) + message, type);
 	}
 
-	_log_event.notify_all();
+	_log_event.Signal(true);
 	return true;
 }
 
 void LogManager::notifyLogCallbacks(const char* message, LogType type)
 {
-	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	EA::Thread::AutoMutex lock(_log_callback_lock);
 
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		it->second(message, type);

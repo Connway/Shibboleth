@@ -52,6 +52,8 @@ public:
 	void* alloc(size_t size_bytes, const char* file, int line) override;
 	void free(void* data) override;
 
+	int32_t getPoolIndex(void) const { return _pool_index; }
+
 private:
 	Shibboleth::IAllocator& _allocator = GetAllocator();
 	const char* _pool_tag = nullptr;

@@ -28,10 +28,10 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Queue.h"
 #include <Gaff_File.h>
+#include <EAThread/eathread_condition.h>
+#include <EAThread/eathread_thread.h>
+#include <EAThread/eathread_mutex.h>
 #include <EASTL/functional.h>
-#include <condition_variable>
-#include <thread>
-#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -74,19 +74,19 @@ private:
 	};
 
 	bool _shutdown;
-	std::condition_variable _log_event;
+	EA::Thread::Condition _log_event;
 
-	VectorMap<HashString32, Gaff::File> _channels;
-	VectorMap<int32_t, LogCallback> _log_callbacks;
-	Queue<LogTask> _logs;
+	VectorMap<HashString32, Gaff::File> _channels{ ProxyAllocator("Log") };
+	VectorMap<int32_t, LogCallback> _log_callbacks{ ProxyAllocator("Log") };
+	Queue<LogTask> _logs{ ProxyAllocator("Log") };
 
 	int32_t _next_id = 0;
 
-	std::mutex _log_condition_lock;
-	std::mutex _log_callback_lock;
-	std::mutex _log_queue_lock;
+	EA::Thread::Mutex _log_condition_lock;
+	EA::Thread::Mutex _log_callback_lock;
+	EA::Thread::Mutex _log_queue_lock;
 
-	std::thread _log_thread;
+	EA::Thread::Thread _log_thread;
 
 	U8String _log_dir = "./logs";
 
@@ -94,7 +94,7 @@ private:
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);
 	void notifyLogCallbacks(const char* message, LogType type);
 
-	static void LogThread(LogManager& lm);
+	static intptr_t LogThread(void* args);
 
 	GAFF_NO_COPY(LogManager);
 	GAFF_NO_MOVE(LogManager);

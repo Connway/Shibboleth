@@ -27,10 +27,10 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
+#include <EAThread/eathread_futex.h>
 #include <EASTL/chrono.h>
 #include <atomic>
 #include <thread>
-#include <mutex>
 
 NS_GAFF
 
@@ -74,10 +74,10 @@ private:
 	struct JobQueue
 	{
 		Queue<JobPair, Allocator> jobs;
-		UniquePtr<std::mutex, Allocator> read_write_lock;
-		UniquePtr<std::mutex, Allocator> thread_lock;
-		//std::mutex read_write_lock;
-		//std::mutex thread_lock;
+		UniquePtr<EA::Thread::Futex, Allocator> read_write_lock;
+		UniquePtr<EA::Thread::Futex, Allocator> thread_lock;
+		//EA::Thread::Futex read_write_lock;
+		//EA::Thread::Futex thread_lock;
 	};
 
 	struct ThreadData

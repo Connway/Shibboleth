@@ -65,15 +65,16 @@ bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_text
 	D3D11_RENDER_TARGET_VIEW_DESC1 desc;
 	desc.Format = TextureD3D11::GetD3DFormat(color_texture->getFormat());
 
-	if (face == NONE) {
+	if (face == CubeFace::NONE) {
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		desc.Texture2D.MipSlice = 0;
+		desc.Texture2D.PlaneSlice = 0;
 
 	} else {
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 		desc.Texture2DArray.ArraySize = 1;
 		desc.Texture2DArray.MipSlice = 0;
-		desc.Texture2DArray.FirstArraySlice = face;
+		desc.Texture2DArray.FirstArraySlice = static_cast<UINT>(face);
 	}
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);

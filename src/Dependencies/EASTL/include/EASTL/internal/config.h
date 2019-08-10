@@ -89,8 +89,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef EASTL_VERSION
-	#define EASTL_VERSION   "3.12.08"
-	#define EASTL_VERSION_N  31208
+	#define EASTL_VERSION   "3.14.01"
+	#define EASTL_VERSION_N  31401
 #endif
 
 
@@ -755,14 +755,6 @@ namespace eastl
 // in practice may never occur for you.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#ifndef EASTL_STRING_OPT_CHAR_INIT
-	// Defined as 0 or 1. Default is 1.
-	// Defines if newly created characters are initialized to 0 or left
-	// as random values.
-	// The C++ string standard is to initialize chars to 0.
-	#define EASTL_STRING_OPT_CHAR_INIT 1
-#endif
 
 #ifndef EASTL_STRING_OPT_EXPLICIT_CTORS
 	// Defined as 0 or 1. Default is 0.
@@ -1864,7 +1856,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 /// This feature define allows users to toggle the problematic eastl::pair implicit 
 /// single element constructor.
 #ifndef EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR
-	#define EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR 1
+	#define EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR 0
 #endif
 
 #endif // Header include guard

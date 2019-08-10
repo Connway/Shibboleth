@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
+#include <EAThread/eathread_thread.h>
 #include <filesystem>
 
 #ifdef PLATFORM_WINDOWS
@@ -146,6 +147,8 @@ bool App::initInternal(bool (*static_init)(void))
 	SetLogDir(log_file_with_time);
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
+
+	EA::Thread::SetAllocator(&_thread_allocator);
 
 	if (!_log_mgr.init(log_file_with_time)) {
 		return false;

@@ -46,6 +46,14 @@ MEMORY_API void* ShibbolethAllocate(size_t size, size_t alignment);
 MEMORY_API void* ShibbolethAllocate(size_t size);
 MEMORY_API void ShibbolethFree(void* data);
 
+MEMORY_API void* ShibbolethCalloc(size_t num_members, size_t member_size, int32_t pool_index);
+MEMORY_API void* ShibbolethCalloc(size_t num_members, size_t member_size);
+
+MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index);
+MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size, int32_t pool_index);
+MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment);
+MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size);
+
 MEMORY_API void SetLogDir(const char* dir);
 MEMORY_API void AllocatorThreadInit(void);
 

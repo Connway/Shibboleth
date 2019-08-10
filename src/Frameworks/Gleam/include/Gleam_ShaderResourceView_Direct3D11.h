@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_IShaderResourceView.h"
 
-struct ID3D11ShaderResourceView;
+struct ID3D11ShaderResourceView1;
 
 NS_GLEAM
 
@@ -40,10 +40,10 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	ID3D11ShaderResourceView* getResourceView(void) const;
+	ID3D11ShaderResourceView1* getResourceView(void) const;
 
 private:
-	ID3D11ShaderResourceView* _resource_view;
+	ID3D11ShaderResourceView1* _resource_view;
 };
 
 NS_END

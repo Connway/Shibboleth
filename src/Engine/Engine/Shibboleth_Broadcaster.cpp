@@ -35,7 +35,7 @@ void Broadcaster::init(void)
 
 void Broadcaster::remove(BroadcastID id)
 {
-	std::lock_guard lock(_listener_lock);
+	EA::Thread::AutoMutex lock(_listener_lock);
 
 	const auto it = _listeners.find(id.first);
 	GAFF_ASSERT(it != _listeners.end() && it->second.listeners.size() > id.second);

@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
+#include <EAThread/eathread_mutex.h>
 #include <atomic>
-#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -100,7 +100,7 @@ private:
 	};
 
 	Vector<FileData> _files;
-	std::mutex _file_lock;
+	EA::Thread::Mutex _file_lock;
 };
 
 NS_END

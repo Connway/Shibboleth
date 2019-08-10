@@ -229,7 +229,7 @@ void Allocator::free(void* data)
 	//AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 	AllocationHeader* header = nullptr;
 
-	_alloc_lock.lock();
+	_alloc_lock.Lock();
 
 	//bool found = false;
 	for (AllocationHeader* list = _list_head; list; list = list->next) {
@@ -265,7 +265,7 @@ void Allocator::free(void* data)
 		_list_head = header->next;
 	}
 
-	_alloc_lock.unlock();
+	_alloc_lock.Unlock();
 
 	for (OnFreeCallback callback : header->free_callbacks) {
 		if (callback) {
@@ -274,6 +274,82 @@ void Allocator::free(void* data)
 	}
 
 	coherent_rpmalloc::rpfree(header);
+}
+
+void* Allocator::calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line)
+{
+	const size_t total_size = num_members * member_size;
+	void* const buffer = alloc(total_size, alignment, pool_index, file, line);
+
+	std::memset(buffer, 0, total_size);
+	return buffer;
+}
+
+void* Allocator::calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line)
+{
+	return calloc(num_members, member_size, alignment, static_cast<int32_t>(0), file, line);
+}
+
+void* Allocator::calloc(size_t num_members, size_t member_size, int32_t pool_index, const char* file, int line)
+{
+	const size_t total_size = num_members * member_size;
+	void* const buffer = alloc(total_size, pool_index, file, line);
+
+	std::memset(buffer, 0, total_size);
+	return buffer;
+}
+
+void* Allocator::calloc(size_t num_members, size_t member_size, const char* file, int line)
+{
+	return calloc(num_members, member_size, static_cast<int32_t>(0), file, line);
+}
+
+void* Allocator::realloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index, const char* file, int line)
+{
+	if (!old_ptr) {
+		return alloc(new_size, alignment, pool_index, file, line);
+	}
+
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(old_ptr) - sizeof(AllocationHeader));
+
+	if (header->alloc_size >= new_size) {
+		return old_ptr;
+	}
+
+	void* const buffer = alloc(new_size, alignment, pool_index, file, line);
+	std::memcpy(buffer, old_ptr, header->alloc_size);
+	free(old_ptr);
+
+	return buffer;
+}
+
+void* Allocator::realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line)
+{
+	return realloc(old_ptr, new_size, alignment, static_cast<int32_t>(0), file, line);
+}
+
+void* Allocator::realloc(void* old_ptr, size_t new_size, int32_t pool_index, const char* file, int line)
+{
+	if (!old_ptr) {
+		return alloc(new_size, pool_index, file, line);
+	}
+
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(old_ptr) - sizeof(AllocationHeader));
+
+	if (header->alloc_size >= new_size) {
+		return old_ptr;
+	}
+
+	void* const buffer = alloc(new_size, pool_index, file, line);
+	std::memcpy(buffer, old_ptr, header->alloc_size);
+	free(old_ptr);
+
+	return buffer;
+}
+
+void* Allocator::realloc(void* old_ptr, size_t new_size, const char* file, int line)
+{
+	return realloc(old_ptr, new_size, static_cast<int32_t>(0), file, line);
 }
 
 size_t Allocator::getTotalBytesAllocated(size_t pool_index) const
@@ -327,7 +403,7 @@ void Allocator::setHeaderData(
 #endif
 
 	// Add to the leak list.
-	_alloc_lock.lock();
+	_alloc_lock.Lock();
 
 	header->next = _list_head;
 
@@ -337,7 +413,7 @@ void Allocator::setHeaderData(
 
 	_list_head = header;
 
-	_alloc_lock.unlock();
+	_alloc_lock.Unlock();
 }
 
 void Allocator::writeAllocationLog(void) const

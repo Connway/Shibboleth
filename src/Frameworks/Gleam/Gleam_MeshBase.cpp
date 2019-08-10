@@ -110,8 +110,7 @@ bool MeshBase::addVertDataHelper(
 		vert_size,
 		IBuffer::BT_VERTEX_DATA,
 		IBuffer::MT_NONE,
-		true,
-		0
+		true
 	};
 
 	if (!vert_buffer->init(rd, vert_settings)) {
@@ -125,8 +124,7 @@ bool MeshBase::addVertDataHelper(
 		sizeof(int32_t),
 		IBuffer::BT_INDEX_DATA,
 		IBuffer::MT_NONE,
-		true,
-		0
+		true
 	};
 
 	if (!index_buffer->init(rd, index_settings)) {

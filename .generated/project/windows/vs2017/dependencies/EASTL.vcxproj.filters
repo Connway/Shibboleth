@@ -25,15 +25,63 @@
     <Filter Include="include\EAStdC">
       <UniqueIdentifier>{0C8DE3FC-F85A-D702-E1EE-4729CD5BB367}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\EAStdC\Win32">
+      <UniqueIdentifier>{EE5D58BE-DAEC-E187-830B-F6826F79F22D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAStdC\internal">
+      <UniqueIdentifier>{D89C0AA2-44D4-5239-4DDE-B65CB9947932}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\EAThread">
       <UniqueIdentifier>{764D7FC5-6246-9E17-8B78-839C77D07D23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\android">
+      <UniqueIdentifier>{C6EEA886-B213-F806-DB5E-DD96C7E2F624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\apple">
+      <UniqueIdentifier>{97211ADD-831B-432F-6C88-D93F5821A99B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\arm">
+      <UniqueIdentifier>{058AD0E6-F118-5AB0-9A37-6EAB86A56A56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\armgcc">
+      <UniqueIdentifier>{32CB8080-9E02-C917-A70C-2D3B13C3EF10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\cpp11">
+      <UniqueIdentifier>{CA4A3EDD-B644-672F-9FB1-FD3F8B4ACD9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\gcc">
+      <UniqueIdentifier>{92A1D0E6-7E30-5AB0-274F-6EAB13BD6A56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\internal">
+      <UniqueIdentifier>{82743EE2-EE36-726C-37E7-00F9A3E84A4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\x86">
+      <UniqueIdentifier>{2BE4D0E6-1773-5AB0-C091-6EABACFF6A56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAThread\x86-64">
+      <UniqueIdentifier>{E2BEEEB1-4EF6-3649-5700-9B6CC3B65D42}</UniqueIdentifier>
     </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\EAAssert">
+      <UniqueIdentifier>{3D700A1D-A9FB-77E1-B20C-FBD51E17D4E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\EAStdC">
+      <UniqueIdentifier>{59100B18-C5D0-864E-8E0B-D0CBFA8ACB2A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\EAThread">
+      <UniqueIdentifier>{03D89448-6F63-020D-7874-8501E47E5E0D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\EAThread\android">
+      <UniqueIdentifier>{53B6328C-BFED-7A23-C8F7-DE4634AEA11C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAAssert\eaassert.h">
+      <Filter>include\EAAssert</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAAssert\version.h">
       <Filter>include\EAAssert</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EABase\config\eacompiler.h">
@@ -112,6 +160,9 @@
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\list_map.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\lru_cache.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\ring_buffer.h">
@@ -426,7 +477,37 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAAlignment.h">
       <Filter>include\EAStdC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EABitTricks.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAByteCrackers.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EACType.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EACallback.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EADateTime.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAEndian.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAFixedPoint.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAGlobal.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAHashCRC.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAHashString.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAMathHelp.h">
       <Filter>include\EAStdC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAMemory.h">
@@ -435,7 +516,25 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAProcess.h">
       <Filter>include\EAStdC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EARandom.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EARandomDistribution.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAScanf.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EASingleton.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EASprintf.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EASprintfOrdered.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAStdC.h">
       <Filter>include\EAStdC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAStopwatch.h">
@@ -447,22 +546,280 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EATextUtil.h">
       <Filter>include\EAStdC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\Int128_t.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\Win32\EAMathHelpWin32.inl">
+      <Filter>include\EAStdC\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\Config.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\EAMemory.inl">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\IntrusiveList.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\ScanfCore.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\SprintfCore.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\Thread.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\internal\stdioEA.h">
+      <Filter>include\EAStdC\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAStdC\version.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\android\eathread_atomic_android.h">
+      <Filter>include\EAThread\android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\android\eathread_atomic_android_c11.h">
+      <Filter>include\EAThread\android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\apple\eathread_atomic_apple.h">
+      <Filter>include\EAThread\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\apple\eathread_callstack_apple.h">
+      <Filter>include\EAThread\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\apple\eathread_sync_apple.h">
+      <Filter>include\EAThread\apple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\arm\eathread_sync_arm.h">
+      <Filter>include\EAThread\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\armgcc\eathread_sync_armgcc.h">
+      <Filter>include\EAThread\armgcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\cpp11\eathread_atomic_cpp11.h">
+      <Filter>include\EAThread\cpp11</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread.h">
       <Filter>include\EAThread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_atomic.h">
       <Filter>include\EAThread</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_barrier.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_callstack.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_callstack_context.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_condition.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_futex.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_list.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_mutex.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_pool.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_rwmutex.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_rwmutex_ip.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_rwsemalock.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_rwspinlock.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_rwspinlockw.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_semaphore.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_spinlock.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_storage.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_sync.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_thread.h">
       <Filter>include\EAThread</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\gcc\eathread_atomic_gcc.h">
+      <Filter>include\EAThread\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\gcc\eathread_sync_gcc.h">
+      <Filter>include\EAThread\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\atomic.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\config.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\dllinfo.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\eathread_atomic.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\eathread_atomic_standalone.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\eathread_atomic_standalone_gcc.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\eathread_atomic_standalone_msvc.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\eathread_global.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\internal\timings.h">
+      <Filter>include\EAThread\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\shared_array_mt.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\shared_ptr_mt.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\version.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\x86-64\eathread_atomic_x86-64.h">
+      <Filter>include\EAThread\x86-64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\x86-64\eathread_sync_x86-64.h">
+      <Filter>include\EAThread\x86-64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\x86\eathread_atomic_x86.h">
+      <Filter>include\EAThread\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EAThread\x86\eathread_sync_x86.h">
+      <Filter>include\EAThread\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\android\com_ea_EAThread_EAThread.h">
+      <Filter>source\EAThread\android</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAMemory.cpp">
-      <Filter>source</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAAssert\eaassert.cpp">
+      <Filter>source\EAAssert</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EASprintf.cpp">
-      <Filter>source</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EACType.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EACallback.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EADateTime.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAFixedPoint.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAGlobal.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAHashCRC.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAHashString.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAMemory.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAProcess.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EARandom.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAScanf.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAScanfCore.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EASprintf.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EASprintfCore.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EASprintfOrdered.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAStdC.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAStopwatch.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EAString.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\EATextUtil.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAStdC\Int128_t.cpp">
+      <Filter>source\EAStdC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_barrier.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_callstack.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_condition.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_futex.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_mutex.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_pool.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_rwmutex.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_rwmutex_ip.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_semaphore.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_storage.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\eathread_thread.cpp">
+      <Filter>source\EAThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\EAThread\version.cpp">
+      <Filter>source\EAThread</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\allocator_eastl.cpp">
       <Filter>source</Filter>

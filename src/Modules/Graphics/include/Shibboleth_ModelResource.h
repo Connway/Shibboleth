@@ -35,7 +35,7 @@ public:
 	int32_t getNumMeshes(void) const;
 
 private:
-	Vector<MeshResourcePtr> _meshes;
+	Vector<MeshResourcePtr> _meshes{ ProxyAllocator("Graphics") };
 
 	void loadModel(IFile* file);
 

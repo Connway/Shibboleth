@@ -14,7 +14,7 @@
 #  include "malloc.h"
 #endif
 
-const char * const z_errmsg[10] = {
+const char * const zng_errmsg[10] = {
     (const char *)"need dictionary",     /* Z_NEED_DICT       2  */
     (const char *)"stream end",          /* Z_STREAM_END      1  */
     (const char *)"",                    /* Z_OK              0  */
@@ -77,9 +77,6 @@ unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
 #ifdef ZLIB_WINAPI
     flags += 1 << 10;
 #endif
-#ifdef BUILDFIXED
-    flags += 1 << 12;
-#endif
 #ifdef DYNAMIC_CRC_TABLE
     flags += 1 << 13;
 #endif
@@ -120,22 +117,18 @@ const char * ZEXPORT PREFIX(zError)(int err)
 
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
+void ZLIB_INTERNAL *zng_calloc (void *opaque, unsigned items, unsigned size)
 {
     (void)opaque;
 #ifndef UNALIGNED_OK
-#ifdef _WIN32
-	return _aligned_malloc(items * size, 16);
-#else
     return memalign(16, items * size);
-#endif
 #else
     return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :
                               (void *)calloc(items, size);
 #endif
 }
 
-void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
+void ZLIB_INTERNAL zng_cfree (void *opaque, void *ptr)
 {
     (void)opaque;
     free(ptr);

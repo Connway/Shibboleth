@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
-#include <mutex>
 
 SHIB_REFLECTION_DEFINE(ResourceManager)
 
@@ -112,7 +111,7 @@ IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const 
 		return IResourcePtr();
 	}
 
-	std::lock_guard<std::mutex> lock(_res_lock);
+	EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -148,7 +147,7 @@ IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const 
 
 IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool delay_load)
 {
-	std::lock_guard<std::mutex> lock(_res_lock);
+	EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -196,7 +195,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool 
 
 IResourcePtr ResourceManager::getResource(Gaff::HashStringTemp64 name)
 {
-	std::lock_guard<std::mutex> lock(_res_lock);
+	EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -238,7 +237,7 @@ const IFile* ResourceManager::loadFileAndWait(const char* file_path)
 
 void ResourceManager::removeResource(const IResource& resource)
 {
-	std::lock_guard<std::mutex> lock(_res_lock);
+	EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
 

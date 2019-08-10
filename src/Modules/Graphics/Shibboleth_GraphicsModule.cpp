@@ -33,13 +33,29 @@ THE SOFTWARE.
 	namespace Graphics
 	{
 
+		static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
+
+		//static void* ImageAlloc(size_t size)
+		//{
+		//	return SHIB_ALLOC(size, g_graphics_allocator);
+		//}
+
+		//static void* ImageCalloc(size_t num, size_t size)
+		//{
+		//	return Shibboleth::ShibbolethCalloc(num, size, g_graphics_allocator.getPoolIndex());
+		//}
+
+		//static void* ImageRealloc(void* old_ptr, size_t new_size)
+		//{
+		//	return Shibboleth::ShibbolethRealloc(old_ptr, new_size, g_graphics_allocator.getPoolIndex());
+		//}
+
 		bool Initialize(Shibboleth::IApp& app)
 		{
 			Shibboleth::SetApp(app);
 			Gen::InitReflection();
 
-			static Shibboleth::ProxyAllocator allocator("Graphics");
-			Gleam::SetAllocator(&allocator);
+			Gleam::SetAllocator(&g_graphics_allocator);
 
 			return true;
 		}

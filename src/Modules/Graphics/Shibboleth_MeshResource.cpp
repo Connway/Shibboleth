@@ -46,7 +46,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	_meshes.reserve(devices.size());
 
-	Gleam::IBuffer::BufferSettings settings{ nullptr, 0, 0, Gleam::IBuffer::BT_VERTEX_DATA, Gleam::IBuffer::MT_NONE, true, 0 };
+	Gleam::IBuffer::BufferSettings settings{ nullptr, 0, 0, Gleam::IBuffer::BT_VERTEX_DATA, Gleam::IBuffer::MT_NONE, true };
 
 	// Options for packing here?
 

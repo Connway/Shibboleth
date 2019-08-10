@@ -40,7 +40,7 @@ public:
 	Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IBuffer> > _buffers;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IBuffer> > _buffers{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
 };

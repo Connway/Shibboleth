@@ -41,7 +41,17 @@ public:
 		CLEAR_ALL = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR
 	};
 
-	enum CubeFace { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };
+	enum class CubeFace
+	{
+		POS_X = 0,
+		NEG_X,
+		POS_Y,
+		NEG_Y,
+		POS_Z,
+		NEG_Z,
+
+		NONE
+	};
 
 	IRenderTarget(void) {}
 	virtual ~IRenderTarget(void) {}
@@ -49,7 +59,7 @@ public:
 	virtual bool init(void) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = NONE) = 0;
+	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = CubeFace::NONE) = 0;
 	virtual void popTexture(void) = 0;
 
 	virtual bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;

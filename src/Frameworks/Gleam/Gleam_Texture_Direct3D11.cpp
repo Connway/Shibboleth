@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static DXGI_FORMAT _format_map[ITexture::FORMAT_SIZE] = {
+static DXGI_FORMAT _format_map[static_cast<int32_t>(ITexture::Format::SIZE)] = {
 	DXGI_FORMAT_R8_UNORM,
 	DXGI_FORMAT_R16_UNORM,
 	DXGI_FORMAT_R8G8_UNORM,
@@ -93,7 +93,7 @@ static DXGI_FORMAT _format_map[ITexture::FORMAT_SIZE] = {
 	DXGI_FORMAT_D32_FLOAT_S8X24_UINT
 };
 
-static int32_t _format_size[ITexture::FORMAT_SIZE] = {
+static int32_t _format_size[static_cast<int32_t>(ITexture::Format::SIZE)] = {
 	1,
 	2,
 	2,
@@ -157,44 +157,38 @@ static int32_t _format_size[ITexture::FORMAT_SIZE] = {
 	8
 };
 
-DXGI_FORMAT TextureD3D11::GetD3DFormat(Format format)
-{
-	return _format_map[format];
-}
-
 DXGI_FORMAT TextureD3D11::GetTypedFormat(Format format)
 {
 	DXGI_FORMAT typed_format;
 
 	switch (format) {
-		case DEPTH_16_UNORM:
+		case Format::DEPTH_16_UNORM:
 			typed_format = DXGI_FORMAT_R16_UNORM;
 			break;
 
-		case DEPTH_32_F:
+		case Format::DEPTH_32_F:
 			typed_format = DXGI_FORMAT_R32_FLOAT;
 			break;
 
-		case DEPTH_STENCIL_24_8_UNORM_UI:
+		case Format::DEPTH_STENCIL_24_8_UNORM_UI:
 			typed_format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 			break;
 
-		case DEPTH_STENCIL_32_8_F:
+		case Format::DEPTH_STENCIL_32_8_F:
 			typed_format = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
 			break;
 
 		default:
-			typed_format = _format_map[format];
+			typed_format = _format_map[static_cast<int32_t>(format)];
 			break;
 	}
 
 	return typed_format;
 }
 
-
-TextureD3D11::TextureD3D11(void):
-	_depth_stencil_view(nullptr), _texture(nullptr)
+DXGI_FORMAT TextureD3D11::GetD3DFormat(Format format)
 {
+	return _format_map[static_cast<int32_t>(format)];
 }
 
 TextureD3D11::~TextureD3D11(void)
@@ -206,21 +200,21 @@ void TextureD3D11::destroy(void)
 {
 	if (_texture) {
 		switch (_type) {
-			case ONED:
+			case Type::ONE_D:
 				_texture_1d->Release();
 				break;
 
-			case DEPTH_STENCIL:
-			case DEPTH:
-			case TWOD:
+			case Type::DEPTH_STENCIL:
+			case Type::DEPTH:
+			case Type::TWO_D:
 				_texture_2d->Release();
 				break;
 
-			case THREED:
+			case Type::THREE_D:
 				_texture_3d->Release();
 				break;
 
-			case CUBE:
+			case Type::CUBE:
 				_texture_2d->Release();
 				break;
 
@@ -230,6 +224,100 @@ void TextureD3D11::destroy(void)
 
 		_texture = nullptr;
 	}
+}
+
+bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
+{
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0 && num_elements > 0);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
+
+	_mip_levels = static_cast<int32_t>(mip_levels);
+	_array_size = num_elements;
+	_format = format;
+	_type = (num_elements > 1) ? Type::TWO_D_ARRAY : Type::TWO_D;
+	_width = width;
+	_height = height;
+	_depth = 0;
+
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = static_cast<UINT>(width);
+	desc.Height = static_cast<UINT>(height);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
+	desc.ArraySize = num_elements;
+	desc.Format = _format_map[static_cast<int32_t>(format)];
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	HRESULT result;
+
+	if (buffer) {
+		D3D11_SUBRESOURCE_DATA sub;
+		sub.pSysMem = buffer;
+
+		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
+
+		result = device->CreateTexture2D(&desc, &sub, &_texture_2d);
+
+	} else {
+		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+		result = device->CreateTexture2D(&desc, nullptr, &_texture_2d);
+	}
+
+	return SUCCEEDED(result);
+
+}
+
+bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
+{
+	GAFF_ASSERT(width > 0 && mip_levels > 0 && num_elements > 0);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
+
+	_mip_levels = static_cast<int32_t>(mip_levels);
+	_array_size = num_elements;
+	_format = format;
+	_type = (num_elements > 1) ? Type::ONE_D_ARRAY : Type::ONE_D;
+	_width = width;
+	_height = 0;
+	_depth = 0;
+
+	D3D11_TEXTURE1D_DESC desc;
+	desc.Width = static_cast<UINT>(width);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
+	desc.ArraySize = num_elements;
+	desc.Format = _format_map[static_cast<int32_t>(format)];
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	HRESULT result;
+
+	if (buffer) {
+		D3D11_SUBRESOURCE_DATA sub;
+		sub.pSysMem = buffer;
+		sub.SysMemSlicePitch = 0;
+
+		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
+
+		result = device->CreateTexture1D(&desc, &sub, &_texture_1d);
+
+	} else {
+		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+		result = device->CreateTexture1D(&desc, nullptr, &_texture_1d);
+	}
+
+	return SUCCEEDED(result);
 }
 
 bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
@@ -242,7 +330,7 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
-	_type = THREED;
+	_type = Type::THREE_D;
 	_width = width;
 	_height = height;
 	_depth = depth;
@@ -252,7 +340,7 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 	desc.Height = static_cast<UINT>(height);
 	desc.Depth = static_cast<UINT>(depth);
 	desc.MipLevels = static_cast<UINT>(mip_levels);
-	desc.Format = _format_map[format];
+	desc.Format = _format_map[static_cast<int32_t>(format)];
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
@@ -264,8 +352,8 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
 
-		sub.SysMemPitch = width * _format_size[format];
-		sub.SysMemSlicePitch = width * height * _format_size[format];
+		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture3D(&desc, &sub, &_texture_3d);
 
@@ -279,93 +367,12 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 
 bool TextureD3D11::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
-
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
-	ID3D11Device5* const device = rd3d.getDevice();
-
-	_mip_levels = static_cast<int32_t>(mip_levels);
-	_format = format;
-	_type = TWOD;
-	_width = width;
-	_height = height;
-	_depth = 0;
-
-	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = static_cast<UINT>(width);
-	desc.Height = static_cast<UINT>(height);
-	desc.MipLevels = static_cast<UINT>(mip_levels);
-	desc.ArraySize = 1;
-	desc.Format = _format_map[format];
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	HRESULT result;
-
-	if (buffer) {
-		D3D11_SUBRESOURCE_DATA sub;
-		sub.pSysMem = buffer;
-
-		sub.SysMemPitch = width * _format_size[format];
-		sub.SysMemSlicePitch = width * height * _format_size[format];
-
-		result = device->CreateTexture2D(&desc, &sub, &_texture_2d);
-
-	} else {
-		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-		result = device->CreateTexture2D(&desc, nullptr, &_texture_2d);
-	}
-
-	return SUCCEEDED(result);
+	return init2DArray(rd, width, height, format, 1, mip_levels, buffer);
 }
 
 bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
-
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
-	ID3D11Device5* const device = rd3d.getDevice();
-
-	_mip_levels = static_cast<int32_t>(mip_levels);
-	_format = format;
-	_type = ONED;
-	_width = width;
-	_height = 0;
-	_depth = 0;
-
-	D3D11_TEXTURE1D_DESC desc;
-	desc.Width = static_cast<UINT>(width);
-	desc.MipLevels = static_cast<UINT>(mip_levels);
-	desc.ArraySize = 1;
-	desc.Format = _format_map[format];
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	HRESULT result;
-
-	if (buffer) {
-		D3D11_SUBRESOURCE_DATA sub;
-		sub.pSysMem = buffer;
-		sub.SysMemSlicePitch = 0;
-
-		sub.SysMemPitch = width * _format_size[format];
-
-		result = device->CreateTexture1D(&desc, &sub, &_texture_1d);
-
-	} else {
-		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-		result = device->CreateTexture1D(&desc, nullptr, &_texture_1d);
-	}
-
-	return SUCCEEDED(result);
+	return init1DArray(rd, width, format, 1, mip_levels, buffer);
 }
 
 bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
@@ -377,8 +384,9 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
+	_array_size = 6;
 	_format = format;
-	_type = CUBE;
+	_type = Type::CUBE;
 	_width = width;
 	_height = height;
 	_depth = 0;
@@ -388,7 +396,7 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	desc.Height = static_cast<UINT>(height);
 	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.ArraySize = 6;
-	desc.Format = _format_map[format];
+	desc.Format = _format_map[static_cast<int32_t>(format)];
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -402,8 +410,8 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
 
-		sub.SysMemPitch = width * _format_size[format];
-		sub.SysMemSlicePitch = width * height * _format_size[format];
+		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture2D(&desc, &sub, &_texture_2d);
 
@@ -431,32 +439,32 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	_depth = 0;
 
 	switch (format) {
-		case DEPTH_16_UNORM:
+		case Format::DEPTH_16_UNORM:
 			typeless_format = DXGI_FORMAT_R16_TYPELESS;
-			_type = DEPTH;
+			_type = Type::DEPTH;
 			break;
 
-		case DEPTH_32_F:
+		case Format::DEPTH_32_F:
 			typeless_format = DXGI_FORMAT_R32_TYPELESS;
-			_type = DEPTH;
+			_type = Type::DEPTH;
 			break;
 
-		case DEPTH_STENCIL_24_8_UNORM_UI:
+		case Format::DEPTH_STENCIL_24_8_UNORM_UI:
 			typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
-			_type = DEPTH_STENCIL;
+			_type = Type::DEPTH_STENCIL;
 			break;
 
-		case DEPTH_STENCIL_32_8_F:
+		case Format::DEPTH_STENCIL_32_8_F:
 			typeless_format = DXGI_FORMAT_R32G8X24_TYPELESS;
-			_type = DEPTH_STENCIL;
+			_type = Type::DEPTH_STENCIL;
 			break;
 
 		default:
-			_type = TYPE_SIZE;
+			_type = Type::SIZE;
 			break;
 	}
 
-	GAFF_ASSERT(_type != TYPE_SIZE);
+	GAFF_ASSERT(_type != Type::SIZE);
 
 	D3D11_TEXTURE2D_DESC depth_stencil_desc;
 	depth_stencil_desc.Width = static_cast<UINT>(width);
@@ -475,7 +483,7 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	RETURNIFFAILED(result)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC ds_view_desc;
-	ds_view_desc.Format = _format_map[format];
+	ds_view_desc.Format = _format_map[static_cast<int32_t>(format)];
 	ds_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	ds_view_desc.Flags = 0;
 	ds_view_desc.Texture2D.MipSlice = 0;

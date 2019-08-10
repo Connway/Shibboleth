@@ -45,7 +45,7 @@ public:
 private:
 	using ShaderLayoutPair = eastl::pair< UniquePtr<Gleam::IShader>, UniquePtr<Gleam::ILayout> >;
 
-	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data;
+	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data{ ProxyAllocator("Graphics") };
 
 	void loadShader(IFile* file);
 
