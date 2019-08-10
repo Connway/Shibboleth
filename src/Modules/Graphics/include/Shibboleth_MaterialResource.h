@@ -61,7 +61,7 @@ public:
 	Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
 	ShaderResourcePtr _shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 
 	void loadMaterial(IFile* file);

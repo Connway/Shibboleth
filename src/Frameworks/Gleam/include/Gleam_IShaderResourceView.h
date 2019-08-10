@@ -34,7 +34,13 @@ class IBuffer;
 class IShaderResourceView
 {
 public:
-	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0, VIEW_BUFFER };
+	enum class Type
+	{
+		TEXTURE_ARRAY = 0,
+		TEXTURE_CUBE,
+		TEXTURE,
+		BUFFER
+	};
 
 	IShaderResourceView(void) {}
 	virtual ~IShaderResourceView(void) {}
@@ -43,12 +49,12 @@ public:
 	virtual bool init(IRenderDevice& rd, const IBuffer* buffer) = 0;
 	virtual void destroy(void) = 0;
 
-	RES_VIEW_TYPE getViewType(void) const { return _view_type; }
+	Type getViewType(void) const { return _view_type; }
 
 	virtual RendererType getRendererType(void) const = 0;
 
 protected:
-	RES_VIEW_TYPE _view_type;
+	Type _view_type;
 
 	GAFF_NO_COPY(IShaderResourceView);
 };

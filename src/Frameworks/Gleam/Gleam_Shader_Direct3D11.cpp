@@ -67,39 +67,39 @@ static ITexture::Format GetFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 
 	if (desc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) {
 		if (desc.Mask & xyzw) {
-			return ITexture::RGBA_32_UI;
+			return ITexture::Format::RGBA_32_UI;
 		} else if (desc.Mask & xyz) {
-			return ITexture::RGB_32_UI;
+			return ITexture::Format::RGB_32_UI;
 		} else if (desc.Mask & xy) {
-			return ITexture::RG_32_UI;
+			return ITexture::Format::RG_32_UI;
 		} else if (desc.Mask & x) {
-			return ITexture::R_32_UI;
+			return ITexture::Format::R_32_UI;
 		}
 
 	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) {
 		if (desc.Mask & xyzw) {
-			return ITexture::RGBA_32_I;
+			return ITexture::Format::RGBA_32_I;
 		} else if (desc.Mask & xyz) {
-			return ITexture::RGB_32_I;
+			return ITexture::Format::RGB_32_I;
 		} else if (desc.Mask & xy) {
-			return ITexture::RG_32_I;
+			return ITexture::Format::RG_32_I;
 		} else if (desc.Mask & x) {
-			return ITexture::R_32_I;
+			return ITexture::Format::R_32_I;
 		}
 
 	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) {
 		if (desc.Mask & xyzw) {
-			return ITexture::RGBA_32_F;
+			return ITexture::Format::RGBA_32_F;
 		} else if (desc.Mask & xyz) {
-			return ITexture::RGB_32_F;
+			return ITexture::Format::RGB_32_F;
 		} else if (desc.Mask & xy) {
-			return ITexture::RG_32_F;
+			return ITexture::Format::RG_32_F;
 		} else if (desc.Mask & x) {
-			return ITexture::R_32_F;
+			return ITexture::Format::R_32_F;
 		}
 	}
 
-	return ITexture::FORMAT_SIZE;
+	return ITexture::Format::SIZE;
 }
 
 ShaderD3D11::ShaderD3D11(void):

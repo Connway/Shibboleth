@@ -38,7 +38,7 @@ public:
 	Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states{ ProxyAllocator("Graphics") };
 
 	void loadRasterState(IFile* file);
 

@@ -27,8 +27,8 @@ THE SOFTWARE.
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Function.h>
+#include <EAThread/eathread_mutex.h>
 #include <atomic>
-#include <mutex>
 
 NS_GAFF
 	using Counter = std::atomic_int32_t;
@@ -65,7 +65,7 @@ private:
 	};
 
 	VectorMap<Gaff::Hash64, ListenerData> _listeners;
-	std::mutex _listener_lock;
+	EA::Thread::Mutex _listener_lock;
 
 	JobPool* _job_pool = nullptr;
 	Gaff::Counter* _counter = nullptr;

@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;MY_ZCALLOC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -118,7 +118,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;MY_ZCALLOC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -145,7 +145,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;MY_ZCALLOC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -172,7 +172,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;WITH_GZFILEOP;Z_LARGE64;MY_ZCALLOC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -195,6 +195,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\adler32_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\ctzl.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\x86.h" />
@@ -202,11 +203,11 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\functable.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzendian.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzguts.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffast.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffixed.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inftrees.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\match_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\memcopy.h" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zbuild.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zendian.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zutil.h" />
@@ -221,7 +223,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\adler32.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.c" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_pclmulqdq.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\deflate_quick.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\fill_window_sse.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\insert_string_sse.c" />

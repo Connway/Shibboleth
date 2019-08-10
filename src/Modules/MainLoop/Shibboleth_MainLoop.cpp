@@ -21,13 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MainLoop.h"
-//#include "Shibboleth_SetupFunctions.h"
-//#include <Shibboleth_IRenderPipelineManager.h>
-//#include <Shibboleth_IOcclusionManager.h>
-//#include <Shibboleth_IObjectManager.h>
-//#include <Shibboleth_IRenderManager.h>
-//#include <Shibboleth_IUpdateManager.h>
-//#include <Shibboleth_ISceneManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
@@ -38,7 +31,9 @@ THE SOFTWARE.
 #include <Shibboleth_MaterialResource.h>
 #include <Shibboleth_ECSSceneResource.h>
 #include <Shibboleth_ModelResource.h>
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_IncludeMatrix.h>
 
 SHIB_REFLECTION_DEFINE(MainLoop)
 
@@ -48,19 +43,6 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MainLoop)
 	.BASE(IMainLoop)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
-
-//static size_t g_image_pool_index = 0;
-//
-//void* MEMCB ImageAlloc(const size_t size)
-//{
-//	return ShibbolethAllocate(size, g_image_pool_index);
-//}
-//
-//void MEMCB ImageFree(const void* const data)
-//{
-//	ShibbolethFree(const_cast<void*>(data));
-//}
-
 
 bool MainLoop::init(void)
 {
@@ -81,56 +63,94 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	//static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
-	static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
-	static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
-	static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
-	static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
-	static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
-	static auto* const program_buffers = _render_mgr->createProgramBuffers();
-	static bool first_run = true;
+	//static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
+	//static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
+	//static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
+	//static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
+	////static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Textures/ninja.png");
+	//static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	//static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
+	//static auto* const program_buffers = _render_mgr->createProgramBuffers();
+	//static bool first_run = true;
 
-	if (first_run) {
-		res_mgr.waitForResource(*raster_state_res);
-		res_mgr.waitForResource(*scene_res);
-		res_mgr.waitForResource(*model_res);
+	//auto& rd = _render_mgr->getDevice(0);
 
-		if (sampler_state_res->hasFailed()) {
-			GetApp().quit();
-			return;
-		}
+	//if (first_run) {
+	//	res_mgr.waitForResource(*camera_material_res);
+	//	res_mgr.waitForResource(*sampler_state_res);
+	//	res_mgr.waitForResource(*raster_state_res);
+	//	res_mgr.waitForResource(*material_res);
+	//	res_mgr.waitForResource(*scene_res);
+	//	res_mgr.waitForResource(*model_res);
 
-		if (raster_state_res->hasFailed()) {
-			GetApp().quit();
-			return;
-		}
+	//	if (camera_material_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
-		if (scene_res->hasFailed()) {
-			GetApp().quit();
-			return;
-		}
+	//	if (sampler_state_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
-		if (model_res->hasFailed()) {
-			GetApp().quit();
-			return;
-		}
-	}
+	//	if (raster_state_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
-	auto& rd = _render_mgr->getDevice(0);
+	//	if (material_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
-	raster_state_res->getRasterState(rd)->set(rd);
+	//	if (scene_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
+	//	if (model_res->hasFailed()) {
+	//		GetApp().quit();
+	//		return;
+	//	}
 
+	//	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
+	//	const glm::mat4x4 projection = glm::perspectiveFovLH<float>(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
+	//	const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -5.0f), glm::zero<glm::vec3>(), glm::vec3(0.0f, 1.0f, 0.0f));
+	//	const glm::mat4x4 result = camera * projection;
 
-	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
-		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
-	}
+	//	Gleam::IBuffer::BufferSettings buffer_settings =
+	//	{
+	//		&result,
+	//		sizeof(glm::mat4x4),
+	//		sizeof(glm::mat4x4),
+	//		Gleam::IBuffer::BT_STRUCTURED_DATA,
+	//		Gleam::IBuffer::MT_WRITE,
+	//		true
+	//	};
 
-	camera_material_res->getProgram(rd)->bind(rd);
-	rd.resetRenderState();
-	rd.renderNoVertexInput(6);
+	//	auto* const camera_buffer = _render_mgr->createBuffer();
+	//	camera_buffer->init(rd, buffer_settings);
+
+	//	auto* const camera_srv = _render_mgr->createShaderResourceView();
+	//	camera_srv->init(rd, camera_buffer);
+
+	//	program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, sampler_state_res->getSamplerState(rd));
+	//	program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, camera_srv);
+	//}
+
+	//raster_state_res->getRasterState(rd)->set(rd);
+
+	//program_buffers->bind(rd);
+
+	//for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
+	//	model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
+	//}
+
+	//camera_material_res->getProgram(rd)->bind(rd);
+	//rd.resetRenderState();
+	//rd.renderNoVertexInput(6);
 
 	GetApp().quit();
 }

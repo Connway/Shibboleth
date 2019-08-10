@@ -23,12 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IAllocator.h"
+#include <EAThread/eathread_mutex.h>
 #include <EASTL/fixed_vector.h>
 #include <Gaff_Hash.h>
 #include <atomic>
-#include <mutex>
 
-#define NUM_TAG_POOLS 16
+#define NUM_TAG_POOLS 32
 #define POOL_NAME_SIZE 32
 
 NS_SHIBBOLETH
@@ -60,6 +60,17 @@ public:
 	void* alloc(size_t size_bytes, const char* file, int line) override;
 	void free(void* data) override;
 
+	void* calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line) override;
+	void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) override;
+	void* calloc(size_t num_members, size_t member_size, int32_t pool_index, const char* file, int line) override;
+	void* calloc(size_t num_members, size_t member_size, const char* file, int line) override;
+
+	void* realloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index, const char* file, int line) override;
+	void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line) override;
+
+	void* realloc(void* old_ptr, size_t new_size, int32_t pool_index, const char* file, int line) override;
+	void* realloc(void* old_ptr, size_t new_size, const char* file, int line) override;
+
 	size_t getTotalBytesAllocated(size_t pool_index) const;
 	size_t getNumAllocations(size_t pool_index) const;
 	size_t getNumFrees(size_t pool_index) const;
@@ -87,7 +98,7 @@ private:
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS, false> _tag_ids;
-	std::mutex _alloc_lock;
+	EA::Thread::Mutex _alloc_lock;
 
 	char _log_dir[64] = { '.', '/', 'l', 'o', 'g', 's', 0 };
 

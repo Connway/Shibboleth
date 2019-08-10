@@ -121,7 +121,7 @@ namespace eastl
 
 			Value        mValue;
 			hash_node*   mpNext;
-			eastl_size_t mnHashCode;      // See config.h for the definition of eastl_size_t, which defaults to uint32_t.
+			eastl_size_t mnHashCode;      // See config.h for the definition of eastl_size_t, which defaults to size_t.
 		} EASTL_MAY_ALIAS;
 
 		template <typename Value>
@@ -839,7 +839,7 @@ namespace eastl
 		typedef Allocator                                                                           allocator_type;
 		typedef Equal                                                                               key_equal;
 		typedef ptrdiff_t                                                                           difference_type;
-		typedef eastl_size_t                                                                        size_type;     // See config.h for the definition of eastl_size_t, which defaults to uint32_t.
+		typedef eastl_size_t                                                                        size_type;     // See config.h for the definition of eastl_size_t, which defaults to size_t.
 		typedef value_type&                                                                         reference;
 		typedef const value_type&                                                                   const_reference;
 		typedef node_iterator<value_type, !bMutableIterators, bCacheHashCode>                       local_iterator;
@@ -1273,10 +1273,10 @@ namespace eastl
 
 		// We keep DoInsertKey overload without third parameter, for compatibility with older revisions of EASTL (3.12.07 and earlier)
 		// It used to call get_hash_code as a first call inside the DoInsertKey.
-		eastl::pair<iterator, bool> DoInsertKey(true_type, const key_type& key){return DoInsertKey(true_type(), key, get_hash_code(key));}
-		iterator                    DoInsertKey(false_type, const key_type& key){return DoInsertKey(false_type(), key, get_hash_code(key));}
-		eastl::pair<iterator, bool> DoInsertKey(true_type, key_type&& key){return DoInsertKey(true_type(), eastl::move(key), get_hash_code(key));}
-		iterator                    DoInsertKey(false_type, key_type&& key){return DoInsertKey(false_type(), eastl::move(key), get_hash_code(key));}
+		eastl::pair<iterator, bool> DoInsertKey(true_type, const key_type& key)  { return DoInsertKey(true_type(),  key, get_hash_code(key)); }
+		iterator                    DoInsertKey(false_type, const key_type& key) { return DoInsertKey(false_type(), key, get_hash_code(key)); }
+		eastl::pair<iterator, bool> DoInsertKey(true_type, key_type&& key)       { return DoInsertKey(true_type(),  eastl::move(key), get_hash_code(key)); }
+		iterator                    DoInsertKey(false_type, key_type&& key)      { return DoInsertKey(false_type(), eastl::move(key), get_hash_code(key)); }
 
 		void       DoRehash(size_type nBucketCount);
 		node_type* DoFindNode(node_type* pNode, const key_type& k, hash_code_t c) const;

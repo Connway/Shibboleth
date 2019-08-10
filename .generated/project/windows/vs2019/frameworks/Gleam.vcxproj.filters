@@ -108,6 +108,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeD3D11.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeMatrix.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeVulkan.h">
       <Filter>include</Filter>
     </ClInclude>

@@ -38,7 +38,7 @@ public:
 	Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
 
 	void loadSamplerState(IFile* file);
 

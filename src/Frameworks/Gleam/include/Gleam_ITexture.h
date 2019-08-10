@@ -32,8 +32,22 @@ class IRenderDevice;
 class ITexture
 {
 public:
-	enum Type { ONED = 0, TWOD, THREED, CUBE, DEPTH, DEPTH_STENCIL, TYPE_SIZE };
-	enum Format
+	enum class Type
+	{
+		ONE_D = 0,
+		TWO_D,
+		THREE_D,
+		CUBE,
+		DEPTH,
+		DEPTH_STENCIL,
+
+		TWO_D_ARRAY,
+		ONE_D_ARRAY,
+
+		SIZE
+	};
+
+	enum class Format
 	{
 		R_8_UNORM = 0,
 		R_16_UNORM,
@@ -97,7 +111,7 @@ public:
 		DEPTH_STENCIL_24_8_UNORM_UI,
 		DEPTH_STENCIL_32_8_F,
 
-		FORMAT_SIZE
+		SIZE
 	};
 
 	ITexture(void) {}
@@ -109,21 +123,22 @@ public:
 	int32_t getWidth(void) const { return _width; }
 	int32_t getHeight(void) const { return _height; }
 	int32_t getDepth(void) const { return _depth; }
+	int32_t getArraySize(void) const { return _array_size; }
 
 	virtual void destroy(void) = 0;
 
-	virtual bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format,
-						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format,
-						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool init1D(IRenderDevice& rd, int32_t width, Format format,
-						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
 	virtual bool initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
 	virtual bool initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
 protected:
+	int32_t _array_size = 0;
 	int32_t _mip_levels;
 	int32_t _width;
 	int32_t _height;

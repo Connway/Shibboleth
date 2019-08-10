@@ -9,6 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\adler32_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.h">
       <Filter>arch\x86</Filter>
     </ClInclude>
@@ -22,11 +23,11 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\functable.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzendian.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzguts.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffast.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffixed.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inftrees.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\match_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\memcopy.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zbuild.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zendian.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zutil.h" />
@@ -41,9 +43,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\adler32.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.c">
-      <Filter>arch\x86</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_pclmulqdq.c">
       <Filter>arch\x86</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\arch\x86\deflate_quick.c">

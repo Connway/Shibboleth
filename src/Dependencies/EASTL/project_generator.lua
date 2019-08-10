@@ -9,12 +9,12 @@ project "EASTL"
 
 	files
 	{
-		"**.cpp",
+		"source/EAAssert/*.cpp",
+		"source/EAStdC/*.cpp",
+		"source/EAThread/*.cpp",
+		"source/*.cpp",
 		"**.h",
-		"**.cc",
-		"**.hpp",
-		"**.inl",
-		"**.c"
+		"**.inl"
 	}
 
 	includedirs { "include" }

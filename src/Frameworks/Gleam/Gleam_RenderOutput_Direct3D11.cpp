@@ -165,6 +165,16 @@ RendererType RenderOutputD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
+int32_t RenderOutputD3D11::getWidth(void) const
+{
+	return static_cast<int32_t>(getViewport().Width);
+}
+
+int32_t RenderOutputD3D11::getHeight(void) const
+{
+	return static_cast<int32_t>(getViewport().Height);
+}
+
 Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
 {
 	return _swap_chain;

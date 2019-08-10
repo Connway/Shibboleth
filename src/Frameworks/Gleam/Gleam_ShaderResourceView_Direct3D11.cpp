@@ -31,13 +31,16 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static D3D11_SRV_DIMENSION g_dimension_map[ITexture::TYPE_SIZE] = {
+static D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::SIZE)] = {
 	D3D11_SRV_DIMENSION_TEXTURE1D,
 	D3D11_SRV_DIMENSION_TEXTURE2D,
 	D3D11_SRV_DIMENSION_TEXTURE3D,
 	D3D11_SRV_DIMENSION_TEXTURECUBE,
 	D3D11_SRV_DIMENSION_TEXTURE2D,
-	D3D11_SRV_DIMENSION_TEXTURE2D
+	D3D11_SRV_DIMENSION_TEXTURE2D,
+
+	D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+	D3D11_SRV_DIMENSION_TEXTURE1DARRAY
 };
 
 ShaderResourceViewD3D11::ShaderResourceViewD3D11(void):
@@ -52,45 +55,62 @@ ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 {
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	GAFF_ASSERT(texture);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_view_type = VIEW_TEXTURE;
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC shader_desc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC1 shader_desc;
 	shader_desc.Format = TextureD3D11::GetTypedFormat(texture->getFormat());
-	shader_desc.ViewDimension = g_dimension_map[texture->getType()];
-	// the union will set this for all texture types
-	shader_desc.Texture2D.MostDetailedMip = 0;
+	shader_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture->getType())];
+
+	// The union will set this for all texture types.
 	shader_desc.Texture2D.MipLevels = texture->getMipLevels();
+	shader_desc.Texture2D.MostDetailedMip = 0;
+
+	if (texture->getType() == ITexture::Type::CUBE) {
+		_view_type = Type::TEXTURE_CUBE;
+
+	} else if (texture->getArraySize() > 1) {
+		// 2D array desc is the same structure as the 1D array desc.
+		shader_desc.Texture2DArray.ArraySize = static_cast<UINT>(texture->getArraySize());
+		shader_desc.Texture2DArray.FirstArraySlice = 0;
+		shader_desc.Texture2DArray.PlaneSlice = 0;
+		_view_type = Type::TEXTURE_ARRAY;
+
+	} else {
+		shader_desc.Texture2D.PlaneSlice = 0;
+		_view_type = Type::TEXTURE;
+	}
 
 	ID3D11Resource* resource = static_cast<ID3D11Resource*>(static_cast<const TextureD3D11*>(texture)->getTexture());
+	HRESULT result = device->CreateShaderResourceView1(resource, &shader_desc, &_resource_view);
 
-	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
 }
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 {
+	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	GAFF_ASSERT(buffer);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_view_type = VIEW_TEXTURE;
+	_view_type = Type::BUFFER;
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC shader_desc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC1 shader_desc;
 	shader_desc.Format = DXGI_FORMAT_UNKNOWN;
 	shader_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-	// the union will set this for all texture types
-	shader_desc.Buffer.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStructuredByteStride());
+
+	// The union will set this for all texture types.
+	shader_desc.Buffer.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStride());
 	shader_desc.Buffer.FirstElement = 0;
 
 	ID3D11Resource* resource = static_cast<const BufferD3D11*>(buffer)->getBuffer();
+	HRESULT result = device->CreateShaderResourceView1(resource, &shader_desc, &_resource_view);
 
-	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
 }
 
@@ -104,7 +124,7 @@ RendererType ShaderResourceViewD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
-ID3D11ShaderResourceView* ShaderResourceViewD3D11::getResourceView(void) const
+ID3D11ShaderResourceView1* ShaderResourceViewD3D11::getResourceView(void) const
 {
 	return _resource_view;
 }

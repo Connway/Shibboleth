@@ -270,8 +270,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Utils_Common.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Vector.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_VectorMap.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Watcher.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Assert.cpp" />

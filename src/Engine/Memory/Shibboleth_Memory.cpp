@@ -63,6 +63,36 @@ void ShibbolethFree(void* data)
 	SHIB_FREE(data, g_allocator);
 }
 
+void* ShibbolethCalloc(size_t num_members, size_t member_size, int32_t pool_index)
+{
+	return SHIB_CALLOC_POOL(num_members, member_size, pool_index, g_allocator);
+}
+
+void* ShibbolethCalloc(size_t num_members, size_t member_size)
+{
+	return SHIB_CALLOC(num_members, member_size, g_allocator);
+}
+
+void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index)
+{
+	return SHIB_REALLOC_ALIGNED_POOL(old_ptr, new_size, alignment, pool_index, g_allocator);
+}
+
+void* ShibbolethRealloc(void* old_ptr, size_t new_size, int32_t pool_index)
+{
+	return SHIB_REALLOC_POOL(old_ptr, new_size, pool_index, g_allocator);
+}
+
+void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment)
+{
+	return SHIB_REALLOC_ALIGNED(old_ptr, new_size, alignment, g_allocator);
+}
+
+void* ShibbolethRealloc(void* old_ptr, size_t new_size)
+{
+	return SHIB_REALLOC(old_ptr, new_size, g_allocator);
+}
+
 void SetLogDir(const char* dir)
 {
 	g_allocator.setLogDir(dir);

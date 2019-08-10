@@ -11,21 +11,7 @@ the original source.
 Libraries Affected:
 	LibTIFF
 		Can't remember, probably compilation errors.
-	libjpeg
-		Can't remember, probably compilation errors.
 	minizip
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
-	EASTL
-		Fixed compilation warnings/errors.
-	rapidjson
-		Fixed compilation warnings/errors.
 	zlib-ng
-		Fixed compilation errors.
-		Fixed linking errors.
-		Adding OF macro
-		Adding STDC defines
-	wxWidgets
-		Fixing setup.h wxSETUP_PATH macro.
-		Exporting wxIsDriveAvailable() helper function.
-		Injecting Shibboleth allocator initialization to wxThreadInternal::WinThreadStart.
-		Fixed off by one bugs in editlbox.cpp.
+		Adding OF macro and STDC defines for compatability with minizip.

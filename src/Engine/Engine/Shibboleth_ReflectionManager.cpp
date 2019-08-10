@@ -77,7 +77,14 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* 
 	const auto it_enum = _enum_reflection_map.find(name);
 	GAFF_ASSERT(it_enum != _enum_reflection_map.end());
 
-	Vector<const Gaff::IEnumReflectionDefinition*>& module_bucket = _module_enum_owners[HashString64(module_name)];
+	const HashString64 name_hash(module_name);
+	const auto it_module = _module_enum_owners.find(name_hash);
+	Vector<const Gaff::IEnumReflectionDefinition*>& module_bucket = (it_module == _module_enum_owners.end()) ? _module_enum_owners[name_hash] : it_module->second;
+
+	if (it_module == _module_enum_owners.end()) {
+		module_bucket.set_allocator(ProxyAllocator("Reflection"));
+	}
+
 	const auto it = eastl::lower_bound(module_bucket.begin(), module_bucket.end(), it_enum->second.get());
 	module_bucket.insert(it, it_enum->second.get());
 }
@@ -109,13 +116,26 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 	const auto it_refl = _reflection_map.find(name);
 	GAFF_ASSERT(it_refl != _reflection_map.end());
 
-	TypeBucketMap& module_types = _module_owners[HashString64(module_name)];
+	const HashString64 name_hash(module_name);
+	const auto it_module = _module_owners.find(name_hash);
+	TypeBucketMap& module_types = (it_module == _module_owners.end()) ? _module_owners[name_hash] : it_module->second;
+
+	if (it_module == _module_owners.end()) {
+		module_types.set_allocator(ProxyAllocator("Reflection"));
+	}
 
 	// If the type is found in a global type bucket, then put it in the module type bucket.
 	for (const auto& bucket_pair : _type_buckets) {
 		const auto it = eastl::lower_bound(bucket_pair.second.begin(), bucket_pair.second.end(), name, CompareRefHash);
 
 		if (it != bucket_pair.second.end() && (*it)->getReflectionInstance().getHash() == name) {
+			const auto it_bucket = module_types.find(bucket_pair.first);
+			TypeBucket& type_bucket = (it_bucket == module_types.end()) ? module_types[bucket_pair.first] : it_bucket->second;
+
+			if (it_bucket == module_types.end()) {
+				type_bucket.set_allocator(ProxyAllocator("Reflection"));
+			}
+
 			insertType(module_types[bucket_pair.first], it_refl->second.get());
 		}
 	}
@@ -151,6 +171,8 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	// Add new type bucket to global type bucket list.
 	TypeBucket& global_unbucketed = _type_buckets.find(Gaff::FNV1aHash64Const("**"))->second;
 	TypeBucket& global_types = _type_buckets[name];
+
+	global_types.set_allocator(ProxyAllocator("Reflection"));
 
 	for (const auto& ref_map_pair : _reflection_map) {
 		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;
@@ -195,6 +217,7 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	GAFF_ASSERT(_attr_buckets.find(attr_name) == _attr_buckets.end());
 
 	TypeBucket& bucket = _attr_buckets[attr_name];
+	bucket.set_allocator(ProxyAllocator("Reflection"));
 
 	for (const auto& ref_map_pair : _reflection_map) {
 		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;

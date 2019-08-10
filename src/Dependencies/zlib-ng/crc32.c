@@ -12,7 +12,8 @@
 /* @(#) $Id$ */
 
 # include "zbuild.h"
-# include "gzendian.h"
+# include "zendian.h"
+# include <inttypes.h>
 
 /*
   Note on the use of DYNAMIC_CRC_TABLE: there is no mutex or semaphore
@@ -56,10 +57,10 @@ static uint32_t gf2_matrix_times(const uint32_t *mat, uint32_t vec) {
 }
 
 #ifdef DYNAMIC_CRC_TABLE
-static volatile int crc_table_empty = 1;
+volatile int crc_table_empty = 1;
 static uint32_t crc_table[8][256];
 static uint32_t crc_comb[GF2_DIM][GF2_DIM];
-static void make_crc_table(void);
+void make_crc_table(void);
 static void gf2_matrix_square(uint32_t *square, const uint32_t *mat);
 #ifdef MAKECRCH
 static void write_table(FILE *, const uint32_t *, int);
@@ -99,7 +100,7 @@ static void gf2_matrix_square(uint32_t *square, const uint32_t *mat) {
   allow for word-at-a-time CRC calculation for both big-endian and little-
   endian machines, where a word is four bytes.
 */
-static void make_crc_table() {
+void make_crc_table() {
     uint32_t c;
     int n, k;
     uint32_t poly;                       /* polynomial exclusive-or pattern */
@@ -209,7 +210,7 @@ static void write_table(FILE *out, const uint32_t *table, int k) {
     int n;
 
     for (n = 0; n < k; n++)
-        fprintf(out, "%s0x%08lx%s", n % 5 ? "" : "    ",
+        fprintf(out, "%s0x%08" PRIx32 "%s", n % 5 ? "" : "    ",
                 (uint32_t)(table[n]),
                 n == k - 1 ? "\n" : (n % 5 == 4 ? ",\n" : ", "));
 }
@@ -400,16 +401,36 @@ uint32_t ZEXPORT PREFIX(crc32_combine64)(uint32_t crc1, uint32_t crc2, z_off64_t
     return crc32_combine_(crc1, crc2, len2);
 }
 
-#ifndef X86_PCLMULQDQ_CRC
+#ifdef X86_PCLMULQDQ_CRC
+#include "arch/x86/x86.h"
+#include "arch/x86/crc_folding.h"
+
+ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
+    if (x86_cpu_has_pclmulqdq)
+        s->strm->adler = crc_fold_512to32(s);
+}
+#endif
+
 ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
+#ifdef X86_PCLMULQDQ_CRC
+    if (x86_cpu_has_pclmulqdq) {
+        crc_fold_init(s);
+        return;
+    }
+#endif
     s->strm->adler = PREFIX(crc32)(0L, NULL, 0);
 }
 
 ZLIB_INTERNAL void copy_with_crc(PREFIX3(stream) *strm, unsigned char *dst, unsigned long size) {
+#ifdef X86_PCLMULQDQ_CRC
+    if (x86_cpu_has_pclmulqdq) {
+        crc_fold_copy(strm->state, dst, strm->next_in, size);
+        return;
+    }
+#endif
     memcpy(dst, strm->next_in, size);
     strm->adler = PREFIX(crc32)(strm->adler, dst, size);
 }
-#endif
 
 /* ========================================================================= */
 static void crc32_combine_gen_(uint32_t *op, z_off64_t len2)

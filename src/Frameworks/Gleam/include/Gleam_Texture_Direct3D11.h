@@ -30,11 +30,12 @@ NS_GLEAM
 class TextureD3D11 : public ITexture
 {
 public:
-	TextureD3D11(void);
 	~TextureD3D11(void);
 
 	void destroy(void) override;
 
+	bool init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) override;
 	bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
 	bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
 	bool init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
@@ -50,15 +51,15 @@ public:
 	ID3D11Texture2D* getTexture2D(void) const;
 	ID3D11Texture3D* getTexture3D(void) const;
 
-	static DXGI_FORMAT GetD3DFormat(Format format);
 	static DXGI_FORMAT GetTypedFormat(Format format);
+	static DXGI_FORMAT GetD3DFormat(Format format);
 
 private:
-	ID3D11DepthStencilView* _depth_stencil_view;
+	ID3D11DepthStencilView* _depth_stencil_view = nullptr;
 
 	union
 	{
-		void* _texture;
+		void* _texture = nullptr;
 		ID3D11Texture1D* _texture_1d;
 		ID3D11Texture2D* _texture_2d;
 		ID3D11Texture3D* _texture_3d;

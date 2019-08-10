@@ -71,7 +71,6 @@ public:
 		BufferType type = BT_SHADER_DATA;
 		MapType cpu_access = MT_NONE;
 		bool gpu_read_only = true;
-		int32_t structure_byte_stride = 0;
 	};
 
 	IBuffer(void) {}
@@ -87,13 +86,11 @@ public:
 	virtual RendererType getRendererType(void) const = 0;
 
 	BufferType getBufferType(void) const { return _buffer_type; }
-	int32_t getStructuredByteStride(void) const { return _structure_stride; }
 	int32_t getStride(void) const { return _stride; }
 	size_t getSize(void) const { return _size; }
 
 protected:
 	BufferType _buffer_type;
-	int32_t _structure_stride;
 	int32_t _stride;
 	size_t _size;
 

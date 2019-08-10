@@ -69,7 +69,7 @@ LooseFileSystem::~LooseFileSystem(void)
 IFile* LooseFileSystem::openFile(const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
-	std::lock_guard<std::mutex> lock(_file_lock);
+	EA::Thread::AutoMutex lock(_file_lock);
 
 	auto it = Gaff::Find(_files, file_name,
 	[](const FileData& lhs, const char* rhs) -> bool
@@ -123,7 +123,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 void LooseFileSystem::closeFile(const IFile* file)
 {
 	GAFF_ASSERT(file);
-	std::lock_guard<std::mutex> lock(_file_lock);
+	EA::Thread::AutoMutex lock(_file_lock);
 
 	auto it = Gaff::Find(_files, file,
 	[](const FileData& lhs, const IFile* rhs) -> bool

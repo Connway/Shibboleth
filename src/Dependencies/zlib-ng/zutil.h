@@ -34,10 +34,10 @@ typedef unsigned char uch; /* Included for compatibility with external code only
 typedef uint16_t ush;      /* Included for compatibility with external code only */
 typedef unsigned long  ulg;
 
-extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
+extern const char * const zng_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
-#define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
+#define ERR_MSG(err) zng_errmsg[Z_NEED_DICT-(err)]
 
 #define ERR_RETURN(strm, err) return (strm->msg = ERR_MSG(err), (err))
 /* To be used only when the state is known to be valid */
@@ -116,6 +116,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 
 /* provide prototypes for these when building zlib without LFS */
 #if !defined(WIN32) && !defined(__MSYS__) && (!defined(_LARGEFILE64_SOURCE) || _LFS64_LARGEFILE-0 == 0)
+# include "zbuild.h"  /* For PREFIX() */
     ZEXTERN uint32_t ZEXPORT PREFIX(adler32_combine64)(uint32_t, uint32_t, z_off_t);
     ZEXTERN uint32_t ZEXPORT PREFIX(crc32_combine64)(uint32_t, uint32_t, z_off_t);
 #endif
@@ -158,8 +159,8 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #   define Tracecv(c, x)
 #endif
 
-void ZLIB_INTERNAL *zcalloc(void *opaque, unsigned items, unsigned size);
-void ZLIB_INTERNAL   zcfree(void *opaque, void *ptr);
+void ZLIB_INTERNAL *zng_calloc(void *opaque, unsigned items, unsigned size);
+void ZLIB_INTERNAL   zng_cfree(void *opaque, void *ptr);
 
 #define ZALLOC(strm, items, size) (*((strm)->zalloc))((strm)->opaque, (items), (size))
 #define ZFREE(strm, addr)         (*((strm)->zfree))((strm)->opaque, (void *)(addr))
@@ -237,12 +238,10 @@ void ZLIB_INTERNAL   zcfree(void *opaque, void *ptr);
 #endif
 #endif
 
-#if (defined(__GNUC__) || defined(__clang__))
-#define MEMCPY __builtin_memcpy
-#define MEMSET __builtin_memset
-#else
-#define MEMCPY memcpy
-#define MEMSET memset
+#if defined(X86_CPUID)
+# include "arch/x86/x86.h"
+#elif defined(__aarch64__) || defined(__arm__) || defined(_M_ARM)
+# include "arch/arm/arm.h"
 #endif
 
 #endif /* ZUTIL_H_ */

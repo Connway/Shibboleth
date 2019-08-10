@@ -39,8 +39,9 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads, ThreadInit
 	_job_pools.resize(num_pools + 1);
 
 	for (JobQueue& job_queue : _job_pools) {
-		job_queue.read_write_lock = UniquePtr<std::mutex, Allocator>(GAFF_ALLOCT(std::mutex, _allocator));
-		job_queue.thread_lock = UniquePtr<std::mutex, Allocator>(GAFF_ALLOCT(std::mutex, _allocator));
+		job_queue.jobs = Queue<JobPair, Allocator>(_allocator);
+		job_queue.read_write_lock = UniquePtr<EA::Thread::Futex, Allocator>(GAFF_ALLOCT(EA::Thread::Futex, _allocator));
+		job_queue.thread_lock = UniquePtr<EA::Thread::Futex, Allocator>(GAFF_ALLOCT(EA::Thread::Futex, _allocator));
 	}
 
 	_thread_data.job_pool = this;
@@ -93,7 +94,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];
 
-	job_queue.read_write_lock->lock();
+	job_queue.read_write_lock->Lock();
 	//job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
 
 	for (size_t i = 0; i < num_jobs; ++i) {
@@ -101,7 +102,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 		job_queue.jobs.emplace_back(JobPair(jobs[i], cnt));
 	}
 
-	job_queue.read_write_lock->unlock();
+	job_queue.read_write_lock->Unlock();
 }
 
 template <class Allocator>
@@ -114,7 +115,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter& counte
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];
 
-	job_queue.read_write_lock->lock();
+	job_queue.read_write_lock->Lock();
 	//job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
 
 	for (size_t i = 0; i < num_jobs; ++i) {
@@ -122,7 +123,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter& counte
 		job_queue.jobs.emplace_back(JobPair(jobs[i], &counter));
 	}
 
-	job_queue.read_write_lock->unlock();
+	job_queue.read_write_lock->Unlock();
 }
 
 template <class Allocator>
@@ -176,9 +177,9 @@ void JobPool<Allocator>::help(eastl::chrono::milliseconds ms)
 	for (size_t i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock->try_lock()) {
+		if (job_queue.thread_lock->TryLock()) {
 			earlied_out = ProcessJobQueue(job_queue, ms);
-			job_queue.thread_lock->unlock();
+			job_queue.thread_lock->Unlock();
 		}
 	}
 
@@ -197,16 +198,16 @@ void JobPool<Allocator>::doAJob(void)
 	for (size_t i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock->try_lock()) {
+		if (job_queue.thread_lock->TryLock()) {
 			if (job_queue.jobs.empty()) {
-				job_queue.thread_lock->unlock();
+				job_queue.thread_lock->Unlock();
 
 			} else {
 				job = job_queue.jobs.front();
 				job_queue.jobs.pop();
 				DoJob(job);
 
-				job_queue.thread_lock->unlock();
+				job_queue.thread_lock->Unlock();
 				return;
 			}
 		}
@@ -214,16 +215,16 @@ void JobPool<Allocator>::doAJob(void)
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[0];
 
-	job_queue.read_write_lock->lock();
+	job_queue.read_write_lock->Lock();
 
 	if (job_queue.jobs.empty()) {
-		job_queue.read_write_lock->unlock();
+		job_queue.read_write_lock->Unlock();
 
 	} else {
 		job = job_queue.jobs.front();
 		job_queue.jobs.pop();
 
-		job_queue.read_write_lock->unlock();
+		job_queue.read_write_lock->Unlock();
 		DoJob(job);
 	}
 }
@@ -249,11 +250,11 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 	JobPair job;
 
 	for (;;) {
-		job_queue.read_write_lock->lock();
+		job_queue.read_write_lock->Lock();
 
 		// No more jobs in the job queue.
 		if (job_queue.jobs.empty()) {
-			job_queue.read_write_lock->unlock();
+			job_queue.read_write_lock->Unlock();
 			break;
 
 		// Process the job.
@@ -261,12 +262,12 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 			job = job_queue.jobs.front();
 			job_queue.jobs.pop();
 
-			job_queue.read_write_lock->unlock();
+			job_queue.read_write_lock->Unlock();
 			DoJob(job);
 		}
 
 		if (ms > eastl::chrono::milliseconds::zero() && (eastl::chrono::high_resolution_clock::now() - start) >= ms) {
-			job_queue.read_write_lock->unlock();
+			job_queue.read_write_lock->Unlock();
 			return true;
 		}
 	}

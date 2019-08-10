@@ -40,7 +40,7 @@ public:
 	bool init(void) override;
 	void destroy(void) override;
 
-	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = NONE) override;
+	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::NONE) override;
 	void popTexture(void) override;
 
 	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) override;
