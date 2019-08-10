@@ -28,13 +28,15 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class Image;
+
 class TextureResource final : public IResource
 {
 public:
 	static constexpr bool Creatable = true;
 
-	//bool createTexture(const Vector<Gleam::IRenderDevice*>& devices);
-	//bool createTexture(Gleam::IRenderDevice& device);
+	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image);
+	bool createTexture(Gleam::IRenderDevice& device, const Image& image);
 
 	const Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd) const;
 	Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd);
@@ -43,6 +45,8 @@ private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ITexture> > _textures{ ProxyAllocator("Graphics") };
 
 	void loadTexture(IFile* file);
+	void loadTextureJSON(const IFile* file);
+	void loadTextureImage(const IFile* file, const char* device_tag);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
 };

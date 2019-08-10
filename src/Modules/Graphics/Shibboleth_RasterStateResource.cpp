@@ -86,6 +86,7 @@ void RasterStateResource::loadRasterState(IFile* file)
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	U8String device_tag;
 
 	{
 		const auto guard = reader.enterElementGuard("devices_tag");
@@ -97,12 +98,13 @@ void RasterStateResource::loadRasterState(IFile* file)
 		}
 
 		const char* const tag = reader.readString("main");
+		device_tag = tag;
 		devices = render_mgr.getDevicesByTag(tag);
 		reader.freeString(tag);
 	}
 
 	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load shader '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer());
+		LogErrorResource("Failed to load shader '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
 		failed();
 		return;
 	}

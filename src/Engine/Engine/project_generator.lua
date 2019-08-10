@@ -20,7 +20,9 @@ project "Engine"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/mpack",
 		"../../Dependencies/glm",
-		"../../Dependencies/zlib-ng"
+		"../../Dependencies/zlib-ng",
+		"../../Dependencies/png++",
+		"../../Dependencies/libpng"
 	}
 
 	StaticHeaderGen()

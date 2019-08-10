@@ -31,9 +31,11 @@ class Image final
 public:
 	Image(const ProxyAllocator& allocator = ProxyAllocator());
 
-	bool load(const void* buffer, const char* file_ext);
+	bool load(const void* buffer, size_t size, const char* file_ext);
 
 private:
+	bool loadPNG(const void* buffer, size_t size);
+
 	ProxyAllocator _allocator;
 };
 
