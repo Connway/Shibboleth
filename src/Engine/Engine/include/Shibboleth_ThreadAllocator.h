@@ -6,7 +6,7 @@
 
 NS_SHIBBOLETH
 
-class ThreadAllocator : public EA::Thread::Allocator
+class ThreadAllocator final : public EA::Thread::Allocator
 {
 public:
 	void* Alloc(size_t size, const char* name = nullptr, unsigned int flags = 0) override

@@ -221,7 +221,7 @@ void MaterialResource::loadMaterial(IFile* file)
 	}
 
 	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load material '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer());
+		LogErrorResource("Failed to load material '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
 		failed();
 		return;
 	}
