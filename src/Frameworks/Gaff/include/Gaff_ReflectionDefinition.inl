@@ -219,10 +219,10 @@ int32_t ReflectionDefinition<T, Allocator>::VarPtr<Var>::sizeOfT(void) const
 
 template <class T, class Allocator>
 template <class Var>
-void ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
 {
 	Var* const var = &(object.*_ptr);
-	GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
 }
 
 template <class T, class Allocator>
@@ -326,18 +326,18 @@ int32_t ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::sizeOfT(void) 
 
 template <class T, class Allocator>
 template <class Ret, class Var>
-void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISerializeReader& reader, T& object)
 {
 	GAFF_ASSERT(_getter);
 	GAFF_ASSERT(_setter);
 
 	if constexpr (std::is_reference<Ret>::value) {
 		RetType& val = const_cast<RetType&>((object.*_getter)());
-		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, val);
+		return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, val);
 
 	} else {
 		RetType* const val = const_cast<RetType*>((object.*_getter)());
-		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, *val);
+		return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, *val);
 	}
 }
 
@@ -506,9 +506,9 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::resize(void* object, 
 
 template <class T, class Allocator>
 template <class Base>
-void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::load(const ISerializeReader& reader, T& object)
 {
-	_base_var->load(reader, object);
+	return _base_var->load(reader, object);
 }
 
 template <class T, class Allocator>
@@ -648,15 +648,19 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::resize(void*
 
 template <class T, class Allocator>
 template <class Var, size_t array_size>
-void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::load(const ISerializeReader& reader, T& object)
 {
 	constexpr int32_t size = static_cast<int32_t>(array_size);
 	GAFF_ASSERT(reader.size() == size);
 
+	bool success = true;
+
 	for (int32_t i = 0; i < size; ++i) {
 		ScopeGuard scope = reader.enterElementGuard(i);
-		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+		success = success && GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
 	}
+
+	return success;
 }
 
 template <class T, class Allocator>
@@ -816,15 +820,19 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::resize(v
 
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator>
-void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::load(const ISerializeReader& reader, T& object)
 {
 	const int32_t size = reader.size();
 	(object.*_ptr).resize(static_cast<size_t>(size));
 
+	bool success = true;
+
 	for (int32_t i = 0; i < size; ++i) {
 		ScopeGuard scope = reader.enterElementGuard(i);
-		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+		success = success && GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
 	}
+
+	return success;
 }
 
 template <class T, class Allocator>

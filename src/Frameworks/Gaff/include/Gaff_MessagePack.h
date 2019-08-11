@@ -94,6 +94,10 @@ public:
 	bool isArray(void) const;
 	bool isString(void) const;
 	bool isNumber(void) const;
+	bool isInt8(void) const;
+	bool isUInt8(void) const;
+	bool isInt16(void) const;
+	bool isUInt16(void) const;
 	bool isInt32(void) const; // Is(U)Int32/64 for compatability with JSON interface.
 	bool isUInt32(void) const;
 	bool isInt64(void) const; 

@@ -74,16 +74,21 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	component[8] = value.z;
 }
 
-void Position::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool Position::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
 {
 	glm::vec3 value;
 
 	{
 		const auto guard = reader.enterElementGuard("value");
-		Reflection<glm::vec3>::Load(reader, value);
+
+		if (!Reflection<glm::vec3>::Load(reader, value)) {
+			// $TODO: Log error.
+			return false;
+		}
 	}
 
 	Set(ecs_mgr, id, value);
+	return true;
 }
 
 const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
@@ -193,16 +198,21 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value)
 	component[12] = value.w;
 }
 
-void Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
 {
 	glm::quat value;
 
 	{
 		const auto guard = reader.enterElementGuard("value");
-		Reflection<glm::quat>::Load(reader, value);
+
+		if (!Reflection<glm::quat>::Load(reader, value)) {
+			// $TODO: Log error.
+			return false;
+		}
 	}
 
 	Set(ecs_mgr, id, value);
+	return true;
 }
 
 const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
@@ -318,16 +328,21 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	component[8] = value.z;
 }
 
-void Scale::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool Scale::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
 {
 	glm::vec3 value;
 
 	{
 		const auto guard = reader.enterElementGuard("value");
-		Reflection<glm::vec3>::Load(reader, value);
+
+		if (!Reflection<glm::vec3>::Load(reader, value)) {
+			// $TODO: Log error.
+			return false;
+		}
 	}
 
 	Set(ecs_mgr, id, value);
+	return true;
 }
 
 const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)

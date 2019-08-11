@@ -34,11 +34,11 @@ THE SOFTWARE.
 #include <Gaff_Reflection.h>
 
 #define SHIB_REFLECTION_DECLARE_BASE(type) \
-		void load(const Gaff::ISerializeReader& reader, void* object) const override \
+		bool load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			GAFF_ASSERT(object); \
-			g_reflection_definition->load(reader, object); \
+			return g_reflection_definition->load(reader, object); \
 		} \
 		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
 		{ \
@@ -46,10 +46,10 @@ THE SOFTWARE.
 			GAFF_ASSERT(object); \
 			g_reflection_definition->save(writer, object); \
 		} \
-		static void Load(const Gaff::ISerializeReader& reader, type& object) \
+		static bool Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
-			g_reflection_definition->load(reader, object); \
+			return g_reflection_definition->load(reader, object); \
 		} \
 		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
 		{ \

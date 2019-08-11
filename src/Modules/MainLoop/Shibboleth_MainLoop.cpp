@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_RasterStateResource.h>
 #include <Shibboleth_MaterialResource.h>
 #include <Shibboleth_ECSSceneResource.h>
+#include <Shibboleth_TextureResource.h>
 #include <Shibboleth_ModelResource.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
@@ -63,57 +64,66 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	//static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
-	//static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
-	//static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler");
-	//static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
-	//static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
-	////static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Textures/ninja.png");
-	//static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
-	//static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
-	//static auto* const program_buffers = _render_mgr->createProgramBuffers();
-	//static bool first_run = true;
+	// This is not safe. Doing for easy testing. Will remove later.
+	static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
+	static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler_state");
+	static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
+	static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
+	static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Models/nskinwh.png");
+	static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
+	static auto* const program_buffers = _render_mgr->createProgramBuffers();
+	static bool first_run = true;
 
 	//auto& rd = _render_mgr->getDevice(0);
 
-	//if (first_run) {
-	//	res_mgr.waitForResource(*camera_material_res);
-	//	res_mgr.waitForResource(*sampler_state_res);
-	//	res_mgr.waitForResource(*raster_state_res);
-	//	res_mgr.waitForResource(*material_res);
-	//	res_mgr.waitForResource(*scene_res);
-	//	res_mgr.waitForResource(*model_res);
+	if (first_run) {
+		first_run = false;
 
-	//	if (camera_material_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		res_mgr.waitForResource(*camera_material_res);
+		res_mgr.waitForResource(*sampler_state_res);
+		res_mgr.waitForResource(*raster_state_res);
+		res_mgr.waitForResource(*material_res);
+		res_mgr.waitForResource(*texture_res);
+		res_mgr.waitForResource(*scene_res);
+		res_mgr.waitForResource(*model_res);
 
-	//	if (sampler_state_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		if (camera_material_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	//	if (raster_state_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		if (sampler_state_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	//	if (material_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		if (raster_state_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	//	if (scene_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		if (material_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
-	//	if (model_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+		if (texture_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
+
+		if (scene_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
+
+		if (model_res->hasFailed()) {
+			GetApp().quit();
+			return;
+		}
 
 	//	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
 	//	const glm::mat4x4 projection = glm::perspectiveFovLH<float>(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
@@ -138,7 +148,7 @@ void MainLoop::update(void)
 
 	//	program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, sampler_state_res->getSamplerState(rd));
 	//	program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, camera_srv);
-	//}
+	}
 
 	//raster_state_res->getRasterState(rd)->set(rd);
 

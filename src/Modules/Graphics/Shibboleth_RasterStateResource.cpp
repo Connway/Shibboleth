@@ -110,7 +110,12 @@ void RasterStateResource::loadRasterState(IFile* file)
 	}
 
 	Gleam::IRasterState::RasterSettings raster_state_settings;
-	Reflection<Gleam::IRasterState::RasterSettings>::Load(reader, raster_state_settings);
+	
+	if (!Reflection<Gleam::IRasterState::RasterSettings>::Load(reader, raster_state_settings)) {
+		LogErrorResource("Failed to load raster state '%s'. Failed to deserialize raster settings.", getFilePath().getBuffer());
+		failed();
+		return;
+	}
 
 	for (Gleam::IRenderDevice* rd : *devices) {
 		Gleam::IRasterState* const raster_state = render_mgr.createRasterState();

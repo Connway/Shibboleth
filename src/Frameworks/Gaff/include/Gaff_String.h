@@ -147,7 +147,7 @@ template <class T>
 bool EndsWith(const T* string, size_t string_size, const T* end_string, size_t end_string_size)
 {
 	GAFF_ASSERT(string && end_string);
-	return string_size > end_string_size && !eastl::Compare(string + string_size - end_string_size, end_string, end_string_size);
+	return string_size >= end_string_size && !eastl::Compare(string + string_size - end_string_size, end_string, end_string_size);
 }
 
 template <class T>

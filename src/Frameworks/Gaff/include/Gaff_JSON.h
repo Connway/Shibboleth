@@ -108,6 +108,10 @@ public:
 	bool isArray(void) const;
 	bool isString(void) const;
 	bool isNumber(void) const;
+	bool isInt8(void) const;
+	bool isUInt8(void) const;
+	bool isInt16(void) const;
+	bool isUInt16(void) const;
 	bool isInt32(void) const;
 	bool isUInt32(void) const;
 	bool isInt64(void) const;

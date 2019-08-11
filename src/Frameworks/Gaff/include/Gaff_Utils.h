@@ -31,7 +31,8 @@ THE SOFTWARE.
 
 #define GAFF_STATIC_FILE_FUNC \
 	static void static__file__func(void); \
-	namespace { \
+	namespace \
+	{ \
 		struct static__file__func__helper \
 		{ \
 		public: \

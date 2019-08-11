@@ -43,6 +43,10 @@ public:
 	bool isArray(void) const override { return _stack.back().isArray(); }
 	bool isString(void) const override { return _stack.back().isString(); }
 	bool isNumber(void) const override { return _stack.back().isNumber(); }
+	bool isInt8(void) const override { return _stack.back().isInt8(); }
+	bool isUInt8(void) const override { return _stack.back().isUInt8(); }
+	bool isInt16(void) const override { return _stack.back().isInt16(); }
+	bool isUInt16(void) const override { return _stack.back().isUInt16(); }
 	bool isInt32(void) const override { return _stack.back().isInt32(); }
 	bool isUInt32(void) const override { return _stack.back().isUInt32(); }
 	bool isInt64(void) const override { return _stack.back().isInt64(); }

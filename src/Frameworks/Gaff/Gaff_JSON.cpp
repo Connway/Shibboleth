@@ -521,6 +521,26 @@ bool JSON::isNumber(void) const
 	return _value.IsNumber();
 }
 
+bool JSON::isInt8(void) const
+{
+	return _value.IsInt();
+}
+
+bool JSON::isUInt8(void) const
+{
+	return _value.IsUint();
+}
+
+bool JSON::isInt16(void) const
+{
+	return _value.IsInt();
+}
+
+bool JSON::isUInt16(void) const
+{
+	return _value.IsUint();
+}
+
 bool JSON::isInt32(void) const
 {
 	return _value.IsInt();

@@ -106,8 +106,15 @@ template <class T>
 bool LoadRefPtr(const Gaff::ISerializeReader& reader, Gaff::RefPtr<T>& out)
 {
 	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
+
+	if (!reader.isString()) {
+		return false;
+	}
+
 	const char* const res_path = reader.readString();
 	out = GetApp().getManagerTFast<ResourceManager>().requestResourceT<T>(res_path);
+	reader.freeString(res_path);
+
 	return out;
 }
 
