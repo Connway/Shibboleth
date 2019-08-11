@@ -35,19 +35,19 @@ THE SOFTWARE.
 
 		static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
 
-		//static void* ImageAlloc(size_t size)
+		//static void* GraphicsAlloc(size_t size)
 		//{
 		//	return SHIB_ALLOC(size, g_graphics_allocator);
 		//}
 
-		//static void* ImageCalloc(size_t num, size_t size)
+		//static void* GraphicsCalloc(size_t num, size_t size)
 		//{
-		//	return Shibboleth::ShibbolethCalloc(num, size, g_graphics_allocator.getPoolIndex());
+		//	return SHIB_CALLOC(num, size, g_graphics_allocator);
 		//}
 
-		//static void* ImageRealloc(void* old_ptr, size_t new_size)
+		//static void* GraphicsRealloc(void* old_ptr, size_t new_size)
 		//{
-		//	return Shibboleth::ShibbolethRealloc(old_ptr, new_size, g_graphics_allocator.getPoolIndex());
+		//	return SHIB_REALLOC(old_ptr, new_size, g_graphics_allocator);
 		//}
 
 		bool Initialize(Shibboleth::IApp& app)

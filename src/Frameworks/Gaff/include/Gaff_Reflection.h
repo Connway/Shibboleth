@@ -138,19 +138,19 @@ THE SOFTWARE.
 		static void BuildReflection(ReflectionBuilder& builder); \
 
 #define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
-		void load(const Gaff::ISerializeReader& reader, void* object) const override \
+		bool load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(object); \
-			g_reflection_definition.load(reader, object); \
+			return g_reflection_definition.load(reader, object); \
 		} \
 		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
 		{ \
 			GAFF_ASSERT(object); \
 			g_reflection_definition.save(writer, object); \
 		} \
-		static void Load(const Gaff::ISerializeReader& reader, type& object) \
+		static bool Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
-			g_reflection_definition.load(reader, object); \
+			return g_reflection_definition.load(reader, object); \
 		} \
 		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
 		{ \

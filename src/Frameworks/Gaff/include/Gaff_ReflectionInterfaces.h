@@ -61,7 +61,7 @@ public:
 
 	virtual void init(void) = 0;
 
-	virtual void load(const ISerializeReader& reader, void* object) const = 0;
+	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
@@ -108,9 +108,10 @@ public:
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
-	void load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
+	bool load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return false;
 	}
 	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/) const override
 	{

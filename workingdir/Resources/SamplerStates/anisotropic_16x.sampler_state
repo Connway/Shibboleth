@@ -1,14 +1,12 @@
 {
-	"filter": "ANISOTROPIC",
-	"wrap_u": "CLAMP",
-	"wrap_v": "CLAMP",
-	"wrap_w": "CLAMP",
+	"filter": "Anisotropic",
+	"wrap_u": "Clamp",
+	"wrap_v": "Clamp",
+	"wrap_w": "Clamp",
 	"max_anisotropy": 16,
 	"min_lod": 0.0,
 	"max_lod": 0.0,
 	"lod_bias": 0.0,
-	"border_r": 0.0,
-	"border_g": 0.0,
-	"border_b": 0.0,
-	"border_a": 0.0
+	"border_color": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 0.0 },
+	"compare_func": "Never"
 }

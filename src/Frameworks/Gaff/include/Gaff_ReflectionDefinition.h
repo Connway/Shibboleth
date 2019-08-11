@@ -69,7 +69,7 @@ public:
 		template <class DataType>
 		void setElementMoveT(T& object, int32_t index, DataType&& data);
 
-		virtual void load(const ISerializeReader& reader, T& object) = 0;
+		virtual bool load(const ISerializeReader& reader, T& object) = 0;
 		virtual void save(ISerializeWriter& writer, const T& object) = 0;
 	};
 
@@ -196,7 +196,7 @@ private:
 
 		int32_t sizeOfT(void) const override;
 
-		void load(const ISerializeReader& reader, T& object) override;
+		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
@@ -220,7 +220,7 @@ private:
 
 		int32_t sizeOfT(void) const override;
 
-		void load(const ISerializeReader& reader, T& object) override;
+		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
@@ -254,7 +254,7 @@ private:
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
 
-		void load(const ISerializeReader& reader, T& object) override;
+		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
@@ -285,7 +285,7 @@ private:
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
 
-		void load(const ISerializeReader& reader, T& object) override;
+		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
@@ -316,7 +316,7 @@ private:
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
 
-		void load(const ISerializeReader& reader, T& object) override;
+		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
@@ -554,7 +554,14 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		int32_t size(void) const override { return sizeof(class_type); } \
 		bool load(const ISerializeReader& reader, void* object) const override { return load(reader, *reinterpret_cast<class_type*>(object)); } \
 		void save(ISerializeWriter& writer, const void* object) const override { save(writer, *reinterpret_cast<const class_type*>(object)); } \
-		bool load(const ISerializeReader& reader, class_type& out) const { out = reader.read##serialize_type(); return true; } \
+		bool load(const ISerializeReader& reader, class_type& out) const \
+		{ \
+			if (!reader.is##serialize_type()) { \
+				return false; \
+			} \
+			out = reader.read##serialize_type(); \
+			return true; \
+		} \
 		void save(ISerializeWriter& writer, const class_type& value) const { writer.write##serialize_type(value); } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \

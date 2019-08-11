@@ -49,12 +49,6 @@ public:
 	}
 };
 
-
-Image::Image(const ProxyAllocator& allocator):
-	_allocator(allocator)
-{
-}
-
 bool Image::load(const void* buffer, size_t size, const char* file_ext)
 {
 	if (Gaff::EndsWith(file_ext, ".png")) {

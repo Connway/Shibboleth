@@ -76,6 +76,26 @@ bool MessagePackNode::isNumber(void) const
 	return isInt64() || isUInt64() || isFloat() || isDouble();
 }
 
+bool MessagePackNode::isInt8(void) const
+{
+	return _node.data->type == mpack_type_int;
+}
+
+bool MessagePackNode::isUInt8(void) const
+{
+	return _node.data->type == mpack_type_uint;
+}
+
+bool MessagePackNode::isInt16(void) const
+{
+	return _node.data->type == mpack_type_int;
+}
+
+bool MessagePackNode::isUInt16(void) const
+{
+	return _node.data->type == mpack_type_uint;
+}
+
 bool MessagePackNode::isInt32(void) const
 {
 	return _node.data->type == mpack_type_int;

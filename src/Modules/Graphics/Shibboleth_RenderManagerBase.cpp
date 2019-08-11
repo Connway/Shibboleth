@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsReflection.h"
 #include <Shibboleth_SerializeReader.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
@@ -115,8 +116,7 @@ bool RenderManagerBase::init(void)
 
 	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
 		const char* const error = config.getErrorText();
-		GAFF_REF(error);
-		// $TODO: Log error.
+		LogErrorDefault("Faild to parse config file with error - %s.", error);
 		fs.closeFile(file);
 		return false;
 	}
@@ -131,14 +131,14 @@ bool RenderManagerBase::init(void)
 		const auto display_modes = getDisplayModes();
 
 		if (adapter_id >= static_cast<int32_t>(display_modes.size())) {
-			// $TODO: Log error
+			LogErrorDefault("Invalid 'adapter_id' for window '%s'.", key);
 			return false;
 		}
 
 		const auto& adapter_info = display_modes[adapter_id];
 
 		if (display_id >= static_cast<int32_t>(adapter_info.displays.size())) {
-			// $TODO: Log error
+			LogErrorDefault("Invalid 'display_id' for window '%s'.", key);
 			return false;
 		}
 
@@ -159,6 +159,7 @@ bool RenderManagerBase::init(void)
 			rd = createRenderDevice();
 			
 			if (!rd->init(adapter_id)) {
+				LogErrorDefault("Failed to create render device for window '%s'.", key);
 				// $TODO: Log error
 				return false;
 			}
@@ -172,10 +173,14 @@ bool RenderManagerBase::init(void)
 		int32_t height = value["height"].getInt32(0);
 		const int32_t refresh_rate = value["refresh_rate"].getInt32(0);
 		const bool vsync = value["vsync"].getBool();
-		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_FULLSCREEN;
+		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_WINDOWED;
 
 		SerializeReader<Gaff::JSON> reader(value["window_mode"], ProxyAllocator("Graphics"));
-		Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode);
+		
+		// Log the error, but leave default to windowed mode.
+		if (!Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode)) {
+			LogWarningDefault("Failed to serialize window mode for window '%s'. Defaulting to 'Windowed' mode.", key);
+		}
 
 		if (width == 0 || height == 0) {
 			width = display_info.curr_width;
@@ -193,7 +198,7 @@ bool RenderManagerBase::init(void)
 		Gleam::IWindow* const window = createWindow();
 
 		if (!window->init(key, window_mode, width, height, x, y)) {
-			// $TODO: Log error
+			LogErrorDefault("Failed to create window '%s'.", key);
 			SHIB_FREET(window, GetAllocator());
 			return false;
 		}
@@ -223,7 +228,7 @@ bool RenderManagerBase::init(void)
 		Gleam::IRenderOutput* const output = createRenderOutput();
 
 		if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
-			// $TODO: Log error
+			LogErrorDefault("Failed to create render output for window '%s'.", key);
 			SHIB_FREET(output, GetAllocator());
 			SHIB_FREET(window, GetAllocator());
 			return false;

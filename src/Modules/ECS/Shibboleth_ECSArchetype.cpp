@@ -339,7 +339,7 @@ void* ECSArchetype::getSharedComponent(Gaff::Hash64 component)
 	return (offset >= 0) ? reinterpret_cast<int8_t*>(_shared_instances) + offset : nullptr;
 }
 
-void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const
+bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const
 {
 	GAFF_ASSERT(ValidEntityID(id));
 
@@ -347,18 +347,18 @@ void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::I
 		if (rdo.ref_def->getReflectionInstance().getHash() == component) {
 			if (!rdo.load_func) {
 				// $TODO: Log error
-				return;
+				return false;
 			}
 
-			rdo.load_func(ecs_mgr, id, reader);
-			return;
+			return rdo.load_func(ecs_mgr, id, reader);
 		}
 	}
 
 	// $TODO: Log error
+	return false;
 }
 
-void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const
+bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
 	GAFF_ASSERT(ValidEntityID(id));
@@ -367,10 +367,10 @@ void ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::I
 
 	if (!rdo.load_func) {
 		// $TODO: Log error
-		return;
+		return false;
 	}
 
-	rdo.load_func(ecs_mgr, id, reader);
+	return rdo.load_func(ecs_mgr, id, reader);
 }
 
 template <bool shared>
@@ -400,7 +400,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 
 	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
-	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<void, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
+	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log warning.

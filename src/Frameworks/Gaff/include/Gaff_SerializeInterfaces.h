@@ -80,6 +80,10 @@ public:
 	virtual bool isArray(void) const = 0;
 	virtual bool isString(void) const = 0;
 	virtual bool isNumber(void) const = 0;
+	virtual bool isInt8(void) const = 0;
+	virtual bool isUInt8(void) const = 0;
+	virtual bool isInt16(void) const = 0;
+	virtual bool isUInt16(void) const = 0;
 	virtual bool isInt32(void) const = 0;
 	virtual bool isUInt32(void) const = 0;
 	virtual bool isInt64(void) const = 0;

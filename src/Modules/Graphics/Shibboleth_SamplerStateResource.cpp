@@ -110,7 +110,12 @@ void SamplerStateResource::loadSamplerState(IFile* file)
 	}
 
 	Gleam::ISamplerState::SamplerSettings sampler_state_settings;
-	Reflection<Gleam::ISamplerState::SamplerSettings>::Load(reader, sampler_state_settings);
+
+	if (!Reflection<Gleam::ISamplerState::SamplerSettings>::Load(reader, sampler_state_settings)) {
+		LogErrorResource("Failed to load sampler state '%s'. Failed to deserialize sampler settings.", getFilePath().getBuffer());
+		failed();
+		return;
+	}
 
 	for (Gleam::IRenderDevice* rd : *devices) {
 		Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();

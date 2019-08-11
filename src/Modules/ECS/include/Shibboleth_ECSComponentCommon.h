@@ -45,7 +45,7 @@ public:
 	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
-	static void Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
@@ -71,7 +71,7 @@ public:
 	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
 
-	static void Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
@@ -98,7 +98,7 @@ public:
 	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
-	static void Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
@@ -124,7 +124,7 @@ public:
 	//static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value);
 	//static void Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
 
-	//static void Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	//static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, EntityID id);

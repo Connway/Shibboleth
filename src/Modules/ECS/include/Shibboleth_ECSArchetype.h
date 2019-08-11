@@ -163,15 +163,15 @@ public:
 	const void* getSharedComponent(Gaff::Hash64 component) const;
 	void* getSharedComponent(Gaff::Hash64 component);
 
-	void loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const;
-	void loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const;
+	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const;
+	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const;
 
 private:
 	struct RefDefOffset final
 	{
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
-		using LoadFunc = void (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
+		using LoadFunc = bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
 
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;

@@ -232,13 +232,26 @@ void MaterialResource::loadMaterial(IFile* file)
 
 		// If a compute shader was specified, then don't process any other fields.
 		if (!reader.isNull()) {
+			if (!reader.isString()) {
+				LogErrorResource("Malformed material '%s'. Element 'compute' is not a string.", getFilePath().getBuffer());
+				failed();
+				return;
+			}
+
 			ShaderResourcePtr compute;
-			Reflection<ShaderResourcePtr>::Load(reader, compute);
+
+			if (!Reflection<ShaderResourcePtr>::Load(reader, compute)) {
+				LogErrorResource("Failed to load material '%s'. Element 'compute' resource request failed.", getFilePath().getBuffer());
+				failed();
+				return;
+			}
 
 			res_mgr.waitForResource(*compute);
 
 			if (compute->hasFailed()) {
+				LogErrorResource("Failed to load material '%s'. Failed to load compute shader '%s'.", getFilePath().getBuffer(), compute->getFilePath().getBuffer());
 				failed();
+				return;
 
 			} else {
 				if (createProgram(*devices, compute)) {
@@ -258,16 +271,21 @@ void MaterialResource::loadMaterial(IFile* file)
 		"pixel",
 		"domain",
 		"geometry",
-		"hull"
+		"hull",
+		nullptr
 	};
 
 	int32_t index = 0;
 
 	for (const char* element : shader_elements) {
+		if (!element) {
+			continue;
+		}
+
 		const auto guard = reader.enterElementGuard(element);
+		++index;
 
 		if (reader.isNull()) {
-			++index;
 			continue;
 
 		} else if (!reader.isString()) {
@@ -277,21 +295,30 @@ void MaterialResource::loadMaterial(IFile* file)
 				failed();
 			}
 
-			++index;
 			continue;
 		}
 
-		Reflection<ShaderResourcePtr>::Load(reader, _shaders[index]);
-		++index;
+		if (!Reflection<ShaderResourcePtr>::Load(reader, _shaders[index])) {
+			LogErrorResource("Failed to load material '%s'. Element '%s' resource request failed.", getFilePath().getBuffer(), element);
+		}
 	}
 
 	if (!hasFailed()) {
-		for (const auto& shader : _shaders) {
+		index = 0;
+
+		for (const char* element : shader_elements) {
+			if (!element) {
+				continue;
+			}
+
+			const auto& shader = _shaders[index];
+			++index;
+
 			if (shader) {
 				res_mgr.waitForResource(*shader);
 
 				if (shader->hasFailed()) {
-					LogErrorResource("Failed to load material '%s'. Failed to load shader '%s'.", getFilePath().getBuffer(), shader->getFilePath().getBuffer());
+					LogErrorResource("Failed to load material '%s'. Failed to load %s shader '%s'.", getFilePath().getBuffer(), element, shader->getFilePath().getBuffer());
 					failed();
 					return;
 				}
