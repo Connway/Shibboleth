@@ -43,7 +43,7 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& 
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success || createShaderAndLayout(*device, shader_source, shader_type);
+		success = success && createShaderAndLayout(*device, shader_source, shader_type);
 	}
 
 	return success;
@@ -60,18 +60,21 @@ bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const c
 		return false;
 	}
 
-	Gleam::ILayout* const layout = render_mgr.createLayout();
-
-	if (!layout->init(device, *shader)) {
-		LogErrorResource("Failed to create shader layout '%s'.", getFilePath().getBuffer());
-		SHIB_FREET(shader, GetAllocator());
-		SHIB_FREET(layout, GetAllocator());
-		return false;
-	}
-
 	ShaderLayoutPair& pair = _shader_data[&device];
 	pair.first.reset(shader);
-	pair.second.reset(layout);
+
+	if (shader_type == Gleam::IShader::SHADER_VERTEX) {
+		Gleam::ILayout* const layout = render_mgr.createLayout();
+
+		if (!layout->init(device, *shader)) {
+			LogErrorResource("Failed to create shader layout '%s'.", getFilePath().getBuffer());
+			SHIB_FREET(shader, GetAllocator());
+			SHIB_FREET(layout, GetAllocator());
+			return false;
+		}
+
+		pair.second.reset(layout);
+	}
 
 	return true;
 }

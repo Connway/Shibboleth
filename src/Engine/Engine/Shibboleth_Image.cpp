@@ -74,10 +74,10 @@ static void PNGRead(png_structp png_ptr, png_bytep out_buffer, png_size_t out_si
 	buffer_data->curr_byte_offset += read_size;
 }
 
-bool Image::load(const void* buffer, size_t size, const char* file_ext, const FinishReadingCallback finish_reading_callback, void* callback_data)
+bool Image::load(const void* buffer, size_t size, const char* file_ext)
 {
 	if (Gaff::EndsWith(file_ext, ".png")) {
-		return loadPNG(buffer, size, finish_reading_callback, callback_data);
+		return loadPNG(buffer, size);
 	} else if (Gaff::EndsWith(file_ext, ".tiff") || Gaff::EndsWith(file_ext, ".tif")) {
 		//return loadTIFF(buffer, size, finish_reading_callback, callback_data);
 	}
@@ -85,7 +85,7 @@ bool Image::load(const void* buffer, size_t size, const char* file_ext, const Fi
 	return false;
 }
 
-bool Image::loadPNG(const void* buffer, size_t size, const FinishReadingCallback finish_reading_callback, void* callback_data)
+bool Image::loadPNG(const void* buffer, size_t size)
 {
 	constexpr size_t PNG_SIG_SIZE = 8;
 
@@ -135,34 +135,25 @@ bool Image::loadPNG(const void* buffer, size_t size, const FinishReadingCallback
 
 	if (retval != 1) {
 		// $TODO: Log error
+		png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		return false;
 	}
 
-	// Give calling code a chance to free up memory, as we no longer need the buffer.
-	if (finish_reading_callback) {
-		finish_reading_callback(callback_data);
-	}
+	const png_byte num_channels = png_get_channels(png_ptr, info_ptr);
+	const size_t bytes_per_row = png_get_rowbytes(png_ptr, info_ptr);
 
-	//const png_byte num_channels = png_get_channels(png_ptr, info_ptr);
+	_image.resize(
+		static_cast<size_t>(width) *
+		static_cast<size_t>(height) *
+		(static_cast<size_t>(bit_depth) / 8) *
+		static_cast<size_t>(num_channels)
+	);
 
-	switch (color_type) {
-		case PNG_COLOR_TYPE_RGB:
-			//_image.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * (static_cast<size_t>(bit_depth) / 8) * 4);
-			break;
+	uint8_t* const start = _image.data();
 
-		case PNG_COLOR_TYPE_RGBA:
-			//_image.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * (static_cast<size_t>(bit_depth) / 8) * 4);
-			break;
-
-		case PNG_COLOR_TYPE_GRAY:
-			// Not supported for now.
-			return false;
-			break;
-
-		case PNG_COLOR_TYPE_GA:
-			// Not supported for now.
-			return false;
-			break;
+	for (int32_t i = 0; i < static_cast<int32_t>(height); ++i) {
+		const size_t byte_offset = static_cast<size_t>(i) * bytes_per_row;
+		png_read_row(png_ptr, start + byte_offset, nullptr);
 	}
 
 	png_destroy_read_struct(&png_ptr, nullptr, nullptr);

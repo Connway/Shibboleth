@@ -34,11 +34,6 @@ SHIB_REFLECTION_DEFINE(TextureResource)
 
 NS_SHIBBOLETH
 
-static void DoneReadingBuffer(void* data)
-{
-	GetApp().getFileSystem().closeFile(reinterpret_cast<IFile*>(data));
-}
-
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.classAttrs(
 		CreatableAttribute(),
@@ -59,7 +54,7 @@ bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success || createTexture(*device, image);
+		success = success && createTexture(*device, image);
 	}
 
 	return success;
@@ -160,7 +155,7 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 	const size_t index = getFilePath().getString().find_last_of('.');
 	Image image;
 
-	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index, DoneReadingBuffer, const_cast<IFile*>(file))) {
+	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index)) {
 		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file.", getFilePath().getBuffer());
 		GetApp().getFileSystem().closeFile(file);
 		failed();

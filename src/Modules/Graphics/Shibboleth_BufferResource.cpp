@@ -41,7 +41,7 @@ bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, 
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success || createBuffer(*device, buffer_settings);
+		success = success && createBuffer(*device, buffer_settings);
 	}
 
 	return success;
