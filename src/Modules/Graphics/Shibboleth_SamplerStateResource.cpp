@@ -35,30 +35,41 @@ SHIB_REFLECTION_DEFINE(SamplerStateResource)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(SamplerStateResource)
-.classAttrs(
-	CreatableAttribute(),
-	ResExtAttribute(".sampler_state.bin"),
-	ResExtAttribute(".sampler_state"),
-	MakeLoadFileCallbackAttribute(&SamplerStateResource::loadSamplerState)
-)
+	.classAttrs(
+		CreatableAttribute(),
+		ResExtAttribute(".sampler_state.bin"),
+		ResExtAttribute(".sampler_state"),
+		MakeLoadFileCallbackAttribute(&SamplerStateResource::loadSamplerState)
+	)
 
-.BASE(IResource)
-.ctor<>()
+	.BASE(IResource)
+	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(SamplerStateResource)
 
-Gleam::ISamplerState* SamplerStateResource::getOrCreateSamplerState(const Gleam::IRenderDevice& rd)
+bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
 {
-	const auto it = _sampler_states.find(&rd);
+	bool success = true;
 
-	if (it != _sampler_states.end()) {
-		return it->second.get();
+	for (Gleam::IRenderDevice* device : devices) {
+		success = success && createSamplerState(*device, sampler_state_settings);
 	}
 
+	return success;
+}
+
+bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
+{
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
 
-	_sampler_states[&rd].reset(sampler_state);
-	return sampler_state;
+	if (!sampler_state->init(device, sampler_state_settings)) {
+		LogErrorResource("Failed to create sampler state '%s'.", getFilePath().getBuffer());
+		SHIB_FREET(sampler_state, GetAllocator());
+		return false;
+	}
+
+	_sampler_states[&device].reset(sampler_state);
+	return true;
 }
 
 const Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRenderDevice& rd) const
@@ -117,22 +128,16 @@ void SamplerStateResource::loadSamplerState(IFile* file)
 		return;
 	}
 
+	bool success = true;
+
 	for (Gleam::IRenderDevice* rd : *devices) {
-		Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
-
-		if (!sampler_state->init(*rd, sampler_state_settings)) {
-			LogErrorResource("Failed to create sampler state '%s'.", getFilePath().getBuffer());
-			failed();
-
-			SHIB_FREET(sampler_state, GetAllocator());
-			continue;
-		}
-
-		_sampler_states[rd].reset(sampler_state);
+		success = success && createSamplerState(*rd, sampler_state_settings);
 	}
 
-	if (!hasFailed()) {
+	if (success) {
 		succeeded();
+	} else {
+		failed();
 	}
 }
 

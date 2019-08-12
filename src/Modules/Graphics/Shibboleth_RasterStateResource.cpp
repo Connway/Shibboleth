@@ -46,19 +46,30 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RasterStateResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(RasterStateResource)
 
-Gleam::IRasterState* RasterStateResource::getOrCreateRasterState(const Gleam::IRenderDevice& rd)
+bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::RasterSettings& raster_state_settings)
 {
-	const auto it = _raster_states.find(&rd);
-	
-	if (it != _raster_states.end()) {
-		return it->second.get();
+	bool success = true;
+
+	for (Gleam::IRenderDevice* device : devices) {
+		success = success && createRasterState(*device, raster_state_settings);
 	}
 
+	return success;
+}
+
+bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::RasterSettings& raster_state_settings)
+{
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
 
-	_raster_states[&rd].reset(raster_state);
-	return raster_state;
+	if (!raster_state->init(device, raster_state_settings)) {
+		LogErrorResource("Failed to create raster state '%s'.", getFilePath().getBuffer());
+		SHIB_FREET(raster_state, GetAllocator());
+		return false;
+	}
+
+	_raster_states[&device].reset(raster_state);
+	return true;
 }
 
 const Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDevice& rd) const
@@ -117,22 +128,16 @@ void RasterStateResource::loadRasterState(IFile* file)
 		return;
 	}
 
+	bool success = true;
+
 	for (Gleam::IRenderDevice* rd : *devices) {
-		Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
-
-		if (!raster_state->init(*rd, raster_state_settings)) {
-			LogErrorResource("Failed to create raster state '%s'.", getFilePath().getBuffer());
-			failed();
-
-			SHIB_FREET(raster_state, GetAllocator());
-			continue;
-		}
-
-		_raster_states[rd].reset(raster_state);
+		success = success && createRasterState(*rd, raster_state_settings);
 	}
 
-	if (!hasFailed()) {
+	if (success) {
 		succeeded();
+	} else {
+		failed();
 	}
 }
 

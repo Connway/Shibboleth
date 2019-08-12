@@ -29,12 +29,15 @@ NS_SHIBBOLETH
 class Image final
 {
 public:
-	using FinishReadingCallback = void (*)(void*);
-
-	bool load(const void* buffer, size_t size, const char* file_ext, const FinishReadingCallback finish_reading_callback = nullptr, void* callback_data = nullptr);
-	bool loadPNG(const void* buffer, size_t size, const FinishReadingCallback finish_reading_callback = nullptr, void* callback_data = nullptr);
+	bool load(const void* buffer, size_t size, const char* file_ext);
+	bool loadPNG(const void* buffer, size_t size);
 
 private:
+	int32_t _width = 0;
+	int32_t _height = 0;
+	int32_t _bit_depth = 0;
+	int32_t _num_channels = 0;
+
 	Vector<uint8_t> _image{ ProxyAllocator("Image") };
 };
 

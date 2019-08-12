@@ -32,7 +32,8 @@ class SamplerStateResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
-	Gleam::ISamplerState* getOrCreateSamplerState(const Gleam::IRenderDevice& rd);
+	bool createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings);
+	bool createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings);
 
 	const Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd) const;
 	Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd);

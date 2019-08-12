@@ -56,7 +56,7 @@ bool MaterialResource::createProgram(
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success || createProgram(*device, vertex, pixel, domain, geometry, hull);
+		success = success && createProgram(*device, vertex, pixel, domain, geometry, hull);
 	}
 
 	return success;
@@ -151,7 +151,7 @@ bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& device
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success || createProgram(*device, compute);
+		success = success && createProgram(*device, compute);
 	}
 
 	return success;
