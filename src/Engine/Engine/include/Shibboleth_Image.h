@@ -29,6 +29,13 @@ NS_SHIBBOLETH
 class Image final
 {
 public:
+	int32_t getWidth(void) const;
+	int32_t getHeight(void) const;
+	int32_t getBitDepth(void) const;
+	int32_t getNumChannels(void) const;
+	const uint8_t* getBuffer(void) const;
+	uint8_t* getBuffer(void);
+
 	bool load(const void* buffer, size_t size, const char* file_ext);
 	bool loadPNG(const void* buffer, size_t size);
 
