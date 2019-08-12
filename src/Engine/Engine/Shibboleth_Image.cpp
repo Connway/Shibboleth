@@ -74,6 +74,36 @@ static void PNGRead(png_structp png_ptr, png_bytep out_buffer, png_size_t out_si
 	buffer_data->curr_byte_offset += read_size;
 }
 
+int32_t Image::getWidth(void) const
+{
+	return _width;
+}
+
+int32_t Image::getHeight(void) const
+{
+	return _height;
+}
+
+int32_t Image::getBitDepth(void) const
+{
+	return _bit_depth;
+}
+
+int32_t Image::getNumChannels(void) const
+{
+	return _num_channels;
+}
+
+const uint8_t* Image::getBuffer(void) const
+{
+	return _image.data();
+}
+
+uint8_t* Image::getBuffer(void)
+{
+	return _image.data();
+}
+
 bool Image::load(const void* buffer, size_t size, const char* file_ext)
 {
 	if (Gaff::EndsWith(file_ext, ".png")) {

@@ -34,6 +34,41 @@ SHIB_REFLECTION_DEFINE(TextureResource)
 
 NS_SHIBBOLETH
 
+static Gleam::ITexture::Format GetTextureFormat(const Image& image)
+{
+	switch (image.getBitDepth()) {
+		case 8:
+			switch (image.getNumChannels()) {
+				case 1: return Gleam::ITexture::Format::R_8_UNORM;
+				case 2: return Gleam::ITexture::Format::RG_8_UNORM;
+				//case 3: return Gleam::ITexture::Format::RGB_8_UNORM;
+				case 4: return Gleam::ITexture::Format::RGBA_8_UNORM;
+				default:
+					break;
+			}
+			break;
+
+		case 16:
+			switch (image.getNumChannels()) {
+				case 1: return Gleam::ITexture::Format::R_16_UNORM;
+				case 2: return Gleam::ITexture::Format::RG_16_UNORM;
+				//case 3: return Gleam::ITexture::Format::RGB_16_UNORM;
+				case 4: return Gleam::ITexture::Format::RGBA_16_UNORM;
+				default:
+					break;
+			}
+			break;
+
+		//case 32:
+		//	break;
+
+		default:
+			break;
+	}
+
+	return Gleam::ITexture::Format::SIZE;
+}
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.classAttrs(
 		CreatableAttribute(),
@@ -49,21 +84,39 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(TextureResource)
 
-bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image)
+bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels)
 {
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success && createTexture(*device, image);
+		success = success && createTexture(*device, image, mip_levels);
 	}
 
 	return success;
 }
 
-bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image)
+bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels)
 {
-	GAFF_REF(device, image);
-	return false;
+	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	Gleam::ITexture* const texture = render_mgr.createTexture();
+
+	const bool success = texture->init2D(
+		device,
+		image.getWidth(),
+		image.getHeight(),
+		GetTextureFormat(image),
+		mip_levels,
+		image.getBuffer()
+	);
+
+	if (!success) {
+		LogErrorResource("Failed to create texture '%s'.", getFilePath().getBuffer());
+		SHIB_FREET(texture, GetAllocator());
+		return false;
+	}
+
+	_textures[&device].reset(texture);
+	return true;
 }
 
 const Gleam::ITexture* TextureResource::getTexture(const Gleam::IRenderDevice& rd) const
@@ -164,11 +217,11 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 
 	GetApp().getFileSystem().closeFile(file);
 
-	if (!createTexture(*devices, image)) {
+	if (createTexture(*devices, image)) {
+		succeeded();
+	} else {
 		failed();
 	}
-
-	succeeded();
 }
 
 NS_END

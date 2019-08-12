@@ -128,13 +128,7 @@ void RasterStateResource::loadRasterState(IFile* file)
 		return;
 	}
 
-	bool success = true;
-
-	for (Gleam::IRenderDevice* rd : *devices) {
-		success = success && createRasterState(*rd, raster_state_settings);
-	}
-
-	if (success) {
+	if (createRasterState(*devices, raster_state_settings)) {
 		succeeded();
 	} else {
 		failed();

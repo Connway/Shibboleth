@@ -128,13 +128,7 @@ void SamplerStateResource::loadSamplerState(IFile* file)
 		return;
 	}
 
-	bool success = true;
-
-	for (Gleam::IRenderDevice* rd : *devices) {
-		success = success && createSamplerState(*rd, sampler_state_settings);
-	}
-
-	if (success) {
+	if (createSamplerState(*devices, sampler_state_settings)) {
 		succeeded();
 	} else {
 		failed();
