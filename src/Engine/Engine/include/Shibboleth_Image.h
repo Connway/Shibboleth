@@ -22,15 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
+#include "Shibboleth_Vector.h"
 
 NS_SHIBBOLETH
 
 class Image final
 {
 public:
-	bool load(const void* buffer, size_t size, const char* file_ext);
-	bool loadPNG(const void* buffer, size_t size);
+	using FinishReadingCallback = void (*)(void*);
+
+	bool load(const void* buffer, size_t size, const char* file_ext, const FinishReadingCallback finish_reading_callback = nullptr, void* callback_data = nullptr);
+	bool loadPNG(const void* buffer, size_t size, const FinishReadingCallback finish_reading_callback = nullptr, void* callback_data = nullptr);
+
+private:
+	Vector<uint8_t> _image{ ProxyAllocator("Image") };
 };
 
 NS_END

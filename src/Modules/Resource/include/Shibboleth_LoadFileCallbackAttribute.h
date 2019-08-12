@@ -32,9 +32,18 @@ class IFile;
 class ILoadFileCallbackAttribute : public Gaff::IAttribute
 {
 public:
-	ILoadFileCallbackAttribute(int32_t pool): _pool(pool) {}
+	ILoadFileCallbackAttribute(bool callback_closes_file, int32_t pool):
+		_callback_closes_file(callback_closes_file),
+		_pool(pool)
+	{
+	}
 	
 	virtual void callCallback(void* object, IFile* file) const = 0;
+
+	bool doesCallbackCloseFile(void) const
+	{
+		return _callback_closes_file;
+	}
 
 	int32_t getPool(void) const
 	{
@@ -42,15 +51,16 @@ public:
 	}
 
 private:
-	int32_t _pool;
+	const bool _callback_closes_file;
+	const int32_t _pool;
 };
 
 template <class T>
 class LoadFileCallbackAttribute final : public ILoadFileCallbackAttribute
 {
 public:
-	LoadFileCallbackAttribute(void (T::*callback)(IFile*), int32_t pool = JPI_ANY):
-		ILoadFileCallbackAttribute(pool), _callback(callback)
+	LoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, int32_t pool = JPI_ANY):
+		ILoadFileCallbackAttribute(callback_closes_file, pool), _callback(callback)
 	{
 	}
 
@@ -73,9 +83,9 @@ private:
 };
 
 template <class T>
-LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), int32_t pool = JPI_ANY)
+LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, int32_t pool = JPI_ANY)
 {
-	return LoadFileCallbackAttribute<T>(callback, pool);
+	return LoadFileCallbackAttribute<T>(callback, callback_closes_file, pool);
 }
 
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(LoadFileCallbackAttribute, T)
