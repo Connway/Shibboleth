@@ -40,7 +40,10 @@ static void LoadJob(void* data)
 	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
 	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second);
 
-	GetApp().getFileSystem().closeFile(job_data->second);
+	if (!cb_attr->doesCallbackCloseFile()) {
+		GetApp().getFileSystem().closeFile(job_data->second);
+	}
+
 	SHIB_FREET(job_data, GetAllocator());
 }
 

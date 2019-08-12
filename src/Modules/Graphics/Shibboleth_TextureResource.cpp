@@ -34,6 +34,11 @@ SHIB_REFLECTION_DEFINE(TextureResource)
 
 NS_SHIBBOLETH
 
+static void DoneReadingBuffer(void* data)
+{
+	GetApp().getFileSystem().closeFile(reinterpret_cast<IFile*>(data));
+}
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.classAttrs(
 		CreatableAttribute(),
@@ -42,7 +47,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 		ResExtAttribute(".png"),
 		ResExtAttribute(".tiff"),
 		ResExtAttribute(".tif"),
-		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture)
+		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture, true)
 	)
 
 	.BASE(IResource)
@@ -82,6 +87,7 @@ void TextureResource::loadTexture(IFile* file)
 {
 	if (Gaff::EndsWith(getFilePath().getBuffer(), ".texture") || Gaff::EndsWith(getFilePath().getBuffer(), ".texture.bin")) {
 		loadTextureJSON(file);
+		GetApp().getFileSystem().closeFile(file);
 	} else {
 		loadTextureImage(file, "main");
 	}
@@ -154,11 +160,14 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 	const size_t index = getFilePath().getString().find_last_of('.');
 	Image image;
 
-	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index)) {
+	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index, DoneReadingBuffer, const_cast<IFile*>(file))) {
 		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file.", getFilePath().getBuffer());
+		GetApp().getFileSystem().closeFile(file);
 		failed();
 		return;
 	}
+
+	GetApp().getFileSystem().closeFile(file);
 
 	if (!createTexture(*devices, image)) {
 		failed();
