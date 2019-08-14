@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_IResource.h>
 #include <Shibboleth_SmartPtrs.h>
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_ITexture.h>
 
 NS_SHIBBOLETH
@@ -41,8 +42,12 @@ public:
 	const Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd) const;
 	Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd);
 
+	const Gleam::IShaderResourceView* getShaderResourceView(const Gleam::IRenderDevice& rd) const;
+	Gleam::IShaderResourceView* getShaderResourceView(const Gleam::IRenderDevice& rd);
+
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ITexture> > _textures{ ProxyAllocator("Graphics") };
+	using Data = eastl::pair< UniquePtr<Gleam::ITexture>, UniquePtr<Gleam::IShaderResourceView> >;
+	VectorMap<const Gleam::IRenderDevice*, Data> _texture_data{ ProxyAllocator("Graphics") };
 
 	void loadTexture(IFile* file);
 	void loadTextureJSON(const IFile* file);

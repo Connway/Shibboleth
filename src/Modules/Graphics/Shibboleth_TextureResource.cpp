@@ -100,7 +100,7 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::ITexture* const texture = render_mgr.createTexture();
 
-	const bool success = texture->init2D(
+	bool success = texture->init2D(
 		device,
 		image.getWidth(),
 		image.getHeight(),
@@ -115,20 +115,45 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 		return false;
 	}
 
-	_textures[&device].reset(texture);
+	Gleam::IShaderResourceView* const srv = render_mgr.createShaderResourceView();
+	success = srv->init(device, texture);
+
+	if (!success) {
+		LogErrorResource("Failed to create texture shader resource view '%s'.", getFilePath().getBuffer());
+		SHIB_FREET(texture, GetAllocator());
+		SHIB_FREET(srv, GetAllocator());
+		return false;
+	}
+
+	auto& data = _texture_data[&device];
+	data.first.reset(texture);
+	data.second.reset(srv);
+
 	return true;
 }
 
 const Gleam::ITexture* TextureResource::getTexture(const Gleam::IRenderDevice& rd) const
 {
-	const auto it = _textures.find(&rd);
-	return (it != _textures.end()) ? it->second.get() : nullptr;
+	const auto it = _texture_data.find(&rd);
+	return (it != _texture_data.end()) ? it->second.first.get() : nullptr;
 }
 
 Gleam::ITexture* TextureResource::getTexture(const Gleam::IRenderDevice& rd)
 {
-	const auto it = _textures.find(&rd);
-	return (it != _textures.end()) ? it->second.get() : nullptr;
+	const auto it = _texture_data.find(&rd);
+	return (it != _texture_data.end()) ? it->second.first.get() : nullptr;
+}
+
+const Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::IRenderDevice& rd) const
+{
+	const auto it = _texture_data.find(&rd);
+	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
+}
+
+Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::IRenderDevice& rd)
+{
+	const auto it = _texture_data.find(&rd);
+	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
 }
 
 void TextureResource::loadTexture(IFile* file)
