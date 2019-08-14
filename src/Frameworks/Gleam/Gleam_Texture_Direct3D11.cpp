@@ -234,7 +234,7 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_mip_levels = static_cast<int32_t>(mip_levels);
+	_mip_levels = mip_levels;
 	_array_size = num_elements;
 	_format = format;
 	_type = (num_elements > 1) ? Type::TWO_D_ARRAY : Type::TWO_D;
@@ -283,7 +283,7 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_mip_levels = static_cast<int32_t>(mip_levels);
+	_mip_levels = mip_levels;
 	_array_size = num_elements;
 	_format = format;
 	_type = (num_elements > 1) ? Type::ONE_D_ARRAY : Type::ONE_D;
@@ -328,7 +328,7 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_mip_levels = static_cast<int32_t>(mip_levels);
+	_mip_levels = mip_levels;
 	_format = format;
 	_type = Type::THREE_D;
 	_width = width;
@@ -383,7 +383,7 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_mip_levels = static_cast<int32_t>(mip_levels);
+	_mip_levels = mip_levels;
 	_array_size = 6;
 	_format = format;
 	_type = Type::CUBE;

@@ -77,7 +77,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 		ResExtAttribute(".png"),
 		ResExtAttribute(".tiff"),
 		ResExtAttribute(".tif"),
-		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture, true)
+		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture)
 	)
 
 	.BASE(IResource)
@@ -210,12 +210,9 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 
 	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index)) {
 		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file.", getFilePath().getBuffer());
-		GetApp().getFileSystem().closeFile(file);
 		failed();
 		return;
 	}
-
-	GetApp().getFileSystem().closeFile(file);
 
 	if (createTexture(*devices, image)) {
 		succeeded();
