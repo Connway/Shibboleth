@@ -43,7 +43,8 @@ public:
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
-	BufferResourcePtr _buffers;
+	BufferResourcePtr _vertex_data;
+	BufferResourcePtr _indice_data;
 
 	void loadMesh(IFile* file);
 

@@ -41,6 +41,11 @@ SHIB_REFLECTION_CLASS_DEFINE_END(MeshResource)
 
 bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh)
 {
+	if (!mesh.HasFaces()) {
+		LogErrorResource("Failed to load mesh '%s'. Mesh does not have an index list.", getFilePath().getBuffer());
+		return false;
+	}
+
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
@@ -79,7 +84,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	settings.stride = static_cast<int32_t>(settings.size / mesh.mNumVertices);
 
-	void* const data = SHIB_ALLOC_POOL(settings.size, GetAllocator().getPoolIndex("Graphics"), GetAllocator());
+	void* data = SHIB_ALLOC_POOL(settings.size, GetAllocator().getPoolIndex("Graphics"), GetAllocator());
 	int8_t* curr = reinterpret_cast<int8_t*>(data);
 
 	settings.data = data;
@@ -116,17 +121,49 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	bool succeeded = true;
 
-	const U8String res_name = getFilePath().getString() + ":mesh_buffer";
-	_buffers = res_mgr.createResourceT<BufferResource>(res_name.data());
+	U8String res_name = getFilePath().getString() + ":vertex_buffer";
+	_vertex_data = res_mgr.createResourceT<BufferResource>(res_name.data());
 
-	if (!_buffers->createBuffer(devices, settings)) {
-		LogErrorResource("Failed to load mesh '%s'.", getFilePath().getBuffer());
+	if (!_vertex_data->createBuffer(devices, settings)) {
+		LogErrorResource("Failed to load mesh '%s'. Failed to create vertex buffer.", getFilePath().getBuffer());
 		succeeded = false;
 	}
 
+	SHIB_FREE(data, GetAllocator());
+
+	// Create indice data.
+	settings = Gleam::IBuffer::BufferSettings{ nullptr, static_cast<size_t>(mesh.mNumFaces) * 3 * sizeof(uint32_t), 0, Gleam::IBuffer::BT_INDEX_DATA, Gleam::IBuffer::MT_NONE, true };
+	data = SHIB_ALLOC_POOL(settings.size, GetAllocator().getPoolIndex("Graphics"), GetAllocator());
+	uint32_t* index = reinterpret_cast<uint32_t*>(data);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(mesh.mNumFaces); ++i) {
+		const aiFace& face = mesh.mFaces[i];
+
+		if (face.mNumIndices != 3) {
+			LogErrorResource("Failed to load mesh '%s'. Face is %u vertices instead of 3.", getFilePath().getBuffer(), face.mNumIndices);
+			continue;
+		}
+
+		index[i * 3] = face.mIndices[0];
+		index[i * 3 + 1] = face.mIndices[1];
+		index[i * 3 + 2] = face.mIndices[2];
+	}
+
+	settings.data = data;
+
+	res_name = getFilePath().getString() + ":indice_buffer";
+	_indice_data = res_mgr.createResourceT<BufferResource>(res_name.data());
+
+	if (!_indice_data->createBuffer(devices, settings)) {
+		LogErrorResource("Failed to load mesh '%s'. Failed to create indice buffer.", getFilePath().getBuffer());
+		succeeded = false;
+	}
+
+	SHIB_FREE(data, GetAllocator());
+
 	for (int32_t j = 0; j < static_cast<int32_t>(devices.size()); ++j) {
 		Gleam::IRenderDevice* const rd = devices[j];
-		Gleam::IBuffer* const buffer = _buffers->getBuffer(*rd);
+		Gleam::IBuffer* const buffer = _vertex_data->getBuffer(*rd);
 
 		if (!buffer) {
 			continue;
@@ -136,6 +173,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		_meshes[rd].reset(gpu_mesh);
 
 		gpu_mesh->setTopologyType(Gleam::IMesh::TRIANGLE_LIST);
+		//gpu_mesh->setIndiceBuffer()
 
 		// Add the buffer with all the offsets to the mesh.
 		uint32_t offset = 0;
@@ -169,8 +207,11 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		}
 	}
 
-	SHIB_FREE(data, GetAllocator());
-	return succeeded;
+	if (!succeeded) {
+		return false;
+	}
+
+	return true;
 }
 
 bool MeshResource::createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh)

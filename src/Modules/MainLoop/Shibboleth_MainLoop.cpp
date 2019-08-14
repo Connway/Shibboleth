@@ -77,7 +77,8 @@ void MainLoop::update(void)
 	static auto* const program_buffers = _render_mgr->createProgramBuffers();
 	static bool first_run = true;
 
-	//auto& rd = _render_mgr->getDevice(0);
+	auto& rd = _render_mgr->getDevice(0);
+	auto& out = *_render_mgr->getOutput("main");
 
 	if (first_run) {
 		first_run = false;
@@ -125,44 +126,48 @@ void MainLoop::update(void)
 			return;
 		}
 
-	//	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
-	//	const glm::mat4x4 projection = glm::perspectiveFovLH<float>(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
-	//	const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -5.0f), glm::zero<glm::vec3>(), glm::vec3(0.0f, 1.0f, 0.0f));
-	//	const glm::mat4x4 result = camera * projection;
+		const Gleam::IWindow* const window = _render_mgr->getWindow("main");
+		const glm::mat4x4 projection = glm::perspectiveFovLH<float>(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
+		const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -5.0f), glm::zero<glm::vec3>(), glm::vec3(0.0f, 1.0f, 0.0f));
+		const glm::mat4x4 result = camera * projection;
 
-	//	Gleam::IBuffer::BufferSettings buffer_settings =
-	//	{
-	//		&result,
-	//		sizeof(glm::mat4x4),
-	//		sizeof(glm::mat4x4),
-	//		Gleam::IBuffer::BT_STRUCTURED_DATA,
-	//		Gleam::IBuffer::MT_WRITE,
-	//		true
-	//	};
+		Gleam::IBuffer::BufferSettings buffer_settings =
+		{
+			&result,
+			sizeof(glm::mat4x4),
+			sizeof(glm::mat4x4),
+			Gleam::IBuffer::BT_STRUCTURED_DATA,
+			Gleam::IBuffer::MT_WRITE,
+			true
+		};
 
-	//	auto* const camera_buffer = _render_mgr->createBuffer();
-	//	camera_buffer->init(rd, buffer_settings);
+		auto* const camera_buffer = _render_mgr->createBuffer();
+		camera_buffer->init(rd, buffer_settings);
 
-	//	auto* const camera_srv = _render_mgr->createShaderResourceView();
-	//	camera_srv->init(rd, camera_buffer);
+		auto* const camera_srv = _render_mgr->createShaderResourceView();
+		camera_srv->init(rd, camera_buffer);
 
-	//	program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, sampler_state_res->getSamplerState(rd));
-	//	program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, camera_srv);
+		program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, sampler_state_res->getSamplerState(rd));
+		program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, texture_res->getShaderResourceView(rd));
+		program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, camera_srv);
 	}
 
-	//raster_state_res->getRasterState(rd)->set(rd);
+	raster_state_res->getRasterState(rd)->set(rd);
+	program_buffers->bind(rd);
+	
+	rd.frameBegin(out);
 
-	//program_buffers->bind(rd);
+	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
+		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
+	}
 
-	//for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
-	//	model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
-	//}
+	rd.frameEnd(out);
 
 	//camera_material_res->getProgram(rd)->bind(rd);
 	//rd.resetRenderState();
 	//rd.renderNoVertexInput(6);
 
-	GetApp().quit();
+	//GetApp().quit();
 }
 
 NS_END
