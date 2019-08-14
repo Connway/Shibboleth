@@ -187,6 +187,12 @@ bool Image::loadPNG(const void* buffer, size_t size)
 	}
 
 	png_destroy_read_struct(&png_ptr, nullptr, nullptr);
+
+	_width = static_cast<int32_t>(width);
+	_height = static_cast<int32_t>(height);
+	_bit_depth = static_cast<int32_t>(bit_depth);
+	_num_channels = static_cast<int32_t>(num_channels);
+
 	return true;
 }
 
