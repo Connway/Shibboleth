@@ -175,6 +175,16 @@ int32_t RenderOutputD3D11::getHeight(void) const
 	return static_cast<int32_t>(getViewport().Height);
 }
 
+const IRenderTarget& RenderOutputD3D11::getRenderTarget(void) const
+{
+	return *_render_target;
+}
+
+IRenderTarget& RenderOutputD3D11::getRenderTarget(void)
+{
+	return *_render_target;
+}
+
 Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
 {
 	return _swap_chain;

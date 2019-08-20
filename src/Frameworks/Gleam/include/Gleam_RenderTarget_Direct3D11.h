@@ -48,7 +48,7 @@ public:
 	void bind(IRenderDevice& rd) override;
 	void unbind(IRenderDevice& rd) override;
 
-	void clear(IRenderDevice& rd, uint32_t clear_flags = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR, float clear_depth = 1.0f, uint8_t clear_stencil = 0, float* clear_color = nullptr) override;
+	void clear(IRenderDevice& rd, uint8_t clear_flags = CLEAR_ALL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color& clear_color = COLOR_BLACK) override;
 
 	bool isComplete(void) const override;
 

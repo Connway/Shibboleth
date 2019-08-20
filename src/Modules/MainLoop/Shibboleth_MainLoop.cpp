@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include <Shibboleth_ModelResource.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_IRenderTarget.h>
 #include <Gleam_IncludeMatrix.h>
 
 SHIB_REFLECTION_DEFINE(MainLoop)
@@ -156,6 +157,8 @@ void MainLoop::update(void)
 	program_buffers->bind(rd);
 	
 	rd.frameBegin(out);
+	out.getRenderTarget().bind(rd);
+	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::ClearFlags::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_RED);
 
 	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
 		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
