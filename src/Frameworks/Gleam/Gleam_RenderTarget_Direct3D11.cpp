@@ -140,7 +140,7 @@ void RenderTargetD3D11::unbind(IRenderDevice& rd)
 	rd3d.getDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void RenderTargetD3D11::clear(IRenderDevice& rd, uint32_t clear_flags, float clear_depth, uint8_t clear_stencil, float* clear_color)
+void RenderTargetD3D11::clear(IRenderDevice& rd, uint8_t clear_flags, float clear_depth, uint8_t clear_stencil, const Color& clear_color)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -148,8 +148,7 @@ void RenderTargetD3D11::clear(IRenderDevice& rd, uint32_t clear_flags, float cle
 
 	if (clear_flags & CLEAR_COLOR) {
 		for (int32_t i = 0; i < static_cast<int32_t>(_render_target_views.size()); ++i) {
-			//context->ClearRenderTargetView(_render_target_views[i], (clear_color) ? clear_color : rd3d.getClearColor());
-			context->ClearRenderTargetView(_render_target_views[i], clear_color);
+			context->ClearRenderTargetView(_render_target_views[i], clear_color.data.data);
 		}
 	}
 

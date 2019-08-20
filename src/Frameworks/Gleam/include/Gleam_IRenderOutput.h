@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class IRenderTarget;
 class IRenderDevice;
 class IWindow;
 
@@ -42,6 +43,9 @@ public:
 
 	virtual int32_t getWidth(void) const = 0;
 	virtual int32_t getHeight(void) const = 0;
+
+	virtual const IRenderTarget& getRenderTarget(void) const = 0;
+	virtual IRenderTarget& getRenderTarget(void) = 0;
 
 	GAFF_NO_COPY(IRenderOutput);
 };

@@ -41,6 +41,9 @@ public:
 	int32_t getWidth(void) const override;
 	int32_t getHeight(void) const override;
 
+	const IRenderTarget& getRenderTarget(void) const override;
+	IRenderTarget& getRenderTarget(void) override;
+
 	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
 	D3D11_VIEWPORT getViewport(void) const;
 	bool isVSync(void) const;

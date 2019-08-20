@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_Color.h"
 #include <Gaff_Defines.h>
 
 NS_GLEAM
@@ -67,7 +67,7 @@ public:
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual void clear(IRenderDevice& rd, uint32_t clear_flags = CLEAR_DEPTH | CLEAR_STENCIL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, float* clear_color = nullptr) = 0;
+	virtual void clear(IRenderDevice& rd, uint8_t clear_flags = CLEAR_ALL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color & clear_color = COLOR_BLACK) = 0;
 
 	virtual bool isComplete(void) const = 0;
 

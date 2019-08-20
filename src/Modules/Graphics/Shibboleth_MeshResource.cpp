@@ -163,9 +163,10 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	for (int32_t j = 0; j < static_cast<int32_t>(devices.size()); ++j) {
 		Gleam::IRenderDevice* const rd = devices[j];
-		Gleam::IBuffer* const buffer = _vertex_data->getBuffer(*rd);
+		Gleam::IBuffer* const vertex_buffer = _vertex_data->getBuffer(*rd);
+		Gleam::IBuffer* const indice_buffer = _indice_data->getBuffer(*rd);
 
-		if (!buffer) {
+		if (!vertex_buffer || !indice_buffer) {
 			continue;
 		}
 
@@ -173,36 +174,37 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		_meshes[rd].reset(gpu_mesh);
 
 		gpu_mesh->setTopologyType(Gleam::IMesh::TRIANGLE_LIST);
-		//gpu_mesh->setIndiceBuffer()
+		gpu_mesh->setIndiceBuffer(indice_buffer);
+		gpu_mesh->setIndexCount(static_cast<int32_t>(mesh.mNumFaces * 3));
 
 		// Add the buffer with all the offsets to the mesh.
 		uint32_t offset = 0;
 
 		if (mesh.HasPositions()) {
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(PosSize);
 		}
 
 		if (mesh.HasNormals()) {
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(NrmSize);
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(TanSize);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(UVSize * mesh.mNumUVComponents[k]);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumColorChannels()); ++k) {
-			gpu_mesh->addBuffer(buffer, offset);
+			gpu_mesh->addBuffer(vertex_buffer, offset);
 			offset += static_cast<uint32_t>(ClrSize);
 		}
 	}
