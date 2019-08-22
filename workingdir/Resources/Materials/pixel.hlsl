@@ -21,9 +21,9 @@ PixelOutputType PixelMain(PixelInputType input)
 {
 	PixelOutputType output;
 
-	output.diffuse = float4(0,1,0,1);
+	//output.diffuse = float4(0,1,0,1);
 	//output.specular = float4(0,1,0,1);
-	//output.diffuse = tex.Sample(sample, input.uv);
+	output.diffuse = tex.Sample(sample, input.uv);
 
 	//output.specular = float4(1.0, 0.0, 0.0, 1.0);
 	//output.normal = input.normal;

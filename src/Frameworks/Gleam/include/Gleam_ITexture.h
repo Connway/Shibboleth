@@ -114,6 +114,8 @@ public:
 		SIZE
 	};
 
+	// $TODO: TextureSettings struct.
+
 	ITexture(void) {}
 	virtual ~ITexture(void) {}
 

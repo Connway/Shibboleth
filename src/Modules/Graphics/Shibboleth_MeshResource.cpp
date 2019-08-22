@@ -96,15 +96,19 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		}
 
 		if (mesh.HasNormals()) {
-			memcpy(curr, &mesh.mNormals[j], NrmSize);
+			const auto normal = mesh.mNormals[j].NormalizeSafe();
+			memcpy(curr, &normal, NrmSize);
 			curr += NrmSize;
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
-			memcpy(curr, &mesh.mTangents[j], TanSize);
+			const auto tan = mesh.mTangents[j].NormalizeSafe();
+			const auto bitan = mesh.mBitangents[j].NormalizeSafe();
+
+			memcpy(curr, &tan, TanSize);
 			curr += TanSize;
 
-			memcpy(curr, &mesh.mBitangents[j], TanSize);
+			memcpy(curr, &bitan, TanSize);
 			curr += TanSize;
 		}
 

@@ -250,7 +250,7 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 	desc.Format = _format_map[static_cast<int32_t>(format)];
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = (buffer) ? D3D11_USAGE_IMMUTABLE : D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
@@ -272,7 +272,6 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 	}
 
 	return SUCCEEDED(result);
-
 }
 
 bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
@@ -296,7 +295,7 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.ArraySize = num_elements;
 	desc.Format = _format_map[static_cast<int32_t>(format)];
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = (buffer) ? D3D11_USAGE_IMMUTABLE : D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
@@ -341,7 +340,7 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 	desc.Depth = static_cast<UINT>(depth);
 	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.Format = _format_map[static_cast<int32_t>(format)];
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = (buffer) ? D3D11_USAGE_IMMUTABLE : D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
@@ -399,7 +398,7 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	desc.Format = _format_map[static_cast<int32_t>(format)];
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = (buffer) ? D3D11_USAGE_IMMUTABLE : D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;

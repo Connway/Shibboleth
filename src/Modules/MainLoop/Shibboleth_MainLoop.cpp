@@ -128,9 +128,9 @@ void MainLoop::update(void)
 		}
 
 		const Gleam::IWindow* const window = _render_mgr->getWindow("main");
-		const glm::mat4x4 projection = glm::perspectiveFovLH<float>(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
-		const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 0.0f, -5.0f), glm::zero<glm::vec3>(), glm::vec3(0.0f, 1.0f, 0.0f));
-		const glm::mat4x4 result = camera * projection;
+		const glm::mat4x4 projection = glm::perspectiveFovLH_ZO(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
+		const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 5.0f, -5.0f), glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		const glm::mat4x4 result = projection * camera;
 
 		Gleam::IBuffer::BufferSettings buffer_settings =
 		{
@@ -156,7 +156,7 @@ void MainLoop::update(void)
 	rd.frameBegin(out);
 
 	out.getRenderTarget().bind(rd);
-	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::ClearFlags::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_RED);
+	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::ClearFlags::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
 	raster_state_res->getRasterState(rd)->set(rd);
 	material_res->getProgram(rd)->bind(rd);
@@ -164,7 +164,7 @@ void MainLoop::update(void)
 	program_buffers->bind(rd);
 
 	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
-		//model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
+		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
 	}
 
 	rd.frameEnd(out);

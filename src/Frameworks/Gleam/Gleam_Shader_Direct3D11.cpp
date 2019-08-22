@@ -66,35 +66,35 @@ static ITexture::Format GetFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 	constexpr uint8_t x = D3D_COMPONENT_MASK_X;
 
 	if (desc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) {
-		if (desc.Mask & xyzw) {
+		if ((desc.Mask & xyzw) == xyzw) {
 			return ITexture::Format::RGBA_32_UI;
-		} else if (desc.Mask & xyz) {
+		} else if ((desc.Mask & xyz) == xyz) {
 			return ITexture::Format::RGB_32_UI;
-		} else if (desc.Mask & xy) {
+		} else if ((desc.Mask & xy) == xy) {
 			return ITexture::Format::RG_32_UI;
-		} else if (desc.Mask & x) {
+		} else if ((desc.Mask & x) == x) {
 			return ITexture::Format::R_32_UI;
 		}
 
 	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) {
-		if (desc.Mask & xyzw) {
+		if ((desc.Mask & xyzw) == xyzw) {
 			return ITexture::Format::RGBA_32_I;
-		} else if (desc.Mask & xyz) {
+		} else if ((desc.Mask & xyz) == xyz) {
 			return ITexture::Format::RGB_32_I;
-		} else if (desc.Mask & xy) {
+		} else if ((desc.Mask & xy) == xy) {
 			return ITexture::Format::RG_32_I;
-		} else if (desc.Mask & x) {
+		} else if ((desc.Mask & x) == x) {
 			return ITexture::Format::R_32_I;
 		}
 
 	} else if (desc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) {
-		if (desc.Mask & xyzw) {
+		if ((desc.Mask & xyzw) == xyzw) {
 			return ITexture::Format::RGBA_32_F;
-		} else if (desc.Mask & xyz) {
+		} else if ((desc.Mask & xyz) == xyz) {
 			return ITexture::Format::RGB_32_F;
-		} else if (desc.Mask & xy) {
+		} else if ((desc.Mask & xy) == xy) {
 			return ITexture::Format::RG_32_F;
-		} else if (desc.Mask & x) {
+		} else if ((desc.Mask & x) == x) {
 			return ITexture::Format::R_32_F;
 		}
 	}
