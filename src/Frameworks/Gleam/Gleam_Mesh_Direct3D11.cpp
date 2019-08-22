@@ -80,12 +80,13 @@ bool MeshD3D11::addVertData(
 		GAFF_FREET(vert_buffer, *GetAllocator());
 	}
 
+	cacheBuffers();
 	return ret;
 }
 
-void MeshD3D11::addBuffer(IBuffer* buffer)
+void MeshD3D11::addBuffer(IBuffer* buffer, uint32_t offset)
 {
-	MeshBase::addBuffer(buffer);
+	MeshBase::addBuffer(buffer, offset);
 	cacheBuffers();
 }
 

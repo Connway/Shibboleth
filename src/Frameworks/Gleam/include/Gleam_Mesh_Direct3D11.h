@@ -38,7 +38,7 @@ public:
 		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
 	);
 
-	void addBuffer(IBuffer* buffer);
+	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
 
 	void setTopologyType(TopologyType topology);
 	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location = 0);

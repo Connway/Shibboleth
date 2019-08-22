@@ -55,7 +55,7 @@ public:
 
 	ShaderReflection getReflectionData(void) const override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
 	void* getShader(void) const;
 	ID3D11VertexShader* getVertexShader(void) const;

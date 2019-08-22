@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Gleam_IShader.h>
 #include <Gleam_ILayout.h>
 
@@ -46,8 +46,6 @@ private:
 	using ShaderLayoutPair = eastl::pair< UniquePtr<Gleam::IShader>, UniquePtr<Gleam::ILayout> >;
 
 	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data{ ProxyAllocator("Graphics") };
-
-	void loadShader(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ShaderResource);
 };
