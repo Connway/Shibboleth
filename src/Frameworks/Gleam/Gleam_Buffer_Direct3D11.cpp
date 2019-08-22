@@ -61,43 +61,55 @@ bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
 
 	desc.BindFlags = g_type_map[buffer_settings.type];
 	desc.ByteWidth = static_cast<UINT>(buffer_settings.size);
-	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = (buffer_settings.type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 	desc.StructureByteStride = (buffer_settings.type == BT_STRUCTURED_DATA) ? static_cast<UINT>(buffer_settings.stride) : 0;
-	desc.Usage = (buffer_settings.gpu_read_only && (buffer_settings.cpu_access == MT_WRITE || buffer_settings.cpu_access == MT_WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+	desc.CPUAccessFlags = 0;
 
-	switch (buffer_settings.cpu_access) {
-		case MT_READ:
-			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-			break;
+	const bool cpu_read = buffer_settings.cpu_access == MT_READ || buffer_settings.cpu_access == MT_READ_WRITE;
+	const bool cpu_write = buffer_settings.cpu_access == MT_WRITE || buffer_settings.cpu_access == MT_WRITE_NO_OVERWRITE;
 
-		case MT_WRITE_NO_OVERWRITE:
-		case MT_WRITE:
-			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			break;
-
-		case MT_READ_WRITE:
-			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
-			break;
-
-		default:
-			break;
+	if (buffer_settings.gpu_read_only) {
+		if (cpu_read) {
+			desc.Usage = D3D11_USAGE_STAGING;
+		} else if (cpu_write) {
+			desc.Usage = D3D11_USAGE_DYNAMIC;
+		} else {
+			desc.Usage = D3D11_USAGE_IMMUTABLE;
+		}
+	} else {
+		if (cpu_read || cpu_write) {
+			desc.Usage = D3D11_USAGE_STAGING;
+		} else {
+			desc.Usage = D3D11_USAGE_DEFAULT;
+		}
 	}
 
-	subres_data.pSysMem = buffer_settings.data;
-	subres_data.SysMemPitch = 0;
-	subres_data.SysMemSlicePitch = 0;
+	if (cpu_read) {
+		desc.CPUAccessFlags |= D3D11_CPU_ACCESS_READ;
+	}
+
+	if (cpu_write) {
+		desc.CPUAccessFlags |= D3D11_CPU_ACCESS_WRITE;
+	}
 
 	_buffer_type = buffer_settings.type;
 	_stride = buffer_settings.stride;
 	_size = buffer_settings.size;
 
-	return SUCCEEDED(device->CreateBuffer(&desc, (buffer_settings.data) ? &subres_data : nullptr, &_buffer));
+	if (buffer_settings.data) {
+		D3D11_SUBRESOURCE_DATA subres_data;
+		subres_data.pSysMem = buffer_settings.data;
+		subres_data.SysMemPitch = 0;
+		subres_data.SysMemSlicePitch = 0;
+
+		return SUCCEEDED(device->CreateBuffer(&desc, &subres_data, &_buffer));
+	}
+
+	return SUCCEEDED(device->CreateBuffer(&desc, nullptr, &_buffer));
 }
 
 void BufferD3D11::destroy(void)
