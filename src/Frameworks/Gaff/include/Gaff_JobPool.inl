@@ -139,7 +139,7 @@ void JobPool<Allocator>::waitForCounter(const Counter* counter)
 	GAFF_ASSERT(counter);
 
 	while (*counter > 0 && !_thread_data.terminate) {
-		std::this_thread::yield();
+		EA::Thread::ThreadSleep();
 	}
 }
 

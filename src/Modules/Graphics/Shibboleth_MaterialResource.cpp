@@ -189,6 +189,18 @@ Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device
 	return (it != _programs.end()) ? it->second.get() : nullptr;
 }
 
+const Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device) const
+{
+	const ShaderResourcePtr& shader = _shaders[Gleam::IShader::SHADER_VERTEX];
+	return (shader) ? shader->getLayout(device) : nullptr;
+}
+
+Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
+{
+	ShaderResourcePtr& shader = _shaders[Gleam::IShader::SHADER_VERTEX];
+	return (shader) ? shader->getLayout(device) : nullptr;
+}
+
 void MaterialResource::loadMaterial(IFile* file)
 {
 	SerializeReaderWrapper readerWrapper;
@@ -226,6 +238,8 @@ void MaterialResource::loadMaterial(IFile* file)
 		return;
 	}
 
+	ShaderResourcePtr shaders[Gleam::IShader::SHADER_TYPE_SIZE];
+
 	// Process the compute section first.
 	{
 		const auto guard = reader.enterElementGuard("compute");
@@ -238,13 +252,36 @@ void MaterialResource::loadMaterial(IFile* file)
 				return;
 			}
 
-			ShaderResourcePtr compute;
+			const char* const res_path = reader.readString();
+			const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
+			reader.freeString(res_path);
 
-			if (!Reflection<ShaderResourcePtr>::Load(reader, compute)) {
-				LogErrorResource("Failed to load material '%s'. Element 'compute' resource request failed.", getFilePath().getBuffer());
-				failed();
-				return;
+			const HashStringTemp64 path_hash(final_path);
+			ShaderResourcePtr compute = res_mgr.getResourceT<ShaderResource>(path_hash);
+
+			if (!compute) {
+				const IFile* const compute_file = res_mgr.loadFileAndWait(final_path.data());
+
+				if (!compute_file) {
+					LogErrorResource("Failed to load material '%s'. Failed to load compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
+					failed();
+					return;
+				}
+
+				compute = res_mgr.createResourceT<ShaderResource>(path_hash);
+
+				const bool success = compute->createShaderAndLayout(
+					*devices,
+					reinterpret_cast<const char*>(compute_file->getBuffer()),
+					Gleam::IShader::SHADER_COMPUTE);
+
+				if (!success) {
+					LogErrorResource("Failed to load material '%s'. Failed to create compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
+					failed();
+					return;
+				}
 			}
+
 
 			res_mgr.waitForResource(*compute);
 
@@ -261,7 +298,6 @@ void MaterialResource::loadMaterial(IFile* file)
 				}
 			}
 
-			_shaders[Gleam::IShader::SHADER_COMPUTE] = compute;
 			return;
 		}
 	}
@@ -279,13 +315,14 @@ void MaterialResource::loadMaterial(IFile* file)
 
 	for (const char* element : shader_elements) {
 		if (!element) {
+			++index;
 			continue;
 		}
 
 		const auto guard = reader.enterElementGuard(element);
-		++index;
 
 		if (reader.isNull()) {
+			++index;
 			continue;
 
 		} else if (!reader.isString()) {
@@ -295,44 +332,50 @@ void MaterialResource::loadMaterial(IFile* file)
 				failed();
 			}
 
+			++index;
 			continue;
 		}
 
-		if (!Reflection<ShaderResourcePtr>::Load(reader, _shaders[index])) {
-			LogErrorResource("Failed to load material '%s'. Element '%s' resource request failed.", getFilePath().getBuffer(), element);
-		}
-	}
+		const char* const res_path = reader.readString();
+		const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
+		reader.freeString(res_path);
 
-	if (!hasFailed()) {
-		index = 0;
+		const HashStringTemp64 path_hash(final_path);
+		shaders[index] = res_mgr.getResourceT<ShaderResource>(path_hash);
 
-		for (const char* element : shader_elements) {
-			if (!element) {
-				continue;
+		if (!shaders[index]) {
+			const IFile* const shader_file = res_mgr.loadFileAndWait(final_path.data());
+
+			if (!shader_file) {
+				LogErrorResource("Failed to load material '%s'. Failed to load compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
+				failed();
+				return;
 			}
 
-			const auto& shader = _shaders[index];
-			++index;
+			shaders[index] = res_mgr.createResourceT<ShaderResource>(path_hash);
 
-			if (shader) {
-				res_mgr.waitForResource(*shader);
+			const bool success = shaders[index]->createShaderAndLayout(
+				*devices,
+				reinterpret_cast<const char*>(shader_file->getBuffer()),
+				static_cast<Gleam::IShader::ShaderType>(index));
 
-				if (shader->hasFailed()) {
-					LogErrorResource("Failed to load material '%s'. Failed to load %s shader '%s'.", getFilePath().getBuffer(), element, shader->getFilePath().getBuffer());
-					failed();
-					return;
-				}
+			if (!success) {
+				LogErrorResource("Failed to load material '%s'. Failed to create compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
+				failed();
+				return;
 			}
 		}
+
+		++index;
 	}
 
 	const bool success = createProgram(
 		*devices,
-		_shaders[Gleam::IShader::SHADER_VERTEX],
-		_shaders[Gleam::IShader::SHADER_PIXEL],
-		_shaders[Gleam::IShader::SHADER_DOMAIN],
-		_shaders[Gleam::IShader::SHADER_GEOMETRY],
-		_shaders[Gleam::IShader::SHADER_HULL]
+		shaders[Gleam::IShader::SHADER_VERTEX],
+		shaders[Gleam::IShader::SHADER_PIXEL],
+		shaders[Gleam::IShader::SHADER_DOMAIN],
+		shaders[Gleam::IShader::SHADER_GEOMETRY],
+		shaders[Gleam::IShader::SHADER_HULL]
 	);
 
 	if (success) {

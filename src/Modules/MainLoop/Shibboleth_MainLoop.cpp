@@ -153,15 +153,18 @@ void MainLoop::update(void)
 		program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, camera_srv);
 	}
 
-	raster_state_res->getRasterState(rd)->set(rd);
-	program_buffers->bind(rd);
-	
 	rd.frameBegin(out);
+
 	out.getRenderTarget().bind(rd);
 	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::ClearFlags::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_RED);
 
+	raster_state_res->getRasterState(rd)->set(rd);
+	material_res->getProgram(rd)->bind(rd);
+	material_res->getLayout(rd)->bind(rd);
+	program_buffers->bind(rd);
+
 	for (int32_t i = 0; i < model_res->getNumMeshes(); ++i) {
-		model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
+		//model_res->getMesh(i)->getMesh(rd)->renderInstanced(rd, 1);
 	}
 
 	rd.frameEnd(out);

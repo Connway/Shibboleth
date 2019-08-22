@@ -54,9 +54,6 @@ private:
 	UniquePtr<RenderTargetD3D11> _render_target;
 
 	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
-	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
-	Gaff::COMRefPtr<ID3D11Device5> _device;
-
 	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;
 
 	UINT _present_flags = 0;

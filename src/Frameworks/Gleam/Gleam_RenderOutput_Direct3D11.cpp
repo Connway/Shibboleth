@@ -109,8 +109,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
-	}
-	else {
+	} else {
 		result = final_swap_chain->SetFullscreenState(FALSE, NULL);
 	}
 
@@ -202,10 +201,11 @@ bool RenderOutputD3D11::isVSync(void) const
 
 void RenderOutputD3D11::present(void)
 {
-	static DXGI_PRESENT_PARAMETERS present_params = { 0, nullptr, nullptr, nullptr };
+	static const DXGI_PRESENT_PARAMETERS present_params = { 0, NULL, NULL, NULL};
 	const UINT interval = (_vsync) ? 1 : 0;
 
 	_swap_chain->Present1(interval, _present_flags, &present_params);
+	//_swap_chain->Present(interval, _present_flags);
 }
 
 NS_END

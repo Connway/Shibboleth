@@ -120,8 +120,8 @@ bool MeshBase::addVertDataHelper(
 	IBuffer::BufferSettings index_settings
 	{
 		indices,
-		sizeof(int32_t) * index_count,
-		sizeof(int32_t),
+		sizeof(uint32_t) * index_count,
+		sizeof(uint32_t),
 		IBuffer::BT_INDEX_DATA,
 		IBuffer::MT_NONE,
 		true

@@ -71,8 +71,8 @@ public:
 	virtual bool init(IRenderDevice& rd, const IShader& shader) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) const = 0;
-	virtual void unsetLayout(IRenderDevice& rd) const = 0;
+	virtual void bind(IRenderDevice& rd) = 0;
+	virtual void unbind(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

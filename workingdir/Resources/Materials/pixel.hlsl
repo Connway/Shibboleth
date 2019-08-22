@@ -8,10 +8,10 @@ struct PixelInputType
 struct PixelOutputType
 {
 	float4 diffuse : SV_TARGET0;
-	float4 specular : SV_TARGET1;
-	float4 normal : SV_TARGET2;
-	float4 position : SV_TARGET3;
-	//float depth : SV_DEPTH;
+	//float4 specular : SV_TARGET1;
+	//float4 normal : SV_TARGET2;
+	//float4 position : SV_TARGET3;
+	////float depth : SV_DEPTH;
 };
 
 SamplerState sample;
@@ -21,12 +21,13 @@ PixelOutputType PixelMain(PixelInputType input)
 {
 	PixelOutputType output;
 
-	//output.diffuse = output.specular = float4(0,1,0,1);
-	output.diffuse = tex.Sample(sample, input.uv);
+	output.diffuse = float4(0,1,0,1);
+	//output.specular = float4(0,1,0,1);
+	//output.diffuse = tex.Sample(sample, input.uv);
 
-	output.specular = float4(1.0, 0.0, 0.0, 1.0);
-	output.normal = input.normal;
-	output.position = input.position;
+	//output.specular = float4(1.0, 0.0, 0.0, 1.0);
+	//output.normal = input.normal;
+	//output.position = input.position;
 	//output.depth = input.position.z / input.position.w;
 	//output.depth = input.position.z;
 

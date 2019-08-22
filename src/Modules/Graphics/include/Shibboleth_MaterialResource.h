@@ -60,6 +60,9 @@ public:
 	const Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device) const;
 	Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device);
 
+	const Gleam::ILayout* getLayout(const Gleam::IRenderDevice& device) const;
+	Gleam::ILayout* getLayout(const Gleam::IRenderDevice& device);
+
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
 	ShaderResourcePtr _shaders[Gleam::IShader::SHADER_TYPE_SIZE];

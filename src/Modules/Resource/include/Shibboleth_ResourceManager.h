@@ -37,10 +37,21 @@ public:
 	void allModulesLoaded(void) override;
 
 	template <class T>
-	Gaff::RefPtr<T> requestResourceT(const char* name, bool delay_load = false)
+	Gaff::RefPtr<T> requestResourceT(Gaff::HashStringTemp64 name, bool delay_load = false)
 	{
 		IResourcePtr old_ptr = requestResource(name, delay_load);
-		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+
+		if (old_ptr) {
+			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+		} else {
+			return Gaff::RefPtr<T>();
+		}
+	}
+
+	template <class T>
+	Gaff::RefPtr<T> requestResourceT(const char* name, bool delay_load = false)
+	{
+		return requestResourceT<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)), delay_load);
 	}
 
 	IResourcePtr requestResource(const char* name, bool delay_load = false)
@@ -49,17 +60,23 @@ public:
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> createResourceT(const char* name)
-	{
-		return createResourceT<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
-	}
-
-	template <class T>
 	Gaff::RefPtr<T> createResourceT(Gaff::HashStringTemp64 name)
 	{
 		static_assert(T::Creatable, "Resource is not a creatable type.");
 		IResourcePtr old_ptr = createResource(name, Reflection<T>::GetReflectionDefinition());
-		return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+
+		if (old_ptr) {
+			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+		}
+		else {
+			return Gaff::RefPtr<T>();
+		}
+	}
+
+	template <class T>
+	Gaff::RefPtr<T> createResourceT(const char* name)
+	{
+		return createResourceT<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
 	}
 
 	IResourcePtr createResource(const char* name, const Gaff::IReflectionDefinition& ref_def)
@@ -68,9 +85,21 @@ public:
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> getResource(const char* name)
+	Gaff::RefPtr<T> getResourceT(Gaff::HashStringTemp64 name)
 	{
-		return getResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
+		IResourcePtr old_ptr = getResource(name);
+
+		if (old_ptr) {
+			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+		} else {
+			return Gaff::RefPtr<T>();
+		}
+	}
+
+	template <class T>
+	Gaff::RefPtr<T> getResourceT(const char* name)
+	{
+		return getResourceT<T>(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
 	}
 
 	IResourcePtr getResource(const char* name)

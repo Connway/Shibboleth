@@ -109,13 +109,9 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	void setLayout(const ILayout* layout) { _layout = layout; }
-	const ILayout* getLayout(void) const { return _layout; }
-
 	ShaderType getType(void) const { return _type; }
 
 protected:
-	const ILayout* _layout = nullptr;
 	ShaderType _type;
 };
 
