@@ -113,7 +113,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
-			memcpy(curr, &mesh.mTextureCoords[k], UVSize * mesh.mNumUVComponents[k]);
+			memcpy(curr, &mesh.mTextureCoords[k][j], UVSize * mesh.mNumUVComponents[k]);
 			curr += UVSize * mesh.mNumUVComponents[k];
 		}
 

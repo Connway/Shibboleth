@@ -129,7 +129,7 @@ void MainLoop::update(void)
 
 		const Gleam::IWindow* const window = _render_mgr->getWindow("main");
 		const glm::mat4x4 projection = glm::perspectiveFovLH_ZO(90.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f, 100.0f);
-		const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 5.0f, -5.0f), glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		const glm::mat4x4 camera = glm::lookAtLH(glm::vec3(0.0f, 5.0f, 5.0f), glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		const glm::mat4x4 result = projection * camera;
 
 		Gleam::IBuffer::BufferSettings buffer_settings =

@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static DXGI_FORMAT _format_map[static_cast<int32_t>(ITexture::Format::SIZE)] = {
+static constexpr DXGI_FORMAT _format_map[static_cast<int32_t>(ITexture::Format::SIZE)] = {
 	DXGI_FORMAT_R8_UNORM,
 	DXGI_FORMAT_R16_UNORM,
 	DXGI_FORMAT_R8G8_UNORM,
@@ -93,7 +93,7 @@ static DXGI_FORMAT _format_map[static_cast<int32_t>(ITexture::Format::SIZE)] = {
 	DXGI_FORMAT_D32_FLOAT_S8X24_UINT
 };
 
-static int32_t _format_size[static_cast<int32_t>(ITexture::Format::SIZE)] = {
+static constexpr UINT _format_size[static_cast<int32_t>(ITexture::Format::SIZE)] = {
 	1,
 	2,
 	2,
@@ -228,7 +228,7 @@ void TextureD3D11::destroy(void)
 
 bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0 && num_elements > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0 && num_elements > 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -260,9 +260,8 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 	if (buffer) {
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
-
-		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
-		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemPitch = static_cast<UINT>(width) * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = static_cast<UINT>(width) * static_cast<UINT>(height) * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture2D(&desc, &sub, &_texture_2d);
 
@@ -276,7 +275,7 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 
 bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && mip_levels > 0 && num_elements > 0);
+	GAFF_ASSERT(width > 0 && mip_levels >= 0 && num_elements > 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -307,7 +306,7 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 		sub.pSysMem = buffer;
 		sub.SysMemSlicePitch = 0;
 
-		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemPitch = static_cast<UINT>(width) * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture1D(&desc, &sub, &_texture_1d);
 
@@ -321,7 +320,7 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 
 bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels >= 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -351,8 +350,8 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
 
-		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
-		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemPitch = static_cast<UINT>(width) * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = static_cast<UINT>(width) * static_cast<UINT>(height) * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture3D(&desc, &sub, &_texture_3d);
 
@@ -376,7 +375,7 @@ bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32
 
 bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
-	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -409,8 +408,8 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
 
-		sub.SysMemPitch = width * _format_size[static_cast<int32_t>(format)];
-		sub.SysMemSlicePitch = width * height * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemPitch = static_cast<UINT>(width) * _format_size[static_cast<int32_t>(format)];
+		sub.SysMemSlicePitch = static_cast<UINT>(width) * static_cast<UINT>(height) * _format_size[static_cast<int32_t>(format)];
 
 		result = device->CreateTexture2D(&desc, &sub, &_texture_2d);
 

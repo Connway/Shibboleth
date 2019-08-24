@@ -38,7 +38,7 @@ using ShaderSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID
 using ShaderResourceViewSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11ShaderResourceView* const*);
 using SamplerSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11SamplerState* const*);
 
-static ShaderSetFunction g_shader_set[IShader::SHADER_TYPE_SIZE] = {
+static ShaderSetFunction g_buffer_set[IShader::SHADER_TYPE_SIZE] = {
 	&ID3D11DeviceContext::VSSetConstantBuffers,
 	&ID3D11DeviceContext::PSSetConstantBuffers,
 	&ID3D11DeviceContext::DSSetConstantBuffers,
@@ -138,7 +138,7 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 		return nullptr;
 	}
 
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
 		pb->_resource_views[i].resize(_resource_views[i].size());
 		pb->_sampler_states[i].resize(_sampler_states[i].size());
 		pb->_constant_buffers[i].resize(_constant_buffers[i].size());
@@ -174,9 +174,9 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 		Vector<ID3D11SamplerState*>& samplers = _samplers[i];
 		Vector<ID3D11Buffer*>& buffers = _buffers[i];
 
-		(context->*g_shader_set[i])(0, static_cast<UINT>(buffers.size()), buffers.data());
 		(context->*g_resource_set[i])(0, static_cast<UINT>(res_views.size()), res_views.data());
 		(context->*g_sampler_set[i])(0, static_cast<UINT>(samplers.size()), samplers.data());
+		(context->*g_buffer_set[i])(0, static_cast<UINT>(buffers.size()), buffers.data());
 	}
 }
 
