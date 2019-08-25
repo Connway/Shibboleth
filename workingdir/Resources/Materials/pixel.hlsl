@@ -31,5 +31,8 @@ PixelOutputType PixelMain(PixelInputType input)
 	//output.depth = input.position.z / input.position.w;
 	//output.depth = input.position.z;
 
+	// Gamma correction: 255 * (Image/255)^(1/2.2)
+	//output.diffuse.rgb = pow(output.diffuse.rgb, 1.0 / 2.2);
+
 	return output;
 }

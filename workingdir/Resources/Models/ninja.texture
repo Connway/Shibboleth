@@ -1,8 +1,7 @@
 {
 	"image": "Models/nskinwh.png",
 
-	"make_linear_srv": true,
-	"already_linear": false
+	"make_linear": true,
 
 	// Need to add cubemap support.
 	//"cubemap": false,

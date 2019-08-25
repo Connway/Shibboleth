@@ -130,8 +130,15 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		return false;
 	}
 
+	// Render target for outputs converts to sRGB space.
+	D3D11_RENDER_TARGET_VIEW_DESC1 rtv_desc;
+	rtv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtv_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	rtv_desc.Texture2D.MipSlice = 0;
+	rtv_desc.Texture2D.PlaneSlice = 0;
+
 	ID3D11RenderTargetView1* render_target_view = nullptr;
-	result = rd3d.getDevice()->CreateRenderTargetView1(back_buffer_ptr, nullptr, &render_target_view);
+	result = rd3d.getDevice()->CreateRenderTargetView1(back_buffer_ptr, &rtv_desc, &render_target_view);
 
 	back_buffer_ptr->Release();
 
