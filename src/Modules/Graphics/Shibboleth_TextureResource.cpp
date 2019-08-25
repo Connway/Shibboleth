@@ -84,27 +84,28 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(TextureResource)
 
-bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels, int8_t flags)
+bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels, bool make_linear)
 {
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success && createTexture(*device, image, mip_levels, flags);
+		success = success && createTexture(*device, image, mip_levels, make_linear);
 	}
 
 	return success;
 }
 
-bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, int8_t flags)
+bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, bool make_linear)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::ITexture* const texture = render_mgr.createTexture();
+	const Gleam::ITexture::Format format = GetTextureFormat(image);
 
 	bool success = texture->init2D(
 		device,
 		image.getWidth(),
 		image.getHeight(),
-		GetTextureFormat(image),
+		(make_linear) ? Gleam::ITexture::GetSRGBFormat(format) : format,
 		mip_levels,
 		image.getBuffer()
 	);
@@ -115,12 +116,8 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 		return false;
 	}
 
-	const bool make_srgb_srv =
-		!Gaff::TestAnyBits(flags, static_cast<int8_t>(CreateFlags::ALREADY_LINEAR)) &&
-		Gaff::TestAnyBits(flags, static_cast<int8_t>(CreateFlags::MAKE_LINEAR_SRV));
-
 	Gleam::IShaderResourceView* const srv = render_mgr.createShaderResourceView();
-	success = srv->init(device, texture, make_srgb_srv);
+	success = srv->init(device, texture);
 
 	if (!success) {
 		LogErrorResource("Failed to create texture shader resource view '%s'.", getFilePath().getBuffer());
@@ -183,8 +180,7 @@ void TextureResource::loadTextureJSON(const IFile* file)
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
-	const bool make_linear_srv = reader.readBool("make_linear_srv", false);
-	const bool already_linear = reader.readBool("already_linear", false);
+	const bool make_linear = reader.readBool("make_linear", false);
 	U8String device_tag;
 
 	{
@@ -225,15 +221,10 @@ void TextureResource::loadTextureJSON(const IFile* file)
 		return;
 	}
 
-	int8_t flags = 0;
-
-	Gaff::SetBitsToValue(flags, static_cast<int8_t>(CreateFlags::MAKE_LINEAR_SRV), make_linear_srv);
-	Gaff::SetBitsToValue(flags, static_cast<int8_t>(CreateFlags::ALREADY_LINEAR), already_linear);
-
-	loadTextureImage(image_file, device_tag.data(), image_path, flags);
+	loadTextureImage(image_file, device_tag.data(), image_path, make_linear);
 }
 
-void TextureResource::loadTextureImage(const IFile* file, const char* device_tag, const U8String& image_path, int8_t create_flags)
+void TextureResource::loadTextureImage(const IFile* file, const char* device_tag, const U8String& image_path, bool make_linear)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	const Vector<Gleam::IRenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
@@ -253,7 +244,7 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 		return;
 	}
 
-	if (createTexture(*devices, image, 1, create_flags)) {
+	if (createTexture(*devices, image, 1, make_linear)) {
 		succeeded();
 	} else {
 		failed();

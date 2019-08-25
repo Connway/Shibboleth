@@ -10,5 +10,5 @@
 	"skeleton_root": "Joint1",
 	"bone_tag": "Joint",
 
-	//"device_tag": "main",
+	//"devices_tag": "main",
 }
