@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::SIZE)] = {
+static constexpr D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::SIZE)] = {
 	D3D11_SRV_DIMENSION_TEXTURE1D,
 	D3D11_SRV_DIMENSION_TEXTURE2D,
 	D3D11_SRV_DIMENSION_TEXTURE3D,
@@ -43,8 +43,7 @@ static D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::
 	D3D11_SRV_DIMENSION_TEXTURE1DARRAY
 };
 
-ShaderResourceViewD3D11::ShaderResourceViewD3D11(void):
-	_resource_view(nullptr)
+ShaderResourceViewD3D11::ShaderResourceViewD3D11(void)
 {
 }
 
@@ -62,7 +61,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
-	res_desc.Format = TextureD3D11::GetTypedFormat(texture->getFormat());
+	res_desc.Format = texture->getFormat();
 	res_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture->getType())];
 
 	// The union will set this for all texture types.

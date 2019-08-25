@@ -43,13 +43,13 @@ void ClearBits(T& value, T bits)
 }
 
 template <class T>
-bool IsAnyBitSet(const T& value, T bits)
+bool TestAnyBits(const T& value, T bits)
 {
 	return (value & bits) != 0;
 }
 
 template <class T>
-bool AreAllBitsSet(const T& value, T bits)
+bool TestAllBits(const T& value, T bits)
 {
 	return (value & bits) == bits;
 }

@@ -84,18 +84,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(TextureResource)
 
-bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels)
+bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels, int8_t flags)
 {
 	bool success = true;
 
 	for (Gleam::IRenderDevice* device : devices) {
-		success = success && createTexture(*device, image, mip_levels);
+		success = success && createTexture(*device, image, mip_levels, flags);
 	}
 
 	return success;
 }
 
-bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels)
+bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, int8_t flags)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	Gleam::ITexture* const texture = render_mgr.createTexture();
@@ -115,8 +115,12 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 		return false;
 	}
 
+	const bool make_srgb_srv =
+		!Gaff::TestAnyBits(flags, static_cast<int8_t>(CreateFlags::ALREADY_LINEAR)) &&
+		Gaff::TestAnyBits(flags, static_cast<int8_t>(CreateFlags::MAKE_LINEAR_SRV));
+
 	Gleam::IShaderResourceView* const srv = render_mgr.createShaderResourceView();
-	success = srv->init(device, texture);
+	success = srv->init(device, texture, make_srgb_srv);
 
 	if (!success) {
 		LogErrorResource("Failed to create texture shader resource view '%s'.", getFilePath().getBuffer());
@@ -162,7 +166,8 @@ void TextureResource::loadTexture(IFile* file)
 		loadTextureJSON(file);
 		GetApp().getFileSystem().closeFile(file);
 	} else {
-		loadTextureImage(file, "main");
+		// Create SRV as is. No SRGB conversion.
+		loadTextureImage(file, "main", getFilePath().getString(), false);
 	}
 }
 
@@ -178,6 +183,8 @@ void TextureResource::loadTextureJSON(const IFile* file)
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const bool make_linear_srv = reader.readBool("make_linear_srv", false);
+	const bool already_linear = reader.readBool("already_linear", false);
 	U8String device_tag;
 
 	{
@@ -195,6 +202,7 @@ void TextureResource::loadTextureJSON(const IFile* file)
 	}
 
 	const IFile* image_file = nullptr;
+	U8String image_path;
 
 	{
 		const auto guard = reader.enterElementGuard("image");
@@ -205,9 +213,10 @@ void TextureResource::loadTextureJSON(const IFile* file)
 			return;
  		}
 
-		const char* image_path = reader.readString();
-		image_file = res_mgr.loadFileAndWait(image_path);
-		reader.freeString(image_path);
+		const char* const path = reader.readString();
+		image_file = res_mgr.loadFileAndWait(path);
+		image_path = path;
+		reader.freeString(path);
 	}
 
 	if (!image_file) {
@@ -216,10 +225,15 @@ void TextureResource::loadTextureJSON(const IFile* file)
 		return;
 	}
 
-	loadTextureImage(image_file, device_tag.data());
+	int8_t flags = 0;
+
+	Gaff::SetBitsToValue(flags, static_cast<int8_t>(CreateFlags::MAKE_LINEAR_SRV), make_linear_srv);
+	Gaff::SetBitsToValue(flags, static_cast<int8_t>(CreateFlags::ALREADY_LINEAR), already_linear);
+
+	loadTextureImage(image_file, device_tag.data(), image_path, flags);
 }
 
-void TextureResource::loadTextureImage(const IFile* file, const char* device_tag)
+void TextureResource::loadTextureImage(const IFile* file, const char* device_tag, const U8String& image_path, int8_t create_flags)
 {
 	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	const Vector<Gleam::IRenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
@@ -230,16 +244,16 @@ void TextureResource::loadTextureImage(const IFile* file, const char* device_tag
 		return;
 	}
 
-	const size_t index = getFilePath().getString().find_last_of('.');
+	const size_t index = image_path.find_last_of('.');
 	Image image;
 
-	if (!image.load(file->getBuffer(), file->size(), getFilePath().getBuffer() + index)) {
-		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file.", getFilePath().getBuffer());
+	if (!image.load(file->getBuffer(), file->size(), image_path.data() + index)) {
+		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file '%s'.", getFilePath().getBuffer(), image_path.data());
 		failed();
 		return;
 	}
 
-	if (createTexture(*devices, image)) {
+	if (createTexture(*devices, image, 1, create_flags)) {
 		succeeded();
 	} else {
 		failed();

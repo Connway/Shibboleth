@@ -43,7 +43,7 @@ public:
 	ID3D11ShaderResourceView1* getResourceView(void) const;
 
 private:
-	ID3D11ShaderResourceView1* _resource_view;
+	ID3D11ShaderResourceView1* _resource_view = nullptr;
 };
 
 NS_END

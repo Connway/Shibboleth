@@ -1,12 +1,9 @@
 {
-	"image_file": "Resources/Models/nskinwh.png",
+	"image": "Models/nskinwh.png",
 
-	"normalized": true,
-	"cubemap": false,
-	"SRGBA": true,
-	"no_shader_resource_views": false,
-	"image_only": false,
+	"make_linear_srv": true,
+	"already_linear": false
 
-	"display_tags": ["DISPLAY_GAMEPLAY"],
-	"any_display_with_tags": false
+	// Need to add cubemap support.
+	//"cubemap": false,
 }

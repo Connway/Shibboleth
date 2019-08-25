@@ -34,10 +34,17 @@ class Image;
 class TextureResource final : public IResource
 {
 public:
+	enum class CreateFlags
+	{
+		NONE = 0,
+		ALREADY_LINEAR = 1,
+		MAKE_LINEAR_SRV = 2
+	};
+
 	static constexpr bool Creatable = true;
 
-	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels = 1);
-	bool createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels = 1);
+	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels = 1, int8_t flags = static_cast<int8_t>(CreateFlags::NONE));
+	bool createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels = 1, int8_t flags = static_cast<int8_t>(CreateFlags::NONE));
 
 	const Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd) const;
 	Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd);
@@ -51,7 +58,7 @@ private:
 
 	void loadTexture(IFile* file);
 	void loadTextureJSON(const IFile* file);
-	void loadTextureImage(const IFile* file, const char* device_tag);
+	void loadTextureImage(const IFile* file, const char* device_tag, const U8String& image_path, int8_t create_flags);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
 };
