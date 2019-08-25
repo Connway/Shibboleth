@@ -70,10 +70,10 @@ template <class T>
 void ClearBits(T& value, T bits);
 
 template <class T>
-bool IsAnyBitSet(const T& value, T bits);
+bool TestAnyBits(const T& value, T bits);
 
 template <class T>
-bool AreAllBitsSet(const T& value, T bits);
+bool TestAllBits(const T& value, T bits);
 
 template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void);

@@ -139,6 +139,22 @@ public:
 	virtual double readDouble(void) const = 0;
 	virtual double readNumber(void) const = 0;
 	virtual bool readBool(void) const = 0;
+
+	//virtual const char* readString(const char* key, char* buffer, size_t buf_size, const char* default_value) const = 0;
+	//virtual const char* readString(const char* key, const char* default_value) const = 0;
+	virtual int8_t readInt8(const char* key, int8_t default_value) const = 0;
+	virtual uint8_t readUInt8(const char* key, uint8_t default_value) const = 0;
+	virtual int16_t readInt16(const char* key, int16_t default_value) const = 0;
+	virtual uint16_t readUInt16(const char* key, uint16_t default_value) const = 0;
+	virtual int32_t readInt32(const char* key, int32_t default_value) const = 0;
+	virtual uint32_t readUInt32(const char* key, uint32_t default_value) const = 0;
+	virtual int64_t readInt64(const char* key, int64_t default_value) const = 0;
+	virtual uint64_t readUInt64(const char* key, uint64_t default_value) const = 0;
+	virtual float readFloat(const char* key, float default_value) const = 0;
+	virtual double readDouble(const char* key, double default_value) const = 0;
+	virtual double readNumber(const char* key, double default_value) const = 0;
+	virtual bool readBool(const char* key, bool default_value) const = 0;
+
 };
 
 class ISerializeWriter

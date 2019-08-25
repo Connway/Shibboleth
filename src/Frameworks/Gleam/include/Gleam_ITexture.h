@@ -127,6 +127,16 @@ public:
 	int32_t getDepth(void) const { return _depth; }
 	int32_t getArraySize(void) const { return _array_size; }
 
+	static Format GetSRGBFormat(Format format)
+	{
+		if (format == Format::RGBA_8_UNORM) {
+			return Format::SRGBA_8_UNORM;
+		}
+
+		return format;
+	}
+
+
 	virtual void destroy(void) = 0;
 
 	virtual bool init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;

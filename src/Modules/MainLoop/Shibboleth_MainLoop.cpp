@@ -72,7 +72,7 @@ void MainLoop::update(void)
 	static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler_state");
 	static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
 	static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
-	static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Models/nskinwh.png");
+	static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Models/ninja.texture");
 	static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
 	static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
 	static auto* const program_buffers = _render_mgr->createProgramBuffers();
@@ -156,7 +156,7 @@ void MainLoop::update(void)
 	rd.frameBegin(out);
 
 	out.getRenderTarget().bind(rd);
-	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::ClearFlags::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+	out.getRenderTarget().clear(rd, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
 	raster_state_res->getRasterState(rd)->set(rd);
 	material_res->getProgram(rd)->bind(rd);
