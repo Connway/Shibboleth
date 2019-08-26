@@ -74,7 +74,7 @@ void DepthStencilStateD3D11::destroy(void)
 	SAFERELEASE(_depth_stencil_state);
 }
 
-void DepthStencilStateD3D11::set(IRenderDevice& rd) const
+void DepthStencilStateD3D11::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -83,7 +83,7 @@ void DepthStencilStateD3D11::set(IRenderDevice& rd) const
 	context->OMSetDepthStencilState(_depth_stencil_state, _stencil_ref);
 }
 
-void DepthStencilStateD3D11::unset(IRenderDevice& rd) const
+void DepthStencilStateD3D11::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);

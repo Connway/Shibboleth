@@ -157,7 +157,27 @@ static constexpr UINT _format_size[static_cast<int32_t>(ITexture::Format::SIZE)]
 	8
 };
 
-DXGI_FORMAT TextureD3D11::GetTypedFormat(Format format)
+DXGI_FORMAT TextureD3D11::GetTypelessD3DFormat(Format format)
+{
+	switch (format) {
+		case Format::DEPTH_16_UNORM:
+			return DXGI_FORMAT_R16_TYPELESS;
+
+		case Format::DEPTH_32_F:
+			return DXGI_FORMAT_R32_TYPELESS;
+
+		case Format::DEPTH_STENCIL_24_8_UNORM_UI:
+			return DXGI_FORMAT_R24G8_TYPELESS;
+
+		case Format::DEPTH_STENCIL_32_8_F:
+			return DXGI_FORMAT_R32G8X24_TYPELESS;
+
+		default:
+			return DXGI_FORMAT_UNKNOWN;
+	}
+}
+
+DXGI_FORMAT TextureD3D11::GetTypedD3DFormat(Format format)
 {
 	DXGI_FORMAT typed_format;
 
@@ -179,7 +199,7 @@ DXGI_FORMAT TextureD3D11::GetTypedFormat(Format format)
 			break;
 
 		default:
-			typed_format = _format_map[static_cast<int32_t>(format)];
+			typed_format = GetD3DFormat(format);
 			break;
 	}
 
@@ -428,32 +448,21 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
-	DXGI_FORMAT typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
-
-	_format = format;
-	_mip_levels = 1;
-	_width = width;
-	_height = height;
-	_depth = 0;
 
 	switch (format) {
 		case Format::DEPTH_16_UNORM:
-			typeless_format = DXGI_FORMAT_R16_TYPELESS;
 			_type = Type::DEPTH;
 			break;
 
 		case Format::DEPTH_32_F:
-			typeless_format = DXGI_FORMAT_R32_TYPELESS;
 			_type = Type::DEPTH;
 			break;
 
 		case Format::DEPTH_STENCIL_24_8_UNORM_UI:
-			typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
 			_type = Type::DEPTH_STENCIL;
 			break;
 
 		case Format::DEPTH_STENCIL_32_8_F:
-			typeless_format = DXGI_FORMAT_R32G8X24_TYPELESS;
 			_type = Type::DEPTH_STENCIL;
 			break;
 
@@ -462,6 +471,12 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 			break;
 	}
 
+	_format = format;
+	_mip_levels = 1;
+	_width = width;
+	_height = height;
+	_depth = 0;
+
 	GAFF_ASSERT(_type != Type::SIZE);
 
 	D3D11_TEXTURE2D_DESC depth_stencil_desc;
@@ -469,7 +484,7 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	depth_stencil_desc.Height = static_cast<UINT>(height);
 	depth_stencil_desc.MipLevels = 1;
 	depth_stencil_desc.ArraySize = 1;
-	depth_stencil_desc.Format = typeless_format;
+	depth_stencil_desc.Format = GetTypelessD3DFormat(format);
 	depth_stencil_desc.SampleDesc.Count = 1;
 	depth_stencil_desc.SampleDesc.Quality = 0;
 	depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -478,31 +493,12 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	depth_stencil_desc.MiscFlags = 0;
 
 	HRESULT result = device->CreateTexture2D(&depth_stencil_desc, NULL, &_texture_2d);
-	RETURNIFFAILED(result)
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC ds_view_desc;
-	ds_view_desc.Format = _format_map[static_cast<int32_t>(format)];
-	ds_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	ds_view_desc.Flags = 0;
-	ds_view_desc.Texture2D.MipSlice = 0;
-
-	result = device->CreateDepthStencilView(_texture_2d, &ds_view_desc, &_depth_stencil_view);
-	if (FAILED(result)) {
-		destroy();
-		return false;
-	}
-
-	return true;
+	return SUCCEEDED(result);
 }
 
 RendererType TextureD3D11::getRendererType(void) const
 {
 	return RendererType::DIRECT3D11;
-}
-
-ID3D11DepthStencilView* TextureD3D11::getDepthStencilView(void) const
-{
-	return _depth_stencil_view;
 }
 
 void* TextureD3D11::getTexture(void) const

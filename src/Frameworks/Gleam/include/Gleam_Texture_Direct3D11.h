@@ -44,19 +44,16 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	ID3D11DepthStencilView* getDepthStencilView(void) const;
-
 	void* getTexture(void) const;
 	ID3D11Texture1D* getTexture1D(void) const;
 	ID3D11Texture2D* getTexture2D(void) const;
 	ID3D11Texture3D* getTexture3D(void) const;
 
-	static DXGI_FORMAT GetTypedFormat(Format format);
+	static DXGI_FORMAT GetTypelessD3DFormat(Format format);
+	static DXGI_FORMAT GetTypedD3DFormat(Format format);
 	static DXGI_FORMAT GetD3DFormat(Format format);
 
 private:
-	ID3D11DepthStencilView* _depth_stencil_view = nullptr;
-
 	union
 	{
 		void* _texture = nullptr;

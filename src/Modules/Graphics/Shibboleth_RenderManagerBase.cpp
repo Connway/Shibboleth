@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
@@ -156,15 +157,12 @@ bool RenderManagerBase::init(void)
 
 		// Create it if we don't already have it.
 		if (!rd) {
-			rd = createRenderDevice();
+			rd = createRenderDevice(adapter_id);
 			
-			if (!rd->init(adapter_id)) {
+			if (!rd) {
 				LogErrorDefault("Failed to create render device for window '%s'.", key);
-				// $TODO: Log error
 				return false;
 			}
-
-			_render_devices.emplace_back(rd);
 		}
 
 		int32_t x = Gaff::Max(0, value["x"].getInt32(0));
@@ -235,6 +233,12 @@ bool RenderManagerBase::init(void)
 		}
 
 		_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
+
+		if (!createGBuffer(key)) {
+			_render_device_tags.erase(window_hash);
+			_window_outputs.erase(window_hash);
+		}
+
 		return false;
 	});
 
@@ -286,6 +290,145 @@ Gleam::IWindow* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
+}
+
+Gleam::IProgramBuffers* RenderManagerBase::getCameraProgramBuffers(Gaff::Hash32 tag) const
+{
+	const auto it = _g_buffers.find(tag);
+	return (it == _g_buffers.end()) ? nullptr : it->second.program_buffers.get();
+}
+
+Gleam::IRenderTarget* RenderManagerBase::getCameraRenderTarget(Gaff::Hash32 tag) const
+{
+	const auto it = _g_buffers.find(tag);
+	return (it == _g_buffers.end()) ? nullptr : it->second.render_target.get();
+}
+
+Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
+{
+	Gleam::IRenderDevice* const rd = createRenderDevice();
+
+	if (!rd->init(adapter_id)) {
+		LogErrorDefault("Failed to create render device.");
+		SHIB_FREET(rd, GetAllocator());
+		return nullptr;
+	}
+
+	_render_devices.emplace_back(rd);
+
+	Gleam::ISamplerState* const sampler_state = createSamplerState();
+	const Gleam::ISamplerState::SamplerSettings sampler_settings = {
+		Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST,
+		Gleam::ISamplerState::WRAP_CLAMP,
+		Gleam::ISamplerState::WRAP_CLAMP,
+		Gleam::ISamplerState::WRAP_CLAMP,
+		0.0f, 0.0f,
+		0.0f,
+		1,
+		Gleam::COLOR_BLACK,
+		Gleam::ComparisonFunc::NEVER
+	};
+
+	if (!sampler_state->init(*rd, sampler_settings)) {
+		LogErrorDefault("Failed to create sampler state for render device.");
+		SHIB_FREET(sampler_state, GetAllocator());
+		SHIB_FREET(rd, GetAllocator());
+		return nullptr;
+	}
+
+	_to_screen_samplers[rd].reset(sampler_state);
+
+	return rd;
+}
+
+bool RenderManagerBase::createGBuffer(const char* window_name)
+{
+	const Gaff::Hash32 window_tag = Gaff::FNV1aHash32String(window_name);
+	const Gleam::IWindow& window = *_window_outputs[window_tag].first;
+
+	GBufferData data;
+	data.program_buffers.reset(createProgramBuffers());
+	data.render_target.reset(createRenderTarget());
+
+	data.diffuse.reset(createTexture());
+	data.specular.reset(createTexture());
+	data.normal.reset(createTexture());
+	data.position.reset(createTexture());
+	data.depth.reset(createTexture());
+
+	data.diffuse_srv.reset(createShaderResourceView());
+	data.specular_srv.reset(createShaderResourceView());
+	data.normal_srv.reset(createShaderResourceView());
+	data.position_srv.reset(createShaderResourceView());
+	data.depth_srv.reset(createShaderResourceView());
+
+	Gleam::IRenderDevice& rd = *_render_device_tags[window_tag][0];
+
+	if (!data.diffuse->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorDefault("Failed to create diffuse texture for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.specular->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorDefault("Failed to create specular texture for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.normal->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorDefault("Failed to create normal texture for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.position->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorDefault("Failed to create position texture for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.depth->initDepthStencil(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::DEPTH_32_F)) {
+		LogErrorDefault("Failed to create depth texture for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.diffuse_srv->init(rd, data.diffuse.get())) {
+		LogErrorDefault("Failed to create diffuse srv for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.specular_srv->init(rd, data.specular.get())) {
+		LogErrorDefault("Failed to create specular srv for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.normal_srv->init(rd, data.normal.get())) {
+		LogErrorDefault("Failed to create normal srv for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.position_srv->init(rd, data.position.get())) {
+		LogErrorDefault("Failed to create position srv for window '%s'.", window_name);
+		return false;
+	}
+
+	if (!data.depth_srv->init(rd, data.depth.get())) {
+		LogErrorDefault("Failed to create depth srv for window '%s'.", window_name);
+		return false;
+	}
+
+	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.diffuse_srv.get());
+	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.specular_srv.get());
+	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.normal_srv.get());
+	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.position_srv.get());
+	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.depth_srv.get());
+	data.program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _to_screen_samplers[&rd].get());
+
+	data.render_target->addTexture(rd, data.diffuse.get());
+	data.render_target->addTexture(rd, data.specular.get());
+	data.render_target->addTexture(rd, data.normal.get());
+	data.render_target->addTexture(rd, data.position.get());
+	data.render_target->addDepthStencilBuffer(rd, data.depth.get());
+
+	_g_buffers[window_tag] = std::move(data);
+	return true;
 }
 
 NS_END

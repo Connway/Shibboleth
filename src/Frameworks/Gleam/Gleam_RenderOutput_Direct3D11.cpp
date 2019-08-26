@@ -212,7 +212,6 @@ void RenderOutputD3D11::present(void)
 	const UINT interval = (_vsync) ? 1 : 0;
 
 	_swap_chain->Present1(interval, _present_flags, &present_params);
-	//_swap_chain->Present(interval, _present_flags);
 }
 
 NS_END
