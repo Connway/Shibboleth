@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_EditorMainLoop.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_RenderManagerBase.h>
-#include <Shibboleth_IManager.h>
-#include <Gleam_IRenderDevice.h>
+//#include <Shibboleth_RenderManagerBase.h>
+//#include <Gleam_IRenderDevice.h>
 
 SHIB_REFLECTION_DEFINE(EditorMainLoop)
 
@@ -39,18 +38,18 @@ SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)
 
 bool EditorMainLoop::init(void)
 {
-	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
+	//RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	//Gleam::IRenderDevice* const rd = rm.createRenderDevice();
 
-	// Initialize to the main graphics adapter.
-	if (!rd->init(0)) {
-		// $TODO: Log error
-		SHIB_FREET(rd, GetAllocator());
-		return false;
-	}
+	//// Initialize to the main graphics adapter.
+	//if (!rd->init(0)) {
+	//	// $TODO: Log error
+	//	SHIB_FREET(rd, GetAllocator());
+	//	return false;
+	//}
 
-	rm.manageRenderDevice(rd);
-	rm.addRenderDeviceTag(rd, "main");
+	//rm.manageRenderDevice(rd);
+	//rm.addRenderDeviceTag(rd, "main");
 
 	return true;
 }

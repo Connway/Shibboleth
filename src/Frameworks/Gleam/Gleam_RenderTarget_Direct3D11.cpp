@@ -107,9 +107,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RendererType::DIRECT3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
-	if (_depth_stencil_view) {
-		_depth_stencil_view->Release();
-	}
+	SAFERELEASE(_depth_stencil_view)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	desc.Flags = 0;
@@ -119,6 +117,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+
 	return SUCCEEDED(result);
 }
 

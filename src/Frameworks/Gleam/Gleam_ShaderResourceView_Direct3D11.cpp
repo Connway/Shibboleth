@@ -61,7 +61,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
-	res_desc.Format = TextureD3D11::GetD3DFormat(texture->getFormat());
+	res_desc.Format = TextureD3D11::GetTypedD3DFormat(texture->getFormat());
 	res_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture->getType())];
 
 	// The union will set this for all texture types.
@@ -87,7 +87,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 
 	if (texture->getType() == ITexture::Type::THREE_D) {
 		resource = static_cast<const TextureD3D11*>(texture)->getTexture3D();
-	} else if (texture->getType() == ITexture::Type::TWO_D || texture->getType() == ITexture::Type::TWO_D_ARRAY) {
+	} else if (texture->getType() == ITexture::Type::TWO_D || texture->getType() == ITexture::Type::TWO_D_ARRAY || texture->getType() == ITexture::Type::DEPTH || texture->getType() == ITexture::Type::DEPTH_STENCIL) {
 		resource = static_cast<const TextureD3D11*>(texture)->getTexture2D();
 	} else 	if (texture->getType() == ITexture::Type::ONE_D || texture->getType() == ITexture::Type::ONE_D_ARRAY) {
 		resource = static_cast<const TextureD3D11*>(texture)->getTexture1D();

@@ -37,8 +37,8 @@ public:
 	bool init(IRenderDevice& rd, const DepthStencilStateSettings& settings) override;
 	void destroy(void) override;
 
-	void set(IRenderDevice& rd) const override;
-	void unset(IRenderDevice& rd) const override;
+	void bind(IRenderDevice& rd) const override;
+	void unbind(IRenderDevice& rd) const override;
 
 	RendererType getRendererType(void) const override;
 

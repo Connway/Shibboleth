@@ -36,7 +36,7 @@ class IRenderDevice;
 class IDepthStencilState
 {
 public:
-	struct StencilData
+	struct StencilData final
 	{
 		StencilOp stencil_depth_fail = StencilOp::KEEP;
 		StencilOp stencil_pass_depth_fail = StencilOp::KEEP;
@@ -44,7 +44,7 @@ public:
 		ComparisonFunc comp_func = ComparisonFunc::ALWAYS;
 	};
 
-	struct DepthStencilStateSettings
+	struct DepthStencilStateSettings final
 	{
 		StencilData front_face, back_face;
 		unsigned int stencil_ref = 0;
@@ -61,8 +61,8 @@ public:
 	virtual bool init(IRenderDevice& rd, const DepthStencilStateSettings& settings) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
+	virtual void bind(IRenderDevice& rd) const = 0;
+	virtual void unbind(IRenderDevice& rd) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 };

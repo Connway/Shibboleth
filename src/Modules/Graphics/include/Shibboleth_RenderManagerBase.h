@@ -26,23 +26,21 @@ THE SOFTWARE.
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderOutput.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_IRenderTarget.h>
+#include <Gleam_ISamplerState.h>
+#include <Gleam_IProgram.h>
+#include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
 
 NS_GLEAM
-	class IShaderResourceView;
 	class IDepthStencilState;
-	class IProgramBuffers;
-	class IRenderOutput;
-	class IRenderTarget;
-	class ISamplerState;
 	class ICommandList;
 	class IRasterState;
 	class IBlendState;
-	class ITexture;
-	class IProgram;
 	class IShader;
 	class IBuffer;
 	class ILayout;
@@ -104,14 +102,48 @@ public:
 	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
 	Gleam::IWindow* getWindow(Gaff::Hash32 tag) const;
 
+	Gleam::IProgramBuffers* getCameraProgramBuffers(Gaff::Hash32 tag) const;
+	Gleam::IRenderTarget* getCameraRenderTarget(Gaff::Hash32 tag) const;
+
 private:
-	using WindowPtr = UniquePtr<Gleam::IWindow>;
 	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
+	using WindowPtr = UniquePtr<Gleam::IWindow>;
 	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
+
+	using ProgramBuffersPtr = UniquePtr<Gleam::IProgramBuffers>;
+	using SamplerPtr = UniquePtr<Gleam::ISamplerState>;
+	using SRVPtr = UniquePtr<Gleam::IShaderResourceView>;
+	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
+	using TexturePtr = UniquePtr<Gleam::ITexture>;
+
+	struct GBufferData final
+	{
+		ProgramBuffersPtr program_buffers;
+		RTVPtr render_target;
+
+		TexturePtr diffuse;
+		TexturePtr specular;
+		TexturePtr normal;
+		TexturePtr position;
+		TexturePtr depth;
+
+		SRVPtr diffuse_srv;
+		SRVPtr specular_srv;
+		SRVPtr normal_srv;
+		SRVPtr position_srv;
+		SRVPtr depth_srv;
+	};
+
+	VectorMap<Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers;
+	VectorMap<Gaff::Hash32, GBufferData> _g_buffers;
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices{ ProxyAllocator("Graphics") };
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+
+
+	Gleam::IRenderDevice* createRenderDevice(int32_t adapter_id);
+	bool createGBuffer(const char* window_name);
 };
 
 NS_END
