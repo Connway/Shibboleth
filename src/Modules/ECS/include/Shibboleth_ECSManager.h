@@ -232,8 +232,6 @@ public:
 
 	~ECSManager(void);
 
-	bool init(void) override;
-
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
 	void addArchetype(ECSArchetype&& archetype);
 	void removeArchetype(Gaff::Hash64 archetype);

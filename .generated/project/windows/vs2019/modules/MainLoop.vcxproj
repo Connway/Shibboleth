@@ -232,9 +232,12 @@ premake5 gen_module_header --module=MainLoop</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTime.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_ISystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
   </ItemGroup>

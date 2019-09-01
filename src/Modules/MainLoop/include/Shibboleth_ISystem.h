@@ -22,20 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_ReflectionInterfaces.h>
 
 NS_SHIBBOLETH
 
-class ECSManager;
-
-class IECSSystem
+class ISystem : public Gaff::IReflectionObject
 {
 public:
-	IECSSystem(void) {}
-	virtual ~IECSSystem(void) {}
+	ISystem(void) {}
+	virtual ~ISystem(void) {}
 
-	virtual void init(ECSManager& ecs_mgr) = 0;
-	//virtual void update() = 0;
+	virtual void init(void) = 0;
+	virtual void update() = 0;
 };
 
 NS_END

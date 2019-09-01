@@ -21,7 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MainLoop.h"
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_ISystem.h>
 #include <Shibboleth_IApp.h>
 
 #include <Shibboleth_RenderManagerBase.h>
@@ -48,8 +50,90 @@ SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
 
 bool MainLoop::init(void)
 {
-	RenderManagerBase& rm = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	IApp& app = GetApp();
+
+	RenderManagerBase& rm = app.GETMANAGERT(RenderManagerBase, RenderManager);
 	_render_mgr = &rm;
+
+	const auto* const systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(ISystem));
+
+	if (!systems || systems->empty()) {
+		return true;
+	}
+
+	ProxyAllocator allocator("MainLoop");
+	SerializeReaderWrapper readerWrapper(allocator);
+
+	if (!OpenJSONOrMPackFile(readerWrapper, "cfg/update_phases.cfg")) {
+		LogErrorDefault("Failed to read cfg/update_phases.cfg[.bin].");
+		return false;
+	}
+
+	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+
+	if (!reader.isArray()) {
+		LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Root is not a 3-dimensional array of strings.");
+		return false;
+	}
+
+	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	const auto* bucket = refl_mgr.getTypeBucket(CLASS_HASH(ISystem));
+
+	_systems.set_allocator(allocator);
+	_systems.resize(reader.size());
+
+	for (int32_t i = 0; i < reader.size(); ++i) {
+		const auto guard_1 = reader.enterElementGuard(i);
+
+		if (!reader.isArray()) {
+			LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Config is not a 3-dimensional array of strings.");
+			return false;
+		}
+
+		_systems[i].set_allocator(allocator);
+		_systems[i].resize(reader.size());
+
+		for (int32_t j = 0; j < reader.size(); ++j) {
+			const auto guard_2 = reader.enterElementGuard(j);
+
+			if (!reader.isArray()) {
+				LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Config is not a 3-dimensional array of strings.");
+				return false;
+			}
+
+			_systems[i][j].set_allocator(allocator);
+			_systems[i][j].resize(reader.size(), nullptr);
+
+			if (!reader.isString()) {
+				LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Config is not a 3-dimensional array of strings.");
+				return false;
+			}
+
+			for (int32_t k = 0; k < reader.size(); ++k) {
+				const char* system_name = reader.readString();
+				const Gaff::Hash64 hash = Gaff::FNV1aHash64String(system_name);
+
+				const auto it = eastl::lower_bound(bucket->begin(), bucket->end(), hash, ReflectionManager::CompareRefHash);
+
+				if (it == bucket->end() || hash != (*it)->getReflectionInstance().getHash()) {
+					LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
+					reader.freeString(system_name);
+					return false;
+				}
+
+				ISystem* const system = (*it)->createT<ISystem>(CLASS_HASH(ISystem), allocator);
+
+				if (!system) {
+					LogErrorDefault("MainLoop: Failed to create system '%s'", system_name);
+					reader.freeString(system_name);
+					return false;
+				}
+
+				reader.freeString(system_name);
+				_systems[i][j][k] = system;
+			}
+		}
+	}
 
 	return true;
 }
@@ -61,7 +145,14 @@ void MainLoop::destroy(void)
 void MainLoop::update(void)
 {
 	_render_mgr->updateWindows(); // This has to happen in the main thread.
-	//_update_mgr->update();
+
+	if (_counter) {
+		GetApp().getJobPool().doAJob();
+	}
+
+	if (!_counter) {
+		//GetApp().getJobPool().addJobs
+	}
 
 	//std::this_thread::yield();
 

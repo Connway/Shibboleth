@@ -34,6 +34,8 @@ THE SOFTWARE.
 			Shibboleth::SetApp(app);
 			Gen::InitReflection();
 
+			app.getReflectionManager().registerTypeBucket(CLASS_HASH(ISystem));
+
 			return true;
 		}
 
