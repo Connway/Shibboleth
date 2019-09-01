@@ -22,35 +22,59 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ISystem.h"
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_IMainLoop.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_Vector.h>
+#include <Shibboleth_IManager.h>
+#include <EASTL/chrono.h>
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
-class ISystem;
+struct Time final
+{
+	double total = 0.0;
+	double delta = 0.0;
 
-class MainLoop : public IMainLoop
+	float GetTotalFloat(void) const { return static_cast<float>(total); }
+	float GetDeltaFloat(void) const { return static_cast<float>(delta); }
+};
+
+class GameTimeManager final : public IManager
 {
 public:
-	bool init(void) override;
-	void destroy(void) override;
-	void update(void) override;
+	void update(void);
+	void reset(void);
+
+	void setGameTimeScale(double scale);
+	double getGameTimeScale(void) const;
+
+	const Time& getRealTime(void) const;
+	const Time& getGameTime(void) const;
 
 private:
-	Vector< Vector< Vector<ISystem*> > > _systems;
+	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _start;
+	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _end;
 
-	Gaff::Counter _counter = 0;
-	int32_t update_block = 0;
-	int32_t system_group = 0;
+	Time _real_time;
+	Time _game_time;
 
-	RenderManagerBase* _render_mgr = nullptr;
+	double _game_time_scale = 1.0;
 
-	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
+	SHIB_REFLECTION_CLASS_DECLARE(GameTimeManager);
+};
+
+class GameTimeSystem final : public ISystem
+{
+public:
+	void init(void) override;
+	void update() override;
+
+private:
+	GameTimeManager* _manager = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(GameTimeSystem);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MainLoop)
+SHIB_REFLECTION_DECLARE(GameTimeManager)
+SHIB_REFLECTION_DECLARE(GameTimeSystem)

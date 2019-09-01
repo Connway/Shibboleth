@@ -22,29 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ModelResource.h>
 #include <Shibboleth_ECSEntity.h>
+#include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
 
 class ECSManager;
 
-class Model final
+template <class T>
+class Resource final
 {
 public:
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ModelResourcePtr& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ModelResourcePtr&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const ModelResourcePtr& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, ModelResourcePtr&& value);
+	using ResourceType = Gaff::RefPtr<T>;
 
-	static const ModelResourcePtr& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const ModelResourcePtr& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, ResourceType&& value);
+
+	static const MaterialResourcePtr& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const MaterialResourcePtr& GetShared(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyShared(const void* old_value, void* new_value);
 
-	ModelResourcePtr value;
+	ResourceType value;
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Model)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
+
+#include "Shibboleth_ResourceComponent.inl"

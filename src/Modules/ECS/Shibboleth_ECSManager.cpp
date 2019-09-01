@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSAttributes.h"
-#include "Shibboleth_IECSSystem.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -67,31 +66,6 @@ ECSManager::~ECSManager(void)
 	for (auto& pages : _entity_pages) {
 		SHIB_FREE(pages.second->arch_ref, allocator);
 	}
-}
-
-bool ECSManager::init(void)
-{
-	IApp& app = GetApp();
-	const auto* const ecs_systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(IECSSystem));
-
-	if (!ecs_systems || ecs_systems->empty()) {
-		return true;
-	}
-
-	ProxyAllocator allocator("ECS");
-	SerializeReaderWrapper readerWrapper(allocator);
-	
-	if (!OpenJSONOrMPackFile(readerWrapper, "cfg/update_phases.cfg")) {
-		LogErrorDefault("Failed to read cfg/update_phases.cfg[.bin].");
-		return false;
-	}
-
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
-
-	// $TODO: Setup system operation order.
-	GAFF_REF(reader);
-
-	return true;
 }
 
 void ECSManager::addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref)
