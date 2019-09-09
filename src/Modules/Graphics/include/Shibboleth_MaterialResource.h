@@ -33,6 +33,8 @@ class MaterialResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
 	bool createProgram(
 		const Vector<Gleam::IRenderDevice*>& devices,
 		ShaderResourcePtr& vertex,

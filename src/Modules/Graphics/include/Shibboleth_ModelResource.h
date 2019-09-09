@@ -24,12 +24,21 @@ THE SOFTWARE.
 
 #include "Shibboleth_MeshResource.h"
 
+struct aiScene;
+
 NS_SHIBBOLETH
 
 class ModelResource final : public IResource
 {
 public:
 	static constexpr bool Creatable = true;
+
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
+	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene);
+	bool createMesh(Gleam::IRenderDevice& device, const aiScene& scene);
+
+	bool createMesh(const Vector<MeshResourcePtr>& meshes);
 
 	const MeshResourcePtr& getMesh(int32_t index) const;
 	int32_t getNumMeshes(void) const;

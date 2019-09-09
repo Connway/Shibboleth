@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ISystem.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IMainLoop.h>
 #include <Shibboleth_JobPool.h>
@@ -30,7 +31,6 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class RenderManagerBase;
-class ISystem;
 
 class MainLoop : public IMainLoop
 {
@@ -40,11 +40,12 @@ public:
 	void update(void) override;
 
 private:
-	Vector< Vector< Vector<ISystem*> > > _systems;
+	Vector< Vector< Vector< UniquePtr<ISystem> > > > _systems;
+	Vector< Vector< Vector<Gaff::JobData> > > _job_data;
 
 	Gaff::Counter _counter = 0;
-	int32_t update_block = 0;
-	int32_t system_group = 0;
+	int32_t _update_block = 0;
+	int32_t _system_group = -1;
 
 	RenderManagerBase* _render_mgr = nullptr;
 

@@ -42,14 +42,14 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
-	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
+	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
-	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
+	static glm::vec3 Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(const void* component_begin);
@@ -68,14 +68,14 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::quat& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
-	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value);
+	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::quat& value);
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
-	static glm::quat Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
+	static glm::quat Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::quat Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(const void* component_begin);
@@ -95,14 +95,14 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
-	static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
+	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value);
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
-	static glm::vec3 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
+	static glm::vec3 Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
 	static glm_vec4 GetX(const void* component_begin);
@@ -121,14 +121,14 @@ public:
 	// Slow versions for posterity.
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Gaff::Hash32 value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
-	//static void Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value);
+	//static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value);
 	//static void Set(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value);
 
 	//static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static Gaff::Hash32 GetShared(ECSManager& ecs_mgr, EntityID id);
-	//static Gaff::Hash32 Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index);
+	//static Gaff::Hash32 Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	//static Gaff::Hash32 Get(ECSManager& ecs_mgr, EntityID id);
 
 	//static glm_uvec4 Get(const void* component_begin);

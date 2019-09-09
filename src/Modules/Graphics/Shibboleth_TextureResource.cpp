@@ -84,6 +84,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(TextureResource)
 
+Vector<Gleam::IRenderDevice*> TextureResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _texture_data) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels, bool make_linear)
 {
 	bool success = true;

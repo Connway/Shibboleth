@@ -20,48 +20,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_DEFINE(Resource, T)
+SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(Resource, T)
 
 NS_SHIBBOLETH
 
+SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(Resource, T)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Resource")
+	)
+
+	.staticFunc("CopyShared", &Resource<T>::CopyShared)
+	//.staticFunc("Copy", &Resource<T>::Copy)
+
+	//.staticFunc("Load", &Resource<T>::Load)
+
+	.var("value", &Resource<T>::value)
+	.ctor<>()
+SHIB_TEMPLATE_REFLECTION_BUILDER_END(Resource, T)
+
 template <class T>
-void Resource::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value)
 {
 	ecs_mgr.getComponentShared<Resource>(archetype)->value = value;
 }
 
 template <class T>
-void Resource::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value)
 {
 	ecs_mgr.getComponentShared<Resource>(archetype)->value = std::move(value);
 }
 
 template <class T>
-void Resource::SetShared(ECSManager& ecs_mgr, EntityID id, const ResourceType& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = value;
 }
 
 template <class T>
-void Resource::SetShared(ECSManager& ecs_mgr, EntityID id, ResourceType&& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = std::move(value);
 }
 
 template <class T>
-const ResourceType& Resource::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+const typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return ecs_mgr.getComponentShared<Resource>(archetype)->value;
 }
 
 template <class T>
-const ResourceType& Resource::GetShared(ECSManager& ecs_mgr, EntityID id)
+const typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
 	return ecs_mgr.getComponentShared<Resource>(id)->value;
 }
 
 template <class T>
-void Resource::CopyShared(const void* old_value, void* new_value)
+void Resource<T>::CopyShared(const void* old_value, void* new_value)
 {
 	reinterpret_cast<Resource*>(new_value)->value = reinterpret_cast<const Resource*>(old_value)->value;
 }

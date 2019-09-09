@@ -35,6 +35,8 @@ class MeshResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
 	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh);
 	bool createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh);
 

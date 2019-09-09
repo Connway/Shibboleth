@@ -36,6 +36,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BufferResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(BufferResource)
 
+Vector<Gleam::IRenderDevice*> BufferResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _buffers) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings)
 {
 	bool success = true;

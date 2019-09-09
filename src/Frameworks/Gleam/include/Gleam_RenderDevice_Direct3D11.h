@@ -41,6 +41,7 @@ public:
 	void frameBegin(IRenderOutput& output) override;
 	void frameEnd(IRenderOutput& output) override;
 
+	IRenderDevice* getOwningDevice(void) const override;
 	bool isDeferred(void) const override;
 	RendererType getRendererType(void) const override;
 
@@ -75,7 +76,7 @@ private:
 	Gaff::COMRefPtr<ID3D11Device5> _device;
 	Gaff::COMRefPtr<IDXGIAdapter4> _adapter;
 
-	bool _is_deferred = false;
+	RenderDeviceD3D11* _owner = nullptr;
 
 	friend class RenderOutputD3D11;
 

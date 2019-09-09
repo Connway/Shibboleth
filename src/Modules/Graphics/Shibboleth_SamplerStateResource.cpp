@@ -46,6 +46,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(SamplerStateResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(SamplerStateResource)
 
+Vector<Gleam::IRenderDevice*> SamplerStateResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _sampler_states) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
 {
 	bool success = true;
