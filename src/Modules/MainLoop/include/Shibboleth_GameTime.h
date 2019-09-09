@@ -65,7 +65,7 @@ private:
 class GameTimeSystem final : public ISystem
 {
 public:
-	void init(void) override;
+	bool init(void) override;
 	void update() override;
 
 private:

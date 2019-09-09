@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSEntity.h>
 #include <Shibboleth_IResource.h>
 
@@ -35,17 +36,17 @@ class Resource final
 public:
 	using ResourceType = Gaff::RefPtr<T>;
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, ResourceType&& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
 
-	static const MaterialResourcePtr& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const MaterialResourcePtr& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyShared(const void* old_value, void* new_value);
 
-	ResourceType value;
+	typename ResourceType value;
 };
 
 NS_END

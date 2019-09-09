@@ -33,6 +33,8 @@ class ShaderResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
 	bool createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::ShaderType shader_type);
 	bool createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::ShaderType shader_type);
 

@@ -38,6 +38,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ShaderResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ShaderResource)
 
+Vector<Gleam::IRenderDevice*> ShaderResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _shader_data) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::ShaderType shader_type)
 {
 	bool success = true;

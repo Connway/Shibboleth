@@ -56,6 +56,69 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(ModelResource)
 
+Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
+{
+	if (!_meshes.empty()) {
+		return _meshes[0]->getDevices();
+	}
+
+	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
+}
+
+bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene)
+{
+	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+
+	if (!scene.HasMeshes()) {
+		LogErrorResource("Failed to load mesh '%s'. Assimp scene has no meshes.", getFilePath().getBuffer());
+		return false;
+	}
+
+	bool succeeded = true;
+
+	for (int32_t i = 0; i < static_cast<int32_t>(scene.mNumMeshes); ++i) {
+		const aiMesh* const mesh = scene.mMeshes[i];
+		U8String mesh_name = getFilePath().getString() + ":";
+
+		if (mesh->mName.length) {
+			mesh_name += mesh->mName.C_Str();
+		}
+		else {
+			mesh_name += '0' + static_cast<char>(i);
+		}
+
+		auto mesh_res = res_mgr.createResourceT<MeshResource>(mesh_name.data());
+
+		if (mesh_res->createMesh(devices, *mesh)) {
+			_meshes.emplace_back(std::move(mesh_res));
+		} else {
+			LogErrorResource("Failed to create model '%s'. Failed to load submesh '%s'.", getFilePath().getBuffer(), mesh_name.data());
+			succeeded = false;
+		}
+	}
+
+	return succeeded;
+}
+
+bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene)
+{
+	const Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	return createMesh(devices, scene);
+}
+
+bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes)
+{
+	for (const auto& mesh : meshes) {
+		if (mesh->getDevices() != meshes[0]->getDevices()) {
+			LogErrorResource("Failed to create model '%s'. Mesh list was not all made from the same device tag.", getFilePath().getBuffer());
+			return false;
+		}
+	}
+
+	_meshes = meshes;
+	return true;
+}
+
 const MeshResourcePtr& ModelResource::getMesh(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
@@ -163,37 +226,11 @@ void ModelResource::loadModel(IFile* file)
 		failed();
 		return;
 	}
-	
-	if (!scene->HasMeshes()) {
-		LogErrorResource("Failed to load mesh '%s'. Assimp scene has no meshes.", getFilePath().getBuffer());
-		failed();
-		return;
-	}
 
-	for (int32_t i = 0; i < static_cast<int32_t>(scene->mNumMeshes); ++i) {
-		const aiMesh* const mesh = scene->mMeshes[i];
-		U8String mesh_name = model_file_path + ":" + device_tag + ":";
-		
-		if (mesh->mName.length) {
-			mesh_name += mesh->mName.C_Str();
-		} else {
-			mesh_name += '0' + static_cast<char>(i);
-		}
-
-		auto mesh_res = res_mgr.createResourceT<MeshResource>(mesh_name.data());
-
-		if (!mesh_res->getMesh(*devices->at(0))) {
-			if (mesh_res->createMesh(*devices, *mesh)) {
-				_meshes.emplace_back(std::move(mesh_res));
-			} else {
-				LogErrorResource("Failed to load model '%s'. Failed to load submesh '%s'.", getFilePath().getBuffer(), mesh->mName.C_Str());
-				failed();
-			}
-		}
-	}
-
-	if (!hasFailed()) {
+	if (createMesh(*devices, *scene)) {
 		succeeded();
+	} else {
+		failed();
 	}
 }
 

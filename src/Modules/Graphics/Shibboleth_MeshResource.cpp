@@ -39,6 +39,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MeshResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(MeshResource)
 
+Vector<Gleam::IRenderDevice*> MeshResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _meshes) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh)
 {
 	if (!mesh.HasFaces()) {
@@ -222,7 +234,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 bool MeshResource::createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh)
 {
-	Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	const Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
 	return createMesh(devices, mesh);
 }
 

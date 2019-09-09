@@ -230,6 +230,70 @@ public:
 		modifyInternal(id, modifier);
 	}
 
+	template <class Callback, class... Components, class... QueryResults>
+	void iterate(Callback&& callback, const QueryResults&... query_results)
+	{
+		static_assert(sizeof...(Components) == sizeof...(QueryResults));
+		EntityData* const data = getEntityData(query_results...);
+
+		for (int32_t i = 0; i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
+			if (data->entity_ids[i] == -1) {
+				continue;
+			}
+
+			callback(data->entity_ids[i], get<Components>(query_results, i)...);
+		}
+	}
+
+	template <class T1, class T2, class T3, class T4, class T5, class Callback>
+	void iterate(
+		Callback&& callback,
+		const ECSQueryResult& query_result1,
+		const ECSQueryResult& query_result2,
+		const ECSQueryResult& query_result3,
+		const ECSQueryResult& query_result4,
+		const ECSQueryResult& query_result5)
+	{
+		iterate<Callback, T1, T2, T3, T4, T5>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4, query_result5);
+	}
+
+	template <class T1, class T2, class T3, class T4, class Callback>
+	void iterate(
+		Callback&& callback,
+		const ECSQueryResult& query_result1,
+		const ECSQueryResult& query_result2,
+		const ECSQueryResult& query_result3,
+		const ECSQueryResult& query_result4)
+	{
+		iterate<Callback, T1, T2, T3, T4>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4);
+	}
+
+	template <class T1, class T2, class T3, class Callback>
+	void iterate(
+		Callback&& callback,
+		const ECSQueryResult& query_result1,
+		const ECSQueryResult& query_result2,
+		const ECSQueryResult& query_result3)
+	{
+		iterate<Callback, T1, T2, T3>(std::forward<Callback>(callback), query_result1, query_result2, query_result3);
+	}
+
+	template <class T1, class T2, class Callback>
+	void iterate(
+		Callback&& callback,
+		const ECSQueryResult& query_result1,
+		const ECSQueryResult& query_result2)
+	{
+		iterate<Callback, T1, T2>(std::forward<Callback>(callback), query_result1, query_result2);
+	}
+
+	template <class T, class Callback>
+	void iterate(Callback&& callback, const ECSQueryResult& query_result)
+	{
+		iterate<Callback, T>(std::forward<Callback>(callback), query_result);
+	}
+
+
 	~ECSManager(void);
 
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
@@ -255,7 +319,8 @@ public:
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 	int32_t getPageIndex(EntityID id) const;
 
-	void* getComponent(ECSQueryResult& query_result, int32_t entity_index);
+	const void* getComponent(const ECSQueryResult& query_result, int32_t entity_index) const;
+	void* getComponent(const ECSQueryResult& query_result, int32_t entity_index);
 	int32_t getNumEntities(const ECSQueryResult& query_result) const;
 
 	void registerQuery(ECSQuery&& query);
@@ -291,6 +356,7 @@ private:
 		Vector< UniquePtr<EntityPage> > pages;
 		Vector<EntityID> entity_ids;
 		Vector<int32_t> free_indices;
+		Vector<int32_t> queries;
 	};
 
 	struct Entity final
@@ -338,6 +404,12 @@ private:
 
 	template <class... Components>
 	ArchetypeReference* addComponentsInternal(EntityID id);
+
+	template <class Component>
+	Component get(const ECSQueryResult& query_result, int32_t entity_index);
+
+	template <class... QueryResults>
+	EntityData* getEntityData(const ECSQueryResult& query_result, const QueryResults&... query_results);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };

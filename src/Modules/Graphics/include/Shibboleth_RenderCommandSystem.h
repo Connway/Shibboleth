@@ -22,33 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
-#include <Shibboleth_SmartPtrs.h>
-#include <Gleam_IBuffer.h>
+#include <Shibboleth_ISystem.h>
+#include <Shibboleth_ResourceComponent.h>
+#include <Shibboleth_MaterialResource.h>
+#include <Shibboleth_TextureResource.h>
+#include <Shibboleth_ModelResource.h>
+#include <Shibboleth_ECSQuery.h>
 
 NS_SHIBBOLETH
 
-class BufferResource final : public IResource
+class RenderManagerBase;
+class ECSManager;
+
+class RenderCommandSystem final : public ISystem
 {
 public:
-	static constexpr bool Creatable = true;
-
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
-
-	bool createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings);
-	bool createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings);
-
-	const Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd) const;
-	Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd);
+	bool init(void) override;
+	void update() override;
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IBuffer> > _buffers{ ProxyAllocator("Graphics") };
+	RenderManagerBase* _render_mgr = nullptr;
+	ECSManager* _ecs_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
+	// Entities
+	Vector< const Resource<MaterialResource>* > _materials{ ProxyAllocator("Graphics") };
+	Vector< const Resource<TextureResource>* > _textures{ ProxyAllocator("Graphics") };
+	Vector< const Resource<ModelResource>* > _models{ ProxyAllocator("Graphics") };
+
+	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
+	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
+	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
+
+	// Cameras
+
+	void newArchetype(void);
+	void removedArchetype(int32_t index);
 };
 
-using BufferResourcePtr = Gaff::RefPtr<BufferResource>;
-
 NS_END
-
-SHIB_REFLECTION_DECLARE(BufferResource)

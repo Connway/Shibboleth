@@ -44,6 +44,7 @@ class ECSQuery final
 {
 public:
 	using SharedPushToListFunc = eastl::function<void (const void*)>;
+	using SharedEraseFromListFunc = eastl::function<void (int32_t)>;
 
 	template <class T>
 	using TypedFilterFunc = eastl::function<bool (const T&)>;
@@ -62,11 +63,15 @@ public:
 			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
+		auto erase_func = Gaff::Func<void (int32_t)>(
+			[&output](int32_t index) -> void { output.erase(output.begin() + index); }
+		);
+
 		auto filter_func = Gaff::Func<bool (const void*)>(
 			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const typename T*>(data)); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter_func));
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter_func));
 	}
 
 	template <class T>
@@ -76,7 +81,11 @@ public:
 			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(filter));
+		auto erase_func = Gaff::Func<void(int32_t)>(
+			[&output](int32_t index) -> void { output.erase(output.begin() + index); }
+		);
+
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter));
 	}
 
 	template <class T>
@@ -86,7 +95,11 @@ public:
 			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func));
+		auto erase_func = Gaff::Func<void(int32_t)>(
+			[&output](int32_t index) -> void { output.erase(output.begin() + index); }
+		);
+
+		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func));
 	}
 
 	template <class T>
@@ -101,12 +114,17 @@ public:
 		add(Reflection<T>::GetReflectionDefinition());
 	}
 
-	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func);
-	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func);
+	ECSQuery(const ProxyAllocator& allocator = ProxyAllocator::GetGlobal());
+
+	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func);
+	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func);
 	void addShared(const Gaff::IReflectionDefinition& ref_def);
 
 	void add(const Gaff::IReflectionDefinition& ref_def, Output& output);
 	void add(const Gaff::IReflectionDefinition& ref_def);
+
+	void addArchetypeCallbacks(eastl::function<void (void)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback);
+	void removeArchetype(const void* entity_data);
 
 	bool filter(const ECSArchetype& archetype, void* entity_data);
 
@@ -115,6 +133,7 @@ private:
 	{
 		const Gaff::IReflectionDefinition* ref_def;
 		SharedPushToListFunc push_func;
+		SharedEraseFromListFunc erase_func;
 		FilterFunc filter_func;
 	};
 
@@ -124,8 +143,16 @@ private:
 		Output* output;
 	};
 
+	struct Callbacks final
+	{
+		eastl::function<void (void)> add;
+		eastl::function<void (int32_t)> remove;
+	};
+
 	Vector<QueryDataShared> _shared_components;
 	Vector<QueryData> _components;
+	Vector<Callbacks> _callbacks;
+	Vector<void*> _entity_data;
 
 	friend class ECSManager;
 };

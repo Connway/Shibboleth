@@ -147,3 +147,16 @@ ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 
 	return arch_ref;
 }
+
+template <class Component>
+Component ECSManager::get(const ECSQueryResult& query_result, int32_t entity_index)
+{
+	return Component{ Component::Get(*this, query_result, entity_index) };
+}
+
+template <class... QueryResults>
+ECSManager::EntityData* ECSManager::getEntityData(const ECSQueryResult& query_result, const QueryResults&...)
+{
+	// Assumes all the query results are from the same query and index. So they should all share the same entity data.
+	return reinterpret_cast<EntityData*>(query_result.entity_data);
+}

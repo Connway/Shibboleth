@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
+#include <EAThread/eathread.h>
 
 NS_GLEAM
 	class IDepthStencilState;
@@ -89,6 +90,8 @@ public:
 	Gleam::IRenderDevice& getDevice(int32_t index) const;
 	int32_t getNumDevices(void) const;
 
+	Vector<Gleam::IRenderDevice*> getOrCreateThreadContexts(EA::Thread::ThreadId id);
+
 	Gleam::IRenderOutput* getOutput(const char* tag) const
 	{
 		return getOutput(Gaff::FNV1aHash32String(tag));
@@ -116,6 +119,8 @@ private:
 	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
 	using TexturePtr = UniquePtr<Gleam::ITexture>;
 
+	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;
+
 	struct GBufferData final
 	{
 		ProgramBuffersPtr program_buffers;
@@ -138,8 +143,9 @@ private:
 	VectorMap<Gaff::Hash32, GBufferData> _g_buffers;
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
-	Vector< UniquePtr<Gleam::IRenderDevice> > _render_devices{ ProxyAllocator("Graphics") };
+	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+	VectorMap< EA::Thread::ThreadId, Vector<RenderDevicePtr> > _deferred_devices{ ProxyAllocator("Graphics") };
 
 
 	Gleam::IRenderDevice* createRenderDevice(int32_t adapter_id);

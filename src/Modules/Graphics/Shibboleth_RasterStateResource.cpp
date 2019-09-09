@@ -46,6 +46,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RasterStateResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(RasterStateResource)
 
+Vector<Gleam::IRenderDevice*> RasterStateResource::getDevices(void) const
+{
+	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+
+	for (const auto& pair : _raster_states) {
+		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+	}
+
+	out.shrink_to_fit();
+	return out;
+}
+
 bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::RasterSettings& raster_state_settings)
 {
 	bool success = true;

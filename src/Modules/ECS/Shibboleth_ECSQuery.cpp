@@ -26,19 +26,27 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, FilterFunc&& filter_func)
+ECSQuery::ECSQuery(const ProxyAllocator& allocator):
+	_shared_components(allocator),
+	_components(allocator),
+	_callbacks(allocator),
+	_entity_data(allocator)
 {
-	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(filter_func) });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func)
+void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func)
 {
-	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), nullptr });
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(erase_func), std::move(filter_func) });
+}
+
+void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func)
+{
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(erase_func), nullptr });
 }
 
 void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def)
 {
-	_shared_components.emplace_back(QueryDataShared{ &ref_def, nullptr, nullptr });
+	_shared_components.emplace_back(QueryDataShared{ &ref_def, nullptr, nullptr, nullptr });
 }
 
 void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def, Output& output)
@@ -49,6 +57,36 @@ void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def, Output& output)
 void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def)
 {
 	_components.emplace_back(QueryData{ &ref_def, nullptr });
+}
+
+void ECSQuery::addArchetypeCallbacks(eastl::function<void (void)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback)
+{
+	_callbacks.emplace_back(Callbacks{ std::move(added_callback), std::move(removed_callback) });
+}
+
+void ECSQuery::removeArchetype(const void* entity_data)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(_entity_data.size()); ++i) {
+		if (entity_data == _entity_data[i]) {
+			_entity_data.erase(_entity_data.begin() + i);
+			
+			for (const Callbacks& callbacks : _callbacks) {
+				if (callbacks.remove) {
+					callbacks.remove(i);
+				}
+			}
+
+			for (const auto& shared_data : _shared_components) {
+				shared_data.erase_func(i);
+			}
+
+			for (const auto& data : _components) {
+				data.output->erase(data.output->begin() + i);
+			}
+
+			break;
+		}
+	}
 }
 
 bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
@@ -73,7 +111,6 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 		if (data.filter_func && !data.filter_func(reinterpret_cast<const int8_t*>(shared_data) + offset)) {
 			return false;
 		}
-
 	}
 
 	for (const QueryData& data : _components) {
@@ -101,6 +138,13 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 		}
 	}
 
+	for (const Callbacks& callbacks : _callbacks) {
+		if (callbacks.add) {
+			callbacks.add();
+		}
+	}
+
+	_entity_data.emplace_back(entity_data);
 	return true;
 }
 

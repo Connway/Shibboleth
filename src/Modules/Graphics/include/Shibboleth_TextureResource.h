@@ -36,6 +36,8 @@ class TextureResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
 	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
 	bool createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
 

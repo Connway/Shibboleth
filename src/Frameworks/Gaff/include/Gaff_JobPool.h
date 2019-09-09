@@ -56,8 +56,8 @@ public:
 	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
 	void destroy(void);
 
-	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
-	void addJobs(JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool = 0);
+	void addJobs(const JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
+	void addJobs(const JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool = 0);
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter* counter);
 	void freeCounter(Counter* counter);

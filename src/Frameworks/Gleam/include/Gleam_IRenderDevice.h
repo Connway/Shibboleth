@@ -74,6 +74,7 @@ public:
 	//virtual bool resize(const IWindow& window) = 0;
 	//virtual bool handleFocusGained(const IWindow& window) = 0;
 
+	virtual IRenderDevice* getOwningDevice(void) const = 0;
 	virtual bool isDeferred(void) const = 0;
 	virtual RendererType getRendererType(void) const = 0;
 

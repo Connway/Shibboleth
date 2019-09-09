@@ -58,7 +58,7 @@ void Position::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& valu
 	ecs_mgr.getComponentShared<Position>(id)->value = value;
 }
 
-void Position::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
+void Position::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 	component[0] = value.x;
@@ -101,7 +101,7 @@ const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return ecs_mgr.getComponentShared<Position>(id)->value;
 }
 
-glm::vec3 Position::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+glm::vec3 Position::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
 	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 
@@ -180,7 +180,7 @@ void Rotation::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::quat& valu
 	ecs_mgr.getComponentShared<Rotation>(id)->value = value;
 }
 
-void Rotation::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value)
+void Rotation::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::quat& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 	component[0] = value.x;
@@ -225,7 +225,7 @@ const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return ecs_mgr.getComponentShared<Rotation>(id)->value;
 }
 
-glm::quat Rotation::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+glm::quat Rotation::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
 	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 
@@ -312,7 +312,7 @@ void Scale::SetShared(ECSManager& ecs_mgr, EntityID id, const glm::vec3& value)
 	ecs_mgr.getComponentShared<Scale>(id)->value = value;
 }
 
-void Scale::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
+void Scale::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const glm::vec3& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 	component[0] = value.x;
@@ -355,7 +355,7 @@ const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return ecs_mgr.getComponentShared<Scale>(id)->value;
 }
 
-glm::vec3 Scale::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+glm::vec3 Scale::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
 	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
 
@@ -432,7 +432,7 @@ void Layer::SetShared(ECSManager& ecs_mgr, EntityID id, Gaff::Hash32 value)
 	ecs_mgr.getComponentShared<Layer>(id)->value = value;
 }
 
-//void Layer::Set(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value)
+//void Layer::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Gaff::Hash32 value)
 //{
 //	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
 //	*component = value;
@@ -454,7 +454,7 @@ Gaff::Hash32 Layer::GetShared(ECSManager& ecs_mgr, EntityID id)
 	return ecs_mgr.getComponentShared<Layer>(id)->value;
 }
 
-//Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, ECSQueryResult& query_result, int32_t entity_index)
+//Gaff::Hash32 Layer::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 //{
 //	return *reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
 //}

@@ -357,9 +357,14 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //	return false;
 //}
 
+IRenderDevice* RenderDeviceD3D11::getOwningDevice(void) const
+{
+	return _owner;
+}
+
 bool RenderDeviceD3D11::isDeferred(void) const
 {
-	return _is_deferred;
+	return _owner != nullptr;
 }
 
 RendererType RenderDeviceD3D11::getRendererType(void) const
@@ -379,7 +384,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 	deferred_render_device->_context.reset(deferred_context);
 	deferred_render_device->_device = _device;
 	deferred_render_device->_adapter = _adapter;
-	deferred_render_device->_is_deferred = true;
+	deferred_render_device->_owner = this;
 
 	return deferred_render_device;
 }
@@ -394,7 +399,7 @@ void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
 
 bool RenderDeviceD3D11::finishCommandList(ICommandList* command_list)
 {
-	GAFF_ASSERT(_is_deferred && command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
+	GAFF_ASSERT(isDeferred() && command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
 
 	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
 	ID3D11CommandList* cl = nullptr;

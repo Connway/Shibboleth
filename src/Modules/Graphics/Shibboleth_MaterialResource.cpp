@@ -45,6 +45,17 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MaterialResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(MaterialResource)
 
+Vector<Gleam::IRenderDevice*> MaterialResource::getDevices(void) const
+{
+	for (const auto& shader : _shaders) {
+		if (shader) {
+			return shader->getDevices();
+		}
+	}
+
+	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
+}
+
 bool MaterialResource::createProgram(
 	const Vector<Gleam::IRenderDevice*>& devices,
 	ShaderResourcePtr& vertex,

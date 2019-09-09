@@ -82,10 +82,11 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(GameTimeSystem)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(GameTimeSystem)
 
-void GameTimeSystem::init(void)
+bool GameTimeSystem::init(void)
 {
 	_manager = &GetApp().getManagerTFast<GameTimeManager>();
 	_manager->reset();
+	return true;
 }
 
 void GameTimeSystem::update()

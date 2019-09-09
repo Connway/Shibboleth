@@ -260,6 +260,10 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	const auto it = Gaff::Find(_render_devices, device, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
 	GAFF_ASSERT(it == _render_devices.end());
 	_render_devices.emplace_back(device);
+
+	for (auto& pair : _deferred_devices) {
+		pair.second.emplace_back(device->createDeferredRenderDevice());
+	}
 }
 
 const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char* tag) const
@@ -278,6 +282,23 @@ Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const
 int32_t RenderManagerBase::getNumDevices(void) const
 {
 	return static_cast<int32_t>(_render_devices.size());
+}
+
+Vector<Gleam::IRenderDevice*> RenderManagerBase::getOrCreateThreadContexts(EA::Thread::ThreadId id)
+{
+	Vector<Gleam::IRenderDevice*> out;
+
+	auto& devices = _deferred_devices[id];
+
+	if (devices.empty()) {
+		for (auto& device : _render_devices) {
+			Gleam::IRenderDevice* const rd = device->createDeferredRenderDevice();
+			devices.emplace_back(rd);
+			out.emplace_back(rd);
+		}
+	}
+
+	return out;
 }
 
 Gleam::IRenderOutput* RenderManagerBase::getOutput(Gaff::Hash32 tag) const
@@ -314,7 +335,7 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
 		return nullptr;
 	}
 
-	_render_devices.emplace_back(rd);
+	manageRenderDevice(rd);
 
 	Gleam::ISamplerState* const sampler_state = createSamplerState();
 	const Gleam::ISamplerState::SamplerSettings sampler_settings = {

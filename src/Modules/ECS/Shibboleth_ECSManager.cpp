@@ -97,6 +97,10 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 		}
 	}
 
+	for (int32_t query_index : it->second->queries) {
+		_queries[query_index].removeArchetype(it->second.get());
+	}
+
 	_entity_pages.erase(it);
 }
 
@@ -236,7 +240,12 @@ int32_t ECSManager::getPageIndex(EntityID id) const
 	return _entities[id].index;
 }
 
-void* ECSManager::getComponent(ECSQueryResult& query_result, int32_t entity_index)
+const void* ECSManager::getComponent(const ECSQueryResult& query_result, int32_t entity_index) const
+{
+	return const_cast<ECSManager*>(this)->getComponent(query_result, entity_index);
+}
+
+void* ECSManager::getComponent(const ECSQueryResult& query_result, int32_t entity_index)
 {
 	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
 	GAFF_ASSERT(entity_index < data->num_entities);
@@ -261,7 +270,10 @@ void ECSManager::registerQuery(ECSQuery&& query)
 
 	for (auto& data : _entity_pages) {
 		EntityData* const entity_data = data.second.get();
-		new_query.filter(entity_data->archetype, entity_data);
+		
+		if (new_query.filter(entity_data->archetype, entity_data)) {
+			entity_data->queries.emplace_back(static_cast<int32_t>(_queries.size() - 1));
+		}
 	}
 }
 
@@ -303,7 +315,6 @@ void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 	}
 
 	EntityData& data = *entity.data;
-
 	entity.page = nullptr;
 	entity.data = nullptr;
 	entity.index = -1;
@@ -447,8 +458,10 @@ ECSManager::ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& 
 
 	_entity_pages[archetype_hash].reset(data);
 
-	for (ECSQuery& query : _queries) {
-		query.filter(data->archetype, data);
+	for (int32_t i = 0; i < static_cast<int32_t>(_queries.size()); ++i) {
+		if (_queries[i].filter(data->archetype, data)) {
+			data->queries.emplace_back(i);
+		}
 	}
 
 	return data->arch_ref;
