@@ -32,9 +32,10 @@ bool RenderCommandSystem::init(void)
 {
 	ECSQuery query;
 
-	query.addShared< Resource<MaterialResource> >(_materials);
-	query.addShared< Resource<TextureResource> >(_textures);
-	query.addShared< Resource<ModelResource> >(_models);
+	query.addShared(_program_buffers);
+	query.addShared(_materials);
+	query.addShared(_textures);
+	query.addShared(_models);
 
 	query.add<Position>(_position);
 	query.add<Rotation>(_rotation);
