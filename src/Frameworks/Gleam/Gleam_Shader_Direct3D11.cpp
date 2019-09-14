@@ -504,7 +504,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		input_refl.instance_data = input_desc.SystemValueType == D3D_NAME_INSTANCE_ID;
 	}
 
-	for (unsigned int i = 0; i < shader_desc.ConstantBuffers; ++i) {
+	for (uint32_t i = 0; i < shader_desc.ConstantBuffers; ++i) {
 		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
 
 		D3D11_SHADER_BUFFER_DESC cb_desc;

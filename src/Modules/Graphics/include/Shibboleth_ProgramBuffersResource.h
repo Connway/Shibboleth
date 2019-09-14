@@ -22,43 +22,33 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProgramBuffersResource.h"
-#include "Shibboleth_ResourceComponent.h"
-#include "Shibboleth_MaterialResource.h"
-#include "Shibboleth_TextureResource.h"
-#include "Shibboleth_ModelResource.h"
-#include <Shibboleth_ISystem.h>
-#include <Shibboleth_ECSQuery.h>
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Gleam_IProgram.h>
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
-class ECSManager;
-
-class RenderCommandSystem final : public ISystem
+class ProgramBuffersResource final : public IResource
 {
 public:
-	bool init(void) override;
-	void update() override;
+	static constexpr bool Creatable = true;
+
+	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+
+	bool createProgramBuffers(const Vector<Gleam::IRenderDevice*>& devices);
+	bool createProgramBuffers(Gleam::IRenderDevice& device);
+
+	const Gleam::IProgramBuffers* getProgramBuffer(const Gleam::IRenderDevice& rd) const;
+	Gleam::IProgramBuffers* getProgramBuffer(const Gleam::IRenderDevice& rd);
 
 private:
-	RenderManagerBase* _render_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
+	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgramBuffers> > _program_buffers{ ProxyAllocator("Graphics") };
 
-	// Entities
-	Vector< const Resource<ProgramBuffersResource>* > _program_buffers{ ProxyAllocator("Graphics") };
-	Vector< const Resource<MaterialResource>* > _materials{ ProxyAllocator("Graphics") };
-	Vector< const Resource<TextureResource>* > _textures{ ProxyAllocator("Graphics") };
-	Vector< const Resource<ModelResource>* > _models{ ProxyAllocator("Graphics") };
-
-	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
-
-	// Cameras
-
-	void newArchetype(void);
-	void removedArchetype(int32_t index);
+	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
 };
 
+using ProgramBufferResourcePtr = Gaff::RefPtr<ProgramBuffersResource>;
+
 NS_END
+
+SHIB_REFLECTION_DECLARE(ProgramBuffersResource)
