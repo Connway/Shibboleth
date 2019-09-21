@@ -21,7 +21,7 @@ struct VertexInputType
 	float3 tangent : TANGENT0;
 	float3 bitangent : BINORMAL0;
 	float2 uv : TEXCOORD0;
-	//uint4 blend_indices : BLENDINCIES0;
+	//uint4 blend_indices : BLENDINDICES0;
 	//float4 blend_weights : BLENDWEIGHTS0;
 	uint instance_id : SV_InstanceID;
 };

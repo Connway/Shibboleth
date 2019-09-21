@@ -20,39 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_GraphicsResourceComponents.h"
 
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_ECSAttributes.h>
-#include <Shibboleth_ECSEntity.h>
-#include <Shibboleth_IResource.h>
+SHIB_REFLECTION_EXTERNAL_DEFINE(Model)
 
 NS_SHIBBOLETH
 
-class ECSManager;
+SHIB_REFLECTION_BUILDER_BEGIN(Model)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Graphics")
+	)
 
-template <class T>
-class Resource
-{
-public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
-
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
-
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
-	typename ResourceType value;
-};
+	.base< Resource<ModelResource> >()
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Model)
 
 NS_END
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"

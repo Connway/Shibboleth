@@ -78,7 +78,7 @@ static void PNGRead(png_structp png_ptr, png_bytep out_buffer, png_size_t out_si
 static tsize_t TIFFRead(thandle_t st, tdata_t buffer, tsize_t size)
 {
 	const BufferData* const data = reinterpret_cast<const BufferData*>(st);
-	const size_t bytes_read = Gaff::Min(size, data->size - data->curr_byte_offset);
+	const size_t bytes_read = Gaff::Min(static_cast<size_t>(size), data->size - data->curr_byte_offset);
 
 	memcpy(buffer, data->buffer, bytes_read);
 	return bytes_read;
@@ -87,10 +87,12 @@ static tsize_t TIFFRead(thandle_t st, tdata_t buffer, tsize_t size)
 static tsize_t TIFFWrite(thandle_t st, tdata_t buffer, tsize_t size)
 {
 	//BufferData* const data = reinterpret_cast<BufferData*>(st);
-	//const size_t bytes_written = Gaff::Min(size, data->size - data->curr_byte_offset);
+	//const size_t bytes_written = Gaff::Min(static_cast<size_t>(size), data->size - data->curr_byte_offset);
 
 	//memcpy(reinterpret_cast<int8_t*>(data->buffer) + data->curr_byte_offset, buffer, bytes_written);
 	//return bytes_written;
+
+	GAFF_REF(st, buffer, size);
 	return 0;
 }
 
@@ -119,7 +121,7 @@ static toff_t TIFFSeek(thandle_t st, toff_t pos, int whence)
 			break;
 
 		case SEEK_END:
-			data->curr_byte_offset = data->curr_byte_offset;
+			// Unsupported.
 			break;
 	}
 
@@ -131,8 +133,13 @@ static toff_t TIFFSize(thandle_t st)
 	return reinterpret_cast<const BufferData*>(st)->size;
 }
 
-static int TIFFMap(thandle_t, tdata_t*, toff_t*)
+static int TIFFMap(thandle_t st, tdata_t* buffer, toff_t* size)
 {
+	BufferData* const data = reinterpret_cast<BufferData*>(st);
+	*buffer = const_cast<void*>(data->buffer);
+	*size = data->size;
+
+	return 1;
 }
 
 static void TIFFUnmap(thandle_t, tdata_t, toff_t)
@@ -205,13 +212,13 @@ bool Image::loadTIFF(const void* buffer, size_t size)
 
 	_image.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * sizeof(uint32_t));
 
-	const bool success = TIFFReadRGBAImage(tiff, width, height, reinterpret_cast<uint32_t*>(_image.data()));
+	const bool success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32_t*>(_image.data()), ORIENTATION_TOPLEFT);
 	TIFFClose(tiff);
 
 	if (success) {
 		_width = static_cast<int32_t>(width);
 		_height = static_cast<int32_t>(height);
-		_bit_depth = sizeof(uint32_t) * 8;
+		_bit_depth = 8;
 		_num_channels = 4;
 	}
 	

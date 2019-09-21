@@ -354,9 +354,6 @@
     <ProjectReference Include="..\dependencies\assimp.vcxproj">
       <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\libtiff.vcxproj">
-      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
@@ -377,6 +374,9 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\libpng.vcxproj">
       <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\libtiff.vcxproj">
+      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>

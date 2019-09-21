@@ -22,17 +22,17 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_GraphicsResourceComponents.h"
 #include "Shibboleth_ProgramBuffersResource.h"
-#include "Shibboleth_ResourceComponent.h"
-#include "Shibboleth_MaterialResource.h"
-#include "Shibboleth_TextureResource.h"
-#include "Shibboleth_ModelResource.h"
+#include "Shibboleth_MaterialComponent.h"
+#include "Shibboleth_BufferResource.h"
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_ECSQuery.h>
 
 NS_SHIBBOLETH
 
 class RenderManagerBase;
+class ResourceManager;
 class ECSManager;
 
 class RenderCommandSystem final : public ISystem
@@ -43,12 +43,15 @@ public:
 
 private:
 	RenderManagerBase* _render_mgr = nullptr;
+	ResourceManager* _res_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
+	int32_t _next_id = 0;
+
+	Vector<ProgramBuffersResourcePtr> _program_buffers{ ProxyAllocator("Graphics") };
+	Vector<BufferResourcePtr> _buffers{ ProxyAllocator("Graphics") };
 
 	// Entities
-	Vector< const Resource<ProgramBuffersResource>* > _program_buffers{ ProxyAllocator("Graphics") };
 	Vector< const Resource<MaterialResource>* > _materials{ ProxyAllocator("Graphics") };
-	Vector< const Resource<TextureResource>* > _textures{ ProxyAllocator("Graphics") };
 	Vector< const Resource<ModelResource>* > _models{ ProxyAllocator("Graphics") };
 
 	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
@@ -59,6 +62,10 @@ private:
 
 	void newArchetype(void);
 	void removedArchetype(int32_t index);
+
+	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(RenderCommandSystem)

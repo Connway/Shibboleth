@@ -60,7 +60,8 @@ local GenerateProject = function()
 			"Assimp",
 			"zlib-ng",
 			"minizip",
-			"libpng"
+			"libpng",
+			"libtiff"
 		}
 
 		dependson(deps)
@@ -79,6 +80,7 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "minizip")
 	table.insert(deps, "libpng")
+	table.insert(deps, "libtiff")
 
 	dependson(deps)
 	links(deps)

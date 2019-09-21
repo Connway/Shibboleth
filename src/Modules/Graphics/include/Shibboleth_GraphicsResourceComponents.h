@@ -22,37 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_ECSAttributes.h>
-#include <Shibboleth_ECSEntity.h>
-#include <Shibboleth_IResource.h>
+#include "Shibboleth_ModelResource.h"
+#include <Shibboleth_ResourceComponent.h>
 
 NS_SHIBBOLETH
 
-class ECSManager;
-
-template <class T>
-class Resource
+class Model final : public Resource<ModelResource>
 {
-public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
-
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
-
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
-	typename ResourceType value;
 };
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"
+SHIB_REFLECTION_DECLARE(Model)

@@ -540,6 +540,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 				break;
 
 			case D3D_SIT_STRUCTURED:
+				// $TODO: Fill out struct information.
 				reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
 				++reflection.num_structured_buffers;
 				break;

@@ -280,6 +280,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\libpng.vcxproj">
       <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\libtiff.vcxproj">
+      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

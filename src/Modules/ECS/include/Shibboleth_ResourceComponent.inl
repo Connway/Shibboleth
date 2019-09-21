@@ -25,14 +25,7 @@ SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(Resource, T)
 NS_SHIBBOLETH
 
 SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(Resource, T)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Resource")
-	)
-
 	.staticFunc("CopyShared", &Resource<T>::CopyShared)
-	//.staticFunc("Copy", &Resource<T>::Copy)
-
-	//.staticFunc("Load", &Resource<T>::Load)
 
 	.var("value", &Resource<T>::value)
 	.ctor<>()
