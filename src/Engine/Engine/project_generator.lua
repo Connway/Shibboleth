@@ -21,8 +21,8 @@ project "Engine"
 		"../../Dependencies/mpack",
 		"../../Dependencies/glm",
 		"../../Dependencies/zlib-ng",
-		"../../Dependencies/png++",
-		"../../Dependencies/libpng"
+		"../../Dependencies/libpng",
+		"../../Dependencies/libtiff"
 	}
 
 	StaticHeaderGen()
