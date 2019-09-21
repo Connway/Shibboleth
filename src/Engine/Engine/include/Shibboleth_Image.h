@@ -37,6 +37,7 @@ public:
 	uint8_t* getBuffer(void);
 
 	bool load(const void* buffer, size_t size, const char* file_ext);
+	bool loadTIFF(const void* buffer, size_t size);
 	bool loadPNG(const void* buffer, size_t size);
 
 private:

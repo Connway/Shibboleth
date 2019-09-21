@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
 #include "Shibboleth_IApp.h"
+#include <tiffio.h>
 #include <png.h>
 
 NS_SHIBBOLETH
@@ -74,6 +75,71 @@ static void PNGRead(png_structp png_ptr, png_bytep out_buffer, png_size_t out_si
 	buffer_data->curr_byte_offset += read_size;
 }
 
+static tsize_t TIFFRead(thandle_t st, tdata_t buffer, tsize_t size)
+{
+	const BufferData* const data = reinterpret_cast<const BufferData*>(st);
+	const size_t bytes_read = Gaff::Min(size, data->size - data->curr_byte_offset);
+
+	memcpy(buffer, data->buffer, bytes_read);
+	return bytes_read;
+}
+
+static tsize_t TIFFWrite(thandle_t st, tdata_t buffer, tsize_t size)
+{
+	//BufferData* const data = reinterpret_cast<BufferData*>(st);
+	//const size_t bytes_written = Gaff::Min(size, data->size - data->curr_byte_offset);
+
+	//memcpy(reinterpret_cast<int8_t*>(data->buffer) + data->curr_byte_offset, buffer, bytes_written);
+	//return bytes_written;
+	return 0;
+}
+
+static int TIFFClose(thandle_t)
+{
+	return 0;
+}
+
+static toff_t TIFFSeek(thandle_t st, toff_t pos, int whence)
+{
+	if (pos == 0xFFFFFFFF) {
+		return 0xFFFFFFFF;
+	}
+
+	BufferData* const data = reinterpret_cast<BufferData*>(st);
+
+	switch (whence) {
+		case SEEK_SET:
+			GAFF_ASSERT(pos < data->size);
+			data->curr_byte_offset = pos;
+			break;
+
+		case SEEK_CUR:
+			GAFF_ASSERT((data->curr_byte_offset + pos) < data->size);
+			data->curr_byte_offset += pos;
+			break;
+
+		case SEEK_END:
+			data->curr_byte_offset = data->curr_byte_offset;
+			break;
+	}
+
+	return data->curr_byte_offset;
+}
+
+static toff_t TIFFSize(thandle_t st)
+{
+	return reinterpret_cast<const BufferData*>(st)->size;
+}
+
+static int TIFFMap(thandle_t, tdata_t*, toff_t*)
+{
+}
+
+static void TIFFUnmap(thandle_t, tdata_t, toff_t)
+{
+}
+
+
 int32_t Image::getWidth(void) const
 {
 	return _width;
@@ -109,10 +175,47 @@ bool Image::load(const void* buffer, size_t size, const char* file_ext)
 	if (Gaff::EndsWith(file_ext, ".png")) {
 		return loadPNG(buffer, size);
 	} else if (Gaff::EndsWith(file_ext, ".tiff") || Gaff::EndsWith(file_ext, ".tif")) {
-		//return loadTIFF(buffer, size, finish_reading_callback, callback_data);
+		return loadTIFF(buffer, size);
 	}
 
 	return false;
+}
+
+bool Image::loadTIFF(const void* buffer, size_t size)
+{
+	BufferData data = { buffer, size, 0 };
+	TIFF* const tiff = TIFFClientOpen(
+		"Memory",
+		"r",
+		&data,
+		TIFFRead,
+		TIFFWrite,
+		TIFFSeek,
+		TIFFClose,
+		TIFFSize,
+		TIFFMap,
+		TIFFUnmap
+	);
+
+	uint32_t width;
+	uint32_t height;
+
+	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
+
+	_image.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * sizeof(uint32_t));
+
+	const bool success = TIFFReadRGBAImage(tiff, width, height, reinterpret_cast<uint32_t*>(_image.data()));
+	TIFFClose(tiff);
+
+	if (success) {
+		_width = static_cast<int32_t>(width);
+		_height = static_cast<int32_t>(height);
+		_bit_depth = sizeof(uint32_t) * 8;
+		_num_channels = 4;
+	}
+	
+	return success;
 }
 
 bool Image::loadPNG(const void* buffer, size_t size)
