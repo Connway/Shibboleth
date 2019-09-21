@@ -26,15 +26,20 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Gleam_IncludeMatrix.h>
 
+SHIB_REFLECTION_DEFINE(RenderCommandSystem)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderCommandSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(RenderCommandSystem)
 
 bool RenderCommandSystem::init(void)
 {
 	ECSQuery query;
 
-	query.addShared(_program_buffers);
 	query.addShared(_materials);
-	query.addShared(_textures);
 	query.addShared(_models);
 
 	query.add<Position>(_position);
@@ -48,6 +53,7 @@ bool RenderCommandSystem::init(void)
 	query.addArchetypeCallbacks(std::move(add_func), std::move(remove_func));
 
 	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(query));
 
@@ -76,19 +82,57 @@ void RenderCommandSystem::update()
 
 void RenderCommandSystem::newArchetype(void)
 {
-	//Gleam::IProgramBuffers* const program_buffers = _render_mgr->createProgramBuffers();
-	//Gleam::IBuffer* const buffer = _render_mgr->createBuffer();
+	auto& program_buffers = _program_buffers.emplace_back();
+	auto& buffer = _buffers.emplace_back();
 
-	//_materials.back()->value->getProgram
+	const auto& material = _materials.back()->value;
+	const auto devices = material->getDevices();
 
-	//Gleam::IBuffer::BufferSettings buffer_settings = {
-	//		nullptr,
-	//		sizeof(glm::mat4x4) *,
-	//		sizeof(glm::mat4x4),
-	//		Gleam::IBuffer::BT_STRUCTURED_DATA,
-	//		Gleam::IBuffer::MT_WRITE,
-	//		true
-	//};
+	if (devices.empty()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const Gleam::IProgram* const program = material->getProgram(*devices[0]);
+	const Gleam::IShader* const vert_shader = program->getAttachedShader(Gleam::IShader::SHADER_VERTEX);
+	//size_t buffer_size = 0;
+
+	if (vert_shader) {
+		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
+
+		for (int32_t i = 0; i < refl.num_structured_buffers; ++i) {
+			if (refl.structured_buffers[i] == "instance_data") {
+
+				break;
+			}
+		}
+	}
+
+	const int32_t id = _next_id++;
+	const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
+	const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
+
+	program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+	buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+
+	const Gleam::IBuffer::BufferSettings settings = {
+		nullptr,
+		0, //size_t size = 0;
+		0, //int32_t stride = 0;
+		Gleam::IBuffer::BT_STRUCTURED_DATA,
+		Gleam::IBuffer::MT_WRITE,
+		true
+	};
+
+	if (!program_buffers->createProgramBuffers(_materials.back()->value->getDevices())) {
+		// $TODO: Log error.
+		return;
+	}
+
+	if (!buffer->createBuffer(_materials.back()->value->getDevices(), settings)) {
+		// $TODO: Log error.
+		return;
+	}
 }
 
 void RenderCommandSystem::removedArchetype(int32_t index)

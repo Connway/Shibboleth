@@ -20,39 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ResourceManager.h>
+#include "Shibboleth_MaterialComponent.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_ECSAttributes.h>
-#include <Shibboleth_ECSEntity.h>
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_ECSManager.h>
+
+SHIB_REFLECTION_EXTERNAL_DEFINE(Material)
 
 NS_SHIBBOLETH
 
-class ECSManager;
+SHIB_REFLECTION_BUILDER_BEGIN(Material)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Graphics")
+	)
 
-template <class T>
-class Resource
+	.staticFunc("CopyShared", &Material::CopyShared)
+
+	.var("material", &Material::material)
+	.var("textures", &Material::textures)
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(Material)
+
+void Material::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const Material& value)
 {
-public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	*ecs_mgr.getComponentShared<Material>(archetype) = value;
+}
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
+void Material::SetShared(ECSManager& ecs_mgr, EntityID id, const Material& value)
+{
+	*ecs_mgr.getComponentShared<Material>(id) = value;
+}
 
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
+const Material& Material::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+{
+	return *ecs_mgr.getComponentShared<Material>(archetype);
+}
 
-	static void CopyShared(const void* old_value, void* new_value);
+const Material& Material::GetShared(ECSManager& ecs_mgr, EntityID id)
+{
+	return *ecs_mgr.getComponentShared<Material>(id);
+}
 
-	typename ResourceType value;
-};
+void Material::CopyShared(const void* old_value, void* new_value)
+{
+	*reinterpret_cast<Material*>(new_value) = *reinterpret_cast<const Material*>(old_value);
+}
 
 NS_END
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"

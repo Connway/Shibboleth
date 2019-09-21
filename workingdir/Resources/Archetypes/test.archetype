@@ -3,7 +3,12 @@
 
 	"shared_components":
 	{
-		"Model": { "Path": "Models/ninja.model" }
+		"Material":
+		{
+			"material": "Materials/test.material",
+			"textures": ["Models/ninja.texture"]
+		},
+		"Model": { "value": "Models/ninja.model" }
 	},
 
 	"components":

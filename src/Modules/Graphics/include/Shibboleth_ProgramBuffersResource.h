@@ -47,7 +47,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
 };
 
-using ProgramBufferResourcePtr = Gaff::RefPtr<ProgramBuffersResource>;
+using ProgramBuffersResourcePtr = Gaff::RefPtr<ProgramBuffersResource>;
 
 NS_END
 
