@@ -102,6 +102,98 @@ static ITexture::Format GetFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 	return ITexture::Format::SIZE;
 }
 
+static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
+{
+	GAFF_ASSERT(shader_src && entry_point && target);
+
+	if (shader_size == SIZE_T_FAIL) {
+		shader_size = strlen(shader_src);
+	}
+
+	ID3DBlob* shader_buffer;
+	ID3DBlob* error_buffer;
+
+	HRESULT result = D3DCompile(shader_src, shader_size, NULL, NULL /*macros*/, NULL /*include*/,
+		entry_point, target, SHADER_FLAGS, 0, &shader_buffer, &error_buffer);
+
+	if (FAILED(result)) {
+		if (error_buffer) {
+			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
+			PrintfToLog(error_msg, LOG_ERROR);
+
+			error_buffer->Release();
+		}
+
+		return nullptr;
+	}
+
+	return shader_buffer;
+}
+
+static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size)
+{
+	GAFF_ASSERT(file_path);
+
+	Gaff::File shader(file_path, Gaff::File::OM_READ_BINARY);
+
+	if (!shader.isOpen()) {
+		U8String msg("Failed to open shader file: ");
+		msg += file_path;
+
+		PrintfToLog(msg.data(), LOG_ERROR);
+		return false;
+	}
+
+	long size = shader.getFileSize();
+
+	shader_size = size;
+	shader_src = reinterpret_cast<char*>(GLEAM_ALLOC(sizeof(char) * shader_size));
+
+	if (!shader_src || size == -1) {
+		return false;
+	}
+
+	if (!shader.readEntireFile(shader_src)) {
+		GleamFree(shader_src);
+		shader_src = nullptr;
+		shader_size = 0;
+
+		U8String msg("Failed to read shader file: ");
+		msg += file_path;
+
+		PrintfToLog(msg.data(), LOG_ERROR);
+		return false;
+	}
+
+	return true;
+}
+
+static void MakeStructuredBufferReflection(StructuredBufferReflection& out_refl, const D3D11_SHADER_INPUT_BIND_DESC& input_desc, ID3D11ShaderReflection* refl)
+{
+	out_refl.name = input_desc.Name;
+	ID3D11ShaderReflectionVariable* const refl_var = refl->GetVariableByName(input_desc.Name);
+	D3D11_SHADER_VARIABLE_DESC var_desc;
+	D3D11_SHADER_TYPE_DESC type_desc;
+
+	auto result = refl_var->GetDesc(&var_desc);
+	auto error = GetLastError();
+
+	ID3D11ShaderReflectionType* const refl_type = refl_var->GetType();
+	result = refl_type->GetDesc(&type_desc);
+	error = GetLastError();
+
+	for (int32_t i = 0; true; ++i) {
+		const char* const name = refl_type->GetMemberTypeName(static_cast<UINT>(i));
+
+		if (!name) {
+			break;
+		}
+	}
+
+}
+
+
+
 ShaderD3D11::ShaderD3D11(void):
 	_shader(nullptr), _shader_buffer(nullptr)
 {
@@ -137,11 +229,11 @@ bool ShaderD3D11::initVertex(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "VertexMain", "vs_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "VertexMain", "vs_5_0");
 
 	GleamFree(shader_src);
 
@@ -166,11 +258,11 @@ bool ShaderD3D11::initPixel(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "PixelMain", "ps_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "PixelMain", "ps_5_0");
 
 	GleamFree(shader_src);
 
@@ -195,11 +287,11 @@ bool ShaderD3D11::initDomain(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "DomainMain", "ds_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "DomainMain", "ds_5_0");
 
 	GleamFree(shader_src);
 
@@ -224,11 +316,11 @@ bool ShaderD3D11::initGeometry(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "GeometryMain", "gs_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "GeometryMain", "gs_5_0");
 
 	GleamFree(shader_src);
 
@@ -253,11 +345,11 @@ bool ShaderD3D11::initHull(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "HullMain", "hs_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "HullMain", "hs_5_0");
 
 	GleamFree(shader_src);
 
@@ -282,11 +374,11 @@ bool ShaderD3D11::initCompute(IRenderDevice& rd, const char* file_path)
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
 
-	if (!loadFile(file_path, shader_src, shader_size)) {
+	if (!LoadFile(file_path, shader_src, shader_size)) {
 		return false;
 	}
 
-	_shader_buffer = compileShader(shader_src, shader_size, "ComputeMain", "cs_5_0");
+	_shader_buffer = CompileShader(shader_src, shader_size, "ComputeMain", "cs_5_0");
 	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
@@ -307,7 +399,7 @@ bool ShaderD3D11::initVertexSource(IRenderDevice& rd, const char* source, size_t
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "VertexMain", "vs_5_0");
+	_shader_buffer = CompileShader(source, source_size, "VertexMain", "vs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -327,7 +419,7 @@ bool ShaderD3D11::initPixelSource(IRenderDevice& rd, const char* source, size_t 
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "PixelMain", "ps_5_0");
+	_shader_buffer = CompileShader(source, source_size, "PixelMain", "ps_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -347,7 +439,7 @@ bool ShaderD3D11::initDomainSource(IRenderDevice& rd, const char* source, size_t
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "DomainMain", "ds_5_0");
+	_shader_buffer = CompileShader(source, source_size, "DomainMain", "ds_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -367,7 +459,7 @@ bool ShaderD3D11::initGeometrySource(IRenderDevice& rd, const char* source, size
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "GeometryMain", "gs_5_0");
+	_shader_buffer = CompileShader(source, source_size, "GeometryMain", "gs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -387,7 +479,7 @@ bool ShaderD3D11::initHullSource(IRenderDevice& rd, const char* source, size_t s
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "HullMain", "hs_5_0");
+	_shader_buffer = CompileShader(source, source_size, "HullMain", "hs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -407,7 +499,7 @@ bool ShaderD3D11::initComputeSource(IRenderDevice& rd, const char* source, size_
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && source);
 
-	_shader_buffer = compileShader(source, source_size, "ComputeMain", "cs_5_0");
+	_shader_buffer = CompileShader(source, source_size, "ComputeMain", "cs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -541,7 +633,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 
 			case D3D_SIT_STRUCTURED:
 				// $TODO: Fill out struct information.
-				reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
+				MakeStructuredBufferReflection(reflection.structured_buffers[reflection.num_structured_buffers], res_desc, refl);
 				++reflection.num_structured_buffers;
 				break;
 
@@ -599,72 +691,6 @@ ID3D11ComputeShader* ShaderD3D11::getComputeShader(void) const
 ID3DBlob* ShaderD3D11::getByteCodeBuffer(void) const
 {
 	return _shader_buffer;
-}
-
-bool ShaderD3D11::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
-{
-	GAFF_ASSERT(file_path);
-
-	Gaff::File shader(file_path, Gaff::File::OM_READ_BINARY);
-
-	if (!shader.isOpen()) {
-		U8String msg("Failed to open shader file: ");
-		msg += file_path;
-
-		PrintfToLog(msg.data(), LOG_ERROR);
-		return false;
-	}
-
-	long size = shader.getFileSize();
-
-	shader_size = size;
-	shader_src = reinterpret_cast<char*>(GLEAM_ALLOC(sizeof(char) * shader_size));
-
-	if (!shader_src || size == -1) {
-		return false;
-	}
-
-	if (!shader.readEntireFile(shader_src)) {
-		GleamFree(shader_src);
-		shader_src = nullptr;
-		shader_size = 0;
-
-		U8String msg("Failed to read shader file: ");
-		msg += file_path;
-
-		PrintfToLog(msg.data(), LOG_ERROR);
-		return false;
-	}
-
-	return true;
-}
-
-ID3DBlob* ShaderD3D11::compileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
-{
-	GAFF_ASSERT(shader_src && entry_point && target);
-
-	if (shader_size == SIZE_T_FAIL) {
-		shader_size = strlen(shader_src);
-	}
-
-	ID3DBlob* shader_buffer;
-	ID3DBlob* error_buffer;
-
-	HRESULT result = D3DCompile(shader_src, shader_size, NULL, NULL /*macros*/, NULL /*include*/,
-								entry_point, target, SHADER_FLAGS, 0, &shader_buffer, &error_buffer);
-
-	if (FAILED(result)) {
-		if (error_buffer) {
-			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
-			PrintfToLog(error_msg, LOG_ERROR);
-
-			error_buffer->Release();
-		}
-
-		return nullptr;
-	}
-
-	return shader_buffer;
 }
 
 NS_END

@@ -80,9 +80,6 @@ private:
 	};
 
 	ID3DBlob* _shader_buffer;
-
-	bool loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const;
-	ID3DBlob* compileShader(const char* shader, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target);
 };
 
 NS_END

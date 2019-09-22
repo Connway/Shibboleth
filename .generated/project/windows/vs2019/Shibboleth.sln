@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{15A0C35D-0158-05AB-6A5F-DE065636A09B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_App", "engine\Game_App.vcxproj", "{5F8C6132-4B59-BC3D-7472-AAE5609EF1CB}"
@@ -24,7 +26,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_App", "engine\Game_App
 		{EA402CAF-D624-ED04-3F85-E7572B88D786} = {EA402CAF-D624-ED04-3F85-E7572B88D786}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Editor_App_2019", "..\..\..\..\src\Engine\Editor_App\Editor_App_2019.csproj", "{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Editor_App_2019", "..\..\..\..\src\Engine\Editor_App\Editor_App_2019.csproj", "{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "engine\Engine.vcxproj", "{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}"
 EndProject
@@ -238,8 +240,6 @@ Global
 		Static_Debug_D3D11|x64 = Static_Debug_D3D11|x64
 		Static_Release_D3D11|x64 = Static_Release_D3D11|x64
 	EndGlobalSection
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5F8C6132-4B59-BC3D-7472-AAE5609EF1CB}.Debug|x64.ActiveCfg = Debug|x64
 		{5F8C6132-4B59-BC3D-7472-AAE5609EF1CB}.Debug|x64.Build.0 = Debug|x64
@@ -255,16 +255,16 @@ Global
 		{5F8C6132-4B59-BC3D-7472-AAE5609EF1CB}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
 		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Debug|x64.ActiveCfg = Debug|x64
 		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Debug|x64.Build.0 = Debug|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Profile|x64.ActiveCfg = Profile|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Profile|x64.Build.0 = Profile|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Optimized_Debug|x64.ActiveCfg = Debug|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Optimized_Debug|x64.Build.0 = Debug|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Profile|x64.ActiveCfg = Release|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Profile|x64.Build.0 = Release|x64
 		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Release|x64.ActiveCfg = Release|x64
 		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Release|x64.Build.0 = Release|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Debug_D3D11|x64.ActiveCfg = Static_Debug_D3D11|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Debug_D3D11|x64.Build.0 = Static_Debug_D3D11|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Release_D3D11|x64.ActiveCfg = Static_Release_D3D11|x64
-		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Debug_D3D11|x64.ActiveCfg = Debug|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Debug_D3D11|x64.Build.0 = Debug|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Release_D3D11|x64.ActiveCfg = Release|x64
+		{68E9B1E5-2F14-4C53-9BC2-A4025EAC9E14}.Static_Release_D3D11|x64.Build.0 = Release|x64
 		{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}.Debug|x64.ActiveCfg = Debug|x64
 		{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}.Debug|x64.Build.0 = Debug|x64
 		{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
@@ -832,5 +832,8 @@ Global
 		{A6C019BC-1281-95F2-DBBB-DE6F473BDACE} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
 		{205E8965-8C3D-0801-9555-93D701B46E62} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
 		{D023306B-BCF1-2371-A585-949791F2FFD5} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B20BD2F0-6664-4FD9-9880-6AA5CAE38541}
 	EndGlobalSection
 EndGlobal

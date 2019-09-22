@@ -47,13 +47,18 @@ struct InputParamReflection final
 	bool instance_data;
 };
 
+struct StructuredBufferReflection final
+{
+	U8String name;
+};
+
 struct ShaderReflection final
 {
 	InputParamReflection input_params_reflection[MAX_SHADER_VAR];
 	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
 	U8String textures[MAX_SHADER_VAR];
 	U8String samplers[MAX_SHADER_VAR];
-	U8String structured_buffers[MAX_SHADER_VAR];
+	StructuredBufferReflection structured_buffers[MAX_SHADER_VAR];
 
 	int32_t num_inputs = 0;
 	int32_t num_constant_buffers = 0;
