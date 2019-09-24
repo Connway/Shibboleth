@@ -142,6 +142,23 @@ static int TIFFMap(thandle_t st, tdata_t* buffer, toff_t* size)
 	return 1;
 }
 
+static void TIFFError(const char* module, const char* format, va_list va)
+{
+	U8String format_string;
+	format_string.sprintf_va_list(format, va);
+
+	LogErrorDefault("TIFF [%s]: %s", module, format);
+}
+
+static void TIFFWarning(const char* module, const char* format, va_list va)
+{
+	U8String format_string;
+	format_string.sprintf_va_list(format, va);
+
+	LogWarningDefault("TIFF [%s]: %s", module, format);
+}
+
+
 static void TIFFUnmap(thandle_t, tdata_t, toff_t)
 {
 }
@@ -190,6 +207,9 @@ bool Image::load(const void* buffer, size_t size, const char* file_ext)
 
 bool Image::loadTIFF(const void* buffer, size_t size)
 {
+	TIFFSetWarningHandler(TIFFWarning);
+	TIFFSetErrorHandler(TIFFError);
+
 	BufferData data = { buffer, size, 0 };
 	TIFF* const tiff = TIFFClientOpen(
 		"Memory",
