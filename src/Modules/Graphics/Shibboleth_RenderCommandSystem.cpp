@@ -101,7 +101,7 @@ void RenderCommandSystem::newArchetype(void)
 		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
 
 		for (int32_t i = 0; i < refl.num_structured_buffers; ++i) {
-			if (refl.structured_buffers[i] == "instance_data") {
+			if (refl.structured_buffers[i].name == "instance_data") {
 
 				break;
 			}
