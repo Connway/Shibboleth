@@ -33,6 +33,44 @@ NS_GLEAM
 class IRenderDevice;
 class ILayout;
 
+enum class VarType
+{
+	Bool,
+	Int,
+	Float,
+	Double,
+	String,
+	UInt,
+	UInt8,
+
+	Count
+
+	//D3D_SVT_BOOL = 1,
+	//D3D_SVT_INT = 2,
+	//D3D_SVT_FLOAT = 3,
+	//D3D_SVT_STRING = 4,
+	//D3D_SVT_TEXTURE = 5,
+	//D3D_SVT_TEXTURE1D = 6,
+	//D3D_SVT_TEXTURE2D = 7,
+	//D3D_SVT_TEXTURE3D = 8,
+	//D3D_SVT_TEXTURECUBE = 9,
+	//D3D_SVT_SAMPLER = 10,
+	//D3D_SVT_SAMPLER1D = 11,
+	//D3D_SVT_SAMPLER2D = 12,
+	//D3D_SVT_SAMPLER3D = 13,
+	//D3D_SVT_SAMPLERCUBE = 14,
+	//D3D_SVT_PIXELSHADER = 15,
+};
+
+struct VarReflection final
+{
+	U8String name;
+	VarType type;
+	size_t start_offset = 0;
+	int32_t rows = 1;
+	int32_t columns = 1;
+};
+
 struct ConstBufferReflection final
 {
 	U8String name;
@@ -50,21 +88,25 @@ struct InputParamReflection final
 struct StructuredBufferReflection final
 {
 	U8String name;
+	size_t size_bytes = 0;
+	int32_t num_vars = 0;
+
+	VarReflection vars[MAX_SHADER_VAR];
 };
 
 struct ShaderReflection final
 {
-	InputParamReflection input_params_reflection[MAX_SHADER_VAR];
-	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
-	U8String textures[MAX_SHADER_VAR];
-	U8String samplers[MAX_SHADER_VAR];
-	StructuredBufferReflection structured_buffers[MAX_SHADER_VAR];
-
 	int32_t num_inputs = 0;
 	int32_t num_constant_buffers = 0;
 	int32_t num_textures = 0;
 	int32_t num_samplers = 0;
 	int32_t num_structured_buffers = 0;
+
+	InputParamReflection input_params_reflection[MAX_SHADER_VAR];
+	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
+	U8String textures[MAX_SHADER_VAR];
+	U8String samplers[MAX_SHADER_VAR];
+	StructuredBufferReflection structured_buffers[MAX_SHADER_VAR];
 };
 
 class IShader
