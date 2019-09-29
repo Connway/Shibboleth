@@ -6,7 +6,11 @@
 		"Material":
 		{
 			"material": "Materials/test.material",
-			"textures": ["Models/ninja.texture"]
+
+			"parameters":
+			{
+				"tex": "Models/ninja.texture"
+			}
 		},
 		"Model": { "value": "Models/ninja.model" }
 	},
