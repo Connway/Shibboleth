@@ -168,28 +168,93 @@ static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_si
 	return true;
 }
 
-static void MakeStructuredBufferReflection(StructuredBufferReflection& out_refl, const D3D11_SHADER_INPUT_BIND_DESC& input_desc, ID3D11ShaderReflection* refl)
+static void MakeVarReflection(
+	StructuredBufferReflection& out_refl,
+	ID3D11ShaderReflectionConstantBuffer* cb_refl)
 {
-	out_refl.name = input_desc.Name;
-	ID3D11ShaderReflectionVariable* const refl_var = refl->GetVariableByName(input_desc.Name);
-	D3D11_SHADER_VARIABLE_DESC var_desc;
+	ID3D11ShaderReflectionVariable* const var_refl = cb_refl->GetVariableByIndex(0);
+	ID3D11ShaderReflectionType* const type_refl = var_refl->GetType();
+	D3D11_SHADER_TYPE_DESC member_type_desc;
 	D3D11_SHADER_TYPE_DESC type_desc;
 
-	auto result = refl_var->GetDesc(&var_desc);
-	auto error = GetLastError();
+	type_refl->GetDesc(&type_desc);
+	out_refl.num_vars = static_cast<int32_t>(type_desc.Members);
 
-	ID3D11ShaderReflectionType* const refl_type = refl_var->GetType();
-	result = refl_type->GetDesc(&type_desc);
-	error = GetLastError();
+	GAFF_ASSERT(type_desc.Members < MAX_SHADER_VAR);
 
-	for (int32_t i = 0; true; ++i) {
-		const char* const name = refl_type->GetMemberTypeName(static_cast<UINT>(i));
 
-		if (!name) {
-			break;
+
+	for (int32_t i = 0; i < static_cast<int32_t>(type_desc.Members); ++i) {
+		auto& out = out_refl.vars[i];
+
+		ID3D11ShaderReflectionType* const member_type_refl = type_refl->GetMemberTypeByIndex(static_cast<UINT>(i));
+		member_type_refl->GetDesc(&member_type_desc);
+
+		out.name = type_refl->GetMemberTypeName(static_cast<UINT>(i));
+		out.start_offset = member_type_desc.Offset;
+
+		switch (member_type_desc.Class) {
+			case D3D_SVC_MATRIX_COLUMNS:
+			case D3D_SVC_MATRIX_ROWS:
+			case D3D_SVC_VECTOR:
+				out.columns = static_cast<int32_t>(member_type_desc.Columns);
+				out.rows = static_cast<int32_t>(member_type_desc.Rows);
+				break;
+
+			default:
+				break;
+		}
+
+		switch (member_type_desc.Type) {
+			case D3D_SVT_BOOL:
+				out.type = VarType::Bool;
+				break;
+			case D3D_SVT_INT:
+				out.type = VarType::Int;
+				break;
+
+			case D3D_SVT_UINT:
+				out.type = VarType::UInt;
+				break;
+
+			case D3D_SVT_UINT8:
+				out.type = VarType::UInt8;
+				break;
+
+			case D3D_SVT_FLOAT:
+				out.type = VarType::Float;
+				break;
+
+			case D3D_SVT_DOUBLE:
+				out.type = VarType::Double;
+				break;
+
+			case D3D_SVT_STRING:
+				out.type = VarType::String;
+				break;
 		}
 	}
+}
 
+static void MakeStructuredBufferReflection(
+	StructuredBufferReflection& out_refl,
+	const D3D11_SHADER_INPUT_BIND_DESC& input_desc,
+	const D3D11_SHADER_DESC& shader_desc,
+	ID3D11ShaderReflection* refl)
+{
+	out_refl.name = input_desc.Name;
+
+	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.ConstantBuffers); ++i) {
+		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
+		D3D11_SHADER_BUFFER_DESC cb_desc;
+
+		cb_refl->GetDesc(&cb_desc);
+
+		if (cb_desc.Name == out_refl.name) {
+			out_refl.size_bytes = cb_desc.Size;
+			MakeVarReflection(out_refl, cb_refl);
+		}
+	}
 }
 
 
@@ -577,9 +642,10 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 	}
 
 	reflection.num_inputs = static_cast<int32_t>(shader_desc.InputParameters);
-	reflection.num_constant_buffers = static_cast<int32_t>(shader_desc.ConstantBuffers);
 
-	for (uint32_t i = 0; i < shader_desc.InputParameters; ++i) {
+	GAFF_ASSERT(shader_desc.InputParameters < MAX_SHADER_VAR);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.InputParameters); ++i) {
 		D3D11_SIGNATURE_PARAMETER_DESC input_desc;
 		result = refl->GetInputParameterDesc(i, &input_desc);
 
@@ -596,7 +662,9 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		input_refl.instance_data = input_desc.SystemValueType == D3D_NAME_INSTANCE_ID;
 	}
 
-	for (uint32_t i = 0; i < shader_desc.ConstantBuffers; ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.ConstantBuffers); ++i) {
+		GAFF_ASSERT(reflection.num_constant_buffers < MAX_SHADER_VAR);
+
 		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
 
 		D3D11_SHADER_BUFFER_DESC cb_desc;
@@ -607,11 +675,16 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 			return reflection;
 		}
 
-		reflection.const_buff_reflection[i].name = cb_desc.Name;
-		reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
+		if (cb_desc.Type == D3D_CT_RESOURCE_BIND_INFO) {
+			continue;
+		}
+
+		reflection.const_buff_reflection[reflection.num_constant_buffers].name = cb_desc.Name;
+		reflection.const_buff_reflection[reflection.num_constant_buffers].size_bytes = cb_desc.Size;
+		++reflection.num_constant_buffers;
 	}
 
-	for (uint32_t i = 0; i < shader_desc.BoundResources; ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.BoundResources); ++i) {
 		D3D11_SHADER_INPUT_BIND_DESC res_desc;
 		result = refl->GetResourceBindingDesc(i, &res_desc);
 
@@ -622,18 +695,27 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 
 		switch (res_desc.Type) {
 			case D3D_SIT_TEXTURE:
+				GAFF_ASSERT(reflection.num_textures < MAX_SHADER_VAR);
 				reflection.textures[reflection.num_textures] = res_desc.Name;
 				++reflection.num_textures;
 				break;
 
 			case D3D_SIT_SAMPLER:
+				GAFF_ASSERT(reflection.num_samplers < MAX_SHADER_VAR);
 				reflection.samplers[reflection.num_samplers] = res_desc.Name;
 				++reflection.num_samplers;
 				break;
 
 			case D3D_SIT_STRUCTURED:
-				// $TODO: Fill out struct information.
-				MakeStructuredBufferReflection(reflection.structured_buffers[reflection.num_structured_buffers], res_desc, refl);
+				GAFF_ASSERT(reflection.num_structured_buffers < MAX_SHADER_VAR);
+
+				MakeStructuredBufferReflection(
+					reflection.structured_buffers[reflection.num_structured_buffers],
+					res_desc,
+					shader_desc,
+					refl
+				);
+
 				++reflection.num_structured_buffers;
 				break;
 
