@@ -62,6 +62,7 @@ public:
 	glm::vec3 value = glm::zero<glm::vec3>();
 };
 
+// $TODO: Make euler angles.
 class Rotation final
 {
 public:
