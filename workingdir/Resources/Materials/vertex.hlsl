@@ -1,7 +1,7 @@
-// cbuffer InstanceBuffer
-// {
-// 	matrix model_to_proj_matrix;
-// };
+//cbuffer InstanceBuffer
+//{
+//	matrix model_to_proj_matrix;
+//};
 
 //cbuffer CameraBuffer
 //{
