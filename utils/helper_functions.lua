@@ -156,6 +156,10 @@ function GetEngineLocation()
 	return GetActionLocation() .. "/engine"
 end
 
+function GetToolsLocation()
+	return GetActionLocation() .. "/tools"
+end
+
 function GetTestsLocation()
 	if _ACTION then
 		return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
