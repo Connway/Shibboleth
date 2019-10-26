@@ -1,4 +1,4 @@
-project "j2mp"
+project "refl_hash_dump"
 	if _ACTION then
 		location(GetToolsLocation())
 	end
@@ -11,15 +11,18 @@ project "j2mp"
 
 	includedirs
 	{
+		"../../Engine/Engine/include",
+		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
-		"../../Dependencies/mpack",
 		"../../Dependencies/EASTL/include"
 	}
 
 	local deps =
 	{
+		"Engine",
 		"Gaff",
+		"Memory",
 		"EASTL",
 		"mpack"
 	}
@@ -28,6 +31,15 @@ project "j2mp"
 	links(deps)
 
 	flags { "FatalWarnings" }
+
+	filter { "system:windows" }
+		-- links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
+		links { "Dbghelp" }
+
+	filter { "system:not windows" }
+		linkoptions { "-Wl,-rpath,../bin" }
+
+	filter {}
 
 	postbuildcommands
 	{

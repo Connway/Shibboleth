@@ -54,7 +54,8 @@ public:
 
 	IFileSystem& getFileSystem(void) override;
 	const Gaff::JSON& getConfigs(void) const override;
-	const U8String& getProjectDirectory(void) const override;
+	Gaff::JSON& getConfigs(void) override;
+	U8String getProjectDirectory(void) const override;
 
 	const ReflectionManager& getReflectionManager(void) const override;
 	ReflectionManager& getReflectionManager(void) override;
@@ -103,7 +104,6 @@ private:
 
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
 	Gaff::JSON _configs;
-	U8String _project_dir = ".";
 
 	ThreadAllocator _thread_allocator;
 

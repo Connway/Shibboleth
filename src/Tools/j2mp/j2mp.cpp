@@ -80,7 +80,7 @@ static void WriteMPack(Gaff::MessagePackWriter& writer, const Gaff::JSON& json)
 	}
 }
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 {
 	if (argc <= 1) {
 		printf("No arguments given.");

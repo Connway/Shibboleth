@@ -21,59 +21,49 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_App.h>
+//#include <Gaff_MessagePack.h>
+//#include <Gaff_String.h>
+//#include <Gaff_JSON.h>
+//#include <Gaff_File.h>
+//#include <cstdio>
 
-#ifdef SHIB_STATIC
-	#include <Gen_ReflectionInit.h>
-#endif
-
-#ifdef PLATFORM_WINDOWS
-// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
-// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
-extern "C"
-{
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-}
-
-int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
-{
-	Shibboleth::App app;
-
-	//while (true) {
-	//}
-
-#ifdef SHIB_STATIC
-	if (!app.init(Gen::LoadModulesStatic)) {
-#else
-	if (!app.init()) {
-#endif
-		app.destroy();
-		return -1;
-	}
-
-	app.run();
-
-#ifdef SHIB_STATIC
-	app.destroy(Gen::ShutdownModulesStatic);
-#else
-	app.destroy();
-#endif
-
-	return 0;
-}
-#else
 int main(int argc, const char** argv)
 {
 	Shibboleth::App app;
+
+	app.getConfigs().setObject("working_dir", Gaff::JSON::CreateString(".."));
+	app.getConfigs().setObject("no_main_loop", Gaff::JSON::CreateBool(true));
+	app.getConfigs().setObject("no_managers", Gaff::JSON::CreateBool(true));
 
 	if (!app.init(argc, argv)) {
 		app.destroy();
 		return -1;
 	}
 
-	app.run();
-	app.destroy();
+	const Shibboleth::ReflectionManager& refl_mgr = app.getReflectionManager();
+	const auto* const class_refl = refl_mgr.getTypeBucket(Gaff::FNV1aHash64Const("*"));
 
+	if (!class_refl) {
+		printf("No reflected classes.");
+		return 0;
+	}
+
+	Gaff::File csv_out;
+
+	if (!csv_out.open("reflection_hashes.csv", Gaff::File::OM_WRITE)) {
+		printf("Failed to open output file.");
+		return 0;
+	}
+
+	csv_out.printf("Class Name,Hash\n");
+
+	for (const Gaff::IReflectionDefinition* ref_def : *class_refl) {
+		const Gaff::Hash64 hash = ref_def->getReflectionInstance().getHash();
+		const char* const name = ref_def->getReflectionInstance().getName();
+
+		csv_out.printf("%s,%llu\n", name, hash);
+	}
+
+	app.destroy();
 	return 0;
 }
-#endif

@@ -50,6 +50,8 @@ App::App(void)
 
 	SetApp(*this);
 
+	_configs = Gaff::JSON::CreateObject();
+
 #ifdef INIT_STACKTRACE_SYSTEM
 	GAFF_ASSERT(Gaff::StackTrace::Init());
 #endif
@@ -62,9 +64,20 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, const char** argv, bool (*static_init)(void))
 {
-	// If we can't load the initial config, then create an empty object.
-	if (!_configs.parseFile("cfg/app.cfg")) {
-		_configs = Gaff::JSON::CreateObject();
+	const bool application_set_configs = _configs.size() > 0 && _configs["working_dir"].isString();
+
+	// Check if application set working directory.
+	if (application_set_configs && !initApp()) {
+		return false;
+	}
+
+	Gaff::JSON main_config;
+
+	if (main_config.parseFile("cfg/app.cfg")) {
+		main_config.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+			_configs.setObject(key, value);
+			return false;
+		});
 	}
 
 	// Load any extra configs and add their values to the _configs object.
@@ -82,9 +95,11 @@ bool App::init(int argc, const char** argv, bool (*static_init)(void))
 				return false;
 			});
 
-		} else if (std::filesystem::is_directory(arg)) {
-			_project_dir = arg;
 		}
+	}
+
+	if (!application_set_configs && !initApp()) {
+		return false;
 	}
 
 	return initInternal(static_init);
@@ -94,9 +109,20 @@ bool App::init(int argc, const char** argv, bool (*static_init)(void))
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(bool (*static_init)(void))
 {
-	// If we can't load the initial config, then create an empty object.
-	if (!_configs.parseFile("cfg/app.cfg")) {
-		_configs = Gaff::JSON::CreateObject();
+	const bool application_set_configs = _configs.size() > 0 && _configs["working_dir"].isString();
+
+	// Check if application set working directory.
+	if (application_set_configs && !initApp()) {
+		return false;
+	}
+
+	Gaff::JSON main_config;
+
+	if (main_config.parseFile("cfg/app.cfg")) {
+		main_config.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+			_configs.setObject(key, value);
+			return false;
+		});
 	}
 
 	int argc = 0;
@@ -118,16 +144,16 @@ bool App::init(bool (*static_init)(void))
 		});
 	}
 
+	if (!application_set_configs && !initApp()) {
+		return false;
+	}
+
 	return initInternal(static_init);
 }
 #endif
 
 bool App::initInternal(bool (*static_init)(void))
 {
-	if (!initApp()) {
-		return false;
-	}
-
 	const char* const log_dir = _configs["log_dir"].getString("./logs");
 
 	if (!Gaff::CreateDir(log_dir, 0777)) {
@@ -258,6 +284,10 @@ bool App::loadFileSystem(void)
 
 bool App::loadMainLoop(void)
 {
+	if (_configs["no_main_loop"].isTrue()) {
+		return true;
+	}
+
 	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 
 	if (!bucket || bucket->empty()) {
@@ -339,7 +369,8 @@ bool App::loadModules(void)
 					continue;
 				}
 
-				const wchar_t* name = dir_entry.path().c_str();
+				const auto abs_path = std::filesystem::absolute(dir_entry.path());
+				const wchar_t* name = abs_path.c_str();
 				CONVERT_STRING(char, temp, name);
 
 				// Skip modules that begin with Editor if we're not the editor.
@@ -363,24 +394,28 @@ bool App::loadModules(void)
 		}
 	}
 
-	// Create manager instances.
-	const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+	const Gaff::JSON& no_managers = _configs["no_managers"];
 
-	for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
-		ProxyAllocator allocator;
-		IManager* manager = ref_def->CREATET(IManager, allocator);
+	if (no_managers.isNull() || no_managers.isFalse()) {
+		// Create manager instances.
+		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
 
-		if (!manager->init()) {
-			// $TODO: Log error
-			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
-			SHIB_FREET(manager, GetAllocator());
-			return false;
+		for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
+			ProxyAllocator allocator;
+			IManager* manager = ref_def->CREATET(IManager, allocator);
+
+			if (!manager->init()) {
+				// $TODO: Log error
+				LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
+				SHIB_FREET(manager, GetAllocator());
+				return false;
+			}
+
+			const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+
+			GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
+			_manager_map[name].reset(manager);
 		}
-
-		const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
-
-		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
-		_manager_map[name].reset(manager);
 	}
 
 	// Notify all modules that every module has been loaded.
@@ -420,19 +455,19 @@ bool App::initApp(void)
 		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
 
 		if ((temp[wd.size() - 1] == TEXT('/') || temp[wd.size() - 1] == TEXT('\\'))) {
-			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t));
+			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t) * 4);
 		} else {
-			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t));
+			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t) * 4);
 		}
 
 		if (!SetDllDirectory(temp)) {
-			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
 			return false;
 		}
 
 	} else {
 		if (!SetDllDirectory(TEXT("bin"))) {
-			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
 			return false;
 		}
 #endif
@@ -443,11 +478,7 @@ bool App::initApp(void)
 
 bool App::loadModule(const char* module_path, const char* module_name)
 {
-#ifdef PLATFORM_WINDOWS
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("..\\") + module_path).data(), module_name);
-#else
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(path.data(), module_name);
-#endif
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, module_name);
 
 	if (!module) {
 		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name);
@@ -463,8 +494,8 @@ bool App::loadModule(const char* module_path, const char* module_name)
 	if (!init_func) {
 		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_name);
 		return false;
-	}
-	else if (!init_func(*this)) {
+
+	} else if (!init_func(*this)) {
 		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name);
 		return false;
 	}
@@ -629,9 +660,15 @@ const Gaff::JSON& App::getConfigs(void) const
 	return _configs;
 }
 
-const U8String& App::getProjectDirectory(void) const
+Gaff::JSON& App::getConfigs(void)
 {
-	return _project_dir;
+	return _configs;
+}
+
+U8String App::getProjectDirectory(void) const
+{
+	const Gaff::JSON& wd = _configs["working_dir"];
+	return (wd.isString()) ? wd.getString() : ".";
 }
 
 const ReflectionManager& App::getReflectionManager(void) const
