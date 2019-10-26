@@ -30,6 +30,36 @@ SHIB_REFLECTION_DEFINE(RenderCommandSystem)
 
 NS_SHIBBOLETH
 
+static bool FilterMaterial(const Material& material)
+{
+	const auto devices = material.material->getDevices();
+
+	if (devices.empty()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
+	const Gleam::IShader* const vert_shader = program->getAttachedShader(Gleam::IShader::SHADER_VERTEX);
+
+	if (vert_shader) {
+		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
+
+		for (int32_t i = 0; i < refl.num_structured_buffers; ++i) {
+			const auto& sb_refl = refl.structured_buffers[i];
+
+			for (int32_t j = 0; j < sb_refl.num_vars; ++j) {
+				if (sb_refl.vars[j].name == "_model_to_proj_matrix") {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderCommandSystem)
 	.BASE(ISystem)
 	.ctor<>()
@@ -39,7 +69,7 @@ bool RenderCommandSystem::init(void)
 {
 	ECSQuery query;
 
-	query.addShared(_materials);
+	query.addShared(_materials, Gaff::Func<bool (const Material&)>(&FilterMaterial));
 	query.addShared(_models);
 
 	query.add<Position>(_position);
@@ -85,7 +115,7 @@ void RenderCommandSystem::newArchetype(void)
 	auto& program_buffers = _program_buffers.emplace_back();
 	auto& buffer = _buffers.emplace_back();
 
-	const auto& material = _materials.back()->value;
+	const auto& material = _materials.back()->material;
 	const auto devices = material->getDevices();
 
 	if (devices.empty()) {
@@ -124,12 +154,12 @@ void RenderCommandSystem::newArchetype(void)
 		true
 	};
 
-	if (!program_buffers->createProgramBuffers(_materials.back()->value->getDevices())) {
+	if (!program_buffers->createProgramBuffers(_materials.back()->material->getDevices())) {
 		// $TODO: Log error.
 		return;
 	}
 
-	if (!buffer->createBuffer(_materials.back()->value->getDevices(), settings)) {
+	if (!buffer->createBuffer(_materials.back()->material->getDevices(), settings)) {
 		// $TODO: Log error.
 		return;
 	}

@@ -8,10 +8,13 @@
 			"material": "Materials/test.material",
 
 			"parameters":
-			{
-				"tex": "Models/ninja.texture"
-			}
+			[
+				{
+					"tex": "Models/ninja.texture"
+				}
+			]
 		},
+
 		"Model": { "value": "Models/ninja.model" }
 	},
 

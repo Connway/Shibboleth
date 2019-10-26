@@ -147,6 +147,7 @@ public:
 	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
+	// $TODO: Add VectorMap support!
 	template <class Var, size_t size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
 

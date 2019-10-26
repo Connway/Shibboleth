@@ -398,6 +398,14 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 		return false;
 	}
 
+	int32_t size = 0;
+
+	if constexpr (shared) {
+		size = ref_def.size();
+	} else {
+		size = attr->size();
+	}
+
 	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
 	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
@@ -428,7 +436,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 
 	// Simple append.
 	if (it == vars.end()) {
-		const int32_t size_offset = (vars.empty()) ? 0 : vars.back().ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar;
+		const int32_t size_offset = (vars.empty()) ? 0 : ((shared) ? vars.back().ref_def->size() : vars.back().ref_def->getClassAttr<ECSClassAttribute>()->size() * size_scalar);
 		const int32_t base_offset = (vars.empty()) ? 0 : vars.back().offset;
 
 		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_shared_func, copy_func, load_func });
@@ -438,13 +446,13 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 		const int32_t offset = it->offset;
 
 		for (auto begin = it; begin != vars.end(); ++begin) {
-			begin->offset += attr->size() * size_scalar;
+			begin->offset += size * size_scalar;
 		}
 
 		vars.emplace(it, RefDefOffset{ &ref_def, offset, copy_shared_func, copy_func, load_func });
 	}
 
-	alloc_size += attr->size();
+	alloc_size += size;
 	return true;
 }
 

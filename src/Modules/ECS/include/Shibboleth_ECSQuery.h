@@ -56,7 +56,7 @@ public:
 
 	using Output = Vector<ECSQueryResult>;
 
-	template <class T, class Arg>
+	template <class T>
 	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T>&& filter)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
