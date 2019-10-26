@@ -51,8 +51,8 @@ private:
 	Vector<BufferResourcePtr> _buffers{ ProxyAllocator("Graphics") };
 
 	// Entities
-	Vector< const Resource<MaterialResource>* > _materials{ ProxyAllocator("Graphics") };
-	Vector< const Resource<ModelResource>* > _models{ ProxyAllocator("Graphics") };
+	Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
+	Vector<const Model*> _models{ ProxyAllocator("Graphics") };
 
 	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
 	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };

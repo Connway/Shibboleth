@@ -29,15 +29,28 @@ SHIB_REFLECTION_EXTERNAL_DEFINE(Material)
 
 NS_SHIBBOLETH
 
+static bool LoadMaterial(const Gaff::ISerializeReader& reader, Material& material)
+{
+	GAFF_REF(reader, material);
+	return true;
+}
+
+static void SaveMaterial(Gaff::ISerializeWriter& writer, const Material& material)
+{
+	GAFF_REF(writer, material);
+}
+
 SHIB_REFLECTION_BUILDER_BEGIN(Material)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
+	.serialize(LoadMaterial, SaveMaterial)
+
 	.staticFunc("CopyShared", &Material::CopyShared)
 
-	.var("material", &Material::material)
-	.var("textures", &Material::textures)
+	//.var("material", &Material::material)
+	//.var("textures", &Material::textures)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Material)
 

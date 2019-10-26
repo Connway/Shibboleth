@@ -159,9 +159,11 @@ ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
 {
+	GAFF_REF(serialize_load, serialize_save);
+
 	// Unsure if this is a reliable hashing mechanism.
-	_hash = FNV1aHash64T(serialize_load, _hash);
-	_hash = FNV1aHash64T(serialize_save, _hash);
+	//_hash = FNV1aHash64T(serialize_load, _hash);
+	//_hash = FNV1aHash64T(serialize_save, _hash);
 	return *this;
 }
 
