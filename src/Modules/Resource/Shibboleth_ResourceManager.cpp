@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 
 SHIB_REFLECTION_DEFINE(ResourceManager)
+SHIB_REFLECTION_DEFINE(ResourceSystem)
 
 NS_SHIBBOLETH
 
@@ -235,14 +236,105 @@ const IFile* ResourceManager::loadFileAndWait(const char* file_path)
 	return data.out_file;
 }
 
+ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback)
+{
+	bool already_loaded = true;
+
+	for (IResource* res : resources) {
+		if (res->getState() == IResource::RS_PENDING) {
+			already_loaded = false;
+			break;
+		}
+	}
+
+	if (already_loaded) {
+		callback(resources);
+		return ResourceCallbackID{ Gaff::INIT_HASH64, -1 };
+	}
+
+	const Gaff::Hash64 hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(resources.data()), sizeof(IResource*) * resources.size());
+	CallbackData& data = _callbacks[hash];
+
+	if (data.resources.empty()) {
+		data.resources = resources;
+	}
+
+	ResourceCallbackID id{ hash, data.next_id++ };
+
+	data.callbacks[id.cb_id] = callback;
+
+	return id;
+}
+
+void ResourceManager::removeCallback(ResourceCallbackID id)
+{
+	const auto it = _callbacks.find(id.res_id);
+
+	if (it == _callbacks.end()) {
+		return;
+	}
+
+	it->second.callbacks.erase(id.cb_id);
+
+	if (it->second.callbacks.empty()) {
+		_callbacks.erase(it);
+	}
+}
+
+void ResourceManager::checkAndRemoveResources(void)
+{
+	EA::Thread::AutoMutex lock(_removal_lock);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
+		if (_pending_removals[i]->getState() == IResource::RS_PENDING) {
+			++i;
+		} else {
+			_pending_removals.erase_unsorted(_pending_removals.begin() + i);
+		}
+	}
+}
+
+void ResourceManager::checkCallbacks(void)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(_callbacks.size());) {
+		auto& cb_data = _callbacks.at(static_cast<size_t>(i));
+		bool not_loaded = false;
+
+		for (IResource* res : cb_data.second.resources) {
+			if (res->getState() == IResource::RS_PENDING) {
+				not_loaded = true;
+				break;
+			}
+		}
+
+		if (not_loaded) {
+			++i;
+			continue;
+		}
+
+		for (auto& cb : cb_data.second.callbacks) {
+			cb.second(cb_data.second.resources);
+		}
+
+		_callbacks.erase(_callbacks.begin() + i);
+	}
+}
+
 void ResourceManager::removeResource(const IResource& resource)
 {
-	EA::Thread::AutoMutex lock(_res_lock);
+	// Resource load job has already been submitted. Wait until it is finished.
+	if (resource.getState() == IResource::RS_PENDING) {
+		EA::Thread::AutoMutex lock(_removal_lock);
+		_pending_removals.emplace_back(&resource);
 
-	auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
+	} else {
+		EA::Thread::AutoMutex lock(_res_lock);
 
-	if (it_res != _resources.end() && *it_res == &resource) {
-		_resources.erase(it_res);
+		auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
+
+		if (it_res != _resources.end() && *it_res == &resource) {
+			_resources.erase(it_res);
+		}
 	}
 }
 
@@ -260,6 +352,24 @@ void ResourceManager::requestLoad(IResource& resource)
 	resource._state = IResource::RS_PENDING;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
 	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_READ_FILE);
+}
+
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResourceSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ResourceSystem)
+
+bool ResourceSystem::init(void)
+{
+	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
+	return true;
+}
+
+void ResourceSystem::update()
+{
+	_res_mgr->checkCallbacks();
+	_res_mgr->checkAndRemoveResources();
 }
 
 NS_END

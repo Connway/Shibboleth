@@ -50,6 +50,12 @@ class IFile;
 class IResource;
 using IResourcePtr = Gaff::RefPtr<IResource>;
 
+struct ResourceCallbackID final
+{
+	Gaff::Hash64 res_id = Gaff::INIT_HASH64;
+	int32_t cb_id = -1;
+};
+
 class IResource : public Gaff::IRefCounted, public Gaff::IReflectionObject
 {
 public:
@@ -71,10 +77,6 @@ public:
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
-	int32_t addLoadedCallback(const eastl::function<void (IResource&)>& callback);
-	int32_t addLoadedCallback(eastl::function<void (IResource&)>&& callback);
-	bool removeLoadedCallback(int32_t id);
-
 	const HashString64& getFilePath(void) const;
 	ResourceState getState(void) const;
 
@@ -83,9 +85,6 @@ public:
 	bool isLoaded(void) const;
 
 protected:
-	VectorMap<int32_t, eastl::function<void (IResource&)> > _callbacks;
-	int32_t _next_id = 0;
-
 	const IFile* loadFile(const char* file_path);
 
 	void succeeded(void);
@@ -98,8 +97,6 @@ private:
 	HashString64 _file_path;
 
 	ResourceManager* _res_mgr = nullptr;
-
-	void callCallbacks(void);
 
 	friend class ResourceManager;
 };

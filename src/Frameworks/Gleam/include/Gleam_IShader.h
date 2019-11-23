@@ -23,10 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ITexture.h"
+#include "Gleam_Vector.h"
 #include "Gleam_String.h"
 #include <Gaff_Defines.h>
-
-#define MAX_SHADER_VAR 16
 
 NS_GLEAM
 
@@ -89,24 +88,17 @@ struct StructuredBufferReflection final
 {
 	U8String name;
 	size_t size_bytes = 0;
-	int32_t num_vars = 0;
 
-	VarReflection vars[MAX_SHADER_VAR];
+	Gleam::Vector<VarReflection> vars;
 };
 
 struct ShaderReflection final
 {
-	int32_t num_inputs = 0;
-	int32_t num_constant_buffers = 0;
-	int32_t num_textures = 0;
-	int32_t num_samplers = 0;
-	int32_t num_structured_buffers = 0;
-
-	InputParamReflection input_params_reflection[MAX_SHADER_VAR];
-	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
-	U8String textures[MAX_SHADER_VAR];
-	U8String samplers[MAX_SHADER_VAR];
-	StructuredBufferReflection structured_buffers[MAX_SHADER_VAR];
+	Gleam::Vector<InputParamReflection> input_params_reflection;
+	Gleam::Vector<ConstBufferReflection> const_buff_reflection;
+	Gleam::Vector<U8String> textures;
+	Gleam::Vector<U8String> samplers;
+	Gleam::Vector<StructuredBufferReflection> structured_buffers;
 };
 
 class IShader

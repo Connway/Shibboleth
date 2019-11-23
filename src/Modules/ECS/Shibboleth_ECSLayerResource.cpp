@@ -51,6 +51,10 @@ ECSLayerResource::ECSLayerResource(void):
 
 ECSLayerResource::~ECSLayerResource(void)
 {
+	if (_callback_id.cb_id > -1) {
+		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+		res_mgr.removeCallback(_callback_id);
+	}
 }
 
 bool ECSLayerResource::loadOverrides(
@@ -112,13 +116,10 @@ bool ECSLayerResource::loadOverrides(
 	return true;
 }
 
-void ECSLayerResource::archetypeLoaded(IResource&)
+void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 {
-	for (const auto& arch_res : _archetypes) {
-		if (arch_res->getState() == IResource::RS_PENDING) {
-			return;
-		}
-	}
+	_callback_id.res_id = Gaff::INIT_HASH64;
+	_callback_id.cb_id = -1;
 
 	Gaff::Hash32 layer_name = Gaff::FNV1aHash32Const("<default>");
 	int32_t index = 0;
@@ -239,9 +240,15 @@ void ECSLayerResource::loadLayer(IFile* file)
 		});
 	}
 
+	const auto callback = Gaff::MemberFunc(this, &ECSLayerResource::archetypeLoaded);
+	Vector<IResource*> resources;
+	resources.reserve(_archetypes.size());
+
 	for (auto& arch_res : _archetypes) {
-		arch_res->addLoadedCallback(Gaff::MemberFunc(this, &ECSLayerResource::archetypeLoaded));
+		resources.emplace_back(arch_res.get());
 	}
+
+	_callback_id = res_mgr.registerCallback(resources, callback);
 }
 
 NS_END

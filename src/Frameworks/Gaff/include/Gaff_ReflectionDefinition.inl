@@ -212,13 +212,6 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, 
 
 template <class T, class Allocator>
 template <class Var>
-int32_t ReflectionDefinition<T, Allocator>::VarPtr<Var>::sizeOfT(void) const
-{
-	return sizeof(Var);
-}
-
-template <class T, class Allocator>
-template <class Var>
 bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
 {
 	Var* const var = &(object.*_ptr);
@@ -310,18 +303,6 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 
 	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_setter)(*reinterpret_cast<RetType*>(data));
-}
-
-template <class T, class Allocator>
-template <class Ret, class Var>
-int32_t ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::sizeOfT(void) const
-{
-	using RetNoRef = typename std::remove_reference<Ret>::type;
-	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
-	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::template type<RetNoConst>;
-
-	return sizeof(RetFinal);
 }
 
 template <class T, class Allocator>
@@ -424,13 +405,6 @@ template <class Base>
 bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isVector(void) const
 {
 	return _base_var->isVector();
-}
-
-template <class T, class Allocator>
-template <class Base>
-int32_t ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::sizeOfT(void) const
-{
-	return _base_var->sizeOfT();
 }
 
 template <class T, class Allocator>
@@ -851,6 +825,206 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::save(ISe
 
 
 
+// VectorMapPtr
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::VectorMapPtr(VectorMap<Key, Value, VecMap_Allocator> T::* ptr):
+	_ptr(ptr)
+{
+	GAFF_ASSERT(ptr);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getReflection(void) const
+{
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Value>::GetInstance();
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getReflectionKey(void) const
+{
+	return GAFF_REFLECTION_NAMESPACE::Reflection<Key>::GetInstance();
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+const void* ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getData(const void* object) const
+{
+	GAFF_ASSERT(object);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void* ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::setData(void* object, const void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	const eastl::pair<Key, Value>* const vars = reinterpret_cast<const eastl::pair<Key, Value>*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	int32_t arr_size = size(object);
+
+	for (int32_t i = 0; i < arr_size; ++i) {
+		(obj->*_ptr)[vars[i].first] = vars[i].second;
+	}
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::setDataMove(void* object, void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	const eastl::pair<Key, Value>* const vars = reinterpret_cast<const eastl::pair<Key, Value>*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	int32_t arr_size = size(object);
+
+	for (int32_t i = 0; i < arr_size; ++i) {
+		(obj->*_ptr)[std::move(vars[i].first)] = std::move(vars[i].second);
+	}
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+int32_t ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::size(const void* object) const
+{
+	GAFF_ASSERT(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return static_cast<int32_t>((obj->*_ptr).size());
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+const void* ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getElement(const void* object, int32_t index) const
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr).at(index);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void* ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr).at(index);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::setElement(void* object, int32_t index, const void* data)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr).at(index).second = *reinterpret_cast<const Value*>(data);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::setElementMove(void* object, int32_t index, void* data)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr).at(index).second = std::move(*reinterpret_cast<const Value*>(data));
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::swap(void* object, int32_t index_a, int32_t index_b)
+{
+	GAFF_ASSERT(index_a < size(object));
+	GAFF_ASSERT(index_b < size(object));
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
+	eastl::swap((obj->*_ptr).at(index_a).second, (obj->*_ptr).at(index_b).second);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::resize(void* object, size_t new_size)
+{
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
+	return (obj->*_ptr).resize(new_size);
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+bool ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(const ISerializeReader& reader, T& object)
+{
+	const int32_t size = reader.size();
+	(object.*_ptr).reserve(static_cast<size_t>(size));
+
+	bool success = true;
+
+	for (int32_t i = 0; i < size; ++i) {
+		ScopeGuard scope = reader.enterElementGuard(i);
+		bool key_loaded = true;
+		Key key;
+
+		{
+			ScopeGuard guard_key = reader.enterElementGuard("key");
+			key_loaded = GAFF_REFLECTION_NAMESPACE::Reflection<Key>::Load(reader, key);
+			success = success && key_loaded;
+		}
+
+		if (key_loaded)
+		{
+			ScopeGuard guard_value = reader.enterElementGuard("value");
+			success = success && GAFF_REFLECTION_NAMESPACE::Reflection<Value>::Load(reader, (object.*_ptr)[key]);
+		}
+	}
+
+	return success;
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocator>::save(ISerializeWriter& writer, const T& object)
+{
+	const int32_t size = static_cast<int32_t>((object.*_ptr).size());
+	writer.startArray(static_cast<uint32_t>(size));
+
+	for (int32_t i = 0; i < size; ++i) {
+		writer.startObject(2);
+
+		writer.writeKey("key");
+		GAFF_REFLECTION_NAMESPACE::Reflection<Key>::Save(writer, (object.*_ptr).at(i).first);
+
+		writer.writeKey("value");
+		GAFF_REFLECTION_NAMESPACE::Reflection<Value>::Save(writer, (object.*_ptr).at(i).second);
+
+		writer.endObject();
+	}
+
+	writer.endArray();
+}
+
+
+
 // ReflectionDefinition
 template <class T, class Allocator>
 template <class... Args>
@@ -860,21 +1034,21 @@ T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
 }
 
 template <class T, class Allocator>
-bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, void* object) const
+bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, void* object, bool refl_load) const
 {
-	return load(reader, *reinterpret_cast<T*>(object));
+	return load(reader, *reinterpret_cast<T*>(object), refl_load);
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const void* object) const
+void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const void* object, bool refl_save) const
 {
-	save(writer, *reinterpret_cast<const T*>(object));
+	save(writer, *reinterpret_cast<const T*>(object), refl_save);
 }
 
 template <class T, class Allocator>
-bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
+bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object, bool refl_load) const
 {
-	if (_serialize_load) {
+	if (_serialize_load && !refl_load) {
 		return _serialize_load(reader, object);
 
 	} else {
@@ -902,9 +1076,9 @@ bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
+void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object, bool refl_save) const
 {
-	if (_serialize_save) {
+	if (_serialize_save && !refl_save) {
 		_serialize_save(writer, object);
 
 	} else {
@@ -920,6 +1094,8 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 
 		// Write out the object.
 		writer.startObject(writable_vars);
+
+		writer.writeUInt64("version", getReflectionInstance().getVersion());
 
 		for (auto& entry : _vars) {
 			if (!entry.second->isReadOnly()) {
@@ -1538,6 +1714,33 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(pair.second.get(), arr, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char(&name)[name_size], VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
+{
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Key>::HasReflection, "Key type is not reflected!");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Value>::HasReflection, "Value type is not reflected!");
+
+	using PtrType = VectorMapPtr<Key, Value, VecMap_Allocator>;
+
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec_map))
+	);
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(pair.second.get(), vec_map, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));

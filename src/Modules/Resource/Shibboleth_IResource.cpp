@@ -99,42 +99,6 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
-int32_t IResource::addLoadedCallback(const eastl::function<void (IResource&)>& callback)
-{
-	if (_state != IResource::RS_DELAYED && _state != IResource::RS_PENDING) {
-		callback(*this);
-		return -1;
-	}
-
-	const int32_t id = _next_id++;
-	_callbacks.emplace(id, callback);
-	return id;
-}
-
-int32_t IResource::addLoadedCallback(eastl::function<void (IResource&)>&& callback)
-{
-	if (_state != IResource::RS_DELAYED && _state != IResource::RS_PENDING) {
-		callback(*this);
-		return -1;
-	}
-
-	const int32_t id = _next_id++;
-	_callbacks.emplace(id, std::move(callback));
-	return id;
-}
-
-bool IResource::removeLoadedCallback(int32_t id)
-{
-	const auto it = _callbacks.find(id);
-
-	if (it != _callbacks.end()) {
-		_callbacks.erase(it);
-		return true;
-	}
-
-	return false;
-}
-
 const HashString64& IResource::getFilePath(void) const
 {
 	return _file_path;
@@ -178,22 +142,11 @@ const IFile* IResource::loadFile(const char* file_path)
 void IResource::succeeded(void)
 {
 	_state = RS_LOADED;
-	callCallbacks();
 }
 
 void IResource::failed(void)
 {
 	_state = RS_FAILED;
-	callCallbacks();
-}
-
-void IResource::callCallbacks(void)
-{
-	for (auto& cb : _callbacks) {
-		cb.second(*this);
-	}
-
-	_callbacks.clear();
 }
 
 NS_END

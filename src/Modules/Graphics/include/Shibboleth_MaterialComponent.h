@@ -44,7 +44,12 @@ public:
 	static void CopyShared(const void* old_value, void* new_value);
 
 	MaterialResourcePtr material;
-	Vector<TextureResourcePtr> textures;
+
+	VectorMap<U8String, TextureResourcePtr> textures_vertex;
+	VectorMap<U8String, TextureResourcePtr> textures_pixel;
+	VectorMap<U8String, TextureResourcePtr> textures_domain;
+	VectorMap<U8String, TextureResourcePtr> textures_geometry;
+	VectorMap<U8String, TextureResourcePtr> textures_hull;
 };
 
 NS_END

@@ -45,7 +45,7 @@ private:
 	RenderManagerBase* _render_mgr = nullptr;
 	ResourceManager* _res_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
-	int32_t _next_id = 0;
+	uint32_t _next_id = 0;
 
 	Vector<ProgramBuffersResourcePtr> _program_buffers{ ProxyAllocator("Graphics") };
 	Vector<BufferResourcePtr> _buffers{ ProxyAllocator("Graphics") };
@@ -62,6 +62,8 @@ private:
 
 	void newArchetype(void);
 	void removedArchetype(int32_t index);
+
+	void processNewArchetypeMaterial(ProgramBuffersResourcePtr& program_buffers, BufferResourcePtr& buffer, const MaterialResourcePtr& material);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

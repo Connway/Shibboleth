@@ -85,11 +85,16 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 		return false;
 	});
 
+	const auto callback = Gaff::MemberFunc(this, &ECSSceneResource::layerLoaded);
+	Vector<IResource*> resources;
+
 	for (LayerData& layer_data : _layers) {
 		if (layer_data.layer->getState() != IResource::RS_DELAYED) {
-			layer_data.layer->addLoadedCallback(Gaff::MemberFunc(this, &ECSSceneResource::layerLoaded));
+			resources.emplace_back(layer_data.layer.get());
 		}
 	}
+
+	res_mgr.registerCallback(resources, callback);
 }
 
 void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
@@ -97,16 +102,8 @@ void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
 	GAFF_REF(writer);
 }
 
-void ECSSceneResource::layerLoaded(IResource&)
+void ECSSceneResource::layerLoaded(const Vector<IResource*>&)
 {
-	for (const LayerData& layer : _layers) {
-		const auto state = layer.layer->getState();
-
-		if (state == IResource::RS_PENDING) {
-			return;
-		}
-	}
-
 	// Even if we have a failed layer, consider us loaded.
 	succeeded();
 }

@@ -39,6 +39,7 @@ private:
 	Vector<ECSArchetypeResourcePtr> _archetypes;
 	Vector<ECSManager::ArchetypeReferencePtr> _archetype_refs;
 	SerializeReaderWrapper _reader_wrapper;
+	ResourceCallbackID _callback_id;
 
 	bool loadOverrides(
 		const Gaff::ISerializeReader& reader,
@@ -48,7 +49,7 @@ private:
 		Gaff::Hash64& outArchetype
 	);
 
-	void archetypeLoaded(IResource&);
+	void archetypeLoaded(const Vector<IResource*>&);
 	void loadLayer(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);

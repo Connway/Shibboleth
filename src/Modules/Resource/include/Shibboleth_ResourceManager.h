@@ -25,13 +25,17 @@ THE SOFTWARE.
 #include "Shibboleth_IResource.h"
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_ISystem.h>
 #include <EAThread/eathread_mutex.h>
+#include <EASTL/functional.h>
 
 NS_SHIBBOLETH
 
 class ResourceManager : public IManager
 {
 public:
+	using ResourceStateCallback = eastl::function<void (const Vector<IResource*>&)>;
+
 	ResourceManager(void);
 
 	void allModulesLoaded(void) override;
@@ -114,20 +118,52 @@ public:
 
 	const IFile* loadFileAndWait(const char* file_path);
 
+	ResourceCallbackID registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback);
+	void removeCallback(ResourceCallbackID id);
+
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 
+	struct CallbackData final
+	{
+		VectorMap<int32_t, ResourceStateCallback> callbacks{ ProxyAllocator("Resource") };
+		Vector<IResource*> resources{ ProxyAllocator("Resource") };
+		int32_t next_id = 0;
+	};
+
 	EA::Thread::Mutex _res_lock;
-	Vector<IResource*> _resources;
-	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories;
+	Vector<IResource*> _resources{ ProxyAllocator("Resource") };
+
+	EA::Thread::Mutex _removal_lock;
+	Vector<const IResource*> _pending_removals{ ProxyAllocator("Resource") };
+
+	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories{ ProxyAllocator("Resource") };
+	VectorMap<Gaff::Hash64, CallbackData> _callbacks{ ProxyAllocator("Resource") };
+
 	ProxyAllocator _allocator = ProxyAllocator("Resource");
+
+	void checkAndRemoveResources(void);
+	void checkCallbacks(void);
 
 	void removeResource(const IResource& resource);
 	void requestLoad(IResource& resource);
 
+	friend class ResourceSystem;
 	friend class IResource;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
+};
+
+class ResourceSystem : public ISystem
+{
+public:
+	bool init(void) override;
+	void update() override;
+
+private:
+	ResourceManager* _res_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ResourceSystem);
 };
 
 
@@ -157,6 +193,7 @@ void SaveRefPtr(Gaff::ISerializeWriter& writer, const Gaff::RefPtr<T>& value)
 NS_END
 
 SHIB_REFLECTION_DECLARE(ResourceManager)
+SHIB_REFLECTION_DECLARE(ResourceSystem)
 
 
 // Gaff::RefPtr
