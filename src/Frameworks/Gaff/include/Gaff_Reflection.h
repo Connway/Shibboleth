@@ -138,23 +138,23 @@ THE SOFTWARE.
 		static void BuildReflection(ReflectionBuilder& builder); \
 
 #define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
-		bool load(const Gaff::ISerializeReader& reader, void* object) const override \
+		bool load(const Gaff::ISerializeReader& reader, void* object, bool refl_load = false) const override \
 		{ \
 			GAFF_ASSERT(object); \
-			return g_reflection_definition.load(reader, object); \
+			return g_reflection_definition.load(reader, object, refl_load); \
 		} \
-		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
+		void save(Gaff::ISerializeWriter& writer, const void* object, bool refl_save = false) const override \
 		{ \
 			GAFF_ASSERT(object); \
-			g_reflection_definition.save(writer, object); \
+			g_reflection_definition.save(writer, object, refl_save); \
 		} \
-		static bool Load(const Gaff::ISerializeReader& reader, type& object) \
+		static bool Load(const Gaff::ISerializeReader& reader, type& object, bool refl_load = false) \
 		{ \
-			return g_reflection_definition.load(reader, object); \
+			return g_reflection_definition.load(reader, object, refl_load); \
 		} \
-		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
+		static void Save(Gaff::ISerializeWriter& writer, const type& object, bool refl_save = false) \
 		{ \
-			g_reflection_definition.save(writer, object); \
+			g_reflection_definition.save(writer, object, refl_save); \
 		} \
 		static const typename Gaff::RefDefType<type, allocator>& GetReflectionDefinition(void) \
 		{ \

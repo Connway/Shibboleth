@@ -41,6 +41,11 @@ public:
 
 	const IReflection& getReflectionInstance(void) const override;
 
+	bool load(const ISerializeReader& reader, void* value, bool) const { return load(reader, value); }
+	void save(ISerializeWriter& writer, const void* value, bool) const { save(writer, value); }
+	bool load(const ISerializeReader& reader, Enum& value, bool) const { return load(reader, value); }
+	void save(ISerializeWriter& writer, Enum value, bool) const { save(writer, value); }
+
 	bool load(const ISerializeReader& reader, void* value) const override;
 	void save(ISerializeWriter& writer, const void* value) const override;
 	bool load(const ISerializeReader& reader, Enum& value) const;

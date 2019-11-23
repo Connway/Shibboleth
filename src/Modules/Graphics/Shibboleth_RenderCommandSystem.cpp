@@ -45,11 +45,9 @@ static bool FilterMaterial(const Material& material)
 	if (vert_shader) {
 		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
 
-		for (int32_t i = 0; i < refl.num_structured_buffers; ++i) {
-			const auto& sb_refl = refl.structured_buffers[i];
-
-			for (int32_t j = 0; j < sb_refl.num_vars; ++j) {
-				if (sb_refl.vars[j].name == "_model_to_proj_matrix") {
+		for (const auto& sb_refl : refl.structured_buffers) {
+			for (const auto& var_refl : sb_refl.vars) {
+				if (var_refl.name == "_model_to_proj_matrix") {
 					return true;
 				}
 			}
@@ -116,6 +114,33 @@ void RenderCommandSystem::newArchetype(void)
 	auto& buffer = _buffers.emplace_back();
 
 	const auto& material = _materials.back()->material;
+	const auto& model = _models.back()->value;
+	const uint32_t id = _next_id++;
+
+	const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
+	const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
+
+	program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+	buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+
+	GAFF_REF(material, model);
+
+	//material->addLoadedCallback(Gaff::Func<void (IResource&)>([&](IResource&) -> void {
+	//	processNewArchetypeMaterial(program_buffers, buffer, material);
+	//}));
+
+	//model->addLoadedCallback(Gaff::Func<void (IResource&)>([&](IResource&) -> void {
+	//	//processNewArchetypeModel(program_buffers, model);
+	//}));
+}
+
+void RenderCommandSystem::removedArchetype(int32_t index)
+{
+	GAFF_REF(index);
+}
+
+void RenderCommandSystem::processNewArchetypeMaterial(ProgramBuffersResourcePtr& program_buffers, BufferResourcePtr& buffer, const MaterialResourcePtr& material)
+{
 	const auto devices = material->getDevices();
 
 	if (devices.empty()) {
@@ -130,20 +155,12 @@ void RenderCommandSystem::newArchetype(void)
 	if (vert_shader) {
 		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
 
-		for (int32_t i = 0; i < refl.num_structured_buffers; ++i) {
-			if (refl.structured_buffers[i].name == "instance_data") {
-
+		for (const auto& sb_refl : refl.structured_buffers) {
+			if (sb_refl.name == "instance_data") {
 				break;
 			}
 		}
 	}
-
-	const int32_t id = _next_id++;
-	const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
-	const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
-
-	program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
-	buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
 
 	const Gleam::IBuffer::BufferSettings settings = {
 		nullptr,
@@ -163,11 +180,6 @@ void RenderCommandSystem::newArchetype(void)
 		// $TODO: Log error.
 		return;
 	}
-}
-
-void RenderCommandSystem::removedArchetype(int32_t index)
-{
-	GAFF_REF(index);
 }
 
 NS_END

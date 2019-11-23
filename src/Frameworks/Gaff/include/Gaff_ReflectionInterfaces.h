@@ -61,8 +61,8 @@ public:
 
 	virtual void init(void) = 0;
 
-	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
@@ -430,8 +430,13 @@ public:
 
 	virtual bool isFixedArray(void) const { return false; }
 	virtual bool isVector(void) const { return false; }
+	virtual bool isMap(void) const { return false; }
 
-	virtual int32_t sizeOfT(void) const { return 0; }
+	virtual const Gaff::IReflection& getReflectionKey(void) const
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector map!");
+		return *static_cast<Gaff::IReflection*>(nullptr);
+	}
 
 	virtual int32_t size(const void*) const
 	{
@@ -1025,8 +1030,8 @@ public:
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
@@ -1125,6 +1130,9 @@ public:
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
+
+	bool load(const ISerializeReader& reader, void* object, bool) const { return load(reader, object); }
+	void save(ISerializeWriter& writer, const void* object, bool) const { save(writer, object); }
 
 	virtual bool load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;

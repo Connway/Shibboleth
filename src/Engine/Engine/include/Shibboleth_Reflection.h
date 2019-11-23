@@ -34,27 +34,27 @@ THE SOFTWARE.
 #include <Gaff_Reflection.h>
 
 #define SHIB_REFLECTION_DECLARE_BASE(type) \
-		bool load(const Gaff::ISerializeReader& reader, void* object) const override \
+		bool load(const Gaff::ISerializeReader& reader, void* object, bool refl_load = false) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			GAFF_ASSERT(object); \
-			return g_reflection_definition->load(reader, object); \
+			return g_reflection_definition->load(reader, object, refl_load); \
 		} \
-		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
+		void save(Gaff::ISerializeWriter& writer, const void* object, bool refl_save = false) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			GAFF_ASSERT(object); \
-			g_reflection_definition->save(writer, object); \
+			g_reflection_definition->save(writer, object, refl_save); \
 		} \
-		static bool Load(const Gaff::ISerializeReader& reader, type& object) \
+		static bool Load(const Gaff::ISerializeReader& reader, type& object, bool refl_load = false) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
-			return g_reflection_definition->load(reader, object); \
+			return g_reflection_definition->load(reader, object, refl_load); \
 		} \
-		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
+		static void Save(Gaff::ISerializeWriter& writer, const type& object, bool refl_save = false) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
-			g_reflection_definition->save(writer, object); \
+			g_reflection_definition->save(writer, object, refl_save); \
 		} \
 		static const typename Gaff::RefDefType<type, ProxyAllocator>& GetReflectionDefinition(void) \
 		{ \

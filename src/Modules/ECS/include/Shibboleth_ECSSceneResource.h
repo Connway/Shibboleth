@@ -47,7 +47,7 @@ private:
 
 	Vector<LayerData> _layers;
 
-	void layerLoaded(IResource&);
+	void layerLoaded(const Vector<IResource*>&);
 	void loadScene(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSSceneResource);

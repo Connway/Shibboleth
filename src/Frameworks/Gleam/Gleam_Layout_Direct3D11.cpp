@@ -82,9 +82,9 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 
 	const ShaderReflection reflection = shader.getReflectionData();
 
-	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(reflection.num_inputs, D3D11_INPUT_ELEMENT_DESC());
+	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(reflection.input_params_reflection.size(), D3D11_INPUT_ELEMENT_DESC());
 
-	for (int32_t i = 0; i < reflection.num_inputs; ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(reflection.input_params_reflection.size()); ++i) {
 		const InputParamReflection& input_ref = reflection.input_params_reflection[i];
 
 		input_desc[i].SemanticName = input_ref.semantic_name.data();
@@ -100,7 +100,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.num_inputs), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
+	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.input_params_reflection.size()), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 

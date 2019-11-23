@@ -80,10 +80,10 @@ public:
 	template <class... Args>
 	T* create(Args&&... args) const;
 
-	bool load(const ISerializeReader& reader, void* object) const override;
-	void save(ISerializeWriter& writer, const void* object) const override;
-	bool load(const ISerializeReader& reader, T& object) const;
-	void save(ISerializeWriter& writer, const T& object) const;
+	bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override;
+	void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
+	bool load(const ISerializeReader& reader, T& object, bool refl_load = false) const;
+	void save(ISerializeWriter& writer, const T& object, bool refl_save = false) const;
 
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
 	void* getInterface(Hash64 class_hash, void* object) const override;
@@ -147,27 +147,29 @@ public:
 	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
-	// $TODO: Add VectorMap support!
-	template <class Var, size_t size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
+	template <class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
 
-	template <class Ret, class Var, size_t size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
+	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
-	template <class Var, class Vec_Allocator, size_t size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes);
+	template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
 
 	template <class Var, size_t array_size, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
+	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	// apply() is not called on these functions. Mainly for use with the attribute file.
 	template <class... Attrs>
@@ -195,8 +197,6 @@ private:
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
-		int32_t sizeOfT(void) const override;
-
 		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
@@ -218,8 +218,6 @@ private:
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
-
-		int32_t sizeOfT(void) const override;
 
 		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
@@ -245,7 +243,6 @@ private:
 
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
-		int32_t sizeOfT(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -275,8 +272,6 @@ private:
 		void setDataMove(void* object, void* data) override;
 
 		bool isFixedArray(void) const override { return true; }
-		bool isVector(void) const override { return false; }
-		int32_t sizeOfT(void) const override { return sizeof(Var); }
 		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -305,9 +300,7 @@ private:
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
-		bool isFixedArray(void) const override { return false; }
 		bool isVector(void) const override { return true; }
-		int32_t sizeOfT(void) const override { return sizeof(Var); }
 		int32_t size(const void* object) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -321,7 +314,37 @@ private:
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
-		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
+		Vector<Var, Vec_Allocator> T::* _ptr = nullptr;
+	};
+
+	template <class Key, class Value, class VecMap_Allocator>
+	class VectorMapPtr final : public IVar
+	{
+	public:
+		VectorMapPtr(VectorMap<Key, Value, VecMap_Allocator> T::* ptr);
+
+		const Gaff::IReflection& getReflection(void) const override;
+		const Gaff::IReflection& getReflectionKey(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isMap(void) const override { return true; }
+		int32_t size(const void* object) const override;
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
+
+		bool load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
+
+	private:
+		VectorMap<Key, Value, VecMap_Allocator> T::* _ptr = nullptr;
 	};
 
 	using IRefFuncPtr = UniquePtr<IReflectionFunctionBase, Allocator>;
@@ -553,17 +576,18 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 	public: \
 		const IReflection& getReflectionInstance(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<class_type>::GetInstance(); } \
 		int32_t size(void) const override { return sizeof(class_type); } \
-		bool load(const ISerializeReader& reader, void* object) const override { return load(reader, *reinterpret_cast<class_type*>(object)); } \
-		void save(ISerializeWriter& writer, const void* object) const override { save(writer, *reinterpret_cast<const class_type*>(object)); } \
-		bool load(const ISerializeReader& reader, class_type& out) const \
+		bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
+		void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
+		bool load(const ISerializeReader& reader, class_type& out, bool refl_load = false) const \
 		{ \
+			GAFF_REF(refl_load); \
 			if (!reader.is##serialize_type()) { \
 				return false; \
 			} \
 			out = reader.read##serialize_type(); \
 			return true; \
 		} \
-		void save(ISerializeWriter& writer, const class_type& value) const { writer.write##serialize_type(value); } \
+		void save(ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \

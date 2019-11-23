@@ -178,11 +178,7 @@ static void MakeVarReflection(
 	D3D11_SHADER_TYPE_DESC type_desc;
 
 	type_refl->GetDesc(&type_desc);
-	out_refl.num_vars = static_cast<int32_t>(type_desc.Members);
-
-	GAFF_ASSERT(type_desc.Members < MAX_SHADER_VAR);
-
-
+	out_refl.vars.resize(type_desc.Members);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(type_desc.Members); ++i) {
 		auto& out = out_refl.vars[i];
@@ -641,9 +637,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		return reflection;
 	}
 
-	reflection.num_inputs = static_cast<int32_t>(shader_desc.InputParameters);
-
-	GAFF_ASSERT(shader_desc.InputParameters < MAX_SHADER_VAR);
+	reflection.input_params_reflection.resize(shader_desc.InputParameters);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.InputParameters); ++i) {
 		D3D11_SIGNATURE_PARAMETER_DESC input_desc;
@@ -663,8 +657,6 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 	}
 
 	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.ConstantBuffers); ++i) {
-		GAFF_ASSERT(reflection.num_constant_buffers < MAX_SHADER_VAR);
-
 		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
 
 		D3D11_SHADER_BUFFER_DESC cb_desc;
@@ -679,10 +671,12 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 			continue;
 		}
 
-		reflection.const_buff_reflection[reflection.num_constant_buffers].name = cb_desc.Name;
-		reflection.const_buff_reflection[reflection.num_constant_buffers].size_bytes = cb_desc.Size;
-		++reflection.num_constant_buffers;
+		auto& const_buff_refl = reflection.const_buff_reflection.emplace_back();
+		const_buff_refl.name = cb_desc.Name;
+		const_buff_refl.size_bytes = cb_desc.Size;
 	}
+
+	reflection.const_buff_reflection.shrink_to_fit();
 
 	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.BoundResources); ++i) {
 		D3D11_SHADER_INPUT_BIND_DESC res_desc;
@@ -695,28 +689,20 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 
 		switch (res_desc.Type) {
 			case D3D_SIT_TEXTURE:
-				GAFF_ASSERT(reflection.num_textures < MAX_SHADER_VAR);
-				reflection.textures[reflection.num_textures] = res_desc.Name;
-				++reflection.num_textures;
+				reflection.textures.emplace_back(res_desc.Name);
 				break;
 
 			case D3D_SIT_SAMPLER:
-				GAFF_ASSERT(reflection.num_samplers < MAX_SHADER_VAR);
-				reflection.samplers[reflection.num_samplers] = res_desc.Name;
-				++reflection.num_samplers;
+				reflection.samplers.emplace_back(res_desc.Name);
 				break;
 
 			case D3D_SIT_STRUCTURED:
-				GAFF_ASSERT(reflection.num_structured_buffers < MAX_SHADER_VAR);
-
 				MakeStructuredBufferReflection(
-					reflection.structured_buffers[reflection.num_structured_buffers],
+					reflection.structured_buffers.emplace_back(),
 					res_desc,
 					shader_desc,
 					refl
 				);
-
-				++reflection.num_structured_buffers;
 				break;
 
 			default:

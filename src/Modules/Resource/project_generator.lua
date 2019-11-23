@@ -22,6 +22,7 @@ local GenerateProject = function()
 			base_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
