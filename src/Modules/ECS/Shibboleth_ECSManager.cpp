@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSAttributes.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Gaff_Function.h>
@@ -30,29 +31,6 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE(ECSManager)
 
 NS_SHIBBOLETH
-
-ECSManager::ArchetypeReference::ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
-	_ecs_mgr(ecs_mgr),
-	_archetype(archetype)
-{
-}
-
-ECSManager::ArchetypeReference::~ArchetypeReference(void)
-{
-	_ecs_mgr.removeArchetype(_archetype);
-}
-
-const ECSArchetype& ECSManager::ArchetypeReference::getArchetype(void) const
-{
-	return _ecs_mgr.getArchetype(_archetype);
-}
-
-Gaff::Hash64 ECSManager::ArchetypeReference::getArchetypeHash(void) const
-{
-	return _archetype;
-}
-
-
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSManager)
 	.BASE(IManager)
@@ -65,6 +43,19 @@ ECSManager::~ECSManager(void)
 
 	for (auto& pages : _entity_pages) {
 		SHIB_FREE(pages.second->arch_ref, allocator);
+	}
+}
+
+void ECSManager::allModulesLoaded(void)
+{
+	const Gaff::JSON starting_scene = GetApp().getConfigs()["starting_scene"];
+
+	if (!starting_scene.isNull() && !starting_scene.isString()) {
+		// $TODO: Log error
+
+	} else if (starting_scene.isString()) {
+		const char* const scene = starting_scene.getString();
+		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(Gaff::HashStringTemp64(scene, eastl::CharStrlen(scene)));
 	}
 }
 
@@ -117,14 +108,14 @@ const ECSArchetype& ECSManager::getArchetype(EntityID id) const
 	return _entities[id].data->archetype;
 }
 
-ECSManager::ArchetypeReferencePtr ECSManager::getArchetypeReference(Gaff::Hash64 archetype)
+ArchetypeReferencePtr ECSManager::getArchetypeReference(Gaff::Hash64 archetype)
 {
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	return ArchetypeReferencePtr(it->second->arch_ref);
 }
 
-ECSManager::ArchetypeReferencePtr ECSManager::getArchetypeReference(EntityID id)
+ArchetypeReferencePtr ECSManager::getArchetypeReference(EntityID id)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	return ArchetypeReferencePtr(_entities[id].data->arch_ref);
@@ -277,6 +268,16 @@ void ECSManager::registerQuery(ECSQuery&& query)
 	}
 }
 
+const ECSSceneResourcePtr& ECSManager::getCurrentScene(void) const
+{
+	return _curr_scene;
+}
+
+void ECSManager::switchScene(const ECSSceneResourcePtr scene)
+{
+	_curr_scene = scene;
+}
+
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
@@ -408,7 +409,7 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 	return global_index;
 }
 
-ECSManager::ArchetypeReference* ECSManager::modifyInternal(EntityID& id, ArchetypeModifier modifier)
+ArchetypeReference* ECSManager::modifyInternal(EntityID& id, ArchetypeModifier modifier)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 
@@ -441,7 +442,7 @@ ECSManager::ArchetypeReference* ECSManager::modifyInternal(EntityID& id, Archety
 	return arch_ref;
 }
 
-ECSManager::ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
+ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 {
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
 

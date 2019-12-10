@@ -56,13 +56,13 @@ void Resource<T>::SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceT
 }
 
 template <class T>
-const typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return ecs_mgr.getComponentShared<Resource>(archetype)->value;
 }
 
 template <class T>
-const typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, EntityID id)
+typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
 	return ecs_mgr.getComponentShared<Resource>(id)->value;
 }

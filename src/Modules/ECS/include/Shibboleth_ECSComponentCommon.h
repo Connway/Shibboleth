@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_ECSEntity.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_Math.h>
-#include <simd/geometric.h>
 
 NS_GAFF
 	class ISerializeReader;
@@ -47,8 +46,8 @@ public:
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
-	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::vec3 Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 
@@ -74,8 +73,8 @@ public:
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
-	static const glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::quat& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static glm::quat& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::quat Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::quat Get(ECSManager& ecs_mgr, EntityID id);
 
@@ -101,8 +100,8 @@ public:
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
-	static const glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static glm::vec3& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static glm::vec3& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static glm::vec3 Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static glm::vec3 Get(ECSManager& ecs_mgr, EntityID id);
 

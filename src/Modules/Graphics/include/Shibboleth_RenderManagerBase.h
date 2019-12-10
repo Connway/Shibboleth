@@ -86,6 +86,7 @@ public:
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);
 
+	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
 	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(const char* tag) const;
 	Gleam::IRenderDevice& getDevice(int32_t index) const;
 	int32_t getNumDevices(void) const;

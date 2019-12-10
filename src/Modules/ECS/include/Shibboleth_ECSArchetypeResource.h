@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ECSManager.h"
+#include "Shibboleth_ECSArchetype.h"
 #include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
@@ -41,7 +41,7 @@ public:
 private:
 	void loadArchetype(IFile* file);
 
-	ECSManager::ArchetypeReferencePtr _archetype_ref;
+	ArchetypeReferencePtr _archetype_ref;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSArchetypeResource);
 };

@@ -98,4 +98,6 @@ float BernsteinPolynomial(float t, float n, float k);
 // Normalize angle to [-Pi, Pi]
 float NormalizeAngle(float angle);
 
+float CalculateFOV(float sensor_size, float focal_length);
+
 NS_END

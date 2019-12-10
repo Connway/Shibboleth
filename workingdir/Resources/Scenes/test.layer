@@ -14,6 +14,18 @@
 					"Position": { "value": {"x": -2.5, "y": 0, "z": 0} }
 				}
 			}
+		},
+		{
+			"archetype": "Archetypes/camera.archetype",
+
+			"overrides":
+			{
+				"shared_components": {},
+				"components":
+				{
+					"Position": { "value": {"x": 0.0, "y": 0, "z": 0} }
+				}
+			}
 		}
 	]
 }

@@ -42,17 +42,29 @@ public:
 	void update() override;
 
 private:
+	struct InstanceData final
+	{
+		ProgramBuffersResourcePtr program_buffers;
+		BufferResourcePtr buffer;
+		VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > buffer_srvs{ ProxyAllocator("Graphics") };
+		int32_t model_to_proj_offset = -1;
+	};
+
 	RenderManagerBase* _render_mgr = nullptr;
 	ResourceManager* _res_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 	uint32_t _next_id = 0;
 
-	Vector<ProgramBuffersResourcePtr> _program_buffers{ ProxyAllocator("Graphics") };
-	Vector<BufferResourcePtr> _buffers{ ProxyAllocator("Graphics") };
+	Vector<InstanceData> _instance_data{ ProxyAllocator("Graphics") };
 
 	// Entities
+	Vector<const BufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
 	Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
 	Vector<const Model*> _models{ ProxyAllocator("Graphics") };
+
+	Vector<ECSQueryResult> _camera_position{ ProxyAllocator("Graphics") };
+	Vector<ECSQueryResult> _camera_rotation{ ProxyAllocator("Graphics") };
+	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
 
 	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
 	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
@@ -63,7 +75,7 @@ private:
 	void newArchetype(void);
 	void removedArchetype(int32_t index);
 
-	void processNewArchetypeMaterial(ProgramBuffersResourcePtr& program_buffers, BufferResourcePtr& buffer, const MaterialResourcePtr& material);
+	void processNewArchetypeMaterial(InstanceData& instance_data, const MaterialResource& material, int32_t buffer_count);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Transform.h"
-#include <gtc/matrix_transform.hpp>
+#include "Gleam_IncludeMatrix.h"
 
 NS_GLEAM
 

@@ -43,4 +43,9 @@ float NormalizeAngle(float angle)
 	return angle;
 }
 
+float CalculateFOV(float sensor_size, float focal_length)
+{
+	return 2.0f * atan(0.5f * sensor_size / focal_length);
+}
+
 NS_END

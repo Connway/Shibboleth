@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSLayerResource.h>
+#include "Shibboleth_ECSLayerResource.h"
 
 NS_SHIBBOLETH
 
