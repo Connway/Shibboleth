@@ -67,6 +67,7 @@ local tests = {
 			"../Engine/Engine/include",
 			"../Engine/Memory/include",
 
+			"../Modules/Resource/include",
 			"../Modules/ECS/include"
 		},
 
@@ -75,7 +76,7 @@ local tests = {
 			"Gaff", "Gleam",
 			"Memory", "EASTL",
 			"Engine", "ECS",
-			"mpack"
+			"mpack", "Resource"
 		},
 
 		extra = function ()

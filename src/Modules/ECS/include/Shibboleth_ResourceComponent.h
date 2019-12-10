@@ -43,8 +43,8 @@ public:
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
 
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyShared(const void* old_value, void* new_value);
 

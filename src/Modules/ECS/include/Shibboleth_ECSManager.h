@@ -22,13 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ECSSceneResource.h"
 #include "Shibboleth_ECSArchetype.h"
 #include "Shibboleth_ECSEntity.h"
 #include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
-#include <Gaff_RefPtr.h>
 
 NS_SHIBBOLETH
 
@@ -78,26 +77,6 @@ void AddComponentHelper(ECSArchetype& archetype)
 class ECSManager final : public IManager
 {
 public:
-	class ArchetypeReference final
-	{
-	public:
-		ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-		~ArchetypeReference(void);
-
-		const ECSArchetype& getArchetype(void) const;
-		Gaff::Hash64 getArchetypeHash(void) const;
-
-	private:
-		Gaff::Hash64 _archetype;
-		ECSManager& _ecs_mgr;
-
-		GAFF_NO_COPY(ArchetypeReference);
-		SHIB_REF_COUNTED();
-	};
-
-	using ArchetypeReferencePtr = Gaff::RefPtr<ArchetypeReference>;
-
-
 	struct ArchetypeModifier final
 	{
 		void (*removeShared)(ECSArchetype&);
@@ -296,6 +275,8 @@ public:
 
 	~ECSManager(void);
 
+	void allModulesLoaded(void) override;
+
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
 	void addArchetype(ECSArchetype&& archetype);
 	void removeArchetype(Gaff::Hash64 archetype);
@@ -325,24 +306,21 @@ public:
 
 	void registerQuery(ECSQuery&& query);
 
+	const ECSSceneResourcePtr& getCurrentScene(void) const;
+	void switchScene(const ECSSceneResourcePtr scene);
+
 private:
 	struct EntityData;
-
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable : 4324)
-#endif
 
 	struct alignas(16) EntityPage final
 	{
 		int32_t num_entities;
 		int32_t next_index;
+
+		uint8_t padding[8]; // To suppress errors.
+
 		// Data after this.
 	};
-
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
 
 	struct EntityData final
 	{
@@ -372,6 +350,8 @@ private:
 
 	Vector<EntityID> _free_ids;
 	EntityID _next_id = 0;
+
+	ECSSceneResourcePtr _curr_scene;
 
 	//bool loadFile(const char* file_name, IFile* file);
 	void destroyEntityInternal(EntityID id, bool change_ref_count);

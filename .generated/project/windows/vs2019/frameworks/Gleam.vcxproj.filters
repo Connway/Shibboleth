@@ -249,6 +249,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeQuaternion.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_AABB.cpp" />

@@ -685,4 +685,26 @@ void ECSArchetype::destroySharedData(void)
 	}
 }
 
+
+ArchetypeReference::ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
+	_ecs_mgr(ecs_mgr),
+	_archetype(archetype)
+{
+}
+
+ArchetypeReference::~ArchetypeReference(void)
+{
+	_ecs_mgr.removeArchetype(_archetype);
+}
+
+const ECSArchetype& ArchetypeReference::getArchetype(void) const
+{
+	return _ecs_mgr.getArchetype(_archetype);
+}
+
+Gaff::Hash64 ArchetypeReference::getArchetypeHash(void) const
+{
+	return _archetype;
+}
+
 NS_END

@@ -29,8 +29,7 @@ THE SOFTWARE.
 	#pragma warning(disable : 4127)
 #endif
 
-#include <ext/matrix_clip_space.hpp>
-#include <ext/matrix_transform.hpp>
+#include <gtc/matrix_transform.hpp>
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

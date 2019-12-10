@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 archetype_hash)
+ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 archetype_hash)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
@@ -38,7 +38,7 @@ ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff:
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash64 archetype_hash)
+ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash64 archetype_hash)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
@@ -55,7 +55,7 @@ ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash6
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Hash64 archetype_hash)
+ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Hash64 archetype_hash)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
@@ -72,7 +72,7 @@ ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Ha
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 archetype_hash)
+ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 archetype_hash)
 {
 	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
@@ -89,7 +89,7 @@ ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 a
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
 {
 	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
@@ -105,7 +105,7 @@ ECSManager::ArchetypeReference* ECSManager::removeSharedComponentsInternal(Entit
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
 {
 	ECSArchetype archetype;
 	archetype.copy(getArchetype(id), true);
@@ -119,7 +119,7 @@ ECSManager::ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID id)
 {
 	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
@@ -128,21 +128,21 @@ ECSManager::ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID
 	AddSharedComponentHelper<Components...>(archetype);
 	archetype.finalize(base_archetype);
 
-	ECSManager::ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
+	ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
 	migrate(id, archetype.getHash());
 
 	return arch_ref;
 }
 
 template <class... Components>
-ECSManager::ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 {
 	ECSArchetype archetype;
 	archetype.copy(getArchetype(id), true);
 	AddComponentHelper<Components...>(archetype);
 	archetype.finalize();
 
-	ECSManager::ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
+	ArchetypeReference* const arch_ref = addArchetypeInternal(std::move(archetype));
 	migrate(id, archetype.getHash());
 
 	return arch_ref;

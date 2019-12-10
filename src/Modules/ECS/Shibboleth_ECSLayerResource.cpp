@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSLayerResource.h"
 #include "Shibboleth_ECSComponentCommon.h"
+#include "Shibboleth_ECSManager.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>

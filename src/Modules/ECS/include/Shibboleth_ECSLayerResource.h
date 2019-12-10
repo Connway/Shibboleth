@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSArchetypeResource.h>
+#include "Shibboleth_ECSArchetypeResource.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 
 NS_SHIBBOLETH
@@ -37,7 +37,7 @@ public:
 
 private:
 	Vector<ECSArchetypeResourcePtr> _archetypes;
-	Vector<ECSManager::ArchetypeReferencePtr> _archetype_refs;
+	Vector<ArchetypeReferencePtr> _archetype_refs;
 	SerializeReaderWrapper _reader_wrapper;
 	ResourceCallbackID _callback_id;
 

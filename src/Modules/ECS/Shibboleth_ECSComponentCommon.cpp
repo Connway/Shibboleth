@@ -49,7 +49,6 @@ SHIB_REFLECTION_BUILDER_END(Position)
 
 void Position::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const glm::vec3& value)
 {
-
 	ecs_mgr.getComponentShared<Position>(archetype)->value = value;
 }
 
@@ -91,12 +90,12 @@ bool Position::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeRead
 	return true;
 }
 
-const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+glm::vec3& Position::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return ecs_mgr.getComponentShared<Position>(archetype)->value;
 }
 
-const glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
+glm::vec3& Position::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
 	return ecs_mgr.getComponentShared<Position>(id)->value;
 }
@@ -215,12 +214,12 @@ bool Rotation::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeRead
 	return true;
 }
 
-const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return ecs_mgr.getComponentShared<Rotation>(archetype)->value;
 }
 
-const glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
+glm::quat& Rotation::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
 	return ecs_mgr.getComponentShared<Rotation>(id)->value;
 }
@@ -345,12 +344,12 @@ bool Scale::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader&
 	return true;
 }
 
-const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return ecs_mgr.getComponentShared<Scale>(archetype)->value;
 }
 
-const glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
+glm::vec3& Scale::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
 	return ecs_mgr.getComponentShared<Scale>(id)->value;
 }

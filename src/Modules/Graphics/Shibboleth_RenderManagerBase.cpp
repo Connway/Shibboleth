@@ -266,11 +266,16 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	}
 }
 
+const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(Gaff::Hash32 tag) const
+{
+	const auto it = _render_device_tags.find(tag);
+	return (it == _render_device_tags.end()) ? nullptr : &it->second;
+}
+
 const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char* tag) const
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
-	const auto it = _render_device_tags.find(hash);
-	return (it == _render_device_tags.end()) ? nullptr : &it->second;
+	return getDevicesByTag(hash);
 }
 
 Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const

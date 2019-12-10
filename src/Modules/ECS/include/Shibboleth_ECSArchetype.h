@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_ECSEntity.h>
 #include <Shibboleth_Vector.h>
+#include <Gaff_RefPtr.h>
 #include <Gaff_Hash.h>
 
 NS_GAFF
@@ -215,5 +217,24 @@ private:
 	void copySharedInstanceData(const ECSArchetype& old_archetype);
 	void destroySharedData(void);
 };
+
+class ArchetypeReference final
+{
+public:
+	ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	~ArchetypeReference(void);
+
+	const ECSArchetype& getArchetype(void) const;
+	Gaff::Hash64 getArchetypeHash(void) const;
+
+private:
+	Gaff::Hash64 _archetype;
+	ECSManager& _ecs_mgr;
+
+	GAFF_NO_COPY(ArchetypeReference);
+	SHIB_REF_COUNTED();
+};
+
+using ArchetypeReferencePtr = Gaff::RefPtr<ArchetypeReference>;
 
 NS_END
