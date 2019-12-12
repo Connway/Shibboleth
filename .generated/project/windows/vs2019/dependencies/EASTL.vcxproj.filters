@@ -189,6 +189,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\deque.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\finally.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_allocator.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
