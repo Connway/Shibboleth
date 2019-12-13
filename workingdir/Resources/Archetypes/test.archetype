@@ -7,11 +7,9 @@
 		{
 			"material": "Materials/test.material",
 
-			"parameters":
+			"textures_pixel":
 			[
-				{
-					"tex": "Models/ninja.texture"
-				}
+				{ "key": "tex", "value": "Models/ninja.texture" }
 			]
 		},
 
@@ -21,6 +19,7 @@
 	"components":
 	{
 		"Position": { "value": {"x": 0, "y": 0, "z": 0} },
-		"Rotation": { "value": {"x": 0, "y": 0, "z": 0, "w": 1} }
+		"Rotation": { "value": {"x": 0, "y": 0, "z": 0, "w": 1} },
+		"Scale": { "value": {"x": 1, "y": 1, "z": 1} }
 	}
 }

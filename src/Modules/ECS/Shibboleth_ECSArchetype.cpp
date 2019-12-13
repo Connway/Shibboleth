@@ -604,18 +604,21 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArc
 		copySharedInstanceData(*base_archetype);
 	}
 
-	int32_t index = 0;
-
 	reader.forEachInObject([&](const char* component) -> bool
 	{
-		const RefDefOffset& data = _shared_vars[index];
+		const Gaff::Hash64 component_hash = Gaff::FNV1aHash64String(component);
 
-		// Class had an issue and was not added to the archetype.
-		if (data.ref_def->getReflectionInstance().getHash() != Gaff::FNV1aHash64String(component)) {
+		const auto it = Gaff::LowerBound(_shared_vars, component_hash, [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool
+		{
+			return lhs.ref_def->getReflectionInstance().getHash() < rhs;
+		});
+
+		if (it == _shared_vars.end() || it->ref_def->getReflectionInstance().getHash() != component_hash)
+		{
 			return false;
 		}
 
-		++index;
+		const RefDefOffset& data = *it;
 
 		const auto ctor = data.ref_def->getConstructor<>();
 		void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + data.offset;

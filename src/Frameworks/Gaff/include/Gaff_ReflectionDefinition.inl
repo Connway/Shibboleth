@@ -1057,9 +1057,11 @@ bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 				const char* const name = entry.first.getBuffer();
 
 				if (!reader.exists(name)) {
-					const auto* const attr = getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("Optional"));
+					// I don't like this method of determining something as optional.
+					const auto* const attr = getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("OptionalAttribute"));
 
 					if (!attr) {
+						// $TODO: Log error.
 						return false;
 					}
 
