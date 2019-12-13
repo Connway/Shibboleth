@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_MaterialComponent.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_OptionalAttribute.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
@@ -38,11 +39,12 @@ SHIB_REFLECTION_BUILDER_BEGIN(Material)
 
 	.var("material", &Material::material)
 
-	.var("textures_vertex", &Material::textures_vertex)
-	.var("textures_pixel", &Material::textures_pixel)
-	.var("textures_domain", &Material::textures_domain)
-	.var("textures_geometry", &Material::textures_geometry)
-	.var("textures_hull", &Material::textures_hull)
+	.var("textures_vertex", &Material::textures_vertex, OptionalAttribute())
+	.var("textures_pixel", &Material::textures_pixel, OptionalAttribute())
+	.var("textures_domain", &Material::textures_domain, OptionalAttribute())
+	.var("textures_geometry", &Material::textures_geometry, OptionalAttribute())
+	.var("textures_hull", &Material::textures_hull, OptionalAttribute())
+
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Material)
 
