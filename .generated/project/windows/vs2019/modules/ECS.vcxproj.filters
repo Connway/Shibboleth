@@ -18,6 +18,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSAttributes.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentBase.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h">
       <Filter>include</Filter>
     </ClInclude>

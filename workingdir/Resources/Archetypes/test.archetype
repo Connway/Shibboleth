@@ -1,5 +1,6 @@
 {
 	"name": "Test",
+	"is_base": true,
 
 	"shared_components":
 	{
@@ -18,8 +19,8 @@
 
 	"components":
 	{
-		"Position": { "value": {"x": 0, "y": 0, "z": 0} },
-		"Rotation": { "value": {"x": 0, "y": 0, "z": 0, "w": 1} },
-		"Scale": { "value": {"x": 1, "y": 1, "z": 1} }
+		"Position": {},
+		"Rotation": {},
+		"Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 	}
 }

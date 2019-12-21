@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_ECSEntity.h>
+#include <Shibboleth_ECSComponentBase.h>
 #include <Shibboleth_Math.h>
 
 NS_GAFF
@@ -35,18 +34,12 @@ NS_SHIBBOLETH
 struct ECSQueryResult;
 class ECSManager;
 
-class Camera final
+class Camera final : public ECSComponentBase<Camera>
 {
 public:
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const Camera& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const Camera& value);
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value);
 	static void Set(ECSManager& ecs_mgr, EntityID id, const Camera& value);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
-
-	static Camera& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static Camera& GetShared(ECSManager& ecs_mgr, EntityID id);
 	static Camera Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
 	static Camera Get(ECSManager& ecs_mgr, EntityID id);
 
@@ -59,17 +52,17 @@ public:
 	//static glm_vec4 GetFocalLength(const void* component_begin);
 
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-	static void CopyShared(const void* old_value, void* new_value);
+
+	// 35mm film (24mm x 36mm) [width x height]
+	static constexpr float DefaultSensorSize = 24.0f;
 
 	Camera(const float* component);
 	Camera(void) = default;
 
-	float GetVerticalFOVDegrees(void) const;
+	void SetVerticalFOV(float focal_length, float sensor_size = DefaultSensorSize);
 	float GetVerticalFOV(void) const;
 
-	// 35mm film (24mm x 36mm) [width x height]
-	static constexpr float DefaultSensorSize = 24.0f;
-	float focal_length = 24.0f; // mm
+	float v_fov = 90.0f;
 	float z_near = 0.01f; // m
 	float z_far = 1000.0f; // m
 

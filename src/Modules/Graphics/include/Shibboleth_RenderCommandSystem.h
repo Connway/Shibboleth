@@ -46,7 +46,18 @@ private:
 	{
 		ProgramBuffersResourcePtr program_buffers;
 		BufferResourcePtr buffer;
+
 		VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > buffer_srvs{ ProxyAllocator("Graphics") };
+
+		using SRVVector = Vector< UniquePtr<Gleam::IShaderResourceView> >;
+		VectorMap<const Gleam::IRenderDevice*, SRVVector> shader_srvs[Gleam::IShader::SHADER_PIPELINE_COUNT]{
+			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") }
+		};
+
 		int32_t model_to_proj_offset = -1;
 	};
 
@@ -75,7 +86,16 @@ private:
 	void newArchetype(void);
 	void removedArchetype(int32_t index);
 
-	void processNewArchetypeMaterial(InstanceData& instance_data, const MaterialResource& material, int32_t buffer_count);
+	void processNewArchetypeMaterial(InstanceData& instance_data, const Material& material, int32_t buffer_count);
+
+	void addTextureSRVs(
+		InstanceData& instance_data,
+		const Material& material,
+		const Gleam::IProgram& program,
+		Gleam::IProgramBuffers& pb,
+		Gleam::IRenderDevice& rd,
+		Gleam::IShader::ShaderType shader_type
+	);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

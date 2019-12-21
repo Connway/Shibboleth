@@ -138,7 +138,10 @@ private:
 	Vector<const IResource*> _pending_removals{ ProxyAllocator("Resource") };
 
 	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories{ ProxyAllocator("Resource") };
+
+	Vector<Gaff::Hash64> _callback_keys{ ProxyAllocator("Resource") };
 	VectorMap<Gaff::Hash64, CallbackData> _callbacks{ ProxyAllocator("Resource") };
+	EA::Thread::Mutex _callback_lock;
 
 	ProxyAllocator _allocator = ProxyAllocator("Resource");
 

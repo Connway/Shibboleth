@@ -45,11 +45,12 @@ public:
 
 	MaterialResourcePtr material;
 
-	VectorMap<U8String, TextureResourcePtr> textures_vertex;
-	VectorMap<U8String, TextureResourcePtr> textures_pixel;
-	VectorMap<U8String, TextureResourcePtr> textures_domain;
-	VectorMap<U8String, TextureResourcePtr> textures_geometry;
-	VectorMap<U8String, TextureResourcePtr> textures_hull;
+	using TextureMap = VectorMap<U8String, TextureResourcePtr>;
+	TextureMap textures_vertex;
+	TextureMap textures_pixel;
+	TextureMap textures_domain;
+	TextureMap textures_geometry;
+	TextureMap textures_hull;
 };
 
 NS_END

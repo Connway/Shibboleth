@@ -170,6 +170,8 @@ EntityID ECSManager::loadEntity(const ECSArchetype& archetype, const Gaff::ISeri
 	const EntityID id = createEntity(archetype);
 
 	if (ValidEntityID(id)) {
+		archetype.loadDefaults(*this, id);
+
 		reader.forEachInObject([&](const char* component) -> bool {
 			const Gaff::Hash64 comp_hash = Gaff::FNV1aHash64String(component);
 			archetype.loadComponent(*this, id, reader, comp_hash);
@@ -395,6 +397,8 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 	// Didn't find a free index. Need to allocate a new page.
 	ProxyAllocator allocator("ECS");
 	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
+	
+	memset(page, 1, EA_KIBIBYTE(64));
 
 	page->num_entities = 1;
 	page->next_index = 1;
@@ -459,9 +463,11 @@ ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 
 	_entity_pages[archetype_hash].reset(data);
 
-	for (int32_t i = 0; i < static_cast<int32_t>(_queries.size()); ++i) {
-		if (_queries[i].filter(data->archetype, data)) {
-			data->queries.emplace_back(i);
+	if (!data->archetype.isBase()) {
+		for (int32_t i = 0; i < static_cast<int32_t>(_queries.size()); ++i) {
+			if (_queries[i].filter(data->archetype, data)) {
+				data->queries.emplace_back(i);
+			}
 		}
 	}
 

@@ -70,7 +70,7 @@ typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, 
 template <class T>
 void Resource<T>::CopyShared(const void* old_value, void* new_value)
 {
-	reinterpret_cast<Resource*>(new_value)->value = reinterpret_cast<const Resource*>(old_value)->value;
+	*reinterpret_cast<Resource*>(new_value) = *reinterpret_cast<const Resource*>(old_value);
 }
 
 NS_END

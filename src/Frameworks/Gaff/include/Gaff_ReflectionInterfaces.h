@@ -1029,6 +1029,8 @@ public:
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
+	virtual bool isStandardLayout(void) const = 0;
+	virtual bool isTrivial(void) const = 0;
 
 	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;

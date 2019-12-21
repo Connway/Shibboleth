@@ -7,8 +7,8 @@
 
 	"components":
 	{
-		"Camera": { "focal_length": 24.0f },
-		"Position": { "value": {"x": 0, "y": 0, "z": 0} },
-		"Rotation": { "value": {"x": 0, "y": 0, "z": 0, "w": 1} }
+		"Camera": { "focal_length": 24.0 },
+		"Position": {},
+		"Rotation": {}
 	}
 }

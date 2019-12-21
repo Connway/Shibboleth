@@ -1174,6 +1174,18 @@ int32_t ReflectionDefinition<T, Allocator>::size(void) const
 }
 
 template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::isStandardLayout(void) const
+{
+	return std::is_standard_layout<T>::value;
+}
+
+template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::isTrivial(void) const
+{
+	return std::is_trivial<T>::value;
+}
+
+template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumVars(void) const
 {
 	return static_cast<int32_t>(_vars.size());

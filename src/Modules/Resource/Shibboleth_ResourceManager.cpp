@@ -253,6 +253,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 	}
 
 	const Gaff::Hash64 hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(resources.data()), sizeof(IResource*) * resources.size());
+	EA::Thread::AutoMutex lock(_callback_lock);
 	CallbackData& data = _callbacks[hash];
 
 	if (data.resources.empty()) {
@@ -268,6 +269,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 
 void ResourceManager::removeCallback(ResourceCallbackID id)
 {
+	EA::Thread::AutoMutex lock(_callback_lock);
 	const auto it = _callbacks.find(id.res_id);
 
 	if (it == _callbacks.end()) {
@@ -296,11 +298,15 @@ void ResourceManager::checkAndRemoveResources(void)
 
 void ResourceManager::checkCallbacks(void)
 {
-	for (int32_t i = 0; i < static_cast<int32_t>(_callbacks.size());) {
-		auto& cb_data = _callbacks.at(static_cast<size_t>(i));
+	for (const auto& pair : _callbacks) {
+		_callback_keys.emplace_back(pair.first);
+	}
+
+	for (Gaff::Hash64 hash : _callback_keys) {
+		auto& cb_data = _callbacks[hash];
 		bool not_loaded = false;
 
-		for (IResource* res : cb_data.second.resources) {
+		for (IResource* res : cb_data.resources) {
 			if (res->getState() == IResource::RS_PENDING) {
 				not_loaded = true;
 				break;
@@ -308,16 +314,17 @@ void ResourceManager::checkCallbacks(void)
 		}
 
 		if (not_loaded) {
-			++i;
 			continue;
 		}
 
-		for (auto& cb : cb_data.second.callbacks) {
-			cb.second(cb_data.second.resources);
+		for (auto& cb : cb_data.callbacks) {
+			cb.second(cb_data.resources);
 		}
 
-		_callbacks.erase(_callbacks.begin() + i);
+		_callbacks.erase(hash);
 	}
+
+	_callback_keys.clear();
 }
 
 void ResourceManager::removeResource(const IResource& resource)
