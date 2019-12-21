@@ -58,6 +58,12 @@ NS_SHIBBOLETH
 //	return false;
 //}
 
+static void AddResourcesToWaitList(const Material::TextureMap& textures, Vector<IResource*>& list)
+{
+	for (const auto& pair : textures) {
+		list.emplace_back(pair.second.get());
+	}
+}
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderCommandSystem)
 	.BASE(ISystem)
@@ -99,7 +105,7 @@ bool RenderCommandSystem::init(void)
 void RenderCommandSystem::update()
 {
 	// All arrays should be same size.
-	const int32_t num_objects = static_cast<int32_t>(_materials.size());
+	const int32_t num_objects = static_cast<int32_t>(_instance_data.size());
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
@@ -114,7 +120,7 @@ void RenderCommandSystem::update()
 			const auto devices = _render_mgr->getDevicesByTag(camera.display_tag);
 
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
-				camera.GetVerticalFOVDegrees(),
+				camera.GetVerticalFOV(),
 				static_cast<float>(window->getWidth()),
 				static_cast<float>(window->getHeight()),
 				camera.z_near, camera.z_far
@@ -159,23 +165,27 @@ void RenderCommandSystem::update()
 
 void RenderCommandSystem::newArchetype(void)
 {
-	InstanceData& instance_data = _instance_data.emplace_back();
-
-	auto* const material = _materials.back()->material.get();
+	auto* const material = _materials.back();
 	auto* const model = _models.back()->value.get();
 	const uint32_t id = _next_id++;
 
-	const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
-	const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
+	Vector<IResource*> resources{ material->material.get(), model };
+	AddResourcesToWaitList(material->textures_vertex, resources);
+	AddResourcesToWaitList(material->textures_pixel, resources);
+	AddResourcesToWaitList(material->textures_domain, resources);
+	AddResourcesToWaitList(material->textures_geometry, resources);
+	AddResourcesToWaitList(material->textures_hull, resources);
 
-	instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
-	instance_data.buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 64;
 
-	Vector<IResource*> resources{ material, model };
+	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, id, material, buffer_count](const Vector<IResource*>&) -> void {
+		const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
+		const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
 
-	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 0;
+		InstanceData& instance_data = _instance_data.emplace_back();
+		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+		instance_data.buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
 
-	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &instance_data, material, buffer_count](const Vector<IResource*>&) -> void {
 		processNewArchetypeMaterial(instance_data, *material, buffer_count);
 	}));
 }
@@ -185,16 +195,16 @@ void RenderCommandSystem::removedArchetype(int32_t index)
 	GAFF_REF(index);
 }
 
-void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_data, const MaterialResource& material, int32_t buffer_count)
+void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_data, const Material& material, int32_t buffer_count)
 {
-	const auto devices = material.getDevices();
+	const auto devices = material.material->getDevices();
 
 	if (devices.empty()) {
 		// $TODO: Log error.
 		return;
 	}
 
-	const Gleam::IProgram* const program = material.getProgram(*devices[0]);
+	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
 	const Gleam::IShader* const vert_shader = program->getAttachedShader(Gleam::IShader::SHADER_VERTEX);
 	size_t instance_data_size =  0;
 
@@ -219,7 +229,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_dat
 
 	const Gleam::IBuffer::BufferSettings settings = {
 		nullptr,
-		instance_data_size * static_cast<size_t>((buffer_count > 0) ? buffer_count : 64), // size
+		instance_data_size * static_cast<size_t>(buffer_count), // size
 		static_cast<int32_t>(instance_data_size), // stride
 		Gleam::IBuffer::BT_STRUCTURED_DATA,
 		Gleam::IBuffer::MT_WRITE,
@@ -244,8 +254,87 @@ void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_dat
 			SHIB_FREET(srv, GetAllocator());
 		}
 
-		instance_data.program_buffers->getProgramBuffer(*rd)->addResourceView(Gleam::IShader::SHADER_VERTEX, srv);
+		Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(*rd);
+
+		pb->addResourceView(Gleam::IShader::SHADER_VERTEX, srv);
 		instance_data.buffer_srvs[rd].reset(srv);
+
+		for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
+			addTextureSRVs(instance_data, material, *program, *pb, *rd, static_cast<Gleam::IShader::ShaderType>(i));
+		}
+	}
+}
+
+void RenderCommandSystem::addTextureSRVs(
+	InstanceData& instance_data,
+	const Material& material,
+	const Gleam::IProgram& program,
+	Gleam::IProgramBuffers& pb,
+	Gleam::IRenderDevice& rd,
+	Gleam::IShader::ShaderType shader_type)
+{
+	const Gleam::IShader* const shader = program.getAttachedShader(shader_type);
+
+	if (!shader) {
+		return;
+	}
+
+	const Material::TextureMap* texture_map = nullptr;
+
+	switch (shader_type) {
+		case Gleam::IShader::SHADER_VERTEX:
+			texture_map = &material.textures_vertex;
+			break;
+
+		case Gleam::IShader::SHADER_PIXEL:
+			texture_map = &material.textures_pixel;
+			break;
+
+		case Gleam::IShader::SHADER_DOMAIN:
+			texture_map = &material.textures_domain;
+			break;
+
+		case Gleam::IShader::SHADER_GEOMETRY:
+			texture_map = &material.textures_geometry;
+			break;
+
+		case Gleam::IShader::SHADER_HULL:
+			texture_map = &material.textures_hull;
+			break;
+
+		default:
+			break;
+	}
+
+	const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
+
+	for (const Gleam::U8String& texture_name : shader_refl.textures) {
+		const auto it = texture_map->find(U8String(texture_name));
+
+		if (it == texture_map->end()) {
+			// $TODO: Use error texture.
+			continue;
+		}
+
+		Gleam::IShaderResourceView* const srv = _render_mgr->createShaderResourceView();
+		const Gleam::ITexture* const texture = it->second->getTexture(rd);
+
+		if (!srv->init(rd, texture)) {
+			// $TODO: Log error and use error texture.
+			SHIB_FREET(srv, GetAllocator());
+			continue;
+		}
+
+		pb.addResourceView(shader_type, srv);
+
+		auto it_srv = instance_data.shader_srvs[shader_type].find(&rd);
+
+		if (it_srv == instance_data.shader_srvs[shader_type].end()) {
+			it_srv = instance_data.shader_srvs[shader_type].insert(&rd).first;
+			it_srv->second.set_allocator(ProxyAllocator("Graphics"));
+		}
+
+		it_srv->second.emplace_back(srv);
 	}
 }
 

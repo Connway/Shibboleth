@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Math.h"
+#include "Shibboleth_OptionalAttribute.h"
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::quat)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::quat)
@@ -32,47 +33,47 @@ SHIB_REFLECTION_BUILDER_END(glm::quat)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec4)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec4)
-	.var("x", &glm::vec4::x)
-	.var("y", &glm::vec4::y)
-	.var("z", &glm::vec4::z)
-	.var("w", &glm::vec4::w)
+	.var("x", &glm::vec4::x, OptionalAttribute())
+	.var("y", &glm::vec4::y, OptionalAttribute())
+	.var("z", &glm::vec4::z, OptionalAttribute())
+	.var("w", &glm::vec4::w, OptionalAttribute())
 
-	.var("r", &glm::vec4::r)
-	.var("g", &glm::vec4::g)
-	.var("b", &glm::vec4::b)
-	.var("a", &glm::vec4::a)
+	.var("r", &glm::vec4::r, OptionalAttribute())
+	.var("g", &glm::vec4::g, OptionalAttribute())
+	.var("b", &glm::vec4::b, OptionalAttribute())
+	.var("a", &glm::vec4::a, OptionalAttribute())
 
-	.var("s", &glm::vec4::s)
-	.var("t", &glm::vec4::t)
-	.var("p", &glm::vec4::p)
-	.var("q", &glm::vec4::q)
+	.var("s", &glm::vec4::s, OptionalAttribute())
+	.var("t", &glm::vec4::t, OptionalAttribute())
+	.var("p", &glm::vec4::p, OptionalAttribute())
+	.var("q", &glm::vec4::q, OptionalAttribute())
 SHIB_REFLECTION_BUILDER_END(glm::vec4)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec3)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec3)
-	.var("x", &glm::vec3::x)
-	.var("y", &glm::vec3::y)
-	.var("z", &glm::vec3::z)
+	.var("x", &glm::vec3::x, OptionalAttribute())
+	.var("y", &glm::vec3::y, OptionalAttribute())
+	.var("z", &glm::vec3::z, OptionalAttribute())
 
-	.var("r", &glm::vec3::r)
-	.var("g", &glm::vec3::g)
-	.var("b", &glm::vec3::b)
+	.var("r", &glm::vec3::r, OptionalAttribute())
+	.var("g", &glm::vec3::g, OptionalAttribute())
+	.var("b", &glm::vec3::b, OptionalAttribute())
 
-	.var("s", &glm::vec3::s)
-	.var("t", &glm::vec3::t)
-	.var("p", &glm::vec3::p)
+	.var("s", &glm::vec3::s, OptionalAttribute())
+	.var("t", &glm::vec3::t, OptionalAttribute())
+	.var("p", &glm::vec3::p, OptionalAttribute())
 SHIB_REFLECTION_BUILDER_END(glm::vec3)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec2)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec2)
-	.var("x", &glm::vec2::x)
-	.var("y", &glm::vec2::y)
+	.var("x", &glm::vec2::x, OptionalAttribute())
+	.var("y", &glm::vec2::y, OptionalAttribute())
 
-	.var("r", &glm::vec2::r)
-	.var("g", &glm::vec2::g)
+	.var("r", &glm::vec2::r, OptionalAttribute())
+	.var("g", &glm::vec2::g, OptionalAttribute())
 
-	.var("s", &glm::vec2::s)
-	.var("t", &glm::vec2::t)
+	.var("s", &glm::vec2::s, OptionalAttribute())
+	.var("t", &glm::vec2::t, OptionalAttribute())
 SHIB_REFLECTION_BUILDER_END(glm::vec2)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::Transform)

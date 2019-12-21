@@ -20,35 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ECSAttributes.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE(ECSClassAttribute)
+#include "Shibboleth_ECSEntity.h"
+#include <Shibboleth_Reflection.h>
+
+NS_GAFF
+	class ISerializeReader;
+NS_END
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSClassAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(ECSClassAttribute)
+class ECSManager;
 
-ECSClassAttribute::ECSClassAttribute(const char* name, const char* category):
-	_name(name), _category(category)
+template <class T>
+class ECSComponentBase
 {
-}
+public:
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, const T& value);
 
-const char* ECSClassAttribute::getCategory(void) const
-{
-	return _category;
-}
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
-const char* ECSClassAttribute::getName(void) const
-{
-	return _name ? _name : Reflection<ECSClassAttribute>::GetName();
-}
+	static T& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static T& GetShared(ECSManager& ecs_mgr, EntityID id);
 
-Gaff::IAttribute* ECSClassAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ECSClassAttribute, allocator.getPoolIndex("Reflection"), allocator, _name, _category);
-}
+	static void CopySharedToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
+	static void CopyShared(const void* old_value, void* new_value);
+};
 
 NS_END
+
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBase, T)
+
+#include "Shibboleth_ECSComponentBase.inl"

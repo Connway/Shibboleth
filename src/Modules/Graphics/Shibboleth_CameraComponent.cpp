@@ -30,20 +30,14 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_BUILDER_BEGIN(Camera)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics"),
-		ECSVarAttribute<float>(), // Focal Length
-		ECSVarAttribute<float>(), // Z-Near
-		ECSVarAttribute<float>()//, // Z-Far
-		//ECSVarAttribute<float>(),
-		//ECSVarAttribute<float>()
+		ECSClassAttribute(nullptr, "Graphics")
 	)
 
-	.staticFunc("CopyShared", &Camera::CopyShared)
+	.base< ECSComponentBase<Camera> >()
+
 	.staticFunc("Copy", &Camera::Copy)
 
-	.staticFunc("Load", &Camera::Load)
-
-	.var("focal_length", &Camera::focal_length)
+	.var("v_fov", &Camera::v_fov)
 	.var("z_near", &Camera::z_near)
 	.var("z_far", &Camera::z_far)
 	//.var("focus_distance", &Camera::focus_distance)
@@ -52,20 +46,10 @@ SHIB_REFLECTION_BUILDER_BEGIN(Camera)
 SHIB_REFLECTION_BUILDER_END(Camera)
 
 
-void Camera::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const Camera& value)
-{
-	*ecs_mgr.getComponentShared<Camera>(archetype) = value;
-}
-
-void Camera::SetShared(ECSManager& ecs_mgr, EntityID id, const Camera& value)
-{
-	*ecs_mgr.getComponentShared<Camera>(id) = value;
-}
-
 void Camera::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
-	component[0] = value.focal_length;
+	component[0] = value.v_fov;
 	//component[4] = value.focus_distance;
 	//component[8] = value.f_stop;
 }
@@ -74,36 +58,9 @@ void Camera::Set(ECSManager& ecs_mgr, EntityID id, const Camera& value)
 {
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Camera>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
-	component[0] = value.focal_length;
+	component[0] = value.v_fov;
 	//component[4] = value.focus_distance;
 	//component[8] = value.f_stop;
-}
-
-bool Camera::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
-{
-	Camera value;
-
-	{
-		const auto guard = reader.enterElementGuard("value");
-
-		if (!Reflection<Camera>::Load(reader, value)) {
-			// $TODO: Log error.
-			return false;
-		}
-	}
-
-	Set(ecs_mgr, id, value);
-	return true;
-}
-
-Camera& Camera::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
-{
-	return *ecs_mgr.getComponentShared<Camera>(archetype);
-}
-
-Camera& Camera::GetShared(ECSManager& ecs_mgr, EntityID id)
-{
-	return *ecs_mgr.getComponentShared<Camera>(id);
 }
 
 Camera Camera::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
@@ -171,25 +128,21 @@ void Camera::Copy(const void* old_begin, int32_t old_index, void* new_begin, int
 	//new_values[8] = old_values[8];
 }
 
-void Camera::CopyShared(const void* old_value, void* new_value)
-{
-	*reinterpret_cast<Camera*>(new_value) = *reinterpret_cast<const Camera*>(old_value);
-}
-
 Camera::Camera(const float* component):
-	focal_length(component[0]),
-	z_near(component[4]), z_far(component[8])
+	v_fov(component[0]),
+	z_near(component[4]),
+	z_far(component[8])
 {
 }
 
-float Camera::GetVerticalFOVDegrees(void) const
+void Camera::SetVerticalFOV(float focal_length, float sensor_size)
 {
-	return GetVerticalFOV() * Gaff::RadToDeg;
+	v_fov = Gaff::CalculateFOV(sensor_size, focal_length);
 }
 
 float Camera::GetVerticalFOV(void) const
 {
-	return Gaff::CalculateFOV(DefaultSensorSize, focal_length);
+	return v_fov;
 }
 
 NS_END

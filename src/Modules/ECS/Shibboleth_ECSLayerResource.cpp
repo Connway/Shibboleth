@@ -96,11 +96,9 @@ bool ECSLayerResource::loadOverrides(
 	ECSArchetype new_archetype;
 	new_archetype.copy(base_archetype);
 
-	if (!new_archetype.hasSharedComponent<Layer>()) {
-		new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
-	}
+	new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
 
-	const bool success = new_archetype.finalize(reader, base_archetype);
+	const bool success = new_archetype.finalize(reader, base_archetype, false);
 
 	if (!success) {
 		return false;

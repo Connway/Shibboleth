@@ -35,58 +35,16 @@ public:
 
 	const char* getCategory(void) const;
 	const char* getName(void) const;
-	int32_t size(void) const;
 
 	Gaff::IAttribute* clone(void) const override;
-
-	void finish(const Gaff::IReflectionDefinition& ref_def) override;
 
 private:
 	const char* _category = nullptr;
 	const char* _name = nullptr;
-	int32_t _size = 0;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSClassAttribute);
 };
 
-class IECSVarAttribute : public Gaff::IAttribute
-{
-public:
-	IECSVarAttribute(void) {}
-	virtual ~IECSVarAttribute(void) {}
-
-	virtual const Gaff::IReflectionDefinition& getType(void) const = 0;
-};
-
-template <class T>
-class ECSVarAttribute final : public IECSVarAttribute
-{
-	static_assert(std::is_pod<T>::value, "ECSVarAttribute type T is not a POD type!");
-
-public:
-	Gaff::IAttribute* clone(void) const override
-	{
-		IAllocator& allocator = GetAllocator();
-		return SHIB_ALLOCT_POOL(ECSVarAttribute<T>, allocator.getPoolIndex("Reflection"), allocator);
-	}
-
-	const Gaff::IReflectionDefinition& getType(void) const override
-	{
-		return Reflection<T>::GetReflectionDefinition();
-	}
-
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(ECSVarAttribute, T);
-};
-
-
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(ECSVarAttribute, T)
-	.BASE(IECSVarAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(ECSVarAttribute, T)
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(ECSClassAttribute)
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSVarAttribute, T)
-SHIB_TEMPLATE_REFLECTION_DEFINE(ECSVarAttribute, T)

@@ -78,7 +78,7 @@ public:
 	IShader* getAttachedShader(IShader::ShaderType type) override;
 
 protected:
-	IShader* _attached_shaders[IShader::SHADER_TYPE_SIZE];
+	IShader* _attached_shaders[IShader::SHADER_TYPE_SIZE] = { nullptr };
 };
 
 NS_END
