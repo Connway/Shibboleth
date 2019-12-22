@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_OptionalAttribute.h>
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Position)
 SHIB_REFLECTION_EXTERNAL_DEFINE(Rotation)
@@ -40,7 +41,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Position)
 	.base< ECSComponentBase<Position> >()
 
 	.staticFunc("Copy", &Position::Copy)
-	.var("value", &Position::value)
+	.var("value", &Position::value, OptionalAttribute())
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Position)
 
@@ -122,7 +123,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 	.base< ECSComponentBase<Rotation> >()
 
 	.staticFunc("Copy", &Rotation::Copy)
-	.var("value", &Rotation::value)
+	.var("value", &Rotation::value, OptionalAttribute())
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Rotation)
 
@@ -214,7 +215,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 	.base< ECSComponentBase<Scale> >()
 
 	.staticFunc("Copy", &Scale::Copy)
-	.var("value", &Scale::value)
+	.var("value", &Scale::value, OptionalAttribute())
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Scale)
 

@@ -408,7 +408,9 @@ bool ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_def
 template <bool shared>
 bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_default_value)
 {
-	GAFF_ASSERT(ref_def.isStandardLayout());
+	if constexpr (!shared) {
+		GAFF_ASSERT(ref_def.isStandardLayout());
+	}
 
 	Vector<RefDefOffset>& vars = (shared) ? _shared_vars : _vars;
 	int32_t& alloc_size = (shared) ? _shared_alloc_size : _alloc_size;
