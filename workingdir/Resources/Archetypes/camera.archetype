@@ -7,7 +7,7 @@
 
 	"components":
 	{
-		"Camera": { "focal_length": 24.0 },
+		"Camera": { "v_fov": 90.0 },
 		"Position": {},
 		"Rotation": {}
 	}

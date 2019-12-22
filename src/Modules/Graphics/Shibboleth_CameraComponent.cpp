@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraComponent.h"
+#include <Shibboleth_OptionalAttribute.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
@@ -37,11 +38,11 @@ SHIB_REFLECTION_BUILDER_BEGIN(Camera)
 
 	.staticFunc("Copy", &Camera::Copy)
 
-	.var("v_fov", &Camera::v_fov)
-	.var("z_near", &Camera::z_near)
-	.var("z_far", &Camera::z_far)
-	//.var("focus_distance", &Camera::focus_distance)
-	//.var("f_stop", &Camera::f_stop)
+	.var("v_fov", &Camera::v_fov, OptionalAttribute())
+	.var("z_near", &Camera::z_near, OptionalAttribute())
+	.var("z_far", &Camera::z_far, OptionalAttribute())
+	//.var("focus_distance", &Camera::focus_distance, OptionalAttribute())
+	//.var("f_stop", &Camera::f_stop, OptionalAttribute())
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Camera)
 
