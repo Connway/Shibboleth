@@ -59,7 +59,7 @@ void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def)
 	_components.emplace_back(QueryData{ &ref_def, nullptr, false });
 }
 
-void ECSQuery::addArchetypeCallbacks(eastl::function<void (void)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback)
+void ECSQuery::addArchetypeCallbacks(eastl::function<void (const ECSArchetype&)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback)
 {
 	_callbacks.emplace_back(Callbacks{ std::move(added_callback), std::move(removed_callback) });
 }
@@ -96,7 +96,7 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 
 	if (!_shared_components.empty()) {
 		// If we're checking for shared data that is not a tag, we should have a shared data buffer.
-		if (shared_size > 0 && !shared_data) {
+		if (shared_size == 0 || !shared_data) {
 			return false;
 		}
 	}
@@ -144,7 +144,7 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 
 	for (const Callbacks& callbacks : _callbacks) {
 		if (callbacks.add) {
-			callbacks.add();
+			callbacks.add(archetype);
 		}
 	}
 

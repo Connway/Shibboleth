@@ -50,6 +50,7 @@ public:
 	void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) override;
 	void removeResourceView(IShader::ShaderType type, int32_t index) override;
 	void popResourceView(IShader::ShaderType type, int32_t count = 1) override;
+	void setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view) override;
 
 	void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) override;
 	void removeSamplerState(IShader::ShaderType type, int32_t index) override;
@@ -65,10 +66,6 @@ private:
 	Vector<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];
 	Vector<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
 	Vector<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
-
-	void cacheResViews(IShader::ShaderType type);
-	void cacheSamplers(IShader::ShaderType type);
-	void cacheBuffers(IShader::ShaderType type);
 
 	friend class ProgramD3D11;
 };

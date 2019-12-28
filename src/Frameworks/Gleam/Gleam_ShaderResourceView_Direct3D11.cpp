@@ -96,6 +96,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	GAFF_ASSERT(resource);
 
 	HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
+	_texture = texture;
 
 	return SUCCEEDED(result);
 }
@@ -120,6 +121,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 
 	ID3D11Resource* const resource = static_cast<const BufferD3D11*>(buffer)->getBuffer();
 	HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
+	_buffer = buffer;
 
 	return SUCCEEDED(result);
 }

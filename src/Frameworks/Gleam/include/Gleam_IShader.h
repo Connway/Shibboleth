@@ -99,6 +99,8 @@ struct ShaderReflection final
 	Gleam::Vector<U8String> textures;
 	Gleam::Vector<U8String> samplers;
 	Gleam::Vector<StructuredBufferReflection> structured_buffers;
+
+	Gleam::Vector<U8String> var_decl_order;
 };
 
 class IShader

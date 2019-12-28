@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_GraphicsReflection.h"
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SerializeReader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -246,6 +247,41 @@ bool RenderManagerBase::init(void)
 	return true;
 }
 
+void RenderManagerBase::allModulesLoaded(void)
+{
+	IFileSystem& fs = GetApp().getFileSystem();
+	const IFile* const file = fs.openFile("cfg/graphics.cfg");
+
+	if (!file) {
+		return;
+	}
+
+	Gaff::JSON config;
+
+	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
+		const char* const error = config.getErrorText();
+		LogErrorDefault("Faild to parse config file with error - %s.", error);
+		fs.closeFile(file);
+		return;
+	}
+
+	fs.closeFile(file);
+
+	const Gaff::JSON sampler = config["texture_filtering"];
+
+	if (sampler.isString()) {
+		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+
+		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
+		res_mgr.waitForResource(*_default_sampler);
+
+		if (_default_sampler->hasFailed()) {
+			// $TODO: Log error.
+			GetApp().quit();
+		}
+	}
+}
+
 void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
@@ -328,6 +364,16 @@ Gleam::IRenderTarget* RenderManagerBase::getCameraRenderTarget(Gaff::Hash32 tag)
 {
 	const auto it = _g_buffers.find(tag);
 	return (it == _g_buffers.end()) ? nullptr : it->second.render_target.get();
+}
+
+const SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void) const
+{
+	return _default_sampler;
+}
+
+SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
+{
+	return _default_sampler;
 }
 
 Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)

@@ -690,6 +690,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 		switch (res_desc.Type) {
 			case D3D_SIT_TEXTURE:
 				reflection.textures.emplace_back(res_desc.Name);
+				reflection.var_decl_order.emplace_back(res_desc.Name);
 				break;
 
 			case D3D_SIT_SAMPLER:
@@ -703,6 +704,8 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 					shader_desc,
 					refl
 				);
+
+				reflection.var_decl_order.emplace_back(res_desc.Name);
 				break;
 
 			default:

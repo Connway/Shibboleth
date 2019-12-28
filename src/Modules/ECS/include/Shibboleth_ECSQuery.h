@@ -123,7 +123,7 @@ public:
 	void add(const Gaff::IReflectionDefinition& ref_def, Output& output, bool optional = false);
 	void add(const Gaff::IReflectionDefinition& ref_def);
 
-	void addArchetypeCallbacks(eastl::function<void (void)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback);
+	void addArchetypeCallbacks(eastl::function<void (const ECSArchetype&)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback);
 	void removeArchetype(const void* entity_data);
 
 	bool filter(const ECSArchetype& archetype, void* entity_data);
@@ -147,7 +147,7 @@ private:
 
 	struct Callbacks final
 	{
-		eastl::function<void (void)> add;
+		eastl::function<void (const ECSArchetype&)> add;
 		eastl::function<void (int32_t)> remove;
 	};
 
