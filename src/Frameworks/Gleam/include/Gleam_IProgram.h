@@ -55,6 +55,7 @@ public:
 	virtual void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) = 0;
 	virtual void removeResourceView(IShader::ShaderType type, int32_t index) = 0;
 	virtual void popResourceView(IShader::ShaderType type, int32_t count = 1) = 0;
+	virtual void setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view) = 0;
 
 	virtual int32_t getResourceViewCount(IShader::ShaderType type) const = 0;
 	virtual int32_t getResourceViewCount(void) const = 0;

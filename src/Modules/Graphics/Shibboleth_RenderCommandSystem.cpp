@@ -31,32 +31,39 @@ SHIB_REFLECTION_DEFINE(RenderCommandSystem)
 
 NS_SHIBBOLETH
 
-//static bool FilterMaterial(const Material& material)
-//{
-//	const auto devices = material.material->getDevices();
-//
-//	if (devices.empty()) {
-//		// $TODO: Log error.
-//		return false;
-//	}
-//
-//	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
-//	const Gleam::IShader* const vert_shader = program->getAttachedShader(Gleam::IShader::SHADER_VERTEX);
-//
-//	if (vert_shader) {
-//		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
-//
-//		for (const auto& sb_refl : refl.structured_buffers) {
-//			for (const auto& var_refl : sb_refl.vars) {
-//				if (var_refl.name == "_model_to_proj_matrix") {
-//					return true;
-//				}
-//			}
-//		}
-//	}
-//
-//	return false;
-//}
+static constexpr const char* k_mtp_mat_name = "_model_to_proj_matrix";
+
+static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::ShaderType shader_type)
+{
+	const Material::TextureMap* texture_map = nullptr;
+
+	switch (shader_type) {
+		case Gleam::IShader::SHADER_VERTEX:
+			texture_map = &material.textures_vertex;
+			break;
+
+		case Gleam::IShader::SHADER_PIXEL:
+			texture_map = &material.textures_pixel;
+			break;
+
+		case Gleam::IShader::SHADER_DOMAIN:
+			texture_map = &material.textures_domain;
+			break;
+
+		case Gleam::IShader::SHADER_GEOMETRY:
+			texture_map = &material.textures_geometry;
+			break;
+
+		case Gleam::IShader::SHADER_HULL:
+			texture_map = &material.textures_hull;
+			break;
+
+		default:
+			break;
+	}
+
+	return texture_map;
+}
 
 static void AddResourcesToWaitList(const Material::TextureMap& textures, Vector<IResource*>& list)
 {
@@ -111,6 +118,7 @@ void RenderCommandSystem::update()
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
 		{
+			// $TODO: Change this to render to a deferred render context instead.
 			const Gleam::IWindow* const window = _render_mgr->getWindow(camera.display_tag);
 
 			if (!window) {
@@ -118,6 +126,13 @@ void RenderCommandSystem::update()
 			}
 
 			const auto devices = _render_mgr->getDevicesByTag(camera.display_tag);
+
+			if (!devices || devices->size() != 1) {
+				// $TODO: Log error.
+				return;
+			}
+
+			Gleam::IRenderDevice& device = *devices->front();
 
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
 				camera.GetVerticalFOV(),
@@ -130,16 +145,18 @@ void RenderCommandSystem::update()
 			const glm::mat4x4 final_camera = projection * camera_transform;
 
 			for (int32_t i = 0; i < num_objects; ++i) {
-				Vector<void*> buffers(devices->size(), nullptr);
-				int32_t stride = 0;
+				InstanceData& instance_data = _instance_data[i];
+
+				if (!instance_data.instance_data) {
+					continue;
+				}
+
+				Vector<void*> buffers(instance_data.instance_data->size(), nullptr, ProxyAllocator("Graphics"));
+				const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(device)->getStride();
 				int32_t index = 0;
 
-				for (int32_t j = 0; j < static_cast<int32_t>(devices->size()); ++j) {
-					Gleam::IRenderDevice& rd = *devices->at(j);
-					Gleam::IBuffer* const buffer = _instance_data[i].buffer->getBuffer(rd);
-
-					buffers[j] = buffer->map(rd);
-					stride = buffer->getStride();
+				for (int32_t j = 0; j < static_cast<int32_t>(buffers.size()); ++j) {
+					buffers[j] = instance_data.instance_data->at(j).buffer->getBuffer(device)->map(device);
 				}
 
 				_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
@@ -148,26 +165,54 @@ void RenderCommandSystem::update()
 					transform *= glm::mat4_cast(obj_rot.value);
 					transform = glm::translate(transform, obj_pos.value);
 
+					const int32_t instance_index = index % instance_data.buffer_instance_count;
+					const int32_t buffer_index = index / instance_data.buffer_instance_count;
+					void* const buffer = buffers[buffer_index];
+
 					// Write to instance buffer.
-					for (void* buffer : buffers) {
-						glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * index) + _instance_data[i].model_to_proj_offset);
-						*matrix = final_camera * transform;
-					}
+					glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
+					*matrix = final_camera * transform;
 
 					++index;
 				},
 				_position[i], _rotation[i], _scale[i]);
+
+				for (const auto& id : *instance_data.instance_data) {
+					id.buffer->getBuffer(device)->unmap(device);
+				}
+
+
+				// Iterate over all the instance buffers and render.
+				Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(device);
+				const int32_t num_buffers = (num_objects / instance_data.buffer_instance_count) + 1;
+
+				for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
+					InstanceData::BufferVarMap& var_map = instance_data.buffers[j];
+
+					for (int32_t k = 0; k < num_buffers; ++k) {
+						for (auto& id : var_map) {
+							if (id.second[k].srv_index < 0) {
+								continue;
+							}
+
+							pb->setResourceView(
+								static_cast<Gleam::IShader::ShaderType>(j),
+								id.second[k].srv_index,
+								id.second[k].srv_map[&device].get()
+							);
+						}
+					}
+				}
 			}
 		},
 		_camera_position[camera_index], _camera_rotation[camera_index], _camera[camera_index]);
 	}
 }
 
-void RenderCommandSystem::newArchetype(void)
+void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
 {
 	auto* const material = _materials.back();
 	auto* const model = _models.back()->value.get();
-	const uint32_t id = _next_id++;
 
 	Vector<IResource*> resources{ material->material.get(), model };
 	AddResourcesToWaitList(material->textures_vertex, resources);
@@ -178,15 +223,19 @@ void RenderCommandSystem::newArchetype(void)
 
 	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 64;
 
-	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, id, material, buffer_count](const Vector<IResource*>&) -> void {
-		const U8String pb_name = U8String("RenderCommandSystem:ProgramBuffers:").append_sprintf("%i", id);
-		const U8String b_name = U8String("RenderCommandSystem:Buffer:").append_sprintf("%i", id);
+	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void {
+		const U8String pb_name(U8String::CtorSprintf(), "RenderCommandSystem:ProgramBuffers:%llu", archetype.getHash());
 
 		InstanceData& instance_data = _instance_data.emplace_back();
 		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
-		instance_data.buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+		instance_data.buffer_instance_count = buffer_count;
 
-		processNewArchetypeMaterial(instance_data, *material, buffer_count);
+		if (!instance_data.program_buffers->createProgramBuffers(material->material->getDevices())) {
+			// $TODO: Log error
+			return;
+		}
+
+		processNewArchetypeMaterial(instance_data, *material, archetype);
 	}));
 }
 
@@ -195,7 +244,10 @@ void RenderCommandSystem::removedArchetype(int32_t index)
 	GAFF_REF(index);
 }
 
-void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_data, const Material& material, int32_t buffer_count)
+void RenderCommandSystem::processNewArchetypeMaterial(
+	InstanceData& instance_data,
+	const Material& material,
+	const ECSArchetype& archetype)
 {
 	const auto devices = material.material->getDevices();
 
@@ -204,111 +256,148 @@ void RenderCommandSystem::processNewArchetypeMaterial(InstanceData& instance_dat
 		return;
 	}
 
-	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
-	const Gleam::IShader* const vert_shader = program->getAttachedShader(Gleam::IShader::SHADER_VERTEX);
-	size_t instance_data_size =  0;
+	SamplerStateResourcePtr& sampler_res = _render_mgr->getDefaultSamplerState();
 
-	if (vert_shader) {
-		const Gleam::ShaderReflection refl = vert_shader->getReflectionData();
+	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
+		const Gleam::IShader::ShaderType shader_type = static_cast<Gleam::IShader::ShaderType>(i);
 
-		for (const auto& sb_refl : refl.structured_buffers) {
-			if (sb_refl.name == "instance_data") {
-				instance_data_size = sb_refl.size_bytes;
+		addStructuredBuffersSRVs(instance_data, material, archetype, devices, shader_type);
 
-				for (const auto& var_refl : sb_refl.vars) {
-					if (var_refl.name == "_model_to_proj_matrix") {
-						instance_data.model_to_proj_offset = static_cast<int32_t>(var_refl.start_offset);
-						break;
+		for (Gleam::IRenderDevice* rd : devices) {
+			const Gleam::IProgram* const program = material.material->getProgram(*rd);
+			const Gleam::IShader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
+
+			if (!shader) {
+				continue;
+			}
+
+			const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
+			InstanceData::VarMap shader_vars{ ProxyAllocator("Graphics") };
+
+			addTextureSRVs(material, shader_refl, shader_vars, *rd, shader_type);
+
+			auto& var_srvs = instance_data.shader_srvs[i][rd];
+			var_srvs = std::move(shader_vars);
+
+			if (shader_type == Gleam::IShader::SHADER_VERTEX) {
+				for (const auto& sb_refl : shader_refl.structured_buffers) {
+					const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char* rhs) -> bool { return lhs.name == rhs; });
+
+					if (it != sb_refl.vars.end()) {
+						instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
+						instance_data.instance_data = &instance_data.buffers[shader_type][HashString32(sb_refl.name)];
 					}
 				}
-
-				break;
 			}
-		}
-	}
 
-	const Gleam::IBuffer::BufferSettings settings = {
-		nullptr,
-		instance_data_size * static_cast<size_t>(buffer_count), // size
-		static_cast<int32_t>(instance_data_size), // stride
-		Gleam::IBuffer::BT_STRUCTURED_DATA,
-		Gleam::IBuffer::MT_WRITE,
-		true
-	};
+			Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(*rd);
 
-	if (!instance_data.program_buffers->createProgramBuffers(_materials.back()->material->getDevices())) {
-		// $TODO: Log error.
-		return;
-	}
+			if (!pb) {
+				continue;
+			}
 
-	if (!instance_data.buffer->createBuffer(_materials.back()->material->getDevices(), settings)) {
-		// $TODO: Log error.
-		return;
-	}
+			Gleam::ISamplerState* const sampler = sampler_res->getSamplerState(*rd);
 
-	for (Gleam::IRenderDevice* rd : instance_data.program_buffers->getDevices()) {
-		Gleam::IShaderResourceView* const srv = _render_mgr->createShaderResourceView();
+			for (int32_t j = 0; j < static_cast<int32_t>(shader_refl.samplers.size()); ++j) {
+				pb->addSamplerState(shader_type, sampler);
+			}
 
-		if (!srv->init(*rd, instance_data.buffer->getBuffer(*rd))) {
-			// $TODO: Log error.
-			SHIB_FREET(srv, GetAllocator());
-		}
+			for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
+				const auto it = var_srvs.find(HashString32(var_name.data()));
 
-		Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(*rd);
+				if (it != var_srvs.end()) {
+					pb->addResourceView(shader_type, it->second.get());
 
-		pb->addResourceView(Gleam::IShader::SHADER_VERTEX, srv);
-		instance_data.buffer_srvs[rd].reset(srv);
+				} else {
+					auto& buffers = instance_data.buffers[shader_type];
+					const auto it_buf = buffers.find(HashString32(var_name.data()));
 
-		for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
-			addTextureSRVs(instance_data, material, *program, *pb, *rd, static_cast<Gleam::IShader::ShaderType>(i));
+					if (it_buf != buffers.end()) {
+						pb->addResourceView(shader_type, it_buf->second.front().srv_map[rd].get());
+					} else {
+						// $TODO: Log error.
+					}
+				}
+			}
 		}
 	}
 }
 
-void RenderCommandSystem::addTextureSRVs(
+void RenderCommandSystem::addStructuredBuffersSRVs(
 	InstanceData& instance_data,
 	const Material& material,
-	const Gleam::IProgram& program,
-	Gleam::IProgramBuffers& pb,
-	Gleam::IRenderDevice& rd,
+	const ECSArchetype& archetype,
+	const Vector<Gleam::IRenderDevice*>& devices,
 	Gleam::IShader::ShaderType shader_type)
 {
-	const Gleam::IShader* const shader = program.getAttachedShader(shader_type);
+	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
+	const Gleam::IShader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
 
 	if (!shader) {
 		return;
 	}
 
-	const Material::TextureMap* texture_map = nullptr;
+	const Gleam::ShaderReflection refl = shader->getReflectionData();
+	InstanceData::BufferVarMap var_map{ ProxyAllocator("Graphics") };
 
-	switch (shader_type) {
-		case Gleam::IShader::SHADER_VERTEX:
-			texture_map = &material.textures_vertex;
-			break;
+	for (const auto& sb_refl : refl.structured_buffers) {
+		const Gleam::IBuffer::BufferSettings settings = {
+			nullptr,
+			sb_refl.size_bytes * static_cast<size_t>(instance_data.buffer_instance_count), // size
+			static_cast<int32_t>(sb_refl.size_bytes), // stride
+			Gleam::IBuffer::BT_STRUCTURED_DATA,
+			Gleam::IBuffer::MT_WRITE,
+			true
+		};
 
-		case Gleam::IShader::SHADER_PIXEL:
-			texture_map = &material.textures_pixel;
-			break;
+		const U8String b_name(U8String::CtorSprintf(), "RenderCommandSystem:Buffer:%s:%llu:0", sb_refl.name.data(), archetype.getHash());
+		BufferResourcePtr buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
 
-		case Gleam::IShader::SHADER_DOMAIN:
-			texture_map = &material.textures_domain;
-			break;
+		if (!buffer->createBuffer(devices, settings)) {
+			// $TODO: Log error.
+			continue;
+		}
 
-		case Gleam::IShader::SHADER_GEOMETRY:
-			texture_map = &material.textures_geometry;
-			break;
+		auto& instance_buffers = var_map[HashString32(sb_refl.name)];
+		var_map.set_allocator(ProxyAllocator("Graphics"));
 
-		case Gleam::IShader::SHADER_HULL:
-			texture_map = &material.textures_hull;
-			break;
+		for (Gleam::IRenderDevice* rd : devices) {
+			Gleam::IShaderResourceView* const srv = _render_mgr->createShaderResourceView();
 
-		default:
-			break;
+			if (!srv->init(*rd, buffer->getBuffer(*rd))) {
+				// $TODO: Log error and use error texture.
+				SHIB_FREET(srv, GetAllocator());
+				return;
+			}
+
+			const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
+
+			InstanceData::InstanceBufferData buffer_data;
+			buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(it, refl.var_decl_order.end()) - 1);
+			buffer_data.srv_map[rd].reset(srv);
+			buffer_data.buffer = buffer;
+
+			instance_buffers.emplace_back(std::move(buffer_data));
+		}
 	}
 
-	const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
+	instance_data.buffers[shader_type] = std::move(var_map);
+}
 
-	for (const Gleam::U8String& texture_name : shader_refl.textures) {
+void RenderCommandSystem::addTextureSRVs(
+	const Material& material,
+	const Gleam::ShaderReflection& refl,
+	InstanceData::VarMap& var_map,
+	Gleam::IRenderDevice& rd,
+	Gleam::IShader::ShaderType shader_type)
+{
+	const Material::TextureMap* const texture_map = GetTextureMap(material, shader_type);
+
+	if (!texture_map) {
+		return;
+	}
+
+	for (const Gleam::U8String& texture_name : refl.textures) {
 		const auto it = texture_map->find(U8String(texture_name));
 
 		if (it == texture_map->end()) {
@@ -325,16 +414,7 @@ void RenderCommandSystem::addTextureSRVs(
 			continue;
 		}
 
-		pb.addResourceView(shader_type, srv);
-
-		auto it_srv = instance_data.shader_srvs[shader_type].find(&rd);
-
-		if (it_srv == instance_data.shader_srvs[shader_type].end()) {
-			it_srv = instance_data.shader_srvs[shader_type].insert(&rd).first;
-			it_srv->second.set_allocator(ProxyAllocator("Graphics"));
-		}
-
-		it_srv->second.emplace_back(srv);
+		var_map[HashString32(texture_name)].reset(srv);
 	}
 }
 

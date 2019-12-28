@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 // $TODO: Make it easier for making components that have a single value class/type in them.
-class BufferCount final
+class InstanceBufferCount final
 {
 public:
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, int32_t value);
@@ -48,5 +48,5 @@ class Model final : public Resource<ModelResource>
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(BufferCount)
+SHIB_REFLECTION_DECLARE(InstanceBufferCount)
 SHIB_REFLECTION_DECLARE(Model)

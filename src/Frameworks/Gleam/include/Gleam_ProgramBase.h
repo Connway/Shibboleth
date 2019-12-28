@@ -48,6 +48,7 @@ public:
 	void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) override;
 	void removeResourceView(IShader::ShaderType type, int32_t index) override;
 	void popResourceView(IShader::ShaderType type, int32_t count = 1) override;
+	void setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view) override;
 
 	int32_t getResourceViewCount(IShader::ShaderType type) const override;
 	int32_t getResourceViewCount(void) const override;

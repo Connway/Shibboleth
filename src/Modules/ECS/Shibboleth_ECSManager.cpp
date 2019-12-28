@@ -264,7 +264,7 @@ void ECSManager::registerQuery(ECSQuery&& query)
 	for (auto& data : _entity_pages) {
 		EntityData* const entity_data = data.second.get();
 		
-		if (new_query.filter(entity_data->archetype, entity_data)) {
+		if (!entity_data->archetype.isBase() && new_query.filter(entity_data->archetype, entity_data)) {
 			entity_data->queries.emplace_back(static_cast<int32_t>(_queries.size() - 1));
 		}
 	}
@@ -465,7 +465,7 @@ ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 
 	if (!data->archetype.isBase()) {
 		for (int32_t i = 0; i < static_cast<int32_t>(_queries.size()); ++i) {
-			if (_queries[i].filter(data->archetype, data)) {
+			if (!data->archetype.isBase() && _queries[i].filter(data->archetype, data)) {
 				data->queries.emplace_back(i);
 			}
 		}

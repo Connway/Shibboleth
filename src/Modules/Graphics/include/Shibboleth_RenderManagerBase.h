@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_SamplerStateResource.h"
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
@@ -58,6 +59,7 @@ public:
 	virtual ~RenderManagerBase(void);
 
 	bool init(void) override;
+	void allModulesLoaded(void) override;
 
 	virtual Gleam::RendererType getRendererType(void) const = 0;
 
@@ -109,6 +111,9 @@ public:
 	Gleam::IProgramBuffers* getCameraProgramBuffers(Gaff::Hash32 tag) const;
 	Gleam::IRenderTarget* getCameraRenderTarget(Gaff::Hash32 tag) const;
 
+	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
+	SamplerStateResourcePtr& getDefaultSamplerState(void);
+
 private:
 	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::IWindow>;
@@ -148,6 +153,7 @@ private:
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
 	VectorMap< EA::Thread::ThreadId, Vector<RenderDevicePtr> > _deferred_devices{ ProxyAllocator("Graphics") };
 
+	SamplerStateResourcePtr _default_sampler;
 
 	Gleam::IRenderDevice* createRenderDevice(int32_t adapter_id);
 	bool createGBuffer(const char* window_name);

@@ -44,32 +44,47 @@ public:
 private:
 	struct InstanceData final
 	{
-		ProgramBuffersResourcePtr program_buffers;
-		BufferResourcePtr buffer;
-
-		VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > buffer_srvs{ ProxyAllocator("Graphics") };
-
-		using SRVVector = Vector< UniquePtr<Gleam::IShaderResourceView> >;
-		VectorMap<const Gleam::IRenderDevice*, SRVVector> shader_srvs[Gleam::IShader::SHADER_PIPELINE_COUNT]{
-			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, SRVVector>{ ProxyAllocator("Graphics") }
+		struct InstanceBufferData final
+		{
+			BufferResourcePtr buffer;
+			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
+			int32_t srv_index = -1;
 		};
 
+		using BufferVarMap = VectorMap< HashString32, Vector<InstanceBufferData> >;
+
+		ProgramBuffersResourcePtr program_buffers;
+
+		BufferVarMap buffers[Gleam::IShader::SHADER_PIPELINE_COUNT]{
+			BufferVarMap{ ProxyAllocator("Graphics") },
+			BufferVarMap{ ProxyAllocator("Graphics") },
+			BufferVarMap{ ProxyAllocator("Graphics") },
+			BufferVarMap{ ProxyAllocator("Graphics") },
+			BufferVarMap{ ProxyAllocator("Graphics") }
+		};
+
+		using VarMap = VectorMap< HashString32, UniquePtr<Gleam::IShaderResourceView> >;
+		VectorMap<const Gleam::IRenderDevice*, VarMap> shader_srvs[Gleam::IShader::SHADER_PIPELINE_COUNT]{
+			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") }
+		};
+
+		Vector<InstanceBufferData>* instance_data = nullptr;
+		int32_t buffer_instance_count = 1;
 		int32_t model_to_proj_offset = -1;
 	};
 
 	RenderManagerBase* _render_mgr = nullptr;
 	ResourceManager* _res_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
-	uint32_t _next_id = 0;
 
 	Vector<InstanceData> _instance_data{ ProxyAllocator("Graphics") };
 
 	// Entities
-	Vector<const BufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
+	Vector<const InstanceBufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
 	Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
 	Vector<const Model*> _models{ ProxyAllocator("Graphics") };
 
@@ -83,16 +98,27 @@ private:
 
 	// Cameras
 
-	void newArchetype(void);
+	void newArchetype(const ECSArchetype& archetype);
 	void removedArchetype(int32_t index);
 
-	void processNewArchetypeMaterial(InstanceData& instance_data, const Material& material, int32_t buffer_count);
-
-	void addTextureSRVs(
+	void processNewArchetypeMaterial(
 		InstanceData& instance_data,
 		const Material& material,
-		const Gleam::IProgram& program,
-		Gleam::IProgramBuffers& pb,
+		const ECSArchetype& archetype
+	);
+
+	void addStructuredBuffersSRVs(
+		InstanceData& instance_data,
+		const Material& material,
+		const ECSArchetype& archetype,
+		const Vector<Gleam::IRenderDevice*>& devices,
+		Gleam::IShader::ShaderType shader_type
+	);
+
+	void addTextureSRVs(
+		const Material& material,
+		const Gleam::ShaderReflection& refl,
+		InstanceData::VarMap& var_map,
 		Gleam::IRenderDevice& rd,
 		Gleam::IShader::ShaderType shader_type
 	);

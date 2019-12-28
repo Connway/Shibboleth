@@ -133,6 +133,12 @@ void ProgramBuffersBase::popResourceView(IShader::ShaderType type, int32_t count
 	}
 }
 
+void ProgramBuffersBase::setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view)
+{
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index <= static_cast<int32_t>(_resource_views[type].size()));
+	_resource_views[type][index] = resource_view;
+}
+
 int32_t ProgramBuffersBase::getResourceViewCount(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE);

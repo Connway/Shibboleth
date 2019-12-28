@@ -23,42 +23,42 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsResourceComponents.h"
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(BufferCount)
+SHIB_REFLECTION_EXTERNAL_DEFINE(InstanceBufferCount)
 SHIB_REFLECTION_EXTERNAL_DEFINE(Model)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_BUILDER_BEGIN(BufferCount)
+SHIB_REFLECTION_BUILDER_BEGIN(InstanceBufferCount)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
 	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(BufferCount)
+SHIB_REFLECTION_BUILDER_END(InstanceBufferCount)
 
-void BufferCount::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, int32_t value)
+void InstanceBufferCount::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, int32_t value)
 {
-	ecs_mgr.getComponentShared<BufferCount>(archetype)->value = value;
+	ecs_mgr.getComponentShared<InstanceBufferCount>(archetype)->value = value;
 }
 
-void BufferCount::SetShared(ECSManager& ecs_mgr, EntityID id, int32_t value)
+void InstanceBufferCount::SetShared(ECSManager& ecs_mgr, EntityID id, int32_t value)
 {
-	ecs_mgr.getComponentShared<BufferCount>(id)->value = value;
+	ecs_mgr.getComponentShared<InstanceBufferCount>(id)->value = value;
 }
 
-int32_t BufferCount::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+int32_t InstanceBufferCount::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
-	return ecs_mgr.getComponentShared<BufferCount>(archetype)->value;
+	return ecs_mgr.getComponentShared<InstanceBufferCount>(archetype)->value;
 }
 
-int32_t BufferCount::GetShared(ECSManager& ecs_mgr, EntityID id)
+int32_t InstanceBufferCount::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return ecs_mgr.getComponentShared<BufferCount>(id)->value;
+	return ecs_mgr.getComponentShared<InstanceBufferCount>(id)->value;
 }
 
-void BufferCount::CopyShared(const void* old_value, void* new_value)
+void InstanceBufferCount::CopyShared(const void* old_value, void* new_value)
 {
-	reinterpret_cast<BufferCount*>(new_value)->value = reinterpret_cast<const BufferCount*>(old_value)->value;
+	reinterpret_cast<InstanceBufferCount*>(new_value)->value = reinterpret_cast<const InstanceBufferCount*>(old_value)->value;
 }
 
 

@@ -49,12 +49,20 @@ public:
 	virtual bool init(IRenderDevice& rd, const IBuffer* buffer) = 0;
 	virtual void destroy(void) = 0;
 
-	Type getViewType(void) const { return _view_type; }
-
 	virtual RendererType getRendererType(void) const = 0;
+
+	Type getViewType(void) const { return _view_type; }
+	const ITexture* getTexture(void) const { return _texture; }
+	const IBuffer* getBuffer(void) const { return _buffer; }
 
 protected:
 	Type _view_type;
+
+	union
+	{
+		const ITexture* _texture = nullptr;
+		const IBuffer* _buffer;
+	};
 
 	GAFF_NO_COPY(IShaderResourceView);
 };

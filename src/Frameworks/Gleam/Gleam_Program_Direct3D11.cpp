@@ -78,55 +78,73 @@ ProgramBuffersD3D11::~ProgramBuffersD3D11(void)
 void ProgramBuffersD3D11::addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer)
 {
 	ProgramBuffersBase::addConstantBuffer(type, const_buffer);
-	cacheBuffers(type);
+	_buffers[type].emplace_back(static_cast<const BufferD3D11*>(const_buffer)->getBuffer());
 }
 
 void ProgramBuffersD3D11::removeConstantBuffer(IShader::ShaderType type, int32_t index)
 {
 	ProgramBuffersBase::removeConstantBuffer(type, index);
-	cacheBuffers(type);
+	_buffers[type].erase(_buffers[type].begin() + index);
 }
 
 void ProgramBuffersD3D11::popConstantBuffer(IShader::ShaderType type, int32_t count)
 {
 	ProgramBuffersBase::popConstantBuffer(type, count);
-	cacheBuffers(type);
+
+	while (count) {
+		_buffers[type].pop_back();
+		--count;
+	}
 }
 
 void ProgramBuffersD3D11::addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view)
 {
 	ProgramBuffersBase::addResourceView(type, resource_view);
-	cacheResViews(type);
+	_res_views[type].emplace_back(static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView());
 }
 
 void ProgramBuffersD3D11::removeResourceView(IShader::ShaderType type, int32_t index)
 {
 	ProgramBuffersBase::removeResourceView(type, index);
-	cacheResViews(type);
+	_res_views[type].erase(_res_views[type].begin() + index);
 }
 
 void ProgramBuffersD3D11::popResourceView(IShader::ShaderType type, int32_t count)
 {
 	ProgramBuffersBase::popResourceView(type, count);
-	cacheResViews(type);
+
+	while (count) {
+		_res_views[type].pop_back();
+		--count;
+	}
+}
+
+void ProgramBuffersD3D11::setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view)
+{
+	ProgramBuffersBase::setResourceView(type, index, resource_view);
+	_res_views[type][index] = static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView();
 }
 
 void ProgramBuffersD3D11::addSamplerState(IShader::ShaderType type, ISamplerState* sampler)
 {
 	ProgramBuffersBase::addSamplerState(type, sampler);
-	cacheSamplers(type);
+	_samplers[type].emplace_back(static_cast<const SamplerStateD3D11*>(sampler)->getSamplerState());
 }
 
 void ProgramBuffersD3D11::removeSamplerState(IShader::ShaderType type, int32_t index)
 {
 	ProgramBuffersBase::removeSamplerState(type, index);
-	cacheSamplers(type);
+	_samplers[type].erase(_samplers[type].begin() + index);
 }
 
 void ProgramBuffersD3D11::popSamplerState(IShader::ShaderType type, int32_t count)
 {
 	ProgramBuffersBase::popSamplerState(type, count);
-	cacheSamplers(type);
+
+	while (count) {
+		_samplers[type].pop_back();
+		--count;
+	}
 }
 
 IProgramBuffers* ProgramBuffersD3D11::clone(void) const
@@ -139,25 +157,12 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 	}
 
 	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		pb->_resource_views[i].resize(_resource_views[i].size());
-		pb->_sampler_states[i].resize(_sampler_states[i].size());
-		pb->_constant_buffers[i].resize(_constant_buffers[i].size());
-
-		for (int32_t j = 0; j < static_cast<int32_t>(_resource_views[i].size()); ++j) {
-			pb->_resource_views[i][j] = _resource_views[i][j];
-		}
-
-		for (int32_t j = 0; j < static_cast<int32_t>(_sampler_states[i].size()); ++j) {
-			pb->_sampler_states[i][j] = _sampler_states[i][j];
-		}
-
-		for (int32_t j = 0; j < static_cast<int32_t>(_constant_buffers[i].size()); ++j) {
-			pb->_constant_buffers[i][j] = _constant_buffers[i][j];
-		}
-
-		pb->cacheResViews(static_cast<IShader::ShaderType>(i));
-		pb->cacheSamplers(static_cast<IShader::ShaderType>(i));
-		pb->cacheBuffers(static_cast<IShader::ShaderType>(i));
+		pb->_resource_views[i] = _resource_views[i];
+		pb->_sampler_states[i] = _sampler_states[i];
+		pb->_constant_buffers[i] = _constant_buffers[i];
+		pb->_res_views[i] = _res_views[i];
+		pb->_samplers[i] = _samplers[i];
+		pb->_buffers[i] = _buffers[i];
 	}
 
 	return pb;
@@ -185,38 +190,6 @@ RendererType ProgramBuffersD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
-void ProgramBuffersD3D11::cacheResViews(IShader::ShaderType type)
-{
-	Vector<IShaderResourceView*>& resource_views = _resource_views[type];
-	Vector<ID3D11ShaderResourceView*>& res_views = _res_views[type];
-	res_views.clear();
-
-	for (int32_t i = 0; i < static_cast<int32_t>(resource_views.size()); ++i) {
-		res_views.emplace_back(static_cast<const ShaderResourceViewD3D11*>(resource_views[i])->getResourceView());
-	}
-}
-
-void ProgramBuffersD3D11::cacheSamplers(IShader::ShaderType type)
-{
-	Vector<ISamplerState*>& sampler_states = _sampler_states[type];
-	Vector<ID3D11SamplerState*>& samplers = _samplers[type];
-	samplers.clear();
-
-	for (int32_t i = 0; i < static_cast<int32_t>(sampler_states.size()); ++i) {
-		samplers.emplace_back(static_cast<const SamplerStateD3D11*>(sampler_states[i])->getSamplerState());
-	}
-}
-
-void ProgramBuffersD3D11::cacheBuffers(IShader::ShaderType type)
-{
-	Vector<IBuffer*>& const_bufs = _constant_buffers[type];
-	Vector<ID3D11Buffer*>& buffers = _buffers[type];
-	buffers.clear();
-
-	for (int32_t i = 0; i < static_cast<int32_t>(const_bufs.size()); ++i) {
-		buffers.emplace_back(static_cast<BufferD3D11*>(const_bufs[i])->getBuffer());
-	}
-}
 
 
 // Program
