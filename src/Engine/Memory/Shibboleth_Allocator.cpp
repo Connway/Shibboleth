@@ -31,11 +31,7 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 #include <rpmalloc.h>
 
-#ifdef _MSC_VER
-	// Disable "structure was padded due to alignment specifier" warning
-	#pragma warning(push)
-	#pragma warning(disable: 4324)
-#endif
+MSVC_DISABLE_WARNING_PUSH(4324)
 
 //#define GATHER_ALLOCATION_STACKTRACE
 
@@ -531,6 +527,4 @@ void Allocator::writeLeakLog(void) const
 
 NS_END
 
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()

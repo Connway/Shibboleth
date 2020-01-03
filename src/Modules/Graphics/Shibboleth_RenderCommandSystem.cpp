@@ -65,6 +65,39 @@ static const Material::TextureMap* GetTextureMap(const Material& material, Gleam
 	return texture_map;
 }
 
+static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::ShaderType shader_type)
+{
+	const Material::SamplerMap* sampler_map = nullptr;
+
+	switch (shader_type) {
+	case Gleam::IShader::SHADER_VERTEX:
+		sampler_map = &material.samplers_vertex;
+		break;
+
+	case Gleam::IShader::SHADER_PIXEL:
+		sampler_map = &material.samplers_pixel;
+		break;
+
+	case Gleam::IShader::SHADER_DOMAIN:
+		sampler_map = &material.samplers_domain;
+		break;
+
+	case Gleam::IShader::SHADER_GEOMETRY:
+		sampler_map = &material.samplers_geometry;
+		break;
+
+	case Gleam::IShader::SHADER_HULL:
+		sampler_map = &material.samplers_hull;
+		break;
+
+	default:
+		break;
+	}
+
+	return sampler_map;
+}
+
+
 static void AddResourcesToWaitList(const Material::TextureMap& textures, Vector<IResource*>& list)
 {
 	for (const auto& pair : textures) {
@@ -256,8 +289,6 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 		return;
 	}
 
-	SamplerStateResourcePtr& sampler_res = _render_mgr->getDefaultSamplerState();
-
 	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
 		const Gleam::IShader::ShaderType shader_type = static_cast<Gleam::IShader::ShaderType>(i);
 
@@ -296,11 +327,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 				continue;
 			}
 
-			Gleam::ISamplerState* const sampler = sampler_res->getSamplerState(*rd);
-
-			for (int32_t j = 0; j < static_cast<int32_t>(shader_refl.samplers.size()); ++j) {
-				pb->addSamplerState(shader_type, sampler);
-			}
+			addSamplers(material, shader_refl, *pb, *rd, shader_type);
 
 			for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
 				const auto it = var_srvs.find(HashString32(var_name.data()));
@@ -392,10 +419,7 @@ void RenderCommandSystem::addTextureSRVs(
 	Gleam::IShader::ShaderType shader_type)
 {
 	const Material::TextureMap* const texture_map = GetTextureMap(material, shader_type);
-
-	if (!texture_map) {
-		return;
-	}
+	GAFF_ASSERT(texture_map);
 
 	for (const Gleam::U8String& texture_name : refl.textures) {
 		const auto it = texture_map->find(U8String(texture_name));
@@ -415,6 +439,39 @@ void RenderCommandSystem::addTextureSRVs(
 		}
 
 		var_map[HashString32(texture_name)].reset(srv);
+	}
+}
+
+void RenderCommandSystem::addSamplers(
+	const Material& material,
+	const Gleam::ShaderReflection& refl,
+	Gleam::IProgramBuffers& pb,
+	Gleam::IRenderDevice& rd,
+	Gleam::IShader::ShaderType shader_type)
+{
+	SamplerStateResourcePtr& default_sampler_res = _render_mgr->getDefaultSamplerState();
+	Gleam::ISamplerState* const default_sampler = default_sampler_res->getSamplerState(rd);
+	const Material::SamplerMap* const sampler_map = GetSamplereMap(material, shader_type);
+
+	GAFF_ASSERT(sampler_map);
+
+	for (const Gleam::U8String& sampler_name : refl.samplers) {
+		const U8String key(sampler_name.data());
+		const auto it = sampler_map->find(key);
+
+		if (it == sampler_map->end()) {
+			pb.addSamplerState(shader_type, default_sampler);
+
+		} else {
+			Gleam::ISamplerState* const sampler = it->second->getSamplerState(rd);
+
+			if (sampler) {
+				pb.addSamplerState(shader_type, sampler);
+			} else {
+				// $TODO: Log error.
+				pb.addSamplerState(shader_type, default_sampler);
+			}
+		}
 	}
 }
 

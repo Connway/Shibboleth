@@ -33,24 +33,53 @@ NS_SHIBBOLETH
 
 class ECSManager;
 
-template <class T>
+enum class ECSComponentType
+{
+	NonShared,
+	Shared,
+	Both
+};
+
+template <class T, ECSComponentType type = ECSComponentType::Both>
 class ECSComponentBase
 {
 public:
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const T& value);
-
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, T&& value);
+	static void SetShared(ECSManager& ecs_mgr, EntityID id, T&& value);
 
 	static T& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static T& GetShared(ECSManager& ecs_mgr, EntityID id);
 
-	static void CopySharedToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
+	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
 	static void CopyShared(const void* old_value, void* new_value);
+
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+
+	static constexpr bool IsNonShared(void);
+	static constexpr bool IsShared(void);
+};
+
+template <class T>
+class ECSComponentBaseNonShared : public ECSComponentBase<T, ECSComponentType::NonShared>
+{
+};
+
+template <class T>
+class ECSComponentBaseShared : public ECSComponentBase<T, ECSComponentType::Shared>
+{
+};
+
+template <class T>
+class ECSComponentBaseBoth : public ECSComponentBase<T, ECSComponentType::Both>
+{
 };
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBase, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 
 #include "Shibboleth_ECSComponentBase.inl"

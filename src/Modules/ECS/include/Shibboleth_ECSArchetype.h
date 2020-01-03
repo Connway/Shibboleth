@@ -57,6 +57,7 @@ public:
 	template <class T>
 	bool addShared(void)
 	{
+		static_assert(T::IsShared(), "Cannot add an ECS component that does not support shared operations.");
 		return addShared(Reflection<T>::GetReflectionDefinition());
 	}
 
@@ -64,6 +65,7 @@ public:
 	bool add(bool has_default_value = false)
 	{
 		static_assert(std::is_standard_layout<T>::value, "Cannot add an ECS component that does not have a standard layout.");
+		static_assert(T::IsNonShared(), "Cannot add an ECS component that does not support non-shared operations.");
 		return add(Reflection<T>::GetReflectionDefinition(), has_default_value);
 	}
 
@@ -189,7 +191,7 @@ public:
 private:
 	struct RefDefOffset final
 	{
-		using CopySharedToNonSharedFunc = void (*)(ECSManager&, EntityID, const void*);
+		using CopyDefaultToNonSharedFunc = void (*)(ECSManager&, EntityID, const void*);
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
 		using LoadFunc = bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
@@ -197,7 +199,7 @@ private:
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;
 
-		CopySharedToNonSharedFunc copy_shared_to_non_shared_func;
+		CopyDefaultToNonSharedFunc copy_default_to_non_shared_func;
 		CopySharedFunc copy_shared_func;
 		CopyFunc copy_func;
 		LoadFunc load_func;

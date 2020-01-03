@@ -34,7 +34,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Camera)
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
-	.base< ECSComponentBase<Camera> >()
+	.base< ECSComponentBaseNonShared<Camera> >()
 
 	.staticFunc("Copy", &Camera::Copy)
 

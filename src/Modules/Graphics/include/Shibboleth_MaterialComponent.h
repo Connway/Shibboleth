@@ -23,26 +23,18 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_MaterialResource.h"
+#include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_TextureResource.h"
+#include <Shibboleth_ECSComponentBase.h>
 #include <Shibboleth_ECSEntity.h>
 
 NS_SHIBBOLETH
 
 class ECSManager;
 
-class Material final
+class Material final : public ECSComponentBaseShared<Material>
 {
 public:
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const Material& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, Material&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const Material& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, Material&& value);
-
-	static const Material& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static const Material& GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
 	MaterialResourcePtr material;
 
 	using TextureMap = VectorMap<U8String, TextureResourcePtr>;
@@ -51,6 +43,13 @@ public:
 	TextureMap textures_domain;
 	TextureMap textures_geometry;
 	TextureMap textures_hull;
+
+	using SamplerMap = VectorMap<U8String, SamplerStateResourcePtr>;
+	SamplerMap samplers_vertex;
+	SamplerMap samplers_pixel;
+	SamplerMap samplers_domain;
+	SamplerMap samplers_geometry;
+	SamplerMap samplers_hull;
 };
 
 NS_END

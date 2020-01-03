@@ -1453,6 +1453,8 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name)
 {
+	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
+
 	const ptrdiff_t offset = OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
@@ -1471,6 +1473,8 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
+	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
+
 	// Add vars, funcs, and static funcs and attrs from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
 		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();

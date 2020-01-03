@@ -28,10 +28,7 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4505)
-#endif
+MSVC_DISABLE_WARNING_PUSH(4505)
 
 NS_GAFF
 
@@ -670,6 +667,4 @@ NS_END
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(Class, data) getInterface<Class>(CLASS_HASH(Class), data)
 
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()

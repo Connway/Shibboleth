@@ -123,6 +123,14 @@ private:
 		Gleam::IShader::ShaderType shader_type
 	);
 
+	void addSamplers(
+		const Material& material,
+		const Gleam::ShaderReflection& refl,
+		Gleam::IProgramBuffers& pb,
+		Gleam::IRenderDevice& rd,
+		Gleam::IShader::ShaderType shader_type
+	);
+
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };
 
