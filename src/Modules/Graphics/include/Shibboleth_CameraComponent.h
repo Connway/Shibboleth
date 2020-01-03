@@ -34,7 +34,7 @@ NS_SHIBBOLETH
 struct ECSQueryResult;
 class ECSManager;
 
-class Camera final : public ECSComponentBase<Camera>
+class Camera final : public ECSComponentBaseNonShared<Camera>
 {
 public:
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value);

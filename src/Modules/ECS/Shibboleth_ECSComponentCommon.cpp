@@ -38,7 +38,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Position)
 		ECSClassAttribute(nullptr, "Transform")
 	)
 
-	.base< ECSComponentBase<Position> >()
+	.base< ECSComponentBaseBoth<Position> >()
 
 	.staticFunc("Copy", &Position::Copy)
 	.var("value", &Position::value, OptionalAttribute())
@@ -120,7 +120,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
 		ECSClassAttribute(nullptr, "Transform")
 	)
 
-	.base< ECSComponentBase<Rotation> >()
+	.base< ECSComponentBaseBoth<Rotation> >()
 
 	.staticFunc("Copy", &Rotation::Copy)
 	.var("value", &Rotation::value, OptionalAttribute())
@@ -212,7 +212,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Scale)
 		ECSClassAttribute(nullptr, "Transform")
 	)
 
-	.base< ECSComponentBase<Scale> >()
+	.base< ECSComponentBaseBoth<Scale> >()
 
 	.staticFunc("Copy", &Scale::Copy)
 	.var("value", &Scale::value, OptionalAttribute())
@@ -294,49 +294,49 @@ SHIB_REFLECTION_BUILDER_BEGIN(Layer)
 		ECSClassAttribute(nullptr, "Scene")
 	)
 
-	.base< ECSComponentBase<Layer> >()
+	.base< ECSComponentBaseShared<Layer> >()
 
 	//.staticFunc("Copy", &Layer::Copy)
 	.var("Name", &Layer::value, HashStringAttribute())
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Layer)
 
-void Layer::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value)
-{
-	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
-	*component = value.value;
-}
-
-void Layer::Set(ECSManager& ecs_mgr, EntityID id, Layer value)
-{
-	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	*component = value.value;
-}
-
-Layer Layer::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
-{
-	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
-	return Layer(*layer);
-}
-
-Layer Layer::Get(ECSManager& ecs_mgr, EntityID id)
-{
-	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	return Layer(*layer);
-}
-
-glm_uvec4 Layer::Get(const void* component_begin)
-{
-	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
-}
-
-void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
-{
-	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
-	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
-
-	*new_value = *old_value;
-}
+//void Layer::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value)
+//{
+//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
+//	*component = value.value;
+//}
+//
+//void Layer::Set(ECSManager& ecs_mgr, EntityID id, Layer value)
+//{
+//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+//	*component = value.value;
+//}
+//
+//Layer Layer::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
+//{
+//	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
+//	return Layer(*layer);
+//}
+//
+//Layer Layer::Get(ECSManager& ecs_mgr, EntityID id)
+//{
+//	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
+//	return Layer(*layer);
+//}
+//
+//glm_uvec4 Layer::Get(const void* component_begin)
+//{
+//	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
+//}
+//
+//void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+//{
+//	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
+//	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
+//
+//	*new_value = *old_value;
+//}
 
 Layer::Layer(Gaff::Hash32 val):
 	value(val)

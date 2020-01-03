@@ -26,6 +26,8 @@ NS_SHIBBOLETH
 
 SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(Resource, T)
 	.staticFunc("CopyShared", &Resource<T>::CopyShared)
+	.staticFunc("IsNonShared", &Resource<T>::IsNonShared)
+	.staticFunc("IsShared", &Resource<T>::IsShared)
 
 	.var("value", &Resource<T>::value)
 	.ctor<>()
@@ -71,6 +73,18 @@ template <class T>
 void Resource<T>::CopyShared(const void* old_value, void* new_value)
 {
 	*reinterpret_cast<Resource*>(new_value) = *reinterpret_cast<const Resource*>(old_value);
+}
+
+template <class T>
+constexpr bool Resource<T>::IsNonShared(void)
+{
+	return false;
+}
+
+template <class T>
+constexpr bool Resource<T>::IsShared(void)
+{
+	return true;
 }
 
 NS_END

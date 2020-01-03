@@ -48,6 +48,9 @@ public:
 
 	static void CopyShared(const void* old_value, void* new_value);
 
+	static constexpr bool IsNonShared(void);
+	static constexpr bool IsShared(void);
+
 	typename ResourceType value;
 };
 

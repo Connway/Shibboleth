@@ -24,16 +24,9 @@ THE SOFTWARE.
 
 #include "Gaff_Assert.h"
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4127)
-#endif
-
+MSVC_DISABLE_WARNING_PUSH(4127)
 #include <mpack.h>
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()
 
 NS_GAFF
 

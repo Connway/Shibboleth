@@ -35,7 +35,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Material)
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
-	.staticFunc("CopyShared", &Material::CopyShared)
+	.base< ECSComponentBaseShared<Material> >()
 
 	.var("material", &Material::material)
 
@@ -45,32 +45,13 @@ SHIB_REFLECTION_BUILDER_BEGIN(Material)
 	.var("textures_geometry", &Material::textures_geometry, OptionalAttribute())
 	.var("textures_hull", &Material::textures_hull, OptionalAttribute())
 
+	.var("samplers_vertex", &Material::samplers_vertex, OptionalAttribute())
+	.var("samplers_pixel", &Material::samplers_pixel, OptionalAttribute())
+	.var("samplers_domain", &Material::samplers_domain, OptionalAttribute())
+	.var("samplers_geometry", &Material::samplers_geometry, OptionalAttribute())
+	.var("samplers_hull", &Material::samplers_hull, OptionalAttribute())
+
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(Material)
-
-void Material::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const Material& value)
-{
-	*ecs_mgr.getComponentShared<Material>(archetype) = value;
-}
-
-void Material::SetShared(ECSManager& ecs_mgr, EntityID id, const Material& value)
-{
-	*ecs_mgr.getComponentShared<Material>(id) = value;
-}
-
-const Material& Material::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
-{
-	return *ecs_mgr.getComponentShared<Material>(archetype);
-}
-
-const Material& Material::GetShared(ECSManager& ecs_mgr, EntityID id)
-{
-	return *ecs_mgr.getComponentShared<Material>(id);
-}
-
-void Material::CopyShared(const void* old_value, void* new_value)
-{
-	*reinterpret_cast<Material*>(new_value) = *reinterpret_cast<const Material*>(old_value);
-}
 
 NS_END

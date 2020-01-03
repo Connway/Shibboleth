@@ -24,21 +24,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelResource.h"
 #include <Shibboleth_ResourceComponent.h>
+#include <Shibboleth_ECSComponentBase.h>
 
 NS_SHIBBOLETH
 
-// $TODO: Make it easier for making components that have a single value class/type in them.
-class InstanceBufferCount final
+class InstanceBufferCount final : public ECSComponentBaseShared<InstanceBufferCount>
 {
 public:
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, int32_t value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, int32_t value);
-
-	static int32_t GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static int32_t GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
 	int32_t value;
 };
 

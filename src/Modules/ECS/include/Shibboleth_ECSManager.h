@@ -215,12 +215,15 @@ public:
 		static_assert(sizeof...(Components) == sizeof...(QueryResults));
 		EntityData* const data = getEntityData(query_results...);
 
-		for (int32_t i = 0; i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
+		int32_t count = 0;
+
+		for (int32_t i = 0; count < data->num_entities && i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
 			if (data->entity_ids[i] == -1) {
 				continue;
 			}
 
 			callback(data->entity_ids[i], get<Components>(query_results, i)...);
+			++count;
 		}
 	}
 

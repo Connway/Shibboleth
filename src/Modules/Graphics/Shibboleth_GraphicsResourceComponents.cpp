@@ -33,34 +33,10 @@ SHIB_REFLECTION_BUILDER_BEGIN(InstanceBufferCount)
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
+	.base< ECSComponentBaseShared<InstanceBufferCount> >()
+	.var("value", &InstanceBufferCount::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(InstanceBufferCount)
-
-void InstanceBufferCount::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, int32_t value)
-{
-	ecs_mgr.getComponentShared<InstanceBufferCount>(archetype)->value = value;
-}
-
-void InstanceBufferCount::SetShared(ECSManager& ecs_mgr, EntityID id, int32_t value)
-{
-	ecs_mgr.getComponentShared<InstanceBufferCount>(id)->value = value;
-}
-
-int32_t InstanceBufferCount::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
-{
-	return ecs_mgr.getComponentShared<InstanceBufferCount>(archetype)->value;
-}
-
-int32_t InstanceBufferCount::GetShared(ECSManager& ecs_mgr, EntityID id)
-{
-	return ecs_mgr.getComponentShared<InstanceBufferCount>(id)->value;
-}
-
-void InstanceBufferCount::CopyShared(const void* old_value, void* new_value)
-{
-	reinterpret_cast<InstanceBufferCount*>(new_value)->value = reinterpret_cast<const InstanceBufferCount*>(old_value)->value;
-}
-
 
 SHIB_REFLECTION_BUILDER_BEGIN(Model)
 	.classAttrs(

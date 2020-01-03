@@ -74,3 +74,15 @@ THE SOFTWARE.
 #else
 	#error "Cannot deduce platform bit-age."
 #endif
+
+#ifdef _MSC_VER
+	#define MSVC_DISABLE_WARNING_PUSH(warnings) \
+		__pragma(warning(push)) \
+		__pragma(warning(disable : warnings))
+
+	#define MSVC_DISABLE_WARNING_POP() __pragma(warning(pop))
+
+#else
+	#define MSVC_DISABLE_WARNING_PUSH(warnings)
+	#define MSVC_DISABLE_WARNING_POP()
+#endif

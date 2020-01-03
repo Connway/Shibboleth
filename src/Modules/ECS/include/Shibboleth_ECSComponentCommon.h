@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 struct ECSQueryResult;
 
-class Position final : public ECSComponentBase<Position>
+class Position final : public ECSComponentBaseBoth<Position>
 {
 public:
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Position& value);
@@ -51,7 +51,7 @@ public:
 };
 
 // $TODO: Make euler angles.
-class Rotation final : public ECSComponentBase<Rotation>
+class Rotation final : public ECSComponentBaseBoth<Rotation>
 {
 public:
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Rotation& value);
@@ -73,7 +73,7 @@ public:
 	glm::quat value = glm::identity<glm::quat>();
 };
 
-class Scale final : public ECSComponentBase<Scale>
+class Scale final : public ECSComponentBaseBoth<Scale>
 {
 public:
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Scale& value);
@@ -94,18 +94,18 @@ public:
 	glm::vec3 value = glm::one<glm::vec3>();
 };
 
-class Layer final : public ECSComponentBase<Layer>
+class Layer final : public ECSComponentBaseShared<Layer>
 {
 public:
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, Layer value);
+	//static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value);
+	//static void Set(ECSManager& ecs_mgr, EntityID id, Layer value);
 
-	static Layer Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static Layer Get(ECSManager& ecs_mgr, EntityID id);
+	//static Layer Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
+	//static Layer Get(ECSManager& ecs_mgr, EntityID id);
 
-	static glm_uvec4 Get(const void* component_begin);
+	//static glm_uvec4 Get(const void* component_begin);
 
-	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	//static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
 	Layer(Gaff::Hash32 val);
 	Layer(void) = default;

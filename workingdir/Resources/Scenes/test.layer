@@ -19,7 +19,9 @@
 						]
 					},
 
-					"Model": { "value": "Models/ninja.model" }
+					"Model": { "value": "Models/ninja.model" },
+
+					"InstanceBufferCount": { "value": 4 }
 				},
 
 				"components":
