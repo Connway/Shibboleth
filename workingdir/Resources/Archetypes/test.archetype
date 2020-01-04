@@ -14,13 +14,15 @@
 			]
 		},
 
-		"Model": { "value": "Models/ninja.model" }
+		"Model": { "value": "Models/ninja.model" },
+		"RasterState": { "value": "RasterStates/opaque.raster_state" }//,
+		//"InstanceBufferCount": { "value": 4 }
 	},
 
 	"components":
 	{
 		"Position": {},
 		"Rotation": {},
-		"Scale": { "value": {"x":1.0, "y":1.0, "z":1.0 } }
+		"Scale": {}
 	}
 }

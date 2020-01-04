@@ -49,8 +49,8 @@ public:
 	virtual bool init(IRenderDevice& rd, const RasterSettings& settings) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
+	virtual void bind(IRenderDevice& rd) const = 0;
+	virtual void unbind(IRenderDevice& rd) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 };

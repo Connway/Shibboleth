@@ -27,7 +27,36 @@
 				"components":
 				{
 					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0} },
-					"Position": { "value": {"x": 0.0, "y": -2.5, "z": 5.0} }
+					"Position": { "value": {"x": -2.5, "y": -2.5, "z": 5.0} }
+				}
+			}
+		},
+		{
+			"archetype": "Archetypes/test.archetype",
+
+			"overrides":
+			{
+				"shared_components":
+				{
+					"Material":
+					{
+						"material": "Materials/test.material",
+
+						"textures_pixel":
+						[
+							{ "key": "tex", "value": "Models/ninja.texture" }
+						]
+					},
+
+					"Model": { "value": "Models/ninja.model" },
+
+					"InstanceBufferCount": { "value": 4 }
+				},
+
+				"components":
+				{
+					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0} },
+					"Position": { "value": {"x": 2.5, "y": -2.5, "z": 5.0} }
 				}
 			}
 		},

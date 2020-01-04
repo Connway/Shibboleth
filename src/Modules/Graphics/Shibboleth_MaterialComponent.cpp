@@ -30,10 +30,61 @@ SHIB_REFLECTION_EXTERNAL_DEFINE(Material)
 
 NS_SHIBBOLETH
 
+static Gaff::Hash64 MaterialComponentHash(const Material& material, Gaff::Hash64 init)
+{
+	init = Gaff::FNV1aHash64T(material.material, init);
+
+	// Textures
+	for (const auto& texture : material.textures_vertex) {
+		init = Gaff::FNV1aHash64T(texture.second, init);
+	}
+
+	for (const auto& texture : material.textures_pixel) {
+		init = Gaff::FNV1aHash64T(texture.second, init);
+	}
+
+	for (const auto& texture : material.textures_domain) {
+		init = Gaff::FNV1aHash64T(texture.second, init);
+	}
+
+	for (const auto& texture : material.textures_geometry) {
+		init = Gaff::FNV1aHash64T(texture.second, init);
+	}
+
+	for (const auto& texture : material.textures_hull) {
+		init = Gaff::FNV1aHash64T(texture.second, init);
+	}
+
+	// Samplers
+	for (const auto& sampler : material.samplers_vertex) {
+		init = Gaff::FNV1aHash64T(sampler.second, init);
+	}
+
+	for (const auto& sampler : material.samplers_pixel) {
+		init = Gaff::FNV1aHash64T(sampler.second, init);
+	}
+
+	for (const auto& sampler : material.samplers_domain) {
+		init = Gaff::FNV1aHash64T(sampler.second, init);
+	}
+
+	for (const auto& sampler : material.samplers_geometry) {
+		init = Gaff::FNV1aHash64T(sampler.second, init);
+	}
+
+	for (const auto& sampler : material.samplers_hull) {
+		init = Gaff::FNV1aHash64T(sampler.second, init);
+	}
+
+	return init;
+}
+
 SHIB_REFLECTION_BUILDER_BEGIN(Material)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
+
+	.setInstanceHash(MaterialComponentHash)
 
 	.base< ECSComponentBaseShared<Material> >()
 

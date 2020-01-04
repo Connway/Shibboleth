@@ -63,6 +63,7 @@ public:
 
 	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
+	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
@@ -1035,6 +1036,8 @@ public:
 	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 
+	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
+
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
 	virtual bool hasInterface(Hash64 class_hash) const = 0;
@@ -1132,6 +1135,8 @@ public:
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
+
+	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
 
 	bool load(const ISerializeReader& reader, void* object, bool) const { return load(reader, object); }
 	void save(ISerializeWriter& writer, const void* object, bool) const { save(writer, object); }

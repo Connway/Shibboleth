@@ -49,10 +49,12 @@ SHIB_REFLECTION_BUILDER_END(Camera)
 
 void Camera::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 	component[0] = value.v_fov;
-	//component[4] = value.focus_distance;
-	//component[8] = value.f_stop;
+	component[4] = value.z_near;
+	component[8] = value.z_far;
+	//component[12] = value.focus_distance;
+	//component[16] = value.f_stop;
 }
 
 void Camera::Set(ECSManager& ecs_mgr, EntityID id, const Camera& value)
@@ -60,13 +62,15 @@ void Camera::Set(ECSManager& ecs_mgr, EntityID id, const Camera& value)
 	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Camera>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
 	component[0] = value.v_fov;
-	//component[4] = value.focus_distance;
-	//component[8] = value.f_stop;
+	component[4] = value.z_near;
+	component[8] = value.z_far;
+	//component[12] = value.focus_distance;
+	//component[16] = value.f_stop;
 }
 
 Camera Camera::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 	return Camera(component);
 }
 
@@ -125,8 +129,10 @@ void Camera::Copy(const void* old_begin, int32_t old_index, void* new_begin, int
 	float* const new_values = reinterpret_cast<float*>(new_begin) + new_index;
 
 	new_values[0] = old_values[0];
-	//new_values[4] = old_values[4];
-	//new_values[8] = old_values[8];
+	new_values[4] = old_values[4];
+	new_values[8] = old_values[8];
+	//new_values[12] = old_values[12];
+	//new_values[16] = old_values[16];
 }
 
 Camera::Camera(const float* component):

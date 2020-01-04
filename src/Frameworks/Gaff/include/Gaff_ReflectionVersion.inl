@@ -160,10 +160,13 @@ template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
 {
 	GAFF_REF(serialize_load, serialize_save);
+	return *this;
+}
 
-	// Unsure if this is a reliable hashing mechanism.
-	//_hash = FNV1aHash64T(serialize_load, _hash);
-	//_hash = FNV1aHash64T(serialize_save, _hash);
+template <class T>
+ReflectionVersion<T>& ReflectionVersion<T>::setInstanceHash(InstanceHashFunc hash_func)
+{
+	GAFF_REF(hash_func);
 	return *this;
 }
 

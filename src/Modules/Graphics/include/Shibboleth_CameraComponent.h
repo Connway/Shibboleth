@@ -63,8 +63,8 @@ public:
 	float GetVerticalFOV(void) const;
 
 	float v_fov = 90.0f;
-	float z_near = 0.01f; // m
-	float z_far = 1000.0f; // m
+	float z_near = 0.001f; // m
+	float z_far = 2000.0f; // m
 
 
 	//float focus_distance;

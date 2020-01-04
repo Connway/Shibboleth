@@ -116,7 +116,8 @@ bool RenderCommandSystem::init(void)
 	ECSQuery object_query;
 
 	object_query.addShared(_buffer_count, true);
-	object_query.addShared(_materials/*, Gaff::Func<bool (const Material&)>(&FilterMaterial)*/);
+	object_query.addShared(_raster_states);
+	object_query.addShared(_materials);
 	object_query.addShared(_models);
 
 	object_query.add<Position>(_position);
@@ -165,7 +166,18 @@ void RenderCommandSystem::update()
 				return;
 			}
 
+			Gleam::IRenderOutput* const output = _render_mgr->getOutput(camera.display_tag);
+
+			if (!output) {
+				// $TODO: Log error.
+				return;
+			}
+
 			Gleam::IRenderDevice& device = *devices->front();
+
+			output->getRenderTarget().bind(device);
+			output->getRenderTarget().clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+			device.frameBegin(*output);
 
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
 				camera.GetVerticalFOV(),
@@ -174,39 +186,75 @@ void RenderCommandSystem::update()
 				camera.z_near, camera.z_far
 			);
 
-			const glm::mat4x4 camera_transform = glm::transpose(glm::translate(glm::mat4_cast(cam_rot.value), cam_pos.value));
+			const glm::mat4x4 camera_transform = glm::translate(glm::mat4_cast(cam_rot.value), cam_pos.value);
 			const glm::mat4x4 final_camera = projection * camera_transform;
 
 			for (int32_t i = 0; i < num_objects; ++i) {
+				const int32_t num_meshes = _models[i]->value->getNumMeshes();
+
+				if (!num_meshes) {
+					continue;
+				}
+
+				Gleam::IProgram* const program = _materials[i]->material->getProgram(device);
+
+				if (!program) {
+					continue;
+				}
+
+				Gleam::ILayout* const layout = _materials[i]->material->getLayout(device);
+
+				if (!layout) {
+					continue;
+				}
+
+				Gleam::IRasterState* const raster_state = _raster_states[i]->value->getRasterState(device);
+
+				if (!raster_state) {
+					continue;
+				}
+
 				InstanceData& instance_data = _instance_data[i];
 
 				if (!instance_data.instance_data) {
 					continue;
 				}
 
+				raster_state->bind(device);
+				program->bind(device);
+				layout->bind(device);
+
 				Vector<void*> buffers(instance_data.instance_data->size(), nullptr, ProxyAllocator("Graphics"));
 				const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(device)->getStride();
-				int32_t index = 0;
+				int32_t object_count = 0;
 
 				for (int32_t j = 0; j < static_cast<int32_t>(buffers.size()); ++j) {
 					buffers[j] = instance_data.instance_data->at(j).buffer->getBuffer(device)->map(device);
 				}
 
-				_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
-				{
-					glm::mat4x4 transform = glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
-					transform *= glm::mat4_cast(obj_rot.value);
-					transform = glm::translate(transform, obj_pos.value);
+				//float scalar = 1.0f;
 
-					const int32_t instance_index = index % instance_data.buffer_instance_count;
-					const int32_t buffer_index = index / instance_data.buffer_instance_count;
+				_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
+				{
+					//const glm::quat rot = glm::rotate(obj_rot.value, 0.001f * scalar, glm::vec3(0.0f, 1.0f, 0.0f));
+					//Rotation::Set(*_ecs_mgr, id, Rotation{ rot });
+					//scalar *= -1.0f;
+
+					const glm::mat4x4 transform = 
+						glm::translate(glm::identity<glm::mat4x4>(), obj_pos.value) *
+						//glm::mat4_cast(rot) *
+						glm::mat4_cast(obj_rot.value) *
+						glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
+
+					const int32_t instance_index = object_count % instance_data.buffer_instance_count;
+					const int32_t buffer_index = object_count / instance_data.buffer_instance_count;
 					void* const buffer = buffers[buffer_index];
 
 					// Write to instance buffer.
 					glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
 					*matrix = final_camera * transform;
 
-					++index;
+					++object_count;
 				},
 				_position[i], _rotation[i], _scale[i]);
 
@@ -215,28 +263,41 @@ void RenderCommandSystem::update()
 				}
 
 
-				// Iterate over all the instance buffers and render.
+				// Iterate over all the instance buffers and set their resource views and render.
 				Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(device);
 				const int32_t num_buffers = (num_objects / instance_data.buffer_instance_count) + 1;
 
-				for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
-					InstanceData::BufferVarMap& var_map = instance_data.buffers[j];
+				for (int32_t mesh_index = 0; mesh_index < num_meshes; ++mesh_index) {
+					Gleam::IMesh* const mesh = _models[i]->value->getMesh(mesh_index)->getMesh(device);
+
+					if (!mesh) {
+						continue;
+					}
 
 					for (int32_t k = 0; k < num_buffers; ++k) {
-						for (auto& id : var_map) {
-							if (id.second[k].srv_index < 0) {
-								continue;
-							}
+						for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
+							InstanceData::BufferVarMap& var_map = instance_data.buffers[j];
 
-							pb->setResourceView(
-								static_cast<Gleam::IShader::ShaderType>(j),
-								id.second[k].srv_index,
-								id.second[k].srv_map[&device].get()
-							);
+							for (auto& id : var_map) {
+								if (id.second[k].srv_index < 0) {
+									continue;
+								}
+
+								pb->setResourceView(
+									static_cast<Gleam::IShader::ShaderType>(j),
+									id.second[k].srv_index,
+									id.second[k].srv_map[&device].get()
+								);
+							}
 						}
+
+						pb->bind(device);
+						mesh->renderInstanced(device, object_count);
 					}
 				}
 			}
+
+			device.frameEnd(*output);
 		},
 		_camera_position[camera_index], _camera_rotation[camera_index], _camera[camera_index]);
 	}

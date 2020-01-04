@@ -36,6 +36,7 @@ class ReflectionVersion final
 public:
 	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
+	using InstanceHashFunc = Hash64 (*)(const T&, Hash64);
 
 	template <class Base>
 	ReflectionVersion& base(const char* name);
@@ -70,6 +71,7 @@ public:
 	ReflectionVersion& version(uint32_t version);
 
 	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
+	ReflectionVersion& setInstanceHash(InstanceHashFunc hash_func);
 
 	template <class T2>
 	ReflectionVersion& dependsOn(void);

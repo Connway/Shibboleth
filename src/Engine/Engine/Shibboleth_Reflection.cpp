@@ -41,6 +41,11 @@ SHIB_REFLECTION_EXTERNAL_DEFINE(U8String)
 
 NS_SHIBBOLETH
 
+static Gaff::Hash64 HashStringInstance(const U8String& string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64String(string.data(), init);
+}
+
 static bool LoadString(const Gaff::ISerializeReader& reader, U8String& out)
 {
 	if (!reader.isString()) {
@@ -90,6 +95,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(bool)
 SHIB_REFLECTION_BUILDER_END(bool)
 
 SHIB_REFLECTION_BUILDER_BEGIN(U8String)
+	.setInstanceHash(HashStringInstance)
 	.serialize(LoadString, SaveString)
 SHIB_REFLECTION_BUILDER_END(U8String)
 
