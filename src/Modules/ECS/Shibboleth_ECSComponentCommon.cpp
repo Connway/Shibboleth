@@ -47,7 +47,7 @@ SHIB_REFLECTION_BUILDER_END(Position)
 
 void Position::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Position& value)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 	component[0] = value.value.x;
 	component[4] = value.value.y;
 	component[8] = value.value.z;
@@ -63,7 +63,7 @@ void Position::Set(ECSManager& ecs_mgr, EntityID id, const Position& value)
 
 Position Position::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 
 	return Position(glm::vec3(
 		component[0],
@@ -129,7 +129,7 @@ SHIB_REFLECTION_BUILDER_END(Rotation)
 
 void Rotation::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Rotation& value)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 	component[0] = value.value.x;
 	component[4] = value.value.y;
 	component[8] = value.value.z;
@@ -147,7 +147,7 @@ void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const Rotation& value)
 
 Rotation Rotation::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 
 	return Rotation(glm::quat(
 		component[12],
@@ -221,7 +221,7 @@ SHIB_REFLECTION_BUILDER_END(Scale)
 
 void Scale::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Scale& value)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 	component[0] = value.value.x;
 	component[4] = value.value.y;
 	component[8] = value.value.z;
@@ -237,7 +237,7 @@ void Scale::Set(ECSManager& ecs_mgr, EntityID id, const Scale& value)
 
 Scale Scale::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index));
+	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
 
 	return Scale(glm::vec3(
 		component[0],

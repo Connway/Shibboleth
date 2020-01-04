@@ -227,6 +227,14 @@ void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 	return reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset + component_offset;
 }
 
+int32_t ECSManager::getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const
+{
+	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
+	GAFF_ASSERT(entity_index < static_cast<int32_t>(data->entity_ids.size()));
+
+	return getPageIndex(data->entity_ids[entity_index]);
+}
+
 int32_t ECSManager::getPageIndex(EntityID id) const
 {
 	GAFF_ASSERT(ValidEntityID(id) && id < _next_id && _entities[id].data);
@@ -241,7 +249,7 @@ const void* ECSManager::getComponent(const ECSQueryResult& query_result, int32_t
 void* ECSManager::getComponent(const ECSQueryResult& query_result, int32_t entity_index)
 {
 	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
-	GAFF_ASSERT(entity_index < data->num_entities);
+	GAFF_ASSERT(entity_index < static_cast<int32_t>(data->entity_ids.size()));
 
 	const int32_t page_index = entity_index / data->num_entities_per_page;
 	EntityPage* const page = data->pages[page_index].get();

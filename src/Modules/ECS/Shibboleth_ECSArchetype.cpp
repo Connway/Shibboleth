@@ -282,13 +282,14 @@ void ECSArchetype::calculateHash(void)
 {
 	_hash = Gaff::INIT_HASH64;
 
-	if (_shared_instances) {
-		_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);
-	}
+	//if (_shared_instances) {
+	//	_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);
+	//}
 
 	for (const RefDefOffset& data : _shared_vars) {
 		const Gaff::Hash64 hash = data.ref_def->getReflectionInstance().getHash();
 		_hash = Gaff::FNV1aHash64T(hash, _hash);
+		_hash = data.ref_def->getInstanceHash(reinterpret_cast<const int8_t*>(_shared_instances) + data.offset, _hash);
 	}
 
 	for (const RefDefOffset& data : _vars) {
@@ -633,7 +634,7 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 			if constexpr (shared) {
 				addShared(*ref_def);
 			} else {
-				add(*ref_def, reader.size() > 0);
+				add(*ref_def, !reader.isNull());
 			}
 
 			return false;
@@ -652,21 +653,10 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 
 void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype)
 {
-	if (!_shared_alloc_size) {
+	initShared();
+
+	if (!_shared_instances) {
 		return;
-	}
-
-	ProxyAllocator allocator("ECS");
-	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
-	//std::memset(_shared_instances, 0, _shared_alloc_size);
-
-	// Should we prefer memset over this?
-	for (const RefDefOffset& data : _shared_vars) {
-		const auto ctor = data.ref_def->getConstructor<>();
-
-		if (ctor) {
-			ctor(reinterpret_cast<int8_t*>(_shared_instances) + data.offset);
-		}
 	}
 
 	// Copy base archetype shared data so that our overrides will not be stomped.
@@ -685,16 +675,9 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArc
 			return false;
 		}
 
-		const RefDefOffset& data = *it;
+		void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + it->offset;
+		it->ref_def->load(reader, instance);
 
-		const auto ctor = data.ref_def->getConstructor<>();
-		void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + data.offset;
-
-		if (ctor) {
-			ctor(instance);
-		}
-
-		data.ref_def->load(reader, instance);
 		return false;
 	});
 }
@@ -780,14 +763,12 @@ void ECSArchetype::initDefaultData(const Gaff::ISerializeReader& reader, const E
 
 		const RefDefOffset& data = *it;
 
-		const auto ctor = data.ref_def->getConstructor<>();
 		void* const instance = reinterpret_cast<int8_t*>(_default_data) + data.offset;
 
-		if (ctor) {
-			ctor(instance);
+		if (!reader.isNull() && reader.size() > 0) {
+			data.ref_def->load(reader, instance);
 		}
 
-		data.ref_def->load(reader, instance);
 		return false;
 	});
 }

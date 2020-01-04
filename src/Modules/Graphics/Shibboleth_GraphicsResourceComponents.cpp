@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(InstanceBufferCount)
+SHIB_REFLECTION_EXTERNAL_DEFINE(RasterState)
 SHIB_REFLECTION_EXTERNAL_DEFINE(Model)
 
 NS_SHIBBOLETH
@@ -37,6 +38,15 @@ SHIB_REFLECTION_BUILDER_BEGIN(InstanceBufferCount)
 	.var("value", &InstanceBufferCount::value)
 	.ctor<>()
 SHIB_REFLECTION_BUILDER_END(InstanceBufferCount)
+
+SHIB_REFLECTION_BUILDER_BEGIN(RasterState)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Graphics")
+	)
+
+	.base< Resource<RasterStateResource> >()
+	.ctor<>()
+SHIB_REFLECTION_BUILDER_END(RasterState)
 
 SHIB_REFLECTION_BUILDER_BEGIN(Model)
 	.classAttrs(

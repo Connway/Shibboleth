@@ -65,7 +65,7 @@ void RasterStateD3D11::destroy(void)
 	SAFERELEASE(_raster_state);
 }
 
-void RasterStateD3D11::set(IRenderDevice& rd) const
+void RasterStateD3D11::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -74,7 +74,7 @@ void RasterStateD3D11::set(IRenderDevice& rd) const
 	context->RSSetState(_raster_state);
 }
 
-void RasterStateD3D11::unset(IRenderDevice& rd) const
+void RasterStateD3D11::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);

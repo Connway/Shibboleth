@@ -85,6 +85,7 @@ private:
 
 	// Entities
 	Vector<const InstanceBufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
+	Vector<const RasterState*> _raster_states{ ProxyAllocator("Graphics") };
 	Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
 	Vector<const Model*> _models{ ProxyAllocator("Graphics") };
 

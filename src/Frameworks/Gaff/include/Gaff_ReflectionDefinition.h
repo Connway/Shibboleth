@@ -42,6 +42,7 @@ public:
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
 	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
+	using InstanceHashFunc = Hash64 (*)(const T&, Hash64);
 
 	class IVar : public IReflectionVar
 	{
@@ -81,6 +82,10 @@ public:
 	void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
 	bool load(const ISerializeReader& reader, T& object, bool refl_load = false) const;
 	void save(ISerializeWriter& writer, const T& object, bool refl_save = false) const;
+
+	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override;
+	Hash64 getInstanceHash(const T& object, Hash64 init = INIT_HASH64) const;
+	ReflectionDefinition& setInstanceHash(InstanceHashFunc hash_func);
 
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
 	void* getInterface(Hash64 class_hash, void* object) const override;
@@ -520,6 +525,7 @@ private:
 	VectorMap<Hash64, AttributeList, Allocator> _static_func_attrs;
 	AttributeList _class_attrs;
 
+	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
 
@@ -589,6 +595,7 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 			return true; \
 		} \
 		void save(ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
+		Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), init); } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \

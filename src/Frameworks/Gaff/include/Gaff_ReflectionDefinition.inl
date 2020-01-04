@@ -1111,6 +1111,29 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 }
 
 template <class T, class Allocator>
+Hash64 ReflectionDefinition<T, Allocator>::getInstanceHash(const void* object, Gaff::Hash64 init) const
+{
+	return getInstanceHash(*reinterpret_cast<const T*>(object), init);
+}
+
+template <class T, class Allocator>
+Hash64 ReflectionDefinition<T, Allocator>::getInstanceHash(const T& object, Gaff::Hash64 init) const
+{
+	if (_instance_hash) {
+		return _instance_hash(object, init);
+	}
+
+	return (_instance_hash) ? _instance_hash(object, init) : Gaff::FNV1aHash64T(object, init);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::setInstanceHash(InstanceHashFunc hash_func)
+{
+	_instance_hash = hash_func;
+	return *this;
+}
+
+template <class T, class Allocator>
 const void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, const void* object) const
 {
 	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {

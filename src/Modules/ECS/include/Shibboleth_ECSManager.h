@@ -301,6 +301,8 @@ public:
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
 	void* getComponentShared(EntityID id, Gaff::Hash64 component);
 	void* getComponent(EntityID id, Gaff::Hash64 component);
+
+	int32_t getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
 	int32_t getPageIndex(EntityID id) const;
 
 	const void* getComponent(const ECSQueryResult& query_result, int32_t entity_index) const;
@@ -332,7 +334,6 @@ private:
 
 		int32_t num_entities_per_page = 0;
 		int32_t num_entities = 0;
-		int32_t next_index = 0;
 
 		Vector< UniquePtr<EntityPage> > pages;
 		Vector<EntityID> entity_ids;

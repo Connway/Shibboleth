@@ -66,6 +66,14 @@ THE SOFTWARE.
 		{ \
 			return std::is_enum<type>::value; \
 		} \
+		Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::INIT_HASH64) const override \
+		{ \
+			return GetInstanceHash(*reinterpret_cast<const type*>(object), init); \
+		} \
+		Gaff::Hash64 getInstanceHash(const type& object, Gaff::Hash64 init = Gaff::INIT_HASH64) const \
+		{ \
+			return GetInstanceHash(object, init); \
+		} \
 		const char* getName(void) const override \
 		{ \
 			return GetName(); \
@@ -109,6 +117,10 @@ THE SOFTWARE.
 		constexpr static const char* GetName(void) \
 		{ \
 			return GAFF_HASHABLE_NAMESPACE::GetName<type>(); \
+		} \
+		static Gaff::Hash64 GetInstanceHash(const type& object, Gaff::Hash64 init = Gaff::INIT_HASH64) \
+		{ \
+			return GetReflectionDefinition().getInstanceHash(&object, init); \
 		} \
 		static Reflection<type>& GetInstance(void) \
 		{ \

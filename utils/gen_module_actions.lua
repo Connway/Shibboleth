@@ -365,21 +365,24 @@ newaction
 			shutdown_func = "void Shutdown(void);"
 		end
 
+		local header_string = gen_header:format(
+			include_files,
+			module_name,
+			init_enum_funcs,
+			init_attr_funcs,
+			init_funcs,
+			module_registers,
+			module_name,
+			shutdown_func
+		)
 
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"
-		io.writefile(
-			file_path,
-			gen_header:format(
-				include_files,
-				module_name,
-				init_enum_funcs,
-				init_attr_funcs,
-				init_funcs,
-				module_registers,
-				module_name,
-				shutdown_func
-			)
-		)
+
+		-- Don't write to the file if the generated header is the same as what's already on disk.
+		-- Prevents build systems from re-building a module that hasn't changed.
+		if not os.isfile(file_path) or header_string ~= io.readfile(file_path) then
+			io.writefile(file_path, header_string)
+		end
 	end
 }
 
@@ -453,16 +456,21 @@ newaction
 			shutdowns = shutdowns:sub(1, -2)
 		end
 
-		io.writefile(
-			"../src/Engine/Engine/include/Gen_ReflectionInit.h",
-			gen_static:format(
-				editor_includes,
-				includes,
-				editor_inits,
-				inits,
-				editor_shutdowns,
-				shutdowns
-			)
+		local header_string = gen_static:format(
+			editor_includes,
+			includes,
+			editor_inits,
+			inits,
+			editor_shutdowns,
+			shutdowns
 		)
+
+		local file_path = "../src/Engine/Engine/include/Gen_ReflectionInit.h"
+
+		-- Don't write to the file if the generated header is the same as what's already on disk.
+		-- Prevents build systems from re-building a module that hasn't changed.
+		if not os.isfile(file_path) or header_string ~= io.readfile(file_path) then
+			io.writefile(file_path, header_string)
+		end
 	end
 }

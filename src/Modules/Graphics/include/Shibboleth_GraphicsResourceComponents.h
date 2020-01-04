@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_RasterStateResource.h"
 #include "Shibboleth_ModelResource.h"
 #include <Shibboleth_ResourceComponent.h>
 #include <Shibboleth_ECSComponentBase.h>
@@ -34,6 +35,10 @@ public:
 	int32_t value;
 };
 
+class RasterState final : public Resource<RasterStateResource>
+{
+};
+
 class Model final : public Resource<ModelResource>
 {
 };
@@ -41,4 +46,5 @@ class Model final : public Resource<ModelResource>
 NS_END
 
 SHIB_REFLECTION_DECLARE(InstanceBufferCount)
+SHIB_REFLECTION_DECLARE(RasterState)
 SHIB_REFLECTION_DECLARE(Model)
