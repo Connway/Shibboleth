@@ -200,12 +200,12 @@ void MainLoop::update(void)
 	//static ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
 	//// This is not safe. Doing for easy testing. Will remove later.
-	//static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
+	////static const auto camera_material_res = res_mgr.requestResourceT<MaterialResource>("CameraToScreen/camera_to_screen.material");
 	//static const auto sampler_state_res = res_mgr.requestResourceT<SamplerStateResource>("SamplerStates/anisotropic_16x.sampler_state");
 	//static const auto raster_state_res = res_mgr.requestResourceT<RasterStateResource>("RasterStates/opaque.raster_state");
 	//static const auto material_res = res_mgr.requestResourceT<MaterialResource>("Materials/test.material");
 	//static const auto texture_res = res_mgr.requestResourceT<TextureResource>("Models/ninja.texture");
-	//static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
+	////static const auto scene_res = res_mgr.requestResourceT<ECSSceneResource>("Scenes/test.scene");
 	//static const auto model_res = res_mgr.requestResourceT<ModelResource>("Models/ninja.model");
 	//static auto* const program_buffers = _render_mgr->createProgramBuffers();
 	//static bool first_run = true;
@@ -216,18 +216,18 @@ void MainLoop::update(void)
 	//if (first_run) {
 	//	first_run = false;
 
-	//	res_mgr.waitForResource(*camera_material_res);
+	//	//res_mgr.waitForResource(*camera_material_res);
 	//	res_mgr.waitForResource(*sampler_state_res);
 	//	res_mgr.waitForResource(*raster_state_res);
 	//	res_mgr.waitForResource(*material_res);
 	//	res_mgr.waitForResource(*texture_res);
-	//	res_mgr.waitForResource(*scene_res);
+	//	//res_mgr.waitForResource(*scene_res);
 	//	res_mgr.waitForResource(*model_res);
 
-	//	if (camera_material_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+	//	//if (camera_material_res->hasFailed()) {
+	//	//	GetApp().quit();
+	//	//	return;
+	//	//}
 
 	//	if (sampler_state_res->hasFailed()) {
 	//		GetApp().quit();
@@ -249,10 +249,10 @@ void MainLoop::update(void)
 	//		return;
 	//	}
 
-	//	if (scene_res->hasFailed()) {
-	//		GetApp().quit();
-	//		return;
-	//	}
+	//	//if (scene_res->hasFailed()) {
+	//	//	GetApp().quit();
+	//	//	return;
+	//	//}
 
 	//	if (model_res->hasFailed()) {
 	//		GetApp().quit();
@@ -290,7 +290,7 @@ void MainLoop::update(void)
 	//out.getRenderTarget().bind(rd);
 	//out.getRenderTarget().clear(rd, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
-	//raster_state_res->getRasterState(rd)->set(rd);
+	//raster_state_res->getRasterState(rd)->bind(rd);
 	//material_res->getProgram(rd)->bind(rd);
 	//material_res->getLayout(rd)->bind(rd);
 	//program_buffers->bind(rd);

@@ -97,10 +97,10 @@ static const Material::SamplerMap* GetSamplereMap(const Material& material, Glea
 	return sampler_map;
 }
 
-
-static void AddResourcesToWaitList(const Material::TextureMap& textures, Vector<IResource*>& list)
+template <class Map>
+static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& list)
 {
-	for (const auto& pair : textures) {
+	for (const auto& pair : resource_map) {
 		list.emplace_back(pair.second.get());
 	}
 }
@@ -189,34 +189,47 @@ void RenderCommandSystem::update()
 			const glm::mat4x4 camera_transform = glm::translate(glm::mat4_cast(cam_rot.value), cam_pos.value);
 			const glm::mat4x4 final_camera = projection * camera_transform;
 
+			// $TODO: Spawn a job per archetype we are processing.
 			for (int32_t i = 0; i < num_objects; ++i) {
 				const int32_t num_meshes = _models[i]->value->getNumMeshes();
 
 				if (!num_meshes) {
+					// $TODO: LOG ERROR
 					continue;
 				}
 
 				Gleam::IProgram* const program = _materials[i]->material->getProgram(device);
 
 				if (!program) {
+					// $TODO: LOG ERROR
 					continue;
 				}
 
 				Gleam::ILayout* const layout = _materials[i]->material->getLayout(device);
 
 				if (!layout) {
+					// $TODO: LOG ERROR
 					continue;
 				}
 
 				Gleam::IRasterState* const raster_state = _raster_states[i]->value->getRasterState(device);
 
 				if (!raster_state) {
+					// $TODO: LOG ERROR
 					continue;
 				}
 
 				InstanceData& instance_data = _instance_data[i];
 
 				if (!instance_data.instance_data) {
+					// $TODO: LOG ERROR
+					continue;
+				}
+
+				Gleam::IRenderDevice* const deferred_device = instance_data.deferred_context[&device].get();
+
+				if (!deferred_device) {
+					// $TODO: LOG ERROR
 					continue;
 				}
 
@@ -276,7 +289,7 @@ void RenderCommandSystem::update()
 
 					for (int32_t k = 0; k < num_buffers; ++k) {
 						for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
-							InstanceData::BufferVarMap& var_map = instance_data.buffers[j];
+							InstanceData::BufferVarMap& var_map = instance_data.pipeline_data[j].buffer_vars;
 
 							for (auto& id : var_map) {
 								if (id.second[k].srv_index < 0) {
@@ -314,6 +327,11 @@ void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
 	AddResourcesToWaitList(material->textures_domain, resources);
 	AddResourcesToWaitList(material->textures_geometry, resources);
 	AddResourcesToWaitList(material->textures_hull, resources);
+	AddResourcesToWaitList(material->samplers_vertex, resources);
+	AddResourcesToWaitList(material->samplers_pixel, resources);
+	AddResourcesToWaitList(material->samplers_domain, resources);
+	AddResourcesToWaitList(material->samplers_geometry, resources);
+	AddResourcesToWaitList(material->samplers_hull, resources);
 
 	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 64;
 
@@ -335,7 +353,7 @@ void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
 
 void RenderCommandSystem::removedArchetype(int32_t index)
 {
-	GAFF_REF(index);
+	_instance_data.erase(_instance_data.begin() + index);
 }
 
 void RenderCommandSystem::processNewArchetypeMaterial(
@@ -348,6 +366,10 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 	if (devices.empty()) {
 		// $TODO: Log error.
 		return;
+	}
+
+	for (Gleam::IRenderDevice* rd : devices) {
+		instance_data.deferred_context[rd].reset(rd->createDeferredRenderDevice());
 	}
 
 	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
@@ -368,7 +390,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 
 			addTextureSRVs(material, shader_refl, shader_vars, *rd, shader_type);
 
-			auto& var_srvs = instance_data.shader_srvs[i][rd];
+			auto& var_srvs = instance_data.pipeline_data[i].srv_vars[rd];
 			var_srvs = std::move(shader_vars);
 
 			if (shader_type == Gleam::IShader::SHADER_VERTEX) {
@@ -377,7 +399,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 
 					if (it != sb_refl.vars.end()) {
 						instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
-						instance_data.instance_data = &instance_data.buffers[shader_type][HashString32(sb_refl.name)];
+						instance_data.instance_data = &instance_data.pipeline_data[i].buffer_vars[HashString32(sb_refl.name)];
 					}
 				}
 			}
@@ -397,7 +419,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 					pb->addResourceView(shader_type, it->second.get());
 
 				} else {
-					auto& buffers = instance_data.buffers[shader_type];
+					auto& buffers = instance_data.pipeline_data[i].buffer_vars;
 					const auto it_buf = buffers.find(HashString32(var_name.data()));
 
 					if (it_buf != buffers.end()) {
@@ -469,7 +491,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 		}
 	}
 
-	instance_data.buffers[shader_type] = std::move(var_map);
+	instance_data.pipeline_data[shader_type].buffer_vars = std::move(var_map);
 }
 
 void RenderCommandSystem::addTextureSRVs(
