@@ -46,33 +46,26 @@ private:
 	{
 		struct InstanceBufferData final
 		{
-			BufferResourcePtr buffer;
 			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
+			BufferResourcePtr buffer;
 			int32_t srv_index = -1;
 		};
 
 		using BufferVarMap = VectorMap< HashString32, Vector<InstanceBufferData> >;
+		using VarMap = VectorMap< HashString32, UniquePtr<Gleam::IShaderResourceView> >;
 
+		struct PipelineData final
+		{
+			BufferVarMap buffer_vars{ ProxyAllocator("Graphics") };
+			VectorMap<const Gleam::IRenderDevice*, VarMap> srv_vars{ ProxyAllocator("Graphics") };
+		};
+
+		PipelineData pipeline_data[Gleam::IShader::SHADER_PIPELINE_COUNT];
 		ProgramBuffersResourcePtr program_buffers;
 
-		BufferVarMap buffers[Gleam::IShader::SHADER_PIPELINE_COUNT]{
-			BufferVarMap{ ProxyAllocator("Graphics") },
-			BufferVarMap{ ProxyAllocator("Graphics") },
-			BufferVarMap{ ProxyAllocator("Graphics") },
-			BufferVarMap{ ProxyAllocator("Graphics") },
-			BufferVarMap{ ProxyAllocator("Graphics") }
-		};
-
-		using VarMap = VectorMap< HashString32, UniquePtr<Gleam::IShaderResourceView> >;
-		VectorMap<const Gleam::IRenderDevice*, VarMap> shader_srvs[Gleam::IShader::SHADER_PIPELINE_COUNT]{
-			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, VarMap>{ ProxyAllocator("Graphics") }
-		};
-
 		Vector<InstanceBufferData>* instance_data = nullptr;
+
+		VectorMap<const Gleam::IRenderDevice*, UniquePtr<Gleam::IRenderDevice> > deferred_context;
 		int32_t buffer_instance_count = 1;
 		int32_t model_to_proj_offset = -1;
 	};
