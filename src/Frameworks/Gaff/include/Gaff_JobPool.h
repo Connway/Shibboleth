@@ -27,10 +27,10 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
+#include <EAThread/eathread_thread.h>
 #include <EAThread/eathread_futex.h>
 #include <EASTL/chrono.h>
 #include <atomic>
-#include <thread>
 
 NS_GAFF
 
@@ -43,7 +43,7 @@ struct JobData
 };
 
 using Counter = std::atomic_int32_t;
-using JobPair = std::pair<JobData, Counter*>;
+using JobPair = eastl::pair<JobData, Counter*>;
 using ThreadInitFunc = void (*)(void);
 
 template <class Allocator = DefaultAllocator>
@@ -67,8 +67,8 @@ public:
 	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
 	void doAJob(void);
 
-	size_t getNumTotalThreads(void) const;
-	void getThreadIDs(size_t* out) const;
+	int32_t getNumTotalThreads(void) const;
+	void getThreadIDs(EA::Thread::ThreadId* out) const;
 
 private:
 	struct JobQueue
@@ -88,7 +88,7 @@ private:
 	};
 
 	Vector<JobQueue, Allocator> _job_pools;
-	Vector<std::thread, Allocator> _threads;
+	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
 
 	Allocator _allocator;
@@ -96,7 +96,7 @@ private:
 	static bool ProcessJobQueue(JobQueue& job_queue, eastl::chrono::milliseconds ms);
 	static void DoJob(JobPair& job);
 
-	static void JobThread(ThreadData& thread_data);
+	static intptr_t JobThread(void* data);
 
 	GAFF_NO_COPY(JobPool);
 	GAFF_NO_MOVE(JobPool);
