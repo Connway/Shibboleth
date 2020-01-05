@@ -97,6 +97,8 @@ private:
 	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
 	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
 
+	Vector<void*> _buffer_cache{ ProxyAllocator("Graphics") };
+
 	// Cameras
 
 	void newArchetype(const ECSArchetype& archetype);

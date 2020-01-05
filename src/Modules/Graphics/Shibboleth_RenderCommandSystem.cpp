@@ -224,12 +224,12 @@ void RenderCommandSystem::update()
 				program->bind(device);
 				layout->bind(device);
 
-				Vector<void*> buffers(instance_data.instance_data->size(), nullptr, ProxyAllocator("Graphics"));
+				_buffer_cache.resize(instance_data.instance_data->size());
 				const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(device)->getStride();
 				int32_t object_count = 0;
 
-				for (int32_t j = 0; j < static_cast<int32_t>(buffers.size()); ++j) {
-					buffers[j] = instance_data.instance_data->at(j).buffer->getBuffer(device)->map(device);
+				for (int32_t j = 0; j < static_cast<int32_t>(_buffer_cache.size()); ++j) {
+					_buffer_cache[j] = instance_data.instance_data->at(j).buffer->getBuffer(device)->map(device);
 				}
 
 				//float scalar = 1.0f;
@@ -248,7 +248,7 @@ void RenderCommandSystem::update()
 
 					const int32_t instance_index = object_count % instance_data.buffer_instance_count;
 					const int32_t buffer_index = object_count / instance_data.buffer_instance_count;
-					void* const buffer = buffers[buffer_index];
+					void* const buffer = _buffer_cache[buffer_index];
 
 					// Write to instance buffer.
 					glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);

@@ -47,12 +47,24 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads, ThreadInit
 	_thread_data.job_pool = this;
 	_thread_data.init_func = init;
 	_thread_data.terminate = false;
-	_threads.reserve(num_threads);
+	_threads.resize(num_threads);
 
 	for (int32_t i = 0; i < num_threads; ++i) {
-		_threads.emplace_back(JobThread, std::ref(_thread_data));
+		U8String<Allocator> thread_name(_allocator);
+		thread_name.sprintf("Job Pool Worker Thread %i", i);
 
-		if (!_threads.back().joinable()) {
+		EA::Thread::ThreadParameters thread_params;
+		thread_params.mbDisablePriorityBoost = false;
+		thread_params.mnAffinityMask = EA::Thread::kThreadAffinityMaskAny;
+		thread_params.mnPriority = EA::Thread::kThreadPriorityDefault;
+		thread_params.mnProcessor = EA::Thread::kProcessorDefault;
+		thread_params.mnStackSize = 0;
+		thread_params.mpName = thread_name.data();
+		thread_params.mpStack = nullptr;
+
+		const bool success = _threads[i].Begin(JobThread, &_thread_data, &thread_params) != EA::Thread::kThreadIdInvalid;
+
+		if (!success) {
 			destroy();
 			return false;
 		}
@@ -66,8 +78,8 @@ void JobPool<Allocator>::destroy(void)
 {
 	_thread_data.terminate = true;
 
-	for (std::thread& thread : _threads) {
-		thread.join();
+	for (EA::Thread::Thread& thread : _threads) {
+		thread.WaitForEnd();
 	}
 
 	_threads.clear();
@@ -230,16 +242,16 @@ void JobPool<Allocator>::doAJob(void)
 }
 
 template <class Allocator>
-size_t JobPool<Allocator>::getNumTotalThreads(void) const
+int32_t JobPool<Allocator>::getNumTotalThreads(void) const
 {
-	return _threads.size();
+	return static_cast<int32_t>(_threads.size());
 }
 
 template <class Allocator>
-void JobPool<Allocator>::getThreadIDs(size_t* out) const
+void JobPool<Allocator>::getThreadIDs(EA::Thread::ThreadId* out) const
 {
 	for (size_t i = 0; i < _threads.size(); ++i) {
-		out[i] = std::hash<std::thread::id>{}(_threads[i].get_id());
+		out[i] = _threads[i].GetId();
 	}
 }
 
@@ -295,8 +307,9 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::JobThread(ThreadData& thread_data)
+intptr_t JobPool<Allocator>::JobThread(void* data)
 {
+	ThreadData& thread_data = *reinterpret_cast<ThreadData*>(data);
 	JobPool<Allocator>* job_pool = thread_data.job_pool;
 
 	if (thread_data.init_func) {
@@ -305,6 +318,8 @@ void JobPool<Allocator>::JobThread(ThreadData& thread_data)
 
 	while (!thread_data.terminate) {
 		job_pool->help();
-		std::this_thread::yield(); // Probably a good idea to give some time back to the CPU for other stuff.
+		EA::Thread::ThreadSleep(); // Probably a good idea to give some time back to the CPU for other stuff.
 	}
+
+	return 0;
 }

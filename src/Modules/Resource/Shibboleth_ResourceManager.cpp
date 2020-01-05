@@ -219,7 +219,7 @@ void ResourceManager::waitForResource(const IResource& resource) const
 {
 	while (resource._state == IResource::RS_PENDING) {
 		// $TODO: Help out?
-		std::this_thread::yield();
+		EA::Thread::ThreadSleep();
 	}
 }
 
