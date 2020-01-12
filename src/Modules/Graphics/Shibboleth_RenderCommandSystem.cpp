@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
-#include <Gleam_IncludeMatrix.h>
 
 SHIB_REFLECTION_DEFINE(RenderCommandSystem)
 
@@ -149,6 +148,9 @@ void RenderCommandSystem::update()
 	const int32_t num_objects = static_cast<int32_t>(_instance_data.size());
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
+	_render_job_data_cache.resize(num_objects * num_cameras);
+	_job_data_cache.resize(num_objects * num_cameras);
+
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
 		{
@@ -191,123 +193,26 @@ void RenderCommandSystem::update()
 
 			// $TODO: Spawn a job per archetype we are processing.
 			for (int32_t i = 0; i < num_objects; ++i) {
-				const int32_t num_meshes = _models[i]->value->getNumMeshes();
+				const int32_t cache_index = camera_index * num_objects + i;
+				auto& deferred_data = _instance_data[i].deferred_data[&device];
 
-				if (!num_meshes) {
-					// $TODO: LOG ERROR
-					continue;
-				}
+				_render_job_data_cache[cache_index] = RenderJobData{
+					this,
+					i,
+					deferred_data.command_list.get(),
+					//deferred_data.deferred_context.get(),
+					&device,
+					final_camera
+				};
 
-				Gleam::IProgram* const program = _materials[i]->material->getProgram(device);
+				_job_data_cache[cache_index] = Gaff::JobData{
+					RenderCommandSystem::GenerateCommandListJob,
+					&_render_job_data_cache[cache_index]
+				};
 
-				if (!program) {
-					// $TODO: LOG ERROR
-					continue;
-				}
+				GenerateCommandListJob(&_render_job_data_cache[cache_index]);
 
-				Gleam::ILayout* const layout = _materials[i]->material->getLayout(device);
-
-				if (!layout) {
-					// $TODO: LOG ERROR
-					continue;
-				}
-
-				Gleam::IRasterState* const raster_state = _raster_states[i]->value->getRasterState(device);
-
-				if (!raster_state) {
-					// $TODO: LOG ERROR
-					continue;
-				}
-
-				InstanceData& instance_data = _instance_data[i];
-
-				if (!instance_data.instance_data) {
-					// $TODO: LOG ERROR
-					continue;
-				}
-
-				Gleam::IRenderDevice* const deferred_device = instance_data.deferred_context[&device].get();
-
-				if (!deferred_device) {
-					// $TODO: LOG ERROR
-					continue;
-				}
-
-				raster_state->bind(device);
-				program->bind(device);
-				layout->bind(device);
-
-				_buffer_cache.resize(instance_data.instance_data->size());
-				const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(device)->getStride();
-				int32_t object_count = 0;
-
-				for (int32_t j = 0; j < static_cast<int32_t>(_buffer_cache.size()); ++j) {
-					_buffer_cache[j] = instance_data.instance_data->at(j).buffer->getBuffer(device)->map(device);
-				}
-
-				//float scalar = 1.0f;
-
-				_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
-				{
-					//const glm::quat rot = glm::rotate(obj_rot.value, 0.001f * scalar, glm::vec3(0.0f, 1.0f, 0.0f));
-					//Rotation::Set(*_ecs_mgr, id, Rotation{ rot });
-					//scalar *= -1.0f;
-
-					const glm::mat4x4 transform = 
-						glm::translate(glm::identity<glm::mat4x4>(), obj_pos.value) *
-						//glm::mat4_cast(rot) *
-						glm::mat4_cast(obj_rot.value) *
-						glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
-
-					const int32_t instance_index = object_count % instance_data.buffer_instance_count;
-					const int32_t buffer_index = object_count / instance_data.buffer_instance_count;
-					void* const buffer = _buffer_cache[buffer_index];
-
-					// Write to instance buffer.
-					glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
-					*matrix = final_camera * transform;
-
-					++object_count;
-				},
-				_position[i], _rotation[i], _scale[i]);
-
-				for (const auto& id : *instance_data.instance_data) {
-					id.buffer->getBuffer(device)->unmap(device);
-				}
-
-
-				// Iterate over all the instance buffers and set their resource views and render.
-				Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(device);
-				const int32_t num_buffers = (num_objects / instance_data.buffer_instance_count) + 1;
-
-				for (int32_t mesh_index = 0; mesh_index < num_meshes; ++mesh_index) {
-					Gleam::IMesh* const mesh = _models[i]->value->getMesh(mesh_index)->getMesh(device);
-
-					if (!mesh) {
-						continue;
-					}
-
-					for (int32_t k = 0; k < num_buffers; ++k) {
-						for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
-							InstanceData::BufferVarMap& var_map = instance_data.pipeline_data[j].buffer_vars;
-
-							for (auto& id : var_map) {
-								if (id.second[k].srv_index < 0) {
-									continue;
-								}
-
-								pb->setResourceView(
-									static_cast<Gleam::IShader::ShaderType>(j),
-									id.second[k].srv_index,
-									id.second[k].srv_map[&device].get()
-								);
-							}
-						}
-
-						pb->bind(device);
-						mesh->renderInstanced(device, object_count);
-					}
-				}
+				//device.executeCommandList(*deferred_data.command_list);
 			}
 
 			device.frameEnd(*output);
@@ -369,7 +274,9 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 	}
 
 	for (Gleam::IRenderDevice* rd : devices) {
-		instance_data.deferred_context[rd].reset(rd->createDeferredRenderDevice());
+		auto& deferred_data = instance_data.deferred_data[rd];
+		deferred_data.deferred_context.reset(rd->createDeferredRenderDevice());
+		deferred_data.command_list.reset(_render_mgr->createCommandList());
 	}
 
 	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
@@ -556,6 +463,137 @@ void RenderCommandSystem::addSamplers(
 			}
 		}
 	}
+}
+
+void RenderCommandSystem::GenerateCommandListJob(void* data)
+{
+	const RenderJobData& job_data = *reinterpret_cast<RenderJobData*>(data);
+
+	if (!job_data.device) {
+		// $TODO: Log error
+		return;
+	}
+
+	if (!job_data.cmd_list) {
+		// $TODO: Log error
+		return;
+	}
+
+	//Gleam::IRenderDevice& owning_device = *job_data.device->getOwningDevice();
+	Gleam::IRenderDevice& owning_device = *job_data.device;
+
+	const int32_t num_meshes = job_data.rcs->_models[job_data.index]->value->getNumMeshes();
+
+	if (!num_meshes) {
+		// $TODO: LOG ERROR
+		return;
+	}
+
+	Gleam::IProgram* const program = job_data.rcs->_materials[job_data.index]->material->getProgram(owning_device);
+
+	if (!program) {
+		// $TODO: LOG ERROR
+		return;
+	}
+
+	Gleam::ILayout* const layout = job_data.rcs->_materials[job_data.index]->material->getLayout(owning_device);
+
+	if (!layout) {
+		// $TODO: LOG ERROR
+		return;
+	}
+
+	Gleam::IRasterState* const raster_state = job_data.rcs->_raster_states[job_data.index]->value->getRasterState(owning_device);
+
+	if (!raster_state) {
+		// $TODO: LOG ERROR
+		return;
+	}
+
+	InstanceData& instance_data = job_data.rcs->_instance_data[job_data.index];
+
+	if (!instance_data.instance_data) {
+		// $TODO: LOG ERROR
+		return;
+	}
+
+	raster_state->bind(*job_data.device);
+	program->bind(*job_data.device);
+	layout->bind(*job_data.device);
+
+	Vector<void*> _buffer_cache(instance_data.instance_data->size(), nullptr, ProxyAllocator("Graphics"));
+	const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(owning_device)->getStride();
+	int32_t object_count = 0;
+
+	for (int32_t j = 0; j < static_cast<int32_t>(_buffer_cache.size()); ++j) {
+		_buffer_cache[j] = instance_data.instance_data->at(j).buffer->getBuffer(owning_device)->map(*job_data.device);
+	}
+
+	//float scalar = 1.0f;
+
+	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
+	{
+		//const glm::quat rot = glm::rotate(obj_rot.value, 0.001f * scalar, glm::vec3(0.0f, 1.0f, 0.0f));
+		//Rotation::Set(*_ecs_mgr, id, Rotation{ rot });
+		//scalar *= -1.0f;
+
+		const glm::mat4x4 transform =
+			glm::translate(glm::identity<glm::mat4x4>(), obj_pos.value) *
+			//glm::mat4_cast(rot) *
+			glm::mat4_cast(obj_rot.value) *
+			glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
+
+		const int32_t instance_index = object_count % instance_data.buffer_instance_count;
+		const int32_t buffer_index = object_count / instance_data.buffer_instance_count;
+		void* const buffer = _buffer_cache[buffer_index];
+
+		// Write to instance buffer.
+		glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
+		*matrix = job_data.view_projection * transform;
+
+		++object_count;
+	},
+	job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index]);
+
+	for (const auto& id : *instance_data.instance_data) {
+		id.buffer->getBuffer(owning_device)->unmap(*job_data.device);
+	}
+
+
+	// Iterate over all the instance buffers and set their resource views and render.
+	Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(owning_device);
+	const int32_t num_buffers = (object_count / instance_data.buffer_instance_count) + 1;
+
+	for (int32_t mesh_index = 0; mesh_index < num_meshes; ++mesh_index) {
+		Gleam::IMesh* const mesh = job_data.rcs->_models[job_data.index]->value->getMesh(mesh_index)->getMesh(owning_device);
+
+		if (!mesh) {
+			continue;
+		}
+
+		for (int32_t k = 0; k < num_buffers; ++k) {
+			for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
+				InstanceData::BufferVarMap& var_map = instance_data.pipeline_data[j].buffer_vars;
+
+				for (auto& id : var_map) {
+					if (id.second[k].srv_index < 0) {
+						continue;
+					}
+
+					pb->setResourceView(
+						static_cast<Gleam::IShader::ShaderType>(j),
+						id.second[k].srv_index,
+						id.second[k].srv_map[&owning_device].get()
+					);
+				}
+			}
+
+			pb->bind(*job_data.device);
+			mesh->renderInstanced(*job_data.device, object_count);
+		}
+	}
+
+	//job_data.device->finishCommandList(*job_data.cmd_list);
 }
 
 NS_END

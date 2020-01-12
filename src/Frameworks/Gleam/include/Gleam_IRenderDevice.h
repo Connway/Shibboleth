@@ -78,30 +78,9 @@ public:
 	virtual bool isDeferred(void) const = 0;
 	virtual RendererType getRendererType(void) const = 0;
 
-	//virtual int32_t getViewportWidth(int32_t device, int32_t output) const = 0;
-	//virtual int32_t getViewportHeight(int32_t device, int32_t output) const = 0;
-
-	//virtual int32_t getActiveViewportWidth(void) = 0;
-	//virtual int32_t getActiveViewportHeight(void) = 0;
-
-	//virtual int32_t getNumOutputs(int32_t device) const = 0;
-	//virtual int32_t getNumDevices(void) const = 0;
-
-	//virtual IRenderTargetPtr getOutputRenderTarget(int32_t device, int32_t output) = 0;
-	//virtual IRenderTargetPtr getActiveOutputRenderTarget(void) = 0;
-
-	//virtual bool setCurrentOutput(int32_t output) = 0;
-	//virtual int32_t getCurrentOutput(void) const = 0;
-
-	//virtual bool setCurrentDevice(int32_t device) = 0;
-	//virtual int32_t getCurrentDevice(void) const = 0;
-
-	//virtual int32_t getDeviceForAdapter(int32_t adapter_id) const = 0;
-	//virtual int32_t getDeviceForMonitor(int32_t monitor) const = 0;
-
 	virtual IRenderDevice* createDeferredRenderDevice(void) = 0;
-	virtual void executeCommandList(ICommandList* command_list) = 0;
-	virtual bool finishCommandList(ICommandList* command_list) = 0;
+	virtual void executeCommandList(ICommandList& command_list) = 0;
+	virtual bool finishCommandList(ICommandList& command_list) = 0;
 
 	virtual void resetRenderState(void) = 0;
 	virtual void renderNoVertexInput(int32_t vert_count) = 0;

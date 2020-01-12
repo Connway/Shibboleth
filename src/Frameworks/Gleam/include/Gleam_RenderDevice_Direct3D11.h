@@ -46,8 +46,8 @@ public:
 	RendererType getRendererType(void) const override;
 
 	IRenderDevice* createDeferredRenderDevice(void) override;
-	void executeCommandList(ICommandList* command_list) override;
-	bool finishCommandList(ICommandList* command_list) override;
+	void executeCommandList(ICommandList& command_list) override;
+	bool finishCommandList(ICommandList& command_list) override;
 
 	void resetRenderState(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
