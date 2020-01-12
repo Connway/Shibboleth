@@ -389,26 +389,26 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 	return deferred_render_device;
 }
 
-void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
+void RenderDeviceD3D11::executeCommandList(ICommandList& command_list)
 {
-	GAFF_ASSERT(command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
-	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
-	GAFF_ASSERT(cmd_list->getCommandList());
-	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
+	GAFF_ASSERT(command_list.getRendererType() == RendererType::DIRECT3D11 && _context);
+	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
+	GAFF_ASSERT(cmd_list.getCommandList());
+	_context->ExecuteCommandList(cmd_list.getCommandList(), FALSE);
 }
 
-bool RenderDeviceD3D11::finishCommandList(ICommandList* command_list)
+bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 {
-	GAFF_ASSERT(isDeferred() && command_list->getRendererType() == RendererType::DIRECT3D11 && _context);
+	GAFF_ASSERT(isDeferred() && command_list.getRendererType() == RendererType::DIRECT3D11 && _context);
 
-	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
+	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
 	ID3D11CommandList* cl = nullptr;
 
 	if (FAILED(_context->FinishCommandList(FALSE, &cl))) {
 		return false;
 	}
 
-	cmd_list->setCommandList(cl);
+	cmd_list.setCommandList(cl);
 	return true;
 }
 

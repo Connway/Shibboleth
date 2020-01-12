@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-struct JobData
+struct JobData final
 {
 	using JobFunc = void (*)(void*);
 

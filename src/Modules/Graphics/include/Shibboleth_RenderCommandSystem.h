@@ -26,8 +26,11 @@ THE SOFTWARE.
 #include "Shibboleth_ProgramBuffersResource.h"
 #include "Shibboleth_MaterialComponent.h"
 #include "Shibboleth_BufferResource.h"
-#include <Shibboleth_ISystem.h>
 #include <Shibboleth_ECSQuery.h>
+#include <Shibboleth_ISystem.h>
+#include <Shibboleth_JobPool.h>
+#include <Gleam_IncludeMatrix.h>
+#include <Gleam_ICommandList.h>
 
 NS_SHIBBOLETH
 
@@ -44,6 +47,12 @@ public:
 private:
 	struct InstanceData final
 	{
+		struct DeferredContextData final
+		{
+			UniquePtr<Gleam::IRenderDevice> deferred_context;
+			UniquePtr<Gleam::ICommandList> command_list;
+		};
+
 		struct InstanceBufferData final
 		{
 			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
@@ -65,9 +74,20 @@ private:
 
 		Vector<InstanceBufferData>* instance_data = nullptr;
 
-		VectorMap<const Gleam::IRenderDevice*, UniquePtr<Gleam::IRenderDevice> > deferred_context;
+		VectorMap<const Gleam::IRenderDevice*, DeferredContextData> deferred_data;
 		int32_t buffer_instance_count = 1;
 		int32_t model_to_proj_offset = -1;
+	};
+
+	struct RenderJobData final
+	{
+		RenderCommandSystem* rcs;
+		int32_t index;
+
+		Gleam::ICommandList* cmd_list;
+		Gleam::IRenderDevice* device;
+
+		glm::mat4x4 view_projection;
 	};
 
 	RenderManagerBase* _render_mgr = nullptr;
@@ -90,7 +110,9 @@ private:
 	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
 	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
 
-	Vector<void*> _buffer_cache{ ProxyAllocator("Graphics") };
+	Vector<RenderJobData> _render_job_data_cache{ ProxyAllocator("Graphics") };
+	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
+	Gaff::Counter _job_counter = 0;
 
 	// Cameras
 
@@ -126,6 +148,8 @@ private:
 		Gleam::IRenderDevice& rd,
 		Gleam::IShader::ShaderType shader_type
 	);
+
+	static void GenerateCommandListJob(void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

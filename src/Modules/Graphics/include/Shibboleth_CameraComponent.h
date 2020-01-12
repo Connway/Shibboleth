@@ -66,7 +66,6 @@ public:
 	float z_near = 0.001f; // m
 	float z_far = 2000.0f; // m
 
-
 	//float focus_distance;
 	//float f_stop;
 
