@@ -103,8 +103,6 @@ public:
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
-
-	virtual bool inEditorMode(void) const = 0;
 };
 
 NS_END

@@ -67,7 +67,7 @@ filter { "configurations:*Debug*", "toolset:not gcc" }
 filter { "toolset:clang"--[[, "rtti:off"--]] }
 	defines { "_HAS_STATIC_RTTI=0" }
 
-filter { "configurations:*debug* or Optimized_Debug*" }
+filter { "configurations:*Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 
 filter { "configurations:Release* or Profile*" }
@@ -88,7 +88,7 @@ filter { "configurations:Optimized_Debug*" }
 	optimize "Speed"
 	runtime "Release"
 
-filter { "configurations:Profile" }
+filter { "configurations:Profile*" }
 	defines { "SHIB_PROFILE" }
 
 filter { "action:vs*" }

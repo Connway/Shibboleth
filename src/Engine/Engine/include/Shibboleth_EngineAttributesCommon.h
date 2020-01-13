@@ -42,16 +42,6 @@ public:
 };
 
 
-// Marks a class to only be loaded when we are running the Editor.
-class EditorAttribute final : public Gaff::IAttribute
-{
-public:
-	IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(EditorAttribute);
-};
-
-
 class RangeAttribute final : public Gaff::IAttribute
 {
 public:
@@ -144,7 +134,6 @@ NS_END
 
 
 SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
-SHIB_REFLECTION_DECLARE(EditorAttribute)
 SHIB_REFLECTION_DECLARE(RangeAttribute)
 SHIB_REFLECTION_DECLARE(HashStringAttribute)
 

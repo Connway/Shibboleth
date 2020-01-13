@@ -77,19 +77,15 @@ function ModuleGen(module_name)
 	}
 end
 
-function ModuleCopy()
+function ModuleCopy(dir)
+	if dir == nil then
+		dir = "Modules"
+	end
+
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/Modules",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/Modules"
-	}
-end
-
-function ModuleEditorCopy()
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../workingdir/EditorModules",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/EditorModules"
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/" .. dir
 	}
 end
 

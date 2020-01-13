@@ -139,7 +139,7 @@ bool App::init(bool (*static_init)(void))
 		}
 
 		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
-			_configs[key] = value;
+			_configs.setObject(key, value);
 			return false;
 		});
 	}
@@ -297,15 +297,6 @@ bool App::loadMainLoop(void)
 
 	const Gaff::IReflectionDefinition* refl = bucket->front();
 
-	if (inEditorMode()) {
-		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-			if (ref_def->getClassAttr<EditorAttribute>()) {
-				refl = ref_def;
-				break;
-			}
-		}
-	}
-
 	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(IMainLoop), ProxyAllocator::GetGlobal());
 
 	if (!_main_loop) {
@@ -344,11 +335,6 @@ bool App::loadModules(void)
 			const Gaff::JSON& module = module_load_order[i];
 			GAFF_ASSERT(module.isString());
 
-			// Skip modules that begin with Editor if we're not the editor.
-			if (!inEditorMode() && Gaff::FindFirstOf(module.getString(), "Editor") == 0) {
-				continue;
-			}
-
 			if (!loadModule(module.getString())) {
 				LogErrorDefault("Failed to load module '%s'!", module.getString());
 				return false;
@@ -372,11 +358,6 @@ bool App::loadModules(void)
 				const auto abs_path = std::filesystem::absolute(dir_entry.path());
 				const wchar_t* name = abs_path.c_str();
 				CONVERT_STRING(char, temp, name);
-
-				// Skip modules that begin with Editor if we're not the editor.
-				if (!inEditorMode() && Gaff::FindFirstOf(temp, "Editor") == 0) {
-					continue;
-				}
 
 				if (!Gaff::File::CheckExtension(temp, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 					continue;
@@ -709,11 +690,6 @@ bool App::isQuitting(void) const
 void App::quit(void)
 {
 	_running = false;
-}
-
-bool App::inEditorMode(void) const
-{
-	return _configs["editor_mode"].getBool(false);
 }
 
 NS_END
