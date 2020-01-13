@@ -22,30 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_DefaultHandler.h"
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+#define CIVETWEB_CXX_DLL_IMPORTS
+#define CIVETWEB_DLL_IMPORTS
 
-NS_SHIBBOLETH
+#include <Gaff_Platform.h>
 
-class DevWebServerManager final : public IManager
-{
-public:
-	DevWebServerManager(void);
-	~DevWebServerManager(void);
+MSVC_DISABLE_WARNING_PUSH(4275 4251)
 
-	void allModulesLoaded(void) override;
-	bool init(void) override;
+#include <CivetServer.h>
 
-private:
-	UniquePtr<CivetServer> _server;
-	DefaultHandler _default_handler;
-
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
-};
-
-NS_END
-
-SHIB_REFLECTION_DECLARE(DevWebServerManager)
+MSVC_DISABLE_WARNING_POP()

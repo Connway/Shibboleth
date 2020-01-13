@@ -20,32 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ECSEntityWebHandler.h"
+#include "Shibboleth_ECSManager.h"
+#include <Shibboleth_DevWebAttributes.h>
 
-#include "Shibboleth_DefaultHandler.h"
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+SHIB_REFLECTION_DEFINE(ECSEntityWebHandler)
 
 NS_SHIBBOLETH
 
-class DevWebServerManager final : public IManager
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSEntityWebHandler)
+	.classAttrs(DevWebCommandAttribute("/entity"))
+
+	.BASE(CivetHandler)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSEntityWebHandler)
+
+ECSEntityWebHandler::ECSEntityWebHandler(void):
+	_ecs(GetApp().getManagerTFast<ECSManager>())
 {
-public:
-	DevWebServerManager(void);
-	~DevWebServerManager(void);
+}
 
-	void allModulesLoaded(void) override;
-	bool init(void) override;
+bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
+{
+	const mg_request_info* const req = mg_get_request_info(conn);
+	int32_t id = -1;
 
-private:
-	UniquePtr<CivetServer> _server;
-	DefaultHandler _default_handler;
+	if (req->query_string) {
+		sscanf(req->query_string, "id=%i", &id);
+	}
 
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
+	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
+	mg_printf(conn, "Content-Type: text/html; charset=utf-8\r\n");
+	mg_printf(conn, "Connection: close\r\n\r\n");
 
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
-};
+	mg_printf(conn, "<html><body>\r\n");
+
+	if (_ecs.isValid(id)) {
+		mg_printf(conn, "<h1>Valid Entity ID: %i\r\n", id);
+	} else {
+		mg_printf(conn, "<h1>Invalid Entity ID: %i\r\n", id);
+	}
+
+	mg_printf(conn, "</body></html>\r\n");
+
+	return true;
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(DevWebServerManager)

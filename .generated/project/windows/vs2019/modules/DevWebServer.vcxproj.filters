@@ -12,12 +12,19 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DefaultHandler.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebAttributes.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebServerManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IncludeCivetWeb.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DefaultHandler.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerModule.cpp" />
   </ItemGroup>

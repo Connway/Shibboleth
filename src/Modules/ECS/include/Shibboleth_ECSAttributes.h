@@ -23,8 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_IAllocator.h>
-#include <Shibboleth_Memory.h>
 
 NS_SHIBBOLETH
 

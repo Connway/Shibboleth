@@ -22,30 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_DefaultHandler.h"
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+#include <CivetServer.h>
 
 NS_SHIBBOLETH
 
-class DevWebServerManager final : public IManager
+class ECSManager;
+
+class ECSEntityWebHandler final : public CivetHandler, public Gaff::IReflectionObject
 {
 public:
-	DevWebServerManager(void);
-	~DevWebServerManager(void);
+	ECSEntityWebHandler(void);
 
-	void allModulesLoaded(void) override;
-	bool init(void) override;
+	bool handleGet(CivetServer* server, mg_connection* conn) override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
 
 private:
-	UniquePtr<CivetServer> _server;
-	DefaultHandler _default_handler;
-
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
+	ECSManager& _ecs;
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DevWebServerManager)
+SHIB_REFLECTION_DECLARE(ECSEntityWebHandler)

@@ -259,6 +259,12 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
+      <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
+    </ProjectReference>
+    <ProjectReference Include="DevWebServer.vcxproj">
+      <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
+    </ProjectReference>
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>

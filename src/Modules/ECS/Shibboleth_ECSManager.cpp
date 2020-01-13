@@ -288,6 +288,11 @@ void ECSManager::switchScene(const ECSSceneResourcePtr scene)
 	_curr_scene = scene;
 }
 
+bool ECSManager::isValid(EntityID id) const
+{
+	return ValidEntityID(id) && id < _next_id;
+}
+
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);

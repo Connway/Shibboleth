@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_DevWebServerManager.h"
+#include "Shibboleth_DevWebAttributes.h"
 #include <Shibboleth_Memory.h>
-
 
 SHIB_REFLECTION_DEFINE(DevWebServerManager)
 
@@ -49,24 +49,46 @@ DevWebServerManager::~DevWebServerManager(void)
 
 bool DevWebServerManager::init(void)
 {
-	ProxyAllocator allocator("DevWeb");
-
 	const char* options[] =
 	{
 		"document_root", "WebRoot", "listening_ports", "8888", 0
 	};
 
+	ProxyAllocator allocator("DevWeb");
 	CivetCallbacks callbacks;
 
 	callbacks.init_thread = InitThread;
 
 	_server.reset(SHIB_ALLOCT(CivetServer, allocator, options, &callbacks, this));
 
-	// add other handlers.
+	return true;
+}
+
+void DevWebServerManager::allModulesLoaded(void)
+{
+	const auto ref_defs = GetApp().getReflectionManager().getReflectionWithAttribute<DevWebCommandAttribute>();
+	ProxyAllocator allocator("DevWeb");
+
+	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
+		if (!ref_def->hasInterface(CLASS_HASH(CivetHandler))) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		CivetHandler* const handler = ref_def->createT<CivetHandler>(CLASS_HASH(CivetHandler), allocator);
+
+		if (!handler) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		const DevWebCommandAttribute* const attr = ref_def->getClassAttr<DevWebCommandAttribute>();
+
+		_server->addHandler(attr->getURI().data(), handler);
+		_handlers.emplace_back(handler);
+	}
 
 	_server->addHandler("", _default_handler);
-
-	return true;
 }
 
 NS_END
