@@ -348,6 +348,15 @@
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\DevWebServer.vcxproj">
+      <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
+      <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\Lua.vcxproj">
+      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
       <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
     </ProjectReference>

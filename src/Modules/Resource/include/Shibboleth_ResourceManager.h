@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ResourceManager : public IManager
+class ResourceManager final : public IManager
 {
 public:
 	using ResourceStateCallback = eastl::function<void (const Vector<IResource*>&)>;

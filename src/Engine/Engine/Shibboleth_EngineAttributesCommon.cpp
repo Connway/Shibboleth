@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
-SHIB_REFLECTION_DEFINE(EditorAttribute)
 SHIB_REFLECTION_DEFINE(RangeAttribute)
 SHIB_REFLECTION_DEFINE(HashStringAttribute)
 
@@ -37,15 +36,6 @@ Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ReadOnlyAttribute, allocator.getPoolIndex("Reflection"), allocator);
-}
-
-
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(EditorAttribute, Gaff::IAttribute)
-
-Gaff::IAttribute* EditorAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(EditorAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 

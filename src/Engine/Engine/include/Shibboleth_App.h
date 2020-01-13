@@ -68,8 +68,6 @@ public:
 	bool isQuitting(void) const override;
 	void quit(void) override;
 
-	bool inEditorMode(void) const override;
-
 private:
 	using InitModuleFunc = bool (*)(IApp&);
 

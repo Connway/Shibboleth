@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_EditorMainLoop.h"
-#include <Shibboleth_EngineAttributesCommon.h>
 //#include <Shibboleth_RenderManagerBase.h>
 //#include <Gleam_IRenderDevice.h>
 
@@ -30,8 +29,6 @@ SHIB_REFLECTION_DEFINE(EditorMainLoop)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorMainLoop)
-	.classAttrs(EditorAttribute())
-
 	.BASE(IMainLoop)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)

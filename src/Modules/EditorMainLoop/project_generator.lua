@@ -38,7 +38,7 @@ local GenerateProject = function()
 
 		files { base_dir .. "Shibboleth_EditorMainLoopModule.cpp" }
 
-		ModuleEditorCopy()
+		ModuleCopy("EditorModules")
 
 		flags { "FatalWarnings" }
 

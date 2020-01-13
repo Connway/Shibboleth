@@ -48,6 +48,9 @@ project "Game_App"
 		defines { "SHIB_STATIC" }
 		StaticLinks()
 
+	filter { "configurations:not Release*" }
+		debugargs { "\"cfg\\dev.cfg\"" }
+
 	filter {}
 
 	postbuildcommands
