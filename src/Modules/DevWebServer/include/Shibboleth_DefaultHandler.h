@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
-#include <CivetServer.h>
+#include "Shibboleth_IncludeCivetWeb.h"
 
 NS_SHIBBOLETH
 

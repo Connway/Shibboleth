@@ -314,6 +314,8 @@ public:
 	const ECSSceneResourcePtr& getCurrentScene(void) const;
 	void switchScene(const ECSSceneResourcePtr scene);
 
+	bool isValid(EntityID id) const;
+
 private:
 	struct EntityData;
 

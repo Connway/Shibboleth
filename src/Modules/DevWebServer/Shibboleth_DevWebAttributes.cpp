@@ -20,32 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_DevWebAttributes.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include "Shibboleth_DefaultHandler.h"
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+SHIB_REFLECTION_DEFINE(DevWebCommandAttribute)
 
 NS_SHIBBOLETH
 
-class DevWebServerManager final : public IManager
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(DevWebCommandAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(DevWebCommandAttribute)
+
+DevWebCommandAttribute::DevWebCommandAttribute(const char* uri):
+	_uri(uri, ProxyAllocator("Reflection"))
 {
-public:
-	DevWebServerManager(void);
-	~DevWebServerManager(void);
+}
 
-	void allModulesLoaded(void) override;
-	bool init(void) override;
+const U8String& DevWebCommandAttribute::getURI(void) const
+{
+	return _uri;
+}
 
-private:
-	UniquePtr<CivetServer> _server;
-	DefaultHandler _default_handler;
-
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
-};
+Gaff::IAttribute* DevWebCommandAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(DevWebCommandAttribute, allocator.getPoolIndex("Reflection"), allocator, _uri.data());
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(DevWebServerManager)

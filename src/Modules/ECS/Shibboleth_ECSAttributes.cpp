@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSAttributes.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE(ECSClassAttribute)
 

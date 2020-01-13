@@ -53,9 +53,7 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"CivetWeb",
-			"Lua",
-			"zlib-ng"
+			"CivetWeb"
 		}
 
 		dependson(deps)
@@ -65,8 +63,6 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("DevWebServer")
 	table.insert(deps, "CivetWeb")
-	table.insert(deps, "Lua")
-	table.insert(deps, "zlib-ng")
 
 	dependson(deps)
 	links(deps)

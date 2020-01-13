@@ -22,30 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_DefaultHandler.h"
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class DevWebServerManager final : public IManager
+class DevWebCommandAttribute final : public Gaff::IAttribute
 {
 public:
-	DevWebServerManager(void);
-	~DevWebServerManager(void);
+	DevWebCommandAttribute(const char* uri);
 
-	void allModulesLoaded(void) override;
-	bool init(void) override;
+	const U8String& getURI(void) const;
+
+	Gaff::IAttribute* clone(void) const override;
 
 private:
-	UniquePtr<CivetServer> _server;
-	DefaultHandler _default_handler;
+	U8String _uri;
 
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
+	SHIB_REFLECTION_CLASS_DECLARE(DevWebCommandAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DevWebServerManager)
+SHIB_REFLECTION_DECLARE(DevWebCommandAttribute)
