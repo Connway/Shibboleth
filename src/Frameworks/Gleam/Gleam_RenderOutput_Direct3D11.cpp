@@ -191,6 +191,14 @@ IRenderTarget& RenderOutputD3D11::getRenderTarget(void)
 	return *_render_target;
 }
 
+void RenderOutputD3D11::present(void)
+{
+	static const DXGI_PRESENT_PARAMETERS present_params = { 0, NULL, NULL, NULL };
+	const UINT interval = (_vsync) ? 1 : 0;
+
+	_swap_chain->Present1(interval, _present_flags, &present_params);
+}
+
 Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
 {
 	return _swap_chain;
@@ -204,14 +212,6 @@ D3D11_VIEWPORT RenderOutputD3D11::getViewport(void) const
 bool RenderOutputD3D11::isVSync(void) const
 {
 	return _vsync;
-}
-
-void RenderOutputD3D11::present(void)
-{
-	static const DXGI_PRESENT_PARAMETERS present_params = { 0, NULL, NULL, NULL};
-	const UINT interval = (_vsync) ? 1 : 0;
-
-	_swap_chain->Present1(interval, _present_flags, &present_params);
 }
 
 NS_END

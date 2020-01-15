@@ -38,9 +38,6 @@ public:
 
 	bool init(int32_t adapter_id) override;
 
-	void frameBegin(IRenderOutput& output) override;
-	void frameEnd(IRenderOutput& output) override;
-
 	IRenderDevice* getOwningDevice(void) const override;
 	bool isDeferred(void) const override;
 	RendererType getRendererType(void) const override;

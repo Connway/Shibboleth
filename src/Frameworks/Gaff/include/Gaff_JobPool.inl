@@ -141,16 +141,14 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, size_t num_jobs, Counter& 
 template <class Allocator>
 void JobPool<Allocator>::waitForAndFreeCounter(Counter* counter)
 {
-	waitForCounter(counter);
+	waitForCounter(*counter);
 	freeCounter(counter);
 }
 
 template <class Allocator>
-void JobPool<Allocator>::waitForCounter(const Counter* counter)
+void JobPool<Allocator>::waitForCounter(const Counter& counter)
 {
-	GAFF_ASSERT(counter);
-
-	while (*counter > 0 && !_thread_data.terminate) {
+	while (counter > 0 && !_thread_data.terminate) {
 		EA::Thread::ThreadSleep();
 	}
 }
@@ -163,11 +161,9 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::helpWhileWaiting(const Counter* counter)
+void JobPool<Allocator>::helpWhileWaiting(const Counter& counter)
 {
-	GAFF_ASSERT(counter);
-
-	while (*counter > 0) {
+	while (counter > 0) {
 		doAJob();
 	}
 }
@@ -175,7 +171,7 @@ void JobPool<Allocator>::helpWhileWaiting(const Counter* counter)
 template <class Allocator>
 void JobPool<Allocator>::helpAndFreeCounter(Counter* counter)
 {
-	helpWhileWaiting(counter);
+	helpWhileWaiting(*counter);
 	freeCounter(counter);
 }
 

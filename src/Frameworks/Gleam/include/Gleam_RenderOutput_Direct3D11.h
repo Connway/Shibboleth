@@ -44,11 +44,11 @@ public:
 	const IRenderTarget& getRenderTarget(void) const override;
 	IRenderTarget& getRenderTarget(void) override;
 
+	void present(void) override;
+
 	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
 	D3D11_VIEWPORT getViewport(void) const;
 	bool isVSync(void) const;
-
-	void present(void);
 
 private:
 	UniquePtr<RenderTargetD3D11> _render_target;

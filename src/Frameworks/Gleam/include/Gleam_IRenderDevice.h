@@ -68,9 +68,6 @@ public:
 
 	virtual bool init(int32_t adapter_id) = 0;
 
-	virtual void frameBegin(IRenderOutput& output) = 0;
-	virtual void frameEnd(IRenderOutput& output) = 0;
-
 	//virtual bool resize(const IWindow& window) = 0;
 	//virtual bool handleFocusGained(const IWindow& window) = 0;
 

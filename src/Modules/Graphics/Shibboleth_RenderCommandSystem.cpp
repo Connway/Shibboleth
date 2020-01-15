@@ -128,14 +128,16 @@ bool RenderCommandSystem::init(void)
 	camera_query.add<Camera>(_camera);
 
 	// Add callbacks for adding/removing buffers.
-	auto add_func = Gaff::MemberFunc(this, &RenderCommandSystem::newArchetype);
-	auto remove_func = Gaff::MemberFunc(this, &RenderCommandSystem::removedArchetype);
+	auto object_add_func = Gaff::MemberFunc(this, &RenderCommandSystem::newObjectArchetype);
+	auto object_remove_func = Gaff::MemberFunc(this, &RenderCommandSystem::removedObjectArchetype);
 
-	object_query.addArchetypeCallbacks(std::move(add_func), std::move(remove_func));
+	object_query.addArchetypeCallbacks(std::move(object_add_func), std::move(object_remove_func));
 
 	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
 	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_job_pool = &GetApp().getJobPool();
+
 	_ecs_mgr->registerQuery(std::move(object_query));
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
@@ -179,7 +181,6 @@ void RenderCommandSystem::update()
 
 			output->getRenderTarget().bind(device);
 			output->getRenderTarget().clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
-			device.frameBegin(*output);
 
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
 				camera.GetVerticalFOV(),
@@ -191,37 +192,42 @@ void RenderCommandSystem::update()
 			const glm::mat4x4 camera_transform = glm::translate(glm::mat4_cast(cam_rot.value), cam_pos.value);
 			const glm::mat4x4 final_camera = projection * camera_transform;
 
-			// $TODO: Spawn a job per archetype we are processing.
-			for (int32_t i = 0; i < num_objects; ++i) {
-				const int32_t cache_index = camera_index * num_objects + i;
-				auto& deferred_data = _instance_data[i].deferred_data[&device];
+			if (num_objects) {
+				for (int32_t i = 0; i < num_objects; ++i) {
+					const int32_t cache_index = camera_index * num_objects + i;
+					auto& deferred_data = _instance_data[i].deferred_data[&device];
 
-				_render_job_data_cache[cache_index] = RenderJobData{
-					this,
-					i,
-					deferred_data.command_list.get(),
-					//deferred_data.deferred_context.get(),
-					&device,
-					final_camera
-				};
+					_render_job_data_cache[cache_index] = RenderJobData{
+						this,
+						i,
+						deferred_data.command_list.get(),
+						deferred_data.deferred_context.get(),
+						//&device,
+						&output->getRenderTarget(),
+						final_camera
+					};
 
-				_job_data_cache[cache_index] = Gaff::JobData{
-					RenderCommandSystem::GenerateCommandListJob,
-					&_render_job_data_cache[cache_index]
-				};
+					_job_data_cache[cache_index] = Gaff::JobData{
+						RenderCommandSystem::GenerateCommandListJob,
+						&_render_job_data_cache[cache_index]
+					};
+				}
 
-				GenerateCommandListJob(&_render_job_data_cache[cache_index]);
+				_job_pool->addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+				_job_pool->helpWhileWaiting(_job_counter);
 
-				//device.executeCommandList(*deferred_data.command_list);
+				for (const auto& render_job_data : _render_job_data_cache) {
+					device.executeCommandList(*render_job_data.cmd_list);
+				}
 			}
 
-			device.frameEnd(*output);
+			output->present();
 		},
 		_camera_position[camera_index], _camera_rotation[camera_index], _camera[camera_index]);
 	}
 }
 
-void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
+void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 {
 	auto* const material = _materials.back();
 	auto* const model = _models.back()->value.get();
@@ -240,7 +246,8 @@ void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
 
 	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 64;
 
-	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void {
+	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
+	{
 		const U8String pb_name(U8String::CtorSprintf(), "RenderCommandSystem:ProgramBuffers:%llu", archetype.getHash());
 
 		InstanceData& instance_data = _instance_data.emplace_back();
@@ -256,7 +263,7 @@ void RenderCommandSystem::newArchetype(const ECSArchetype& archetype)
 	}));
 }
 
-void RenderCommandSystem::removedArchetype(int32_t index)
+void RenderCommandSystem::removedObjectArchetype(int32_t index)
 {
 	_instance_data.erase(_instance_data.begin() + index);
 }
@@ -479,8 +486,12 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		return;
 	}
 
-	//Gleam::IRenderDevice& owning_device = *job_data.device->getOwningDevice();
-	Gleam::IRenderDevice& owning_device = *job_data.device;
+	if (!job_data.target) {
+		// $TODO: Log error
+		return;
+	}
+
+	Gleam::IRenderDevice& owning_device = *job_data.device->getOwningDevice();
 
 	const int32_t num_meshes = job_data.rcs->_models[job_data.index]->value->getNumMeshes();
 
@@ -517,6 +528,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		return;
 	}
 
+	job_data.target->bind(*job_data.device);
 	raster_state->bind(*job_data.device);
 	program->bind(*job_data.device);
 	layout->bind(*job_data.device);
@@ -593,7 +605,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		}
 	}
 
-	//job_data.device->finishCommandList(*job_data.cmd_list);
+	job_data.device->finishCommandList(*job_data.cmd_list);
 }
 
 NS_END
