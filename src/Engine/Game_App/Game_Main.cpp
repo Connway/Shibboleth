@@ -27,53 +27,54 @@ THE SOFTWARE.
 #endif
 
 #ifdef PLATFORM_WINDOWS
-// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
-// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
-extern "C"
-{
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-}
-
-int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
-{
-	Shibboleth::App app;
-
-	//while (true) {
-	//}
-
-#ifdef SHIB_STATIC
-	if (!app.init(Gen::LoadModulesStatic)) {
-#else
-	if (!app.init()) {
-#endif
-		app.destroy();
-		return -1;
+	// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
+	// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
+	extern "C"
+	{
+		__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+		__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 	}
 
-	app.run();
+	int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
+	{
+		Shibboleth::App app;
 
-#ifdef SHIB_STATIC
-	app.destroy(Gen::ShutdownModulesStatic);
-#else
-	app.destroy();
-#endif
+		//while (true) {
+		//}
 
-	return 0;
-}
-#else
-int main(int argc, const char** argv)
-{
-	Shibboleth::App app;
+	#ifdef SHIB_STATIC
+		if (!app.init(Gen::LoadModulesStatic)) {
+	#else
+		if (!app.init()) {
+	#endif
+			app.destroy();
+			return -1;
+		}
 
-	if (!app.init(argc, argv)) {
+		app.run();
+
+	#ifdef SHIB_STATIC
+		app.destroy(Gen::ShutdownModulesStatic);
+	#else
 		app.destroy();
-		return -1;
+	#endif
+
+		return 0;
 	}
 
-	app.run();
-	app.destroy();
+#else
+	int main(int argc, const char** argv)
+	{
+		Shibboleth::App app;
 
-	return 0;
-}
+		if (!app.init(argc, argv)) {
+			app.destroy();
+			return -1;
+		}
+
+		app.run();
+		app.destroy();
+
+		return 0;
+	}
 #endif

@@ -59,9 +59,9 @@ public:
 	void addJobs(const JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
 	void addJobs(const JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool = 0);
 	void waitForAndFreeCounter(Counter* counter);
-	void waitForCounter(const Counter* counter);
+	void waitForCounter(const Counter& counter);
 	void freeCounter(Counter* counter);
-	void helpWhileWaiting(const Counter* counter);
+	void helpWhileWaiting(const Counter& counter);
 	void helpAndFreeCounter(Counter* counter);
 
 	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());

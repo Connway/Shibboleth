@@ -47,6 +47,8 @@ public:
 	virtual const IRenderTarget& getRenderTarget(void) const = 0;
 	virtual IRenderTarget& getRenderTarget(void) = 0;
 
+	virtual void present(void) = 0;
+
 	GAFF_NO_COPY(IRenderOutput);
 };
 

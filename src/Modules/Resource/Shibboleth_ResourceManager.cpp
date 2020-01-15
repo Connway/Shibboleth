@@ -231,7 +231,7 @@ const IFile* ResourceManager::loadFileAndWait(const char* file_path)
 	auto& job_pool = GetApp().getJobPool();
 
 	job_pool.addJobs(&job_data, 1, counter, JPI_READ_FILE);
-	job_pool.helpWhileWaiting(&counter);
+	job_pool.helpWhileWaiting(counter);
 
 	return data.out_file;
 }

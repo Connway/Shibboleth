@@ -263,23 +263,6 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	return true;
 }
 
-void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
-{
-	GAFF_ASSERT(output.getRendererType() == RendererType::DIRECT3D11);
-	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
-	const D3D11_VIEWPORT viewport = out.getViewport();
-
-	resetRenderState();
-	_context->RSSetViewports(1, &viewport);
-}
-
-void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
-{
-	GAFF_ASSERT(output.getRendererType() == RendererType::DIRECT3D11);
-	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
-	out.present();
-}
-
 //bool RenderDeviceD3D11::resize(const IWindow& window)
 //{
 //	const Window& wnd = static_cast<const Window&>(window);

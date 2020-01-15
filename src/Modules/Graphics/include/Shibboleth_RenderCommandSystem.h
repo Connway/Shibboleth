@@ -32,6 +32,10 @@ THE SOFTWARE.
 #include <Gleam_IncludeMatrix.h>
 #include <Gleam_ICommandList.h>
 
+NS_GLEAM
+	class IRenderTarget;
+NS_END
+
 NS_SHIBBOLETH
 
 class RenderManagerBase;
@@ -86,6 +90,7 @@ private:
 
 		Gleam::ICommandList* cmd_list;
 		Gleam::IRenderDevice* device;
+		Gleam::IRenderTarget* target;
 
 		glm::mat4x4 view_projection;
 	};
@@ -93,6 +98,7 @@ private:
 	RenderManagerBase* _render_mgr = nullptr;
 	ResourceManager* _res_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
+	JobPool* _job_pool = nullptr;
 
 	Vector<InstanceData> _instance_data{ ProxyAllocator("Graphics") };
 
@@ -116,8 +122,8 @@ private:
 
 	// Cameras
 
-	void newArchetype(const ECSArchetype& archetype);
-	void removedArchetype(int32_t index);
+	void newObjectArchetype(const ECSArchetype& archetype);
+	void removedObjectArchetype(int32_t index);
 
 	void processNewArchetypeMaterial(
 		InstanceData& instance_data,
