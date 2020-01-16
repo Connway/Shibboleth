@@ -30,6 +30,8 @@ NS_GLEAM
 
 using WindowProcHelper = void (*)(AnyMessage&, Window*, WPARAM, LPARAM);
 
+static const wchar_t* g_window_class_name = L"Gleam_Window_Class";
+
 static VectorMap<UINT, WindowProcHelper> g_window_helpers;
 static Vector<Window*> g_windows;
 static bool g_first_init = true;
@@ -181,6 +183,24 @@ bool Window::init(HWND hwnd)
 		g_right_keys[VK_MENU] = KEY_RIGHTALT;
 		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
 
+		WNDCLASSEX wc;
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc = WindowProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = _hinstance;
+		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+		wc.hIconSm = wc.hIcon;
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = g_window_class_name;
+		wc.cbSize = sizeof(WNDCLASSEX);
+
+		if (!RegisterClassEx(&wc)) {
+			return false;
+		}
+
 		InitWindowProcHelpers();
 
 		g_first_init = false;
@@ -217,12 +237,28 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 		g_right_keys[VK_MENU] = KEY_RIGHTALT;
 		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
 
+		WNDCLASSEX wc;
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc = WindowProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = _hinstance;
+		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+		wc.hIconSm = wc.hIcon;
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = g_window_class_name;
+		wc.cbSize = sizeof(WNDCLASSEX);
+
+		if (!RegisterClassEx(&wc)) {
+			return false;
+		}
+
 		InitWindowProcHelpers();
 
 		g_first_init = false;
 	}
-
-	WNDCLASSEX wc;
 
 	_hinstance = GetModuleHandle(NULL);
 
@@ -234,23 +270,6 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 	_window_mode = window_mode;
 
 	CONVERT_STRING(wchar_t, temp, window_name);
-
-	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WindowProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = _hinstance;
-	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-	wc.hIconSm = wc.hIcon;
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = temp;
-	wc.cbSize = sizeof(WNDCLASSEX);
-
-	if (!RegisterClassEx(&wc)) {
-		return false;
-	}
 
 	DWORD flags = 0;
 
@@ -299,7 +318,7 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 	}
 
 	_hwnd = CreateWindowEx(
-		WS_EX_APPWINDOW, temp, temp,
+		WS_EX_APPWINDOW, g_window_class_name, temp,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
 		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
 		NULL, NULL, _hinstance, NULL
