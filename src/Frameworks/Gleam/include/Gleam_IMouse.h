@@ -24,16 +24,18 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IInputDevice.h"
+#include <vec2.hpp>
 
 NS_GLEAM
 
-struct MouseData
+struct MouseData final
 {
-	int32_t abs_x, abs_y;
-	int32_t rel_x, rel_y;
-	int32_t dx, dy;
-	bool buttons[MOUSE_BUTTON_COUNT];
-	int32_t wheel;
+	glm::ivec2 abs_pos{ 0, 0 };
+	glm::ivec2 rel_pos{ 0, 0 };
+	glm::ivec2 delta{ 0, 0 };
+
+	bool buttons[static_cast<uint8_t>(MouseCode::MOUSE_BUTTON_COUNT)] = { false };
+	int32_t wheel = 0;
 };
 
 class IMouse : public IInputDevice
@@ -42,17 +44,17 @@ public:
 	IMouse(void) {}
 	virtual ~IMouse(void) {}
 
-	virtual const MouseData& getMouseData(void) const = 0;
-	virtual void getAbsolutePosition(int32_t& x, int32_t& y) const = 0;
-	virtual void getRelativePosition(int32_t& x, int32_t& y) const = 0;
-	virtual void getDeltas(int32_t& dx, int32_t& dy) const = 0;
-	//virtual void getNormalizedAbsolutePosition(float& nx, float& ny) const = 0;
-	virtual void getNormalizedRelativePosition(float& nx, float& ny) const = 0;
-	virtual void getNormalizedDeltas(float& ndx, float& ndy) const = 0;
-	virtual int32_t getWheelDelta(void) const = 0;
+	const MouseData& getMouseData(void) const { return _data; }
+
+	virtual glm::ivec2 getNormalizedAbsolutePosition(void) const = 0;
+	virtual glm::ivec2 getNormalizedRelativePosition(void) const = 0;
+	virtual glm::ivec2 getNormalizedDeltas(void) const = 0;
 
 	bool isKeyboard(void) const override { return false; }
 	bool isMouse(void) const override { return true; }
+
+protected:
+	MouseData _data;
 };
 
 NS_END

@@ -225,6 +225,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Flags.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Function.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hash.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.h" />

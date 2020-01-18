@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IMouse.h"
+#include <Gaff_Flags.h>
 
 NS_GLEAM
 
@@ -37,14 +38,9 @@ public:
 	void destroy(void) override;
 	void update(void) override;
 
-	const MouseData& getMouseData(void) const override;
-	void getAbsolutePosition(int32_t& x, int32_t& y) const override;
-	void getRelativePosition(int32_t& x, int32_t& y) const override;
-	void getDeltas(int32_t& dx, int32_t& dy) const override;
-	//void getNormalizedAbsolutePosition(float& nx, float& ny) const override;
-	void getNormalizedRelativePosition(float& nx, float& ny) const override;
-	void getNormalizedDeltas(float& ndx, float& ndy) const override;
-	int32_t getWheelDelta(void) const override;
+	glm::ivec2 getNormalizedAbsolutePosition(void) const override;
+	glm::ivec2 getNormalizedRelativePosition(void) const override;
+	glm::ivec2 getNormalizedDeltas(void) const override;
 
 	void allowRepeats(bool allow) override;
 	bool areRepeatsAllowed(void) const override;
@@ -55,16 +51,19 @@ public:
 	const IWindow* getAssociatedWindow(void) const override;
 
 private:
-	MouseData _curr_data;
+	enum class Flag : uint8_t
+	{
+		AllowRepeats,
+		GlobalHandler,
+
+		Count
+	};
+
 	MouseData _prev_data;
+	IWindow* _window = nullptr;
 
-	int32_t _dx, _dy;
-	int32_t _wheel;
-
-	int32_t _flags;
-
-	IWindow* _window;
-	int32_t _id;
+	Gaff::Flags<Flag> _flags;
+	int32_t _id = -1;
 
 	bool handleMessage(const AnyMessage& message);
 };

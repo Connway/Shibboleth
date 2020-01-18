@@ -28,7 +28,7 @@ NS_GLEAM
 
 class IWindow;
 
-enum EventType
+enum class EventType : uint8_t
 {
 	WND_CLOSED = 0,
 	WND_DESTROYED,
@@ -47,7 +47,7 @@ enum EventType
 	EVENT_COUNT
 };
 
-enum MouseCode
+enum class MouseCode : uint8_t
 {
 	MOUSE_LEFT = 0,
 	MOUSE_RIGHT,
@@ -67,7 +67,7 @@ enum MouseCode
 };
 
 #ifdef PLATFORM_WINDOWS
-enum KeyCode
+enum class KeyCode
 {
 	// KEY_CANCEL = 0x03,
 	KEY_BACKSPACE = 0x08,
@@ -321,13 +321,13 @@ enum KeyCode
 };
 #endif
 
-struct MessageBase
-{	
+struct MessageBase final
+{
 	EventType type;
 	IWindow* window;
 };
 
-struct MouseMoveMessage
+struct MouseMoveMessage final
 {
 	EventType type;
 	IWindow* window;
@@ -339,7 +339,7 @@ struct MouseMoveMessage
 	int32_t dy;
 };
 
-struct MouseStateMessage
+struct MouseStateMessage final
 {
 	EventType type;
 	IWindow* window;
@@ -351,7 +351,7 @@ struct MouseStateMessage
 	};
 };
 
-struct KeyCharMessage
+struct KeyCharMessage final
 {
 	EventType type;
 	IWindow* window;
@@ -363,7 +363,7 @@ struct KeyCharMessage
 	};
 };
 
-union AnyMessage
+union AnyMessage final
 {
 	MessageBase base;
 	MouseMoveMessage mouse_move;

@@ -56,9 +56,9 @@ SHIB_ENUM_REFLECTION_END(Gleam::IShader::ShaderType)
 
 SHIB_ENUM_REFLECTION_DEFINE(Gleam::IWindow::WindowMode)
 SHIB_ENUM_REFLECTION_BEGIN(Gleam::IWindow::WindowMode)
-	.entry("Fullscreen", Gleam::IWindow::WM_FULLSCREEN)
-	.entry("Windowed", Gleam::IWindow::WM_WINDOWED)
-	.entry("Borderless Windowed", Gleam::IWindow::WM_BORDERLESS_WINDOWED)
+	.entry("Fullscreen", Gleam::IWindow::WindowMode::Fullscreen)
+	.entry("Windowed", Gleam::IWindow::WindowMode::Windowed)
+	.entry("Borderless Windowed", Gleam::IWindow::WindowMode::BorderlessWindowed)
 SHIB_ENUM_REFLECTION_END(Gleam::IWindow::WindowMode)
 
 SHIB_ENUM_REFLECTION_DEFINE(Gleam::ComparisonFunc)

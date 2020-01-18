@@ -45,10 +45,10 @@ VectorMap<uint16_t, KeyCode> Window::g_left_keys;
 
 static void InitWindowProcHelpers(void)
 {
-	//WM_MOUSELEAVE
-	//WM_GETMINMAXINFO
-	//WM_ENTERSIZEMOVE
-	//WM_EXITSIZEMOVE
+	//WindowMode::MOUSELEAVE
+	//WindowMode::GETMINMAXINFO
+	//WindowMode::ENTERSIZEMOVE
+	//WindowMode::EXITSIZEMOVE
 	g_window_helpers.emplace(WM_CLOSE, WindowClosed);
 	g_window_helpers.emplace(WM_DESTROY, WindowDestroyed);
 	g_window_helpers.emplace(WM_MOVE, WindowMoved);
@@ -66,6 +66,47 @@ static void InitWindowProcHelpers(void)
 	g_window_helpers.emplace(WM_MOUSEWHEEL, WindowMouseWheel);
 	g_window_helpers.emplace(WM_SETFOCUS, WindowSetFocus);
 	g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
+}
+
+static bool DoFirstInit(
+	WNDPROC window_proc,
+	HINSTANCE hinstance,
+	VectorMap<uint16_t, KeyCode>& left_keys,
+	VectorMap<uint16_t, KeyCode>& right_keys)
+{
+	if (g_first_init) {
+		left_keys[VK_CONTROL] = KeyCode::KEY_LEFTCONTROL;
+		left_keys[VK_MENU] = KeyCode::KEY_LEFTALT;
+		left_keys[VK_SHIFT] = KeyCode::KEY_LEFTSHIFT;
+
+		right_keys[VK_CONTROL] = KeyCode::KEY_RIGHTCONTROL;
+		right_keys[VK_MENU] = KeyCode::KEY_RIGHTALT;
+		right_keys[VK_SHIFT] = KeyCode::KEY_RIGHTSHIFT;
+
+		WNDCLASSEX wc;
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc = window_proc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = hinstance;
+		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+		wc.hIconSm = wc.hIcon;
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = g_window_class_name;
+		wc.cbSize = sizeof(WNDCLASSEX);
+
+		if (!RegisterClassEx(&wc)) {
+			return false;
+		}
+
+		InitWindowProcHelpers();
+
+		g_first_init = false;
+	}
+
+	return true;
 }
 
 static bool RemoveMessageHandler(VectorMap<int32_t, MessageHandler>& handlers, int32_t id)
@@ -174,50 +215,26 @@ Window::~Window(void)
 
 bool Window::init(HWND hwnd)
 {
-	if (g_first_init) {
-		g_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
-		g_left_keys[VK_MENU] = KEY_LEFTALT;
-		g_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
+	_hinstance = GetModuleHandle(NULL);
 
-		g_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
-		g_right_keys[VK_MENU] = KEY_RIGHTALT;
-		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
-
-		WNDCLASSEX wc;
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = WindowProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = _hinstance;
-		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-		wc.hIconSm = wc.hIcon;
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-		wc.lpszMenuName = NULL;
-		wc.lpszClassName = g_window_class_name;
-		wc.cbSize = sizeof(WNDCLASSEX);
-
-		if (!RegisterClassEx(&wc)) {
-			return false;
-		}
-
-		InitWindowProcHelpers();
-
-		g_first_init = false;
+	if (!_hinstance) {
+		return false;
 	}
 
-	_window_mode = WM_WINDOWED;
+	DoFirstInit(WindowProc, _hinstance, g_left_keys, g_right_keys);
+
+	_window_mode = WindowMode::Windowed;
 	_owns_window = false;
 	_hwnd = hwnd;
 
 	RECT rect;
 	GetWindowRect(_hwnd, &rect);
 
-	_pos_x = rect.left;
-	_pos_y = rect.top;
+	_pos.x = rect.left;
+	_pos.y = rect.top;
 
-	_width = rect.right - rect.left;
-	_height = rect.bottom - rect.top;
+	_size.x = rect.right - rect.left;
+	_size.y = rect.bottom - rect.top;
 
 	return true;
 }
@@ -228,43 +245,13 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 {
 	GAFF_ASSERT(window_name);
 
-	if (g_first_init) {
-		g_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
-		g_left_keys[VK_MENU] = KEY_LEFTALT;
-		g_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
-
-		g_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
-		g_right_keys[VK_MENU] = KEY_RIGHTALT;
-		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
-
-		WNDCLASSEX wc;
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = WindowProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = _hinstance;
-		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-		wc.hIconSm = wc.hIcon;
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-		wc.lpszMenuName = NULL;
-		wc.lpszClassName = g_window_class_name;
-		wc.cbSize = sizeof(WNDCLASSEX);
-
-		if (!RegisterClassEx(&wc)) {
-			return false;
-		}
-
-		InitWindowProcHelpers();
-
-		g_first_init = false;
-	}
-
 	_hinstance = GetModuleHandle(NULL);
 
 	if (!_hinstance) {
 		return false;
 	}
+
+	DoFirstInit(WindowProc, _hinstance, g_left_keys, g_right_keys);
 
 	_window_name = window_name;
 	_window_mode = window_mode;
@@ -274,22 +261,22 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 	DWORD flags = 0;
 
 	switch (window_mode) {
-		case WM_BORDERLESS_WINDOWED:
-		case WM_FULLSCREEN:
+		case WindowMode::BorderlessWindowed:
+		case WindowMode::Fullscreen:
 			flags = WS_POPUP;
 			break;
 
-		case WM_WINDOWED:
+		case WindowMode::Windowed:
 			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
 			break;
 	}
 
-	_pos_x = pos_x;
-	_pos_y = pos_y;
-	_width = width;
-	_height = height;
+	_pos.x = pos_x;
+	_pos.y = pos_y;
+	_size.x = width;
+	_size.y = height;
 
-	if (window_mode == WM_FULLSCREEN) {
+	if (window_mode == WindowMode::Fullscreen) {
 		// If full screen set the screen to maximum size of the users desktop and 32-bit.
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
@@ -303,12 +290,12 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 	}
 
 	// Adjust window to make the drawable area to be the desired resolution.
-	RECT window_rect = { _pos_x, pos_y, _pos_x + static_cast<int>(_width), _pos_y + static_cast<int>(_height) };
+	RECT window_rect = { _pos.x, _pos.y, _pos.x + _size.x, _pos.y + _size.y };
 
-	if (window_mode == WM_WINDOWED) {
+	if (window_mode == WindowMode::Windowed) {
 		AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);
 
-		if (_pos_x == 0 && _pos_y == 0) {
+		if (_pos.x == 0 && _pos.y == 0) {
 			window_rect.right += -window_rect.left;
 			window_rect.left = 0;
 
@@ -329,7 +316,7 @@ bool Window::init(const char* window_name, WindowMode window_mode,
 	}
 
 	// Bring the window up on the screen and set it as main focus.
-	ShowWindow(_hwnd, (window_mode == WM_FULLSCREEN) ? SW_MAXIMIZE : SW_SHOW);
+	ShowWindow(_hwnd, (window_mode == WindowMode::Fullscreen) ? SW_MAXIMIZE : SW_SHOW);
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
 
@@ -353,7 +340,7 @@ void Window::destroy(void)
 	containCursor(false);
 	showCursor(true);
 
-	if (_window_mode == WM_FULLSCREEN) {
+	if (_window_mode == WindowMode::Fullscreen) {
 		ChangeDisplaySettings(NULL, 0);
 	}
 
@@ -410,9 +397,10 @@ void Window::containCursor(bool contain)
 
 	if (contain) {
 		RECT rect = {
-			_pos_x, _pos_y,
-			_pos_x + static_cast<int>(_width),
-			_pos_y + static_cast<int>(_height)
+			_pos.x,
+			_pos.y,
+			_pos.x + _size.x,
+			_pos.y + _size.y
 		};
 
 		ClipCursor(&rect);
@@ -438,40 +426,40 @@ bool Window::setWindowMode(WindowMode window_mode)
 	DWORD flags = 0;
 
 	switch (window_mode) {
-		case WM_BORDERLESS_WINDOWED:
-			_pos_x = _pos_y = 0;
-			_width = GetSystemMetrics(SM_CXSCREEN);
-			_height = GetSystemMetrics(SM_CYSCREEN);
+		case WindowMode::BorderlessWindowed:
+			_pos.x = _pos.y = 0;
+			_size.x = GetSystemMetrics(SM_CXSCREEN);
+			_size.y = GetSystemMetrics(SM_CYSCREEN);
 			break;
 
-		case WM_FULLSCREEN:
-			_pos_x = _pos_y = 0;
+		case WindowMode::Fullscreen:
+			_pos.x = _pos.y = 0;
 			flags = WS_POPUP;
 			break;
 
-		case WM_WINDOWED:
+		case WindowMode::Windowed:
 			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
 			break;
 	}
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if (window_mode == WM_FULLSCREEN) {
+	if (window_mode == WindowMode::Fullscreen) {
 		DEVMODE dm_screen_settings;
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
 		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(_width);
-		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_height);
+		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(_size.x);
+		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_size.y);
 		dm_screen_settings.dmBitsPerPel = 32;
 		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		// Change the display settings to full screen.
 		if (ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN) == DISP_CHANGE_BADMODE) {
 			// If we try to change to a bad mode, default to desktop resolution
-			_width = GetSystemMetrics(SM_CXSCREEN);
-			_height = GetSystemMetrics(SM_CYSCREEN);
-			dm_screen_settings.dmPelsWidth = static_cast<DWORD>(_width);
-			dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_height);
+			_size.x = GetSystemMetrics(SM_CXSCREEN);
+			_size.y = GetSystemMetrics(SM_CYSCREEN);
+			dm_screen_settings.dmPelsWidth = static_cast<DWORD>(_size.x);
+			dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_size.y);
 
 			// try one last time using desktop resolution
 			if (ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
@@ -485,7 +473,7 @@ bool Window::setWindowMode(WindowMode window_mode)
 	}
 
 	SetWindowLongPtr(_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags);
-	return SetWindowPos(_hwnd, HWND_TOP, _pos_x, _pos_y, _width, _height, SWP_SHOWWINDOW | SWP_DRAWFRAME) != FALSE;
+	return SetWindowPos(_hwnd, HWND_TOP, _pos.x, _pos.y, _size.x, _size.y, SWP_SHOWWINDOW | SWP_DRAWFRAME) != FALSE;
 }
 
 Window::WindowMode Window::getWindowMode(void) const
@@ -493,41 +481,37 @@ Window::WindowMode Window::getWindowMode(void) const
 	return _window_mode;
 }
 
-void Window::getPos(int& x, int& y) const
+const glm::ivec2& Window::getPos(void) const
 {
-	x = _pos_x;
-	y = _pos_y;
+	return _pos;
 }
 
-void Window::getDimensions(int32_t& width, int32_t& height) const
+const glm::ivec2& Window::getSize(void) const
 {
-	width = _width;
-	height = _height;
+	return _size;
 }
 
-int Window::getPosX(void) const
+void Window::setPos(const glm::ivec2& pos)
 {
-	return _pos_x;
+	_pos = pos;
+
+	if (_owns_window) {
+		MoveWindow(_hwnd, _pos.x, _pos.y, _size.x, _size.y, false);
+	}
 }
 
-int Window::getPosY(void) const
+void Window::setSize(const glm::ivec2& size)
 {
-	return _pos_y;
-}
+	_size = size;
 
-int32_t Window::getWidth(void) const
-{
-	return _width;
-}
-
-int32_t Window::getHeight(void) const
-{
-	return _height;
+	if (_owns_window) {
+		MoveWindow(_hwnd, _pos.x, _pos.y, _size.x, _size.y, false);
+	}
 }
 
 bool Window::isFullScreen(void) const
 {
-	return _window_mode == WM_FULLSCREEN;
+	return _window_mode == WindowMode::Fullscreen;
 }
 
 bool Window::setIcon(const char* icon)
@@ -541,26 +525,6 @@ bool Window::setIcon(const char* icon)
 
 	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
 	return true;
-}
-
-void Window::setPos(int32_t x, int32_t y)
-{
-	_pos_x = x;
-	_pos_y = y;
-
-	if (_owns_window) {
-		MoveWindow(_hwnd, _pos_x, _pos_y, _width, _height, false);
-	}
-}
-
-void Window::setDimensions(int32_t width, int32_t height)
-{
-	_width = width;
-	_height = height;
-
-	if (_owns_window) {
-		MoveWindow(_hwnd, _pos_x, _pos_y, _width, _height, false);
-	}
 }
 
 HINSTANCE Window::getHInstance(void) const

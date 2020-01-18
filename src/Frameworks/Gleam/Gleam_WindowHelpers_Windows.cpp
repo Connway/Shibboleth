@@ -28,33 +28,37 @@ NS_GLEAM
 
 void WindowClosed(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = WND_CLOSED;
+	message.base.type = EventType::WND_CLOSED;
 }
 
 void WindowDestroyed(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = WND_DESTROYED;
+	message.base.type = EventType::WND_DESTROYED;
 }
 
 void WindowMoved(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 {
-	window->_pos_x = (int)(short)LOWORD(l);
-	window->_pos_y = (int)(short)HIWORD(l);
+	window->_pos = glm::ivec2{
+		(int)(short)LOWORD(l),
+		(int)(short)HIWORD(l)
+	};
 
-	message.base.type = WND_MOVED;
+	message.base.type = EventType::WND_MOVED;
 }
 
 void WindowResized(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 {
-	window->_width = LOWORD(l);
-	window->_height = HIWORD(l);
+	window->_size = glm::ivec2{
+		LOWORD(l),
+		HIWORD(l)
+	};
 
-	message.base.type = WND_RESIZED;
+	message.base.type = EventType::WND_RESIZED;
 }
 
 void WindowCharacter(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = IN_CHARACTER;
+	message.base.type = EventType::IN_CHARACTER;
 	message.key_char.character = static_cast<uint32_t>(w);
 
 	//if (m_keyRepeatEnabled || ((lParam & (1 << 30)) == 0))
@@ -103,7 +107,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 	if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
 
-		message.base.type = IN_MOUSEMOVE;
+		message.base.type = EventType::IN_MOUSEMOVE;
 
 		POINT pos;
 		if (GetCursorPos(&pos)) {
@@ -129,7 +133,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 	} else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
 
-		message.base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? IN_KEYUP : IN_KEYDOWN;
+		message.base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? EventType::IN_KEYUP : EventType::IN_KEYDOWN;
 
 		switch (raw->data.keyboard.VKey) {
 			case VK_CONTROL:
@@ -137,7 +141,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 				// For some reason, right shift isn't getting the RI_KEY_E0 flag set.
 				// Special case it so that we send the correct key.
 				if (raw->data.keyboard.MakeCode == 54) {
-					message.key_char.key = KEY_RIGHTSHIFT;
+					message.key_char.key = KeyCode::KEY_RIGHTSHIFT;
 					break;
 				}
 
@@ -158,74 +162,76 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 void WindowLeftButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEDOWN;
-	message.mouse_state.button = MOUSE_LEFT;
+	message.base.type = EventType::IN_MOUSEDOWN;
+	message.mouse_state.button = MouseCode::MOUSE_LEFT;
 }
 
 void WindowRightButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEDOWN;
-	message.mouse_state.button = MOUSE_RIGHT;
+	message.base.type = EventType::IN_MOUSEDOWN;
+	message.mouse_state.button = MouseCode::MOUSE_RIGHT;
 }
 
 void WindowMiddleButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEDOWN;
-	message.mouse_state.button = MOUSE_MIDDLE;
+	message.base.type = EventType::IN_MOUSEDOWN;
+	message.mouse_state.button = MouseCode::MOUSE_MIDDLE;
 }
 
 void WindowXButtonDown(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = IN_MOUSEDOWN;
-	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MOUSE_BACK : MOUSE_FORWARD;
+	message.base.type = EventType::IN_MOUSEDOWN;
+	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::MOUSE_BACK : MouseCode::MOUSE_FORWARD;
 }
 
 void WindowLeftButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEUP;
-	message.mouse_state.button = MOUSE_LEFT;
+	message.base.type = EventType::IN_MOUSEUP;
+	message.mouse_state.button = MouseCode::MOUSE_LEFT;
 }
 
 void WindowRightButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEUP;
-	message.mouse_state.button = MOUSE_RIGHT;
+	message.base.type = EventType::IN_MOUSEUP;
+	message.mouse_state.button = MouseCode::MOUSE_RIGHT;
 }
 
 void WindowMiddleButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = IN_MOUSEUP;
-	message.mouse_state.button = MOUSE_MIDDLE;
+	message.base.type = EventType::IN_MOUSEUP;
+	message.mouse_state.button = MouseCode::MOUSE_MIDDLE;
 }
 
 void WindowXButtonUp(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = IN_MOUSEUP;
-	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MOUSE_BACK : MOUSE_FORWARD;
+	message.base.type = EventType::IN_MOUSEUP;
+	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::MOUSE_BACK : MouseCode::MOUSE_FORWARD;
 }
 
 void WindowMouseWheel(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = IN_MOUSEWHEEL;
+	message.base.type = EventType::IN_MOUSEWHEEL;
 	message.mouse_state.wheel = static_cast<short>(HIWORD(w) / WHEEL_DELTA);
 }
 
 void WindowSetFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 {
-	if (window->_window_mode == IWindow::WM_FULLSCREEN) {
+	if (window->_window_mode == IWindow::WindowMode::Fullscreen) {
+		const glm::ivec2& size = window->getSize();
+
 		// If full screen set the screen to maximum size of the users desktop and 32-bit.
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
 		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-		dm_screen_settings.dmPelsWidth  = window->_width;
-		dm_screen_settings.dmPelsHeight = window->_height;
+		dm_screen_settings.dmPelsWidth  = size.x;
+		dm_screen_settings.dmPelsHeight = size.y;
 		dm_screen_settings.dmBitsPerPel = 32;
 		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
 	}
 
-	message.base.type = WND_GAINEDFOCUS;
+	message.base.type = EventType::WND_GAINEDFOCUS;
 }
 
 void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
@@ -244,7 +250,7 @@ void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 	//	ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
 	//}
 
-	//message.base.type = WND_LOSTFOCUS;
+	//message.base.type = EventType::WND_LOSTFOCUS;
 }
 
 NS_END

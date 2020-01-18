@@ -20,40 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-template <class T>
-void SetBitsToValue(T& value, T bits, bool set)
-{
-	if (set) {
-		SetBits(value, bits);
-	} else {
-		ClearBits(value, bits);
-	}
-}
-
-template <class T>
-void SetBits(T& value, T bits)
-{
-	value |= bits;
-}
-
-template <class T>
-void ClearBits(T& value, T bits)
-{
-	value &= ~bits;
-}
-
-template <class T>
-bool TestAnyBits(const T& value, T bits)
-{
-	return (value & bits) != 0;
-}
-
-template <class T>
-bool TestAllBits(const T& value, T bits)
-{
-	return (value & bits) == bits;
-}
-
 template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void)
 {
