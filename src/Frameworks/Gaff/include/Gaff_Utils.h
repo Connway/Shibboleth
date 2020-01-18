@@ -60,21 +60,6 @@ void AlignedFree(void* data);
 bool IsDebuggerAttached(void);
 void DebugBreak(void);
 
-template <class T>
-void SetBitsToValue(T& value, T bits, bool set);
-
-template <class T>
-void SetBits(T& value, T bits);
-
-template <class T>
-void ClearBits(T& value, T bits);
-
-template <class T>
-bool TestAnyBits(const T& value, T bits);
-
-template <class T>
-bool TestAllBits(const T& value, T bits);
-
 template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void);
 

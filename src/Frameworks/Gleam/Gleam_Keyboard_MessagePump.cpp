@@ -24,17 +24,10 @@ THE SOFTWARE.
 #include "Gleam_RawInputRegisterFunction.h"
 #include "Gleam_Window.h"
 
-#define KMP_ALLOW_REPEATS (1 << 0)
-#define KMP_NO_WINDOWS_KEY (1 << 1)
-#define KMP_GLOBAL_HANDLER (1 << 2)
-
 NS_GLEAM
 
-KeyboardMP::KeyboardMP(void):
-	_flags(0), _window(nullptr)
+KeyboardMP::KeyboardMP(void)
 {
-	memset(_curr_state, 0, sizeof(_curr_state));
-	memset(_prev_state, 0, sizeof(_prev_state));
 }
 
 KeyboardMP::~KeyboardMP(void)
@@ -44,10 +37,7 @@ KeyboardMP::~KeyboardMP(void)
 
 bool KeyboardMP::init(IWindow& window, bool no_windows_key)
 {
-	if (no_windows_key) {
-		_flags |= KMP_NO_WINDOWS_KEY;
-	}
-
+	_flags.set(no_windows_key, Flag::NoWindowsKey);
 	return init(window);
 }
 
@@ -62,10 +52,7 @@ bool KeyboardMP::init(IWindow& window)
 
 bool KeyboardMP::init(bool no_windows_key)
 {
-	if (no_windows_key) {
-		_flags |= KMP_NO_WINDOWS_KEY;
-	}
-
+	_flags.set(no_windows_key, Flag::NoWindowsKey);
 	return init();
 }
 
@@ -74,7 +61,7 @@ bool KeyboardMP::init(void)
 	auto cb = Gaff::MemberFunc(this, &KeyboardMP::handleMessage);
 	_id = Window::AddGlobalMessageHandler(cb);
 
-	_flags |= KMP_GLOBAL_HANDLER;
+	_flags.set(true, Flag::GlobalHandler);
 	return true;
 }
 
@@ -97,7 +84,7 @@ void KeyboardMP::update(void)
 {
 	if (areRepeatsAllowed()) {
 		for (int32_t i = 0; i < 256; ++i) {
-			uint8_t curr = _curr_state[i];
+			uint8_t curr = _data[i];
 			const int32_t size = static_cast<int32_t>(_input_handlers.size());
 
 			for (int32_t j = 0; j < size; ++j) {
@@ -107,7 +94,7 @@ void KeyboardMP::update(void)
 
 	} else {
 		for (int32_t i = 0; i < 256; ++i) {
-			uint8_t curr = _curr_state[i];
+			uint8_t curr = _data[i];
 			uint8_t prev = _prev_state[i];
 
 			if (curr != prev) {
@@ -119,37 +106,18 @@ void KeyboardMP::update(void)
 			}
 		}
 
-		memcpy(_prev_state, _curr_state, sizeof(_curr_state));
+		memcpy(_prev_state, _data, sizeof(_data));
 	}
-}
-
-bool KeyboardMP::isKeyDown(KeyCode key) const
-{
-	return _curr_state[key] != 0;
-}
-
-bool KeyboardMP::isKeyUp(KeyCode key) const
-{
-	return _curr_state[key] == 0;
 }
 
 void KeyboardMP::allowRepeats(bool allow)
 {
-	if (allow) {
-		_flags |= KMP_ALLOW_REPEATS;
-	} else {
-		_flags &= ~KMP_ALLOW_REPEATS;
-	}
+	_flags.set(allow, Flag::AllowRepeats);
 }
 
 bool KeyboardMP::areRepeatsAllowed(void) const
 {
-	return _flags & KMP_ALLOW_REPEATS;
-}
-
-const uint8_t* KeyboardMP::getKeyboardData(void) const
-{
-	return _curr_state;
+	return _flags.testAll(Flag::AllowRepeats);
 }
 
 const char* KeyboardMP::getDeviceName(void) const
@@ -170,15 +138,15 @@ const IWindow* KeyboardMP::getAssociatedWindow(void) const
 bool KeyboardMP::handleMessage(const AnyMessage& message)
 {
 	switch (message.base.type) {
-		case IN_KEYDOWN:
-			_curr_state[message.key_char.key] = true;
+		case EventType::IN_KEYDOWN:
+			_data[static_cast<int32_t>(message.key_char.key)] = true;
 			return true;
 
-		case IN_KEYUP:
-			_curr_state[message.key_char.key] = false;
+		case EventType::IN_KEYUP:
+			_data[static_cast<int32_t>(message.key_char.key)] = false;
 			return true;
 
-		case IN_CHARACTER: {
+		case EventType::IN_CHARACTER: {
 			const int32_t size = static_cast<int32_t>(_character_handlers.size());
 
 			for (int32_t i = 0; i < size; ++i) {
@@ -188,7 +156,7 @@ bool KeyboardMP::handleMessage(const AnyMessage& message)
 			return true;
 		}
 
-		// To get rid of pesky "case not handled" warnings in GCC
+		// To get rid of pesky "case not handled" warnings.
 		default:
 			break;
 	}

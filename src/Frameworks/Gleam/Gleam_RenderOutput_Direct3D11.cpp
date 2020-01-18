@@ -31,7 +31,7 @@ NS_GLEAM
 bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RendererType::DIRECT3D11);
-	_vsync = vsync && window.getWindowMode() != IWindow::WM_FULLSCREEN;
+	_vsync = vsync && window.getWindowMode() != IWindow::WindowMode::Fullscreen;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
 	const Window& wnd = static_cast<const Window&>(window);
@@ -60,9 +60,11 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		return false;
 	}
 
+	const glm::ivec2& size = wnd.getSize();
+
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc;
-	swap_chain_desc.Width = static_cast<UINT>(wnd.getWidth());
-	swap_chain_desc.Height = static_cast<UINT>(wnd.getHeight());
+	swap_chain_desc.Width = static_cast<UINT>(size.x);
+	swap_chain_desc.Height = static_cast<UINT>(size.y);
 	swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swap_chain_desc.Stereo = FALSE;
 	swap_chain_desc.SampleDesc.Count = 1;
@@ -74,11 +76,11 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-	if (wnd.getWindowMode() != IWindow::WM_FULLSCREEN) {
+	if (wnd.getWindowMode() != IWindow::WindowMode::Fullscreen) {
 		_present_flags |= DXGI_PRESENT_ALLOW_TEARING;
 	}
 
-	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
+	if (wnd.getWindowMode() == IWindow::WindowMode::Fullscreen) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -107,7 +109,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	swap_chain->Release();
 
-	if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
+	if (wnd.getWindowMode() == IWindow::WindowMode::Fullscreen) {
 		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
 	} else {
 		result = final_swap_chain->SetFullscreenState(FALSE, NULL);
@@ -152,8 +154,8 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	_swap_chain.reset(final_swap_chain);
 
 	D3D11_VIEWPORT viewport;
-	viewport.Width = static_cast<float>(wnd.getWidth());
-	viewport.Height = static_cast<float>(wnd.getHeight());
+	viewport.Width = static_cast<float>(size.x);
+	viewport.Height = static_cast<float>(size.y);
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;

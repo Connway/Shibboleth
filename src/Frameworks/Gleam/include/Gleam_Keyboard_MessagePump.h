@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IKeyboard.h"
+#include <Gaff_Flags.h>
 
 NS_GLEAM
 
@@ -32,20 +33,15 @@ public:
 	KeyboardMP(void);
 	~KeyboardMP(void);
 
-	bool init(IWindow& window, bool no_windows_key);
-	bool init(IWindow& window);
-	bool init(bool no_windows_key);
-	bool init(void);
-	void destroy(void);
-	void update(void);
+	bool init(IWindow& window, bool no_windows_key) override;
+	bool init(IWindow& window) override;
+	bool init(bool no_windows_key) override;
+	bool init(void) override;
+	void destroy(void) override;
+	void update(void) override;
 
-	bool isKeyDown(KeyCode key) const;
-	bool isKeyUp(KeyCode key) const;
-
-	void allowRepeats(bool allow);
-	bool areRepeatsAllowed(void) const;
-
-	const uint8_t* getKeyboardData(void) const;
+	void allowRepeats(bool allow) override;
+	bool areRepeatsAllowed(void) const override;
 
 	const char* getDeviceName(void) const;
 	const char* getPlatformImplementationString(void) const;
@@ -55,12 +51,20 @@ public:
 	bool handleMessage(const AnyMessage& message);
 
 private:
-	uint8_t _curr_state[256];
-	uint8_t _prev_state[256];
-	char _flags;
+	enum class Flag : uint8_t
+	{
+		AllowRepeats,
+		GlobalHandler,
+		NoWindowsKey,
 
-	IWindow* _window;
-	int32_t _id;
+		Count
+	};
+
+	uint8_t _prev_state[256] = { 0 };
+	Gaff::Flags<Flag> _flags;
+
+	IWindow* _window = nullptr;
+	int32_t _id = -1;
 };
 
 NS_END

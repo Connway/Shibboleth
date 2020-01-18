@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Gleam_Window_Defines.h>
 #include <EASTL/functional.h>
+#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -32,13 +33,13 @@ using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 class IWindow
 {
 public:
-	enum WindowMode { WM_FULLSCREEN = 0, WM_WINDOWED, WM_BORDERLESS_WINDOWED };
+	enum class WindowMode : uint8_t { Fullscreen = 0, Windowed, BorderlessWindowed };
 
 	IWindow(void) {}
 	virtual ~IWindow(void) {}
 
 	virtual bool init(
-		const char* window_name, WindowMode window_mode = WM_FULLSCREEN,
+		const char* window_name, WindowMode window_mode = WindowMode::Fullscreen,
 		int32_t width = 0, int32_t height = 0,
 		int32_t pos_x = 0, int32_t pos_y = 0,
 		const char* compat = nullptr
@@ -59,18 +60,14 @@ public:
 	virtual bool setWindowMode(WindowMode window_mode) = 0;
 	virtual WindowMode getWindowMode(void) const = 0;
 
-	virtual void getPos(int& x, int& y) const = 0;
-	virtual void getDimensions(int32_t& width, int32_t& height) const = 0;
-	virtual int32_t getPosX(void) const = 0;
-	virtual int32_t getPosY(void) const = 0;
-	virtual int32_t getWidth(void) const = 0;
-	virtual int32_t getHeight(void) const = 0;
+	virtual const glm::ivec2& getPos(void) const = 0;
+	virtual const glm::ivec2& getSize(void) const = 0;
+	virtual void setPos(const glm::ivec2& pos) = 0;
+	virtual void setSize(const glm::ivec2& size) = 0;
+
 	virtual bool isFullScreen(void) const = 0;
 
 	virtual bool setIcon(const char* icon) = 0;
-
-	virtual void setPos(int32_t x, int32_t y) = 0;
-	virtual void setDimensions(int32_t width, int32_t height) = 0;
 };
 
 NS_END

@@ -182,10 +182,11 @@ void RenderCommandSystem::update()
 			output->getRenderTarget().bind(device);
 			output->getRenderTarget().clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
+			const glm::ivec2& size = window->getSize();
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
 				camera.GetVerticalFOV(),
-				static_cast<float>(window->getWidth()),
-				static_cast<float>(window->getHeight()),
+				static_cast<float>(size.x),
+				static_cast<float>(size.y),
 				camera.z_near, camera.z_far
 			);
 

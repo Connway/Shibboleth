@@ -172,7 +172,7 @@ bool RenderManagerBase::init(void)
 		int32_t height = value["height"].getInt32(0);
 		const int32_t refresh_rate = value["refresh_rate"].getInt32(0);
 		const bool vsync = value["vsync"].getBool();
-		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WM_WINDOWED;
+		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
 
 		SerializeReader<Gaff::JSON> reader(value["window_mode"], ProxyAllocator("Graphics"));
 		
@@ -186,7 +186,7 @@ bool RenderManagerBase::init(void)
 			height = display_info.curr_height;
 		}
 
-		if (window_mode == Gleam::IWindow::WM_FULLSCREEN) {
+		if (window_mode == Gleam::IWindow::WindowMode::Fullscreen) {
 			x = 0;
 			y = 0;
 		}
@@ -435,28 +435,29 @@ bool RenderManagerBase::createGBuffer(const char* window_name)
 	data.depth_srv.reset(createShaderResourceView());
 
 	Gleam::IRenderDevice& rd = *_render_device_tags[window_tag][0];
+	const glm::ivec2& size = window.getSize();
 
-	if (!data.diffuse->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+	if (!data.diffuse->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 		LogErrorDefault("Failed to create diffuse texture for window '%s'.", window_name);
 		return false;
 	}
 
-	if (!data.specular->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+	if (!data.specular->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 		LogErrorDefault("Failed to create specular texture for window '%s'.", window_name);
 		return false;
 	}
 
-	if (!data.normal->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+	if (!data.normal->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 		LogErrorDefault("Failed to create normal texture for window '%s'.", window_name);
 		return false;
 	}
 
-	if (!data.position->init2D(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::RGBA_8_UNORM)) {
+	if (!data.position->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 		LogErrorDefault("Failed to create position texture for window '%s'.", window_name);
 		return false;
 	}
 
-	if (!data.depth->initDepthStencil(rd, window.getWidth(), window.getHeight(), Gleam::ITexture::Format::DEPTH_32_F)) {
+	if (!data.depth->initDepthStencil(rd, size.x, size.y, Gleam::ITexture::Format::DEPTH_32_F)) {
 		LogErrorDefault("Failed to create depth texture for window '%s'.", window_name);
 		return false;
 	}

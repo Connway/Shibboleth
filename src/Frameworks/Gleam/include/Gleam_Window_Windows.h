@@ -46,7 +46,7 @@ public:
 
 	bool init(HWND hwnd);
 
-	bool init(const char* window_name, WindowMode window_mode = WM_FULLSCREEN,
+	bool init(const char* window_name, WindowMode window_mode = WindowMode::Fullscreen,
 				int32_t width = 0, int32_t height = 0,
 				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
 	void destroy(void) override;
@@ -64,27 +64,23 @@ public:
 	bool setWindowMode(WindowMode window_mode) override;
 	WindowMode getWindowMode(void) const override;
 
-	void getPos(int32_t& x, int32_t& y) const override;
-	void getDimensions(int32_t& width, int32_t& height) const override;
-	int32_t getPosX(void) const override;
-	int32_t getPosY(void) const override;
-	int32_t getWidth(void) const override;
-	int32_t getHeight(void) const override;
+	const glm::ivec2& getPos(void) const override;
+	const glm::ivec2& getSize(void) const override;
+	void setPos(const glm::ivec2& pos) override;
+	void setSize(const glm::ivec2& size) override;
+
 	bool isFullScreen(void) const override;
 
 	bool setIcon(const char* icon) override;
-
-	void setPos(int32_t x, int32_t y) override;
-	void setDimensions(int32_t width, int32_t height) override;
 
 	HINSTANCE getHInstance(void) const;
 	HWND getHWnd(void) const;
 
 private:
-	int32_t _pos_x, _pos_y;
-	int32_t _width, _height;
+	glm::ivec2 _pos{ 0, 0 };
+	glm::ivec2 _size{ 1, 1 };
 
-	WindowMode _window_mode = WM_FULLSCREEN;
+	WindowMode _window_mode = WindowMode::Fullscreen;
 	bool _cursor_visible = true;
 	bool _contain = false;
 
