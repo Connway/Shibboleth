@@ -146,12 +146,13 @@ bool RenderCommandSystem::init(void)
 
 void RenderCommandSystem::update()
 {
-	// All arrays should be same size.
+	// All arrays should be same size as instance data.
 	const int32_t num_objects = static_cast<int32_t>(_instance_data.size());
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
-	_render_job_data_cache.resize(num_objects * num_cameras);
-	_job_data_cache.resize(num_objects * num_cameras);
+	const size_t new_size = static_cast<size_t>(num_objects)* static_cast<size_t>(num_cameras);
+	_render_job_data_cache.resize(new_size);
+	_job_data_cache.resize(new_size);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
@@ -178,9 +179,6 @@ void RenderCommandSystem::update()
 			}
 
 			Gleam::IRenderDevice& device = *devices->front();
-
-			output->getRenderTarget().bind(device);
-			output->getRenderTarget().clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
 			const glm::ivec2& size = window->getSize();
 			const glm::mat4x4 projection = glm::perspectiveFovLH(
@@ -215,6 +213,11 @@ void RenderCommandSystem::update()
 				}
 
 				_job_pool->addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+
+				// Do the clear while jobs are running to not waste time.
+				output->getRenderTarget().bind(device);
+				output->getRenderTarget().clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+
 				_job_pool->helpWhileWaiting(_job_counter);
 
 				for (const auto& render_job_data : _render_job_data_cache) {
@@ -249,7 +252,7 @@ void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 
 	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
 	{
-		const U8String pb_name(U8String::CtorSprintf(), "RenderCommandSystem:ProgramBuffers:%llu", archetype.getHash());
+		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, archetype.getHash());
 
 		InstanceData& instance_data = _instance_data.emplace_back();
 		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
@@ -325,6 +328,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 				continue;
 			}
 
+			addConstantBuffers(shader_refl, *pb, *rd, archetype, devices, shader_type);
 			addSamplers(material, shader_refl, *pb, *rd, shader_type);
 
 			for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
@@ -338,7 +342,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 					const auto it_buf = buffers.find(HashString32(var_name.data()));
 
 					if (it_buf != buffers.end()) {
-						pb->addResourceView(shader_type, it_buf->second.front().srv_map[rd].get());
+						pb->addResourceView(shader_type, it_buf->second.pages[0].srv_map[rd].get());
 					} else {
 						// $TODO: Log error.
 					}
@@ -375,7 +379,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 			true
 		};
 
-		const U8String b_name(U8String::CtorSprintf(), "RenderCommandSystem:Buffer:%s:%llu:0", sb_refl.name.data(), archetype.getHash());
+		U8String b_name(U8String::CtorSprintf(), StructuredBufferFormat, sb_refl.name.data(), archetype.getHash(), 0);
 		BufferResourcePtr buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
 
 		if (!buffer->createBuffer(devices, settings)) {
@@ -383,8 +387,13 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 			continue;
 		}
 
-		auto& instance_buffers = var_map[HashString32(sb_refl.name)];
+		auto& buffer_data = var_map[HashString32(sb_refl.name)];
 		var_map.set_allocator(ProxyAllocator("Graphics"));
+
+		const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
+		buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(it, refl.var_decl_order.end()) - 1);
+		buffer_data.buffer_string = std::move(b_name);
+		auto& page = buffer_data.pages.emplace_back();
 
 		for (Gleam::IRenderDevice* rd : devices) {
 			Gleam::IShaderResourceView* const srv = _render_mgr->createShaderResourceView();
@@ -395,15 +404,10 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 				return;
 			}
 
-			const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
-
-			InstanceData::InstanceBufferData buffer_data;
-			buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(it, refl.var_decl_order.end()) - 1);
-			buffer_data.srv_map[rd].reset(srv);
-			buffer_data.buffer = buffer;
-
-			instance_buffers.emplace_back(std::move(buffer_data));
+			page.srv_map[rd].reset(srv);
 		}
+
+		page.buffer = std::move(buffer);
 	}
 
 	instance_data.pipeline_data[shader_type].buffer_vars = std::move(var_map);
@@ -437,6 +441,36 @@ void RenderCommandSystem::addTextureSRVs(
 		}
 
 		var_map[HashString32(texture_name)].reset(srv);
+	}
+}
+
+void RenderCommandSystem::addConstantBuffers(
+	const Gleam::ShaderReflection& refl,
+	Gleam::IProgramBuffers& pb,
+	Gleam::IRenderDevice& rd,
+	const ECSArchetype& archetype,
+	const Vector<Gleam::IRenderDevice*>& devices,
+	Gleam::IShader::ShaderType shader_type)
+{
+	for (const Gleam::ConstBufferReflection& const_buf_refl : refl.const_buff_reflection) {
+		const Gleam::IBuffer::BufferSettings settings = {
+			nullptr,
+			const_buf_refl.size_bytes, // size
+			static_cast<int32_t>(const_buf_refl.size_bytes), // stride
+			Gleam::IBuffer::BT_SHADER_DATA,
+			Gleam::IBuffer::MT_WRITE,
+			true
+		};
+
+		const U8String b_name(U8String::CtorSprintf(), ConstBufferFormat, const_buf_refl.name.data(), archetype.getHash());
+		BufferResourcePtr buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+
+		if (!buffer->createBuffer(devices, settings)) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		pb.addConstantBuffer(shader_type, buffer->getBuffer(rd));
 	}
 }
 
@@ -534,48 +568,75 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 	program->bind(*job_data.device);
 	layout->bind(*job_data.device);
 
-	Vector<void*> _buffer_cache(instance_data.instance_data->size(), nullptr, ProxyAllocator("Graphics"));
-	const int32_t stride = instance_data.instance_data->at(0).buffer->getBuffer(owning_device)->getStride();
-	int32_t object_count = 0;
+	const int32_t stride = instance_data.instance_data->pages[0].buffer->getBuffer(owning_device)->getStride();
+	const int32_t object_count = job_data.rcs->_ecs_mgr->getNumEntities(job_data.rcs->_position[job_data.index]);
+	const int32_t num_pages = (object_count / instance_data.buffer_instance_count) + 1;
+	int32_t object_index = 0;
 
-	for (int32_t j = 0; j < static_cast<int32_t>(_buffer_cache.size()); ++j) {
-		_buffer_cache[j] = instance_data.instance_data->at(j).buffer->getBuffer(owning_device)->map(*job_data.device);
+	// Make sure we have enough buffers for the number of object's we are rendering.
+	if (int32_t start_index = static_cast<int32_t>(instance_data.instance_data->pages.size()); start_index < num_pages) {
+		instance_data.instance_data->pages.resize(static_cast<size_t>(num_pages));
+		const auto devices = job_data.rcs->_materials[job_data.index]->material->getDevices();
+
+
+		for (; start_index < num_pages; ++start_index) {
+			const size_t colon_index = instance_data.instance_data->buffer_string.find_last_of(':');
+
+			instance_data.instance_data->buffer_string.erase(colon_index + 1);
+			instance_data.instance_data->buffer_string.append_sprintf("%i", start_index);
+
+			BufferResourcePtr buffer = job_data.rcs->_res_mgr->createResourceT<BufferResource>(
+				instance_data.instance_data->buffer_string.data()
+			);
+
+			for (Gleam::IRenderDevice* rd : devices) {
+				Gleam::IShaderResourceView* const srv = job_data.rcs->_render_mgr->createShaderResourceView();
+
+				if (!srv->init(*rd, buffer->getBuffer(*rd))) {
+					// $TODO: Log error and use error texture.
+					SHIB_FREET(srv, GetAllocator());
+					return;
+				}
+
+				instance_data.instance_data->pages[start_index].srv_map[rd].reset(srv);
+			}
+
+			instance_data.instance_data->pages[start_index].buffer = std::move(buffer);
+		}
 	}
 
-	//float scalar = 1.0f;
+	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, ProxyAllocator("Graphics"));
+
+	for (int32_t j = 0; j < static_cast<int32_t>(buffer_cache.size()); ++j) {
+		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*job_data.device);
+	}
 
 	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
 	{
-		//const glm::quat rot = glm::rotate(obj_rot.value, 0.001f * scalar, glm::vec3(0.0f, 1.0f, 0.0f));
-		//Rotation::Set(*_ecs_mgr, id, Rotation{ rot });
-		//scalar *= -1.0f;
-
 		const glm::mat4x4 transform =
 			glm::translate(glm::identity<glm::mat4x4>(), obj_pos.value) *
-			//glm::mat4_cast(rot) *
 			glm::mat4_cast(obj_rot.value) *
 			glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
 
-		const int32_t instance_index = object_count % instance_data.buffer_instance_count;
-		const int32_t buffer_index = object_count / instance_data.buffer_instance_count;
-		void* const buffer = _buffer_cache[buffer_index];
+		const int32_t instance_index = object_index % instance_data.buffer_instance_count;
+		const int32_t buffer_index = object_index / instance_data.buffer_instance_count;
+		void* const buffer = buffer_cache[buffer_index];
 
 		// Write to instance buffer.
 		glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
 		*matrix = job_data.view_projection * transform;
 
-		++object_count;
+		++object_index;
 	},
 	job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index]);
 
-	for (const auto& id : *instance_data.instance_data) {
-		id.buffer->getBuffer(owning_device)->unmap(*job_data.device);
+	for (const auto& page : instance_data.instance_data->pages) {
+		page.buffer->getBuffer(owning_device)->unmap(*job_data.device);
 	}
 
 
 	// Iterate over all the instance buffers and set their resource views and render.
 	Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(owning_device);
-	const int32_t num_buffers = (object_count / instance_data.buffer_instance_count) + 1;
 
 	for (int32_t mesh_index = 0; mesh_index < num_meshes; ++mesh_index) {
 		Gleam::IMesh* const mesh = job_data.rcs->_models[job_data.index]->value->getMesh(mesh_index)->getMesh(owning_device);
@@ -584,19 +645,19 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 			continue;
 		}
 
-		for (int32_t k = 0; k < num_buffers; ++k) {
+		for (int32_t k = 0; k < num_pages; ++k) {
 			for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
 				InstanceData::BufferVarMap& var_map = instance_data.pipeline_data[j].buffer_vars;
 
 				for (auto& id : var_map) {
-					if (id.second[k].srv_index < 0) {
+					if (id.second.srv_index < 0) {
 						continue;
 					}
 
 					pb->setResourceView(
 						static_cast<Gleam::IShader::ShaderType>(j),
-						id.second[k].srv_index,
-						id.second[k].srv_map[&owning_device].get()
+						id.second.srv_index,
+						id.second.pages[k].srv_map[&owning_device].get()
 					);
 				}
 			}

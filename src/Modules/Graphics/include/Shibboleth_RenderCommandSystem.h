@@ -45,6 +45,10 @@ class ECSManager;
 class RenderCommandSystem final : public ISystem
 {
 public:
+	static constexpr const char* StructuredBufferFormat = "RenderCommandSystem:StructuredBuffer:%s:%llu:%i";
+	static constexpr const char* ProgramBuffersFormat = "RenderCommandSystem:ProgramBuffers:%llu";
+	static constexpr const char* ConstBufferFormat = "RenderCommandSystem:ConstBuffer:%s:%llu";
+
 	bool init(void) override;
 	void update() override;
 
@@ -57,14 +61,20 @@ private:
 			UniquePtr<Gleam::ICommandList> command_list;
 		};
 
-		struct InstanceBufferData final
+		struct InstanceBufferPage final
 		{
 			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
 			BufferResourcePtr buffer;
+		};
+
+		struct InstanceBufferData final
+		{
+			Vector<InstanceBufferPage> pages{ ProxyAllocator("Graphics") };
+			U8String buffer_string{ ProxyAllocator("Graphics") };
 			int32_t srv_index = -1;
 		};
 
-		using BufferVarMap = VectorMap< HashString32, Vector<InstanceBufferData> >;
+		using BufferVarMap = VectorMap<HashString32, InstanceBufferData>;
 		using VarMap = VectorMap< HashString32, UniquePtr<Gleam::IShaderResourceView> >;
 
 		struct PipelineData final
@@ -76,7 +86,7 @@ private:
 		PipelineData pipeline_data[Gleam::IShader::SHADER_PIPELINE_COUNT];
 		ProgramBuffersResourcePtr program_buffers;
 
-		Vector<InstanceBufferData>* instance_data = nullptr;
+		InstanceBufferData* instance_data = nullptr;
 
 		VectorMap<const Gleam::IRenderDevice*, DeferredContextData> deferred_data;
 		int32_t buffer_instance_count = 1;
@@ -144,6 +154,15 @@ private:
 		const Gleam::ShaderReflection& refl,
 		InstanceData::VarMap& var_map,
 		Gleam::IRenderDevice& rd,
+		Gleam::IShader::ShaderType shader_type
+	);
+
+	void addConstantBuffers(
+		const Gleam::ShaderReflection& refl,
+		Gleam::IProgramBuffers& pb,
+		Gleam::IRenderDevice& rd,
+		const ECSArchetype& archetype,
+		const Vector<Gleam::IRenderDevice*>& devices,
 		Gleam::IShader::ShaderType shader_type
 	);
 
