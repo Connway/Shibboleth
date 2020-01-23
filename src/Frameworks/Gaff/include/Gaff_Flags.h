@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
+// *Range() functions include the end bit.
 template <class Enum>
 class Flags final
 {
@@ -36,75 +37,52 @@ class Flags final
 
 public:
 	template <class... Enum2>
-	constexpr static StorageType GetBits(Enum flag, Enum2... rest)
-	{
-		if constexpr (sizeof...(rest) > 0) {
-			return GetBit(flag) | GetBits(rest...);
-		} else {
-			return GetBit(flag);
-		}
-	}
-
-	constexpr static StorageType GetBit(Enum flag)
-	{
-		return 1 << static_cast<StorageType>(flag);
-	}
+	constexpr static typename StorageType GetBits(Enum flag, Enum2... rest);
+	constexpr static typename StorageType GetBit(Enum flag);
 
 	template <class... Enum2>
-	bool testAll(Enum flag, Enum2... rest) const
-	{
-		return testAll(GetBits(flag, rest...));
-	}
+	bool testAll(Enum flag, Enum2... rest) const;
 
 	template <class... Enum2>
-	bool testAny(Enum flag, Enum2... rest) const
-	{
-		return testAny(GetBits(flag, rest...));
-	}
+	bool testAny(Enum flag, Enum2... rest) const;
 
 	template <class... Enum2>
-	void set(bool value, Enum flag, Enum2... rest)
-	{
-		set(value, GetBits(flag, rest...));
-	}
+	void toggle(Enum flag, Enum2... rest);
 
 	template <class... Enum2>
-	Flags(Enum flag, Enum2... rest):
-		_flags(GetBits(flag, rest...))
-	{
-	}
+	void set(bool value, Enum flag, Enum2... rest);
 
-	Flags(StorageType flags = 0):
-		_flags(flags)
-	{
-	}
+	template <class... Enum2>
+	Flags(Enum flag, Enum2... rest);
 
-	bool testAll(StorageType flags) const
-	{
-		return (_flags & flags) == flags;
-	}
-	
-	bool testAny(StorageType flags) const
-	{
-		return (_flags & flags) != 0;
-	}
+	Flags(typename StorageType flags = 0);
 
-	void clear(void)
-	{
-		_flags = 0;
-	}
+	bool testAll(typename StorageType flags) const;
+	bool testAny(typename StorageType flags) const;
+	bool testRange(Enum start, Enum end) const;
+	bool empty(void) const;
 
-	void set(bool value, StorageType flags)
-	{
-		if (value) {
-			_flags |= flags;
-		} else {
-			_flags &= ~flags;
-		}
-	}
+	void setRange(bool value, Enum start, Enum end);
+	void set(bool value, typename StorageType flags);
+	void toggle(Enum flag);
+	void invert(void);
+	void clear(void);
+
+	int32_t countUnset(void) const;
+	int32_t countSet(void) const;
+
+	const Flags& operator&=(Flags rhs);
+	const Flags& operator^=(Flags rhs);
+	const Flags& operator|=(Flags rhs);
+	Flags operator&(Flags rhs) const;
+	Flags operator^(Flags rhs) const;
+	Flags operator|(Flags rhs) const;
+	Flags operator~(void) const;
 
 private:
-	StorageType _flags = 0;
+	typename StorageType _flags = 0;
 };
+
+#include "Gaff_Flags.inl"
 
 NS_END
