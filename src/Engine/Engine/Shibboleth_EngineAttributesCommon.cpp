@@ -27,6 +27,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_DEFINE(RangeAttribute)
 SHIB_REFLECTION_DEFINE(HashStringAttribute)
+SHIB_REFLECTION_DEFINE(OptionalAttribute)
 
 NS_SHIBBOLETH
 
@@ -74,6 +75,15 @@ Gaff::IAttribute* HashStringAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(HashStringAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(OptionalAttribute, Gaff::IAttribute)
+
+Gaff::IAttribute* OptionalAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(OptionalAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END

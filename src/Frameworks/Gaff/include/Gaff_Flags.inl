@@ -69,13 +69,13 @@ void Flags<Enum>::set(bool value, Enum flag, Enum2... rest)
 
 template <class Enum>
 template <class... Enum2>
-Flags<Enum>::Flags(Enum flag, Enum2... rest):
+constexpr Flags<Enum>::Flags(Enum flag, Enum2... rest):
 	_flags(GetBits(flag, rest...))
 {
 }
 
 template <class Enum>
-Flags<Enum>::Flags(typename StorageType flags):
+constexpr Flags<Enum>::Flags(typename StorageType flags):
 	_flags(flags)
 {
 }

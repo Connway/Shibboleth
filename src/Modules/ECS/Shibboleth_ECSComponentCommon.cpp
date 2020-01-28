@@ -21,67 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSComponentCommon.h"
-#include "Shibboleth_ECSAttributes.h"
-#include "Shibboleth_ECSManager.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_OptionalAttribute.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Position)
-SHIB_REFLECTION_EXTERNAL_DEFINE(Rotation)
-SHIB_REFLECTION_EXTERNAL_DEFINE(Scale)
-SHIB_REFLECTION_EXTERNAL_DEFINE(Layer)
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Position, nullptr, "Transform", OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Rotation, nullptr, "Transform", OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scale, nullptr, "Transform", OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Layer, nullptr, "Scene", HashStringAttribute())
 
 NS_SHIBBOLETH
-
-SHIB_REFLECTION_BUILDER_BEGIN(Position)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Transform")
-	)
-
-	.base< ECSComponentBaseBoth<Position> >()
-
-	.staticFunc("Copy", &Position::Copy)
-	.var("value", &Position::value, OptionalAttribute())
-	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Position)
-
-void Position::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Position& value)
-{
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-}
-
-void Position::Set(ECSManager& ecs_mgr, EntityID id, const Position& value)
-{
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-}
-
-Position Position::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-
-	return Position(glm::vec3(
-		component[0],
-		component[4],
-		component[8]
-	));
-}
-
-Position Position::Get(ECSManager& ecs_mgr, EntityID id)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Position>(id)) + ecs_mgr.getPageIndex(id) % 4;
-
-	return Position(glm::vec3(
-		component[0],
-		component[4],
-		component[8]
-	));
-}
 
 glm_vec4 Position::GetX(const void* component_begin)
 {
@@ -98,7 +45,7 @@ glm_vec4 Position::GetZ(const void* component_begin)
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
-void Position::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+void Position::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
 	const float* const old_values = reinterpret_cast<const float*>(old_begin) + old_index;
 	float* const new_values = reinterpret_cast<float*>(new_begin) + new_index;
@@ -108,66 +55,26 @@ void Position::Copy(const void* old_begin, int32_t old_index, void* new_begin, i
 	new_values[8] = old_values[8];
 }
 
-Position::Position(const glm::vec3& val):
-	value(val)
+void Position::SetInternal(void* component, int32_t page_index, const Position& value)
 {
+	float* const comp = reinterpret_cast<float*>(component) + page_index;
+	comp[0] = value.value.x;
+	comp[4] = value.value.y;
+	comp[8] = value.value.z;
 }
 
-
-
-SHIB_REFLECTION_BUILDER_BEGIN(Rotation)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Transform")
-	)
-
-	.base< ECSComponentBaseBoth<Rotation> >()
-
-	.staticFunc("Copy", &Rotation::Copy)
-	.var("value", &Rotation::value, OptionalAttribute())
-	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Rotation)
-
-void Rotation::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Rotation& value)
+Position Position::GetInternal(const void* component, int32_t page_index)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-	component[12] = value.value.w;
-}
+	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-void Rotation::Set(ECSManager& ecs_mgr, EntityID id, const Rotation& value)
-{
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-	component[12] = value.value.w;
-}
-
-Rotation Rotation::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-
-	return Rotation(glm::quat(
-		component[12],
-		component[0],
-		component[4],
-		component[8]
+	return Position(glm::vec3(
+		comp[0],
+		comp[4],
+		comp[8]
 	));
 }
 
-Rotation Rotation::Get(ECSManager& ecs_mgr, EntityID id)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Rotation>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
-	return Rotation(glm::quat(
-		component[12],
-		component[0],
-		component[4],
-		component[8]
-	));
-}
 
 glm_vec4 Rotation::GetX(const void* component_begin)
 {
@@ -189,7 +96,7 @@ glm_vec4 Rotation::GetW(const void* component_begin)
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 }
 
-void Rotation::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+void Rotation::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
 	const float* const old_values = reinterpret_cast<const float*>(old_begin) + old_index;
 	float* const new_values = reinterpret_cast<float*>(new_begin) + new_index;
@@ -200,62 +107,28 @@ void Rotation::Copy(const void* old_begin, int32_t old_index, void* new_begin, i
 	new_values[12] = old_values[12];
 }
 
-Rotation::Rotation(const glm::quat& val):
-	value(val)
+void Rotation::SetInternal(void* component, int32_t page_index, const Rotation& value)
 {
+	float* const comp = reinterpret_cast<float*>(component) + page_index;
+	comp[0] = value.value.x;
+	comp[4] = value.value.y;
+	comp[8] = value.value.z;
+	comp[12] = value.value.w;
 }
 
-
-
-SHIB_REFLECTION_BUILDER_BEGIN(Scale)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Transform")
-	)
-
-	.base< ECSComponentBaseBoth<Scale> >()
-
-	.staticFunc("Copy", &Scale::Copy)
-	.var("value", &Scale::value, OptionalAttribute())
-	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Scale)
-
-void Scale::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Scale& value)
+Rotation Rotation::GetInternal(const void* component, int32_t page_index)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-}
+	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-void Scale::Set(ECSManager& ecs_mgr, EntityID id, const Scale& value)
-{
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	component[0] = value.value.x;
-	component[4] = value.value.y;
-	component[8] = value.value.z;
-}
-
-Scale Scale::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-
-	return Scale(glm::vec3(
-		component[0],
-		component[4],
-		component[8]
+	return Rotation(glm::quat(
+		comp[12],
+		comp[0],
+		comp[4],
+		comp[8]
 	));
 }
 
-Scale Scale::Get(ECSManager& ecs_mgr, EntityID id)
-{
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Scale>(id)) + ecs_mgr.getPageIndex(id) % 4;
 
-	return Scale(glm::vec3(
-		component[0],
-		component[4],
-		component[8]
-	));
-}
 
 glm_vec4 Scale::GetX(const void* component_begin)
 {
@@ -272,7 +145,7 @@ glm_vec4 Scale::GetZ(const void* component_begin)
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
 }
 
-void Scale::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+void Scale::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
 	const float* const old_values = reinterpret_cast<const float*>(old_begin) + old_index;
 	float* const new_values = reinterpret_cast<float*>(new_begin) + new_index;
@@ -282,65 +155,23 @@ void Scale::Copy(const void* old_begin, int32_t old_index, void* new_begin, int3
 	new_values[8] = old_values[8];
 }
 
-Scale::Scale(const glm::vec3& val):
-	value(val)
+void Scale::SetInternal(void* component, int32_t page_index, const Scale& value)
 {
+	float* const comp = reinterpret_cast<float*>(component) + page_index;
+	comp[0] = value.value.x;
+	comp[4] = value.value.y;
+	comp[8] = value.value.z;
 }
 
-
-
-SHIB_REFLECTION_BUILDER_BEGIN(Layer)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Scene")
-	)
-
-	.base< ECSComponentBaseShared<Layer> >()
-
-	//.staticFunc("Copy", &Layer::Copy)
-	.var("Name", &Layer::value, HashStringAttribute())
-	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Layer)
-
-//void Layer::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value)
-//{
-//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
-//	*component = value.value;
-//}
-//
-//void Layer::Set(ECSManager& ecs_mgr, EntityID id, Layer value)
-//{
-//	Gaff::Hash32* const component = reinterpret_cast<Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-//	*component = value.value;
-//}
-//
-//Layer Layer::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
-//{
-//	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent(query_result, entity_index));
-//	return Layer(*layer);
-//}
-//
-//Layer Layer::Get(ECSManager& ecs_mgr, EntityID id)
-//{
-//	const auto* const layer = reinterpret_cast<const Gaff::Hash32*>(ecs_mgr.getComponent<Layer>(id)) + ecs_mgr.getPageIndex(id) % 4;
-//	return Layer(*layer);
-//}
-//
-//glm_uvec4 Layer::Get(const void* component_begin)
-//{
-//	return _mm_load_si128(reinterpret_cast<const glm_uvec4*>(component_begin));
-//}
-//
-//void Layer::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
-//{
-//	const Gaff::Hash32* const old_value = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
-//	Gaff::Hash32* const new_value = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
-//
-//	*new_value = *old_value;
-//}
-
-Layer::Layer(Gaff::Hash32 val):
-	value(val)
+Scale Scale::GetInternal(const void* component, int32_t page_index)
 {
+	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
+
+	return Scale(glm::vec3(
+		comp[0],
+		comp[4],
+		comp[8]
+	));
 }
 
 NS_END

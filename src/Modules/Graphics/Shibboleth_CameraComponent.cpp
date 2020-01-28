@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraComponent.h"
-#include <Shibboleth_OptionalAttribute.h>
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 

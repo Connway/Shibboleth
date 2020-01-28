@@ -27,91 +27,39 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-struct ECSQueryResult;
-
-class Position final : public ECSComponentBaseBoth<Position>
-{
-public:
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Position& value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, const Position& value);
-
-	static Position Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static Position Get(ECSManager& ecs_mgr, EntityID id);
-
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Position, glm::vec3, ECSComponentBaseBoth)
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
 
-	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-
-	Position(const glm::vec3& val);
-	Position(void) = default;
-
-	glm::vec3 value = glm::zero<glm::vec3>();
-};
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const Position& value);
+	static Position GetInternal(const void* component, int32_t page_index);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Position)
 
 // $TODO: Make euler angles.
-class Rotation final : public ECSComponentBaseBoth<Rotation>
-{
-public:
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Rotation& value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, const Rotation& value);
-
-	static Rotation Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static Rotation Get(ECSManager& ecs_mgr, EntityID id);
-
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Rotation, glm::quat, ECSComponentBaseBoth)
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
 	static glm_vec4 GetW(const void* component_begin);
 
-	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const Rotation& value);
+	static Rotation GetInternal(const void* component, int32_t page_index);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Rotation)
 
-	Rotation(const glm::quat& val);
-	Rotation(void) = default;
-
-	glm::quat value = glm::identity<glm::quat>();
-};
-
-class Scale final : public ECSComponentBaseBoth<Scale>
-{
-public:
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Scale& value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, const Scale& value);
-
-	static Scale Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static Scale Get(ECSManager& ecs_mgr, EntityID id);
-
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Scale, glm::vec3, ECSComponentBaseBoth)
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
 
-	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const Scale& value);
+	static Scale GetInternal(const void* component, int32_t page_index);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Scale)
 
-	Scale(const glm::vec3& val);
-	Scale(void) = default;
-
-	glm::vec3 value = glm::one<glm::vec3>();
-};
-
-class Layer final : public ECSComponentBaseShared<Layer>
-{
-public:
-	//static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, Layer value);
-	//static void Set(ECSManager& ecs_mgr, EntityID id, Layer value);
-
-	//static Layer Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	//static Layer Get(ECSManager& ecs_mgr, EntityID id);
-
-	//static glm_uvec4 Get(const void* component_begin);
-
-	//static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-
-	Layer(Gaff::Hash32 val);
-	Layer(void) = default;
-
-	Gaff::Hash32 value;
-};
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE(Layer, Gaff::Hash32, ECSComponentBaseShared)
 
 NS_END
 

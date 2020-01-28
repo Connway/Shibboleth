@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Math.h"
-#include "Shibboleth_OptionalAttribute.h"
+#include "Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::quat)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::quat)
