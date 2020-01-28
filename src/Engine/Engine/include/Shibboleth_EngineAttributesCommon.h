@@ -73,6 +73,15 @@ public:
 };
 
 
+class OptionalAttribute final : public Gaff::IAttribute
+{
+public:
+	IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
+};
+
+
 // Template Attributes
 template <class T, class Msg>
 class GlobalMessageAttribute final : public Gaff::IAttribute
@@ -136,6 +145,7 @@ NS_END
 SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(RangeAttribute)
 SHIB_REFLECTION_DECLARE(HashStringAttribute)
+SHIB_REFLECTION_DECLARE(OptionalAttribute)
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
 SHIB_TEMPLATE_REFLECTION_DEFINE(GlobalMessageAttribute, T, Msg)

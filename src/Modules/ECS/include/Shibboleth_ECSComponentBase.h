@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ECSAttributes.h"
+#include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSEntity.h"
-#include <Shibboleth_Reflection.h>
 
 NS_GAFF
 	class ISerializeReader;
@@ -31,6 +32,7 @@ NS_END
 
 NS_SHIBBOLETH
 
+struct ECSQueryResult;
 class ECSManager;
 
 enum class ECSComponentType
@@ -52,13 +54,25 @@ public:
 	static T& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static T& GetShared(ECSManager& ecs_mgr, EntityID id);
 
+	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const T& value);
+	static void Set(ECSManager& ecs_mgr, EntityID id, const T& value);
+
+	static T Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
+	static T Get(ECSManager& ecs_mgr, EntityID id);
+
 	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
 	static void CopyShared(const void* old_value, void* new_value);
+	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
 	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
 
 	static constexpr bool IsNonShared(void);
 	static constexpr bool IsShared(void);
+
+protected:
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const T& value);
+	static T GetInternal(const void* component, int32_t page_index);
 };
 
 template <class T>
@@ -76,6 +90,16 @@ class ECSComponentBaseBoth : public ECSComponentBase<T, ECSComponentType::Both>
 {
 };
 
+template <class T>
+class ECSComponentWithSingleArg
+{
+public:
+	ECSComponentWithSingleArg(const T& val): value(val) {}
+	ECSComponentWithSingleArg(void) = default;
+
+	T value;
+};
+
 NS_END
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T)
@@ -83,3 +107,50 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T)
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 
 #include "Shibboleth_ECSComponentBase.inl"
+
+#define SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
+	SHIB_REFLECTION_BUILDER_BEGIN(type) \
+		.classAttrs( \
+			ECSClassAttribute(name, category) \
+		) \
+		.ctor<>(); \
+		if constexpr (type::IsNonShared() && type::IsShared()) { \
+			builder \
+				.base< ECSComponentBaseBoth<type> >() \
+				.staticFunc("Copy", &type::Copy); \
+		} else if constexpr (type::IsNonShared()) { \
+			builder \
+				.base< ECSComponentBaseNonShared<type> >() \
+				.staticFunc("Copy", &type::Copy); \
+		} else if constexpr (type::IsShared()) { \
+				builder \
+					.base< ECSComponentBaseShared<type> >(); \
+		}
+
+#define SHIB_ECS_TAG_COMPONENT_DEFINE(type, name, category) \
+	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
+	SHIB_REFLECTION_BUILDER_END(type)
+
+
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base) \
+	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
+	{ \
+	public: \
+		name(const type& val): ECSComponentWithSingleArg(val) {} \
+		name(void) = default;
+
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name) \
+	}; \
+
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE(name, type, base) \
+	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base) \
+	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name)
+
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(type, name, category, ...) \
+	SHIB_REFLECTION_EXTERNAL_DEFINE(type) \
+	NS_SHIBBOLETH \
+		SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
+			builder \
+				.var("value", &type::value, ##__VA_ARGS__); \
+		SHIB_REFLECTION_BUILDER_END(type) \
+	NS_END

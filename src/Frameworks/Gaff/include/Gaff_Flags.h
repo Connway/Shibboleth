@@ -53,9 +53,9 @@ public:
 	void set(bool value, Enum flag, Enum2... rest);
 
 	template <class... Enum2>
-	Flags(Enum flag, Enum2... rest);
+	constexpr Flags(Enum flag, Enum2... rest);
 
-	Flags(typename StorageType flags = 0);
+	constexpr Flags(typename StorageType flags = 0);
 
 	bool testAll(typename StorageType flags) const;
 	bool testAny(typename StorageType flags) const;
