@@ -131,6 +131,12 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
 	SHIB_REFLECTION_BUILDER_END(type)
 
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(name, type, base, default_val) \
+	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
+	{ \
+	public: \
+		name(const type& val): ECSComponentWithSingleArg(val) {} \
+		name(void): ECSComponentWithSingleArg(default_val) {}
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base) \
 	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
@@ -141,6 +147,10 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name) \
 	}; \
+
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_WITH_DEFAULT(name, type, base, default_val) \
+	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base, default_val) \
+	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE(name, type, base) \
 	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base) \

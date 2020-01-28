@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Position, glm::vec3, ECSComponentBaseBoth)
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Position, glm::vec3, ECSComponentBaseBoth, glm::zero<glm::vec3>())
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
@@ -38,7 +38,7 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Position, glm::vec3, ECSComponentBas
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Position)
 
 // $TODO: Make euler angles.
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Rotation, glm::quat, ECSComponentBaseBoth)
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Rotation, glm::quat, ECSComponentBaseBoth, glm::identity<glm::quat>())
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
@@ -49,7 +49,7 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Rotation, glm::quat, ECSComponentBas
 	static Rotation GetInternal(const void* component, int32_t page_index);
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Rotation)
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(Scale, glm::vec3, ECSComponentBaseBoth)
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Scale, glm::vec3, ECSComponentBaseBoth, glm::one<glm::vec3>())
 	static glm_vec4 GetX(const void* component_begin);
 	static glm_vec4 GetY(const void* component_begin);
 	static glm_vec4 GetZ(const void* component_begin);
