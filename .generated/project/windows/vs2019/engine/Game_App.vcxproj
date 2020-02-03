@@ -360,6 +360,9 @@
     <ProjectReference Include="..\dependencies\assimp.vcxproj">
       <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\Input.vcxproj">
+      <Project>{953A660D-014F-8EBE-CAD0-311E36A48AEF}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

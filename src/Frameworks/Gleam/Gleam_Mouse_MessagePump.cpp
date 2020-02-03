@@ -102,6 +102,12 @@ void MouseMP::update(void)
 
 			if (_data.wheel != _prev_data.wheel) {
 				_input_handlers[j](this, static_cast<int32_t>(MouseCode::MOUSE_WHEEL), static_cast<float>(_data.wheel));
+
+				if (_data.wheel < 0) {
+					_input_handlers[j](this, static_cast<int32_t>(MouseCode::MOUSE_WHEEL_DOWN), fabsf(static_cast<float>(_data.wheel)));
+				} else if (_data.wheel > 0) {
+					_input_handlers[j](this, static_cast<int32_t>(MouseCode::MOUSE_WHEEL_UP), static_cast<float>(_data.wheel));
+				}
 			}
 
 			for (int32_t i = 0; i < static_cast<int32_t>(MouseCode::MOUSE_BUTTON_COUNT); ++i) {
