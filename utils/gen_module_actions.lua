@@ -105,11 +105,11 @@ local GenerateProject = function()
 		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl", base_dir .. "**.lua" }
 		defines { "SHIB_STATIC" }
 
-		SetupConfigMap()
 		ModuleGen("%s")
+		SetupConfigMap()
 
 		flags { "FatalWarnings" }
 
@@ -146,6 +146,8 @@ local LinkDependencies = function()
 	dependson(deps)
 	links(deps)
 end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }
 ]]
 
 local gen_static = [[
@@ -217,7 +219,7 @@ newaction
 		-- Make Shibboleth_<module_name>Module.cpp file.
 		io.writefile(
 			path .. "/Shibboleth_" .. module_name .. "Module.cpp",
-			gen_entry:format(module_name, module_name)
+			gen_entry:format(module_name, module_name, module_name)
 		)
 
 		-- Make project_generator.lua file.

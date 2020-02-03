@@ -10,10 +10,10 @@ newoption
 newoption
 {
 	trigger = "project",
-	description = "The project to build. (Defaults to VS2017/gmake depending on platform) ('build' only)",
+	description = "The project to build. (Defaults to VS2019/gmake depending on platform) ('build' only)",
 	allowed =
 	{
-		{ "vs2017", "Visual Studio 2017" },
+		{ "vs2019", "Visual Studio 2019" },
 		{ "gmake2", "GNU Make" },
 		{ "gmake", "GNU Make" }
 	}
@@ -42,8 +42,8 @@ newaction
 	trigger = "build",
 	description = "Builds everything. Defaults to Debug builds with the platform default compiler.",
 	execute = function()
-		function VS2017(config, target)
-			local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2017/Shibboleth.sln"
+		function VS2019(config, target)
+			local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2019/Shibboleth.sln"
 			local msbuild = "msbuild \"" .. solution .. "\" /p:Configuration=" .. config
 			local vcvars = "vcvarsall.bat amd64"
 
@@ -113,7 +113,7 @@ newaction
 
 		if not project then
 			if os.ishost("windows") then
-				project = "vs2017"
+				project = "vs2019"
 			elseif os.ishost("linux") then
 				project = "gmake"
 			else
@@ -130,8 +130,8 @@ newaction
 		local cwd = os.getcwd()
 
 		if os.ishost("windows") then
-			if project == "vs2017" then
-				VS2017(config, target)
+			if project == "vs2019" then
+				VS2019(config, target)
 			elseif project == "gmake" then
 				Make(config, target, false)
 			elseif project == "gmake2" then
