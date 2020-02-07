@@ -254,6 +254,8 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefPtr.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Reflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionInterfaces.h" />

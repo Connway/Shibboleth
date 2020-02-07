@@ -135,6 +135,12 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Reflection.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>

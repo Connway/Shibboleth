@@ -32,6 +32,8 @@ NS_GAFF
 template <class Enum, class Allocator>
 class EnumReflectionDefinition : public IEnumReflectionDefinition
 {
+	static_assert(std::is_enum<Enum>::value, "Template type Enum is not an enum.");
+
 public:
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
 
@@ -41,7 +43,7 @@ public:
 
 	const IReflection& getReflectionInstance(void) const override;
 
-	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1Hash64(reinterpret_cast<const char*>(object), init); }
+	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object, sizeof(Enum)), init); }
 	Hash64 getInstanceHash(Enum value, Hash64 init = INIT_HASH64) const { return getInstanceHash(&value, init); }
 
 	bool load(const ISerializeReader& reader, void* value, bool) const { return load(reader, value); }
