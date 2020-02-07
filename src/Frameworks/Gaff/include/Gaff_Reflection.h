@@ -37,8 +37,100 @@ THE SOFTWARE.
 	#define NS_REFLECTION namespace GAFF_REFLECTION_NAMESPACE {
 #endif
 
-#define GAFF_TEMPLATE_GET_NAME(x) GAFF_HASHABLE_NAMESPACE::GetName<x>()
+#ifdef GAFF_REF_DEF_IS_PTR
+	#define GAFF_REF_DEF_DECLARE(type, allocator)
+	#define GAFF_REF_DEF_DEFINE(type, allocator)
+
+	#ifndef GAFF_REF_DEF_INIT
+		#error "Reflection Definition is pointer, but GAFF_REF_DEF_INIT was not defined."
+	#endif
+
+	#define GAFF_REF_DEF_INIT_INTERNAL() GAFF_REF_DEF_INIT()
+#else
+	#ifndef GAFF_REF_DEF_INIT
+		#define GAFF_REF_DEF_INIT()
+	#endif
+
+	#define GAFF_REF_DEF_DECLARE(type, allocator) static typename Gaff::RefDefType<type, allocator> g_reflection_definition;
+	#define GAFF_REF_DEF_DEFINE(type, allocator) typename Gaff::RefDefType<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition;
+
+	#define GAFF_REF_DEF_INIT_INTERNAL() \
+		g_ref_def = &g_reflection_definition; \
+		GAFF_REF_DEF_INIT() \
+
+#endif
+
+//#define GAFF_TEMPLATE_GET_NAME(x) GAFF_HASHABLE_NAMESPACE::GetName<x>()
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
+
+#define GAFF_REFLECTION_DECLARE_NEW(type, allocator) \
+	NS_HASHABLE \
+		GAFF_CLASS_HASHABLE(type) \
+	NS_END \
+	NS_REFLECTION \
+		template <> \
+		class Reflection<type> final : public Gaff::ReflectionBase<type, allocator> \
+		{ \
+		public: \
+			constexpr static bool HasReflection = true; \
+			template <class ReflectionBuilder> \
+			static void BuildReflection(ReflectionBuilder& builder); \
+			static Reflection<type>& GetInstance(void) \
+			{ \
+				return g_instance; \
+			} \
+			static const typename Gaff::RefDefType<type, allocator>& GetReflectionDefinition(void) \
+			{ \
+				GAFF_ASSERT(g_ref_def); \
+				return *g_ref_def; \
+			} \
+			static void Init(void) \
+			{ \
+				BuildReflection(g_version); \
+				GAFF_REF_DEF_INIT_INTERNAL(); \
+				BuildReflection(*g_ref_def); \
+			} \
+			void init(void) override \
+			{ \
+				Init(); \
+			} \
+		private: \
+			static Reflection<type> g_instance; \
+			GAFF_REF_DEF_DECLARE(type, allocator) \
+		}; \
+	NS_END
+
+#define GAFF_REFLECTION_CLASS_DECLARE_NEW(type, allocator) \
+	public: \
+		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
+		{ \
+			return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition(); \
+		} \
+		const void* getBasePointer(void) const override \
+		{ \
+			return this; \
+		} \
+		void* getBasePointer(void) override \
+		{ \
+			return this; \
+		} \
+	private: \
+		template <class T, class Allocator> \
+		class Reflection
+
+#define GAFF_REFLECTION_DEFINE_BEGIN_NEW(type, allocator) \
+	GAFF_REF_DEF_DEFINE(type, allocator) \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		builder
+
+#define GAFF_REFLECTION_DEFINE_END_NEW(type) \
+		; \
+		builder.finish(); \
+	}
+
+
 
 #define GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
 	class Reflection<type> final : public Gaff::IReflection \
@@ -147,7 +239,7 @@ THE SOFTWARE.
 			g_on_defined_callbacks.emplace_back(std::move(callback)); \
 		} \
 		template <class ReflectionBuilder> \
-		static void BuildReflection(ReflectionBuilder& builder); \
+		static void BuildReflection(ReflectionBuilder& builder);
 
 #define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 		bool load(const Gaff::ISerializeReader& reader, void* object, bool refl_load = false) const override \
@@ -470,35 +562,8 @@ THE SOFTWARE.
 #define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
+
 NS_GAFF
-
-template <class C>
-class IsClassReflected
-{
-	// This one catches inheritance.
-//	template <class T>
-//	constexpr static std::true_type testSignature(const void* (T::*)(void) const);
-//
-//	template <class T>
-//	constexpr static decltype(testSignature(&T::getBasePointer)) test(std::nullptr_t);
-//
-//	template <class T>
-//	constexpr static std::false_type test(...);
-//
-//public:
-//	using type = decltype(test<C>(nullptr));
-//	constexpr static bool value = type::value;
-
-	// This one does not catch inheritance.
-	template<typename U, const void* (U::*)(void) const> struct SFINAE {};
-	template<typename U>
-	constexpr static char Test(SFINAE<U, &U::getBasePointer>*);
-	template<typename U> 
-	constexpr static int Test(...);
-
-public:
-	constexpr static bool value = sizeof(Test<C>(0)) == sizeof(char);
-};
 
 template <class T, class Allocator, bool is_enum>
 struct RefDefTypeHelper;
