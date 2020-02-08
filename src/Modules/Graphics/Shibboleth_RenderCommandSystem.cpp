@@ -26,9 +26,14 @@ THE SOFTWARE.
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_DEFINE(RenderCommandSystem)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(RenderCommandSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(RenderCommandSystem)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(RenderCommandSystem)
 
 static constexpr const char* k_mtp_mat_name = "_model_to_proj_matrix";
 
@@ -103,11 +108,6 @@ static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& 
 		list.emplace_back(pair.second.get());
 	}
 }
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderCommandSystem)
-	.BASE(ISystem)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(RenderCommandSystem)
 
 bool RenderCommandSystem::init(void)
 {

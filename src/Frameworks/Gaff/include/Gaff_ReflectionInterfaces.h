@@ -109,13 +109,15 @@ public:
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
-	bool load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
+	bool load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/, bool refl_load = false) const override
 	{
+		GAFF_REF(refl_load);
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return false;
 	}
-	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/) const override
+	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/, bool refl_save = false) const override
 	{
+		GAFF_REF(refl_save);
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 	const char* getName(void) const override
@@ -442,13 +444,13 @@ public:
 	template <class T>
 	const T* getInterface(const void* object) const
 	{
-		return reinterpret_cast<const T*>(getInterface(T::GetReflectionHash(), object));
+		return reinterpret_cast<const T*>(getInterface(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash(), object));
 	}
 
 	template <class T>
 	T* getInterface(void* object) const
 	{
-		return reinterpret_cast<T*>(getInterface(T::GetReflectionHash(), object));
+		return reinterpret_cast<T*>(getInterface(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash(), object));
 	}
 
 	template <class T>

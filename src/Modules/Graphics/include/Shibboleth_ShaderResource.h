@@ -49,11 +49,11 @@ private:
 
 	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data{ ProxyAllocator("Graphics") };
 
-	SHIB_REFLECTION_CLASS_DECLARE(ShaderResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ShaderResource);
 };
 
 using ShaderResourcePtr = Gaff::RefPtr<ShaderResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ShaderResource)
+SHIB_REFLECTION_DECLARE_NEW(ShaderResource)

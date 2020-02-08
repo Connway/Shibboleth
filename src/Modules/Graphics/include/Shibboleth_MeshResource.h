@@ -50,11 +50,11 @@ private:
 
 	void loadMesh(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(MeshResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(MeshResource);
 };
 
 using MeshResourcePtr = Gaff::RefPtr<MeshResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MeshResource)
+SHIB_REFLECTION_DECLARE_NEW(MeshResource)

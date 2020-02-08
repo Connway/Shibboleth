@@ -1992,7 +1992,7 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
 	if (!_dependents_remaining) {
-		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
+		//GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
 
 		// Call finish() on attributes first.
 		for (IAttributePtr& attr : _class_attrs) {
@@ -2018,11 +2018,11 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 		}
 
 		// Call all callbacks waiting for us to finish being defined.
-		for (eastl::function<void(void)>& func : GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks) {
-			func();
-		}
+		//for (eastl::function<void(void)>& func : GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks) {
+		//	func();
+		//}
 
-		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks.clear();
+		//GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks.clear();
 	}
 }
 

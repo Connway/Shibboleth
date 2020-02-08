@@ -22,12 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_SerializeInterfaces.h"
-#include "Gaff_EnumReflectionDefinition.h"
-#include "Gaff_ReflectionDefinition.h"
-#include "Gaff_ReflectionVersion.h"
-#include "Gaff_Hashable.h"
-#include "Gaff_Utils.h"
+#include "Gaff_ReflectionBase.h"
 
 #ifndef GAFF_REFLECTION_NAMESPACE
 	#define GAFF_REFLECTION_NAMESPACE Gaff
@@ -39,28 +34,40 @@ THE SOFTWARE.
 
 #ifdef GAFF_REF_DEF_IS_PTR
 	#define GAFF_REF_DEF_DECLARE(type, allocator)
-	#define GAFF_REF_DEF_DEFINE(type, allocator)
+	#define GAFF_REF_DEF_DEFINE(type, allocator) \
+		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
+		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void) \
+		{ \
+			BuildReflection(g_version); \
+			GAFF_REF_DEF_INIT_INTERNAL; \
+			BuildReflection(*g_ref_def); \
+			g_defined = true; \
+			for (auto& func : g_on_defined_callbacks) { \
+				func(); \
+			} \
+			g_on_defined_callbacks.clear(); \
+		}
 
 	#ifndef GAFF_REF_DEF_INIT
 		#error "Reflection Definition is pointer, but GAFF_REF_DEF_INIT was not defined."
 	#endif
 
-	#define GAFF_REF_DEF_INIT_INTERNAL() GAFF_REF_DEF_INIT()
+	#define GAFF_REF_DEF_INIT_INTERNAL GAFF_REF_DEF_INIT
 #else
 	#ifndef GAFF_REF_DEF_INIT
 		#define GAFF_REF_DEF_INIT()
 	#endif
 
 	#define GAFF_REF_DEF_DECLARE(type, allocator) static typename Gaff::RefDefType<type, allocator> g_reflection_definition;
-	#define GAFF_REF_DEF_DEFINE(type, allocator) typename Gaff::RefDefType<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition;
+	#define GAFF_REF_DEF_DEFINE(type, allocator) \
+		typename Gaff::RefDefType<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
+		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance
 
-	#define GAFF_REF_DEF_INIT_INTERNAL() \
+	#define GAFF_REF_DEF_INIT_INTERNAL \
 		g_ref_def = &g_reflection_definition; \
-		GAFF_REF_DEF_INIT() \
-
+		GAFF_REF_DEF_INIT
 #endif
 
-//#define GAFF_TEMPLATE_GET_NAME(x) GAFF_HASHABLE_NAMESPACE::GetName<x>()
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
 
 #define GAFF_REFLECTION_DECLARE_NEW(type, allocator) \
@@ -71,10 +78,13 @@ THE SOFTWARE.
 		template <> \
 		class Reflection<type> final : public Gaff::ReflectionBase<type, allocator> \
 		{ \
+		private: \
+			using ThisType = type; \
 		public: \
 			constexpr static bool HasReflection = true; \
 			template <class ReflectionBuilder> \
 			static void BuildReflection(ReflectionBuilder& builder); \
+			static void Init(void); \
 			static Reflection<type>& GetInstance(void) \
 			{ \
 				return g_instance; \
@@ -83,12 +93,6 @@ THE SOFTWARE.
 			{ \
 				GAFF_ASSERT(g_ref_def); \
 				return *g_ref_def; \
-			} \
-			static void Init(void) \
-			{ \
-				BuildReflection(g_version); \
-				GAFF_REF_DEF_INIT_INTERNAL(); \
-				BuildReflection(*g_ref_def); \
 			} \
 			void init(void) override \
 			{ \
@@ -100,12 +104,9 @@ THE SOFTWARE.
 		}; \
 	NS_END
 
-#define GAFF_REFLECTION_CLASS_DECLARE_NEW(type, allocator) \
+#define GAFF_REFLECTION_CLASS_DECLARE_NEW(type) \
 	public: \
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
-		{ \
-			return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition(); \
-		} \
+		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override; \
 		const void* getBasePointer(void) const override \
 		{ \
 			return this; \
@@ -115,20 +116,28 @@ THE SOFTWARE.
 			return this; \
 		} \
 	private: \
-		template <class T, class Allocator> \
-		class Reflection
+		template <class RefT> \
+		friend class Reflection
+
+#define GAFF_REFLECTION_CLASS_DEFINE_NEW(type) \
+	const Gaff::IReflectionDefinition& type::getReflectionDefinition(void) const \
+	{ \
+		return GAFF_REFLECTION_NAMESPACE::Reflection<type>::GetReflectionDefinition(); \
+	}
 
 #define GAFF_REFLECTION_DEFINE_BEGIN_NEW(type, allocator) \
-	GAFF_REF_DEF_DEFINE(type, allocator) \
-	template <class ReflectionBuilder> \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
-	{ \
-		builder
+	NS_REFLECTION \
+		GAFF_REF_DEF_DEFINE(type, allocator) \
+		template <class ReflectionBuilder> \
+		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+		{ \
+			builder
 
 #define GAFF_REFLECTION_DEFINE_END_NEW(type) \
-		; \
-		builder.finish(); \
-	}
+			; \
+			builder.finish(); \
+		} \
+	NS_END
 
 
 
@@ -561,45 +570,3 @@ THE SOFTWARE.
 #define REFLECTION_CAST_NAME(T, name, object) *REFLECTION_CAST_PTR_NAME(T, name, &object)
 #define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
-
-
-NS_GAFF
-
-template <class T, class Allocator, bool is_enum>
-struct RefDefTypeHelper;
-
-template <class T, class Allocator>
-struct RefDefTypeHelper<T, Allocator, true> final
-{
-	using Type = EnumReflectionDefinition<T, Allocator>;
-	using Interface = IEnumReflectionDefinition;
-};
-
-template <class T, class Allocator>
-struct RefDefTypeHelper<T, Allocator, false> final
-{
-	using Type = ReflectionDefinition<T, Allocator>;
-	using Interface = IReflectionDefinition;
-};
-
-template <class T, class Allocator>
-using RefDefInterface = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Interface;
-
-template <class T, class Allocator>
-using RefDefType = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Type;
-
-
-void AddToAttributeReflectionChain(IReflection* reflection);
-IReflection* GetAttributeReflectionChainHead(void);
-
-void AddToReflectionChain(IReflection* reflection);
-IReflection* GetReflectionChainHead(void);
-
-void AddToEnumReflectionChain(IReflection* reflection);
-IReflection* GetEnumReflectionChainHead(void);
-
-void InitAttributeReflection(void);
-void InitClassReflection(void);
-void InitEnumReflection(void);
-
-NS_END

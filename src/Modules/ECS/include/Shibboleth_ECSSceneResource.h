@@ -50,11 +50,11 @@ private:
 	void layerLoaded(const Vector<IResource*>&);
 	void loadScene(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSSceneResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSSceneResource);
 };
 
 using ECSSceneResourcePtr = Gaff::RefPtr<ECSSceneResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSSceneResource)
+SHIB_REFLECTION_DECLARE_NEW(ECSSceneResource)

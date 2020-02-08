@@ -39,17 +39,17 @@ THE SOFTWARE.
 #include <Gleam_Window.h>
 #include <Gleam_Mesh.h>
 
-SHIB_REFLECTION_DEFINE(RenderManager)
-
-NS_SHIBBOLETH
-
-static ProxyAllocator g_allocator("Graphics");
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(RenderManager)
 	.BASE(RenderManagerBase)
 	.BASE(IManager)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
+SHIB_REFLECTION_DEFINE_END_NEW(RenderManager)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(RenderManager)
+
+static ProxyAllocator g_allocator("Graphics");
 
 static constexpr Gleam::RendererType GetRendererType(void)
 {

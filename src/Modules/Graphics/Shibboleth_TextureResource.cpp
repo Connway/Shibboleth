@@ -30,9 +30,24 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Image.h>
 
-SHIB_REFLECTION_DEFINE(TextureResource)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(TextureResource)
+	.classAttrs(
+		CreatableAttribute(),
+		ResExtAttribute(".texture.bin"),
+		ResExtAttribute(".texture"),
+		ResExtAttribute(".png"),
+		ResExtAttribute(".tiff"),
+		ResExtAttribute(".tif"),
+		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture)
+	)
+
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(TextureResource)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(TextureResource)
 
 static Gleam::ITexture::Format GetTextureFormat(const Image& image)
 {
@@ -68,21 +83,6 @@ static Gleam::ITexture::Format GetTextureFormat(const Image& image)
 
 	return Gleam::ITexture::Format::SIZE;
 }
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TextureResource)
-	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".texture.bin"),
-		ResExtAttribute(".texture"),
-		ResExtAttribute(".png"),
-		ResExtAttribute(".tiff"),
-		ResExtAttribute(".tif"),
-		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture)
-	)
-
-	.BASE(IResource)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(TextureResource)
 
 Vector<Gleam::IRenderDevice*> TextureResource::getDevices(void) const
 {

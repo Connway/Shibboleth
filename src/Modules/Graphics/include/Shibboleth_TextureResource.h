@@ -55,11 +55,11 @@ private:
 	void loadTextureJSON(const IFile* file);
 	void loadTextureImage(const IFile* file, const char* device_tag, const U8String& image_path, bool make_linear);
 
-	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(TextureResource);
 };
 
 using TextureResourcePtr = Gaff::RefPtr<TextureResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(TextureResource)
+SHIB_REFLECTION_DECLARE_NEW(TextureResource)

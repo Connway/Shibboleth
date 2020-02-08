@@ -186,7 +186,7 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
-	GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::g_defined = true;
+	//GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::g_defined = true;
 }
 
 template <class Enum, class Allocator>

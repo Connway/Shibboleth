@@ -52,11 +52,11 @@ private:
 	void archetypeLoaded(const Vector<IResource*>&);
 	void loadLayer(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSLayerResource);
 };
 
 using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSLayerResource)
+SHIB_REFLECTION_DECLARE_NEW(ECSLayerResource)

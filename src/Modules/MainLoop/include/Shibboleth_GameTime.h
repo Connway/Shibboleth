@@ -59,7 +59,7 @@ private:
 
 	double _game_time_scale = 1.0;
 
-	SHIB_REFLECTION_CLASS_DECLARE(GameTimeManager);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(GameTimeManager);
 };
 
 class GameTimeSystem final : public ISystem
@@ -71,10 +71,10 @@ public:
 private:
 	GameTimeManager* _manager = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(GameTimeSystem);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(GameTimeSystem);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(GameTimeManager)
-SHIB_REFLECTION_DECLARE(GameTimeSystem)
+SHIB_REFLECTION_DECLARE_NEW(GameTimeManager)
+SHIB_REFLECTION_DECLARE_NEW(GameTimeSystem)

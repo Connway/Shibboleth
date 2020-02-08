@@ -26,7 +26,7 @@ template <class T, class Allocator>
 Vector<eastl::function<void(void)>, Allocator> ReflectionBase<T, Allocator>::g_on_defined_callbacks;
 
 template <class T, class Allocator>
-typename RefDefType<T, Allocator>::Type* ReflectionBase<T, Allocator>::g_ref_def = nullptr;
+typename RefDefType<T, Allocator>* ReflectionBase<T, Allocator>::g_ref_def = nullptr;
 
 template <class T, class Allocator>
 ReflectionVersion<T> ReflectionBase<T, Allocator>::g_version;
@@ -53,7 +53,7 @@ constexpr int32_t ReflectionBase<T, Allocator>::Size(void)
 }
 
 template <class T, class Allocator>
-constexpr static bool ReflectionBase<T, Allocator>::IsEnum(void)
+constexpr bool ReflectionBase<T, Allocator>::IsEnum(void)
 {
 	return std::is_enum<T>::value;
 }
@@ -96,18 +96,22 @@ void ReflectionBase<T, Allocator>::RegisterOnDefinedCallback(eastl::function<voi
 }
 
 template <class T, class Allocator>
-bool ReflectionBase<T, Allocator>::Load(const ISerializeReader& reader, type& object, bool refl_load)
+bool ReflectionBase<T, Allocator>::Load(const ISerializeReader& reader, T& object, bool refl_load)
 {
+	GAFF_REF(reader, object, refl_load);
 	//if constexpr (IsEnum()) {
 	//	return getEnumReflectionDefinition().load(reader, object, refl_load);
 	//} else {
 	//	return getReflectionDefinition().load(reader, object, refl_load);
 	//}
+
+	return false;
 }
 
 template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::Save(ISerializeWriter& writer, const type& object, bool refl_save)
+void ReflectionBase<T, Allocator>::Save(ISerializeWriter& writer, const T& object, bool refl_save)
 {
+	GAFF_REF(writer, object, refl_save);
 	//if constexpr (IsEnum()) {
 	//	return getEnumReflectionDefinition().save(writer, object, refl_save);
 	//} else {

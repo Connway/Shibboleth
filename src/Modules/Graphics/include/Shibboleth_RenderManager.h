@@ -56,9 +56,9 @@ public:
 
 	void updateWindows(void) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(RenderManager);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(RenderManager)
+SHIB_REFLECTION_DECLARE_NEW(RenderManager)

@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE(CreatableAttribute)
-SHIB_REFLECTION_DEFINE(ResExtAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(CreatableAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(ResExtAttribute, Gaff::IAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(CreatableAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(CreatableAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ResExtAttribute)
 
 Gaff::IAttribute* CreatableAttribute::clone(void) const
 {
@@ -36,7 +37,6 @@ Gaff::IAttribute* CreatableAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(ResExtAttribute, Gaff::IAttribute)
 
 ResExtAttribute::ResExtAttribute(const char* extension):
 	_extension(extension, eastl::CharStrlen(extension))
