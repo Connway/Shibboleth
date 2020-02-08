@@ -32,7 +32,7 @@ class CreatableAttribute final : public Gaff::IAttribute
 public:
 	Gaff::IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(CreatableAttribute);
 };
 
 class ResExtAttribute final : public Gaff::IAttribute
@@ -47,10 +47,10 @@ public:
 private:
 	HashStringTemp32 _extension;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ResExtAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(CreatableAttribute)
-SHIB_REFLECTION_DECLARE(ResExtAttribute)
+SHIB_REFLECTION_DECLARE_NEW(CreatableAttribute)
+SHIB_REFLECTION_DECLARE_NEW(ResExtAttribute)

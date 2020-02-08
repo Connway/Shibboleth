@@ -45,11 +45,11 @@ private:
 
 	void loadSamplerState(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(SamplerStateResource);
 };
 
 using SamplerStateResourcePtr = Gaff::RefPtr<SamplerStateResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(SamplerStateResource)
+SHIB_REFLECTION_DECLARE_NEW(SamplerStateResource)

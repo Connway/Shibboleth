@@ -43,11 +43,11 @@ private:
 
 	ArchetypeReferencePtr _archetype_ref;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSArchetypeResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSArchetypeResource);
 };
 
 using ECSArchetypeResourcePtr = Gaff::RefPtr<ECSArchetypeResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSArchetypeResource)
+SHIB_REFLECTION_DECLARE_NEW(ECSArchetypeResource)

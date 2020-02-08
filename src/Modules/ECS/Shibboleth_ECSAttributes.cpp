@@ -24,13 +24,13 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE(ECSClassAttribute)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSClassAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_END_NEW(ECSClassAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSClassAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(ECSClassAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ECSClassAttribute)
 
 ECSClassAttribute::ECSClassAttribute(const char* name, const char* category):
 	_name(name), _category(category)

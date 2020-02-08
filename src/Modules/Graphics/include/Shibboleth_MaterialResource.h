@@ -71,11 +71,11 @@ private:
 
 	void loadMaterial(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(MaterialResource);
 };
 
 using MaterialResourcePtr = Gaff::RefPtr<MaterialResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MaterialResource)
+SHIB_REFLECTION_DECLARE_NEW(MaterialResource)

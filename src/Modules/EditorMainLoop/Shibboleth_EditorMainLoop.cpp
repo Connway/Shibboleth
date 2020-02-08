@@ -24,14 +24,14 @@ THE SOFTWARE.
 //#include <Shibboleth_RenderManagerBase.h>
 //#include <Gleam_IRenderDevice.h>
 
-SHIB_REFLECTION_DEFINE(EditorMainLoop)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(EditorMainLoop)
+	.BASE(IMainLoop)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(EditorMainLoop)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorMainLoop)
-	.BASE(IMainLoop)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(EditorMainLoop)
 
 bool EditorMainLoop::init(void)
 {

@@ -24,14 +24,19 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
-SHIB_REFLECTION_DEFINE(RangeAttribute)
-SHIB_REFLECTION_DEFINE(HashStringAttribute)
-SHIB_REFLECTION_DEFINE(OptionalAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(ReadOnlyAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(RangeAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(HashStringAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(OptionalAttribute, Gaff::IAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(ReadOnlyAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ReadOnlyAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(RangeAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(HashStringAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(OptionalAttribute)
+
+
 
 Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 {
@@ -40,7 +45,6 @@ Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(RangeAttribute, Gaff::IAttribute)
 
 RangeAttribute::RangeAttribute(double min, double max, double step):
 	_step(step), _min(min), _max(max)
@@ -69,7 +73,6 @@ Gaff::IAttribute* RangeAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(HashStringAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* HashStringAttribute::clone(void) const
 {
@@ -78,7 +81,6 @@ Gaff::IAttribute* HashStringAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE_NO_INHERITANCE(OptionalAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* OptionalAttribute::clone(void) const
 {

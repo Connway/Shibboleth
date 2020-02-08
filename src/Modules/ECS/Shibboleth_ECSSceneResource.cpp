@@ -29,11 +29,8 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Gaff_Function.h>
 
-SHIB_REFLECTION_DEFINE(ECSSceneResource)
 
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSSceneResource)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSSceneResource)
 	.classAttrs(
 		ResExtAttribute(".scene.bin"),
 		ResExtAttribute(".scene"),
@@ -42,7 +39,11 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSSceneResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ECSSceneResource)
+SHIB_REFLECTION_DEFINE_END_NEW(ECSSceneResource)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ECSSceneResource)
 
 ECSSceneResource::ECSSceneResource(void)
 {

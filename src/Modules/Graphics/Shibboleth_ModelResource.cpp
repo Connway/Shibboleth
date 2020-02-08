@@ -33,18 +33,7 @@ THE SOFTWARE.
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
-SHIB_REFLECTION_DEFINE(ModelResource)
-
-NS_SHIBBOLETH
-
-template <int32_t flag, size_t size>
-static int32_t GetIgnoreFlag(const char (&field)[size], const Gaff::ISerializeReader& reader)
-{
-	const auto guard = reader.enterElementGuard(field);
-	return (reader.readBool(false)) ? flag : 0;
-}
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ModelResource)
 	.classAttrs(
 		CreatableAttribute(),
 		ResExtAttribute(".model.bin"),
@@ -54,7 +43,18 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ModelResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ModelResource)
+SHIB_REFLECTION_DEFINE_END_NEW(ModelResource)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ModelResource)
+
+template <int32_t flag, size_t size>
+static int32_t GetIgnoreFlag(const char (&field)[size], const Gaff::ISerializeReader& reader)
+{
+	const auto guard = reader.enterElementGuard(field);
+	return (reader.readBool(false)) ? flag : 0;
+}
 
 Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
 {

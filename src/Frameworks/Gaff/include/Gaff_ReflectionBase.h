@@ -22,13 +22,53 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_EnumReflectionDefinition.h"
 #include "Gaff_ReflectionInterfaces.h"
+#include "Gaff_ReflectionDefinition.h"
 #include "Gaff_SerializeInterfaces.h"
 #include "Gaff_ReflectionVersion.h"
 #include "Gaff_Hashable.h"
 #include "Gaff_Utils.h"
 
 NS_GAFF
+
+template <class T, class Allocator, bool is_enum>
+struct RefDefTypeHelper;
+
+template <class T, class Allocator>
+struct RefDefTypeHelper<T, Allocator, true> final
+{
+	using Type = EnumReflectionDefinition<T, Allocator>;
+	using Interface = IEnumReflectionDefinition;
+};
+
+template <class T, class Allocator>
+struct RefDefTypeHelper<T, Allocator, false> final
+{
+	using Type = ReflectionDefinition<T, Allocator>;
+	using Interface = IReflectionDefinition;
+};
+
+template <class T, class Allocator>
+using RefDefInterface = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Interface;
+
+template <class T, class Allocator>
+using RefDefType = typename RefDefTypeHelper<T, Allocator, std::is_enum<T>::value>::Type;
+
+
+void AddToAttributeReflectionChain(IReflection* reflection);
+IReflection* GetAttributeReflectionChainHead(void);
+
+void AddToReflectionChain(IReflection* reflection);
+IReflection* GetReflectionChainHead(void);
+
+void AddToEnumReflectionChain(IReflection* reflection);
+IReflection* GetEnumReflectionChainHead(void);
+
+void InitAttributeReflection(void);
+void InitClassReflection(void);
+void InitEnumReflection(void);
+
 
 template <class T, class Allocator>
 class ReflectionBase : public IReflection
@@ -83,12 +123,6 @@ protected:
 	static typename RefDefType<T, Allocator>* g_ref_def;
 	static ReflectionVersion<T> g_version;
 	static bool g_defined;
-
-	template <class RefT, class RefAllocator>
-	friend class EnumReflectionDefinition;
-
-	template <class RefT, class RefAllocator>
-	friend class ReflectionDefinition;
 };
 
 #include "Gaff_ReflectionBase.inl"

@@ -24,20 +24,20 @@ THE SOFTWARE.
 #include "Shibboleth_DevWebAttributes.h"
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE(DevWebServerManager)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(DevWebServerManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(DevWebServerManager)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(DevWebServerManager)
 
 static void* InitThread(const mg_context*, int)
 {
 	AllocatorThreadInit();
 	return nullptr;
 }
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(DevWebServerManager)
-	.BASE(IManager)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(DevWebServerManager)
 
 DevWebServerManager::DevWebServerManager(void)
 {

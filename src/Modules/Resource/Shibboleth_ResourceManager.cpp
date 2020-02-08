@@ -31,10 +31,20 @@ THE SOFTWARE.
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
-SHIB_REFLECTION_DEFINE(ResourceManager)
-SHIB_REFLECTION_DEFINE(ResourceSystem)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ResourceManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(ResourceManager)
+
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ResourceSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(ResourceSystem)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ResourceManager)
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ResourceSystem)
 
 struct RawJobData final
 {
@@ -58,11 +68,6 @@ static void ResourceFileLoadJob(void* data)
 	res->load();
 }
 
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResourceManager)
-	.BASE(IManager)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ResourceManager)
 
 ResourceManager::ResourceManager(void)
 {
@@ -362,10 +367,6 @@ void ResourceManager::requestLoad(IResource& resource)
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResourceSystem)
-	.BASE(ISystem)
-	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ResourceSystem)
 
 bool ResourceSystem::init(void)
 {

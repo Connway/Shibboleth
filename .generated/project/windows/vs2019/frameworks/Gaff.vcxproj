@@ -286,7 +286,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Math.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePack.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePackSerializeWriter.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_ReflectionBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Common.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Mac.cpp" />

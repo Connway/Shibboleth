@@ -397,11 +397,11 @@ private:
 	template <class... QueryResults>
 	EntityData* getEntityData(const ECSQueryResult& query_result, const QueryResults&... query_results);
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSManager);
 };
 
 #include "Shibboleth_ECSManager.inl"
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSManager)
+SHIB_REFLECTION_DECLARE_NEW(ECSManager)

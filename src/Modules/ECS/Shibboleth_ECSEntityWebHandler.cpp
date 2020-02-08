@@ -24,16 +24,16 @@ THE SOFTWARE.
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_DevWebAttributes.h>
 
-SHIB_REFLECTION_DEFINE(ECSEntityWebHandler)
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSEntityWebHandler)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSEntityWebHandler)
 	.classAttrs(DevWebCommandAttribute("/entity"))
 
 	.BASE(CivetHandler)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(ECSEntityWebHandler)
+SHIB_REFLECTION_DEFINE_END_NEW(ECSEntityWebHandler)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_NEW(ECSEntityWebHandler)
 
 ECSEntityWebHandler::ECSEntityWebHandler(void):
 	_ecs(GetApp().getManagerTFast<ECSManager>())

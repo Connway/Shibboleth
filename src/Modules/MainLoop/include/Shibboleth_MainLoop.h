@@ -49,9 +49,9 @@ private:
 
 	RenderManagerBase* _render_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
+	SHIB_REFLECTION_CLASS_DECLARE_NEW(MainLoop);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MainLoop)
+SHIB_REFLECTION_DECLARE_NEW(MainLoop)
