@@ -22,16 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_InputReflection.h"
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
+#include <Gleam_Keyboard_MessagePump.h>
+#include <Gleam_Mouse_MessagePump.h>
 
 NS_SHIBBOLETH
 
 class InputManager final : public IManager
 {
 public:
+	bool init(void) override;
 
 private:
+	template <class Enum>
+	struct Binding final
+	{
+		Gaff::Hash32 alias;
+		float scale;
+		Enum code;
+	};
+
+	VectorMap<Gaff::Hash32, float> _alias_values;
+	Vector< Binding<Gleam::MouseCode> > _mouse_bindings;
+	Vector< Binding<Gleam::KeyCode> > _kb_bindings;
+
+	Gleam::KeyboardMP _keyboard;
+	Gleam::MouseMP _mouse;
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };
