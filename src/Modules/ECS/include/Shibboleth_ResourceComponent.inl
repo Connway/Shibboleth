@@ -20,18 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(Resource, T)
-
-NS_SHIBBOLETH
-
-SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(Resource, T)
 	.staticFunc("CopyShared", &Resource<T>::CopyShared)
 	.staticFunc("IsNonShared", &Resource<T>::IsNonShared)
 	.staticFunc("IsShared", &Resource<T>::IsShared)
 
 	.var("value", &Resource<T>::value)
 	.ctor<>()
-SHIB_TEMPLATE_REFLECTION_BUILDER_END(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(Resource, T)
+
+NS_SHIBBOLETH
 
 template <class T>
 void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value)

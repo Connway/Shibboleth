@@ -79,8 +79,10 @@ public:
 private:
 	void (T::*_callback)(IFile*);
 
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(LoadFileCallbackAttribute, T);
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(LoadFileCallbackAttribute, T);
 };
+
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(LoadFileCallbackAttribute, T)
 
 template <class T>
 LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, int32_t pool = JPI_ANY)
@@ -88,12 +90,11 @@ LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(I
 	return LoadFileCallbackAttribute<T>(callback, callback_closes_file, pool);
 }
 
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(LoadFileCallbackAttribute, T)
-	.BASE(ILoadFileCallbackAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(LoadFileCallbackAttribute, T)
-
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(LoadFileCallbackAttribute, T)
-SHIB_TEMPLATE_REFLECTION_DEFINE(LoadFileCallbackAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(LoadFileCallbackAttribute, T)
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(LoadFileCallbackAttribute, T)
+	.BASE(ILoadFileCallbackAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(LoadFileCallbackAttribute, T)

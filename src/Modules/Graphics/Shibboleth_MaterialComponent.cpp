@@ -25,7 +25,31 @@ THE SOFTWARE.
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Material)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(Material)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Graphics")
+	)
+
+	.setInstanceHash(MaterialComponentHash)
+
+	.base< ECSComponentBaseShared<Material> >()
+
+	.var("material", &Material::material)
+
+	.var("textures_vertex", &Material::textures_vertex, OptionalAttribute())
+	.var("textures_pixel", &Material::textures_pixel, OptionalAttribute())
+	.var("textures_domain", &Material::textures_domain, OptionalAttribute())
+	.var("textures_geometry", &Material::textures_geometry, OptionalAttribute())
+	.var("textures_hull", &Material::textures_hull, OptionalAttribute())
+
+	.var("samplers_vertex", &Material::samplers_vertex, OptionalAttribute())
+	.var("samplers_pixel", &Material::samplers_pixel, OptionalAttribute())
+	.var("samplers_domain", &Material::samplers_domain, OptionalAttribute())
+	.var("samplers_geometry", &Material::samplers_geometry, OptionalAttribute())
+	.var("samplers_hull", &Material::samplers_hull, OptionalAttribute())
+
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END_NEW(Material)
 
 NS_SHIBBOLETH
 
@@ -77,31 +101,5 @@ static Gaff::Hash64 MaterialComponentHash(const Material& material, Gaff::Hash64
 
 	return init;
 }
-
-SHIB_REFLECTION_BUILDER_BEGIN(Material)
-	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
-	)
-
-	.setInstanceHash(MaterialComponentHash)
-
-	.base< ECSComponentBaseShared<Material> >()
-
-	.var("material", &Material::material)
-
-	.var("textures_vertex", &Material::textures_vertex, OptionalAttribute())
-	.var("textures_pixel", &Material::textures_pixel, OptionalAttribute())
-	.var("textures_domain", &Material::textures_domain, OptionalAttribute())
-	.var("textures_geometry", &Material::textures_geometry, OptionalAttribute())
-	.var("textures_hull", &Material::textures_hull, OptionalAttribute())
-
-	.var("samplers_vertex", &Material::samplers_vertex, OptionalAttribute())
-	.var("samplers_pixel", &Material::samplers_pixel, OptionalAttribute())
-	.var("samplers_domain", &Material::samplers_domain, OptionalAttribute())
-	.var("samplers_geometry", &Material::samplers_geometry, OptionalAttribute())
-	.var("samplers_hull", &Material::samplers_hull, OptionalAttribute())
-
-	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Material)
 
 NS_END

@@ -25,11 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Camera)
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_BUILDER_BEGIN(Camera)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(Camera)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
@@ -44,8 +40,9 @@ SHIB_REFLECTION_BUILDER_BEGIN(Camera)
 	//.var("focus_distance", &Camera::focus_distance, OptionalAttribute())
 	//.var("f_stop", &Camera::f_stop, OptionalAttribute())
 	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Camera)
+SHIB_REFLECTION_DEFINE_END_NEW(Camera)
 
+NS_SHIBBOLETH
 
 void Camera::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value)
 {

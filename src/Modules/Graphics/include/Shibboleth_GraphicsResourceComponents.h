@@ -45,6 +45,6 @@ class Model final : public Resource<ModelResource>
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(InstanceBufferCount)
-SHIB_REFLECTION_DECLARE(RasterState)
-SHIB_REFLECTION_DECLARE(Model)
+SHIB_REFLECTION_DECLARE_NEW(InstanceBufferCount)
+SHIB_REFLECTION_DECLARE_NEW(RasterState)
+SHIB_REFLECTION_DECLARE_NEW(Model)

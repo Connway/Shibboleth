@@ -129,15 +129,13 @@ private:
 		s_removers.erase(object);
 	}
 
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(GlobalMessageAttribute, T, Msg);
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(GlobalMessageAttribute, T, Msg);
 };
+
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(GlobalMessageAttribute, T, Msg)
 
 template <class T, class Msg>
 VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
-
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
-	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(GlobalMessageAttribute, T, Msg)
 
 NS_END
 
@@ -147,5 +145,8 @@ SHIB_REFLECTION_DECLARE_NEW(RangeAttribute)
 SHIB_REFLECTION_DECLARE_NEW(HashStringAttribute)
 SHIB_REFLECTION_DECLARE_NEW(OptionalAttribute)
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
-SHIB_TEMPLATE_REFLECTION_DEFINE(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(GlobalMessageAttribute, T, Msg)
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(GlobalMessageAttribute, T, Msg)
+	.BASE(Gaff::IAttribute)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(GlobalMessageAttribute, T, Msg)

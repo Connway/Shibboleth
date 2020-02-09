@@ -28,12 +28,12 @@ THE SOFTWARE.
 #include <Gleam_IWindow.h>
 #include <Gleam_IShader.h>
 
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::ISamplerState::Filter)
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::ISamplerState::Wrap)
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::IShader::ShaderType)
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::IWindow::WindowMode)
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::ComparisonFunc)
-SHIB_ENUM_REFLECTION_DECLARE(Gleam::StencilOp)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::ISamplerState::Filter)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::ISamplerState::Wrap)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::IShader::ShaderType)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::IWindow::WindowMode)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::ComparisonFunc)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::StencilOp)
 
-SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::SamplerSettings)
-SHIB_REFLECTION_DECLARE(Gleam::IRasterState::RasterSettings)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::ISamplerState::SamplerSettings)
+SHIB_REFLECTION_DECLARE_NEW(Gleam::IRasterState::RasterSettings)

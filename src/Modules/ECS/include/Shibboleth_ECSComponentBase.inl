@@ -20,13 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(ECSComponentBaseNonShared, T)
-SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(ECSComponentBaseShared, T)
-SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(ECSComponentBaseBoth, T)
-
-NS_SHIBBOLETH
-
-SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseNonShared, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(ECSComponentBaseNonShared, T)
 	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseNonShared<T>::CopyDefaultToNonShared)
 	.staticFunc("CopyShared", &ECSComponentBaseNonShared<T>::CopyShared)
 	.staticFunc("Copy", &ECSComponentBaseNonShared<T>::Copy)
@@ -35,9 +29,9 @@ SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseNonShared, T)
 
 	.staticFunc("IsNonShared", &ECSComponentBaseNonShared<T>::IsNonShared)
 	.staticFunc("IsShared", &ECSComponentBaseNonShared<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_BUILDER_END(ECSComponentBaseNonShared, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(ECSComponentBaseNonShared, T)
 
-SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseShared, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(ECSComponentBaseShared, T)
 	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseShared<T>::CopyDefaultToNonShared)
 	.staticFunc("CopyShared", &ECSComponentBaseShared<T>::CopyShared)
 
@@ -45,9 +39,9 @@ SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseShared, T)
 
 	.staticFunc("IsNonShared", &ECSComponentBaseShared<T>::IsNonShared)
 	.staticFunc("IsShared", &ECSComponentBaseShared<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_BUILDER_END(ECSComponentBaseShared, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(ECSComponentBaseShared, T)
 
-SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseBoth, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(ECSComponentBaseBoth, T)
 	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseBoth<T>::CopyDefaultToNonShared)
 	.staticFunc("CopyShared", &ECSComponentBaseBoth<T>::CopyShared)
 	.staticFunc("Copy", &ECSComponentBaseBoth<T>::Copy)
@@ -56,7 +50,9 @@ SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(ECSComponentBaseBoth, T)
 
 	.staticFunc("IsNonShared", &ECSComponentBase<T>::IsNonShared)
 	.staticFunc("IsShared", &ECSComponentBase<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_BUILDER_END(ECSComponentBase, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(ECSComponentBase, T)
+
+NS_SHIBBOLETH
 
 template <class T, ECSComponentType type>
 void ECSComponentBase<T, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value)
