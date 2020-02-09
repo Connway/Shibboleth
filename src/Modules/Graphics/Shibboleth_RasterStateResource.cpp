@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(RasterStateResource)
+SHIB_REFLECTION_DEFINE_BEGIN(RasterStateResource)
 	.classAttrs(
 		CreatableAttribute(),
 		ResExtAttribute(".raster_state.bin"),
@@ -40,11 +40,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(RasterStateResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(RasterStateResource)
+SHIB_REFLECTION_DEFINE_END(RasterStateResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(RasterStateResource)
+SHIB_REFLECTION_CLASS_DEFINE(RasterStateResource)
 
 Vector<Gleam::IRenderDevice*> RasterStateResource::getDevices(void) const
 {

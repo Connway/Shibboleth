@@ -26,20 +26,20 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(GameTimeManager)
+SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
 	.BASE(IManager)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(GameTimeManager)
+SHIB_REFLECTION_DEFINE_END(GameTimeManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(GameTimeSystem)
+SHIB_REFLECTION_DEFINE_BEGIN(GameTimeSystem)
 	.BASE(ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(GameTimeSystem)
+SHIB_REFLECTION_DEFINE_END(GameTimeSystem)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(GameTimeManager)
-SHIB_REFLECTION_CLASS_DEFINE_NEW(GameTimeSystem)
+SHIB_REFLECTION_CLASS_DEFINE(GameTimeManager)
+SHIB_REFLECTION_CLASS_DEFINE(GameTimeSystem)
 
 void GameTimeManager::update(void)
 {

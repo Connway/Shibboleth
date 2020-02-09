@@ -24,11 +24,11 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE_NEW(UniqueAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(UniqueAttribute, Gaff::IAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(UniqueAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(UniqueAttribute)
 
 Gaff::IAttribute* UniqueAttribute::clone(void) const
 {

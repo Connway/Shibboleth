@@ -47,11 +47,11 @@ private:
 
 	void loadRasterState(IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(RasterStateResource);
+	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };
 
 using RasterStateResourcePtr = Gaff::RefPtr<RasterStateResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(RasterStateResource)
+SHIB_REFLECTION_DECLARE(RasterStateResource)

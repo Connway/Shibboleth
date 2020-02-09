@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputReflection.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Gleam::MouseCode)
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::MouseCode)
 	.entry("Mouse Button Left", Gleam::MouseCode::MOUSE_LEFT)
 	.entry("Mouse Button Right", Gleam::MouseCode::MOUSE_RIGHT)
 	.entry("Mouse Button Middle", Gleam::MouseCode::MOUSE_MIDDLE)
@@ -33,9 +33,9 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(Gleam::MouseCode)
 	.entry("Mouse Button 7", Gleam::MouseCode::MOUSE_BUTTON7)
 	.entry("Mouse Wheel Up", Gleam::MouseCode::MOUSE_WHEEL_UP)
 	.entry("Mouse Wheel Down", Gleam::MouseCode::MOUSE_WHEEL_DOWN)
-SHIB_REFLECTION_DEFINE_END_NEW(Gleam::MouseCode)
+SHIB_REFLECTION_DEFINE_END(Gleam::MouseCode)
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Gleam::KeyCode)
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::KeyCode)
 	.entry("Backspace", Gleam::KeyCode::KEY_BACKSPACE)
 	.entry("Tab", Gleam::KeyCode::KEY_TAB)
 	.entry("Enter", Gleam::KeyCode::KEY_ENTER)
@@ -138,4 +138,4 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(Gleam::KeyCode)
 	.entry("[", Gleam::KeyCode::KEY_LEFTSQUAREBRACKET)
 	.entry("]", Gleam::KeyCode::KEY_RIGHTSQUAREBRACKET)
 	.entry("'", Gleam::KeyCode::KEY_APOSTROPHE)
-SHIB_REFLECTION_DEFINE_END_NEW(Gleam::KeyCode)
+SHIB_REFLECTION_DEFINE_END(Gleam::KeyCode)

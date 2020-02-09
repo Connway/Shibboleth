@@ -154,7 +154,7 @@ private:
 	friend class ResourceSystem;
 	friend class IResource;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ResourceManager);
+	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
 class ResourceSystem : public ISystem
@@ -166,7 +166,7 @@ public:
 private:
 	ResourceManager* _res_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ResourceSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(ResourceSystem);
 };
 
 
@@ -195,13 +195,13 @@ void SaveRefPtr(Gaff::ISerializeWriter& writer, const Gaff::RefPtr<T>& value)
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(ResourceManager)
-SHIB_REFLECTION_DECLARE_NEW(ResourceSystem)
+SHIB_REFLECTION_DECLARE(ResourceManager)
+SHIB_REFLECTION_DECLARE(ResourceSystem)
 
 
 // Gaff::RefPtr
-SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(Gaff::RefPtr, T);
+SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T);
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(Gaff::RefPtr, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Gaff::RefPtr, T)
 	.serialize(LoadRefPtr<T>, SaveRefPtr<T>)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(Gaff::RefPtr, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Gaff::RefPtr, T)

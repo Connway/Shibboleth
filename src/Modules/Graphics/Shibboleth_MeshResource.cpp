@@ -28,16 +28,16 @@ THE SOFTWARE.
 
 #include <assimp/mesh.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(MeshResource)
+SHIB_REFLECTION_DEFINE_BEGIN(MeshResource)
 	.classAttrs(CreatableAttribute())
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(MeshResource)
+SHIB_REFLECTION_DEFINE_END(MeshResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(MeshResource)
+SHIB_REFLECTION_CLASS_DEFINE(MeshResource)
 
 Vector<Gleam::IRenderDevice*> MeshResource::getDevices(void) const
 {

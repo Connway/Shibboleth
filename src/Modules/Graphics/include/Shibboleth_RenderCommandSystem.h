@@ -176,9 +176,9 @@ private:
 
 	static void GenerateCommandListJob(void* data);
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(RenderCommandSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(RenderCommandSystem)
+SHIB_REFLECTION_DECLARE(RenderCommandSystem)

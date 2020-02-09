@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSArchetypeResource)
+SHIB_REFLECTION_DEFINE_BEGIN(ECSArchetypeResource)
 	.classAttrs(
 		ResExtAttribute(".archetype.bin"),
 		ResExtAttribute(".archetype"),
@@ -38,11 +38,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSArchetypeResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(ECSArchetypeResource)
+SHIB_REFLECTION_DEFINE_END(ECSArchetypeResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(ECSArchetypeResource)
+SHIB_REFLECTION_CLASS_DEFINE(ECSArchetypeResource)
 
 ECSArchetypeResource::ECSArchetypeResource(void)
 {

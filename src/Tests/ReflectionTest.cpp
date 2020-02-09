@@ -37,7 +37,7 @@ class Base : public Gaff::IReflectionObject
 {
 public:
 	int a = 1;
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(Base);
+	SHIB_REFLECTION_CLASS_DECLARE(Base);
 };
 
 class Base2
@@ -53,25 +53,25 @@ public:
 	void setC(int v) { c = v; }
 
 	int c = 3;
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(Derived);
+	SHIB_REFLECTION_CLASS_DECLARE(Derived);
 };
 
-SHIB_REFLECTION_DECLARE_NEW(Base);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(Base);
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Base)
+SHIB_REFLECTION_DECLARE(Base);
+SHIB_REFLECTION_CLASS_DEFINE(Base);
+SHIB_REFLECTION_DEFINE_BEGIN(Base)
 	.var("a", &Base::a)
-SHIB_REFLECTION_DEFINE_END_NEW(Base)
+SHIB_REFLECTION_DEFINE_END(Base)
 
-SHIB_REFLECTION_DECLARE_NEW(Derived);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(Derived);
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Derived)
+SHIB_REFLECTION_DECLARE(Derived);
+SHIB_REFLECTION_CLASS_DEFINE(Derived);
+SHIB_REFLECTION_DEFINE_BEGIN(Derived)
 	.base<Base>()
 	.BASE(Base2)
 
 	.var("c", &Derived::c)
 	//.var("cFunc", &Derived::getC, &Derived::setC)
 	.var("cRef", &Derived::getCRef, &Derived::setC)
-SHIB_REFLECTION_DEFINE_END_NEW(Derived)
+SHIB_REFLECTION_DEFINE_END(Derived)
 
 
 // Namespace Test
@@ -79,15 +79,15 @@ namespace Foo
 {
 	class NamespaceClass : public Gaff::IReflectionObject
 	{
-		SHIB_REFLECTION_CLASS_DECLARE_NEW(NamespaceClass);
+		SHIB_REFLECTION_CLASS_DECLARE(NamespaceClass);
 	};
 }
 
-SHIB_REFLECTION_DECLARE_NEW(Foo::NamespaceClass);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(Foo::NamespaceClass);
+SHIB_REFLECTION_DECLARE(Foo::NamespaceClass);
+SHIB_REFLECTION_CLASS_DEFINE(Foo::NamespaceClass);
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Foo::NamespaceClass)
-SHIB_REFLECTION_DEFINE_END_NEW(Foo::NamespaceClass)
+SHIB_REFLECTION_DEFINE_BEGIN(Foo::NamespaceClass)
+SHIB_REFLECTION_DEFINE_END(Foo::NamespaceClass)
 
 TEST_CASE("shibboleth_reflection_basic")
 {
@@ -186,15 +186,15 @@ class Test1 : public Gaff::IReflectionObject
 	double a = 20.0;
 	T t;
 
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(Test1, T);
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test1, T);
 };
 
-SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(Test1, T);
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(Test1, T);
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(Test1, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Test1, T);
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(Test1, T);
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Test1, T)
 	.var("a", &Test1<T>::a)
 	.var("t", &Test1<T>::t)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(Test1, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Test1, T)
 
 
 template <class T1, class T2>
@@ -204,16 +204,16 @@ class Test2 : public Gaff::IReflectionObject
 	T1 t1;
 	T2 t2;
 
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(Test2, T1, T2);
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test2, T1, T2);
 };
 
-SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(Test2, T1, T2);
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(Test2, T1, T2);
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(Test2, T1, T2)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Test2, T1, T2);
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(Test2, T1, T2);
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Test2, T1, T2)
 	.var("a", &Test2<T1, T2>::a)
 	.var("t1", &Test2<T1, T2>::t1)
 	.var("t2", &Test2<T1, T2>::t2)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(Test2, T1, T2)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Test2, T1, T2)
 
 TEST_CASE("shibboleth_reflection_template_class")
 {
@@ -240,17 +240,17 @@ class VecTest : public Gaff::IReflectionObject
 	float arr[4] = { 0.0f, 1.0f, 2.0f, 3.0f };
 	Base base[2];
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(VecTest);
+	SHIB_REFLECTION_CLASS_DECLARE(VecTest);
 };
 
-SHIB_REFLECTION_DECLARE_NEW(VecTest);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(VecTest);
+SHIB_REFLECTION_DECLARE(VecTest);
+SHIB_REFLECTION_CLASS_DEFINE(VecTest);
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(VecTest)
+SHIB_REFLECTION_DEFINE_BEGIN(VecTest)
 	.var("vec", &VecTest::vec)
 	.var("arr", &VecTest::arr)
 	.var("base", &VecTest::base)
-SHIB_REFLECTION_DEFINE_END_NEW(VecTest)
+SHIB_REFLECTION_DEFINE_END(VecTest)
 
 TEST_CASE("shibboleth_reflection_array_vector")
 {
@@ -366,16 +366,16 @@ public:
 
 	int a = 200;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(CtorTest);
+	SHIB_REFLECTION_CLASS_DECLARE(CtorTest);
 };
 
-SHIB_REFLECTION_DECLARE_NEW(CtorTest);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(CtorTest);
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(CtorTest)
+SHIB_REFLECTION_DECLARE(CtorTest);
+SHIB_REFLECTION_CLASS_DEFINE(CtorTest);
+SHIB_REFLECTION_DEFINE_BEGIN(CtorTest)
 	.ctor<>()
 	.ctor<int>()
 	.var("a", &CtorTest::a)
-SHIB_REFLECTION_DEFINE_END_NEW(CtorTest)
+SHIB_REFLECTION_DEFINE_END(CtorTest)
 
 TEST_CASE("shibboleth_factory")
 {
@@ -416,7 +416,7 @@ public:
 
 	int a = 555;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(AttrTest);
+	SHIB_REFLECTION_CLASS_DECLARE(AttrTest);
 };
 
 class TestAttr final : public Gaff::IAttribute
@@ -424,17 +424,17 @@ class TestAttr final : public Gaff::IAttribute
 public:
 	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(TestAttr);
+	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
 };
 
-SHIB_REFLECTION_DECLARE_NEW(TestAttr);
-SHIB_REFLECTION_DEFINE_NEW(TestAttr);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(TestAttr);
+SHIB_REFLECTION_DECLARE(TestAttr);
+SHIB_REFLECTION_DEFINE(TestAttr);
+SHIB_REFLECTION_CLASS_DEFINE(TestAttr);
 
 
-SHIB_REFLECTION_DECLARE_NEW(AttrTest);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(AttrTest);
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(AttrTest)
+SHIB_REFLECTION_DECLARE(AttrTest);
+SHIB_REFLECTION_CLASS_DEFINE(AttrTest);
+SHIB_REFLECTION_DEFINE_BEGIN(AttrTest)
 	.classAttrs
 	(
 		TestAttr(),
@@ -445,7 +445,7 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(AttrTest)
 	.ctor<>()
 	.ctor<int>()
 	.var("a", &AttrTest::a, TestAttr(), TestAttr())
-SHIB_REFLECTION_DEFINE_END_NEW(AttrTest)
+SHIB_REFLECTION_DEFINE_END(AttrTest)
 
 
 TEST_CASE("shibboleth_attribute")
@@ -465,13 +465,13 @@ class FuncTest : public Gaff::IReflectionObject
 
 	int _my_int = 1238;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(FuncTest);
+	SHIB_REFLECTION_CLASS_DECLARE(FuncTest);
 };
 
-SHIB_REFLECTION_DECLARE_NEW(FuncTest);
-SHIB_REFLECTION_CLASS_DEFINE_NEW(FuncTest);
+SHIB_REFLECTION_DECLARE(FuncTest);
+SHIB_REFLECTION_CLASS_DEFINE(FuncTest);
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(FuncTest)
+SHIB_REFLECTION_DEFINE_BEGIN(FuncTest)
 	.ctor<>()
 	.func("getMyInt", &FuncTest::getMyInt)
 	.func("setMyInt", &FuncTest::setMyInt)
@@ -479,7 +479,7 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(FuncTest)
 	.func("myInt", &FuncTest::setMyInt)
 	.func("getIntRef", &FuncTest::getIntRef)
 	.func("setIntRef", &FuncTest::setIntRef)
-SHIB_REFLECTION_DEFINE_END_NEW(FuncTest)
+SHIB_REFLECTION_DEFINE_END(FuncTest)
 
 TEST_CASE("shibboleth_func")
 {
@@ -546,15 +546,15 @@ enum TestEnum
 	TE_TWENTY = 20
 };
 
-SHIB_REFLECTION_DECLARE_NEW(TestEnum)
+SHIB_REFLECTION_DECLARE(TestEnum)
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(TestEnum)
+SHIB_REFLECTION_DEFINE_BEGIN(TestEnum)
 	.entry("MinusOne", TE_MINUS_ONE)
 	.entry("Zero", TE_ZERO)
 	.entry("One", TE_ONE)
 	.entry("Two", TE_TWO)
 	.entry("Twenty", TE_TWENTY)
-SHIB_REFLECTION_DEFINE_END_NEW(TestEnum)
+SHIB_REFLECTION_DEFINE_END(TestEnum)
 
 TEST_CASE("shibboleth_enum")
 {

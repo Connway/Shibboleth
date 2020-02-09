@@ -120,7 +120,7 @@ THE SOFTWARE.
 		GAFF_REF_DEF_INIT
 #endif
 
-#define GAFF_REFLECTION_DECLARE_NEW(type, allocator) \
+#define GAFF_REFLECTION_DECLARE(type, allocator) \
 	NS_HASHABLE \
 		GAFF_CLASS_HASHABLE(type) \
 	NS_END \
@@ -154,7 +154,7 @@ THE SOFTWARE.
 		}; \
 	NS_END
 
-#define GAFF_REFLECTION_CLASS_DECLARE_NEW(type) \
+#define GAFF_REFLECTION_CLASS_DECLARE(type) \
 	public: \
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override; \
 		const void* getBasePointer(void) const override \
@@ -168,13 +168,13 @@ THE SOFTWARE.
 	private: \
 		friend class GAFF_REFLECTION_NAMESPACE::Reflection<type>
 
-#define GAFF_REFLECTION_CLASS_DEFINE_NEW(type) \
+#define GAFF_REFLECTION_CLASS_DEFINE(type) \
 	const Gaff::IReflectionDefinition& type::getReflectionDefinition(void) const \
 	{ \
 		return GAFF_REFLECTION_NAMESPACE::Reflection<type>::GetReflectionDefinition(); \
 	}
 
-#define GAFF_REFLECTION_DEFINE_BEGIN_NEW(type, allocator) \
+#define GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
 	NS_REFLECTION \
 		GAFF_REF_DEF_DEFINE(type, allocator) \
 		template <class ReflectionBuilder> \
@@ -182,7 +182,7 @@ THE SOFTWARE.
 		{ \
 			builder
 
-#define GAFF_REFLECTION_DEFINE_END_NEW(type) \
+#define GAFF_REFLECTION_DEFINE_END(type) \
 			; \
 			builder.finish(); \
 		} \
@@ -190,7 +190,7 @@ THE SOFTWARE.
 
 
 
-#define GAFF_TEMPLATE_REFLECTION_DECLARE_NEW(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 	NS_HASHABLE \
 		GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
 	NS_END \
@@ -224,14 +224,14 @@ THE SOFTWARE.
 		}; \
 	NS_END
 
-#define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(type, ...) \
+#define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	const Gaff::IReflectionDefinition& type<__VA_ARGS__>::getReflectionDefinition(void) const \
 	{ \
 		return GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::GetReflectionDefinition(); \
 	}
 
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, allocator, ...) \
 	NS_REFLECTION \
 		GAFF_TEMPLATE_REF_DEF_DEFINE(type, allocator, __VA_ARGS__) \
 		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -240,8 +240,8 @@ THE SOFTWARE.
 		{ \
 			builder
 
-#define GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(type, ...) GAFF_REFLECTION_CLASS_DECLARE_NEW(type<__VA_ARGS__>)
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_END_NEW(type, ...) GAFF_REFLECTION_DEFINE_END_NEW(type<__VA_ARGS__>)
+#define GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) GAFF_REFLECTION_CLASS_DECLARE(type<__VA_ARGS__>)
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_END(type, ...) GAFF_REFLECTION_DEFINE_END(type<__VA_ARGS__>)
 
 #define REFLECTION_CAST_PTR_NAME(T, name, object) \
 	reinterpret_cast<T*>( \

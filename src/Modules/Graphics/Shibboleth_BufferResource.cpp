@@ -25,16 +25,16 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(BufferResource)
+SHIB_REFLECTION_DEFINE_BEGIN(BufferResource)
 	.classAttrs(CreatableAttribute())
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(BufferResource)
+SHIB_REFLECTION_DEFINE_END(BufferResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(BufferResource)
+SHIB_REFLECTION_CLASS_DEFINE(BufferResource)
 
 Vector<Gleam::IRenderDevice*> BufferResource::getDevices(void) const
 {

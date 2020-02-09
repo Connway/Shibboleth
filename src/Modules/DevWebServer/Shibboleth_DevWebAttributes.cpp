@@ -24,13 +24,13 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(DevWebCommandAttribute)
+SHIB_REFLECTION_DEFINE_BEGIN(DevWebCommandAttribute)
 	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_END_NEW(DevWebCommandAttribute)
+SHIB_REFLECTION_DEFINE_END(DevWebCommandAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(DevWebCommandAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(DevWebCommandAttribute)
 
 DevWebCommandAttribute::DevWebCommandAttribute(const char* uri):
 	_uri(uri, ProxyAllocator("Reflection"))

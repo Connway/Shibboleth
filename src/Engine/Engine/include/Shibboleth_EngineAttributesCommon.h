@@ -38,7 +38,7 @@ public:
 	template <class T, class Var, class Ret>
 	void apply(Gaff::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ReadOnlyAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
 
 
@@ -58,7 +58,7 @@ private:
 	double _min;
 	double _max;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(RangeAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
 };
 
 
@@ -69,7 +69,7 @@ class HashStringAttribute final : public Gaff::IAttribute
 public:
 	IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(HashStringAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(HashStringAttribute);
 };
 
 
@@ -78,7 +78,7 @@ class OptionalAttribute final : public Gaff::IAttribute
 public:
 	IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(OptionalAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
 };
 
 
@@ -129,10 +129,10 @@ private:
 		s_removers.erase(object);
 	}
 
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE_NEW(GlobalMessageAttribute, T, Msg);
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(GlobalMessageAttribute, T, Msg);
 };
 
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_NEW(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(GlobalMessageAttribute, T, Msg)
 
 template <class T, class Msg>
 VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
@@ -140,13 +140,13 @@ VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = 
 NS_END
 
 
-SHIB_REFLECTION_DECLARE_NEW(ReadOnlyAttribute)
-SHIB_REFLECTION_DECLARE_NEW(RangeAttribute)
-SHIB_REFLECTION_DECLARE_NEW(HashStringAttribute)
-SHIB_REFLECTION_DECLARE_NEW(OptionalAttribute)
+SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
+SHIB_REFLECTION_DECLARE(RangeAttribute)
+SHIB_REFLECTION_DECLARE(HashStringAttribute)
+SHIB_REFLECTION_DECLARE(OptionalAttribute)
 
-SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
 	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(GlobalMessageAttribute, T, Msg)

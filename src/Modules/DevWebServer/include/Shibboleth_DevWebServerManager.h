@@ -43,9 +43,9 @@ private:
 
 	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(DevWebServerManager);
+	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(DevWebServerManager)
+SHIB_REFLECTION_DECLARE(DevWebServerManager)

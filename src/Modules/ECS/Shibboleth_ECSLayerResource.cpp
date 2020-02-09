@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Gaff_SerializeInterfaces.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSLayerResource)
+SHIB_REFLECTION_DEFINE_BEGIN(ECSLayerResource)
 	.classAttrs(
 		ResExtAttribute(".layer.bin"),
 		ResExtAttribute(".layer"),
@@ -39,11 +39,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(ECSLayerResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(ECSLayerResource)
+SHIB_REFLECTION_DEFINE_END(ECSLayerResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(ECSLayerResource)
+SHIB_REFLECTION_CLASS_DEFINE(ECSLayerResource)
 
 ECSLayerResource::ECSLayerResource(void):
 	_reader_wrapper(ProxyAllocator("Resource"))

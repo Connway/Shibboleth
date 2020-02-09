@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Material)
+SHIB_REFLECTION_DEFINE_BEGIN(Material)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
@@ -49,7 +49,7 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(Material)
 	.var("samplers_hull", &Material::samplers_hull, OptionalAttribute())
 
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(Material)
+SHIB_REFLECTION_DEFINE_END(Material)
 
 NS_SHIBBOLETH
 

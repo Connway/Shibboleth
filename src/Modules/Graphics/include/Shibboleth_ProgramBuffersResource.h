@@ -44,11 +44,11 @@ public:
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgramBuffers> > _program_buffers{ ProxyAllocator("Graphics") };
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ProgramBuffersResource);
+	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
 };
 
 using ProgramBuffersResourcePtr = Gaff::RefPtr<ProgramBuffersResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(ProgramBuffersResource)
+SHIB_REFLECTION_DECLARE(ProgramBuffersResource)
