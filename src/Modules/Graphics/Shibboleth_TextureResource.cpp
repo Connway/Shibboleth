@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Image.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(TextureResource)
+SHIB_REFLECTION_DEFINE_BEGIN(TextureResource)
 	.classAttrs(
 		CreatableAttribute(),
 		ResExtAttribute(".texture.bin"),
@@ -43,11 +43,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(TextureResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(TextureResource)
+SHIB_REFLECTION_DEFINE_END(TextureResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(TextureResource)
+SHIB_REFLECTION_CLASS_DEFINE(TextureResource)
 
 static Gleam::ITexture::Format GetTextureFormat(const Image& image)
 {

@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(ModelResource)
+SHIB_REFLECTION_DEFINE_BEGIN(ModelResource)
 	.classAttrs(
 		CreatableAttribute(),
 		ResExtAttribute(".model.bin"),
@@ -43,11 +43,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(ModelResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(ModelResource)
+SHIB_REFLECTION_DEFINE_END(ModelResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(ModelResource)
+SHIB_REFLECTION_CLASS_DEFINE(ModelResource)
 
 template <int32_t flag, size_t size>
 static int32_t GetIgnoreFlag(const char (&field)[size], const Gaff::ISerializeReader& reader)

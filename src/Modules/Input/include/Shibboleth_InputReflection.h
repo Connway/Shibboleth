@@ -25,5 +25,5 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Gleam_Window_Defines.h>
 
-SHIB_REFLECTION_DECLARE_NEW(Gleam::MouseCode)
-SHIB_REFLECTION_DECLARE_NEW(Gleam::KeyCode)
+SHIB_REFLECTION_DECLARE(Gleam::MouseCode)
+SHIB_REFLECTION_DECLARE(Gleam::KeyCode)

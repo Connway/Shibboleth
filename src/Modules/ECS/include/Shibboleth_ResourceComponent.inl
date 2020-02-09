@@ -20,14 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_NEW(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Resource, T)
 	.staticFunc("CopyShared", &Resource<T>::CopyShared)
 	.staticFunc("IsNonShared", &Resource<T>::IsNonShared)
 	.staticFunc("IsShared", &Resource<T>::IsShared)
 
 	.var("value", &Resource<T>::value)
 	.ctor<>()
-SHIB_TEMPLATE_REFLECTION_DEFINE_END_NEW(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Resource, T)
 
 NS_SHIBBOLETH
 

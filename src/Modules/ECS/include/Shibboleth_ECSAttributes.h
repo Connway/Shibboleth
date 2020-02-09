@@ -40,9 +40,9 @@ private:
 	const char* _category = nullptr;
 	const char* _name = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSClassAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(ECSClassAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(ECSClassAttribute)
+SHIB_REFLECTION_DECLARE(ECSClassAttribute)

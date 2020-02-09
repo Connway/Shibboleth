@@ -31,9 +31,9 @@ class UniqueAttribute final : public Gaff::IAttribute
 public:
 	IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(UniqueAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(UniqueAttribute)
+SHIB_REFLECTION_DECLARE(UniqueAttribute)

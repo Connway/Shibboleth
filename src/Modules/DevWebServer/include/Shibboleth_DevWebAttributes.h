@@ -38,9 +38,9 @@ public:
 private:
 	U8String _uri;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(DevWebCommandAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(DevWebCommandAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(DevWebCommandAttribute)
+SHIB_REFLECTION_DECLARE(DevWebCommandAttribute)

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(MaterialResource)
+SHIB_REFLECTION_DEFINE_BEGIN(MaterialResource)
 	.classAttrs(
 		CreatableAttribute(),
 		ResExtAttribute(".material.bin"),
@@ -39,11 +39,11 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(MaterialResource)
 
 	.BASE(IResource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(MaterialResource)
+SHIB_REFLECTION_DEFINE_END(MaterialResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(MaterialResource)
+SHIB_REFLECTION_CLASS_DEFINE(MaterialResource)
 
 Vector<Gleam::IRenderDevice*> MaterialResource::getDevices(void) const
 {

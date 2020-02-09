@@ -36,7 +36,7 @@ public:
 
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE_NEW(ECSEntityWebHandler);
+	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
 
 private:
 	ECSManager& _ecs;
@@ -44,4 +44,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE_NEW(ECSEntityWebHandler)
+SHIB_REFLECTION_DECLARE(ECSEntityWebHandler)

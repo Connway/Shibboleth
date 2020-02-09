@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsResourceComponents.h"
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_BEGIN(InstanceBufferCount)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
@@ -31,22 +31,22 @@ SHIB_REFLECTION_DEFINE_BEGIN_NEW(InstanceBufferCount)
 	.base< ECSComponentBaseShared<InstanceBufferCount> >()
 	.var("value", &InstanceBufferCount::value)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_END(InstanceBufferCount)
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(RasterState)
+SHIB_REFLECTION_DEFINE_BEGIN(RasterState)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
 	.base< Resource<RasterStateResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(RasterState)
+SHIB_REFLECTION_DEFINE_END(RasterState)
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(Model)
+SHIB_REFLECTION_DEFINE_BEGIN(Model)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
 	.base< Resource<ModelResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(Model)
+SHIB_REFLECTION_DEFINE_END(Model)

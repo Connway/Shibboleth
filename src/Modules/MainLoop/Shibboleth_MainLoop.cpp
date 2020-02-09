@@ -40,14 +40,14 @@ THE SOFTWARE.
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_IncludeMatrix.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN_NEW(MainLoop)
+SHIB_REFLECTION_DEFINE_BEGIN(MainLoop)
 	.BASE(IMainLoop)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END_NEW(MainLoop)
+SHIB_REFLECTION_DEFINE_END(MainLoop)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_NEW(MainLoop)
+SHIB_REFLECTION_CLASS_DEFINE(MainLoop)
 
 static void UpdateSystemJob(void* data)
 {
