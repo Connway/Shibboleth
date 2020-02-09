@@ -53,7 +53,9 @@ THE SOFTWARE.
 			g_ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<ThisType, ProxyAllocator>), allocator); \
 			g_ref_def->setAllocator(allocator); \
 			BuildReflection(*g_ref_def); \
-		}
+			GetApp().getReflectionManager().registerReflection(g_ref_def); \
+		} \
+		g_defined = true;
 #endif
 
 #include "Shibboleth_ReflectionManager.h"

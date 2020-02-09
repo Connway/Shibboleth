@@ -40,10 +40,15 @@ THE SOFTWARE.
 		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void) \
 		{ \
+			if (g_defined) { \
+				return; \
+			} \
 			BuildReflection(g_version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			BuildReflection(*g_ref_def); \
-			g_defined = true; \
+			if (!g_defined) { \
+				BuildReflection(*g_ref_def); \
+				g_defined = true; \
+			} \
 			for (auto& func : g_on_defined_callbacks) { \
 				func(); \
 			} \
@@ -57,10 +62,15 @@ THE SOFTWARE.
 		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 		void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
+			if (g_defined) { \
+				return; \
+			} \
 			BuildReflection(g_version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			BuildReflection(*g_ref_def); \
-			g_defined = true; \
+			if (!g_defined) { \
+				BuildReflection(*g_ref_def); \
+				g_defined = true; \
+			} \
 			for (auto& func : g_on_defined_callbacks) { \
 				func(); \
 			} \
@@ -83,10 +93,15 @@ THE SOFTWARE.
 		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void) \
 		{ \
+			if (g_defined) { \
+				return; \
+			} \
 			BuildReflection(g_version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			BuildReflection(*g_ref_def); \
-			g_defined = true; \
+			if (!g_defined) { \
+				BuildReflection(*g_ref_def); \
+				g_defined = true; \
+			} \
 			for (auto& func : g_on_defined_callbacks) { \
 				func(); \
 			} \
@@ -105,10 +120,15 @@ THE SOFTWARE.
 		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 		void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
+			if (g_defined) { \
+				return; \
+			} \
 			BuildReflection(g_version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			BuildReflection(*g_ref_def); \
-			g_defined = true; \
+			if (!g_defined) { \
+				BuildReflection(*g_ref_def); \
+				g_defined = true; \
+			} \
 			for (auto& func : g_on_defined_callbacks) { \
 				func(); \
 			} \

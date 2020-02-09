@@ -8,6 +8,19 @@ local gen_header = [[
 %s
 #include <Shibboleth_Reflection.h>
 
+namespace
+{
+	template <class T>
+	void RegisterOwningModule(void)
+	{
+		if constexpr (std::is_enum<T>::value) {
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Shibboleth::Reflection<T>::GetHash(), "%s");
+		} else {
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Shibboleth::Reflection<T>::GetHash(), "%s");
+		}
+	}
+}
+
 namespace %s::Gen
 {
 	void InitReflection(void)
@@ -15,7 +28,6 @@ namespace %s::Gen
 		// Initialize Enums.
 		Gaff::InitEnumReflection();
 
-%s
 		// Initialize Attributes.
 		Gaff::InitAttributeReflection();
 
@@ -245,7 +257,6 @@ newaction
 		local include_folder = source_folder .. "/include"
 
 		local file_class_map = {}
-		local file_enum_map = {}
 
 		function ParseFile(file)
 			local stripped_file = file:sub(include_folder:len() + 2)
@@ -280,19 +291,6 @@ newaction
 					goto continue
 				end
 
-				-- Detect enums
-				match = line:match("SHIB_ENUM_REFLECTION_DECLARE%((.+)%)")
-
-				if match then
-					print(stripped_file)
-					if not file_enum_map[stripped_file] then
-						file_enum_map[stripped_file] = {}
-					end
-
-					table.insert(file_enum_map[stripped_file], last_namespace .. match)
-					goto continue
-				end
-
 				::continue::
 			end
 		end
@@ -323,7 +321,6 @@ newaction
 
 		local include_files = ""
 		local init_attr_funcs = ""
-		local init_enum_funcs = ""
 		local init_funcs = ""
 		local module_registers = ""
 		local shutdown_func = ""
@@ -338,25 +335,7 @@ newaction
 					init_funcs = init_funcs .. "\t\tShibboleth::Reflection<" .. c .. ">::Init();\n"
 				end
 
-				if module_registers == "" then
-					module_registers = "\t\tShibboleth::ReflectionManager& refl_mgr = Shibboleth::GetApp().getReflectionManager();\n\n"
-				end
-
-				module_registers = module_registers .. "\t\trefl_mgr.registerOwningModule(Shibboleth::Reflection<" .. c .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
-			end
-		end
-
-		for k,v in pairs(file_enum_map) do
-			include_files = include_files .. "#include <" .. k .. ">\n"
-
-			for _,e in pairs(v) do
-				init_enum_funcs = init_enum_funcs .. "\t\tShibboleth::Reflection<" .. e .. ">::Init();\n"
-
-				if module_registers == "" then
-					module_registers = "\t\tShibboleth::ReflectionManager& refl_mgr = Shibboleth::GetApp().getReflectionManager();\n\n"
-				end
-
-				module_registers = module_registers .. "\t\trefl_mgr.registerEnumOwningModule(Shibboleth::Reflection<" .. e .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
+				module_registers = module_registers .. "\t\tRegisterOwningModule<" .. c .. ">();\n"
 			end
 		end
 
@@ -370,7 +349,8 @@ newaction
 		local header_string = gen_header:format(
 			include_files,
 			module_name,
-			init_enum_funcs,
+			module_name,
+			module_name,
 			init_attr_funcs,
 			init_funcs,
 			module_registers,
