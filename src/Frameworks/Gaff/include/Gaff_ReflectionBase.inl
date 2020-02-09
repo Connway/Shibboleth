@@ -98,25 +98,13 @@ void ReflectionBase<T, Allocator>::RegisterOnDefinedCallback(eastl::function<voi
 template <class T, class Allocator>
 bool ReflectionBase<T, Allocator>::Load(const ISerializeReader& reader, T& object, bool refl_load)
 {
-	GAFF_REF(reader, object, refl_load);
-	//if constexpr (IsEnum()) {
-	//	return getEnumReflectionDefinition().load(reader, object, refl_load);
-	//} else {
-	//	return getReflectionDefinition().load(reader, object, refl_load);
-	//}
-
-	return false;
+	return g_ref_def->load(reader, object, refl_load);
 }
 
 template <class T, class Allocator>
 void ReflectionBase<T, Allocator>::Save(ISerializeWriter& writer, const T& object, bool refl_save)
 {
-	GAFF_REF(writer, object, refl_save);
-	//if constexpr (IsEnum()) {
-	//	return getEnumReflectionDefinition().save(writer, object, refl_save);
-	//} else {
-	//	return getReflectionDefinition().save(writer, object, refl_save);
-	//}
+	g_ref_def->save(writer, object, refl_save);
 }
 
 template <class T, class Allocator>
