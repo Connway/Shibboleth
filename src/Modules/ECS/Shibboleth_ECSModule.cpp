@@ -24,8 +24,7 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-	#include <Shibboleth_IApp.h>
+	#include <Shibboleth_ECSAttributes.h>
 
 	namespace ECS
 	{

@@ -23,13 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsResourceComponents.h"
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(InstanceBufferCount)
-SHIB_REFLECTION_EXTERNAL_DEFINE(RasterState)
-SHIB_REFLECTION_EXTERNAL_DEFINE(Model)
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_BUILDER_BEGIN(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(InstanceBufferCount)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
@@ -37,24 +31,22 @@ SHIB_REFLECTION_BUILDER_BEGIN(InstanceBufferCount)
 	.base< ECSComponentBaseShared<InstanceBufferCount> >()
 	.var("value", &InstanceBufferCount::value)
 	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_END_NEW(InstanceBufferCount)
 
-SHIB_REFLECTION_BUILDER_BEGIN(RasterState)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(RasterState)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
 	.base< Resource<RasterStateResource> >()
 	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(RasterState)
+SHIB_REFLECTION_DEFINE_END_NEW(RasterState)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Model)
+SHIB_REFLECTION_DEFINE_BEGIN_NEW(Model)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Graphics")
 	)
 
 	.base< Resource<ModelResource> >()
 	.ctor<>()
-SHIB_REFLECTION_BUILDER_END(Model)
-
-NS_END
+SHIB_REFLECTION_DEFINE_END_NEW(Model)

@@ -102,14 +102,14 @@ public:
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(ECSComponentBaseNonShared, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(ECSComponentBaseShared, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE_NEW(ECSComponentBaseBoth, T)
 
 #include "Shibboleth_ECSComponentBase.inl"
 
 #define SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
-	SHIB_REFLECTION_BUILDER_BEGIN(type) \
+	SHIB_REFLECTION_DEFINE_BEGIN_NEW(type) \
 		.classAttrs( \
 			ECSClassAttribute(name, category) \
 		) \
@@ -129,7 +129,7 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 
 #define SHIB_ECS_TAG_COMPONENT_DEFINE(type, name, category) \
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
-	SHIB_REFLECTION_BUILDER_END(type)
+	SHIB_REFLECTION_DEFINE_END_NEW(type)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(name, type, base, default_val) \
 	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
@@ -157,10 +157,7 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(type, name, category, ...) \
-	SHIB_REFLECTION_EXTERNAL_DEFINE(type) \
-	NS_SHIBBOLETH \
-		SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
-			builder \
-				.var("value", &type::value, ##__VA_ARGS__); \
-		SHIB_REFLECTION_BUILDER_END(type) \
-	NS_END
+	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
+		builder \
+			.var("value", &type::value, ##__VA_ARGS__); \
+	SHIB_REFLECTION_DEFINE_END_NEW(type) \

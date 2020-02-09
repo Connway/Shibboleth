@@ -1499,7 +1499,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
 	// Add vars, funcs, and static funcs and attrs from base class.
-	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
+	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::IsDefined()) {
 		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();
 		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 
@@ -1612,7 +1612,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		++_dependents_remaining;
 
 		eastl::function<void (void)> cb(&RegisterBaseVariables<Base>);
-		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(std::move(cb));
+		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::RegisterOnDefinedCallback(std::move(cb));
 	}
 
 	return *this;
@@ -1980,9 +1980,9 @@ template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::dependsOn(void)
 {
-	if (!GAFF_REFLECTION_NAMESPACE::Reflection<T2>::g_defined) {
+	if (!GAFF_REFLECTION_NAMESPACE::Reflection<T2>::IsDefined()) {
 		eastl::function<void(void)> cb(&FinishAfterDependent);
-		GAFF_REFLECTION_NAMESPACE::Reflection<T2>::g_on_defined_callbacks.emplace_back(std::move(cb));
+		GAFF_REFLECTION_NAMESPACE::Reflection<T2>::RegisterOnDefinedCallback(std::move(cb));
 	}
 
 	return *this;
@@ -1992,8 +1992,6 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
 	if (!_dependents_remaining) {
-		//GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
-
 		// Call finish() on attributes first.
 		for (IAttributePtr& attr : _class_attrs) {
 			attr->finish(*this);
@@ -2016,13 +2014,6 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 				attr->finish(*this);
 			}
 		}
-
-		// Call all callbacks waiting for us to finish being defined.
-		//for (eastl::function<void(void)>& func : GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks) {
-		//	func();
-		//}
-
-		//GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks.clear();
 	}
 }
 
