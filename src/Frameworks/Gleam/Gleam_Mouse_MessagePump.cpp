@@ -181,9 +181,6 @@ bool MouseMP::handleMessage(const AnyMessage& message)
 			_data.buttons[static_cast<uint8_t>(message.mouse_state.button)] = false;
 			return true;
 
-		case EventType::IN_MOUSEDOUBLECLICK:
-			return true;
-
 		case EventType::IN_MOUSEWHEEL:
 			_data.wheel = message.mouse_state.wheel;
 			return true;

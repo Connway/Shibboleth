@@ -51,7 +51,7 @@ public:
 	const IWindow* getAssociatedWindow(void) const override;
 
 private:
-	enum class Flag : uint8_t
+	enum class Flag
 	{
 		AllowRepeats,
 		GlobalHandler,

@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputManager.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 #include <Gleam_Window.h>
 #include <Gaff_JSON.h>
+#include <EASTL/sort.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(InputManager)
 	.BASE(IManager)
@@ -31,6 +33,30 @@ SHIB_REFLECTION_DEFINE_BEGIN(InputManager)
 SHIB_REFLECTION_DEFINE_END(InputManager)
 
 NS_SHIBBOLETH
+
+constexpr char* const g_alias_cfg_schema =
+R"({
+	"type": "array",
+	"items": { "type": "string" }
+})";
+
+constexpr char* const g_binding_cfg_schema =
+R"({
+	"type": "array",
+	"items":
+	{
+		"type": "object",
+		"properties":
+		{
+			"Alias": { "type": "string" },
+			"Binding": { "type": ["array", "string"], "items": { "type": "string" } },
+			"Scale": { "type": "number", "default": 1.0 },
+
+			"required": ["Alias", "Binding"]
+		}
+	}
+})";
+
 
 SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 
@@ -50,14 +76,14 @@ bool InputManager::init(void)
 	IFile* const alias_file = GetApp().getFileSystem().openFile("cfg/input_aliases.cfg");
 
 	if (!alias_file) {
-		// $TODO: Log error.
+		LogErrorDefault("InputManager: Failed to open file 'cfg/input_aliases.cfg'");
 		return false;
 	}
 
 	Gaff::JSON aliases;
 
-	if (!aliases.parse(reinterpret_cast<char*>(alias_file->getBuffer()))) {
-		// $TODO: Log error.
+	if (!aliases.parse(reinterpret_cast<char*>(alias_file->getBuffer()), g_alias_cfg_schema)) {
+		LogErrorDefault("InputManager: Failed to parse 'cfg/input_aliases.cfg' with error '%s'", aliases.getErrorText());
 		return false;
 	}
 
@@ -68,56 +94,157 @@ bool InputManager::init(void)
 		return false;
 	});
 
+	_alias_values.shrink_to_fit();
+
 	// Load bindings.
 	IFile* const input_file = GetApp().getFileSystem().openFile("cfg/input_bindings.cfg");
 
 	if (!input_file) {
-		// $TODO: Log error.
+		LogErrorDefault("InputManager: Failed to open file 'cfg/input_bindings.cfg'");
 		return false;
 	}
 
 	Gaff::JSON input_bindings;
 
-	if (!input_bindings.parse(reinterpret_cast<char*>(input_file->getBuffer()))) {
-		// $TODO: Log error.
+	if (!input_bindings.parse(reinterpret_cast<char*>(input_file->getBuffer()), g_binding_cfg_schema)) {
+		LogErrorDefault("InputManager: Failed to parse 'cfg/input_bindings.cfg' with error '%s'", input_bindings.getErrorText());
 		return false;
 	}
+
+	_keyboard.addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
+	_mouse.addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
 	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
 		GAFF_ASSERT(value.isObject());
-		GAFF_ASSERT(value["Alias"].isString());
-		GAFF_ASSERT(value["Binding"].isString());
-		GAFF_ASSERT(value["Scale"].isFloat());
-
-		const auto& mouse_ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
-		const auto& key_ref_def = Reflection<Gleam::KeyCode>::GetReflectionDefinition();
 
 		const Gaff::JSON binding = value["Binding"];
 		const Gaff::JSON scale = value["Scale"];
 		const Gaff::JSON alias = value["Alias"];
 
-		const char* const binding_str = binding.getString();
+		GAFF_ASSERT(binding.isString() || binding.isArray());
+		GAFF_ASSERT(scale.isFloat() || scale.isNull());
+		GAFF_ASSERT(alias.isString());
+
+		const auto& mouse_ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
+		const auto& key_ref_def = Reflection<Gleam::KeyCode>::GetReflectionDefinition();
+
 		const char* const alias_str = alias.getString();
-		const float scale_value = scale.getFloat();
+		const float scale_value = scale.getFloat(1.0f);
 
 		const Gaff::Hash32 alias_hash = Gaff::FNV1aHash32String(alias_str);
 
-		if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
-			_kb_bindings.emplace_back(Binding<Gleam::KeyCode>{ alias_hash, scale_value, static_cast<Gleam::KeyCode>(value_kb) });
-		} else if (const int32_t value_mouse = mouse_ref_def.getEntryValue(binding_str); value_mouse != std::numeric_limits<int32_t>::min()) {
-			_mouse_bindings.emplace_back(Binding<Gleam::MouseCode>{ alias_hash, scale_value, static_cast<Gleam::MouseCode>(value_mouse) });
-		} else {
-			// $TODO: Log error.
+		if (_alias_values.find(alias_hash) == _alias_values.end()) {
+			LogErrorDefault("InputManager: Invalid input alias '%s'.", alias_str);
+			alias.freeString(alias_str);
+
+			return false;
 		}
 
-		binding.freeString(binding_str);
+		Binding final_binding;
+
 		alias.freeString(alias_str);
+
+		if (binding.isArray()) {
+			const bool failed = binding.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+			{
+				const char* const binding_str = value.getString();
+
+				if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
+					final_binding.key_codes.emplace_back(static_cast<Gleam::KeyCode>(value_kb));
+
+				} else if (const int32_t value_mouse = mouse_ref_def.getEntryValue(binding_str); value_mouse != std::numeric_limits<int32_t>::min()) {
+					final_binding.mouse_codes.emplace_back(static_cast<Gleam::MouseCode>(value_mouse));
+
+				} else {
+					LogErrorDefault("InputManager: Invalid input binding '%s'.", binding_str);
+					return true;
+				}
+
+				value.freeString(binding_str);
+				return false;
+			});
+
+			// Skip adding the binding.
+			if (failed) {
+				return false;
+			}
+
+		} else {
+			const char* const binding_str = binding.getString();
+
+			if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
+				final_binding.key_codes.resize(1);
+				final_binding.key_codes[0] = static_cast<Gleam::KeyCode>(value_kb);
+
+			} else if (const int32_t value_mouse = mouse_ref_def.getEntryValue(binding_str); value_mouse != std::numeric_limits<int32_t>::min()) {
+				final_binding.mouse_codes.resize(1);
+				final_binding.mouse_codes[0] = static_cast<Gleam::MouseCode>(value_mouse);
+
+			} else {
+				LogErrorDefault("InputManager: Invalid input binding '%s'.", binding_str);
+			}
+
+			binding.freeString(binding_str);
+		}
+
+		final_binding.mouse_codes.shrink_to_fit();
+		final_binding.key_codes.shrink_to_fit();
+
+		eastl::sort(final_binding.mouse_codes.begin(), final_binding.mouse_codes.end());
+		eastl::sort(final_binding.key_codes.begin(), final_binding.key_codes.end());
 
 		return false;
 	});
 
 	return true;
+}
+
+float InputManager::getAliasValue(Gaff::Hash32 alias_name) const
+{
+	const auto it = _alias_values.find(alias_name);
+	return (it == _alias_values.end()) ? 0.0f : it->second;
+}
+
+float InputManager::getAliasValue(const char* alias_name) const
+{
+	return getAliasValue(Gaff::FNV1aHash32String(alias_name));
+}
+
+void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
+{
+	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
+	value = (value <= 0.0f) ? -value : value;
+
+	for (Binding& binding : _bindings) {
+		const auto it = Gaff::Find(binding.key_codes, code);
+
+		if (it != binding.key_codes.end()) {
+			_alias_values[binding.alias] += binding.scale * value;
+		}
+	}
+}
+
+void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value)
+{
+	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT);
+	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
+
+	if (is_button) {
+		value = (value <= 0.0f) ? -value : value;
+	}
+
+	for (Binding& binding : _bindings) {
+		const auto it = Gaff::Find(binding.mouse_codes, code);
+
+		if (it != binding.mouse_codes.end()) {
+			if (is_button) {
+				_alias_values[binding.alias] += binding.scale * value;
+			} else {
+				_alias_values[binding.alias] = binding.scale * value;
+			}
+		}
+	}
 }
 
 NS_END

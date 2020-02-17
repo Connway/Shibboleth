@@ -34,23 +34,34 @@ NS_SHIBBOLETH
 class InputManager final : public IManager
 {
 public:
+	template <size_t size>
+	float getAliasValue(const char (&alias_name)[size])
+	{
+		return getAliasValue(Gaff::FNV1aHash32Const(alias_name));
+	}
+
 	bool init(void) override;
 
+	float getAliasValue(Gaff::Hash32 alias_name) const;
+	float getAliasValue(const char* alias_name) const;
+
 private:
-	template <class Enum>
 	struct Binding final
 	{
+		Vector<Gleam::MouseCode> mouse_codes{ ProxyAllocator("Input") };
+		Vector<Gleam::KeyCode> key_codes{ ProxyAllocator("Input") };
 		Gaff::Hash32 alias;
-		float scale;
-		Enum code;
+		float scale = 1.0f;
 	};
 
-	VectorMap<Gaff::Hash32, float> _alias_values;
-	Vector< Binding<Gleam::MouseCode> > _mouse_bindings;
-	Vector< Binding<Gleam::KeyCode> > _kb_bindings;
+	VectorMap<Gaff::Hash32, float> _alias_values{ ProxyAllocator("Input") };
+	Vector<Binding> _bindings{ ProxyAllocator("Input") };
 
 	Gleam::KeyboardMP _keyboard;
 	Gleam::MouseMP _mouse;
+
+	void handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value);
+	void handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };

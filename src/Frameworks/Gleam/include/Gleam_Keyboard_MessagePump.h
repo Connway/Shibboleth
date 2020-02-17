@@ -51,7 +51,7 @@ public:
 	bool handleMessage(const AnyMessage& message);
 
 private:
-	enum class Flag : uint8_t
+	enum class Flag
 	{
 		AllowRepeats,
 		GlobalHandler,
@@ -60,7 +60,7 @@ private:
 		Count
 	};
 
-	uint8_t _prev_state[256] = { 0 };
+	bool _prev_state[256] = { false };
 	Gaff::Flags<Flag> _flags;
 
 	IWindow* _window = nullptr;

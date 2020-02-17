@@ -23,17 +23,67 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Defines.h"
+#include <EASTL/bitset.h>
 
 NS_GAFF
+
+constexpr size_t ClosestIntegerSize(size_t size_bits)
+{
+	// Round up to nearest multiple of 8.
+	const size_t remainder = size_bits % CHAR_BIT;
+	size_bits = size_bits + ((remainder > 0) ? (CHAR_BIT - remainder) : 0);
+
+	size_t size_bytes = size_bits / CHAR_BIT;
+	size_t count = 0;
+
+	// First n in the below condition is for the case where size_bytes is 0.
+	if (size_bytes && !(size_bytes & (size_bytes - 1))) {
+		return size_bytes;
+	}
+
+	while (size_bytes != 0) {
+		size_bytes >>= 1;
+		count += 1;
+	}
+
+	return 1ULL << count;
+}
+
+template <size_t size_bytes>
+struct ClosestSizeFlagTypeHelper final
+{
+	using Type = uint64_t;
+};
+
+template <>
+struct ClosestSizeFlagTypeHelper<1> final
+{
+	using Type = uint8_t;
+};
+
+template <>
+struct ClosestSizeFlagTypeHelper<2> final
+{
+	using Type = uint16_t;
+};
+
+template <>
+struct ClosestSizeFlagTypeHelper<4> final
+{
+	using Type = uint32_t;
+};
+
+template <size_t size_bytes>
+using ClosestSizeFlagType = typename ClosestSizeFlagTypeHelper<size_bytes>::Type;
+
 
 // *Range() functions include the end bit.
 template <class Enum>
 class Flags final
 {
-	using StorageType = std::underlying_type_t<Enum>;
-
 	static_assert(std::is_enum<Enum>::value, "Flags must be given an enum template argument.");
-	static_assert(static_cast<StorageType>(Enum::Count) <= (sizeof(StorageType) * CHAR_BIT), "Not enough bits in enum storage type for flag count.");
+	using StorageType = ClosestSizeFlagType<ClosestIntegerSize(static_cast<size_t>(Enum::Count))>;
+	using BitsetType = eastl::bitset<static_cast<size_t>(Enum::Count), StorageType>;
 
 public:
 	template <class... Enum2>
@@ -55,7 +105,9 @@ public:
 	template <class... Enum2>
 	constexpr Flags(Enum flag, Enum2... rest);
 
+	constexpr Flags(typename BitsetType flags);
 	constexpr Flags(typename StorageType flags = 0);
+	//constexpr Flags(Flags rhs);
 
 	bool testAll(typename StorageType flags) const;
 	bool testAny(typename StorageType flags) const;
@@ -71,16 +123,19 @@ public:
 	int32_t countUnset(void) const;
 	int32_t countSet(void) const;
 
-	const Flags& operator&=(Flags rhs);
-	const Flags& operator^=(Flags rhs);
-	const Flags& operator|=(Flags rhs);
+	bool operator==(Flags rhs) const;
+	bool operator!=(Flags rhs) const;
+	Flags& operator=(Flags rhs);
+	Flags& operator&=(Flags rhs);
+	Flags& operator^=(Flags rhs);
+	Flags& operator|=(Flags rhs);
 	Flags operator&(Flags rhs) const;
 	Flags operator^(Flags rhs) const;
 	Flags operator|(Flags rhs) const;
 	Flags operator~(void) const;
 
 private:
-	typename StorageType _flags = 0;
+	BitsetType _flags;
 };
 
 #include "Gaff_Flags.inl"
