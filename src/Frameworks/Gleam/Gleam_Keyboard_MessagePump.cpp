@@ -77,15 +77,16 @@ void KeyboardMP::destroy(void)
 		Window::RemoveGlobalMessageHandler(_id);
 	}
 
-	_flags = 0;
+	_flags.clear();
 }
 
 void KeyboardMP::update(void)
 {
 	if (areRepeatsAllowed()) {
+		const int32_t size = static_cast<int32_t>(_input_handlers.size());
+
 		for (int32_t i = 0; i < 256; ++i) {
-			uint8_t curr = _data[i];
-			const int32_t size = static_cast<int32_t>(_input_handlers.size());
+			const bool  curr = _data[i];
 
 			for (int32_t j = 0; j < size; ++j) {
 				_input_handlers[j](this, i, static_cast<float>(curr));
@@ -94,8 +95,8 @@ void KeyboardMP::update(void)
 
 	} else {
 		for (int32_t i = 0; i < 256; ++i) {
-			uint8_t curr = _data[i];
-			uint8_t prev = _prev_state[i];
+			const bool curr = _data[i];
+			const bool prev = _prev_state[i];
 
 			if (curr != prev) {
 				const int32_t size = static_cast<int32_t>(_input_handlers.size());

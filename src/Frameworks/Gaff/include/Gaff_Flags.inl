@@ -57,7 +57,11 @@ template <class Enum>
 template <class... Enum2>
 void Flags<Enum>::toggle(Enum flag, Enum2... rest)
 {
-	_flags ^= GetBits(flag, rest...);
+	toggle(flag);
+
+	if constexpr (sizeof...(rest) > 0) {
+		toggle(rest)...;
+	}
 }
 
 template <class Enum>
@@ -69,34 +73,54 @@ void Flags<Enum>::set(bool value, Enum flag, Enum2... rest)
 
 template <class Enum>
 template <class... Enum2>
-constexpr Flags<Enum>::Flags(Enum flag, Enum2... rest):
-	_flags(GetBits(flag, rest...))
+constexpr Flags<Enum>::Flags(Enum flag, Enum2... rest)
 {
+	_flags.from_uint64(GetBits(flag, rest...));
 }
 
 template <class Enum>
-constexpr Flags<Enum>::Flags(typename StorageType flags):
+constexpr Flags<Enum>::Flags(typename BitsetType flags):
 	_flags(flags)
 {
 }
 
 template <class Enum>
+constexpr Flags<Enum>::Flags(typename StorageType flags)
+{
+	_flags.from_uint64(flags);
+}
+
+//template <class Enum>
+//constexpr Flags<Enum>::Flags(Flags<Enum> rhs):
+//	_flags(rhs._flags)
+//{
+//}
+
+template <class Enum>
 bool Flags<Enum>::testAll(typename StorageType flags) const
 {
-	return (_flags & flags) == flags;
+	BitsetType temp;
+	temp.from_uint64(flags);
+
+	return (_flags & temp) == temp;
 }
 	
 template <class Enum>
 bool Flags<Enum>::testAny(typename StorageType flags) const
 {
-	return (_flags & flags) != 0;
+	BitsetType temp;
+	temp.from_uint64(flags);
+
+	return !(_flags & temp).none();
 }
 
 template <class Enum>
 bool Flags<Enum>::testRange(Enum start, Enum end) const
 {
 	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++start) {
-		return testAll(static_cast<Enum>(i));
+		if (!_flags.test(static_cast<size_t>(i))) {
+			return false;
+		}
 	}
 
 	return true;
@@ -105,89 +129,96 @@ bool Flags<Enum>::testRange(Enum start, Enum end) const
 template <class Enum>
 bool Flags<Enum>::empty(void) const
 {
-	return _flags == 0;
+	return _flags.none();
 }
 
 template <class Enum>
 void Flags<Enum>::setRange(bool value, Enum start, Enum end)
 {
+	GAFF_ASSERT(static_cast<int32_t>(start) <= static_cast<int32_t>(end));
 	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++start) {
-		return set(value, static_cast<Enum>(i));
+		_flags.set(static_cast<size_t>(i), value);
 	}
 }
 
 template <class Enum>
 void Flags<Enum>::set(bool value, typename StorageType flags)
 {
+	BitsetType temp;
+	temp.from_uint64(flags);
+
 	if (value) {
-		_flags |= flags;
+		_flags |= temp;
 	} else {
-		_flags &= ~flags;
+		_flags &= ~temp;
 	}
 }
 
 template <class Enum>
 void Flags<Enum>::toggle(Enum flag)
 {
-	_flags ^= GetBit(flag);
+	_flags.flip(static_cast<size_t>(flag));
 }
 
 template <class Enum>
 void Flags<Enum>::invert(void)
 {
-	_flags = ~_flags;
+	_flags.flip();
 }
 
 template <class Enum>
 void Flags<Enum>::clear(void)
 {
-	_flags = 0;
+	_flags.reset();
 }
 
 template <class Enum>
 int32_t Flags<Enum>::countUnset(void) const
 {
-	int32_t count = 0;
-
-	for (int32_t i = 0; i < Enum::Count; ++i) {
-		if (!testAll(GetBit(static_cast<Enum>(i)))) {
-			++count;
-		}
-	}
-	
-	return count;
+	return static_cast<int32_t>(BitsetType::kSize - _flags.count());
 }
 
 template <class Enum>
 int32_t Flags<Enum>::countSet(void) const
 {
-	int32_t count = 0;
-
-	for (int32_t i = 0; i < Enum::Count; ++i) {
-		if (testAll(GetBit(static_cast<Enum>(i)))) {
-			++count;
-		}
-	}
-
-	return count;
+	return static_cast<int32_t>(_flags.count());
 }
 
 template <class Enum>
-const Flags<Enum>& Flags<Enum>::operator&=(Flags rhs)
+bool Flags<Enum>::operator==(Flags rhs) const
+{
+	return _flags == rhs._flags;
+}
+
+template <class Enum>
+bool Flags<Enum>::operator!=(Flags rhs) const
+{
+	return _flags != rhs._flags;
+}
+
+template <class Enum>
+Flags<Enum>& Flags<Enum>::operator=(Flags rhs)
+{
+	_flags = rhs._flags;
+	return *this;
+}
+
+template <class Enum>
+Flags<Enum>& Flags<Enum>::operator&=(Flags rhs)
 {
 	_flags &= rhs._flags;
 	return *this;
 }
 
 template <class Enum>
-const Flags<Enum>& Flags<Enum>::operator^=(Flags rhs)
+Flags<Enum>& Flags<Enum>::operator^=(Flags rhs)
 {
 	_flags ^= rhs._flags;
 	return *this;
 }
 
 template <class Enum>
-const Flags<Enum>& Flags<Enum>::operator|=(Flags rhs)
+Flags<Enum>& Flags<Enum>::operator|=(Flags rhs)
 {
 	_flags |= rhs._flags;
 	return *this;

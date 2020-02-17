@@ -37,13 +37,13 @@ NS_SHIBBOLETH
 
 // Change this if the game supports more than one monitor.
 // "main" display is implicit. Not necessary to explicitly reference it.
-constexpr const char* g_supported_displays[] = { nullptr };
+static constexpr const char* g_supported_displays[] = { nullptr };
 
 const VectorMap< Gaff::Hash32, Vector<const char*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const("gameplay"), { "main" } }
 };
 
-const char* const g_graphics_cfg_schema =
+static constexpr char* const g_graphics_cfg_schema =
 R"({
 	"type": "object",
 

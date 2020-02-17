@@ -40,10 +40,10 @@ public:
 	virtual bool init(IWindow& window) = 0;
 	virtual bool init(void) = 0;
 
-	bool isKeyDown(KeyCode key) const { return _data[static_cast<int32_t>(key)] != 0; }
-	bool isKeyUp(KeyCode key) const { return _data[static_cast<int32_t>(key)] == 0; }
+	bool isKeyDown(KeyCode key) const { return _data[static_cast<int32_t>(key)]; }
+	bool isKeyUp(KeyCode key) const { return !_data[static_cast<int32_t>(key)]; }
 
-	const uint8_t* getKeyboardData(void) const { return _data; }
+	const bool* getKeyboardData(void) const { return _data; }
 
 	bool isKeyboard(void) const { return true; }
 	bool isMouse(void) const { return false; }
@@ -76,7 +76,7 @@ public:
 
 protected:
 	VectorMap<int32_t, CharacterHandler> _character_handlers;
-	uint8_t _data[256] = { 0 };
+	bool _data[256] = { false };
 
 private:
 	int32_t _next_id = 0;

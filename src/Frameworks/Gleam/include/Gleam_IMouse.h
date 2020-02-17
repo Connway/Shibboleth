@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IInputDevice.h"
 #include <vec2.hpp>
+#include <EASTL/bitset.h>
 
 NS_GLEAM
 
@@ -34,7 +35,7 @@ struct MouseData final
 	glm::ivec2 rel_pos{ 0, 0 };
 	glm::ivec2 delta{ 0, 0 };
 
-	bool buttons[static_cast<uint8_t>(MouseCode::MOUSE_BUTTON_COUNT)] = { false };
+	eastl::bitset<static_cast<size_t>(MouseCode::MOUSE_BUTTON_COUNT), uint8_t> buttons;
 	int32_t wheel = 0;
 };
 
