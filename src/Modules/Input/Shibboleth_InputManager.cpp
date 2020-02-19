@@ -211,16 +211,46 @@ float InputManager::getAliasValue(const char* alias_name) const
 	return getAliasValue(Gaff::FNV1aHash32String(alias_name));
 }
 
+float InputManager::getAliasValue(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values.size()));
+	return _alias_values.at(index).second;
+}
+
+int32_t InputManager::getAliasIndex(Gaff::Hash32 alias_name) const
+{
+	const auto it = _alias_values.find(alias_name);
+	return (it != _alias_values.end()) ? static_cast<int32_t>(eastl::distance(_alias_values.begin(), it)) : -1;
+}
+
+int32_t InputManager::getAliasIndex(const char* alias_name) const
+{
+	return getAliasIndex(Gaff::FNV1aHash32String(alias_name));
+}
+
 void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
-	value = (value <= 0.0f) ? -value : value;
 
 	for (Binding& binding : _bindings) {
+		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.key_codes, code);
 
 		if (it != binding.key_codes.end()) {
-			_alias_values[binding.alias] += binding.scale * value;
+			if (value > 0.0f) {
+				++binding.count;
+
+				if (binding.count == binding_size) {
+					_alias_values[binding.alias] += binding.scale;
+				}
+
+			} else {
+				if (binding.count == binding_size) {
+					_alias_values[binding.alias] -= binding.scale;
+				}
+
+				--binding.count;
+			}
 		}
 	}
 }
@@ -230,18 +260,29 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 
-	if (is_button) {
-		value = (value <= 0.0f) ? -value : value;
-	}
-
 	for (Binding& binding : _bindings) {
+		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.mouse_codes, code);
 
 		if (it != binding.mouse_codes.end()) {
-			if (is_button) {
-				_alias_values[binding.alias] += binding.scale * value;
-			} else {
+			if (binding_size == 1 && !is_button) {
 				_alias_values[binding.alias] = binding.scale * value;
+
+			} else {
+				if (value != 0.0f) {
+					++binding.count;
+
+					if (binding.count == binding_size) {
+						_alias_values[binding.alias] += binding.scale;
+					}
+
+				} else {
+					if (binding.count == binding_size) {
+						_alias_values[binding.alias] -= binding.scale;
+					}
+
+					--binding.count;
+				}
 			}
 		}
 	}
