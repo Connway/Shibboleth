@@ -44,6 +44,10 @@ public:
 
 	float getAliasValue(Gaff::Hash32 alias_name) const;
 	float getAliasValue(const char* alias_name) const;
+	float getAliasValue(int32_t index) const;
+
+	int32_t getAliasIndex(Gaff::Hash32 alias_name) const;
+	int32_t getAliasIndex(const char* alias_name) const;
 
 private:
 	struct Binding final
@@ -52,6 +56,7 @@ private:
 		Vector<Gleam::KeyCode> key_codes{ ProxyAllocator("Input") };
 		Gaff::Hash32 alias;
 		float scale = 1.0f;
+		int8_t count = 0;
 	};
 
 	VectorMap<Gaff::Hash32, float> _alias_values{ ProxyAllocator("Input") };
