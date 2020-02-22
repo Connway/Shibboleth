@@ -26,7 +26,8 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
-			base_dir .. "../../Frameworks/Gleam/include"
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Modules/MainLoop/include"
 		}
 
 	project "InputModule"
@@ -48,7 +49,8 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"Gleam"
+			"Gleam",
+			"MainLoop"
 		}
 
 		dependson(deps)
@@ -58,6 +60,7 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Input")
 	table.insert(deps, "Gleam")
+	table.insert(deps, "MainLoop")
 
 	dependson(deps)
 	links(deps)

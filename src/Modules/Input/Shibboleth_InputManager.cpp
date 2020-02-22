@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_InputManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
+#include <Shibboleth_GameTime.h>
 #include <Gleam_Window.h>
 #include <Gaff_JSON.h>
 #include <EASTL/sort.h>
@@ -37,7 +38,18 @@ NS_SHIBBOLETH
 constexpr char* const g_alias_cfg_schema =
 R"({
 	"type": "array",
-	"items": { "type": "string" }
+	"items":
+	{
+		"type": ["string", "object"],
+		"properties":
+		{
+			"Name": { "type": "string" },
+			"Taps": { "type": "integer", "minimum": 1 },
+			"Tap Interval": { "type": "number" },
+
+			"required": ["Name"]
+		}
+	}
 })";
 
 constexpr char* const g_binding_cfg_schema =
@@ -89,8 +101,37 @@ bool InputManager::init(void)
 
 	aliases.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
-		GAFF_ASSERT(value.isString());
-		_alias_values[Gaff::FNV1aHash32String(value.getString())] = 0.0f;
+		GAFF_ASSERT(value.isString() || value.isObject());
+
+		Gaff::Hash32 alias_hash;
+		Alias alias;
+
+		if (value.isString()) {
+			const char* const name_value = value.getString();
+			alias_hash = Gaff::FNV1aHash32String(name_value);
+			value.freeString(name_value);
+
+		} else {
+			const Gaff::JSON tap_interval = value["Tap Interval"];
+			const Gaff::JSON taps = value["Taps"];
+			const Gaff::JSON name = value["Name"];
+
+			GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
+			GAFF_ASSERT(taps.isInt8() || taps.isNull());
+			GAFF_ASSERT(name.isString());
+
+			const float tap_interval_value = tap_interval.getFloat(0.1f);
+			const char* const name_value = name.getString();
+			const int8_t taps_value = taps.getInt8(0);
+
+			alias.tap_interval = tap_interval_value;
+			alias.taps = taps_value;
+
+			alias_hash = Gaff::FNV1aHash32String(name_value);
+			name.freeString(name_value);
+		}
+
+		_alias_values[alias_hash] = alias;
 		return false;
 	});
 
@@ -142,6 +183,8 @@ bool InputManager::init(void)
 		}
 
 		Binding final_binding;
+		final_binding.alias = Gaff::FNV1aHash32String(alias_str);
+		final_binding.scale = scale_value;
 
 		alias.freeString(alias_str);
 
@@ -200,10 +243,34 @@ bool InputManager::init(void)
 	return true;
 }
 
+void InputManager::update()
+{
+	const float dt = static_cast<float>(GetApp().getManagerTFast<GameTimeManager>().getRealTime().delta);
+
+	for (auto& alias : _alias_values) {
+		if (alias.second.taps > 0) {
+			alias.second.curr_tap_time += dt;
+
+			// We have been set for at least one frame or we have exceeded the tap time. Reset.
+			if (!alias.second.first_frame && alias.second.curr_tap == alias.second.taps) {
+				alias.second.curr_tap_time = 0.0f;
+				alias.second.curr_tap = 0;
+				alias.second.value = 0.0f;
+
+			} else if (alias.second.curr_tap_time > alias.second.tap_interval) {
+				alias.second.curr_tap_time = 0.0f;
+				alias.second.curr_tap = 0;
+			}
+
+			alias.second.first_frame = false;
+		}
+	}
+}
+
 float InputManager::getAliasValue(Gaff::Hash32 alias_name) const
 {
 	const auto it = _alias_values.find(alias_name);
-	return (it == _alias_values.end()) ? 0.0f : it->second;
+	return (it == _alias_values.end()) ? 0.0f : it->second.value;
 }
 
 float InputManager::getAliasValue(const char* alias_name) const
@@ -214,7 +281,7 @@ float InputManager::getAliasValue(const char* alias_name) const
 float InputManager::getAliasValue(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values.size()));
-	return _alias_values.at(index).second;
+	return _alias_values.at(index).second.value;
 }
 
 int32_t InputManager::getAliasIndex(Gaff::Hash32 alias_name) const
@@ -240,13 +307,35 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 			if (value > 0.0f) {
 				++binding.count;
 
+				// All the bindings have been pressed.
 				if (binding.count == binding_size) {
-					_alias_values[binding.alias] += binding.scale;
+					auto& alias = _alias_values[binding.alias];
+
+					if (alias.taps <= 0) {
+						alias.value += binding.scale;
+					}
 				}
 
 			} else {
+				// All the bindings have been released.
 				if (binding.count == binding_size) {
-					_alias_values[binding.alias] -= binding.scale;
+					auto& alias = _alias_values[binding.alias];
+
+					// Check that we've reached the tap count.
+					if (alias.taps > 0) {
+						alias.curr_tap_time = 0.0f;
+						++alias.curr_tap;
+
+						// We've reached the tap count, set the alias.
+						if (alias.curr_tap == alias.taps) {
+							alias.value += binding.scale;
+							alias.first_frame = true;
+						}
+
+					// We have no tap requirements.
+					} else {
+						alias.value -= binding.scale;
+					}
 				}
 
 				--binding.count;
@@ -266,19 +355,41 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 
 		if (it != binding.mouse_codes.end()) {
 			if (binding_size == 1 && !is_button) {
-				_alias_values[binding.alias] = binding.scale * value;
+				_alias_values[binding.alias].value = binding.scale * value;
 
 			} else {
 				if (value != 0.0f) {
 					++binding.count;
 
+					// All the bindings have been pressed.
 					if (binding.count == binding_size) {
-						_alias_values[binding.alias] += binding.scale;
+						auto& alias = _alias_values[binding.alias];
+
+						if (alias.taps <= 0) {
+							alias.value += binding.scale;
+						}
 					}
 
 				} else {
+					// All the bindings have been released.
 					if (binding.count == binding_size) {
-						_alias_values[binding.alias] -= binding.scale;
+						auto& alias = _alias_values[binding.alias];
+
+						// Check that we've reached the tap count.
+						if (alias.taps > 0) {
+							alias.curr_tap_time = 0.0f;
+							++alias.curr_tap;
+
+							// We've reached the tap count, set the alias.
+							if (alias.curr_tap == alias.taps) {
+								alias.value += binding.scale;
+								alias.first_frame = true;
+							}
+
+						// We have no tap requirements.
+						} else {
+							alias.value -= binding.scale;
+						}
 					}
 
 					--binding.count;
@@ -286,6 +397,18 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 			}
 		}
 	}
+}
+
+
+bool InputSystem::init(void)
+{
+	_input_mgr = &GetApp().getManagerTFast<InputManager>();
+	return true;
+}
+
+void InputSystem::update(void)
+{
+	_input_mgr->update();
 }
 
 NS_END

@@ -33,7 +33,7 @@ public:
 	virtual ~ISystem(void) {}
 
 	virtual bool init(void) = 0;
-	virtual void update() = 0;
+	virtual void update(void) = 0;
 };
 
 NS_END
