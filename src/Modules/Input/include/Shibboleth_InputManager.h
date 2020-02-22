@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_ISystem.h>
 #include <Gleam_Keyboard_MessagePump.h>
 #include <Gleam_Mouse_MessagePump.h>
 
@@ -41,6 +42,7 @@ public:
 	}
 
 	bool init(void) override;
+	void update(void);
 
 	float getAliasValue(Gaff::Hash32 alias_name) const;
 	float getAliasValue(const char* alias_name) const;
@@ -59,7 +61,17 @@ private:
 		int8_t count = 0;
 	};
 
-	VectorMap<Gaff::Hash32, float> _alias_values{ ProxyAllocator("Input") };
+	struct Alias final
+	{
+		float curr_tap_time = 0.0f;
+		float tap_interval = 0.1f;
+		float value = 0.0f;
+		int8_t curr_tap = 0;
+		int8_t taps = 0;
+		bool first_frame = false;
+	};
+
+	VectorMap<Gaff::Hash32, Alias> _alias_values{ ProxyAllocator("Input") };
 	Vector<Binding> _bindings{ ProxyAllocator("Input") };
 
 	Gleam::KeyboardMP _keyboard;
@@ -69,6 +81,16 @@ private:
 	void handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
+};
+
+class InputSystem final : public ISystem
+{
+public:
+	bool init(void) override;
+	void update(void) override;
+
+private:
+	InputManager* _input_mgr = nullptr;
 };
 
 NS_END
