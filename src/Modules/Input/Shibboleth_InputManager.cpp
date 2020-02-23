@@ -28,12 +28,13 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <EASTL/sort.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(InputManager)
-	.BASE(IManager)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(InputManager)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(InputManager, IManager)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(InputSystem, ISystem)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(InputManager)
+SHIB_REFLECTION_CLASS_DEFINE(InputSystem)
 
 constexpr char* const g_alias_cfg_schema =
 R"({
@@ -70,7 +71,6 @@ R"({
 })";
 
 
-SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 
 bool InputManager::init(void)
 {

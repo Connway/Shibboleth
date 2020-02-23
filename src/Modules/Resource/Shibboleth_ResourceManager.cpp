@@ -31,15 +31,8 @@ THE SOFTWARE.
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
-	.BASE(IManager)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ResourceManager)
-
-SHIB_REFLECTION_DEFINE_BEGIN(ResourceSystem)
-	.BASE(ISystem)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ResourceSystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(ResourceManager, IManager)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(ResourceSystem, ISystem)
 
 NS_SHIBBOLETH
 
