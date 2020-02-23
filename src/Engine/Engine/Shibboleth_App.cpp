@@ -363,10 +363,16 @@ bool App::loadModules(void)
 					continue;
 				}
 
-				eastl::string_view module_name_view(temp + 8);
-				module_name_view = module_name_view.substr(0, module_name_view.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION));
+				U8String module_name(temp);
+				size_t pos = module_name.find_first_of('\\');
 
-				const U8String module_name(module_name_view);
+				while (pos != U8String::npos) {
+					module_name[pos] = '/';
+					pos = module_name.find_first_of('\\');
+				}
+
+				pos = module_name.find_last_of('/');
+				module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION) - (pos + 1));
 
 				if (!(_dynamic_loader.getModule(module_name.data()) || loadModule(temp, module_name.data()))) {
 					return false;
@@ -539,40 +545,95 @@ void App::destroy(void (*static_shutdown)(void))
 	}
 
 	_job_pool.destroy();
-	_manager_map.clear();
 
 	const Gaff::JSON module_unload_order = _configs["module_unload_order"];
 	Vector<Gaff::Hash32> module_hashes;
 
+	// Free managers and shutdown modules in requested to close these first.
 	if (!module_unload_order.isNull()) {
 		if (module_unload_order.isArray()) {
-			module_unload_order.forEachInArray([&](int32_t index, const Gaff::JSON& value) -> bool {
-				if (!value.isString()) {
-					LogErrorDefault("module_unload_order[%i] is not a string!", index);
+			module_unload_order.forEachInArray([&](int32_t index, const Gaff::JSON& value) -> bool
+			{
+				const char* module_name = nullptr;
+
+				if (value.isString()) {
+					module_name = value.getString();
+
+				} else if (value.isArray()) {
+					if (!value[0].isString() || !value[1].isArray()) {
+						LogErrorDefault("module_unload_order[%i] malformed config list!", index);
+						return false;
+					}
+
+					module_name = value[0].getString();
+
+				} else {
+					LogErrorDefault("module_unload_order[%i] is not a string or a config list!", index);
 					return false;
 				}
 
-				DynamicLoader::ModulePtr module = _dynamic_loader.getModule(value.getString());
+				// Find all the managers for this module and free them.
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager), Gaff::FNV1aHash64String(module_name));
 
-				if (!module) {
-					LogErrorDefault("module_unload_order[%i] module '%s' was not found!", value.getString());
-					return false;
+				if (manager_refls) {
+					for (const Gaff::IReflectionDefinition* ref_def : *manager_refls) {
+						const auto it = _manager_map.find(ref_def->getReflectionInstance().getHash());
+
+						if (it != _manager_map.end()) {
+							_manager_map.erase(it);
+						}
+					}
 				}
 
-				void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
+				// Shutdown the module.
+				const auto module_shutdown = [&](const char* name) -> void
+				{
+					DynamicLoader::ModulePtr module = _dynamic_loader.getModule(name);
 
-				if (shutdown_func) {
-					module_hashes.emplace_back(Gaff::FNV1aHash32String(value.getString()));
-					shutdown_func();
+					if (!module) {
+						LogErrorDefault("module_unload_order[%i] module '%s' was not found!", index, name);
+						return;
+					}
+
+					void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
+
+					if (shutdown_func) {
+						module_hashes.emplace_back(Gaff::FNV1aHash32String(name));
+						shutdown_func();
+					}
+				};
+
+				if (value.isString()) {
+					module_shutdown(module_name);
+					value.freeString(module_name);
+
+				} else if (value.isArray()) {
+					value[1].forEachInArray([module_shutdown, index](int32_t flavor_index, const Gaff::JSON& module_flavor) -> bool
+					{
+						if (!module_flavor.isString()) {
+							LogErrorDefault("module_unload_order[%i][%i] is not a string!", index, flavor_index);
+							return false;
+						}
+
+						const char* const name = module_flavor.getString();
+						module_shutdown(name);
+						module_flavor.freeString(name);
+
+						return false;
+					});
 				}
 
 				return false;
 			});
+
 		} else {
 			LogErrorDefault("'module_unload_order' config option is not an array of strings!");
 		}
 	}
 
+	_manager_map.clear();
+
+	// Shutdown the modules we haven't already shutdown.
 	_dynamic_loader.forEachModule([&](const HashString32& module_name, DynamicLoader::ModulePtr module) -> bool
 	{
 		const auto it = Gaff::Find(module_hashes, module_name.getHash());

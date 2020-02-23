@@ -41,6 +41,8 @@ ECSManager::~ECSManager(void)
 {
 	IAllocator& allocator = GetAllocator();
 
+	_curr_scene = nullptr;
+
 	for (auto& pages : _entity_pages) {
 		SHIB_FREE(pages.second->arch_ref, allocator);
 	}
