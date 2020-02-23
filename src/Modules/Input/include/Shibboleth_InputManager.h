@@ -91,8 +91,11 @@ public:
 
 private:
 	InputManager* _input_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
 };
 
 NS_END
 
 SHIB_REFLECTION_DECLARE(InputManager)
+SHIB_REFLECTION_DECLARE(InputSystem)
