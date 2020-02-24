@@ -28,12 +28,16 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_Keyboard_MessagePump.h>
+#include <Gleam_Mouse_MessagePump.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
+
+static ProxyAllocator g_allocator("Graphics");
 
 // Change this if the game supports more than one monitor.
 // "main" display is implicit. Not necessary to explicitly reference it.
@@ -280,6 +284,16 @@ void RenderManagerBase::allModulesLoaded(void)
 			GetApp().quit();
 		}
 	}
+}
+
+Gleam::IKeyboard* RenderManagerBase::createKeyboard(void) const
+{
+	return SHIB_ALLOCT(Gleam::KeyboardMP, g_allocator);
+}
+
+Gleam::IMouse* RenderManagerBase::createMouse(void) const
+{
+	return SHIB_ALLOCT(Gleam::MouseMP, g_allocator);
 }
 
 void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)

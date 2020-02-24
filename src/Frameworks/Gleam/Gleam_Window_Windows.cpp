@@ -65,7 +65,7 @@ static void InitWindowProcHelpers(void)
 	g_window_helpers.emplace(WM_XBUTTONUP, WindowXButtonUp);
 	g_window_helpers.emplace(WM_MOUSEWHEEL, WindowMouseWheel);
 	g_window_helpers.emplace(WM_SETFOCUS, WindowSetFocus);
-	g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
+	//g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
 }
 
 static bool DoFirstInit(
@@ -176,7 +176,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 	{
 		Window* window = *it_wnd;
 
-		if (!window->_window_callbacks.empty()) {
+		if (!window->_window_callbacks.empty() || !g_global_message_handlers.empty()) {
 			// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
 			WindowProcHelper helper_func = g_window_helpers[msg];
 

@@ -254,6 +254,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
+    <ProjectReference Include="GraphicsBase.vcxproj">
+      <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

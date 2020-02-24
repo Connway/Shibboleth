@@ -41,6 +41,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(RenderManager)
 	.BASE(RenderManagerBase)
+	.BASE(IRenderManager)
 	.BASE(IManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(RenderManager)

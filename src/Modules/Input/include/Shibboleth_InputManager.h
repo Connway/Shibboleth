@@ -25,10 +25,11 @@ THE SOFTWARE.
 #include "Shibboleth_InputReflection.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
+#include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ISystem.h>
-#include <Gleam_Keyboard_MessagePump.h>
-#include <Gleam_Mouse_MessagePump.h>
+#include <Gleam_IKeyboard.h>
+#include <Gleam_IMouse.h>
 
 NS_SHIBBOLETH
 
@@ -74,8 +75,8 @@ private:
 	VectorMap<Gaff::Hash32, Alias> _alias_values{ ProxyAllocator("Input") };
 	Vector<Binding> _bindings{ ProxyAllocator("Input") };
 
-	Gleam::KeyboardMP _keyboard;
-	Gleam::MouseMP _mouse;
+	UniquePtr<Gleam::IKeyboard> _keyboard;
+	UniquePtr<Gleam::IMouse> _mouse;
 
 	void handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value);
 	void handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value);

@@ -71,7 +71,7 @@ bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*
 
 bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
 
 	if (!sampler_state->init(device, sampler_state_settings)) {

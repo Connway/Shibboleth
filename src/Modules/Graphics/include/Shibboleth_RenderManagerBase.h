@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IRenderManager.h"
 #include "Shibboleth_SamplerStateResource.h"
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
-#include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderOutput.h>
@@ -38,21 +38,9 @@ THE SOFTWARE.
 #include <Gaff_Hash.h>
 #include <EAThread/eathread.h>
 
-NS_GLEAM
-	class IDepthStencilState;
-	class ICommandList;
-	class IRasterState;
-	class IBlendState;
-	class IShader;
-	class IBuffer;
-	class ILayout;
-	class IModel;
-	class IMesh;
-NS_END
-
 NS_SHIBBOLETH
 
-class RenderManagerBase : public IManager
+class RenderManagerBase : public IRenderManager
 {
 public:
 	RenderManagerBase(void);
@@ -61,29 +49,10 @@ public:
 	bool init(void) override;
 	void allModulesLoaded(void) override;
 
-	virtual Gleam::RendererType getRendererType(void) const = 0;
-
-	virtual Gleam::IShaderResourceView* createShaderResourceView(void) const = 0;
-	virtual Gleam::IDepthStencilState* createDepthStencilState(void) const = 0;
 	virtual Gleam::IRenderDevice* createRenderDevice(void) const = 0;
-	virtual Gleam::IRenderOutput* createRenderOutput(void) const = 0;
-	virtual Gleam::IRenderTarget* createRenderTarget(void) const = 0;
-	virtual Gleam::ISamplerState* createSamplerState(void) const = 0;
-	virtual Gleam::ICommandList* createCommandList(void) const = 0;
-	virtual Gleam::IRasterState* createRasterState(void) const = 0;
-	virtual Gleam::IBlendState* createBlendState(void) const = 0;
-	virtual Gleam::ITexture* createTexture(void) const = 0;
-	virtual Gleam::IProgramBuffers* createProgramBuffers(void) const = 0;
-	virtual Gleam::IProgram* createProgram(void) const = 0;
-	virtual Gleam::IShader* createShader(void) const = 0;
-	virtual Gleam::IBuffer* createBuffer(void) const = 0;
-	virtual Gleam::ILayout* createLayout(void) const = 0;
-	virtual Gleam::IMesh* createMesh(void) const = 0;
 
-	virtual Gleam::IRenderDevice::AdapterList getDisplayModes(void) const = 0;
-	virtual Gleam::IWindow* createWindow(void) const = 0;
-
-	virtual void updateWindows(void) = 0;
+	Gleam::IKeyboard* createKeyboard(void) const override;
+	Gleam::IMouse* createMouse(void) const override;
 
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);

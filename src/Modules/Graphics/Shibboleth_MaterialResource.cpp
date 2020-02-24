@@ -112,7 +112,7 @@ bool MaterialResource::createProgram(
 		return false;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	if (vert) {
@@ -177,7 +177,7 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 		return false;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	_shaders[Gleam::IShader::SHADER_COMPUTE] = compute;

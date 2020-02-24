@@ -111,9 +111,11 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
-	bool loadModule(const char* module_path, const char* module_name);
 	bool loadModule(const char* module_name);
 	void removeExtraLogs(void);
+
+	bool createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers);
+	bool hasManager(Gaff::Hash64 name) const;
 
 	GAFF_NO_COPY(App);
 	GAFF_NO_MOVE(App);

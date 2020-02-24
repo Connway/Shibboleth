@@ -109,7 +109,7 @@ bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices
 
 bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, bool make_linear)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::ITexture* const texture = render_mgr.createTexture();
 	const Gleam::ITexture::Format format = GetTextureFormat(image);
 

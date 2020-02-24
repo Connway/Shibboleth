@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InputManager.h"
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
@@ -74,12 +75,17 @@ R"({
 
 bool InputManager::init(void)
 {
-	if (!_keyboard.init()) {
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+
+	_keyboard.reset(render_mgr.createKeyboard());
+	_mouse.reset(render_mgr.createMouse());
+
+	if (!_keyboard || !_keyboard->init()) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	if (!_mouse.init()) {
+	if (!_mouse || !_mouse->init()) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -152,8 +158,8 @@ bool InputManager::init(void)
 		return false;
 	}
 
-	_keyboard.addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
-	_mouse.addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
+	_keyboard->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
+	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
 	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
@@ -237,6 +243,8 @@ bool InputManager::init(void)
 		eastl::sort(final_binding.mouse_codes.begin(), final_binding.mouse_codes.end());
 		eastl::sort(final_binding.key_codes.begin(), final_binding.key_codes.end());
 
+		_bindings.emplace_back(final_binding);
+
 		return false;
 	});
 
@@ -245,6 +253,9 @@ bool InputManager::init(void)
 
 void InputManager::update()
 {
+	_keyboard->update();
+	_mouse->update();
+
 	const float dt = static_cast<float>(GetApp().getManagerTFast<GameTimeManager>().getRealTime().delta);
 
 	for (auto& alias : _alias_values) {
