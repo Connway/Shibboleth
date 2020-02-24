@@ -71,7 +71,7 @@ bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>&
 
 bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::RasterSettings& raster_state_settings)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
 
 	if (!raster_state->init(device, raster_state_settings)) {

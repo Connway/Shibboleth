@@ -152,382 +152,6 @@ bool App::init(bool (*static_init)(void))
 }
 #endif
 
-bool App::initInternal(bool (*static_init)(void))
-{
-	const char* const log_dir = _configs["log_dir"].getString("./logs");
-
-	if (!Gaff::CreateDir(log_dir, 0777)) {
-		return false;
-	}
-
-	char log_file_with_time[64] = { 0 };
-	char time_string[64] = { 0 };
-
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
-	snprintf(log_file_with_time, ARRAY_SIZE(log_file_with_time), "%s/%s", log_dir, time_string);
-
-	if (!Gaff::CreateDir(log_file_with_time, 0777)) {
-		return false;
-	}
-
-	SetLogDir(log_file_with_time);
-
-	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
-
-	EA::Thread::SetAllocator(&_thread_allocator);
-
-	if (!_log_mgr.init(log_file_with_time)) {
-		return false;
-	}
-
-	LogInfoDefault("Initializing...");
-
-	auto thread_init = []()
-	{
-		AllocatorThreadInit();
-	};
-
-	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
-		LogErrorDefault("Failed to initialize thread pool.");
-		return false;
-	}
-
-	_broadcaster.init();
-
-	if (!loadFileSystem()) {
-		return false;
-	}
-
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
-
-	if (static_init && !static_init()) {
-		return false;
-	}
-
-	if (!loadModules()) {
-		return false;
-	}
-
-	if (!loadMainLoop()) {
-		return false;
-	}
-
-	LogInfoDefault("Game Successfully Initialized.");
-	return true;
-}
-
-// Still single-threaded at this point, so ok that we're not using the spinlock
-bool App::loadFileSystem(void)
-{
-	const Gaff::JSON& lfs = _configs["file_system"];
-	U8String fs = "";
-
-	if (lfs.isString()) {
-		fs = U8String(lfs.getString()) + BIT_EXTENSION;
-		fs += DYNAMIC_EXTENSION;
-
-		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "FileSystem");
-
-		if (!_fs.file_system_module) {
-			LogInfoDefault("Failed to find file system '%s'.", fs.data());
-			return false;
-		}
-
-#ifdef INIT_STACKTRACE_SYSTEM
-		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
-
-		LogInfoDefault("Found '%s'. Creating file system.", fs.data());
-
-		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
-
-		if (init_func && !init_func(*this)) {
-			LogErrorDefault("Failed to init file system module.");
-			return false;
-		}
-
-		_fs.destroy_func = _fs.file_system_module->getFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
-		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
-
-		if (!_fs.create_func) {
-			LogErrorDefault("Failed to find 'CreateFileSystem' in '%s'.", fs.data());
-			return false;
-		}
-
-		if (!_fs.destroy_func) {
-			LogErrorDefault("Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
-			return false;
-		}
-
-		_fs.file_system = _fs.create_func();
-
-		if (!_fs.file_system) {
-			LogErrorDefault("Failed to create file system from '%s'.", fs.data());
-			return false;
-		}
-
-	} else {
-		LogInfoDefault("Defaulting to loose file system.", fs.data());
-
-		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
-
-		if (!_fs.file_system) {
-			LogErrorDefault("Failed to create loose file system.");
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool App::loadMainLoop(void)
-{
-	if (_configs["no_main_loop"].isTrue()) {
-		return true;
-	}
-
-	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
-
-	if (!bucket || bucket->empty()) {
-		LogErrorDefault("Failed to find a class that implements the 'IMainLoop' interface.");
-		return false;
-	}
-
-	const Gaff::IReflectionDefinition* refl = bucket->front();
-
-	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(IMainLoop), ProxyAllocator::GetGlobal());
-
-	if (!_main_loop) {
-		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
-		return false;
-	}
-	
-	if (!_main_loop->init()) {
-		LogErrorDefault("Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
-		return false;
-	}
-
-	return true;
-}
-
-bool App::loadModules(void)
-{
-	const Gaff::JSON& module_load_order = _configs["module_load_order"];
-	const Gaff::JSON& module_dirs = _configs["module_directories"];
-
-	if (!module_dirs.isNull() && !module_dirs.isArray()) {
-		LogErrorDefault("'module_directories' config option is not an array of strings!");
-		return false;
-	}
-
-	if (!module_load_order.isNull() && !module_load_order.isArray()) {
-		LogErrorDefault("'module_load_order' config option is not an array of strings!");
-		return false;
-	}
-
-	if (module_load_order.isArray()) {
-		const int32_t size = module_load_order.size();
-
-		// First pass, load specified modules first.
-		for (int32_t i = 0; i < size; ++i) {
-			const Gaff::JSON& module = module_load_order[i];
-			GAFF_ASSERT(module.isString());
-
-			if (!loadModule(module.getString())) {
-				LogErrorDefault("Failed to load module '%s'!", module.getString());
-				return false;
-			}
-		}
-	}
-
-	if (module_dirs.isArray()) {
-		const int32_t size = module_dirs.size();
-
-		// Load the rest.
-		for (int32_t i = 0; i < size; ++i) {
-			const Gaff::JSON& dir = module_dirs[i];
-			GAFF_ASSERT(dir.isString());
-
-			for (const auto& dir_entry : std::filesystem::directory_iterator(dir.getString())) {
-				if (!dir_entry.is_regular_file()) {
-					continue;
-				}
-
-				const auto abs_path = std::filesystem::absolute(dir_entry.path());
-				const wchar_t* name = abs_path.c_str();
-				CONVERT_STRING(char, temp, name);
-
-				if (!Gaff::File::CheckExtension(temp, BIT_EXTENSION DYNAMIC_EXTENSION)) {
-					continue;
-				}
-
-				U8String module_name(temp);
-				size_t pos = module_name.find_first_of('\\');
-
-				while (pos != U8String::npos) {
-					module_name[pos] = '/';
-					pos = module_name.find_first_of('\\');
-				}
-
-				pos = module_name.find_last_of('/');
-				module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION) - (pos + 1));
-
-				if (!(_dynamic_loader.getModule(module_name.data()) || loadModule(temp, module_name.data()))) {
-					return false;
-				}
-			}
-		}
-	}
-
-	const Gaff::JSON& no_managers = _configs["no_managers"];
-
-	if (no_managers.isNull() || no_managers.isFalse()) {
-		// Create manager instances.
-		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
-
-		for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
-			ProxyAllocator allocator;
-			IManager* manager = ref_def->CREATET(IManager, allocator);
-
-			if (!manager->init()) {
-				// $TODO: Log error
-				LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
-				SHIB_FREET(manager, GetAllocator());
-				return false;
-			}
-
-			const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
-
-			GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
-			_manager_map[name].reset(manager);
-		}
-	}
-
-	// Notify all modules that every module has been loaded.
-	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
-	{
-		using AllModulesLoadedFunc = void (*)(void);
-		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
-
-		if (aml_func) {
-			aml_func();
-		}
-
-		return false;
-	});
-
-	// Notify all managers that every module has been loaded.
-	for (auto& mgr_pair : _manager_map) {
-		mgr_pair.second->allModulesLoaded();
-	}
-
-	return true;
-}
-
-bool App::initApp(void)
-{
-	const Gaff::JSON& wd = _configs["working_dir"];
-
-	if (wd.isString()) {
-		if (!Gaff::SetWorkingDir(wd.getString())) {
-			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
-			return false;
-		}
-
-		// Set DLL auto-load directory.
-#ifdef PLATFORM_WINDOWS
-		const char8_t* working_dir_ptr = wd.getString();
-		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
-
-		if ((temp[wd.size() - 1] == TEXT('/') || temp[wd.size() - 1] == TEXT('\\'))) {
-			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t) * 4);
-		} else {
-			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t) * 4);
-		}
-
-		if (!SetDllDirectory(temp)) {
-			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
-			return false;
-		}
-
-	} else {
-		if (!SetDllDirectory(TEXT("bin"))) {
-			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
-			return false;
-		}
-#endif
-	}
-
-	return true;
-}
-
-bool App::loadModule(const char* module_path, const char* module_name)
-{
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, module_name);
-
-	if (!module) {
-		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name);
-		return false;
-	}
-
-#ifdef INIT_STACKTRACE_SYSTEM
-	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
-
-	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
-
-	if (!init_func) {
-		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_name);
-		return false;
-
-	} else if (!init_func(*this)) {
-		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name);
-		return false;
-	}
-
-	return true;
-}
-
-bool App::loadModule(const char* module_name)
-{
-	const U8String path = U8String(module_name) + BIT_EXTENSION DYNAMIC_EXTENSION;
-	return loadModule(path.data(), module_name);
-}
-
-void App::removeExtraLogs(void)
-{
-	const char* const log_dir = _configs["log_dir"].getString("./logs");
-	int32_t dir_count = 0;
-
-	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_directory()) {
-			continue;
-		}
-
-		++dir_count;
-	}
-
-	if (dir_count <= 10) {
-		return;
-	}
-
-	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_directory()) {
-			continue;
-		}
-
-		const std::filesystem::path& path = dir_entry.path();
-		std::filesystem::remove_all(path);
-		--dir_count;
-
-		if (dir_count <= 10) {
-			break;
-		}
-	}
-}
-
 void App::run(void)
 {
 	while (_running) {
@@ -751,6 +375,477 @@ bool App::isQuitting(void) const
 void App::quit(void)
 {
 	_running = false;
+}
+
+bool App::initInternal(bool (*static_init)(void))
+{
+	const char* const log_dir = _configs["log_dir"].getString("./logs");
+
+	if (!Gaff::CreateDir(log_dir, 0777)) {
+		return false;
+	}
+
+	char log_file_with_time[64] = { 0 };
+	char time_string[64] = { 0 };
+
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
+	snprintf(log_file_with_time, ARRAY_SIZE(log_file_with_time), "%s/%s", log_dir, time_string);
+
+	if (!Gaff::CreateDir(log_file_with_time, 0777)) {
+		return false;
+	}
+
+	SetLogDir(log_file_with_time);
+
+	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
+
+	EA::Thread::SetAllocator(&_thread_allocator);
+
+	if (!_log_mgr.init(log_file_with_time)) {
+		return false;
+	}
+
+	LogInfoDefault("Initializing...");
+
+	auto thread_init = []()
+	{
+		AllocatorThreadInit();
+	};
+
+	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
+		LogErrorDefault("Failed to initialize thread pool.");
+		return false;
+	}
+
+	_broadcaster.init();
+
+	if (!loadFileSystem()) {
+		return false;
+	}
+
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+
+	if (static_init && !static_init()) {
+		return false;
+	}
+
+	if (!loadModules()) {
+		return false;
+	}
+
+	if (!loadMainLoop()) {
+		return false;
+	}
+
+	LogInfoDefault("Game Successfully Initialized.");
+	return true;
+}
+
+// Still single-threaded at this point, so ok that we're not using the spinlock
+bool App::loadFileSystem(void)
+{
+	const Gaff::JSON& lfs = _configs["file_system"];
+	U8String fs = "";
+
+	if (lfs.isString()) {
+		fs = U8String(lfs.getString()) + BIT_EXTENSION;
+		fs += DYNAMIC_EXTENSION;
+
+		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "FileSystem");
+
+		if (!_fs.file_system_module) {
+			LogInfoDefault("Failed to find file system '%s'.", fs.data());
+			return false;
+		}
+
+#ifdef INIT_STACKTRACE_SYSTEM
+		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
+
+		LogInfoDefault("Found '%s'. Creating file system.", fs.data());
+
+		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
+
+		if (init_func && !init_func(*this)) {
+			LogErrorDefault("Failed to init file system module.");
+			return false;
+		}
+
+		_fs.destroy_func = _fs.file_system_module->getFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
+		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
+
+		if (!_fs.create_func) {
+			LogErrorDefault("Failed to find 'CreateFileSystem' in '%s'.", fs.data());
+			return false;
+		}
+
+		if (!_fs.destroy_func) {
+			LogErrorDefault("Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
+			return false;
+		}
+
+		_fs.file_system = _fs.create_func();
+
+		if (!_fs.file_system) {
+			LogErrorDefault("Failed to create file system from '%s'.", fs.data());
+			return false;
+		}
+
+	} else {
+		LogInfoDefault("Defaulting to loose file system.", fs.data());
+
+		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
+
+		if (!_fs.file_system) {
+			LogErrorDefault("Failed to create loose file system.");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool App::loadMainLoop(void)
+{
+	if (_configs["no_main_loop"].isTrue()) {
+		return true;
+	}
+
+	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
+
+	if (!bucket || bucket->empty()) {
+		LogErrorDefault("Failed to find a class that implements the 'IMainLoop' interface.");
+		return false;
+	}
+
+	const Gaff::IReflectionDefinition* refl = bucket->front();
+
+	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(IMainLoop), ProxyAllocator::GetGlobal());
+
+	if (!_main_loop) {
+		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
+		return false;
+	}
+	
+	if (!_main_loop->init()) {
+		LogErrorDefault("Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
+		return false;
+	}
+
+	return true;
+}
+
+bool App::loadModules(void)
+{
+	const Gaff::JSON& module_load_order = _configs["module_load_order"];
+	const Gaff::JSON& module_dirs = _configs["module_directories"];
+
+	if (!module_dirs.isNull() && !module_dirs.isArray()) {
+		LogErrorDefault("'module_directories' config option is not an array of strings.");
+		return false;
+	}
+
+	if (!module_load_order.isNull() && !module_load_order.isArray()) {
+		LogErrorDefault("'module_load_order' config option is not an array.");
+		return false;
+	}
+
+	const bool no_managers = _configs["no_managers"].getBool(false);
+
+	if (module_load_order.isArray()) {
+		const int32_t size = module_load_order.size();
+
+		// First pass, load specified modules first.
+		for (int32_t i = 0; i < size; ++i) {
+			const Gaff::JSON& module_row = module_load_order[i];
+
+			if (module_row.isString()) {
+				const char* const module_name = module_row.getString();
+				const U8String module_path(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name);
+
+				if (!loadModule(module_path.data())) {
+					LogErrorDefault("Failed to load module '%s'.", module_path.data());
+					return false;
+				}
+
+				eastl::string_view name_view(module_name);
+				const size_t delimeter = name_view.find_last_of('/');
+
+				if (delimeter != eastl::string_view::npos) {
+					name_view = name_view.substr(delimeter + 1);
+				}
+
+				const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager), Gaff::FNV1aHash64(name_view.data(), name_view.size()));
+
+				if (manager_bucket) {
+					if (!createManagersInternal(*manager_bucket)) {
+						return false;
+					}
+				}
+
+				module_row.freeString(module_name);
+
+			} else if (module_row.isArray()) {
+				if (!module_row[0].isString()) {
+					LogErrorDefault("module_load_order[%i][0] is not a string.", i);
+					return false;
+				}
+
+				if (!module_row[1].isArray()) {
+					LogErrorDefault("module_load_order[%i][1] is not an array.", i);
+					return false;
+				}
+
+				const char* const real_module_name = module_row[0].getString();
+				const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(real_module_name);
+				module_row[0].freeString(real_module_name);
+
+				const int32_t row_size = module_row[1].size();
+				bool success = false;
+
+				for (int32_t j = 0; j < row_size; ++j) {
+					const Gaff::JSON& module_row_element = module_row[1][j];
+
+					if (!module_row_element.isString()) {
+						LogErrorDefault("module_load_order[%i][1][%i] is not a string.", i, j);
+					}
+
+					const char* const module_name = module_row_element.getString();
+					const U8String module_path(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name);
+
+					success = loadModule(module_path.data());
+
+					if (success) {
+						const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager), module_hash);
+
+						if (manager_bucket) {
+							if (!createManagersInternal(*manager_bucket)) {
+								module_row_element.freeString(module_name);
+								return false;
+							}
+						}
+
+						module_row_element.freeString(module_name);
+						break;
+					}
+				}
+
+				if (!success) {
+					LogErrorDefault("Failed to load any modules in module_load_order[%i].", i);
+					return false;
+				}
+
+			} else {
+				LogErrorDefault("module_load_order[%i] is not a string or an array of strings.", i);
+			}
+		}
+	}
+
+	if (module_dirs.isArray()) {
+		const int32_t size = module_dirs.size();
+
+		// Load the rest.
+		for (int32_t i = 0; i < size; ++i) {
+			const Gaff::JSON& dir = module_dirs[i];
+			GAFF_ASSERT(dir.isString());
+
+			for (const auto& dir_entry : std::filesystem::directory_iterator(dir.getString())) {
+				if (!dir_entry.is_regular_file()) {
+					continue;
+				}
+
+				const wchar_t* name = dir_entry.path().c_str();
+				CONVERT_STRING(char, temp, name);
+
+				if (!loadModule(temp)) {
+					return false;
+				}
+			}
+		}
+	}
+
+	// Create manager instances.
+	if (!no_managers) {
+		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager));
+
+		if (manager_bucket) {
+			if (!createManagersInternal(*manager_bucket)) {
+				return false;
+			}
+		}
+	}
+
+	// Notify all modules that every module has been loaded.
+	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
+	{
+		using AllModulesLoadedFunc = void (*)(void);
+		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
+
+		if (aml_func) {
+			aml_func();
+		}
+
+		return false;
+	});
+
+	// Notify all managers that every module has been loaded.
+	for (auto& mgr_pair : _manager_map) {
+		mgr_pair.second->allModulesLoaded();
+	}
+
+	return true;
+}
+
+bool App::initApp(void)
+{
+	const Gaff::JSON& wd = _configs["working_dir"];
+
+	if (wd.isString()) {
+		if (!Gaff::SetWorkingDir(wd.getString())) {
+			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
+			return false;
+		}
+
+		// Set DLL auto-load directory.
+#ifdef PLATFORM_WINDOWS
+		const char8_t* working_dir_ptr = wd.getString();
+		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
+
+		if ((temp[wd.size() - 1] == TEXT('/') || temp[wd.size() - 1] == TEXT('\\'))) {
+			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t) * 4);
+		} else {
+			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t) * 4);
+		}
+
+		if (!SetDllDirectory(temp)) {
+			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
+			return false;
+		}
+
+	} else {
+		if (!SetDllDirectory(TEXT("bin"))) {
+			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
+			return false;
+		}
+#endif
+	}
+
+	return true;
+}
+
+bool App::loadModule(const char* module_path)
+{
+	const auto abs_path = std::filesystem::absolute(module_path);
+	const wchar_t* name = abs_path.c_str();
+	CONVERT_STRING(char, temp, name);
+
+	U8String module_name(temp);
+	size_t pos = module_name.find_first_of('\\');
+
+	while (pos != U8String::npos) {
+		module_name[pos] = '/';
+		pos = module_name.find_first_of('\\');
+	}
+
+	pos = module_name.find_last_of('/');
+	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION) - (pos + 1));
+
+	DynamicLoader::ModulePtr module = _dynamic_loader.getModule(module_name.data());
+
+	if (module) {
+		return true;
+	}
+
+	module = _dynamic_loader.loadModule(temp, module_name.data());
+
+	if (!module) {
+		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name.data());
+		return false;
+	}
+
+#ifdef INIT_STACKTRACE_SYSTEM
+	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
+
+	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
+
+	if (!init_func) {
+		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_name.data());
+		return false;
+
+	} else if (!init_func(*this)) {
+		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name.data());
+		return false;
+	}
+
+	return true;
+}
+
+void App::removeExtraLogs(void)
+{
+	const char* const log_dir = _configs["log_dir"].getString("./logs");
+	int32_t dir_count = 0;
+
+	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
+		if (!dir_entry.is_directory()) {
+			continue;
+		}
+
+		++dir_count;
+	}
+
+	if (dir_count <= 10) {
+		return;
+	}
+
+	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
+		if (!dir_entry.is_directory()) {
+			continue;
+		}
+
+		const std::filesystem::path& path = dir_entry.path();
+		std::filesystem::remove_all(path);
+		--dir_count;
+
+		if (dir_count <= 10) {
+			break;
+		}
+	}
+}
+
+bool App::createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers)
+{
+	ProxyAllocator allocator;
+
+	for (const Gaff::IReflectionDefinition* ref_def : managers) {
+		if (hasManager(ref_def->getReflectionInstance().getHash())) {
+			continue;
+		}
+
+		IManager* manager = ref_def->CREATET(IManager, allocator);
+
+		if (!manager->init()) {
+			// $TODO: Log error
+			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
+			SHIB_FREET(manager, GetAllocator());
+			return false;
+		}
+
+		const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+
+		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
+		_manager_map[name].reset(manager);
+	}
+
+	return true;
+}
+
+bool App::hasManager(Gaff::Hash64 name) const
+{
+	auto it = _manager_map.find(name);
+	return it != _manager_map.end();
 }
 
 NS_END

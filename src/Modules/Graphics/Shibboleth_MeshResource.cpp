@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MeshResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
@@ -58,7 +58,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		return false;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
 	_meshes.reserve(devices.size());

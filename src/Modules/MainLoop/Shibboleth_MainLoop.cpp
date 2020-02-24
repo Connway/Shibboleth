@@ -59,8 +59,7 @@ bool MainLoop::init(void)
 {
 	IApp& app = GetApp();
 
-	RenderManagerBase& rm = app.GETMANAGERT(RenderManagerBase, RenderManager);
-	_render_mgr = &rm;
+	_render_mgr = &app.GETMANAGERT(IRenderManager, RenderManager);
 
 	const auto* const systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(ISystem));
 

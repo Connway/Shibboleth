@@ -41,7 +41,7 @@ bool MouseMP::init(IWindow& window)
 	_window = &window;
 	_id = _window->addWindowMessageHandler(cb);
 
-	return RegisterForRawInput(RAW_INPUT_MOUSE, window);
+	return RegisterForRawInput(RAW_INPUT_MOUSE, &window);
 }
 
 bool MouseMP::init(void)
@@ -50,7 +50,7 @@ bool MouseMP::init(void)
 	_id = Window::AddGlobalMessageHandler(cb);
 
 	_flags.set(true, Flag::GlobalHandler);
-	return true;
+	return RegisterForRawInput(RAW_INPUT_MOUSE, nullptr);
 }
 
 void MouseMP::destroy(void)

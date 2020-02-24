@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
+class IRenderManager;
 
 class MainLoop : public IMainLoop
 {
@@ -47,7 +47,7 @@ private:
 	int32_t _update_block = 0;
 	int32_t _system_group = -1;
 
-	RenderManagerBase* _render_mgr = nullptr;
+	IRenderManager* _render_mgr = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
 };

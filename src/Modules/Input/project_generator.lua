@@ -27,7 +27,8 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Modules/MainLoop/include"
+			base_dir .. "../../Modules/MainLoop/include",
+			base_dir .. "../../Modules/Graphics/include" -- for creating keyboard/mouse
 		}
 
 	project "InputModule"
@@ -50,7 +51,8 @@ local GenerateProject = function()
 		local deps =
 		{
 			"Gleam",
-			"MainLoop"
+			"MainLoop",
+			"GraphicsBase"
 		}
 
 		dependson(deps)
@@ -61,6 +63,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Input")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "MainLoop")
+	table.insert(deps, "GraphicsBase")
 
 	dependson(deps)
 	links(deps)

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ShaderResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 
@@ -63,7 +63,7 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& 
 
 bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::ShaderType shader_type)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IShader* const shader = render_mgr.createShader();
 
 	if (!shader->initSource(device, shader_source, shader_type)) {

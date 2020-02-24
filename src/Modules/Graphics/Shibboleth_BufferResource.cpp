@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_BufferResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 
@@ -61,7 +61,7 @@ bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, 
 
 bool BufferResource::createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IBuffer* const buffer = render_mgr.createBuffer();
 
 	if (!buffer->init(device, buffer_settings)) {

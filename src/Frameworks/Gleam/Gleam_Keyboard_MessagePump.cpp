@@ -47,7 +47,7 @@ bool KeyboardMP::init(IWindow& window)
 	_window = &window;
 	_id = _window->addWindowMessageHandler(cb);
 
-	return RegisterForRawInput(RAW_INPUT_KEYBOARD, window);
+	return RegisterForRawInput(RAW_INPUT_KEYBOARD, &window);
 }
 
 bool KeyboardMP::init(bool no_windows_key)
@@ -62,7 +62,7 @@ bool KeyboardMP::init(void)
 	_id = Window::AddGlobalMessageHandler(cb);
 
 	_flags.set(true, Flag::GlobalHandler);
-	return true;
+	return RegisterForRawInput(RAW_INPUT_KEYBOARD, nullptr);
 }
 
 void KeyboardMP::destroy(void)
