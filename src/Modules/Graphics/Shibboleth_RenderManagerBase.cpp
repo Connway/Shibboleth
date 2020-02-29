@@ -104,10 +104,6 @@ RenderManagerBase::RenderManagerBase(void)
 	}
 }
 
-RenderManagerBase::~RenderManagerBase(void)
-{
-}
-
 bool RenderManagerBase::init(void)
 {
 	IFileSystem& fs = GetApp().getFileSystem();
@@ -388,6 +384,12 @@ const SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void) c
 SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
 {
 	return _default_sampler;
+}
+
+const RenderManagerBase::GBufferData* RenderManagerBase::getGBufferData(Gaff::Hash32 tag) const
+{
+	const auto it = _g_buffers.find(tag);
+	return (it != _g_buffers.end()) ? &it->second : nullptr;
 }
 
 Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)

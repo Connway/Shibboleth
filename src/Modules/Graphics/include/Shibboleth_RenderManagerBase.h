@@ -43,8 +43,37 @@ NS_SHIBBOLETH
 class RenderManagerBase : public IRenderManager
 {
 public:
+	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
+	using WindowPtr = UniquePtr<Gleam::IWindow>;
+	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
+
+	using ProgramBuffersPtr = UniquePtr<Gleam::IProgramBuffers>;
+	using SamplerPtr = UniquePtr<Gleam::ISamplerState>;
+	using SRVPtr = UniquePtr<Gleam::IShaderResourceView>;
+	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
+	using TexturePtr = UniquePtr<Gleam::ITexture>;
+
+	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;
+
+	struct GBufferData final
+	{
+		ProgramBuffersPtr program_buffers;
+		RTVPtr render_target;
+
+		TexturePtr diffuse;
+		TexturePtr specular;
+		TexturePtr normal;
+		TexturePtr position;
+		TexturePtr depth;
+
+		SRVPtr diffuse_srv;
+		SRVPtr specular_srv;
+		SRVPtr normal_srv;
+		SRVPtr position_srv;
+		SRVPtr depth_srv;
+	};
+
 	RenderManagerBase(void);
-	virtual ~RenderManagerBase(void);
 
 	bool init(void) override;
 	void allModulesLoaded(void) override;
@@ -83,37 +112,9 @@ public:
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
 
+	const GBufferData* getGBufferData(Gaff::Hash32 tag) const;
+
 private:
-	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
-	using WindowPtr = UniquePtr<Gleam::IWindow>;
-	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
-
-	using ProgramBuffersPtr = UniquePtr<Gleam::IProgramBuffers>;
-	using SamplerPtr = UniquePtr<Gleam::ISamplerState>;
-	using SRVPtr = UniquePtr<Gleam::IShaderResourceView>;
-	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
-	using TexturePtr = UniquePtr<Gleam::ITexture>;
-
-	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;
-
-	struct GBufferData final
-	{
-		ProgramBuffersPtr program_buffers;
-		RTVPtr render_target;
-
-		TexturePtr diffuse;
-		TexturePtr specular;
-		TexturePtr normal;
-		TexturePtr position;
-		TexturePtr depth;
-
-		SRVPtr diffuse_srv;
-		SRVPtr specular_srv;
-		SRVPtr normal_srv;
-		SRVPtr position_srv;
-		SRVPtr depth_srv;
-	};
-
 	VectorMap<Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers;
 	VectorMap<Gaff::Hash32, GBufferData> _g_buffers;
 
