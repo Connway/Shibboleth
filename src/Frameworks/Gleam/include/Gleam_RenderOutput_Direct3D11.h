@@ -38,8 +38,7 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	int32_t getWidth(void) const override;
-	int32_t getHeight(void) const override;
+	glm::ivec2 getSize(void) const override;
 
 	const IRenderTarget& getRenderTarget(void) const override;
 	IRenderTarget& getRenderTarget(void) override;

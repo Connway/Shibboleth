@@ -54,7 +54,7 @@ public:
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
 	// 35mm film (24mm x 36mm) [width x height]
-	static constexpr float DefaultSensorSize = 24.0f;
+	static constexpr float DefaultSensorSize = 36.0f;
 
 	Camera(const float* component);
 	Camera(void) = default;
@@ -62,14 +62,14 @@ public:
 	void SetVerticalFOV(float focal_length, float sensor_size = DefaultSensorSize);
 	float GetVerticalFOV(void) const;
 
-	float v_fov = 90.0f;
+	Gaff::Hash32 device_tag = Gaff::FNV1aHash32Const("main");
+
+	float v_fov = 0.25f; // turns
 	float z_near = 0.001f; // m
 	float z_far = 2000.0f; // m
 
 	//float focus_distance;
 	//float f_stop;
-
-	Gaff::Hash32 display_tag = Gaff::FNV1aHash32Const("main");
 };
 
 NS_END

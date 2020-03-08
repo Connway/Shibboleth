@@ -168,6 +168,25 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 	return pb;
 }
 
+void ProgramBuffersD3D11::clearResourceViews(void)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(IShader::SHADER_TYPE_SIZE); ++i) {
+		_res_views[i].clear();
+	}
+}
+
+void ProgramBuffersD3D11::clear(void)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(IShader::SHADER_TYPE_SIZE); ++i) {
+		_resource_views[i].clear();
+		_sampler_states[i].clear();
+		_constant_buffers[i].clear();
+		_res_views[i].clear();
+		_samplers[i].clear();
+		_buffers[i].clear();
+	}
+}
+
 void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);

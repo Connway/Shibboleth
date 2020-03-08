@@ -55,12 +55,6 @@ public:
 private:
 	struct InstanceData final
 	{
-		struct DeferredContextData final
-		{
-			UniquePtr<Gleam::IRenderDevice> deferred_context;
-			UniquePtr<Gleam::ICommandList> command_list;
-		};
-
 		struct InstanceBufferPage final
 		{
 			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
@@ -88,7 +82,6 @@ private:
 
 		InstanceBufferData* instance_data = nullptr;
 
-		VectorMap<const Gleam::IRenderDevice*, DeferredContextData> deferred_data;
 		int32_t buffer_instance_count = 1;
 		int32_t model_to_proj_offset = -1;
 	};
@@ -98,11 +91,32 @@ private:
 		RenderCommandSystem* rcs;
 		int32_t index;
 
-		Gleam::ICommandList* cmd_list;
-		Gleam::IRenderDevice* device;
+		UniquePtr<Gleam::ICommandList> cmd_list;
+		UniquePtr<Gleam::IRenderDevice> device;
 		Gleam::IRenderTarget* target;
 
 		glm::mat4x4 view_projection;
+	};
+
+	struct DeviceJobData final
+	{
+		DeviceJobData(void) = default;
+		DeviceJobData(DeviceJobData&& data)
+		{
+			rcs = data.rcs;
+
+			render_job_data_cache = std::move(data.render_job_data_cache);
+			job_data_cache = std::move(data.job_data_cache);
+			device = data.device;
+			job_counter = static_cast<int32_t>(data.job_counter);
+		}
+
+		RenderCommandSystem* rcs;
+
+		Vector<RenderJobData> render_job_data_cache{ ProxyAllocator("Graphics") };
+		Vector<Gaff::JobData> job_data_cache{ ProxyAllocator("Graphics") };
+		Gleam::IRenderDevice* device;
+		Gaff::Counter job_counter = 0;
 	};
 
 	RenderManagerBase* _render_mgr = nullptr;
@@ -126,11 +140,9 @@ private:
 	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
 	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
 
-	Vector<RenderJobData> _render_job_data_cache{ ProxyAllocator("Graphics") };
+	Vector<DeviceJobData> _device_job_data_cache{ ProxyAllocator("Graphics") };
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
-
-	// Cameras
 
 	void newObjectArchetype(const ECSArchetype& archetype);
 	void removedObjectArchetype(int32_t index);
@@ -175,6 +187,7 @@ private:
 	);
 
 	static void GenerateCommandListJob(void* data);
+	static void DeviceJob(void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

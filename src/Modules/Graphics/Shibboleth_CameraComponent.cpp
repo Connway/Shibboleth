@@ -34,6 +34,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Camera)
 
 	.staticFunc("Copy", &Camera::Copy)
 
+	.var("device_tag", &Camera::device_tag, HashStringAttribute())
 	.var("v_fov", &Camera::v_fov, OptionalAttribute())
 	.var("z_near", &Camera::z_near, OptionalAttribute())
 	.var("z_far", &Camera::z_far, OptionalAttribute())

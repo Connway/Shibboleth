@@ -37,12 +37,10 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Position, glm::vec3, EC
 	static Position GetInternal(const void* component, int32_t page_index);
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Position)
 
-// $TODO: Make euler angles.
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Rotation, glm::quat, ECSComponentBaseBoth, glm::identity<glm::quat>())
-	static glm_vec4 GetX(const void* component_begin);
-	static glm_vec4 GetY(const void* component_begin);
-	static glm_vec4 GetZ(const void* component_begin);
-	static glm_vec4 GetW(const void* component_begin);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Rotation, glm::vec3, ECSComponentBaseBoth, glm::zero<glm::vec3>())
+	static glm_vec4 GetPitch(const void* component_begin);
+	static glm_vec4 GetYaw(const void* component_begin);
+	static glm_vec4 GetRoll(const void* component_begin);
 
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t page_index, const Rotation& value);

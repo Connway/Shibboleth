@@ -76,19 +76,19 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	REQUIRE_EQ(id2, 1);
 
 	Shibboleth::Position::Set(ecs_mgr, id1, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
-	Shibboleth::Rotation::Set(ecs_mgr, id1, Shibboleth::Rotation(glm::quat(1.0f, glm::vec3(0.0f))));
+	Shibboleth::Rotation::Set(ecs_mgr, id1, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
 	Shibboleth::Scale::Set(ecs_mgr, id1, Shibboleth::Scale(glm::vec3(3.0f)));
 
 	Shibboleth::Position::Set(ecs_mgr, id2, Shibboleth::Position(glm::vec3(5.0f, 4.0f, 3.0f)));
-	Shibboleth::Rotation::Set(ecs_mgr, id2, Shibboleth::Rotation(glm::quat(2.0f, glm::vec3(4.0f))));
+	Shibboleth::Rotation::Set(ecs_mgr, id2, Shibboleth::Rotation(glm::vec3(1.0f, 2.0f, 3.0f)));
 	Shibboleth::Scale::Set(ecs_mgr, id2, Shibboleth::Scale(glm::vec3(5.0f)));
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id1).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id1).value, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id1).value, glm::vec3(0.0f, 0.0f, 0.0f));
 	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id1).value, glm::vec3(3.0f));
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id2).value, glm::vec3(5.0f, 4.0f, 3.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2).value, glm::quat(2.0f, glm::vec3(4.0f)));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2).value, glm::vec3(1.0f, 2.0f, 3.0f));
 	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id2).value, glm::vec3(5.0f));
 
 	ecs_mgr.destroyEntity(id1);
@@ -113,15 +113,15 @@ TEST_CASE("shibboleth_ecs_add_remove_component")
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
 
 	ecs_mgr.addComponents<Shibboleth::Rotation, Shibboleth::Scale>(id);
-	Shibboleth::Rotation::Set(ecs_mgr, id, Shibboleth::Rotation(glm::quat(1.0f, glm::vec3(0.0f))));
+	Shibboleth::Rotation::Set(ecs_mgr, id, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
 	Shibboleth::Scale::Set(ecs_mgr, id, Shibboleth::Scale(glm::vec3(3.0f)));
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::vec3(0.0f, 0.0f, 0.0f));
 	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id).value, glm::vec3(3.0f));
 
 	ecs_mgr.removeComponents<Shibboleth::Position, Shibboleth::Scale>(id);
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	ecs_mgr.destroyEntity(id);
 }
@@ -138,7 +138,7 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	ecs_mgr.addArchetype(std::move(archetype));
 
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
-	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, Shibboleth::Rotation(glm::quat(1.0f, glm::vec3(0.0f))));
+	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
 
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE_EQ(id, 0);
@@ -146,7 +146,7 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash).value, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash).value, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	ecs_mgr.addSharedComponents<Shibboleth::Scale>(id);
 
@@ -159,7 +159,7 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	scale->value = glm::vec3(3.0f);
 
 	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(rotation->value, glm::quat(1.0f, glm::vec3(0.0f)));
+	REQUIRE_EQ(rotation->value, glm::vec3(0.0f, 0.0f, 0.0f));
 	REQUIRE_EQ(scale->value, glm::vec3(3.0f));
 
 	ecs_mgr.destroyEntity(id);

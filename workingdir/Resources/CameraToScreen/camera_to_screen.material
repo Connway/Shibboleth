@@ -1,4 +1,0 @@
-{
-	"vertex": "CameraToScreen/camera_to_screen_vertex",
-	"pixel": "CameraToScreen/camera_to_screen_pixel"
-}

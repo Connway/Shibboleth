@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IRenderManager.h"
 #include "Shibboleth_SamplerStateResource.h"
+#include <Shibboleth_ECSEntity.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
@@ -91,8 +92,6 @@ public:
 	Gleam::IRenderDevice& getDevice(int32_t index) const;
 	int32_t getNumDevices(void) const;
 
-	Vector<Gleam::IRenderDevice*> getOrCreateThreadContexts(EA::Thread::ThreadId id);
-
 	Gleam::IRenderOutput* getOutput(const char* tag) const
 	{
 		return getOutput(Gaff::FNV1aHash32String(tag));
@@ -106,17 +105,19 @@ public:
 	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
 	Gleam::IWindow* getWindow(Gaff::Hash32 tag) const;
 
-	Gleam::IProgramBuffers* getCameraProgramBuffers(Gaff::Hash32 tag) const;
-	Gleam::IRenderTarget* getCameraRenderTarget(Gaff::Hash32 tag) const;
-
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
 
-	const GBufferData* getGBufferData(Gaff::Hash32 tag) const;
+	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const glm::ivec2& size);
+	const GBufferData* getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
+	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
+	bool hasGBuffer(EntityID id) const;
+
+	void presentAllOutputs(void);
 
 private:
-	VectorMap<Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers;
-	VectorMap<Gaff::Hash32, GBufferData> _g_buffers;
+	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
+	VectorMap<EntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
@@ -126,7 +127,6 @@ private:
 	SamplerStateResourcePtr _default_sampler;
 
 	Gleam::IRenderDevice* createRenderDevice(int32_t adapter_id);
-	bool createGBuffer(const char* window_name);
 };
 
 NS_END

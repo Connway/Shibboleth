@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Color.h"
 #include <Gaff_Defines.h>
+#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -58,6 +59,8 @@ public:
 
 	virtual bool init(void) = 0;
 	virtual void destroy(void) = 0;
+
+	virtual glm::ivec2 getSize(void) const = 0;
 
 	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = CubeFace::NONE) = 0;
 	virtual void popTexture(void) = 0;
