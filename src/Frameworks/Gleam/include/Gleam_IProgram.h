@@ -72,6 +72,9 @@ public:
 
 	virtual IProgramBuffers* clone(void) const = 0;
 
+	virtual void clearResourceViews(void) = 0;
+	virtual void clear(void) = 0;
+
 	virtual void bind(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;

@@ -40,6 +40,8 @@ public:
 	bool init(void) override;
 	void destroy(void) override;
 
+	glm::ivec2 getSize(void) const override;
+
 	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::NONE) override;
 	void popTexture(void) override;
 
@@ -59,7 +61,7 @@ public:
 private:
 	Vector<ID3D11RenderTargetView1*> _render_target_views;
 	D3D11_VIEWPORT _viewport;
-	ID3D11DepthStencilView* _depth_stencil_view;
+	ID3D11DepthStencilView* _depth_stencil_view = nullptr;
 
 	friend class RenderOutputD3D11;
 	void setRTV(ID3D11RenderTargetView1* rt, const D3D11_VIEWPORT& viewport);

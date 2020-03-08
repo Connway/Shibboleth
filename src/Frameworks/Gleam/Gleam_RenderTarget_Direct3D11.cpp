@@ -29,8 +29,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-RenderTargetD3D11::RenderTargetD3D11(void):
-	_depth_stencil_view(nullptr)
+RenderTargetD3D11::RenderTargetD3D11(void)
 {
 }
 
@@ -53,6 +52,14 @@ void RenderTargetD3D11::destroy(void)
 	SAFERELEASE(_depth_stencil_view)
 
 	_render_target_views.clear();
+}
+
+glm::ivec2 RenderTargetD3D11::getSize(void) const
+{
+	return glm::ivec2{
+		static_cast<int32_t>(_viewport.Width),
+		static_cast<int32_t>(_viewport.Height)
+	};
 }
 
 bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face)

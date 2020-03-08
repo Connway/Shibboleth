@@ -173,14 +173,14 @@ RendererType RenderOutputD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
-int32_t RenderOutputD3D11::getWidth(void) const
+glm::ivec2 RenderOutputD3D11::getSize(void) const
 {
-	return static_cast<int32_t>(getViewport().Width);
-}
+	const D3D11_VIEWPORT viewport = getViewport();
 
-int32_t RenderOutputD3D11::getHeight(void) const
-{
-	return static_cast<int32_t>(getViewport().Height);
+	return glm::ivec2{
+		static_cast<int32_t>(viewport.Width),
+		static_cast<int32_t>(viewport.Height)
+	};
 }
 
 const IRenderTarget& RenderOutputD3D11::getRenderTarget(void) const

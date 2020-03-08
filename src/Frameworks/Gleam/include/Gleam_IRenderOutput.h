@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 #include <Gaff_Defines.h>
+#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -41,8 +42,7 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual int32_t getWidth(void) const = 0;
-	virtual int32_t getHeight(void) const = 0;
+	virtual glm::ivec2 getSize(void) const = 0;
 
 	virtual const IRenderTarget& getRenderTarget(void) const = 0;
 	virtual IRenderTarget& getRenderTarget(void) = 0;

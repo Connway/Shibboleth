@@ -76,24 +76,19 @@ Position Position::GetInternal(const void* component, int32_t page_index)
 
 
 
-glm_vec4 Rotation::GetX(const void* component_begin)
+glm_vec4 Rotation::GetPitch(const void* component_begin)
 {
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
 }
 
-glm_vec4 Rotation::GetY(const void* component_begin)
+glm_vec4 Rotation::GetYaw(const void* component_begin)
 {
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
 }
 
-glm_vec4 Rotation::GetZ(const void* component_begin)
+glm_vec4 Rotation::GetRoll(const void* component_begin)
 {
 	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
-}
-
-glm_vec4 Rotation::GetW(const void* component_begin)
-{
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 }
 
 void Rotation::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -104,7 +99,6 @@ void Rotation::CopyInternal(const void* old_begin, int32_t old_index, void* new_
 	new_values[0] = old_values[0];
 	new_values[4] = old_values[4];
 	new_values[8] = old_values[8];
-	new_values[12] = old_values[12];
 }
 
 void Rotation::SetInternal(void* component, int32_t page_index, const Rotation& value)
@@ -113,15 +107,13 @@ void Rotation::SetInternal(void* component, int32_t page_index, const Rotation& 
 	comp[0] = value.value.x;
 	comp[4] = value.value.y;
 	comp[8] = value.value.z;
-	comp[12] = value.value.w;
 }
 
 Rotation Rotation::GetInternal(const void* component, int32_t page_index)
 {
 	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-	return Rotation(glm::quat(
-		comp[12],
+	return Rotation(glm::vec3(
 		comp[0],
 		comp[4],
 		comp[8]

@@ -29,6 +29,10 @@ NS_GAFF
 constexpr float Pi = 3.141592654f;
 constexpr float DegToRad = Pi / 180.0f;
 constexpr float RadToDeg = 180.0f / Pi;
+constexpr float TurnsToDeg = 360.0f;
+constexpr float TurnsToRad = 2.0f * Pi;
+constexpr float DegToTurns = 1.0f / 360.0f;
+constexpr float RadToTurns = 1.0f / (2.0f * Pi);
 
 template <class T>
 constexpr const T& Min(const T& v1, const T& v2)
@@ -98,6 +102,8 @@ float BernsteinPolynomial(float t, float n, float k);
 // Normalize angle to [-Pi, Pi]
 float NormalizeAngle(float angle);
 
+float CalculateFOVRadians(float sensor_size, float focal_length);
+float CalculateFOVDegrees(float sensor_size, float focal_length);
 float CalculateFOV(float sensor_size, float focal_length);
 
 NS_END

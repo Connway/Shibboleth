@@ -34,8 +34,3 @@ If you wish to generate your own solution files, just run "utils/premake5 vs2019
 ========================
     WORK IN PROGRESS
 ========================
-
-Researching replacing Editor_App. Going from C++ using wxWidgets to using C# and Avalonia. 
-Getting runtime scene loading with archetype overrides.
-
-Things to think about: C# calling into C++ code and doing operations on C++ side. I don't want to have to make managed C++ wrappers to have interop with C#. That's a giant sink of time and not exactly a great architectural decision.

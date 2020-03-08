@@ -121,7 +121,10 @@ template <class Allocator>
 void JobPool<Allocator>::addJobs(const JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool)
 {
 	GAFF_ASSERT(pool < _job_pools.size());
-	GAFF_ASSERT(num_jobs);
+
+	if (!num_jobs) {
+		return;
+	}
 
 	counter += static_cast<int32_t>(num_jobs);
 

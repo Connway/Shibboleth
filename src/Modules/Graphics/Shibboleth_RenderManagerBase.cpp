@@ -54,7 +54,6 @@ R"({
 	"properties":
 	{
 		"icon": { "type": "string" },
-		"initial_pipeline": { "type": "string" },
 
 		"windows":
 		{
@@ -80,7 +79,7 @@ R"({
 			}
 		},
 
-		"required": ["initial_pipeline", "windows"]
+		"required": ["windows"]
 	}
 })";
 
@@ -206,6 +205,8 @@ bool RenderManagerBase::init(void)
 		const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
 		_render_device_tags[window_hash].emplace_back(rd);
 
+		_render_device_tags[Gaff::FNV1aHash32Const("all")].emplace_back(rd);
+
 		// Add render device to tag list if not already present.
 		for (const auto& entry : g_display_tags) {
 			const auto it = Gaff::Find(entry.second, key, [](const char* lhs, const char* rhs) -> bool
@@ -234,12 +235,6 @@ bool RenderManagerBase::init(void)
 		}
 
 		_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
-
-		if (!createGBuffer(key)) {
-			_render_device_tags.erase(window_hash);
-			_window_outputs.erase(window_hash);
-		}
-
 		return false;
 	});
 
@@ -335,23 +330,6 @@ int32_t RenderManagerBase::getNumDevices(void) const
 	return static_cast<int32_t>(_render_devices.size());
 }
 
-Vector<Gleam::IRenderDevice*> RenderManagerBase::getOrCreateThreadContexts(EA::Thread::ThreadId id)
-{
-	Vector<Gleam::IRenderDevice*> out;
-
-	auto& devices = _deferred_devices[id];
-
-	if (devices.empty()) {
-		for (auto& device : _render_devices) {
-			Gleam::IRenderDevice* const rd = device->createDeferredRenderDevice();
-			devices.emplace_back(rd);
-			out.emplace_back(rd);
-		}
-	}
-
-	return out;
-}
-
 Gleam::IRenderOutput* RenderManagerBase::getOutput(Gaff::Hash32 tag) const
 {
 	const auto it = _window_outputs.find(tag);
@@ -364,18 +342,6 @@ Gleam::IWindow* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
-Gleam::IProgramBuffers* RenderManagerBase::getCameraProgramBuffers(Gaff::Hash32 tag) const
-{
-	const auto it = _g_buffers.find(tag);
-	return (it == _g_buffers.end()) ? nullptr : it->second.program_buffers.get();
-}
-
-Gleam::IRenderTarget* RenderManagerBase::getCameraRenderTarget(Gaff::Hash32 tag) const
-{
-	const auto it = _g_buffers.find(tag);
-	return (it == _g_buffers.end()) ? nullptr : it->second.render_target.get();
-}
-
 const SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void) const
 {
 	return _default_sampler;
@@ -386,10 +352,145 @@ SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
 	return _default_sampler;
 }
 
-const RenderManagerBase::GBufferData* RenderManagerBase::getGBufferData(Gaff::Hash32 tag) const
+bool RenderManagerBase::createGBuffer(
+	EntityID id,
+	Gaff::Hash32 device_tag,
+	const glm::ivec2& size)
 {
-	const auto it = _g_buffers.find(tag);
-	return (it != _g_buffers.end()) ? &it->second : nullptr;
+	auto it = _g_buffers.find(id);
+
+	if (it != _g_buffers.end()) {
+		return true;
+	}
+
+	it = _g_buffers.emplace(id, VectorMap<const Gleam::IRenderDevice*, GBufferData>{ ProxyAllocator("Graphics") }).first;
+
+	const auto* const devices = getDevicesByTag(device_tag);
+
+	if (!devices || devices->empty()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	for (Gleam::IRenderDevice* device : *devices) {
+		GBufferData data;
+		data.program_buffers.reset(createProgramBuffers());
+		data.render_target.reset(createRenderTarget());
+
+		data.diffuse.reset(createTexture());
+		data.specular.reset(createTexture());
+		data.normal.reset(createTexture());
+		data.position.reset(createTexture());
+		data.depth.reset(createTexture());
+
+		data.diffuse_srv.reset(createShaderResourceView());
+		data.specular_srv.reset(createShaderResourceView());
+		data.normal_srv.reset(createShaderResourceView());
+		data.position_srv.reset(createShaderResourceView());
+		data.depth_srv.reset(createShaderResourceView());
+
+		if (!data.diffuse->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+			LogErrorDefault("Failed to create diffuse texture for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.specular->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+			LogErrorDefault("Failed to create specular texture for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.normal->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+			LogErrorDefault("Failed to create normal texture for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.position->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+			LogErrorDefault("Failed to create position texture for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.depth->initDepthStencil(*device, size.x, size.y, Gleam::ITexture::Format::DEPTH_32_F)) {
+			LogErrorDefault("Failed to create depth texture for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.diffuse_srv->init(*device, data.diffuse.get())) {
+			LogErrorDefault("Failed to create diffuse srv for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.specular_srv->init(*device, data.specular.get())) {
+			LogErrorDefault("Failed to create specular srv for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.normal_srv->init(*device, data.normal.get())) {
+			LogErrorDefault("Failed to create normal srv for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.position_srv->init(*device, data.position.get())) {
+			LogErrorDefault("Failed to create position srv for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		if (!data.depth_srv->init(*device, data.depth.get())) {
+			LogErrorDefault("Failed to create depth srv for camera [%u / %i].", device_tag, id);
+			return false;
+		}
+
+		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.diffuse_srv.get());
+		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.specular_srv.get());
+		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.normal_srv.get());
+		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.position_srv.get());
+		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.depth_srv.get());
+		data.program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _to_screen_samplers[device].get());
+
+		data.render_target->addTexture(*device, data.diffuse.get());
+		data.render_target->addTexture(*device, data.specular.get());
+		data.render_target->addTexture(*device, data.normal.get());
+		data.render_target->addTexture(*device, data.position.get());
+		data.render_target->addDepthStencilBuffer(*device, data.depth.get());
+
+		it->second.emplace(device, std::move(data));
+	}
+
+	return true;
+}
+
+const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const
+{
+	const auto rd_it = _g_buffers.find(id);
+
+	if (rd_it != _g_buffers.end()) {
+		const auto gb_it = rd_it->second.find(&device);
+		return (gb_it != rd_it->second.end()) ? &gb_it->second : nullptr;
+	}
+
+	return nullptr;
+}
+
+bool RenderManagerBase::hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const
+{
+	const auto it = _g_buffers.find(id);
+
+	if (it != _g_buffers.end()) {
+		return it->second.find(&device) != it->second.end();
+	}
+
+	return false;
+}
+
+bool RenderManagerBase::hasGBuffer(EntityID id) const
+{
+	return _g_buffers.find(id) != _g_buffers.end();
+}
+
+void RenderManagerBase::presentAllOutputs(void)
+{
+	for (auto& pair : _window_outputs) {
+		pair.second.second->present();
+	}
 }
 
 Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
@@ -427,97 +528,6 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
 	_to_screen_samplers[rd].reset(sampler_state);
 
 	return rd;
-}
-
-bool RenderManagerBase::createGBuffer(const char* window_name)
-{
-	const Gaff::Hash32 window_tag = Gaff::FNV1aHash32String(window_name);
-	const Gleam::IWindow& window = *_window_outputs[window_tag].first;
-
-	GBufferData data;
-	data.program_buffers.reset(createProgramBuffers());
-	data.render_target.reset(createRenderTarget());
-
-	data.diffuse.reset(createTexture());
-	data.specular.reset(createTexture());
-	data.normal.reset(createTexture());
-	data.position.reset(createTexture());
-	data.depth.reset(createTexture());
-
-	data.diffuse_srv.reset(createShaderResourceView());
-	data.specular_srv.reset(createShaderResourceView());
-	data.normal_srv.reset(createShaderResourceView());
-	data.position_srv.reset(createShaderResourceView());
-	data.depth_srv.reset(createShaderResourceView());
-
-	Gleam::IRenderDevice& rd = *_render_device_tags[window_tag][0];
-	const glm::ivec2& size = window.getSize();
-
-	if (!data.diffuse->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-		LogErrorDefault("Failed to create diffuse texture for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.specular->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-		LogErrorDefault("Failed to create specular texture for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.normal->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-		LogErrorDefault("Failed to create normal texture for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.position->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-		LogErrorDefault("Failed to create position texture for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.depth->initDepthStencil(rd, size.x, size.y, Gleam::ITexture::Format::DEPTH_32_F)) {
-		LogErrorDefault("Failed to create depth texture for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.diffuse_srv->init(rd, data.diffuse.get())) {
-		LogErrorDefault("Failed to create diffuse srv for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.specular_srv->init(rd, data.specular.get())) {
-		LogErrorDefault("Failed to create specular srv for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.normal_srv->init(rd, data.normal.get())) {
-		LogErrorDefault("Failed to create normal srv for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.position_srv->init(rd, data.position.get())) {
-		LogErrorDefault("Failed to create position srv for window '%s'.", window_name);
-		return false;
-	}
-
-	if (!data.depth_srv->init(rd, data.depth.get())) {
-		LogErrorDefault("Failed to create depth srv for window '%s'.", window_name);
-		return false;
-	}
-
-	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.diffuse_srv.get());
-	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.specular_srv.get());
-	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.normal_srv.get());
-	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.position_srv.get());
-	data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.depth_srv.get());
-	data.program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _to_screen_samplers[&rd].get());
-
-	data.render_target->addTexture(rd, data.diffuse.get());
-	data.render_target->addTexture(rd, data.specular.get());
-	data.render_target->addTexture(rd, data.normal.get());
-	data.render_target->addTexture(rd, data.position.get());
-	data.render_target->addDepthStencilBuffer(rd, data.depth.get());
-
-	_g_buffers[window_tag] = std::move(data);
-	return true;
 }
 
 NS_END

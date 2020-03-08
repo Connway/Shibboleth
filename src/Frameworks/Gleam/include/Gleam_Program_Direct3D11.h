@@ -58,6 +58,9 @@ public:
 
 	IProgramBuffers* clone(void) const override;
 
+	void clearResourceViews(void) override;
+	void clear(void) override;
+
 	void bind(IRenderDevice& rd) override;
 
 	RendererType getRendererType(void) const override;
