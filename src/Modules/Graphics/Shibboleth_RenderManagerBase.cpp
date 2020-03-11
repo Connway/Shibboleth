@@ -355,7 +355,8 @@ SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
 bool RenderManagerBase::createGBuffer(
 	EntityID id,
 	Gaff::Hash32 device_tag,
-	const glm::ivec2& size)
+	const glm::ivec2& size,
+	bool create_render_texture)
 {
 	auto it = _g_buffers.find(id);
 
@@ -374,7 +375,6 @@ bool RenderManagerBase::createGBuffer(
 
 	for (Gleam::IRenderDevice* device : *devices) {
 		GBufferData data;
-		data.program_buffers.reset(createProgramBuffers());
 		data.render_target.reset(createRenderTarget());
 
 		data.diffuse.reset(createTexture());
@@ -439,18 +439,34 @@ bool RenderManagerBase::createGBuffer(
 			return false;
 		}
 
-		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.diffuse_srv.get());
-		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.specular_srv.get());
-		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.normal_srv.get());
-		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.position_srv.get());
-		data.program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, data.depth_srv.get());
-		data.program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _to_screen_samplers[device].get());
-
 		data.render_target->addTexture(*device, data.diffuse.get());
 		data.render_target->addTexture(*device, data.specular.get());
 		data.render_target->addTexture(*device, data.normal.get());
 		data.render_target->addTexture(*device, data.position.get());
 		data.render_target->addDepthStencilBuffer(*device, data.depth.get());
+
+		if (create_render_texture) {
+			data.final_image.reset(createTexture());
+
+			if (!data.final_image->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+				LogErrorDefault("Failed to create final output texture for camera [%u / %i].", device_tag, id);
+				return false;
+			}
+
+			data.final_srv.reset(createShaderResourceView());
+
+			if (!data.final_srv->init(*device, data.final_image.get())) {
+				LogErrorDefault("Failed to create final output srv for camera [%u / %i].", device_tag, id);
+				return false;
+			}
+
+			data.final_render_target.reset(createRenderTarget());
+
+			if (!data.final_render_target->addTexture(*device, data.final_image.get())) {
+				LogErrorDefault("Failed to create final output render target for camera [%u / %i].", device_tag, id);
+				return false;
+			}
+		}
 
 		it->second.emplace(device, std::move(data));
 	}

@@ -63,6 +63,7 @@ public:
 	float GetVerticalFOV(void) const;
 
 	Gaff::Hash32 device_tag = Gaff::FNV1aHash32Const("main");
+	glm::ivec2 size = glm::ivec2{ -1, -1 };
 
 	float v_fov = 0.25f; // turns
 	float z_near = 0.001f; // m
