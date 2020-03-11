@@ -64,17 +64,23 @@ void CameraPreRenderSystem::update(void)
 				return;
 			}
 
+			bool create_render_texture = false;
 			glm::ivec2 size(0, 0);
 
-			if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
-				size = window->getSize();
-			} /*else if (check for texture target) {
-			}*/ else {
-				// $TODO: Log error.
-				return;
+			if (camera.size.x > 0 && camera.size.y > 0) {
+				create_render_texture = true;
+				size = camera.size;
+
+			} else {
+				if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
+					size = window->getSize();
+				} else {
+					// $TODO: Log Error
+					return;
+				}
 			}
 
-			_render_mgr->createGBuffer(id, camera.device_tag, size);
+			_render_mgr->createGBuffer(id, camera.device_tag, size, create_render_texture);
 		},
 		_camera[camera_index]);
 	}
@@ -204,10 +210,11 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 
 			pb.bind(*job_data.device);
 
-			if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
+			if (g_buffer->final_render_target) {
+				g_buffer->final_render_target->bind(*job_data.device);
+			} else if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
 				output->getRenderTarget().bind(*job_data.device);
-			} /*else if (check for texture target) {
-			}*/ else {
+			} else {
 				// $TODO: Log error.
 				return;
 			}

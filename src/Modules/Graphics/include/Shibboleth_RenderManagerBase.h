@@ -58,7 +58,6 @@ public:
 
 	struct GBufferData final
 	{
-		ProgramBuffersPtr program_buffers;
 		RTVPtr render_target;
 
 		TexturePtr diffuse;
@@ -72,6 +71,11 @@ public:
 		SRVPtr normal_srv;
 		SRVPtr position_srv;
 		SRVPtr depth_srv;
+
+		// These fields are only filled out if doing off-screen rendering.
+		RTVPtr final_render_target;
+		TexturePtr final_image;
+		SRVPtr final_srv;
 	};
 
 	RenderManagerBase(void);
@@ -108,7 +112,7 @@ public:
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
 
-	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const glm::ivec2& size);
+	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const glm::ivec2& size, bool create_render_texture = false);
 	const GBufferData* getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool hasGBuffer(EntityID id) const;
