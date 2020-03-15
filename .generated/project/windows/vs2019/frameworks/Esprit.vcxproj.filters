@@ -15,6 +15,12 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_HashString.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_ICondition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_IProcess.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Pose.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -22,6 +28,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Skeleton.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_SmartPtrs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachine.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h">
@@ -32,6 +44,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Global.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Pose.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Skeleton.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />

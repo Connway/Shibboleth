@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSManager.h"
-#include "Shibboleth_ECSAttributes.h"
+#include "Shibboleth_ECSComponentCommon.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_IFileSystem.h>
@@ -411,9 +411,9 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 
 	// Didn't find a free index. Need to allocate a new page.
 	ProxyAllocator allocator("ECS");
-	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(EA_KIBIBYTE(64), 16, allocator));
+	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(data.page_size, 16, allocator));
 	
-	memset(page, 1, EA_KIBIBYTE(64));
+	memset(page, 1, data.page_size);
 
 	page->num_entities = 1;
 	page->next_index = 1;
@@ -469,10 +469,19 @@ ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 		return it->second->arch_ref;
 	}
 
+	int32_t page_size_bytes = EA_KIBIBYTE(64);
+
+	if (const PageSize* const page_size = archetype.getSharedComponent<PageSize>()) {
+		if (page_size->value > sizeof(EntityPage)) {
+			page_size_bytes = page_size->value;
+		}
+	}
+
 	ProxyAllocator allocator("ECS");
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage)) / archetype.size();
+	data->num_entities_per_page = (page_size_bytes - sizeof(EntityPage)) / archetype.size();
+	data->page_size = page_size_bytes;
 	data->arch_ref = SHIB_ALLOCT(ArchetypeReference, allocator, *this, archetype_hash);
 	data->archetype = std::move(archetype);
 

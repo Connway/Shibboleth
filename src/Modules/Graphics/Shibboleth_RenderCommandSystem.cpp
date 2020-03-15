@@ -213,7 +213,7 @@ void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 	AddResourcesToWaitList(material->samplers_geometry, resources);
 	AddResourcesToWaitList(material->samplers_hull, resources);
 
-	const int32_t buffer_count = (_buffer_count.back()) ? _buffer_count.back()->value : 64;
+	const int32_t buffer_count = (_buffer_count.empty()) ? 64 : _buffer_count.back()->value;
 
 	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
 	{

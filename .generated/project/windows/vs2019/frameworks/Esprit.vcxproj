@@ -214,15 +214,20 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Global.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_HashString.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_ICondition.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_IProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Pose.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Skeleton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_SmartPtrs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachine.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Global.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Pose.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Skeleton.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />

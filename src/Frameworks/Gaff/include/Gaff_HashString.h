@@ -37,12 +37,16 @@ public:
 	using HashFunc = HashType(*)(const char*, size_t);
 
 	template <class Allocator>
+	HashStringTemp(const HashString<T, HashType, Allocator>& hash_string);
+
+	template <class Allocator>
 	HashStringTemp(const String<T, Allocator>& string, HashFunc hash_func = nullptr);
 
 	template <size_t size>
 	HashStringTemp(const T (&string)[size], HashFunc hash_func = nullptr);
 
 	HashStringTemp(const T* string, size_t size, HashFunc hash_func = nullptr);
+	HashStringTemp(const T* string, HashFunc hash_func = nullptr);
 
 	HashStringTemp(const HashStringTemp<T, HashType>& string) = default;
 	HashStringTemp(HashStringTemp<T, HashType>&& string) = default;
@@ -123,6 +127,9 @@ public:
 	bool operator!=(HashType rhs) const;
 	bool operator<(HashType rhs) const;
 	bool operator>(HashType rhs) const;
+
+	operator HashStringTemp<T, HashType>(void) const;
+
 
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(const T* string);

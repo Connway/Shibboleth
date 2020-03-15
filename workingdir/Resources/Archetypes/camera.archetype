@@ -4,6 +4,7 @@
 
 	"shared_components":
 	{
+		"PageSize": { "value": 512 }
 	},
 
 	"components":

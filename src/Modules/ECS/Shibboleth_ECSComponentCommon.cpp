@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSComponentCommon.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PageSize, nullptr, "Memory")
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Position, nullptr, "Transform", OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Rotation, nullptr, "Transform", OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scale, nullptr, "Transform", OptionalAttribute())
