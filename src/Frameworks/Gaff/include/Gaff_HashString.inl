@@ -62,6 +62,13 @@ HashType CalculateHash(const String<T, Allocator>& value, HashType(*hash_func)(c
 // HashStringTemp
 template <class T, class HashType>
 template <class Allocator>
+HashStringTemp<T, HashType>::HashStringTemp(const HashString<T, HashType, Allocator>& hash_string):
+	_string(hash_string.getBuffer()), _hash_value(hash_string.getHash())
+{
+}
+
+template <class T, class HashType>
+template <class Allocator>
 HashStringTemp<T, HashType>::HashStringTemp(const String<T, Allocator>& string, HashFunc hash):
 	_string(string.data()), _hash_value(CalculateHash(string, hash))
 {
@@ -77,6 +84,12 @@ HashStringTemp<T, HashType>::HashStringTemp(const T (&string)[size], HashFunc ha
 template <class T, class HashType>
 HashStringTemp<T, HashType>::HashStringTemp(const T* string, size_t size, HashFunc hash):
 	_string(string), _hash_value(CalculateHash(string, size, hash))
+{
+}
+
+template <class T, class HashType>
+HashStringTemp<T, HashType>::HashStringTemp(const T* string, HashFunc hash):
+	HashStringTemp(string, eastl::CharStrlen(string), hash)
 {
 }
 
@@ -330,6 +343,12 @@ template <class T, class HashType, class Allocator>
 bool HashString<T, HashType, Allocator>::operator>(HashType rhs) const
 {
 	return _hash_value > rhs;
+}
+
+template <class T, class HashType, class Allocator>
+HashString<T, HashType, Allocator>::operator HashStringTemp<T, HashType>(void) const
+{
+	return HashStringTemp<T, HashType>(*this);
 }
 
 // WARNING: This function takes ownership of the string instead of copying

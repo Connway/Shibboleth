@@ -336,6 +336,7 @@ private:
 
 		int32_t num_entities_per_page = 0;
 		int32_t num_entities = 0;
+		int32_t page_size = static_cast<int32_t>(EA_KIBIBYTE(64));
 
 		Vector< UniquePtr<EntityPage> > pages;
 		Vector<EntityID> entity_ids;
