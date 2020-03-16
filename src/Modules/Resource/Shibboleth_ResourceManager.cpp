@@ -103,7 +103,7 @@ void ResourceManager::allModulesLoaded(void)
 	}
 }
 
-IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const Gaff::IReflectionDefinition& ref_def)
+IResourcePtr ResourceManager::createResource(HashStringTemp64<> name, const Gaff::IReflectionDefinition& ref_def)
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
@@ -144,7 +144,7 @@ IResourcePtr ResourceManager::createResource(Gaff::HashStringTemp64 name, const 
 	return IResourcePtr(resource);
 }
 
-IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool delay_load)
+IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name, bool delay_load)
 {
 	EA::Thread::AutoMutex lock(_res_lock);
 
@@ -192,7 +192,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name, bool 
 	return IResourcePtr(res);
 }
 
-IResourcePtr ResourceManager::getResource(Gaff::HashStringTemp64 name)
+IResourcePtr ResourceManager::getResource(HashStringTemp64<> name)
 {
 	EA::Thread::AutoMutex lock(_res_lock);
 

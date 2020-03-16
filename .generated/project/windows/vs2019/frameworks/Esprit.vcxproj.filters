@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_BitVector.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -34,6 +37,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VariableSet.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h">

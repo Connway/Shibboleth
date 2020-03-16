@@ -160,7 +160,7 @@ template <size_t size, class... Attrs>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value, const Attrs&... attrs)
 {
 	eastl::pair<HashString32<Allocator>, Enum> pair(
-		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, size - 1, _allocator),
 		value
 	);
 

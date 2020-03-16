@@ -57,7 +57,7 @@ public:
 	int32_t addLogCallback(LogCallback&& callback);
 	bool removeLogCallback(int32_t id);
 
-	void addChannel(Gaff::HashStringTemp32 channel, const char* file);
+	void addChannel(HashStringTemp32<> channel, const char* file);
 	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
 
 private:
@@ -76,7 +76,7 @@ private:
 	bool _shutdown;
 	EA::Thread::Condition _log_event;
 
-	VectorMap<HashString32, Gaff::File> _channels{ ProxyAllocator("Log") };
+	VectorMap<HashString32<>, Gaff::File> _channels{ ProxyAllocator("Log") };
 	VectorMap<int32_t, LogCallback> _log_callbacks{ ProxyAllocator("Log") };
 	Queue<LogTask> _logs{ ProxyAllocator("Log") };
 

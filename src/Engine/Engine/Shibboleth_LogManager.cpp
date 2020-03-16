@@ -153,7 +153,7 @@ bool LogManager::removeLogCallback(int32_t id)
 	return false;
 }
 
-void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
+void LogManager::addChannel(HashStringTemp32<> channel, const char* file)
 {
 	auto it = Gaff::Find(_channels, channel);
 
@@ -168,7 +168,7 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 			file
 		);
 
-		auto pair = eastl::make_pair<HashString32, Gaff::File>(HashString32(channel), Gaff::File());
+		auto pair = eastl::make_pair<HashString32<>, Gaff::File>(HashString32<>(channel), Gaff::File());
 
 		if (pair.second.open(file_name, Gaff::File::OM_WRITE)) {
 			_channels.insert(std::move(pair));

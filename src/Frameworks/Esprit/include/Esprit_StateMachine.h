@@ -37,29 +37,33 @@ public:
 
 	bool isActive(void) const;
 
-	int32_t addState(const Gaff::HashStringTemp32& name);
-	int32_t addState(HashString32&& name);
+	const StateMachine* getParent(void) const;
+	StateMachine* getParent(void);
+	void setParent(StateMachine* parent);
+
+	int32_t addState(const HashStringTemp32<>& name);
+	int32_t addState(HashString32<>&& name);
 	int32_t addState(const char* name);
 
-	bool removeState(const Gaff::HashStringTemp32& name);
+	bool removeState(const HashStringTemp32<>& name);
 	bool removeState(const char* name);
 
-	int32_t addEdge(const Gaff::HashStringTemp32& start_state_name, const Gaff::HashStringTemp32& end_state_name);
+	int32_t addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
 	int32_t addEdge(const char* start_state_name, const char* end_state_name);
 	int32_t addEdge(int32_t start_state_index, int32_t end_state_index);
 
-	bool removeEdge(const Gaff::HashStringTemp32& start_state_name, const Gaff::HashStringTemp32& end_state_name);
+	bool removeEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
 	bool removeEdge(const char* start_state_name, const char* end_state_name);
 	bool removeEdge(int32_t start_state_index, int32_t end_state_index);
 
-	int32_t addCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, ICondition* condition);
+	int32_t addCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
 	int32_t addCondition(const char* state_name, int32_t edge_index, ICondition* condition);
 	int32_t addCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
 
-	bool removeCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, ICondition* condition);
+	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
 	bool removeCondition(const char* state_name, int32_t edge_index, ICondition* condition);
 	bool removeCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
-	bool removeCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, int32_t condition_index);
+	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, int32_t condition_index);
 	bool removeCondition(const char* state_name, int32_t edge_index, int32_t condition_index);
 	bool removeCondition(int32_t state_index, int32_t edge_index, int32_t condition_index);
 
@@ -74,13 +78,15 @@ private:
 	{
 		Vector< UniquePtr<IProcess> > processes;
 		Vector<Edge> edges;
-		HashString32 name;
+		HashString32<> name;
 	};
 
 	Vector<State> _states;
 	int32_t _current_state = 0;
 
-	int32_t findStateIndex(const Gaff::HashStringTemp32& state_name);
+	StateMachine* _parent = nullptr;
+
+	int32_t findStateIndex(const HashStringTemp32<>& state_name);
 };
 
 NS_END

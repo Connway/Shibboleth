@@ -21,168 +21,143 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class HashType>
-HashType CalculateHash(const T* value, size_t size, HashType (*hash_func)(const char*, size_t))
+HashType CalculateHash(const T* value, size_t size, HashFunc<HashType> hash_func)
 {
-	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));
-	}
-
-	Hash32 hash_value = FNV1aHash32(reinterpret_cast<const char*>(value), size * sizeof(T));
-	return static_cast<HashType>(hash_value);
-}
-
-template <class T>
-Hash32 CalculateHash(const T* value, size_t size, Hash32 (*hash_func)(const char*, size_t))
-{
-	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));
-	}
-
-	return FNV1aHash32(reinterpret_cast<const char*>(value), size * sizeof(T));
-}
-
-template <class T>
-Hash64 CalculateHash(const T* value, size_t size, Hash64 (*hash_func)(const char*, size_t))
-{
-	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));
-	}
-
-	return FNV1aHash64(reinterpret_cast<const char*>(value), size * sizeof(T));
+	return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));
 }
 
 template <class T, class HashType, class Allocator>
-HashType CalculateHash(const String<T, Allocator>& value, HashType(*hash_func)(const char*, size_t))
+HashType CalculateHash(const String<T, Allocator>& value, HashFunc<HashType> hash_func)
 {
-	return CalculateHash(value.data(), value.size(), hash_func);
+	return hash_func(reinterpret_cast<const char*>(value.data()), value.size() * sizeof(T));
 }
 
 
 
 // HashStringTemp
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-HashStringTemp<T, HashType>::HashStringTemp(const HashString<T, HashType, Allocator>& hash_string):
+HashStringTemp<T, HashType, HashingFunc>::HashStringTemp(const HashString<T, HashType, HashingFunc, Allocator, true>& hash_string):
 	_string(hash_string.getBuffer()), _hash_value(hash_string.getHash())
 {
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-HashStringTemp<T, HashType>::HashStringTemp(const String<T, Allocator>& string, HashFunc hash):
-	_string(string.data()), _hash_value(CalculateHash(string, hash))
+HashStringTemp<T, HashType, HashingFunc>::HashStringTemp(const String<T, Allocator>& string):
+	_string(string.data()), _hash_value(CalculateHash(string, HashingFunc))
 {
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <size_t size>
-HashStringTemp<T, HashType>::HashStringTemp(const T (&string)[size], HashFunc hash):
-	_string(string), _hash_value(CalculateHash(string, size - 1, hash))
+HashStringTemp<T, HashType, HashingFunc>::HashStringTemp(const T (&string)[size]):
+	_string(string), _hash_value(CalculateHash(string, size - 1, HashingFunc))
 {
 }
 
-template <class T, class HashType>
-HashStringTemp<T, HashType>::HashStringTemp(const T* string, size_t size, HashFunc hash):
-	_string(string), _hash_value(CalculateHash(string, size, hash))
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+HashStringTemp<T, HashType, HashingFunc>::HashStringTemp(const T* string, size_t size):
+	_string(string), _hash_value(CalculateHash(string, size, HashingFunc))
 {
 }
 
-template <class T, class HashType>
-HashStringTemp<T, HashType>::HashStringTemp(const T* string, HashFunc hash):
-	HashStringTemp(string, eastl::CharStrlen(string), hash)
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+HashStringTemp<T, HashType, HashingFunc>::HashStringTemp(const T* string):
+	HashStringTemp(string, eastl::CharStrlen(string))
 {
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-bool HashStringTemp<T, HashType>::operator==(const HashString<T, HashType, Allocator>& rhs) const
+bool HashStringTemp<T, HashType, HashingFunc>::operator==(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const
 {
 	return _hash_value == rhs.getHash();
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-bool HashStringTemp<T, HashType>::operator!=(const HashString<T, HashType, Allocator>& rhs) const
+bool HashStringTemp<T, HashType, HashingFunc>::operator!=(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const
 {
 	return _hash_value != rhs.getHash();
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-bool HashStringTemp<T, HashType>::operator<(const HashString<T, HashType, Allocator>& rhs) const
+bool HashStringTemp<T, HashType, HashingFunc>::operator<(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const
 {
 	return _hash_value < rhs.getHash();
 }
 
-template <class T, class HashType>
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
 template <class Allocator>
-bool HashStringTemp<T, HashType>::operator>(const HashString<T, HashType, Allocator>& rhs) const
+bool HashStringTemp<T, HashType, HashingFunc>::operator>(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const
 {
 	return _hash_value > rhs.getHash();
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator==(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value == rhs._hash_value;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator!=(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value != rhs._hash_value;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator<(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value < rhs._hash_value;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator>(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value > rhs._hash_value;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator==(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator==(HashType rhs) const
 {
 	return _hash_value == rhs;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator!=(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator!=(HashType rhs) const
 {
 	return _hash_value != rhs;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator<(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator<(HashType rhs) const
 {
 	return _hash_value < rhs;
 }
 
-template <class T, class HashType>
-bool HashStringTemp<T, HashType>::operator>(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+bool HashStringTemp<T, HashType, HashingFunc>::operator>(HashType rhs) const
 {
 	return _hash_value > rhs;
 }
 
-template <class T, class HashType>
-const T* HashStringTemp<T, HashType>::getBuffer(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+const T* HashStringTemp<T, HashType, HashingFunc>::getBuffer(void) const
 {
 	return _string;
 }
 
-template <class T, class HashType>
-HashType HashStringTemp<T, HashType>::getHash(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+HashType HashStringTemp<T, HashType, HashingFunc>::getHash(void) const
 {
 	return _hash_value;
 }
 
-template <class T, class HashType>
-HashStringTemp<T, HashType>::operator HashType(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+HashStringTemp<T, HashType, HashingFunc>::operator HashType(void) const
 {
 	return _hash_value;
 }
@@ -190,252 +165,419 @@ HashStringTemp<T, HashType>::operator HashType(void) const
 
 
 
-// HashString
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const String<T, Allocator>& string, HashFunc hash_func):
-	_string(string), _hash_value(CalculateHash(string, hash_func)), _hash_func(hash_func)
+// HashString<true>
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const String<T, Allocator>& string):
+	_string(string), _hash_value(CalculateHash(string, HashingFunc))
 {
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const HashStringTemp<T, HashType>& string, HashFunc hash_func, const Allocator& allocator):
-	_string(string.getBuffer(), allocator), _hash_value(string.getHash()), _hash_func(hash_func)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const HashStringTemp<T, HashType, HashingFunc>& string, const Allocator& allocator):
+	_string(string.getBuffer(), allocator), _hash_value(string.getHash())
 {
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, HashFunc hash_func, const Allocator& allocator):
-	_string(string, size, allocator), _hash_value(0), _hash_func(hash_func)
-{
-	_hash_value = CalculateHash(_string, hash_func);
-}
-
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const T* string, HashFunc hash_func, const Allocator& allocator):
-	_string(string, allocator), _hash_value(0), _hash_func(hash_func)
-{
-	_hash_value = CalculateHash(_string, hash_func);
-}
-
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, HashType hash, HashFunc hash_func, const Allocator& allocator):
-	_string(string, size, allocator), _hash_value(hash), _hash_func(hash_func)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, size_t size, const Allocator& allocator):
+	_string(string, size, allocator), _hash_value(CalculateHash(string, size, HashingFunc))
 {
 }
 
-//template <class T, class HashType, class Allocator>
-//HashString<T, HashType, Allocator>::HashString(const T* string, HashType hash, HashFunc hash_func, const Allocator& allocator):
-//	_string(string, allocator), _hash_value(hash), _hash_func(hash_func)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, const Allocator& allocator):
+	_string(string, allocator), _hash_value(CalculateHash(string, eastl::CharStrlen(string), HashingFunc))
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, size_t size, HashType hash, const Allocator& allocator):
+	_string(string, size, allocator), _hash_value(hash)
+{
+}
+
+//template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+//HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, HashType hash, const Allocator& allocator):
+//	_string(string, allocator), _hash_value(hash)
 //{
 //}
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(HashType hash, HashFunc hash_func, const Allocator& allocator):
-	_string(allocator), _hash_value(hash), _hash_func(hash_func)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(HashType hash, const Allocator& allocator):
+	_string(allocator), _hash_value(hash)
 {
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(HashFunc hash_func, const Allocator& allocator):
-	_string(allocator), _hash_value(0), _hash_func(hash_func)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const Allocator& allocator):
+	_string(allocator), _hash_value(0)
 {
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(const HashStringTemp<T, HashType>& rhs)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>& HashString<T, HashType, HashingFunc, Allocator, true>::operator=(const HashStringTemp<T, HashType, HashingFunc>& rhs)
 {
 	_string = rhs.getBuffer();
 	_hash_value = rhs.getHash();
 	return *this;
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(const String<T, Allocator>& rhs)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>& HashString<T, HashType, HashingFunc, Allocator, true>::operator=(const String<T, Allocator>& rhs)
 {
 	_string = rhs;
-	 _hash_value = CalculateHash(_string, _hash_func);
+	 _hash_value = CalculateHash(_string, HashingFunc);
 	return *this;
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(String<T, Allocator>&& rhs)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>& HashString<T, HashType, HashingFunc, Allocator, true>::operator=(String<T, Allocator>&& rhs)
 {
 	_string = std::move(rhs);
-	 _hash_value = CalculateHash(_string, _hash_func);
+	 _hash_value = CalculateHash(_string, HashingFunc);
 	return *this;
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>& HashString<T, HashType, Allocator>::operator=(const T* rhs)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>& HashString<T, HashType, HashingFunc, Allocator, true>::operator=(const T* rhs)
 {
 	_string = rhs;
-	 _hash_value = CalculateHash(_string, _hash_func);
+	 _hash_value = CalculateHash(_string, HashingFunc);
 	return *this;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator==(const HashString<T, HashType, Allocator>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator==(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
 {
 	return _hash_value == rhs._hash_value;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator!=(const HashString<T, HashType, Allocator>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator!=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
 {
 	return _hash_value != rhs._hash_value;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator<(const HashString<T, HashType, Allocator>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator<(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
 {
 	return _hash_value < rhs._hash_value;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator>(const HashString<T, HashType, Allocator>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator>(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
 {
 	return _hash_value > rhs._hash_value;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator==(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value == rhs.getHash();
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator!=(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value != rhs.getHash();
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator<(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value < rhs.getHash();
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator>(const HashStringTemp<T, HashType>& rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
 {
 	return _hash_value > rhs.getHash();
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator==(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator==(HashType rhs) const
 {
 	return _hash_value == rhs;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator!=(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator!=(HashType rhs) const
 {
 	return _hash_value != rhs;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator<(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator<(HashType rhs) const
 {
 	return _hash_value < rhs;
 }
 
-template <class T, class HashType, class Allocator>
-bool HashString<T, HashType, Allocator>::operator>(HashType rhs) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::operator>(HashType rhs) const
 {
 	return _hash_value > rhs;
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::operator HashStringTemp<T, HashType>(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::operator HashStringTemp<T, HashType, HashingFunc>(void) const
 {
-	return HashStringTemp<T, HashType>(*this);
+	return HashStringTemp<T, HashType, HashingFunc>(*this);
 }
 
 // WARNING: This function takes ownership of the string instead of copying
-template <class T, class HashType, class Allocator>
-void HashString<T, HashType, Allocator>::set(const T* string)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+void HashString<T, HashType, HashingFunc, Allocator, true>::set(const T* string)
 {
 	_string.set(string);
-	_hash_value = _hash_func(reinterpret_cast<const char*>(string), _string.size() * sizeof(T));
+	_hash_value = HashingFunc(reinterpret_cast<const char*>(string), _string.size() * sizeof(T));
 }
 
-template <class T, class HashType, class Allocator>
-void HashString<T, HashType, Allocator>::clear(void)
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+void HashString<T, HashType, HashingFunc, Allocator, true>::clear(void)
 {
 	_string.clear();
 	_hash_value = 0;
 }
 
-template <class T, class HashType, class Allocator>
-size_t HashString<T, HashType, Allocator>::size(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+size_t HashString<T, HashType, HashingFunc, Allocator, true>::size(void) const
 {
 	return _string.size();
 }
 
-template <class T, class HashType, class Allocator>
-const String<T, Allocator>& HashString<T, HashType, Allocator>::getString(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+const String<T, Allocator>& HashString<T, HashType, HashingFunc, Allocator, true>::getString(void) const
 {
 	return _string;
 }
 
-template <class T, class HashType, class Allocator>
-const T* HashString<T, HashType, Allocator>::getBuffer(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+const T* HashString<T, HashType, HashingFunc, Allocator, true>::getBuffer(void) const
 {
 	return _string.data();
 }
 
-template <class T, class HashType, class Allocator>
-HashType HashString<T, HashType, Allocator>::getHash(void) const
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashType HashString<T, HashType, HashingFunc, Allocator, true>::getHash(void) const
 {
 	return _hash_value;
 }
 
 
-template <class HashTypeA, class T, class HashTypeB, class Allocator>
-bool operator==(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs)
+
+// HashString<false>
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const String<T, Allocator>& string):
+	_hash_value(CalculateHash(string, HashingFunc))
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const HashStringTemp<T, HashType, HashingFunc>& string, const Allocator&):
+	_hash_value(string.getHash())
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* string, size_t size, const Allocator&):
+	_hash_value(CalculateHash(string, size, HashingFunc))
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* string, const Allocator&):
+	_hash_value(CalculateHash(string, eastl::CharStrlen(string), HashingFunc))
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* string, size_t size, HashType hash, const Allocator&):
+	_hash_value(hash)
+{
+}
+
+//template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+//HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* string, HashType hash, const Allocator&):
+//	_hash_value(hash)
+//{
+//}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(HashType hash, const Allocator&):
+	_hash_value(hash)
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const Allocator&):
+	_hash_value(0)
+{
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+HashString<T, HashType, HashingFunc, Allocator, false>& HashString<T, HashType, HashingFunc, Allocator, false>::operator=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs)
+{
+	_hash_value = rhs._hash_value;
+	return *this;
+
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>& HashString<T, HashType, HashingFunc, Allocator, false>::operator=(const HashStringTemp<T, HashType, HashingFunc>& rhs)
+{
+	_hash_value = rhs.getHash();
+	return *this;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>& HashString<T, HashType, HashingFunc, Allocator, false>::operator=(const String<T, Allocator>& rhs)
+{
+	_hash_value = CalculateHash(rhs, HashingFunc);
+	return *this;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, false>& HashString<T, HashType, HashingFunc, Allocator, false>::operator=(const T* rhs)
+{
+	_hash_value = CalculateHash(rhs, eastl::CharStrlen(rhs), HashingFunc);
+	return *this;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator==(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
+{
+	return _hash_value == rhs._hash_value;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator!=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
+{
+	return _hash_value != rhs._hash_value;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator<(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
+{
+	return _hash_value < rhs._hash_value;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+template <bool has_string>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator>(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const
+{
+	return _hash_value > rhs._hash_value;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
+{
+	return _hash_value == rhs.getHash();
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
+{
+	return _hash_value != rhs.getHash();
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
+{
+	return _hash_value < rhs.getHash();
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const
+{
+	return _hash_value > rhs.getHash();
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator==(HashType rhs) const
+{
+	return _hash_value == rhs;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator!=(HashType rhs) const
+{
+	return _hash_value != rhs;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator<(HashType rhs) const
+{
+	return _hash_value < rhs;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, false>::operator>(HashType rhs) const
+{
+	return _hash_value > rhs;
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashType HashString<T, HashType, HashingFunc, Allocator, false>::getHash(void) const
+{
+	return _hash_value;
+}
+
+
+
+// HashString helpers
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator==(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs)
 {
 	return lhs == rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB, class Allocator>
-bool operator!=(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator!=(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs)
 {
 	return lhs != rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB, class Allocator>
-bool operator<(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator<(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs)
 {
 	return lhs < rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB, class Allocator>
-bool operator>(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator>(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs)
 {
 	return lhs > rhs.getHash();
 }
 
 
-template <class HashTypeA, class T, class HashTypeB>
-bool operator==(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator==(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs)
 {
 	return lhs == rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB>
-bool operator!=(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator!=(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs)
 {
 	return lhs != rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB>
-bool operator<(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator<(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs)
 {
 	return lhs < rhs.getHash();
 }
 
-template <class HashTypeA, class T, class HashTypeB>
-bool operator>(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs)
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator>(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs)
 {
 	return lhs > rhs.getHash();
 }

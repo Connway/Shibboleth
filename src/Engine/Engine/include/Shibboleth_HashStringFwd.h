@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Gaff_Hash.h>
 
 NS_GAFF
-	template <class T, class HashType, class Allocator>
+	template <class T, class HashType, class Allocator, bool contains_string = true>
 	class HashString;
 
 	template <class T, class HashType>
@@ -50,7 +50,7 @@ using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
 using HashString32 = Gaff::HashString32<ProxyAllocator>;
 using HashString64 = Gaff::HashString64<ProxyAllocator>;
 
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+using HashStringTemp32 = HashStringTemp32<>;
+using HashStringTemp64 = HashStringTemp64<>;
 
 NS_END

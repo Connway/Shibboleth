@@ -53,7 +53,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 
 	if (module) {
 		if (module->load(filename)) {
-			_modules.emplace(std::move(HString(name, FNV1aHash32, _allocator)), module);
+			_modules.emplace(std::move(HString(name, _allocator)), module);
 			return module;
 		}
 	}

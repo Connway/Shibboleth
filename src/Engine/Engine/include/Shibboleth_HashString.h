@@ -27,13 +27,25 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
+template < class T, class HashType, Gaff::HashFunc<HashType> HashingFunc = Gaff::DefaultHashFunc<HashType> >
+using HashString = Gaff::HashString<T, HashType, HashingFunc, ProxyAllocator, true>;
 
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
+template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
+using HashString32 = Gaff::HashString32<ProxyAllocator, HashingFunc>;
 
-using HashStringTemp32 = Gaff::HashStringTemp32;
-using HashStringTemp64 = Gaff::HashStringTemp64;
+template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
+using HashString64 = Gaff::HashString64<ProxyAllocator, HashingFunc>;
+
+template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
+using OptimizedHashString32 = Gaff::OptimizedHashString32<ProxyAllocator>;
+
+template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
+using OptimizedHashString64 = Gaff::OptimizedHashString64<ProxyAllocator>;
+
+template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
+using HashStringTemp32 = Gaff::HashStringTemp32<HashingFunc>;
+
+template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
+using HashStringTemp64 = Gaff::HashStringTemp64<HashingFunc>;
 
 NS_END

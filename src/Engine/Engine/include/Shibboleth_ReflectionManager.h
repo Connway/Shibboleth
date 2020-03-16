@@ -75,7 +75,7 @@ public:
 	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const;
 
-	Vector<HashString64> getModules(void) const;
+	Vector< HashString64<> > getModules(void) const;
 
 private:
 	using TypeBucket = Vector<const Gaff::IReflectionDefinition*>;
@@ -87,8 +87,8 @@ private:
 	TypeBucketMap _attr_buckets{ ProxyAllocator("Reflection") };
 	TypeBucketMap _type_buckets{ ProxyAllocator("Reflection") };
 
-	VectorMap< HashString64, Vector<const Gaff::IEnumReflectionDefinition*> > _module_enum_owners{ ProxyAllocator("Reflection") };
-	VectorMap<HashString64, TypeBucketMap> _module_owners{ ProxyAllocator("Reflection") };
+	VectorMap< HashString64<>, Vector<const Gaff::IEnumReflectionDefinition*> > _module_enum_owners{ ProxyAllocator("Reflection") };
+	VectorMap<HashString64<>, TypeBucketMap> _module_owners{ ProxyAllocator("Reflection") };
 
 	void insertType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);
 	void removeType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);

@@ -1481,7 +1481,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(con
 	const ptrdiff_t offset = OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
-			HashString64<Allocator>(name, nullptr, _allocator),
+			HashString64<Allocator>(name, _allocator),
 			offset
 		)
 	);
@@ -1656,7 +1656,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Type is not reflected!");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr))
 	);
 
@@ -1694,7 +1694,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = VarFuncPtr<Ret, Var>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
 	);
 
@@ -1719,7 +1719,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec))
 	);
 
@@ -1744,7 +1744,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = ArrayPtr<Var, array_size>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	);
 
@@ -1771,7 +1771,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = VectorMapPtr<Key, Value, VecMap_Allocator>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec_map))
 	);
 
@@ -1804,7 +1804,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		);
 
 		eastl::pair<HashString32<Allocator>, FuncData> pair(
-			HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+			HashString32<Allocator>(name, name_size - 1, _allocator),
 			FuncData()
 		);
 
@@ -1865,7 +1865,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		);
 
 		it = _funcs.emplace(
-			HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+			HashString32<Allocator>(name, name_size - 1, _allocator),
 			FuncData()
 		).first;
 		
@@ -1918,7 +1918,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
-			HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
+			HashString32<Allocator>(name, name_size - 1, _allocator),
 			StaticFuncData()
 		).first;
 
