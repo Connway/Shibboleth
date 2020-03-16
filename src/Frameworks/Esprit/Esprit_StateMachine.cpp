@@ -38,8 +38,8 @@ StateMachine::StateMachine(void)
 {
 	// Always have special states.
 	_states.resize(static_cast<size_t>(SpecialStates::Count));
-	_states[0].name = HashString32("Start");
-	_states[0].name = HashString32("End");
+	_states[0].name = HashString32<>("Start");
+	_states[0].name = HashString32<>("End");
 }
 
 bool StateMachine::isActive(void) const
@@ -47,7 +47,22 @@ bool StateMachine::isActive(void) const
 	return _current_state >= static_cast<int32_t>(SpecialStates::Count);
 }
 
-int32_t StateMachine::addState(const Gaff::HashStringTemp32& name)
+const StateMachine* StateMachine::getParent(void) const
+{
+	return _parent;
+}
+
+StateMachine* StateMachine::getParent(void)
+{
+	return _parent;
+}
+
+void StateMachine::setParent(StateMachine* parent)
+{
+	_parent = parent;
+}
+
+int32_t StateMachine::addState(const HashStringTemp32<>& name)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -61,7 +76,7 @@ int32_t StateMachine::addState(const Gaff::HashStringTemp32& name)
 	return static_cast<int32_t>(_states.size() - 1);
 }
 
-int32_t StateMachine::addState(HashString32&& name)
+int32_t StateMachine::addState(HashString32<>&& name)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -77,10 +92,10 @@ int32_t StateMachine::addState(HashString32&& name)
 
 int32_t StateMachine::addState(const char* name)
 {
-	return addState(Gaff::HashStringTemp32(name));
+	return addState(HashStringTemp32<>(name));
 }
 
-bool StateMachine::removeState(const Gaff::HashStringTemp32& name)
+bool StateMachine::removeState(const HashStringTemp32<>& name)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -94,10 +109,10 @@ bool StateMachine::removeState(const Gaff::HashStringTemp32& name)
 
 bool StateMachine::removeState(const char* name)
 {
-	return removeState(Gaff::HashStringTemp32(name));
+	return removeState(HashStringTemp32<>(name));
 }
 
-int32_t StateMachine::addEdge(const Gaff::HashStringTemp32& start_state_name, const Gaff::HashStringTemp32& end_state_name)
+int32_t StateMachine::addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name)
 {
 	const auto start_index = findStateIndex(start_state_name);
 	const auto end_index = findStateIndex(end_state_name);
@@ -115,7 +130,7 @@ int32_t StateMachine::addEdge(const Gaff::HashStringTemp32& start_state_name, co
 
 int32_t StateMachine::addEdge(const char* start_state_name, const char* end_state_name)
 {
-	return addEdge(Gaff::HashStringTemp32(start_state_name), Gaff::HashStringTemp32(end_state_name));
+	return addEdge(HashStringTemp32<>(start_state_name), HashStringTemp32<>(end_state_name));
 }
 
 int32_t StateMachine::addEdge(int32_t start_state_index, int32_t end_state_index)
@@ -134,7 +149,7 @@ int32_t StateMachine::addEdge(int32_t start_state_index, int32_t end_state_index
 	return static_cast<int32_t>(_states[start_state_index].edges.size() - 1);
 }
 
-bool StateMachine::removeEdge(const Gaff::HashStringTemp32& start_state_name, const Gaff::HashStringTemp32& end_state_name)
+bool StateMachine::removeEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name)
 {
 	const auto start_index = findStateIndex(start_state_name);
 	const auto end_index = findStateIndex(end_state_name);
@@ -152,7 +167,7 @@ bool StateMachine::removeEdge(const Gaff::HashStringTemp32& start_state_name, co
 
 bool StateMachine::removeEdge(const char* start_state_name, const char* end_state_name)
 {
-	return removeEdge(Gaff::HashStringTemp32(start_state_name), Gaff::HashStringTemp32(end_state_name));
+	return removeEdge(HashStringTemp32<>(start_state_name), HashStringTemp32<>(end_state_name));
 }
 
 bool StateMachine::removeEdge(int32_t start_state_index, int32_t end_state_index)
@@ -178,7 +193,7 @@ bool StateMachine::removeEdge(int32_t start_state_index, int32_t end_state_index
 	return false;
 }
 
-int32_t StateMachine::addCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, ICondition* condition)
+int32_t StateMachine::addCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -191,7 +206,7 @@ int32_t StateMachine::addCondition(const Gaff::HashStringTemp32& state_name, int
 
 int32_t StateMachine::addCondition(const char* state_name, int32_t edge_index, ICondition* condition)
 {
-	return addCondition(Gaff::HashStringTemp32(state_name), edge_index, condition);
+	return addCondition(HashStringTemp32<>(state_name), edge_index, condition);
 }
 
 int32_t StateMachine::addCondition(int32_t state_index, int32_t edge_index, ICondition* condition)
@@ -208,7 +223,7 @@ int32_t StateMachine::addCondition(int32_t state_index, int32_t edge_index, ICon
 	return static_cast<int32_t>(_states[state_index].edges[edge_index].conditions.size() - 1);
 }
 
-bool StateMachine::removeCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, ICondition* condition)
+bool StateMachine::removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -221,7 +236,7 @@ bool StateMachine::removeCondition(const Gaff::HashStringTemp32& state_name, int
 
 bool StateMachine::removeCondition(const char* state_name, int32_t edge_index, ICondition* condition)
 {
-	return removeCondition(Gaff::HashStringTemp32(state_name), edge_index, condition);
+	return removeCondition(HashStringTemp32<>(state_name), edge_index, condition);
 }
 
 bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, ICondition* condition)
@@ -248,7 +263,7 @@ bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, ICon
 	return false;
 }
 
-bool StateMachine::removeCondition(const Gaff::HashStringTemp32& state_name, int32_t edge_index, int32_t condition_index)
+bool StateMachine::removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, int32_t condition_index)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -261,7 +276,7 @@ bool StateMachine::removeCondition(const Gaff::HashStringTemp32& state_name, int
 
 bool StateMachine::removeCondition(const char* state_name, int32_t edge_index, int32_t condition_index)
 {
-	return removeCondition(Gaff::HashStringTemp32(state_name), edge_index, condition_index);
+	return removeCondition(HashStringTemp32<>(state_name), edge_index, condition_index);
 }
 
 bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, int32_t condition_index)
@@ -284,9 +299,9 @@ bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, int3
 	return true;
 }
 
-int32_t StateMachine::findStateIndex(const Gaff::HashStringTemp32& state_name)
+int32_t StateMachine::findStateIndex(const HashStringTemp32<>& state_name)
 {
-	const auto it = Gaff::Find(_states, state_name, [](const State& lhs, const Gaff::HashStringTemp32& rhs) -> bool
+	const auto it = Gaff::Find(_states, state_name, [](const State& lhs, const HashStringTemp32<>& rhs) -> bool
 	{
 		return lhs.name == rhs;
 	});

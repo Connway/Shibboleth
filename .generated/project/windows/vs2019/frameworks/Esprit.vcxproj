@@ -211,6 +211,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_BitVector.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Global.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_HashString.h" />
@@ -221,6 +222,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Skeleton.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachine.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VariableSet.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h" />
   </ItemGroup>
   <ItemGroup>

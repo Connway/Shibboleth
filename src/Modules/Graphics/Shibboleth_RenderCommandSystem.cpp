@@ -276,7 +276,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 
 					if (it != sb_refl.vars.end()) {
 						instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
-						instance_data.instance_data = &instance_data.pipeline_data[i].buffer_vars[HashString32(sb_refl.name)];
+						instance_data.instance_data = &instance_data.pipeline_data[i].buffer_vars[HashString32<>(sb_refl.name)];
 					}
 				}
 			}
@@ -291,14 +291,14 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 			addSamplers(material, shader_refl, *pb, *rd, shader_type);
 
 			for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
-				const auto it = var_srvs.find(HashString32(var_name.data()));
+				const auto it = var_srvs.find(HashString32<>(var_name.data()));
 
 				if (it != var_srvs.end()) {
 					pb->addResourceView(shader_type, it->second.get());
 
 				} else {
 					auto& buffers = instance_data.pipeline_data[i].buffer_vars;
-					const auto it_buf = buffers.find(HashString32(var_name.data()));
+					const auto it_buf = buffers.find(HashString32<>(var_name.data()));
 
 					if (it_buf != buffers.end()) {
 						pb->addResourceView(shader_type, it_buf->second.pages[0].srv_map[rd].get());
@@ -346,7 +346,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 			continue;
 		}
 
-		auto& buffer_data = var_map[HashString32(sb_refl.name)];
+		auto& buffer_data = var_map[HashString32<>(sb_refl.name)];
 		var_map.set_allocator(ProxyAllocator("Graphics"));
 
 		const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
@@ -399,7 +399,7 @@ void RenderCommandSystem::addTextureSRVs(
 			continue;
 		}
 
-		var_map[HashString32(texture_name)].reset(srv);
+		var_map[HashString32<>(texture_name)].reset(srv);
 	}
 }
 

@@ -22,35 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Gaff_HashString.h>
+#include "Esprit_ProxyAllocator.h"
+#include <EASTL/bitvector.h>
 
-NS_SHIBBOLETH
+NS_ESPRIT
 
-class CreatableAttribute final : public Gaff::IAttribute
-{
-public:
-	Gaff::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
-};
-
-class ResExtAttribute final : public Gaff::IAttribute
-{
-public:
-	ResExtAttribute(const char* extension);
-
-	const HashStringTemp32<>& getExtension(void) const;
-
-	Gaff::IAttribute* clone(void) const override;
-
-private:
-	HashStringTemp32<> _extension;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
-};
+using BitVector = eastl::bitvector<ProxyAllocator>;
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(CreatableAttribute)
-SHIB_REFLECTION_DECLARE(ResExtAttribute)

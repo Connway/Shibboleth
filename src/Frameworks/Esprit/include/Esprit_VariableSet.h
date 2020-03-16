@@ -22,35 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Gaff_HashString.h>
+#include "Esprit_BitVector.h"
+#include "Esprit_Vector.h"
+#include <Gaff_Hash.h>
 
-NS_SHIBBOLETH
+NS_ESPRIT
 
-class CreatableAttribute final : public Gaff::IAttribute
+class VariableSet
 {
 public:
-	Gaff::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
-};
-
-class ResExtAttribute final : public Gaff::IAttribute
-{
-public:
-	ResExtAttribute(const char* extension);
-
-	const HashStringTemp32<>& getExtension(void) const;
-
-	Gaff::IAttribute* clone(void) const override;
 
 private:
-	HashStringTemp32<> _extension;
+	struct BooleanVariables final
+	{
+		Vector<Gaff::Hash32> names;
+		BitVector values;
+	};
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
+	template <class T>
+	struct Variable final
+	{
+		Gaff::Hash32 name;
+		T value;
+	};
+
+	BooleanVariables _booleans;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(CreatableAttribute)
-SHIB_REFLECTION_DECLARE(ResExtAttribute)

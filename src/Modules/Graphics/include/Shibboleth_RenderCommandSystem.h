@@ -68,8 +68,8 @@ private:
 			int32_t srv_index = -1;
 		};
 
-		using BufferVarMap = VectorMap<HashString32, InstanceBufferData>;
-		using VarMap = VectorMap< HashString32, UniquePtr<Gleam::IShaderResourceView> >;
+		using BufferVarMap = VectorMap<HashString32<>, InstanceBufferData>;
+		using VarMap = VectorMap< HashString32<>, UniquePtr<Gleam::IShaderResourceView> >;
 
 		struct PipelineData final
 		{

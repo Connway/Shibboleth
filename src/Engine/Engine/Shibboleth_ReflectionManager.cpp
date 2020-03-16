@@ -77,7 +77,7 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* 
 	const auto it_enum = _enum_reflection_map.find(name);
 	GAFF_ASSERT(it_enum != _enum_reflection_map.end());
 
-	const HashString64 name_hash(module_name);
+	const HashString64<> name_hash(module_name);
 	const auto it_module = _module_enum_owners.find(name_hash);
 	Vector<const Gaff::IEnumReflectionDefinition*>& module_bucket = (it_module == _module_enum_owners.end()) ? _module_enum_owners[name_hash] : it_module->second;
 
@@ -116,7 +116,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 	const auto it_refl = _reflection_map.find(name);
 	GAFF_ASSERT(it_refl != _reflection_map.end());
 
-	const HashString64 name_hash(module_name);
+	const HashString64<> name_hash(module_name);
 	const auto it_module = _module_owners.find(name_hash);
 	TypeBucketMap& module_types = (it_module == _module_owners.end()) ? _module_owners[name_hash] : it_module->second;
 
@@ -143,7 +143,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 
 const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
-	const auto it_module = _module_owners.find(HashString64(module_name));
+	const auto it_module = _module_owners.find(HashString64<>(module_name));
 
 	if (it_module == _module_owners.end() || it_module->first.getHash() != module_name) {
 		return nullptr;
@@ -238,7 +238,7 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 
 Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
-	const auto it_module = _module_enum_owners.find(HashString64(module_name));
+	const auto it_module = _module_enum_owners.find(HashString64<>(module_name));
 	Vector<const Gaff::IEnumReflectionDefinition*> out;
 
 	if (it_module == _module_enum_owners.end() || it_module->first.getHash() != module_name) {
@@ -305,9 +305,9 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	return out;
 }
 
-Vector<HashString64> ReflectionManager::getModules(void) const
+Vector< HashString64<> > ReflectionManager::getModules(void) const
 {
-	Vector<HashString64> out;
+	Vector< HashString64<> > out;
 
 	for (const auto& modules : _module_owners) {
 		out.emplace_back(modules.first);

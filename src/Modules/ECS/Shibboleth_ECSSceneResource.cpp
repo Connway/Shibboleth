@@ -80,7 +80,7 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 
 		_layers.emplace_back(LayerData{
 			res_mgr.requestResourceT<ECSLayerResource>(path, delay_load),
-			HashString64(name),
+			HashString64<>(name),
 		});
 
 		return false;

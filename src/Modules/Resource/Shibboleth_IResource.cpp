@@ -99,7 +99,7 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
-const HashString64& IResource::getFilePath(void) const
+const HashString64<>& IResource::getFilePath(void) const
 {
 	return _file_path;
 }

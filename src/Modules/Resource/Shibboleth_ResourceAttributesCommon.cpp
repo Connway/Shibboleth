@@ -43,7 +43,7 @@ ResExtAttribute::ResExtAttribute(const char* extension):
 {
 }
 
-const HashStringTemp32& ResExtAttribute::getExtension(void) const
+const HashStringTemp32<>& ResExtAttribute::getExtension(void) const
 {
 	return _extension;
 }

@@ -42,7 +42,7 @@ private:
 	struct LayerData final
 	{
 		ECSLayerResourcePtr layer;
-		HashString64 layer_name;
+		HashString64<> layer_name;
 	};
 
 	Vector<LayerData> _layers;

@@ -57,7 +57,7 @@ void ECSManager::allModulesLoaded(void)
 
 	} else if (starting_scene.isString()) {
 		const char* const scene = starting_scene.getString();
-		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(Gaff::HashStringTemp64(scene, eastl::CharStrlen(scene)));
+		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringTemp64<>(scene, eastl::CharStrlen(scene)));
 	}
 }
 

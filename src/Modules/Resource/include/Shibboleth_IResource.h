@@ -77,7 +77,7 @@ public:
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
-	const HashString64& getFilePath(void) const;
+	const HashString64<>& getFilePath(void) const;
 	ResourceState getState(void) const;
 
 	bool hasFailed(void) const;
@@ -94,7 +94,7 @@ private:
 	mutable std::atomic_int32_t _count = 0;
 
 	ResourceState _state = RS_DELAYED;
-	HashString64 _file_path;
+	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;
 

@@ -258,7 +258,7 @@ void App::destroy(void (*static_shutdown)(void))
 	_manager_map.clear();
 
 	// Shutdown the modules we haven't already shutdown.
-	_dynamic_loader.forEachModule([&](const HashString32& module_name, DynamicLoader::ModulePtr module) -> bool
+	_dynamic_loader.forEachModule([&](const HashString32<>& module_name, DynamicLoader::ModulePtr module) -> bool
 	{
 		const auto it = Gaff::Find(module_hashes, module_name.getHash());
 
@@ -678,7 +678,7 @@ bool App::loadModules(void)
 	}
 
 	// Notify all modules that every module has been loaded.
-	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
+	_dynamic_loader.forEachModule([](const HashString32<>&, DynamicLoader::ModulePtr& module) -> bool
 	{
 		using AllModulesLoadedFunc = void (*)(void);
 		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
