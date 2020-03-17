@@ -222,6 +222,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Skeleton.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachine.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VariableSet.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h" />
   </ItemGroup>
@@ -230,6 +231,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Pose.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Skeleton.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachine.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_VariableSet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />
