@@ -26,12 +26,14 @@ THE SOFTWARE.
 
 NS_ESPRIT
 
+class StateMachine;
+
 class ICondition
 {
 public:
 	virtual ~ICondition(void) {}
 
-	virtual bool evaluate(void) const = 0;
+	virtual bool evaluate(const StateMachine& owner) const = 0;
 };
 
 NS_END

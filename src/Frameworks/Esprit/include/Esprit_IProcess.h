@@ -26,13 +26,15 @@ THE SOFTWARE.
 
 NS_ESPRIT
 
+class StateMachine;
+
 class IProcess
 {
 public:
 	virtual ~IProcess(void) {}
 
-	virtual bool init(void) { return true; }
-	virtual void update(void) {}
+	virtual bool init(const StateMachine& /*owner*/) { return true; }
+	virtual void update(const StateMachine& /*owner*/) {}
 };
 
 NS_END
