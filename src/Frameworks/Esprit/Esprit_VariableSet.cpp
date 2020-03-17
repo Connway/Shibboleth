@@ -21,181 +21,323 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Esprit_VariableSet.h"
+#include <EASTL/sort.h>
 
 NS_ESPRIT
 
-bool VariableSet::getVariable(Gaff::Hash32 name, const U8String*& result) const
+bool VariableSet::addVariableString(const HashStringTemp32<>& name)
 {
-	const auto* const entry = GetVariableEntry(name, _strings);
+	const int32_t index = GetVariableIndex(name, _strings);
 
-	if (entry) {
-		result = &entry->value;
-	}
-
-	return entry != nullptr;
-}
-
-bool VariableSet::getVariable(const char* name, const U8String*& result) const
-{
-	return getVariable(Gaff::FNV1aHash32String(name), result);
-}
-
-bool VariableSet::getVariable(Gaff::Hash32 name, U8String& result) const
-{
-	const auto* const entry = GetVariableEntry(name, _strings);
-
-	if (entry) {
-		result = entry->value;
-	}
-
-	return entry != nullptr;
-}
-
-bool VariableSet::getVariable(const char* name, U8String& result) const
-{
-	return getVariable(Gaff::FNV1aHash32String(name), result);
-}
-
-void VariableSet::setVariable(Gaff::Hash32 name, const U8String& value)
-{
-	auto* const entry = GetVariableEntry(name, _strings);
-
-	if (entry) {
-		entry->value = value;
-	}
-}
-
-void VariableSet::setVariable(const char* name, const U8String& value)
-{
-	setVariable(Gaff::FNV1aHash32String(name), value);
-}
-
-void VariableSet::setVariable(Gaff::Hash32 name, U8String&& value)
-{
-	auto* const entry = GetVariableEntry(name, _strings);
-
-	if (entry) {
-		entry->value = std::move(value);
-	}
-}
-
-void VariableSet::setVariable(const char* name, U8String&& value)
-{
-	setVariable(Gaff::FNV1aHash32String(name), std::move(value));
-}
-
-bool VariableSet::getVariable(Gaff::Hash32 name, float& result) const
-{
-	const auto* const entry = GetVariableEntry(name, _floats);
-
-	if (entry) {
-		result = entry->value;
-	}
-
-	return entry != nullptr;
-}
-
-bool VariableSet::getVariable(const char* name, float& result) const
-{
-	return getVariable(Gaff::FNV1aHash32String(name), result);
-}
-
-void VariableSet::setVariable(Gaff::Hash32 name, float value)
-{
-	auto* const entry = GetVariableEntry(name, _floats);
-
-	if (entry) {
-		entry->value = value;
-	}
-}
-
-void VariableSet::setVariable(const char* name, float value)
-{
-	setVariable(Gaff::FNV1aHash32String(name), value);
-}
-
-bool VariableSet::getVariable(Gaff::Hash32 name, int64_t& result) const
-{
-	const auto* const entry = GetVariableEntry(name, _integers);
-
-	if (entry) {
-		result = entry->value;
-	}
-
-	return entry != nullptr;
-}
-
-bool VariableSet::getVariable(const char* name, int64_t& result) const
-{
-	return getVariable(Gaff::FNV1aHash32String(name), result);
-}
-
-void VariableSet::setVariable(Gaff::Hash32 name, int64_t value)
-{
-	auto* const entry = GetVariableEntry(name, _integers);
-
-	if (entry) {
-		entry->value = value;
-	}
-}
-
-void VariableSet::setVariable(const char* name, int64_t value)
-{
-	setVariable(Gaff::FNV1aHash32String(name), value);
-}
-
-bool VariableSet::getVariable(Gaff::Hash32 name, bool& result) const
-{
-	const auto it = Gaff::Find(_booleans.names, name);
-
-	if (it == _booleans.names.end()) {
+	if (index > -1) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	const size_t index = eastl::distance(_booleans.names.begin(), it);
-	result = _booleans.values[index];
+	auto& variable = _strings.emplace_back();
+	variable.name = name;
 	return true;
 }
 
-bool VariableSet::getVariable(const char* name, bool& result) const
+bool VariableSet::removeVariableString(const HashStringTemp32<>& name)
 {
-	return getVariable(Gaff::FNV1aHash32String(name), result);
+	const int32_t index = GetVariableIndex(name, _strings);
+
+	if (index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_strings.erase_unsorted(_strings.begin() + index);
+	return true;
 }
 
-void VariableSet::setVariable(Gaff::Hash32 name, bool value)
+bool VariableSet::addVariableFloat(const HashStringTemp32<>& name)
 {
-	const auto it = Gaff::Find(_booleans.names, name);
+	const int32_t index = GetVariableIndex(name, _floats);
 
-	if (it == _booleans.names.end()) {
+	if (index > -1) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	auto& variable = _floats.emplace_back();
+	variable.name = name;
+	return true;
+}
+
+bool VariableSet::removeVariableFloat(const HashStringTemp32<>& name)
+{
+	const int32_t index = GetVariableIndex(name, _floats);
+
+	if (index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_floats.erase_unsorted(_floats.begin() + index);
+	return true;
+}
+
+bool VariableSet::addVariableInteger(const HashStringTemp32<>& name)
+{
+	const int32_t index = GetVariableIndex(name, _integers);
+
+	if (index > -1) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	auto& variable = _integers.emplace_back();
+	variable.name = name;
+	return true;
+}
+
+bool VariableSet::removeVariableInteger(const HashStringTemp32<>& name)
+{
+	const int32_t index = GetVariableIndex(name, _integers);
+
+	if (index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_integers.erase_unsorted(_integers.begin() + index);
+	return true;
+}
+
+bool VariableSet::addVariableBool(const HashStringTemp32<>& name)
+{
+	const auto it = Gaff::LowerBound(_booleans.names, name);
+
+	if (it == _booleans.names.end() || *it != name) {
+		_booleans.names.emplace_back(name);
+		_booleans.values.push_back();
+		return true;
+	}
+
+	// $TODO: Log error.
+	return false;
+}
+
+bool VariableSet::removeVariableBool(const HashStringTemp32<>& name)
+{
+	const auto it = Gaff::LowerBound(_booleans.names, name);
+
+	if (it == _booleans.names.end() || *it != name) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_booleans.names.erase_unsorted(it);
+	_booleans.values.pop_back();
+	return true;
+}
+
+int32_t VariableSet::getVariableIndexString(const HashStringTemp32<>& name) const
+{
+	return GetVariableIndex(name, _strings);
+}
+
+int32_t VariableSet::getVariableIndexFloat(const HashStringTemp32<>& name) const
+{
+	return GetVariableIndex(name, _floats);
+}
+
+int32_t VariableSet::getVariableIndexInteger(const HashStringTemp32<>& name) const
+{
+	return GetVariableIndex(name, _integers);
+}
+
+int32_t VariableSet::getVariableIndexBool(const HashStringTemp32<>& name) const
+{
+	const auto it = Gaff::LowerBound(_booleans.names, name);
+
+	if (it == _booleans.names.end() || *it != name) {
+		return -1;
+	}
+
+	return static_cast<int32_t>(eastl::distance(_booleans.names.begin(), it));
+}
+
+void VariableSet::finalize(void)
+{
+	eastl::sort(_strings.begin(), _strings.end(), VariablePredicate<U8String>);
+	eastl::sort(_floats.begin(), _floats.end(), VariablePredicate<float>);
+	eastl::sort(_integers.begin(), _integers.end(), VariablePredicate<int64_t>);
+	eastl::sort(_booleans.names.begin(), _booleans.names.end());
+}
+
+bool VariableSet::getVariable(const HashStringTemp32<>& name, const U8String*& result) const
+{
+	return getVariable(GetVariableIndex(name, _strings), result);
+}
+
+bool VariableSet::getVariable(int32_t index, const U8String*& result) const
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_strings.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = &_strings[index].value;
+	return true;
+}
+
+bool VariableSet::getVariable(const HashStringTemp32<>& name, U8String& result) const
+{
+	return getVariable(GetVariableIndex(name, _strings), result);
+}
+
+bool VariableSet::getVariable(int32_t index, U8String& result) const
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_strings.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = _strings[index].value;
+	return true;
+}
+
+void VariableSet::setVariable(const HashStringTemp32<>& name, const U8String& value)
+{
+	setVariable(GetVariableIndex(name, _strings), value);
+}
+
+void VariableSet::setVariable(int32_t index, const U8String& value)
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_strings.size()))) {
 		// $TODO: Log error.
 		return;
 	}
 
-	const size_t index = eastl::distance(_booleans.names.begin(), it);
+	_strings[index].value = value;
+}
+
+void VariableSet::setVariable(const HashStringTemp32<>& name, U8String&& value)
+{
+	setVariable(GetVariableIndex(name, _strings), std::move(value));
+}
+
+void VariableSet::setVariable(int32_t index, U8String&& value)
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_strings.size()))) {
+		// $TODO: Log error.
+		return;
+	}
+
+	_strings[index].value = std::move(value);
+}
+
+bool VariableSet::getVariable(const HashStringTemp32<>& name, float& result) const
+{
+	return getVariable(GetVariableIndex(name, _floats), result);
+}
+
+bool VariableSet::getVariable(int32_t index, float& result) const
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_floats.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = _floats[index].value;
+	return true;
+}
+
+void VariableSet::setVariable(const HashStringTemp32<>& name, float value)
+{
+	setVariable(GetVariableIndex(name, _floats), value);
+}
+
+void VariableSet::setVariable(int32_t index, float value)
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_floats.size()))) {
+		// $TODO: Log error.
+		return;
+	}
+
+	_floats[index].value = value;
+}
+
+bool VariableSet::getVariable(const HashStringTemp32<>& name, int64_t& result) const
+{
+	return getVariable(GetVariableIndex(name, _integers), result);
+}
+
+bool VariableSet::getVariable(int32_t index, int64_t& result) const
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_integers.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = _integers[index].value;
+	return true;
+}
+
+void VariableSet::setVariable(const HashStringTemp32<>& name, int64_t value)
+{
+	setVariable(GetVariableIndex(name, _integers), value);
+}
+
+void VariableSet::setVariable(int32_t index, int64_t value)
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_integers.size()))) {
+		// $TODO: Log error.
+		return;
+	}
+
+	_integers[index].value = value;
+}
+
+bool VariableSet::getVariable(const HashStringTemp32<>& name, bool& result) const
+{
+	return getVariable(getVariableIndexBool(name), result);
+}
+
+bool VariableSet::getVariable(int32_t index, bool& result) const
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_booleans.names.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = _booleans.values[index];
+	return true;
+}
+
+void VariableSet::setVariable(const HashStringTemp32<>& name, bool value)
+{
+	setVariable(getVariableIndexBool(name), value);
+}
+
+void VariableSet::setVariable(int32_t index, bool value)
+{
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(_booleans.names.size()))) {
+		// $TODO: Log error.
+		return;
+	}
+
 	_booleans.values.set(index, value);
 }
 
-void VariableSet::setVariable(const char* name, bool value)
+template <class T>
+bool VariableSet::VariablePredicate(const Variable<T>& lhs, const Variable<T>& rhs)
 {
-	setVariable(Gaff::FNV1aHash32String(name), value);
+	return lhs.name < rhs.name;
 }
 
 template <class T>
-const VariableSet::Variable<T>* VariableSet::GetVariableEntry(Gaff::Hash32 name, const Vector< Variable<T> >& variables)
+int32_t VariableSet::GetVariableIndex(const HashStringTemp32<>& name, const Vector< Variable<T> >& variables)
 {
-	return GetVariableEntry(name, const_cast<Vector< Variable<T> >&>(variables));
-}
-
-template <class T>
-VariableSet::Variable<T>* VariableSet::GetVariableEntry(Gaff::Hash32 name, Vector< Variable<T> >& variables)
-{
-	auto it = Gaff::Find(variables, name, [](const Variable<T>& lhs, Gaff::Hash32 rhs) -> bool
+	const auto it = Gaff::LowerBound(variables, name, [](const Variable<T>& lhs, Gaff::Hash32 rhs) -> bool
 	{
-		return lhs.name == rhs;
+		return lhs.name < rhs;
 	});
 
-	return (it == variables.end()) ? nullptr : it;
+	return (it == variables.end() || it->name != name) ? -1 : static_cast<int32_t>(eastl::distance(variables.begin(), it));
 }
 
 NS_END

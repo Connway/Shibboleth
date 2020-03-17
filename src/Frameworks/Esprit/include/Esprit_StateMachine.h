@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_HashString.h"
+#include "Esprit_VariableSet.h"
 #include "Esprit_ICondition.h"
 #include "Esprit_SmartPtrs.h"
 #include "Esprit_IProcess.h"
@@ -41,31 +41,30 @@ public:
 	StateMachine* getParent(void);
 	void setParent(StateMachine* parent);
 
-	int32_t addState(const HashStringTemp32<>& name);
-	int32_t addState(HashString32<>&& name);
-	int32_t addState(const char* name);
+	const VariableSet* getVariables(void) const;
+	void setVariables(VariableSet* variables);
 
+	int32_t getStateIndex(const HashStringTemp32<>& name) const;
+	int32_t addState(const HashStringTemp32<>& name);
 	bool removeState(const HashStringTemp32<>& name);
-	bool removeState(const char* name);
 
 	int32_t addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
-	int32_t addEdge(const char* start_state_name, const char* end_state_name);
 	int32_t addEdge(int32_t start_state_index, int32_t end_state_index);
 
 	bool removeEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
-	bool removeEdge(const char* start_state_name, const char* end_state_name);
 	bool removeEdge(int32_t start_state_index, int32_t end_state_index);
 
 	int32_t addCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
-	int32_t addCondition(const char* state_name, int32_t edge_index, ICondition* condition);
 	int32_t addCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
 
 	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
-	bool removeCondition(const char* state_name, int32_t edge_index, ICondition* condition);
 	bool removeCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
 	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, int32_t condition_index);
-	bool removeCondition(const char* state_name, int32_t edge_index, int32_t condition_index);
 	bool removeCondition(int32_t state_index, int32_t edge_index, int32_t condition_index);
+
+#ifdef _DEBUG
+	// Add debug query functions here.
+#endif
 
 private:
 	struct Edge final
@@ -78,15 +77,16 @@ private:
 	{
 		Vector< UniquePtr<IProcess> > processes;
 		Vector<Edge> edges;
-		HashString32<> name;
+		OptimizedHashString32<> name;
 	};
 
+	UniquePtr<VariableSet> _variables;
 	Vector<State> _states;
 	int32_t _current_state = 0;
 
 	StateMachine* _parent = nullptr;
 
-	int32_t findStateIndex(const HashStringTemp32<>& state_name);
+	int32_t findStateIndex(const HashStringTemp32<>& state_name) const;
 };
 
 NS_END
