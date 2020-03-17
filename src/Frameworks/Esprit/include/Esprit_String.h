@@ -23,10 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Esprit_ProxyAllocator.h"
-#include <Gaff_Vector.h>
+#include <Gaff_String.h>
 
 NS_ESPRIT
 
-template <class T> using Vector = eastl::vector<T, ProxyAllocator>;
+template <class T> using String = Gaff::String<T, ProxyAllocator>;
+using U8String = Gaff::U8String<ProxyAllocator>;
 
 NS_END

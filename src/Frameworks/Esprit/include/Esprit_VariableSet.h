@@ -22,31 +22,68 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Esprit_HashString.h"
 #include "Esprit_BitVector.h"
 #include "Esprit_Vector.h"
-#include <Gaff_Hash.h>
+#include "Esprit_String.h"
 
 NS_ESPRIT
 
 class VariableSet
 {
 public:
+	bool getVariable(Gaff::Hash32 name, const U8String*& result) const;
+	bool getVariable(const char* name, const U8String*& result) const;
+	bool getVariable(Gaff::Hash32 name, U8String& result) const;
+	bool getVariable(const char* name, U8String& result) const;
+	void setVariable(Gaff::Hash32 name, const U8String& value);
+	void setVariable(const char* name, const U8String& value);
+	void setVariable(Gaff::Hash32 name, U8String&& value);
+	void setVariable(const char* name, U8String&& value);
+
+	bool getVariable(Gaff::Hash32 name, float& result) const;
+	bool getVariable(const char* name, float& result) const;
+	void setVariable(Gaff::Hash32 name, float value);
+	void setVariable(const char* name, float value);
+
+	bool getVariable(Gaff::Hash32 name, int64_t& result) const;
+	bool getVariable(const char* name, int64_t& result) const;
+	void setVariable(Gaff::Hash32 name, int64_t value);
+	void setVariable(const char* name, int64_t value);
+
+	bool getVariable(Gaff::Hash32 name, bool& result) const;
+	bool getVariable(const char* name, bool& result) const;
+	void setVariable(Gaff::Hash32 name, bool value);
+	void setVariable(const char* name, bool value);
+
+#ifdef _DEBUG
+	// Add debug query functions here.
+#endif
 
 private:
 	struct BooleanVariables final
 	{
-		Vector<Gaff::Hash32> names;
+		Vector< OptimizedHashString32<> > names;
 		BitVector values;
 	};
 
 	template <class T>
 	struct Variable final
 	{
-		Gaff::Hash32 name;
+		OptimizedHashString32<> name;
 		T value;
 	};
 
+	Vector< Variable<U8String> > _strings;
+	Vector< Variable<float> > _floats;
+	Vector< Variable<int64_t> > _integers;
 	BooleanVariables _booleans;
+
+	template <class T>
+	static const Variable<T>* GetVariableEntry(Gaff::Hash32 name, const Vector< Variable<T> >& variables);
+
+	template <class T>
+	static Variable<T>* GetVariableEntry(Gaff::Hash32 name, Vector< Variable<T> >& variables);
 };
 
 NS_END
