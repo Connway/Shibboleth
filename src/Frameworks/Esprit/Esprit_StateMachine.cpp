@@ -72,16 +72,6 @@ void StateMachine::setParent(StateMachine* parent)
 	_parent = parent;
 }
 
-const VariableSet* StateMachine::getVariables(void) const
-{
-	return _variables.get();
-}
-
-void StateMachine::setVariables(VariableSet* variables)
-{
-	_variables.reset(variables);
-}
-
 int32_t StateMachine::getStateIndex(const HashStringTemp32<>& name) const
 {
 	return findStateIndex(name);
