@@ -41,9 +41,6 @@ public:
 	StateMachine* getParent(void);
 	void setParent(StateMachine* parent);
 
-	const VariableSet* getVariables(void) const;
-	void setVariables(VariableSet* variables);
-
 	int32_t getStateIndex(const HashStringTemp32<>& name) const;
 	int32_t addState(const HashStringTemp32<>& name);
 	bool removeState(const HashStringTemp32<>& name);
@@ -80,7 +77,6 @@ private:
 		OptimizedHashString32<> name;
 	};
 
-	UniquePtr<VariableSet> _variables;
 	Vector<State> _states;
 	int32_t _current_state = 0;
 

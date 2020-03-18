@@ -32,78 +32,54 @@ NS_ESPRIT
 class VariableSet final
 {
 public:
-	bool addVariableString(const HashStringTemp32<>& name);
-	bool removeVariableString(const HashStringTemp32<>& name);
+	struct VariableInstance final
+	{
+		Vector<U8String> strings;
+		Vector<float> floats;
+		Vector<int64_t> integers;
+		BitVector bools;
+	};
 
-	bool addVariableFloat(const HashStringTemp32<>& name);
-	bool removeVariableFloat(const HashStringTemp32<>& name);
+	enum class VariableType
+	{
+		String,
+		Float,
+		Integer,
+		Bool,
 
-	bool addVariableInteger(const HashStringTemp32<>& name);
-	bool removeVariableInteger(const HashStringTemp32<>& name);
+		Count
+	};
 
-	bool addVariableBool(const HashStringTemp32<>& name);
-	bool removeVariableBool(const HashStringTemp32<>& name);
-
-	int32_t getVariableIndexString(const HashStringTemp32<>& name) const;
-	int32_t getVariableIndexFloat(const HashStringTemp32<>& name) const;
-	int32_t getVariableIndexInteger(const HashStringTemp32<>& name) const;
-	int32_t getVariableIndexBool(const HashStringTemp32<>& name) const;
+	int32_t getVariableIndex(const HashStringTemp32<>& name, VariableType type) const;
+	bool removeVariable(const HashStringTemp32<>& name, VariableType type);
+	bool addVariable(const HashStringTemp32<>& name, VariableType type);
 
 	// Once called, add/remove functions should not be called.
 	void finalize(void);
 
-	bool getVariable(const HashStringTemp32<>& name, const U8String*& result) const;
-	bool getVariable(int32_t index, const U8String*& result) const;
-	bool getVariable(const HashStringTemp32<>& name, U8String& result) const;
-	bool getVariable(int32_t index, U8String& result) const;
-	void setVariable(const HashStringTemp32<>& name, const U8String& value);
-	void setVariable(int32_t index, const U8String& value);
-	void setVariable(const HashStringTemp32<>& name, U8String&& value);
-	void setVariable(int32_t index, U8String&& value);
+	VariableInstance* createInstanceData(void) const;
 
-	bool getVariable(const HashStringTemp32<>& name, float& result) const;
-	bool getVariable(int32_t index, float& result) const;
-	void setVariable(const HashStringTemp32<>& name, float value);
-	void setVariable(int32_t index, float value);
+	bool getVariable(const VariableInstance& variables, int32_t index, const U8String*& result) const;
+	bool getVariable(const VariableInstance& variables, int32_t index, U8String& result) const;
+	bool setVariable(VariableInstance& variables, int32_t index, const U8String& value) const;
+	bool setVariable(VariableInstance& variables, int32_t index, U8String&& value) const;
 
-	bool getVariable(const HashStringTemp32<>& name, int64_t& result) const;
-	bool getVariable(int32_t index, int64_t& result) const;
-	void setVariable(const HashStringTemp32<>& name, int64_t value);
-	void setVariable(int32_t index, int64_t value);
+	bool getVariable(const VariableInstance& variables, int32_t index, float& result) const;
+	bool setVariable(VariableInstance& variables, int32_t index, float value) const;
 
-	bool getVariable(const HashStringTemp32<>& name, bool& result) const;
-	bool getVariable(int32_t index, bool& result) const;
-	void setVariable(const HashStringTemp32<>& name, bool value);
-	void setVariable(int32_t index, bool value);
+	bool getVariable(const VariableInstance& variables, int32_t index, int64_t& result) const;
+	bool setVariable(VariableInstance& variables, int32_t index, int64_t value) const;
+
+	bool getVariable(const VariableInstance& variables, int32_t index, bool& result) const;
+	bool setVariable(VariableInstance& variables, int32_t index, bool value) const;
 
 #ifdef _DEBUG
 	// Add debug query functions here.
 #endif
 
 private:
-	struct BooleanVariables final
-	{
-		Vector< OptimizedHashString32<> > names;
-		BitVector values;
-	};
 
-	template <class T>
-	struct Variable final
-	{
-		OptimizedHashString32<> name;
-		T value;
-	};
-
-	Vector< Variable<U8String> > _strings;
-	Vector< Variable<float> > _floats;
-	Vector< Variable<int64_t> > _integers;
-	BooleanVariables _booleans;
-
-	template <class T>
-	static bool VariablePredicate(const Variable<T>& lhs, const Variable<T>& rhs);
-
-	template <class T>
-	static int32_t GetVariableIndex(const HashStringTemp32<>& name, const Vector< Variable<T> >& variables);
+	Vector< OptimizedHashString32<> > _names[static_cast<size_t>(VariableType::Count)];
 };
 
 NS_END
