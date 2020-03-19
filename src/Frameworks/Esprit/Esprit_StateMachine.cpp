@@ -57,6 +57,70 @@ bool StateMachine::isActive(void) const
 	return _current_state >= static_cast<int32_t>(SpecialStates::Count);
 }
 
+void StateMachine::update(VariableSet::VariableInstance* instance_data)
+{
+	if (_variables && !instance_data) {
+		// $TODO: Log error.
+		return;
+	}
+
+	if (!Gaff::Between(_current_state, 0, static_cast<int32_t>(_states.size()))) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const State& state = _states[_current_state];
+
+	for (const UniquePtr<IProcess>& process : state.processes) {
+		process->update(*this, instance_data);
+	}
+
+	int32_t next_state = -1;
+
+	for (const Edge& edge : state.edges) {
+		bool can_transition = true;
+
+		for (const UniquePtr<ICondition>& condition : edge.conditions) {
+			if (!condition->evaluate(*this, instance_data)) {
+				can_transition = false;
+				break;
+			}
+		}
+
+		if (can_transition) {
+			next_state = edge.destination;
+			break;
+		}
+	}
+
+	if (next_state > -1) {
+		_current_state = next_state;
+	}
+}
+
+bool StateMachine::finalize(void)
+{
+	for (const State& state : _states) {
+		for (const UniquePtr<IProcess>& process : state.processes) {
+			if (!process->init(*this)) {
+				// $TODO: Log error.
+				return false;
+			}
+		}
+
+		for (const Edge& edge : state.edges) {
+			for (const UniquePtr<ICondition>& condition : edge.conditions) {
+				if (!condition->init(*this)) {
+					// $TODO: Log error.
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
 const StateMachine* StateMachine::getParent(void) const
 {
 	return _parent;
@@ -70,6 +134,16 @@ StateMachine* StateMachine::getParent(void)
 void StateMachine::setParent(StateMachine* parent)
 {
 	_parent = parent;
+}
+
+const VariableSet* StateMachine::getVariables(void) const
+{
+	return _variables.get();
+}
+
+void StateMachine::setVariables(VariableSet* variables)
+{
+	_variables.reset(variables);
 }
 
 int32_t StateMachine::getStateIndex(const HashStringTemp32<>& name) const

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_Defines.h"
+#include "Esprit_VariableSet.h"
 
 NS_ESPRIT
 
@@ -33,7 +33,8 @@ class ICondition
 public:
 	virtual ~ICondition(void) {}
 
-	virtual bool evaluate(const StateMachine& owner) const = 0;
+	virtual bool init(const StateMachine& /*owner*/) { return true; }
+	virtual bool evaluate(const StateMachine& owner, VariableSet::VariableInstance* instance_data) const = 0;
 };
 
 NS_END

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_Defines.h"
+#include "Esprit_VariableSet.h"
 
 NS_ESPRIT
 
@@ -34,7 +34,7 @@ public:
 	virtual ~IProcess(void) {}
 
 	virtual bool init(const StateMachine& /*owner*/) { return true; }
-	virtual void update(const StateMachine& /*owner*/) {}
+	virtual void update(const StateMachine& /*owner*/, VariableSet::VariableInstance* /*instance_data*/) = 0;
 };
 
 NS_END

@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_VariableSet.h"
 #include "Esprit_ICondition.h"
 #include "Esprit_SmartPtrs.h"
 #include "Esprit_IProcess.h"
@@ -37,9 +36,15 @@ public:
 
 	bool isActive(void) const;
 
+	void update(VariableSet::VariableInstance* instance_data);
+	bool finalize(void);
+
 	const StateMachine* getParent(void) const;
 	StateMachine* getParent(void);
 	void setParent(StateMachine* parent);
+
+	const VariableSet* getVariables(void) const;
+	void setVariables(VariableSet* variables);
 
 	int32_t getStateIndex(const HashStringTemp32<>& name) const;
 	int32_t addState(const HashStringTemp32<>& name);
@@ -66,8 +71,8 @@ public:
 private:
 	struct Edge final
 	{
+		Vector< UniquePtr<ICondition> > conditions;
 		int32_t destination;
-		Vector< UniquePtr<ICondition> >conditions;
 	};
 
 	struct State final
@@ -77,6 +82,7 @@ private:
 		OptimizedHashString32<> name;
 	};
 
+	UniquePtr<VariableSet> _variables;
 	Vector<State> _states;
 	int32_t _current_state = 0;
 
