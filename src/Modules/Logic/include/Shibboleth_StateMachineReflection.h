@@ -22,36 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_Hash.h>
+#include <Esprit_StateMachineCommonConditions.h>
+#include <Shibboleth_Reflection.h>
 
-NS_GAFF
-	template <class T, class HashType, class Allocator, bool contains_string = true>
-	template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-	class HashString;
+SHIB_REFLECTION_DECLARE(Esprit::U8String)
+SHIB_REFLECTION_DECLARE(Esprit::HashString32<>)
+SHIB_REFLECTION_DECLARE(Esprit::HashString64<>)
+SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString32<>)
+SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString64<>)
 
-	template <class T, class HashType>
-	class HashStringTemp;
+SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
 
-	template <class Allocator>
-	using HashString32 = HashString<char, Hash32, Allocator>;
-
-	template <class Allocator>
-	using HashString64 = HashString<char, Hash64, Allocator>;
-
-	using HashStringTemp32 = HashStringTemp<char, Hash32>;
-	using HashStringTemp64 = HashStringTemp<char, Hash64>;
-NS_END
-
-NS_SHIBBOLETH
-
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
-
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
-
-using HashStringTemp32 = HashStringTemp32<>;
-using HashStringTemp64 = HashStringTemp64<>;
-
-NS_END
+SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)

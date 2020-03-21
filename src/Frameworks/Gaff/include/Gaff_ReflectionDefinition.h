@@ -209,6 +209,34 @@ private:
 	};
 
 	template <class Ret, class Var>
+	class VarFuncPtrWithCache final : public IVar
+	{
+	public:
+		using Getter = Ret (T::*)(void) const;
+		using Setter = void (T::*)(Var);
+
+		VarFuncPtrWithCache(Getter getter, Setter setter);
+
+		const Gaff::IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
+
+	private:
+		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+		using VarType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Var>::type >::type >::type;
+
+		Getter _getter = nullptr;
+		Setter _setter = nullptr;
+
+		RetType _cache;
+	};
+
+	template <class Ret, class Var>
 	class VarFuncPtr final : public IVar
 	{
 	public:
@@ -227,10 +255,10 @@ private:
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
+		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+
 		Getter _getter = nullptr;
 		Setter _setter = nullptr;
-
-		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
 	};
 
 	template <class Base>
@@ -422,7 +450,7 @@ private:
 			GAFF_ASSERT(isConst());
 
 			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
-			const void* const object = ref_def.getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+			const void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
@@ -435,7 +463,7 @@ private:
 		Ret call(void* obj, Args... args) const
 		{
 			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
-			void* const object = ref_def.getBasePointer(obj, _func->getBaseRefDef().getReflectionInstance().getHash());
+			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);

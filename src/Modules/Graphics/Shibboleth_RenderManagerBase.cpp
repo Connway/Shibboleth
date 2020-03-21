@@ -47,7 +47,7 @@ const VectorMap< Gaff::Hash32, Vector<const char*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const("gameplay"), { "main" } }
 };
 
-static constexpr char* const g_graphics_cfg_schema =
+static constexpr const char* const g_graphics_cfg_schema =
 R"({
 	"type": "object",
 

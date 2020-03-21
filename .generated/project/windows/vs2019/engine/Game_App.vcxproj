@@ -363,6 +363,12 @@
     <ProjectReference Include="..\modules\Input.vcxproj">
       <Project>{953A660D-014F-8EBE-CAD0-311E36A48AEF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\Logic.vcxproj">
+      <Project>{93E89C0D-FFFC-C4BE-C87E-681E3452C1EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Esprit.vcxproj">
+      <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

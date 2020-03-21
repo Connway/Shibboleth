@@ -100,7 +100,7 @@ public:
 	operator HashType(void) const;
 
 private:
-	const T* const _string;
+	const T* _string = nullptr;
 	HashType _hash_value;
 };
 
@@ -237,6 +237,12 @@ using HashStringTemp32 = HashStringTemp< char, Hash32, HashingFunc>;
 
 template < HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64> >
 using HashStringTemp64 = HashStringTemp< char, Hash64, HashingFunc>;
+
+template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>
+using HashStringNoString32 = HashString<char, Hash32, HashingFunc, Allocator, false>;
+
+template <class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64>>
+using HashStringNoString64 = HashString<char, Hash64, HashingFunc, Allocator, false>;
 
 #ifdef _DEBUG
 	template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>

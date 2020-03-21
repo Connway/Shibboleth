@@ -34,6 +34,7 @@ class VariableSet final
 public:
 	struct VariableInstance final
 	{
+		Vector<void*> references;
 		Vector<U8String> strings;
 		Vector<float> floats;
 		Vector<int64_t> integers;
@@ -42,6 +43,7 @@ public:
 
 	enum class VariableType
 	{
+		Reference,
 		String,
 		Float,
 		Integer,
@@ -58,6 +60,9 @@ public:
 	void finalize(void);
 
 	VariableInstance* createInstanceData(void) const;
+
+	bool getVariable(const VariableInstance& variables, int32_t index, void*& result) const;
+	bool setVariable(VariableInstance& variables, int32_t index, void* value) const;
 
 	bool getVariable(const VariableInstance& variables, int32_t index, const U8String*& result) const;
 	bool getVariable(const VariableInstance& variables, int32_t index, U8String& result) const;

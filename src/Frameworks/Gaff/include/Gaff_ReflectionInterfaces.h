@@ -417,28 +417,27 @@ public:
 
 	using VoidFunc = void (*)(void);
 
-	const void* getBasePointer(const void* object, Hash64 interface_name) const
+	const void* getBasePointer(Hash64 interface_name, const void* object) const
 	{
-		const ptrdiff_t offset = getBasePointerOffset(interface_name);
-		return reinterpret_cast<const int8_t*>(object) + offset;
+		return const_cast<IReflectionDefinition*>(this)->getBasePointer(interface_name, const_cast<void*>(object));
 	}
 
-	void* getBasePointer(void* object, Hash64 interface_name) const
+	void* getBasePointer(Hash64 interface_name, void* object) const
 	{
 		const ptrdiff_t offset = getBasePointerOffset(interface_name);
-		return reinterpret_cast<int8_t*>(object) + offset;
+		return reinterpret_cast<int8_t*>(object) - offset;
 	}
 
 	template <class T>
 	const void* getBasePointer(const T* object) const
 	{
-		return getBasePointer(object, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
+		return getBasePointer(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash(), object);
 	}
 
 	template <class T>
 	void* getBasePointer(T* object) const
 	{
-		return getBasePointer(object, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
+		return getBasePointer(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash(), object);
 	}
 
 	template <class T>

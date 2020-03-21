@@ -60,6 +60,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ProxyAllocator.h"
+#include "Shibboleth_HashString.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_Hashable.h"
 #include "Shibboleth_IApp.h"
@@ -105,3 +106,133 @@ SHIB_REFLECTION_DECLARE(float)
 SHIB_REFLECTION_DECLARE(double)
 SHIB_REFLECTION_DECLARE(bool)
 SHIB_REFLECTION_DECLARE(U8String)
+SHIB_REFLECTION_DECLARE(HashString32<>)
+SHIB_REFLECTION_DECLARE(HashString64<>)
+SHIB_REFLECTION_DECLARE(HashStringNoString32<>)
+SHIB_REFLECTION_DECLARE(HashStringNoString64<>)
+SHIB_REFLECTION_DECLARE(HashStringTemp32<>)
+SHIB_REFLECTION_DECLARE(HashStringTemp64<>)
+
+NS_SHIBBOLETH
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static Gaff::Hash64 HashStringInstanceHash(const Gaff::HashString<T, HashType, HashingFunc, Allocator, true> & hash_string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64String(hash_string.getBuffer(), init);
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static Gaff::Hash64 HashStringInstanceHash(const Gaff::HashString<T, HashType, HashingFunc, Allocator, false> & hash_string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64T(hash_string.getHash(), init);
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static Gaff::Hash64 HashStringTempInstanceHash(const Gaff::HashStringTemp<T, HashType, HashingFunc>& hash_string, Gaff::Hash64 init)
+{
+	if (hash_string.getBuffer()) {
+		return Gaff::FNV1aHash64String(hash_string.getBuffer(), init);
+	} else {
+		return Gaff::FNV1aHash64T(hash_string.getHash(), init);
+	}
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static bool LoadHashString(const Gaff::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, true>& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
+
+	const char* const str = reader.readString();
+	out = str;
+	reader.freeString(str);
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static bool LoadHashString(const Gaff::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& out)
+{
+	if (!reader.isString() && !reader.isUInt32() && !reader.isUInt64()) {
+		return false;
+	}
+
+	if (reader.isString()) {
+		const char* const str = reader.readString();
+		out = str;
+		reader.freeString(str);
+
+	} else if (reader.isUInt32()) {
+		out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(static_cast<T>(reader.readUInt32()));
+
+	} else if (reader.isUInt64()) {
+		out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(static_cast<T>(reader.readUInt64()));
+	}
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static bool LoadHashStringTemp(const Gaff::ISerializeReader& reader, Gaff::HashStringTemp<T, HashType, HashingFunc>& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
+
+	const char* const str = reader.readString();
+	out = Gaff::HashStringTemp<T, HashType, HashingFunc>(str);
+	reader.freeString(str);
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static void SaveHashString(Gaff::ISerializeWriter& writer, const Gaff::HashString<T, HashType, HashingFunc, Allocator, true>& value)
+{
+	writer.writeString(value.getBuffer());
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static void SaveHashString(Gaff::ISerializeWriter& writer, const Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& value)
+{
+	writer.writeUInt64(value.getHash());
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static void SaveHashStringTemp(Gaff::ISerializeWriter& writer, const Gaff::HashStringTemp<T, HashType, HashingFunc>& value)
+{
+	if (value.getBuffer()) {
+		writer.writeString(value.getBuffer());
+	} else {
+		writer.writeUInt64(value.getHash());
+	}
+}
+
+template <class Allocator>
+static Gaff::Hash64 HashStringInstance(const Gaff::U8String<Allocator>& string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64String(string.data(), init);
+}
+
+template <class Allocator>
+static bool LoadString(const Gaff::ISerializeReader& reader, Gaff::U8String<Allocator>& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
+
+	const char* const str = reader.readString();
+	out = str;
+	reader.freeString(str);
+
+	return true;
+}
+
+template <class Allocator>
+static void SaveString(Gaff::ISerializeWriter& writer, const Gaff::U8String<Allocator>& value)
+{
+	writer.writeString(value.data());
+}
+
+NS_END

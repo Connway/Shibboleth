@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_StateMachineCommonConditions.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Global.cpp" />
@@ -55,6 +58,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Skeleton.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachine.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_VariableSet.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachineCommonConditions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />

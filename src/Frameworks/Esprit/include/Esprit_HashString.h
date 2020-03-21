@@ -37,15 +37,21 @@ template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff
 using HashString64 = Gaff::HashString64<ProxyAllocator, HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
-using OptimizedHashString32 = Gaff::OptimizedHashString32<ProxyAllocator>;
+using OptimizedHashString32 = Gaff::OptimizedHashString32<ProxyAllocator, HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
-using OptimizedHashString64 = Gaff::OptimizedHashString64<ProxyAllocator>;
+using OptimizedHashString64 = Gaff::OptimizedHashString64<ProxyAllocator, HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
 using HashStringTemp32 = Gaff::HashStringTemp32<HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
 using HashStringTemp64 = Gaff::HashStringTemp64<HashingFunc>;
+
+template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
+using HashStringNoString32 = Gaff::HashStringNoString32<ProxyAllocator, HashingFunc>;
+
+template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
+using HashStringNoString64 = Gaff::HashStringNoString64<ProxyAllocator, HashingFunc>;
 
 NS_END
