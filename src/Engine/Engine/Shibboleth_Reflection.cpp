@@ -26,30 +26,6 @@ THE SOFTWARE.
 	#undef LoadString
 #endif
 
-NS_SHIBBOLETH
-
-static Gaff::Hash64 HashStringInstance(const U8String& string, Gaff::Hash64 init)
-{
-	return Gaff::FNV1aHash64String(string.data(), init);
-}
-
-static bool LoadString(const Gaff::ISerializeReader& reader, U8String& out)
-{
-	if (!reader.isString()) {
-		return false;
-	}
-
-	const char* const str = reader.readString();
-	out = str;
-	reader.freeString(str);
-
-	return true;
-}
-
-static void SaveString(Gaff::ISerializeWriter& writer, const U8String& value) { writer.writeString(value.data()); }
-
-NS_END
-
 SHIB_REFLECTION_DEFINE(int8_t)
 SHIB_REFLECTION_DEFINE(int16_t)
 SHIB_REFLECTION_DEFINE(int32_t)
@@ -63,6 +39,54 @@ SHIB_REFLECTION_DEFINE(double)
 SHIB_REFLECTION_DEFINE(bool)
 
 SHIB_REFLECTION_DEFINE_BEGIN(U8String)
-	.setInstanceHash(HashStringInstance)
-	.serialize(LoadString, SaveString)
+	.setInstanceHash(HashStringInstance<ProxyAllocator>)
+	.serialize(LoadString<ProxyAllocator>, SaveString<ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(U8String)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashString32<>)
+	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>)
+	.serialize(
+		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>,
+		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>
+	)
+SHIB_REFLECTION_DEFINE_END(HashString32<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashString64<>)
+	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>)
+	.serialize(
+		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>,
+		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>
+	)
+SHIB_REFLECTION_DEFINE_END(HashString64<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString32<>)
+	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>)
+	.serialize(
+		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>,
+		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>
+	)
+SHIB_REFLECTION_DEFINE_END(HashStringNoString32<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString64<>)
+	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>)
+	.serialize(
+		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>,
+		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>
+	)
+SHIB_REFLECTION_DEFINE_END(HashStringNoString64<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringTemp32<>)
+	.setInstanceHash(HashStringTempInstanceHash< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
+	.serialize(
+		LoadHashStringTemp< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
+		SaveHashStringTemp< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
+	)
+SHIB_REFLECTION_DEFINE_END(HashStringTemp32<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringTemp64<>)
+	.setInstanceHash(HashStringTempInstanceHash< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
+	.serialize(
+		LoadHashStringTemp< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
+		SaveHashStringTemp< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
+	)
+SHIB_REFLECTION_DEFINE_END(HashStringTemp64<>)

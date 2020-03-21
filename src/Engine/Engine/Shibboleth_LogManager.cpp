@@ -224,7 +224,7 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 
 	{
 		EA::Thread::AutoMutex lock(_log_queue_lock);
-		_logs.emplace_back(it->second, U8String(time_string) + message, type);
+		_logs.emplace(it->second, U8String(time_string) + message, type);
 	}
 
 	_log_event.Signal(true);

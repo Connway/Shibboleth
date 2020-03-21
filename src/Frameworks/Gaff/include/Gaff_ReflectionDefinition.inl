@@ -227,6 +227,92 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& wri
 }
 
 
+// VarFuncPtrWithCache
+template <class T, class Allocator>
+template <class Ret, class Var>
+ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::VarFuncPtrWithCache(Getter getter, Setter setter) :
+	_getter(getter), _setter(setter)
+{
+	GAFF_ASSERT(getter);
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::getReflection(void) const
+{
+	return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetInstance();
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+const void* ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::getData(const void* object) const
+{
+	return const_cast<ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>*>(this)->getData(const_cast<void*>(object));
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void* ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(_getter);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	_cache = (obj->*_getter)();
+
+	return &_cache;
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::setData(void* object, const void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(_setter);
+	GAFF_ASSERT(data);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_setter)(*reinterpret_cast<const VarType*>(data));
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::setDataMove(void* object, void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(_setter);
+	GAFF_ASSERT(data);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_setter)(std::move(*reinterpret_cast<VarType*>(data)));
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+bool ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::load(const ISerializeReader& reader, T& object)
+{
+	GAFF_ASSERT(_getter);
+	GAFF_ASSERT(_setter);
+
+	VarType var;
+		
+	if (!GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, var)) {
+		return false;
+	}
+
+	(object.*_setter)(var);
+	return true;
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::save(ISerializeWriter& writer, const T& object)
+{
+	GAFF_ASSERT(_getter);
+	GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Save(writer, (object.*_getter)());
+}
+
+
 
 // VarFuncPtr
 template <class T, class Allocator>
@@ -248,18 +334,7 @@ template <class T, class Allocator>
 template <class Ret, class Var>
 const void* ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getData(const void* object) const
 {
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_getter);
-
-	const T* const obj = reinterpret_cast<const T*>(object);
-
-	if constexpr (std::is_reference<Ret>::value) {
-		const Ret& val = (obj->*_getter)();
-		return &val;
-
-	} else if (std::is_pointer<Ret>::value) {
-		return (obj->*_getter)();
-	}
+	return const_cast<ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>*>(this)->getData(const_cast<void*>(object));
 }
 
 template <class T, class Allocator>
@@ -302,7 +377,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	GAFF_ASSERT(data);
 
 	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_setter)(*reinterpret_cast<RetType*>(data));
+	(obj->*_setter)(std::move(*reinterpret_cast<RetType*>(data)));
 }
 
 template <class T, class Allocator>
@@ -310,7 +385,6 @@ template <class Ret, class Var>
 bool ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISerializeReader& reader, T& object)
 {
 	GAFF_ASSERT(_getter);
-	GAFF_ASSERT(_setter);
 
 	if constexpr (std::is_reference<Ret>::value) {
 		RetType& val = const_cast<RetType&>((object.*_getter)());
@@ -1677,7 +1751,7 @@ template <class T, class Allocator>
 template <class Ret, class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
-	static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
+	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
 
 	using RetNoRef = typename std::remove_reference<Ret>::type;
 	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
@@ -1691,12 +1765,24 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetFinal>::HasReflection, "Getter return type is not reflected!");
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarFinal>::HasReflection, "Setter arg type is not reflected!");
-	using PtrType = VarFuncPtr<Ret, Var>;
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
-		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
-	);
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair;
+
+	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
+		using PtrType = VarFuncPtr<Ret, Var>;
+
+		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
+			HashString32<Allocator>(name, name_size - 1, _allocator),
+			IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
+		);
+	} else {
+		using PtrType = VarFuncPtrWithCache<Ret, Var>;
+
+		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
+			HashString32<Allocator>(name, name_size - 1, _allocator),
+			IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
+		);
+	}
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 

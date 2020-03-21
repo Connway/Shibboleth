@@ -22,36 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_Hash.h>
-
-NS_GAFF
-	template <class T, class HashType, class Allocator, bool contains_string = true>
-	template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-	class HashString;
-
-	template <class T, class HashType>
-	class HashStringTemp;
-
-	template <class Allocator>
-	using HashString32 = HashString<char, Hash32, Allocator>;
-
-	template <class Allocator>
-	using HashString64 = HashString<char, Hash64, Allocator>;
-
-	using HashStringTemp32 = HashStringTemp<char, Hash32>;
-	using HashStringTemp64 = HashStringTemp<char, Hash64>;
-NS_END
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Esprit_StateMachine.h>
 
 NS_SHIBBOLETH
 
-template <class T, class HashType>
-using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
+class StateMachineResource final : public IResource
+{
+public:
+	static constexpr bool Creatable = true;
 
-using HashString32 = Gaff::HashString32<ProxyAllocator>;
-using HashString64 = Gaff::HashString64<ProxyAllocator>;
+	const Esprit::StateMachine* getStateMachine(void) const;
 
-using HashStringTemp32 = HashStringTemp32<>;
-using HashStringTemp64 = HashStringTemp64<>;
+private:
+	UniquePtr<Esprit::StateMachine> _state_machine;
+
+	void loadStateMachine(IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(StateMachineResource);
+};
+
+using StateMachineResourcePtr = Gaff::RefPtr<StateMachineResource>;
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(StateMachineResource)

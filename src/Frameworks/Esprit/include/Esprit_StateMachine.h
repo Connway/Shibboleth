@@ -44,11 +44,19 @@ public:
 	void setParent(StateMachine* parent);
 
 	const VariableSet* getVariables(void) const;
+	VariableSet* getVariables(void);
 	void setVariables(VariableSet* variables);
 
 	int32_t getStateIndex(const HashStringTemp32<>& name) const;
 	int32_t addState(const HashStringTemp32<>& name);
 	bool removeState(const HashStringTemp32<>& name);
+
+	int32_t addProcess(const HashStringTemp32<>& name, IProcess* process);
+	int32_t addProcess(int32_t state_index, IProcess* process);
+	bool removeProcess(const HashStringTemp32<>& name, IProcess* process);
+	bool removeProcess(int32_t state_index, IProcess* process);
+	bool removeProcess(const HashStringTemp32<>& name, int32_t process_index);
+	bool removeProcess(int32_t state_index, int32_t process_index);
 
 	int32_t addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
 	int32_t addEdge(int32_t start_state_index, int32_t end_state_index);

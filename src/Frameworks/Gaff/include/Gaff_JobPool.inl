@@ -111,7 +111,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, size_t num_jobs, Counter**
 
 	for (size_t i = 0; i < num_jobs; ++i) {
 		GAFF_ASSERT(jobs[i].job_func);
-		job_queue.jobs.emplace_back(JobPair(jobs[i], cnt));
+		job_queue.jobs.emplace(JobPair(jobs[i], cnt));
 	}
 
 	job_queue.read_write_lock->Unlock();
@@ -135,7 +135,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, size_t num_jobs, Counter& 
 
 	for (size_t i = 0; i < num_jobs; ++i) {
 		GAFF_ASSERT(jobs[i].job_func);
-		job_queue.jobs.emplace_back(JobPair(jobs[i], &counter));
+		job_queue.jobs.emplace(JobPair(jobs[i], &counter));
 	}
 
 	job_queue.read_write_lock->Unlock();

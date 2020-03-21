@@ -75,12 +75,39 @@ void VariableSet::finalize(void)
 VariableSet::VariableInstance* VariableSet::createInstanceData(void) const
 {
 	VariableInstance* const instance_data = GAFF_ALLOCT(VariableInstance, *GetAllocator());
+	instance_data->references.resize(_names[static_cast<size_t>(VariableType::Reference)].size());
 	instance_data->strings.resize(_names[static_cast<size_t>(VariableType::String)].size());
 	instance_data->floats.resize(_names[static_cast<size_t>(VariableType::Float)].size());
 	instance_data->integers.resize(_names[static_cast<size_t>(VariableType::Integer)].size());
 	instance_data->bools.resize(_names[static_cast<size_t>(VariableType::Bool)].size());
 
 	return instance_data;
+}
+
+bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, void*& result) const
+{
+	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
+
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	result = variables.references[index];
+	return true;
+}
+
+bool VariableSet::setVariable(VariableInstance& variables, int32_t index, void* value) const
+{
+	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
+
+	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	variables.references[index] = value;
+	return true;
 }
 
 bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, const U8String*& result) const

@@ -141,6 +141,11 @@ const VariableSet* StateMachine::getVariables(void) const
 	return _variables.get();
 }
 
+VariableSet* StateMachine::getVariables(void)
+{
+	return _variables.get();
+}
+
 void StateMachine::setVariables(VariableSet* variables)
 {
 	_variables.reset(variables);
@@ -175,6 +180,85 @@ bool StateMachine::removeState(const HashStringTemp32<>& name)
 	}
 
 	return false;
+}
+
+int32_t StateMachine::addProcess(const HashStringTemp32<>& name, IProcess* process)
+{
+	const int32_t index = findStateIndex(name);
+
+	if (index < 0) {
+		return -1;
+	}
+
+	return addProcess(index, process);
+}
+
+int32_t StateMachine::addProcess(int32_t state_index, IProcess* process)
+{
+	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return -1;
+	}
+
+	_states[state_index].processes.emplace_back(process);
+	return static_cast<int32_t>(_states[state_index].processes.size() - 1);
+}
+
+bool StateMachine::removeProcess(const HashStringTemp32<>& name, IProcess* process)
+{
+	const int32_t index = findStateIndex(name);
+
+	if (index < 0) {
+		return false;
+	}
+
+	return removeProcess(index, process);
+}
+
+bool StateMachine::removeProcess(int32_t state_index, IProcess* process)
+{
+	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return false;
+	}
+
+	auto& processes = _states[state_index].processes;
+	const auto it = Gaff::Find(processes, process, [](const UniquePtr<IProcess>& lhs, const IProcess* rhs) -> bool
+	{
+		return lhs.get() == rhs;
+	});
+
+	if (it == processes.end()) {
+		return false;
+	}
+
+	processes.erase(it);
+	return true;
+}
+
+bool StateMachine::removeProcess(const HashStringTemp32<>& name, int32_t process_index)
+{
+	const int32_t index = findStateIndex(name);
+
+	if (index < 0) {
+		return false;
+	}
+
+	return removeProcess(index, process_index);
+}
+
+bool StateMachine::removeProcess(int32_t state_index, int32_t process_index)
+{
+	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return false;
+	}
+
+	auto& processes = _states[state_index].processes;
+
+	if (!Gaff::Between(process_index, 0, static_cast<int32_t>(processes.size() - 1))) {
+		return false;
+	}
+
+	processes.erase(processes.begin() + process_index);
+	return true;
 }
 
 int32_t StateMachine::addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name)
