@@ -32,8 +32,7 @@ public:
 	IManager(void) {}
 	virtual ~IManager(void) {}
 
-	virtual void allModulesLoaded(void) {}
-
+	virtual bool initAllModulesLoaded(void) { return true; }
 	virtual bool init(void) { return true; }
 
 	GAFF_NO_COPY(IManager);

@@ -34,7 +34,7 @@ public:
 	DevWebServerManager(void);
 	~DevWebServerManager(void);
 
-	void allModulesLoaded(void) override;
+	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
 private:

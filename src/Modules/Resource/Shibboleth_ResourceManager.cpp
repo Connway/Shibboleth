@@ -64,17 +64,21 @@ static void ResourceFileLoadJob(void* data)
 
 ResourceManager::ResourceManager(void)
 {
-	IApp& app = GetApp();
-	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
-	app.getLogManager().addChannel("Resource", "ResourceLog");
 }
 
-void ResourceManager::allModulesLoaded(void)
+bool ResourceManager::init(void)
 {
 	IApp& app = GetApp();
-	const ReflectionManager& refl_mgr = app.getReflectionManager();
+	IReflectionManager& refl_mgr = app.getReflectionManager();
+
+	refl_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	app.getLogManager().addChannel("Resource", "ResourceLog");
+
 	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IResource"));
-	GAFF_ASSERT(type_bucket);
+
+	if (!type_bucket) {
+		return true;
+	}
 
 	Vector<const ResExtAttribute*> ext_attrs;
 	const CreatableAttribute* creatable = nullptr;
@@ -101,6 +105,8 @@ void ResourceManager::allModulesLoaded(void)
 		creatable = nullptr;
 		ext_attrs.clear();
 	}
+
+	return true;
 }
 
 IResourcePtr ResourceManager::createResource(HashStringTemp64<> name, const Gaff::IReflectionDefinition& ref_def)

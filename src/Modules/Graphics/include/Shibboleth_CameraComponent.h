@@ -37,21 +37,17 @@ class ECSManager;
 class Camera final : public ECSComponentBaseNonShared<Camera>
 {
 public:
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, const Camera& value);
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const Camera& value);
+	static Camera GetInternal(const void* component, int32_t page_index);
 
-	static Camera Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static Camera Get(ECSManager& ecs_mgr, EntityID id);
-
-	static glm_vec4 GetVerticalFOVDegrees(const void* component_begin);
-	static glm_vec4 GetVerticalFOV(const void* component_begin);
-	static glm_vec4 GetFocalLength(const void* component_begin);
-	static glm_vec4 GetZNear(const void* component_begin);
-	static glm_vec4 GetZFar(const void* component_begin);
-	//static glm_vec4 GetFocusDistance(const void* component_begin);
-	//static glm_vec4 GetFocalLength(const void* component_begin);
-
-	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static glm_vec4 GetVerticalFOVDegrees(const void* component, int32_t page_index);
+	static glm_vec4 GetVerticalFOV(const void* component, int32_t page_index);
+	static glm_vec4 GetFocalLength(const void* component, int32_t page_index);
+	static glm_vec4 GetZNear(const void* component, int32_t page_index);
+	static glm_vec4 GetZFar(const void* component, int32_t page_index);
+	//static glm_vec4 GetFocusDistance(const void* component, int32_t page_index);
+	//static glm_vec4 GetFocalLength(const void* component, int32_t page_index);
 
 	// 35mm film (24mm x 36mm) [width x height]
 	static constexpr float DefaultSensorSize = 36.0f;
@@ -71,6 +67,10 @@ public:
 
 	//float focus_distance;
 	//float f_stop;
+
+private:
+	static const float* GetFloatBegin(const void* component, int32_t page_index);
+	static float* GetFloatBegin(void* component, int32_t page_index);
 };
 
 NS_END

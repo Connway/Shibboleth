@@ -83,7 +83,6 @@ public:
 		return *ptr;
 	}
 
-	IReflection* attr_next = nullptr;
 	IReflection* next = nullptr;
 };
 
@@ -944,53 +943,6 @@ private:
 class IEnumReflectionDefinition
 {
 public:
-	template <class T>
-	const T* getEnumAttr(Hash64 attr_name) const
-	{
-		for (int32_t i = 0; i < getNumEnumAttrs(); ++i) {
-			const IAttribute* const attribute = getEnumAttr(i);
-			const void* attr = attribute->getReflectionDefinition().getInterface(attr_name, attribute->getBasePointer());
-
-			if (attr) {
-				return reinterpret_cast<const T*>(attr);
-			}
-		}
-
-		return nullptr;
-	}
-
-	template <class T>
-	const T* getEnumAttr(void) const
-	{
-		for (int32_t i = 0; i < getNumEnumAttrs(); ++i) {
-			const IAttribute* const attribute = getEnumAttr(i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
-	}
-
-	template <class T>
-	const T* getEntryAttr(Hash32 entry_name) const
-	{
-		const int32_t size = getNumEntryAttrs(entry_name);
-
-		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getEntryAttr(entry_name, i);
-			const T* attr = ReflectionCast<T>(*attribute);
-
-			if (attr) {
-				return attr;
-			}
-		}
-
-		return nullptr;
-	}
-
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
@@ -1009,12 +961,6 @@ public:
 	virtual int32_t getEntryValue(int32_t index) const = 0;
 	virtual int32_t getEntryValue(const char* name) const = 0;
 	virtual int32_t getEntryValue(Hash32 name) const = 0;
-
-	virtual int32_t getNumEnumAttrs(void) const = 0;
-	virtual const IAttribute* getEnumAttr(int32_t index) const = 0;
-
-	virtual int32_t getNumEntryAttrs(Hash32 name) const = 0;
-	virtual const IAttribute* getEntryAttr(Hash32 name, int32_t index) const = 0;
 };
 
 template <class Derived, class Base>

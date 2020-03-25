@@ -20,46 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#pragma once
 
-#ifdef SHIB_STATIC
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ECSEntity.h>
+#include <Esprit_IProcess.h>
 
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+NS_SHIBBOLETH
 
-namespace DevWebServer
+class GameTimeManager;
+class InputManager;
+class ECSManager;
+
+class FlyCameraProcess final : public Esprit::IProcess
 {
+public:
+	bool init(const Esprit::StateMachine& owner) override;
+	void update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::VariableInstance* instance_data) override;
 
-	bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		if (mode == Shibboleth::InitMode::Regular) {
-			// Initialize Enums.
-			Gaff::InitEnumReflection();
+private:
+	GameTimeManager* _time_mgr = nullptr;
+	InputManager* _input_mgr = nullptr;
+	ECSManager* _ecs_mgr = nullptr;
+	int32_t _entity_id_index = -1;
 
-			// Initialize Attributes.
-			Gaff::InitAttributeReflection();
-		}
+	int32_t _horiz_alias_index = -1;
+	int32_t _vert_alias_index = -1;
+};
 
-		Shibboleth::SetApp(app);
-		DevWebServer::Gen::InitReflection(mode);
+NS_END
 
-		return true;
-	}
-
-}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return DevWebServer::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		DevWebServer::InitializeNonOwned();
-	}
-
-#endif
+SHIB_REFLECTION_DECLARE(FlyCameraProcess)

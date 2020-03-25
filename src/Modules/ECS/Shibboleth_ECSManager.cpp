@@ -48,17 +48,20 @@ ECSManager::~ECSManager(void)
 	}
 }
 
-void ECSManager::allModulesLoaded(void)
+bool ECSManager::initAllModulesLoaded(void)
 {
 	const Gaff::JSON starting_scene = GetApp().getConfigs()["starting_scene"];
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
 		// $TODO: Log error
+		return false;
 
 	} else if (starting_scene.isString()) {
 		const char* const scene = starting_scene.getString();
 		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringTemp64<>(scene, eastl::CharStrlen(scene)));
 	}
+
+	return true;
 }
 
 void ECSManager::addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref)

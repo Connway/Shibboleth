@@ -28,10 +28,18 @@ THE SOFTWARE.
 
 	namespace Input
 	{
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
+			if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
 			Shibboleth::SetApp(app);
-			Input::Gen::InitReflection();
+			Input::Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -41,9 +49,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Input::Initialize(app);
+		return Input::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		Input::InitializeNonOwned();
 	}
 
 #endif

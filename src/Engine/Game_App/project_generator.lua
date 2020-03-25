@@ -27,6 +27,7 @@ project "Game_App"
 	{
 		"Engine",
 		"Gaff",
+		"Gleam",
 		"Memory",
 		"EASTL",
 		"mpack"

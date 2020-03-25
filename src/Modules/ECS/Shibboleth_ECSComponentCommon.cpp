@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSComponentCommon.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PlayerOwner, nullptr, "Player")
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PageSize, nullptr, "Memory")
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Position, nullptr, "Transform", OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Rotation, nullptr, "Transform", OptionalAttribute())
@@ -165,6 +166,28 @@ Scale Scale::GetInternal(const void* component, int32_t page_index)
 		comp[4],
 		comp[8]
 	));
+}
+
+
+
+void PlayerOwner::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+{
+	const int32_t* const old_values = reinterpret_cast<const int32_t*>(old_begin) + old_index;
+	int32_t* const new_values = reinterpret_cast<int32_t*>(new_begin) + new_index;
+
+	*new_values = *old_values;
+}
+
+void PlayerOwner::SetInternal(void* component, int32_t page_index, const PlayerOwner& value)
+{
+	int32_t* const comp = reinterpret_cast<int32_t*>(component) + page_index;
+	*comp = value.value;
+}
+
+PlayerOwner PlayerOwner::GetInternal(const void* component, int32_t page_index)
+{
+	const int32_t* const comp = reinterpret_cast<const int32_t*>(component) + page_index;
+	return PlayerOwner(*comp);
 }
 
 NS_END

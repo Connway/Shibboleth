@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_InputReflection.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
@@ -33,50 +32,74 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+static constexpr int32_t g_max_local_players = 4;
+
 class InputManager final : public IManager
 {
 public:
 	template <size_t size>
-	float getAliasValue(const char (&alias_name)[size])
+	float getAliasValue(const char (&alias_name)[size], int32_t player_id)
 	{
-		return getAliasValue(Gaff::FNV1aHash32Const(alias_name));
+		return getAliasValue(Gaff::FNV1aHash32Const(alias_name), player_id);
 	}
 
-	bool init(void) override;
+	template <size_t size>
+	int32_t getAliasIndex(const char (&alias_name)[size])
+	{
+		return getAliasIndex(Gaff::FNV1aHash32Const(alias_name));
+	}
+
+	bool initAllModulesLoaded(void) override;
 	void update(void);
 
-	float getAliasValue(Gaff::Hash32 alias_name) const;
-	float getAliasValue(const char* alias_name) const;
-	float getAliasValue(int32_t index) const;
+	float getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const;
+	float getAliasValue(const char* alias_name, int32_t player_id) const;
+	float getAliasValue(int32_t index, int32_t player_id) const;
 
 	int32_t getAliasIndex(Gaff::Hash32 alias_name) const;
 	int32_t getAliasIndex(const char* alias_name) const;
+
+	void setKeyboardMousePlayerID(int32_t player_id);
+	int32_t getKeyboardMousePlayerID(void) const;
 
 private:
 	struct Binding final
 	{
 		Vector<Gleam::MouseCode> mouse_codes{ ProxyAllocator("Input") };
 		Vector<Gleam::KeyCode> key_codes{ ProxyAllocator("Input") };
-		Gaff::Hash32 alias;
-		float scale = 1.0f;
-		int8_t count = 0;
-	};
-
-	struct Alias final
-	{
+		int32_t alias_index;
 		float curr_tap_time = 0.0f;
 		float tap_interval = 0.1f;
-		float value = 0.0f;
+		float scale = 1.0f;
+		int8_t count = 0;
 		int8_t curr_tap = 0;
 		int8_t taps = 0;
 		bool first_frame = false;
 	};
 
-	VectorMap<Gaff::Hash32, Alias> _alias_values{ ProxyAllocator("Input") };
-	Vector<Binding> _bindings{ ProxyAllocator("Input") };
+	struct Alias final
+	{
+		float value = 0.0f;
+	};
+
+	VectorMap<Gaff::Hash32, Alias> _alias_values[g_max_local_players] = {
+		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") }
+	};
+
+	Vector<Binding> _bindings[g_max_local_players] = {
+		Vector<Binding>{ ProxyAllocator("Input") },
+		Vector<Binding>{ ProxyAllocator("Input") },
+		Vector<Binding>{ ProxyAllocator("Input") },
+		Vector<Binding>{ ProxyAllocator("Input") }
+	};
 
 	UniquePtr<Gleam::IKeyboard> _keyboard;
 	UniquePtr<Gleam::IMouse> _mouse;
+
+	int32_t _km_player_id = 0;
 
 	void handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value);
 	void handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value);

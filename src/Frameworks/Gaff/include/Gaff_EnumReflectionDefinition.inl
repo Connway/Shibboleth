@@ -119,36 +119,6 @@ const char* EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) 
 }
 
 template <class Enum, class Allocator>
-int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEnumAttrs(void) const
-{
-	return static_cast<int32_t>(_enum_attrs.size());
-}
-
-template <class Enum, class Allocator>
-const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEnumAttr(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_enum_attrs.size()));
-	return _enum_attrs[index].get();
-}
-
-template <class Enum, class Allocator>
-int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEntryAttrs(Hash32 name) const
-{
-	auto it = _entry_attrs.find(name);
-	GAFF_ASSERT(it != _entry_attrs.end());
-	return static_cast<int32_t>(it->second.size());
-}
-
-template <class Enum, class Allocator>
-const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEntryAttr(Hash32 name, int32_t index) const
-{
-	auto it = _entry_attrs.find(name);
-	GAFF_ASSERT(it != _entry_attrs.end());
-	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
-	return it->second[index].get();
-}
-
-template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_entries.set_allocator(allocator);
@@ -157,7 +127,7 @@ void EnumReflectionDefinition<Enum, Allocator>::setAllocator(const Allocator& al
 
 template <class Enum, class Allocator>
 template <size_t size, class... Attrs>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value, const Attrs&... attrs)
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value)
 {
 	eastl::pair<HashString32<Allocator>, Enum> pair(
 		HashString32<Allocator>(name, size - 1, _allocator),
@@ -167,58 +137,12 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 	GAFF_ASSERT(_entries.find(pair.first) == _entries.end());
 	_entries.insert(std::move(pair));
 
-	if constexpr (sizeof...(Attrs) > 0) {
-		auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];
-		attrs_list.set_allocator(_allocator);
-		addAttributes(value, attrs_list, attrs...);
-	}
-
 	return *this;
-}
-
-template <class Enum, class Allocator>
-template <class... Attrs>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::enumAttrs(const Attrs&... attrs)
-{
-	return addAttributes(_entry_attrs, attrs...);
 }
 
 template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
-	//GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::g_defined = true;
-}
-
-template <class Enum, class Allocator>
-template <class First, class... Rest>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Enum value, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(value);
-
-	return addAttributes(value, attrs, rest...);
-}
-
-template <class Enum, class Allocator>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Enum, Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
-}
-
-template <class Enum, class Allocator>
-template <class First, class... Rest>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
-{
-	attrs.emplace_back(IAttributePtr(first->clone()));
-	return addAttributes(attrs, rest...);
-}
-
-template <class Enum, class Allocator>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>&)
-{
-	return *this;
 }
 
 NS_END

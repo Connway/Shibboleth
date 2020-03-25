@@ -35,8 +35,11 @@ local tests = {
 
 		links =
 		{
-			"Gaff", "Memory",
-			"EASTL", "Engine",
+			"Gaff",
+			"Gleam",
+			"Memory",
+			"EASTL",
+			"Engine",
 			"mpack"
 		},
 

@@ -29,14 +29,16 @@ namespace
 	{
 		StartState,
 		EndState,
+		AnyState,
 
 		Count
 	};
 
-	constexpr const char* k_special_state_names[static_cast<size_t>(SpecialStates::Count)] =
+	constexpr const char* g_special_state_names[static_cast<size_t>(SpecialStates::Count)] =
 	{
 		"Start",
-		"End"
+		"End",
+		"Any"
 	};
 }
 
@@ -48,7 +50,7 @@ StateMachine::StateMachine(void)
 	_states.resize(static_cast<size_t>(SpecialStates::Count));
 
 	for (int32_t i = 0; i < static_cast<int32_t>(SpecialStates::Count); ++i) {
-		_states[i].name = k_special_state_names[i];
+		_states[i].name = g_special_state_names[i];
 	}
 }
 
@@ -69,32 +71,8 @@ void StateMachine::update(VariableSet::VariableInstance* instance_data)
 		return;
 	}
 
-	const State& state = _states[_current_state];
-
-	for (const UniquePtr<IProcess>& process : state.processes) {
-		process->update(*this, instance_data);
-	}
-
-	int32_t next_state = -1;
-
-	for (const Edge& edge : state.edges) {
-		bool can_transition = true;
-
-		for (const UniquePtr<ICondition>& condition : edge.conditions) {
-			if (!condition->evaluate(*this, instance_data)) {
-				can_transition = false;
-				break;
-			}
-		}
-
-		if (can_transition) {
-			next_state = edge.destination;
-			break;
-		}
-	}
-
-	if (next_state > -1) {
-		_current_state = next_state;
+	if (!doState(_states[static_cast<int32_t>(SpecialStates::AnyState)], instance_data)) {
+		doState(_states[_current_state], instance_data);
 	}
 }
 
@@ -174,6 +152,11 @@ bool StateMachine::removeState(const HashStringTemp32<>& name)
 {
 	const int32_t index = findStateIndex(name);
 
+	// Can't remove special states.
+	if (index < static_cast<int32_t>(SpecialStates::Count)) {
+		return false;
+	}
+
 	if (index > -1) {
 		_states.erase(_states.begin() + index);
 		return true;
@@ -186,7 +169,8 @@ int32_t StateMachine::addProcess(const HashStringTemp32<>& name, IProcess* proce
 {
 	const int32_t index = findStateIndex(name);
 
-	if (index < 0) {
+	// Special states can't have processes.
+	if (index < static_cast<int32_t>(SpecialStates::Count)) {
 		return -1;
 	}
 
@@ -199,6 +183,11 @@ int32_t StateMachine::addProcess(int32_t state_index, IProcess* process)
 		return -1;
 	}
 
+	// Special states can't have processes.
+	if (state_index < static_cast<int32_t>(SpecialStates::Count)) {
+		return -1;
+	}
+
 	_states[state_index].processes.emplace_back(process);
 	return static_cast<int32_t>(_states[state_index].processes.size() - 1);
 }
@@ -207,7 +196,8 @@ bool StateMachine::removeProcess(const HashStringTemp32<>& name, IProcess* proce
 {
 	const int32_t index = findStateIndex(name);
 
-	if (index < 0) {
+	// Special states can't have processes.
+	if (index < static_cast<int32_t>(SpecialStates::Count)) {
 		return false;
 	}
 
@@ -217,6 +207,11 @@ bool StateMachine::removeProcess(const HashStringTemp32<>& name, IProcess* proce
 bool StateMachine::removeProcess(int32_t state_index, IProcess* process)
 {
 	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return false;
+	}
+
+	// Special states can't have processes.
+	if (state_index < static_cast<int32_t>(SpecialStates::Count)) {
 		return false;
 	}
 
@@ -238,7 +233,8 @@ bool StateMachine::removeProcess(const HashStringTemp32<>& name, int32_t process
 {
 	const int32_t index = findStateIndex(name);
 
-	if (index < 0) {
+	// Special states can't have processes.
+	if (index < static_cast<int32_t>(SpecialStates::Count)) {
 		return false;
 	}
 
@@ -248,6 +244,11 @@ bool StateMachine::removeProcess(const HashStringTemp32<>& name, int32_t process
 bool StateMachine::removeProcess(int32_t state_index, int32_t process_index)
 {
 	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return false;
+	}
+
+	// Special states can't have processes.
+	if (state_index < static_cast<int32_t>(SpecialStates::Count)) {
 		return false;
 	}
 
@@ -284,6 +285,21 @@ int32_t StateMachine::addEdge(int32_t start_state_index, int32_t end_state_index
 	}
 
 	if (!Gaff::Between(end_state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+		return -1;
+	}
+
+	// Can't add an edge coming from the End state.
+	if (start_state_index == static_cast<int32_t>(SpecialStates::EndState)) {
+		return -1;
+	}
+
+	// Can't add an edge back to the Start state.
+	if (end_state_index == static_cast<int32_t>(SpecialStates::StartState)) {
+		return -1;
+	}
+
+	// Can't add an edge to the Any state.
+	if (end_state_index == static_cast<int32_t>(SpecialStates::AnyState)) {
 		return -1;
 	}
 
@@ -431,6 +447,38 @@ int32_t StateMachine::findStateIndex(const HashStringTemp32<>& state_name) const
 	});
 
 	return static_cast<int32_t>(eastl::distance(_states.begin(), it));
+}
+
+bool StateMachine::doState(const State& state, VariableSet::VariableInstance* instance_data)
+{
+	for (const UniquePtr<IProcess>& process : state.processes) {
+		process->update(*this, instance_data);
+	}
+
+	int32_t next_state = -1;
+
+	for (const Edge& edge : state.edges) {
+		bool can_transition = true;
+
+		for (const UniquePtr<ICondition>& condition : edge.conditions) {
+			if (!condition->evaluate(*this, instance_data)) {
+				can_transition = false;
+				break;
+			}
+		}
+
+		if (can_transition) {
+			next_state = edge.destination;
+			break;
+		}
+	}
+
+	if (next_state > -1) {
+		_current_state = next_state;
+		return true;
+	}
+
+	return false;
 }
 
 NS_END

@@ -30,7 +30,7 @@ static IReflection* g_head = nullptr;
 
 static void AddToChain(IReflection*& head, IReflection* reflection)
 {
-	reflection->attr_next = head;
+	reflection->next = head;
 	head = reflection;
 }
 
@@ -38,7 +38,7 @@ static void InitChain(IReflection* head)
 {
 	while (head) {
 		head->init();
-		head = head->attr_next;
+		head = head->next;
 	}
 }
 

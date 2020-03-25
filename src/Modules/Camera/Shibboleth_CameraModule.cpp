@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 	#include <Shibboleth_Utilities.h>
 
-	namespace Logic
+	namespace Camera
 	{
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
@@ -36,13 +36,10 @@ THE SOFTWARE.
 
 				// Initialize Attributes.
 				Gaff::InitAttributeReflection();
-
-				app.getReflectionManager().registerAttributeBucket(CLASS_HASH(Epsrit::ICondition));
-				app.getReflectionManager().registerAttributeBucket(CLASS_HASH(Epsrit::IProcess));
 			}
 
 			Shibboleth::SetApp(app);
-			Logic::Gen::InitReflection(mode);
+			Camera::Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -54,12 +51,12 @@ THE SOFTWARE.
 
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Logic::Initialize(app, mode);
+		return Camera::Initialize(app, mode);
 	}
 
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
-		Logic::InitializeNonOwned();
+		Camera::InitializeNonOwned();
 	}
 
 #endif

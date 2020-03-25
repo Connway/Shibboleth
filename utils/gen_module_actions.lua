@@ -7,6 +7,7 @@ local gen_header = [[
 // Includes
 %s
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_IApp.h>
 
 namespace
 {
@@ -19,11 +20,32 @@ namespace
 			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Shibboleth::Reflection<T>::GetHash(), "%s");
 		}
 	}
+
+	template <class T>
+	void InitReflectionT(Shibboleth::InitMode mode)
+	{
+		if constexpr (std::is_enum<T>::value) {
+			if (mode == Shibboleth::InitMode::Enums) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
+			if (mode == Shibboleth::InitMode::Attributes) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		} else {
+			if (mode == Shibboleth::InitMode::Regular) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		}
+	}
 }
 
 namespace %s::Gen
 {
-	void InitReflection(void)
+	void InitNonOwnedReflection(void)
 	{
 		// Initialize Enums.
 		Gaff::InitEnumReflection();
@@ -31,25 +53,38 @@ namespace %s::Gen
 		// Initialize Attributes.
 		Gaff::InitAttributeReflection();
 
-%s
 		// Initialize regular classes.
 		Gaff::InitClassReflection();
+	}
 
+	void InitReflection(Shibboleth::InitMode mode)
+	{
 %s
-		// Register our module as the owners of the reflection.
-%s	}
+	}
 }
-#endif
 
-namespace Shibboleth
-{
-	class IApp;
-}
+#else
+	#include <Gaff_Defines.h>
+
+	namespace Shibboleth
+	{
+		enum class InitMode : int8_t;
+		class IApp;
+	}
+#endif
 
 namespace %s
 {
-	bool Initialize(Shibboleth::IApp& app);
+	bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode);
+	void InitializeNonOwned(void);
 	%s
+
+#ifdef SHIB_STATIC
+	void InitializeNonOwned(void)
+	{
+		Gen::InitNonOwnedReflection();
+	}
+#endif
 }
 ]]
 
@@ -100,6 +135,11 @@ THE SOFTWARE.
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	{
 		return %s::Initialize(app);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		%s::InitiailizeNonOwned();
 	}
 
 #endif
@@ -167,22 +207,28 @@ local gen_static = [[
 
 #pragma once
 
-// Includes
-#undef SHIB_STATIC
+// Module Includes
+#ifdef SHIB_STATIC
+	#undef SHIB_STATIC
 
-#ifdef SHIB_EDITOR
+	#ifdef SHIB_EDITOR
 %s
+	#endif
+
+%s
+	#define SHIB_STATIC
 #endif
 
+// Engine reflection includes
 %s
 #include "Shibboleth_Utilities.h"
 #include <Gaff_Defines.h>
 
-#define SHIB_STATIC
+#ifdef SHIB_STATIC
 
-namespace Gen
+namespace Engine::Gen
 {
-	bool LoadModulesStatic(void)
+	bool LoadModulesStatic(Shibboleth::InitMode mode)
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
 
@@ -206,6 +252,53 @@ namespace Gen
 %s
 	}
 }
+
+#endif
+
+namespace
+{
+	template <class T>
+	void RegisterOwningModule(void)
+	{
+		if constexpr (std::is_enum<T>::value) {
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Shibboleth::Reflection<T>::GetHash(), "Engine");
+		} else {
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Shibboleth::Reflection<T>::GetHash(), "Engine");
+		}
+	}
+
+	template <class T>
+	void InitReflectionT(Shibboleth::InitMode mode)
+	{
+		if constexpr (std::is_enum<T>::value) {
+			if (mode == Shibboleth::InitMode::Enums) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
+			if (mode == Shibboleth::InitMode::Attributes) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		} else {
+			if (mode == Shibboleth::InitMode::Regular) {
+				Shibboleth::Reflection<T>::Init();
+				RegisterOwningModule<T>();
+			}
+		}
+	}
+}
+
+namespace Engine
+{
+	bool Initialize(Shibboleth::InitMode mode)
+	{
+%s
+
+		return true;
+	}
+}
+
 ]]
 
 
@@ -231,7 +324,7 @@ newaction
 		-- Make Shibboleth_<module_name>Module.cpp file.
 		io.writefile(
 			path .. "/Shibboleth_" .. module_name .. "Module.cpp",
-			gen_entry:format(module_name, module_name, module_name)
+			gen_entry:format(module_name, module_name, module_name, module_name)
 		)
 
 		-- Make project_generator.lua file.
@@ -320,22 +413,14 @@ newaction
 		table.foreachi(headers, ParseFile)
 
 		local include_files = ""
-		local init_attr_funcs = ""
 		local init_funcs = ""
-		local module_registers = ""
 		local shutdown_func = ""
 
 		for k,v in pairs(file_class_map) do
 			include_files = include_files .. "#include <" .. k .. ">\n"
 
 			for _,c in pairs(v) do
-				if c:endswith("Attribute") then
-					init_attr_funcs = init_attr_funcs .. "\t\tShibboleth::Reflection<" .. c .. ">::Init();\n"
-				else
-					init_funcs = init_funcs .. "\t\tShibboleth::Reflection<" .. c .. ">::Init();\n"
-				end
-
-				module_registers = module_registers .. "\t\tRegisterOwningModule<" .. c .. ">();\n"
+				init_funcs = init_funcs .. "\t\tInitReflectionT<" .. c .. ">(mode);\n"
 			end
 		end
 
@@ -351,9 +436,7 @@ newaction
 			module_name,
 			module_name,
 			module_name,
-			init_attr_funcs,
 			init_funcs,
-			module_registers,
 			module_name,
 			shutdown_func
 		)
@@ -400,8 +483,8 @@ newaction
 
 		table.foreachi(editor_modules, function(dir)
 			local module_name = dir:sub(16)
-			editor_includes = editor_includes .. "\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
-			editor_inits = editor_inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+			editor_includes = editor_includes .. "\t\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+			editor_inits = editor_inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app, mode), false)\n"
 
 			local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
 
@@ -412,8 +495,8 @@ newaction
 
 		table.foreachi(modules, function(dir)
 			local module_name = dir:sub(16)
-			includes = includes .. "#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
-			inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app), false)\n"
+			includes = includes .. "\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+			inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app, mode), false)\n"
 
 			local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
 
@@ -438,13 +521,75 @@ newaction
 			shutdowns = shutdowns:sub(1, -2)
 		end
 
+		local source_folder = "../src/Engine/Engine"
+		local include_folder = source_folder .. "/include"
+
+		local file_class_map = {}
+
+		function ParseFile(file)
+			local stripped_file = file:sub(include_folder:len() + 2)
+
+			if file == "Gen_ReflectionInit.h" then
+				return
+			end
+
+			local lines = io.readfile(file):explode("\n")
+			local last_namespace = ""
+
+			for _, line in next, lines do
+				if line:match("#define") then
+					goto continue
+				end
+
+				local match = line:match("NS_(.+)")
+
+				if match then
+					if match:find("END") == nil then
+						last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
+					end
+
+					goto continue
+				end
+
+				-- Detect classes
+				match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
+
+				if match then
+					if not file_class_map[stripped_file] then
+						file_class_map[stripped_file] = {}
+					end
+
+					table.insert(file_class_map[stripped_file], last_namespace .. match)
+					goto continue
+				end
+
+				::continue::
+			end
+		end
+
+		local headers = os.matchfiles(include_folder .. "/**.h")
+		table.foreachi(headers, ParseFile)
+
+		local include_files = ""
+		local init_funcs = ""
+
+		for k,v in pairs(file_class_map) do
+			include_files = include_files .. "#include \"" .. k .. "\"\n"
+
+			for _,c in pairs(v) do
+				init_funcs = init_funcs .. "\t\tInitReflectionT<" .. c .. ">(mode);\n"
+			end
+		end
+
 		local header_string = gen_static:format(
 			editor_includes,
 			includes,
+			include_files,
 			editor_inits,
 			inits,
 			editor_shutdowns,
-			shutdowns
+			shutdowns,
+			init_funcs
 		)
 
 		local file_path = "../src/Engine/Engine/include/Gen_ReflectionInit.h"

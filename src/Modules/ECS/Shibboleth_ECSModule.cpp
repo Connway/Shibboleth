@@ -29,12 +29,20 @@ THE SOFTWARE.
 	namespace ECS
 	{
 
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			Shibboleth::SetApp(app);
-			ECS::Gen::InitReflection();
+			if (mode == Shibboleth::InitMode::Regular) {
+				app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
 
-			app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
+			Shibboleth::SetApp(app);
+			ECS::Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -45,9 +53,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return ECS::Initialize(app);
+		return ECS::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		ECS::InitializeNonOwned();
 	}
 
 #endif

@@ -80,8 +80,8 @@ public:
 
 	RenderManagerBase(void);
 
+	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
-	void allModulesLoaded(void) override;
 
 	virtual Gleam::IRenderDevice* createRenderDevice(void) const = 0;
 

@@ -22,10 +22,6 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
-#ifdef SHIB_STATIC
-	#include <Gen_ReflectionInit.h>
-#endif
-
 #ifdef PLATFORM_WINDOWS
 	// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
 	// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
@@ -42,22 +38,13 @@ THE SOFTWARE.
 		//while (true) {
 		//}
 
-	#ifdef SHIB_STATIC
-		if (!app.init(Gen::LoadModulesStatic)) {
-	#else
 		if (!app.init()) {
-	#endif
 			app.destroy();
 			return -1;
 		}
 
 		app.run();
-
-	#ifdef SHIB_STATIC
-		app.destroy(Gen::ShutdownModulesStatic);
-	#else
 		app.destroy();
-	#endif
 
 		return 0;
 	}

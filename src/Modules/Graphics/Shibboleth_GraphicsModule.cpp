@@ -50,12 +50,20 @@ THE SOFTWARE.
 		//	return SHIB_REALLOC(old_ptr, new_size, g_graphics_allocator);
 		//}
 
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			Shibboleth::SetApp(app);
-			Gen::InitReflection();
+			if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
 
 			Gleam::SetAllocator(&g_graphics_allocator);
+
+			Shibboleth::SetApp(app);
+			Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -71,9 +79,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Graphics::Initialize(app);
+		return Graphics::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		Graphics::InitializeNonOwned();
 	}
 
 	DYNAMICEXPORT_C void ShutdownModule()

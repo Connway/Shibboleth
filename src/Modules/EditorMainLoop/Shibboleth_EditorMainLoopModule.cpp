@@ -29,10 +29,18 @@ THE SOFTWARE.
 	namespace EditorMainLoop
 	{
 
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
+			if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
 			Shibboleth::SetApp(app);
-			Gen::InitReflection();
+			Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -43,9 +51,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return EditorMainLoop::Initialize(app);
+		return EditorMainLoop::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		EditorMainLoop::InitializeNonOwned();
 	}
 
 #endif

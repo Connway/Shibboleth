@@ -69,7 +69,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 	ProxyAllocator allocator("Resource");
 	_state_machine.reset(SHIB_ALLOCT(Esprit::StateMachine, allocator));
 
-	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	const IReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
 
 	// Load variables.
@@ -126,6 +126,15 @@ void StateMachineResource::loadStateMachine(IFile* file)
 			// $TODO: Log error.
 
 		} else {
+			const auto* const process_bucket = refl_mgr.getTypeBucket(CLASS_HASH(Esprit::IProcess));
+
+			if (!process_bucket) {
+				// $TODO: Log error.
+				_state_machine.reset(nullptr);
+				failed();
+				return;
+			}
+
 			if (reader.isObject() && reader.size() > 0) {
 				reader.forEachInObject([&](const char* key) -> bool
 				{
@@ -148,12 +157,18 @@ void StateMachineResource::loadStateMachine(IFile* file)
 									const Gaff::IReflectionDefinition* ref_def = nullptr;
 
 									{
-										const auto guard_type = reader.enterElementGuard("condition_type");
+										const auto guard_type = reader.enterElementGuard("process_type");
 
 										if (reader.isString()) {
 											const char* const type = reader.readString();
-											ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(type));
+											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 											reader.freeString(type);
+
+											const auto it = Gaff::LowerBound(*process_bucket, type_hash, ReflectionManager::CompareRefHash);
+
+											if (it == process_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
+												ref_def = *it;
+											}
 
 										} else {
 											// $TODO: Log error.
@@ -202,12 +217,22 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 		if (reader.isNull()) {
 			// $TODO: Log error.
+
 		} else {
+			const auto* const cond_bucket = refl_mgr.getTypeBucket(CLASS_HASH(Esprit::ICondition));
+
+			if (!cond_bucket) {
+				// $TODO: Log error.
+				_state_machine.reset(nullptr);
+				failed();
+				return;
+			}
+
 			if (reader.isArray() && reader.size() > 0) {
 				reader.forEachInArray([&](int32_t) -> bool
 				{
-					const char* source = nullptr;
 					const char* destination = nullptr;
+					const char* source = nullptr;
 
 					{
 						const auto guard_src = reader.enterElementGuard("source");
@@ -247,7 +272,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 							if (edge_index > -1) {
 								const auto guard_conditions = reader.enterElementGuard("conditions");
 
-								if (reader.isArray() && reader.size() > 0) {
+								if (reader.isArray()) {
 									reader.forEachInArray([&](int32_t) -> bool
 									{
 										const Gaff::IReflectionDefinition* ref_def = nullptr;
@@ -257,8 +282,14 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 											if (reader.isString()) {
 												const char* const type = reader.readString();
-												ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(type));
+												const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 												reader.freeString(type);
+
+												const auto it = Gaff::LowerBound(*cond_bucket, type_hash, ReflectionManager::CompareRefHash);
+
+												if (it == cond_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
+													ref_def = *it;
+												}
 
 											} else {
 												// $TODO: Log error.
@@ -284,9 +315,6 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 										return false;
 									});
-
-								} else {
-									// $TODO: Log error.
 								}
 
 							} else {

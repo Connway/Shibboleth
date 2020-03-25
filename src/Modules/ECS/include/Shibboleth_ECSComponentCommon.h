@@ -57,13 +57,19 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Scale, glm::vec3, ECSCo
 	static Scale GetInternal(const void* component, int32_t page_index);
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Scale)
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(PageSize, int32_t, ECSComponentBaseBoth, -1)
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(PageSize)
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(PlayerOwner, int32_t, ECSComponentBaseBoth, -1)
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const PlayerOwner& value);
+	static PlayerOwner GetInternal(const void* component, int32_t page_index);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(PlayerOwner)
 
+
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_WITH_DEFAULT(PageSize, int32_t, ECSComponentBaseShared, -1)
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE(Layer, Gaff::Hash32, ECSComponentBaseShared)
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(PlayerOwner)
 SHIB_REFLECTION_DECLARE(PageSize)
 SHIB_REFLECTION_DECLARE(Position)
 SHIB_REFLECTION_DECLARE(Rotation)

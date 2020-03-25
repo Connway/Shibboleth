@@ -35,9 +35,6 @@ public:
 
 	const ECSArchetype& getArchetype(void) const;
 
-	//void load(const Gaff::ISerializeReader& reader);
-	//void save(Gaff::ISerializeWriter& writer);
-
 private:
 	void loadArchetype(IFile* file);
 

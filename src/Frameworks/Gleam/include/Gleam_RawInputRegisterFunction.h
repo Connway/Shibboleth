@@ -38,6 +38,8 @@ NS_END
 	#define RAW_INPUT_GAMEPAD ((unsigned short)0x05)
 	#define RAW_INPUT_KEYBOARD ((unsigned short)0x06)
 
+	using InputDeviceHandle = void*;
+
 NS_GLEAM
 
 	bool RegisterForRawInput(uint16_t device, const IWindow* window);

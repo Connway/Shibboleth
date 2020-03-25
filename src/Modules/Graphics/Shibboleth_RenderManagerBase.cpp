@@ -103,6 +103,44 @@ RenderManagerBase::RenderManagerBase(void)
 	}
 }
 
+bool RenderManagerBase::initAllModulesLoaded(void)
+{
+	IFileSystem& fs = GetApp().getFileSystem();
+	const IFile* const file = fs.openFile("cfg/graphics.cfg");
+
+	if (!file) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	Gaff::JSON config;
+
+	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
+		LogErrorDefault("Faild to parse config file with error - %s.", config.getErrorText());
+		fs.closeFile(file);
+
+		return false;
+	}
+
+	fs.closeFile(file);
+
+	const Gaff::JSON sampler = config["texture_filtering"];
+
+	if (sampler.isString()) {
+		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+
+		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
+		res_mgr.waitForResource(*_default_sampler);
+
+		if (_default_sampler->hasFailed()) {
+			// $TODO: Log error.
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool RenderManagerBase::init(void)
 {
 	IFileSystem& fs = GetApp().getFileSystem();
@@ -242,40 +280,6 @@ bool RenderManagerBase::init(void)
 	return true;
 }
 
-void RenderManagerBase::allModulesLoaded(void)
-{
-	IFileSystem& fs = GetApp().getFileSystem();
-	const IFile* const file = fs.openFile("cfg/graphics.cfg");
-
-	if (!file) {
-		return;
-	}
-
-	Gaff::JSON config;
-
-	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
-		const char* const error = config.getErrorText();
-		LogErrorDefault("Faild to parse config file with error - %s.", error);
-		fs.closeFile(file);
-		return;
-	}
-
-	fs.closeFile(file);
-
-	const Gaff::JSON sampler = config["texture_filtering"];
-
-	if (sampler.isString()) {
-		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
-
-		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
-		res_mgr.waitForResource(*_default_sampler);
-
-		if (_default_sampler->hasFailed()) {
-			// $TODO: Log error.
-			GetApp().quit();
-		}
-	}
-}
 
 Gleam::IKeyboard* RenderManagerBase::createKeyboard(void) const
 {
