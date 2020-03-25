@@ -604,7 +604,7 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 	bool success = read_data;
 
 	if (read_data) {
-		const IReflectionManager& refl_mgr = GetApp().getReflectionManager();
+		const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 
 		reader.forEachInObject([&](const char* component_name) -> bool
 		{

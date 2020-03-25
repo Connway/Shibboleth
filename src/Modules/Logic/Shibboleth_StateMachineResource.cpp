@@ -69,7 +69,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 	ProxyAllocator allocator("Resource");
 	_state_machine.reset(SHIB_ALLOCT(Esprit::StateMachine, allocator));
 
-	const IReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
 
 	// Load variables.

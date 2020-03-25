@@ -31,55 +31,10 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IReflectionManager
-{
-public:
-	template <class T>
-	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(void) const
-	{
-		return getEnumReflectionWithAttribute(Reflection<T>::GetHash());
-	}
-
-	template <class T>
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(void) const
-	{
-		return getReflectionWithAttribute(Reflection<T>::GetHash());
-	}
-
-	virtual ~IReflectionManager(void) {}
-
-	virtual const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const = 0;
-	virtual void registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def) = 0;
-	virtual void registerEnumOwningModule(Gaff::Hash64 name, const char* module_name) = 0;
-	virtual void registerReflection(Gaff::IEnumReflectionDefinition* ref_def) = 0;
-
-	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
-	virtual void registerReflection(Gaff::IReflectionDefinition* ref_def) = 0;
-	virtual void registerOwningModule(Gaff::Hash64 name, const char* module_name) = 0;
-
-	virtual const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const = 0;
-	virtual const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const = 0;
-	virtual void registerTypeBucket(Gaff::Hash64 name) = 0;
-
-	virtual const Vector<const Gaff::IReflectionDefinition*>* getAttributeBucket(Gaff::Hash64 name) const = 0;
-	virtual void registerAttributeBucket(Gaff::Hash64 attr_name) = 0;
-
-	virtual Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const = 0;
-	virtual Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const = 0;
-
-	virtual Vector< HashString64<> > getModules(void) const = 0;
-};
-
-class ReflectionManager final : public IReflectionManager
+class ReflectionManager final
 {
 public:
 	static bool CompareRefHash(const Gaff::IReflectionDefinition* lhs, Gaff::Hash64 rhs);
-
-	template <class T>
-	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(void) const
-	{
-		return getEnumReflectionWithAttribute(Reflection<T>::GetHash());
-	}
 
 	template <class T>
 	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(void) const
@@ -93,24 +48,24 @@ public:
 
 	void destroy(void);
 
-	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
-	void registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def) override;
-	void registerEnumOwningModule(Gaff::Hash64 name, const char* module_name) override;
-	void registerReflection(Gaff::IEnumReflectionDefinition* ref_def) override;
+	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const;
+	void registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def);
+	void registerEnumOwningModule(Gaff::Hash64 name, const char* module_name);
+	void registerReflection(Gaff::IEnumReflectionDefinition* ref_def);
 
-	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
-	void registerReflection(Gaff::IReflectionDefinition* ref_def) override;
-	void registerOwningModule(Gaff::Hash64 name, const char* module_name) override;
+	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const;
+	void registerReflection(Gaff::IReflectionDefinition* ref_def);
+	void registerOwningModule(Gaff::Hash64 name, const char* module_name);
 
-	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const override;
-	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const override;
-	void registerTypeBucket(Gaff::Hash64 name) override;
+	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const;
+	void registerTypeBucket(Gaff::Hash64 name);
 
-	const Vector<const Gaff::IReflectionDefinition*>* getAttributeBucket(Gaff::Hash64 name) const override;
-	void registerAttributeBucket(Gaff::Hash64 attr_name) override;
+	const Vector<const Gaff::IReflectionDefinition*>* getAttributeBucket(Gaff::Hash64 name) const;
+	void registerAttributeBucket(Gaff::Hash64 attr_name);
 
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const override;
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const override;
+	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const;
 
 	Vector< HashString64<> > getModules(void) const;
 

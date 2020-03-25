@@ -34,7 +34,7 @@ NS_END
 
 NS_SHIBBOLETH
 
-class IReflectionManager;
+class ReflectionManager;
 class IFileSystem;
 class Broadcaster;
 class LogManager;
@@ -103,8 +103,8 @@ public:
 	virtual Gaff::JSON& getConfigs(void) = 0;
 	virtual U8String getProjectDirectory(void) const = 0;
 
-	virtual const IReflectionManager& getReflectionManager(void) const = 0;
-	virtual IReflectionManager& getReflectionManager(void) = 0;
+	virtual const ReflectionManager& getReflectionManager(void) const = 0;
+	virtual ReflectionManager& getReflectionManager(void) = 0;
 	virtual Broadcaster& getBroadcaster(void) = 0;
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
