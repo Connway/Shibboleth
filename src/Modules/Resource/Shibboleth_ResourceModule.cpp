@@ -29,10 +29,18 @@ THE SOFTWARE.
 	namespace Resource
 	{
 
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
+			if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
 			Shibboleth::SetApp(app);
-			Resource::Gen::InitReflection();
+			Resource::Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -43,9 +51,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Resource::Initialize(app);
+		return Resource::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		Resource::InitializeNonOwned();
 	}
 
 #endif

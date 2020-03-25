@@ -47,10 +47,12 @@ public:
 	VariableSet* getVariables(void);
 	void setVariables(VariableSet* variables);
 
+	// Add states first.
 	int32_t getStateIndex(const HashStringTemp32<>& name) const;
 	int32_t addState(const HashStringTemp32<>& name);
 	bool removeState(const HashStringTemp32<>& name);
 
+	// Then processes, edges, and conditions.
 	int32_t addProcess(const HashStringTemp32<>& name, IProcess* process);
 	int32_t addProcess(int32_t state_index, IProcess* process);
 	bool removeProcess(const HashStringTemp32<>& name, IProcess* process);
@@ -97,6 +99,7 @@ private:
 	StateMachine* _parent = nullptr;
 
 	int32_t findStateIndex(const HashStringTemp32<>& state_name) const;
+	bool doState(const State& state, VariableSet::VariableInstance* instance_data);
 };
 
 NS_END

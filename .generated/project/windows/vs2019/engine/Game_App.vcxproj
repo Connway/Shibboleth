@@ -156,7 +156,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\Gleam.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Debug\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -192,7 +192,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\Gleam.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Release\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -228,7 +228,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\Gleam.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Profile\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -264,7 +264,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Gleam.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\mpack.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -339,6 +339,9 @@
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
     <ProjectReference Include="Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>
@@ -347,6 +350,9 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\Camera.vcxproj">
+      <Project>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
       <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
@@ -377,9 +383,6 @@
     </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
-      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>

@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InputManager.h"
+#include "Shibboleth_InputReflection.h"
 #include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -42,15 +43,7 @@ R"({
 	"type": "array",
 	"items":
 	{
-		"type": ["string", "object"],
-		"properties":
-		{
-			"Name": { "type": "string" },
-			"Taps": { "type": "integer", "minimum": 1 },
-			"Tap Interval": { "type": "number" },
-
-			"required": ["Name"]
-		}
+		"type": "string"
 	}
 })";
 
@@ -65,6 +58,8 @@ R"({
 			"Alias": { "type": "string" },
 			"Binding": { "type": ["array", "string"], "items": { "type": "string" } },
 			"Scale": { "type": "number", "default": 1.0 },
+			"Taps": { "type": "integer", "minimum": 1 },
+			"Tap Interval": { "type": "number" },
 
 			"required": ["Alias", "Binding"]
 		}
@@ -73,7 +68,7 @@ R"({
 
 
 
-bool InputManager::init(void)
+bool InputManager::initAllModulesLoaded(void)
 {
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 
@@ -105,43 +100,24 @@ bool InputManager::init(void)
 		return false;
 	}
 
+	VectorMap<Gaff::Hash32, Alias> alias_values(ProxyAllocator("Input"));
+
 	aliases.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
 		GAFF_ASSERT(value.isString() || value.isObject());
 
-		Gaff::Hash32 alias_hash;
-		Alias alias;
+		const char* const name_value = value.getString();
+		alias_values[Gaff::FNV1aHash32String(name_value)] = Alias{};
+		value.freeString(name_value);
 
-		if (value.isString()) {
-			const char* const name_value = value.getString();
-			alias_hash = Gaff::FNV1aHash32String(name_value);
-			value.freeString(name_value);
-
-		} else {
-			const Gaff::JSON tap_interval = value["Tap Interval"];
-			const Gaff::JSON taps = value["Taps"];
-			const Gaff::JSON name = value["Name"];
-
-			GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
-			GAFF_ASSERT(taps.isInt8() || taps.isNull());
-			GAFF_ASSERT(name.isString());
-
-			const float tap_interval_value = tap_interval.getFloat(0.1f);
-			const char* const name_value = name.getString();
-			const int8_t taps_value = taps.getInt8(0);
-
-			alias.tap_interval = tap_interval_value;
-			alias.taps = taps_value;
-
-			alias_hash = Gaff::FNV1aHash32String(name_value);
-			name.freeString(name_value);
-		}
-
-		_alias_values[alias_hash] = alias;
 		return false;
 	});
 
-	_alias_values.shrink_to_fit();
+	alias_values.shrink_to_fit();
+
+	for (auto& av : _alias_values) {
+		av = alias_values;
+	}
 
 	// Load bindings.
 	IFile* const input_file = GetApp().getFileSystem().openFile("cfg/input_bindings.cfg");
@@ -161,16 +137,22 @@ bool InputManager::init(void)
 	_keyboard->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
 	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
+	Vector<Binding> bindings(ProxyAllocator("Input"));
+
 	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
 		GAFF_ASSERT(value.isObject());
 
+		const Gaff::JSON tap_interval = value["Tap Interval"];
 		const Gaff::JSON binding = value["Binding"];
 		const Gaff::JSON scale = value["Scale"];
 		const Gaff::JSON alias = value["Alias"];
+		const Gaff::JSON taps = value["Taps"];
 
+		GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
 		GAFF_ASSERT(binding.isString() || binding.isArray());
 		GAFF_ASSERT(scale.isFloat() || scale.isNull());
+		GAFF_ASSERT(taps.isInt8() || taps.isNull());
 		GAFF_ASSERT(alias.isString());
 
 		const auto& mouse_ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
@@ -180,17 +162,23 @@ bool InputManager::init(void)
 		const float scale_value = scale.getFloat(1.0f);
 
 		const Gaff::Hash32 alias_hash = Gaff::FNV1aHash32String(alias_str);
+		const auto alias_it = alias_values.find(alias_hash);
 
-		if (_alias_values.find(alias_hash) == _alias_values.end()) {
+		if (alias_values.find(alias_hash) == alias_values.end()) {
 			LogErrorDefault("InputManager: Invalid input alias '%s'.", alias_str);
 			alias.freeString(alias_str);
 
 			return false;
 		}
 
+		const float tap_interval_value = tap_interval.getFloat(0.1f);
+		const int8_t taps_value = taps.getInt8(0);
+
 		Binding final_binding;
-		final_binding.alias = Gaff::FNV1aHash32String(alias_str);
+		final_binding.alias_index = static_cast<int32_t>(eastl::distance(alias_values.begin(), alias_it));
 		final_binding.scale = scale_value;
+		final_binding.tap_interval = tap_interval_value;
+		final_binding.taps = taps_value;
 
 		alias.freeString(alias_str);
 
@@ -243,10 +231,14 @@ bool InputManager::init(void)
 		eastl::sort(final_binding.mouse_codes.begin(), final_binding.mouse_codes.end());
 		eastl::sort(final_binding.key_codes.begin(), final_binding.key_codes.end());
 
-		_bindings.emplace_back(final_binding);
+		bindings.emplace_back(final_binding);
 
 		return false;
 	});
+
+	for (auto& b : _bindings) {
+		b = bindings;
+	}
 
 	return true;
 }
@@ -258,47 +250,51 @@ void InputManager::update()
 
 	const float dt = static_cast<float>(GetApp().getManagerTFast<GameTimeManager>().getRealTime().delta);
 
-	for (auto& alias : _alias_values) {
-		if (alias.second.taps > 0) {
-			alias.second.curr_tap_time += dt;
+	for (int32_t i = 0; i < g_max_local_players; ++i) {
+		for (auto& binding : _bindings[i]) {
+			if (binding.taps > 0) {
+				binding.curr_tap_time += dt;
 
-			// We have been set for at least one frame or we have exceeded the tap time. Reset.
-			if (!alias.second.first_frame && alias.second.curr_tap == alias.second.taps) {
-				alias.second.curr_tap_time = 0.0f;
-				alias.second.curr_tap = 0;
-				alias.second.value = 0.0f;
+				// We have been set for at least one frame or we have exceeded the tap time. Reset.
+				if (!binding.first_frame && binding.curr_tap == binding.taps) {
+					_alias_values[i][binding.alias_index].value = 0.0f;
+					binding.curr_tap_time = 0.0f;
+					binding.curr_tap = 0;
 
-			} else if (alias.second.curr_tap_time > alias.second.tap_interval) {
-				alias.second.curr_tap_time = 0.0f;
-				alias.second.curr_tap = 0;
+				} else if (binding.curr_tap_time > binding.tap_interval) {
+					binding.curr_tap_time = 0.0f;
+					binding.curr_tap = 0;
+				}
+
+				binding.first_frame = false;
 			}
-
-			alias.second.first_frame = false;
 		}
 	}
 }
 
-float InputManager::getAliasValue(Gaff::Hash32 alias_name) const
+float InputManager::getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const
 {
-	const auto it = _alias_values.find(alias_name);
-	return (it == _alias_values.end()) ? 0.0f : it->second.value;
+	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	const auto it = _alias_values[player_id].find(alias_name);
+	return (it == _alias_values[player_id].end()) ? 0.0f : it->second.value;
 }
 
-float InputManager::getAliasValue(const char* alias_name) const
+float InputManager::getAliasValue(const char* alias_name, int32_t player_id) const
 {
-	return getAliasValue(Gaff::FNV1aHash32String(alias_name));
+	return getAliasValue(Gaff::FNV1aHash32String(alias_name), player_id);
 }
 
-float InputManager::getAliasValue(int32_t index) const
+float InputManager::getAliasValue(int32_t index, int32_t player_id) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values.size()));
-	return _alias_values.at(index).second.value;
+	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values[player_id].size()));
+	return _alias_values[player_id].at(index).second.value;
 }
 
 int32_t InputManager::getAliasIndex(Gaff::Hash32 alias_name) const
 {
-	const auto it = _alias_values.find(alias_name);
-	return (it != _alias_values.end()) ? static_cast<int32_t>(eastl::distance(_alias_values.begin(), it)) : -1;
+	const auto it = _alias_values[0].find(alias_name);
+	return (it != _alias_values[0].end()) ? static_cast<int32_t>(eastl::distance(_alias_values[0].begin(), it)) : -1;
 }
 
 int32_t InputManager::getAliasIndex(const char* alias_name) const
@@ -306,11 +302,23 @@ int32_t InputManager::getAliasIndex(const char* alias_name) const
 	return getAliasIndex(Gaff::FNV1aHash32String(alias_name));
 }
 
+void InputManager::setKeyboardMousePlayerID(int32_t player_id)
+{
+	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	_km_player_id = player_id;
+}
+
+int32_t InputManager::getKeyboardMousePlayerID(void) const
+{
+	return _km_player_id;
+}
+
 void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
+	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, g_max_local_players));
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
 
-	for (Binding& binding : _bindings) {
+	for (Binding& binding : _bindings[_km_player_id]) {
 		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.key_codes, code);
 
@@ -320,9 +328,9 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 
 				// All the bindings have been pressed.
 				if (binding.count == binding_size) {
-					auto& alias = _alias_values[binding.alias];
+					auto& alias = _alias_values[_km_player_id][binding.alias_index];
 
-					if (alias.taps <= 0) {
+					if (binding.taps <= 0) {
 						alias.value += binding.scale;
 					}
 				}
@@ -330,17 +338,17 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 			} else {
 				// All the bindings have been released.
 				if (binding.count == binding_size) {
-					auto& alias = _alias_values[binding.alias];
+					auto& alias = _alias_values[_km_player_id][binding.alias_index];
 
 					// Check that we've reached the tap count.
-					if (alias.taps > 0) {
-						alias.curr_tap_time = 0.0f;
-						++alias.curr_tap;
+					if (binding.taps > 0) {
+						binding.curr_tap_time = 0.0f;
+						++binding.curr_tap;
 
 						// We've reached the tap count, set the alias.
-						if (alias.curr_tap == alias.taps) {
+						if (binding.curr_tap == binding.taps) {
 							alias.value += binding.scale;
-							alias.first_frame = true;
+							binding.first_frame = true;
 						}
 
 					// We have no tap requirements.
@@ -360,13 +368,13 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 
-	for (Binding& binding : _bindings) {
+	for (Binding& binding : _bindings[_km_player_id]) {
 		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.mouse_codes, code);
 
 		if (it != binding.mouse_codes.end()) {
 			if (binding_size == 1 && !is_button) {
-				_alias_values[binding.alias].value = binding.scale * value;
+				_alias_values[_km_player_id][binding.alias_index].value = binding.scale * value;
 
 			} else {
 				if (value != 0.0f) {
@@ -374,9 +382,9 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 
 					// All the bindings have been pressed.
 					if (binding.count == binding_size) {
-						auto& alias = _alias_values[binding.alias];
+						auto& alias = _alias_values[_km_player_id][binding.alias_index];
 
-						if (alias.taps <= 0) {
+						if (binding.taps <= 0) {
 							alias.value += binding.scale;
 						}
 					}
@@ -384,17 +392,17 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 				} else {
 					// All the bindings have been released.
 					if (binding.count == binding_size) {
-						auto& alias = _alias_values[binding.alias];
+						auto& alias = _alias_values[_km_player_id][binding.alias_index];
 
 						// Check that we've reached the tap count.
-						if (alias.taps > 0) {
-							alias.curr_tap_time = 0.0f;
-							++alias.curr_tap;
+						if (binding.taps > 0) {
+							binding.curr_tap_time = 0.0f;
+							++binding.curr_tap;
 
 							// We've reached the tap count, set the alias.
-							if (alias.curr_tap == alias.taps) {
+							if (binding.curr_tap == binding.taps) {
 								alias.value += binding.scale;
-								alias.first_frame = true;
+								binding.first_frame = true;
 							}
 
 						// We have no tap requirements.

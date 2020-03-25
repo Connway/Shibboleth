@@ -32,8 +32,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Camera)
 
 	.base< ECSComponentBaseNonShared<Camera> >()
 
-	.staticFunc("Copy", &Camera::Copy)
-
 	.var("device_tag", &Camera::device_tag, HashStringAttribute())
 	.var("v_fov", &Camera::v_fov, OptionalAttribute())
 	.var("z_near", &Camera::z_near, OptionalAttribute())
@@ -45,49 +43,53 @@ SHIB_REFLECTION_DEFINE_END(Camera)
 
 NS_SHIBBOLETH
 
-void Camera::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Camera& value)
+void Camera::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-	component[0] = value.v_fov;
-	component[4] = value.z_near;
-	component[8] = value.z_far;
-	//component[12] = value.focus_distance;
-	//component[16] = value.f_stop;
+	const Gaff::Hash32* const old_device = reinterpret_cast<const Gaff::Hash32*>(old_begin) + old_index;
+	Gaff::Hash32* const new_device = reinterpret_cast<Gaff::Hash32*>(new_begin) + new_index;
+
+	const float* const old_values = GetFloatBegin(old_begin, old_index);
+	float* const new_values = GetFloatBegin(new_begin, new_index);
+
+	*new_device = *old_device;
+	new_values[0] = old_values[0];
+	new_values[4] = old_values[4];
+	new_values[8] = old_values[8];
+	//new_values[12] = old_values[12];
+	//new_values[16] = old_values[16];
 }
 
-void Camera::Set(ECSManager& ecs_mgr, EntityID id, const Camera& value)
+void Camera::SetInternal(void* component, int32_t page_index, const Camera& value)
 {
-	float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Camera>(id)) + ecs_mgr.getPageIndex(id) % 4;
+	Gaff::Hash32* const device = reinterpret_cast<Gaff::Hash32*>(component) + page_index;
+	float* const comp = GetFloatBegin(component, page_index);
 
-	component[0] = value.v_fov;
-	component[4] = value.z_near;
-	component[8] = value.z_far;
-	//component[12] = value.focus_distance;
-	//component[16] = value.f_stop;
+	*device = value.device_tag;
+	comp[0] = value.v_fov;
+	comp[4] = value.z_near;
+	comp[8] = value.z_far;
 }
 
-Camera Camera::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
+Camera Camera::GetInternal(const void* component, int32_t page_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent(query_result, entity_index)) + ecs_mgr.getPageIndex(query_result, entity_index) % 4;
-	return Camera(component);
+	const Gaff::Hash32* const device = reinterpret_cast<const Gaff::Hash32*>(component) + page_index;
+
+	Camera camera(GetFloatBegin(component, page_index));
+	camera.device_tag = *device;
+
+	return camera;
 }
 
-Camera Camera::Get(ECSManager& ecs_mgr, EntityID id)
+glm_vec4 Camera::GetVerticalFOVDegrees(const void* component, int32_t page_index)
 {
-	const float* const component = reinterpret_cast<float*>(ecs_mgr.getComponent<Camera>(id)) + ecs_mgr.getPageIndex(id) % 4;
-	return Camera(component);
+	return glm_vec4_mul(GetVerticalFOV(component, page_index), _mm_set_ps1(Gaff::RadToDeg));
 }
 
-glm_vec4 Camera::GetVerticalFOVDegrees(const void* component_begin)
-{
-	return glm_vec4_mul(GetVerticalFOV(component_begin), _mm_set_ps1(Gaff::RadToDeg));
-}
-
-glm_vec4 Camera::GetVerticalFOV(const void* component_begin)
+glm_vec4 Camera::GetVerticalFOV(const void* component, int32_t page_index)
 {
 	// 2.0f * atan(0.5f * sensor_size / focal_length)
 	const glm_vec4 sensor_size = _mm_set_ps1(DefaultSensorSize * 0.5f);
-	const glm_vec4 focal_length = GetFocalLength(component_begin);
+	const glm_vec4 focal_length = GetFocalLength(component, page_index);
 
 	glm_vec4 fov = glm_vec4_div(sensor_size, focal_length);
 	fov = _mm_atan_ps(fov);
@@ -96,42 +98,30 @@ glm_vec4 Camera::GetVerticalFOV(const void* component_begin)
 	return fov;
 }
 
-glm_vec4 Camera::GetFocalLength(const void* component_begin)
+glm_vec4 Camera::GetFocalLength(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
+	return _mm_load_ps(GetFloatBegin(component, page_index));
 }
 
-glm_vec4 Camera::GetZNear(const void* component_begin)
+glm_vec4 Camera::GetZNear(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
+	return _mm_load_ps(GetFloatBegin(component, page_index) + 4);
 }
 
-glm_vec4 Camera::GetZFar(const void* component_begin)
+glm_vec4 Camera::GetZFar(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
+	return _mm_load_ps(GetFloatBegin(component, page_index) + 8);
 }
 
-//glm_vec4 Camera::GetFocusDistance(const void* component_begin)
+//glm_vec4 Camera::GetFocusDistance(const void* component, int32_t page_index)
 //{
 //	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 //}
 
-//glm_vec4 GetFocalLength(const void* component_begin)
+//glm_vec4 GetFocalLength(const void* component, int32_t page_index)
 //{
 //	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 16);
 //}
-
-void Camera::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
-{
-	const float* const old_values = reinterpret_cast<const float*>(old_begin) + old_index;
-	float* const new_values = reinterpret_cast<float*>(new_begin) + new_index;
-
-	new_values[0] = old_values[0];
-	new_values[4] = old_values[4];
-	new_values[8] = old_values[8];
-	//new_values[12] = old_values[12];
-	//new_values[16] = old_values[16];
-}
 
 Camera::Camera(const float* component):
 	v_fov(component[0]),
@@ -148,6 +138,18 @@ void Camera::SetVerticalFOV(float focal_length, float sensor_size)
 float Camera::GetVerticalFOV(void) const
 {
 	return v_fov;
+}
+
+const float* Camera::GetFloatBegin(const void* component, int32_t page_index)
+{
+	return GetFloatBegin(const_cast<void*>(component), page_index);
+}
+
+float* Camera::GetFloatBegin(void* component, int32_t page_index)
+{
+	Gaff::Hash32* const device = reinterpret_cast<Gaff::Hash32*>(component);
+	float* const comp = reinterpret_cast<float*>(device + 4) + page_index;
+	return comp;
 }
 
 NS_END

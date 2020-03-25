@@ -22,6 +22,7 @@ project "refl_hash_dump"
 	{
 		"Engine",
 		"Gaff",
+		"Gleam",
 		"Memory",
 		"EASTL",
 		"mpack"

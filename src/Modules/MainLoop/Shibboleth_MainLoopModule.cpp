@@ -29,12 +29,20 @@ THE SOFTWARE.
 	namespace MainLoop
 	{
 
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			Shibboleth::SetApp(app);
-			Gen::InitReflection();
+			if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
 
-			app.getReflectionManager().registerTypeBucket(CLASS_HASH(ISystem));
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+
+				app.getReflectionManager().registerTypeBucket(CLASS_HASH(ISystem));
+			}
+
+			Shibboleth::SetApp(app);
+			Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -45,9 +53,14 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return MainLoop::Initialize(app);
+		return MainLoop::Initialize(app, mode);
+	}
+
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		MainLoop::InitializeNonOwned();
 	}
 
 #endif

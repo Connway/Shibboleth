@@ -278,7 +278,7 @@ public:
 
 	~ECSManager(void);
 
-	void allModulesLoaded(void) override;
+	bool initAllModulesLoaded(void) override;
 
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
 	void addArchetype(ECSArchetype&& archetype);

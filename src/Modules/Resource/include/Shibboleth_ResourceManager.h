@@ -38,7 +38,7 @@ public:
 
 	ResourceManager(void);
 
-	void allModulesLoaded(void) override;
+	bool init(void) override;
 
 	template <class T>
 	Gaff::RefPtr<T> requestResourceT(HashStringTemp64<> name, bool delay_load = false)

@@ -116,16 +116,15 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 		.ctor<>(); \
 		if constexpr (type::IsNonShared() && type::IsShared()) { \
 			builder \
-				.base< ECSComponentBaseBoth<type> >() \
-				.staticFunc("Copy", &type::Copy); \
+				.base< ECSComponentBaseBoth<type> >(); \
 		} else if constexpr (type::IsNonShared()) { \
 			builder \
-				.base< ECSComponentBaseNonShared<type> >() \
-				.staticFunc("Copy", &type::Copy); \
+				.base< ECSComponentBaseNonShared<type> >(); \
 		} else if constexpr (type::IsShared()) { \
-				builder \
-					.base< ECSComponentBaseShared<type> >(); \
-		}
+			builder \
+				.base< ECSComponentBaseShared<type> >(); \
+		} \
+		builder
 
 #define SHIB_ECS_TAG_COMPONENT_DEFINE(type, name, category) \
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
@@ -149,7 +148,7 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 	}; \
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_WITH_DEFAULT(name, type, base, default_val) \
-	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base, default_val) \
+	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(name, type, base, default_val) \
 	SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE(name, type, base) \
@@ -158,6 +157,5 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(type, name, category, ...) \
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
-		builder \
-			.var("value", &type::value, ##__VA_ARGS__); \
+		.var("value", &type::value, ##__VA_ARGS__); \
 	SHIB_REFLECTION_DEFINE_END(type) \

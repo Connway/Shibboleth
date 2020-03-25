@@ -64,7 +64,7 @@ bool DevWebServerManager::init(void)
 	return true;
 }
 
-void DevWebServerManager::allModulesLoaded(void)
+bool DevWebServerManager::initAllModulesLoaded(void)
 {
 	const auto ref_defs = GetApp().getReflectionManager().getReflectionWithAttribute<DevWebCommandAttribute>();
 	ProxyAllocator allocator("DevWeb");
@@ -89,6 +89,7 @@ void DevWebServerManager::allModulesLoaded(void)
 	}
 
 	_server->addHandler("", _default_handler);
+	return true;
 }
 
 NS_END

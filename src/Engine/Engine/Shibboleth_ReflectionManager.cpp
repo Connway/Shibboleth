@@ -236,37 +236,6 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	eastl::sort(bucket.begin(), bucket.end(), CompareRefDef);
 }
 
-Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
-{
-	const auto it_module = _module_enum_owners.find(HashString64<>(module_name));
-	Vector<const Gaff::IEnumReflectionDefinition*> out;
-
-	if (it_module == _module_enum_owners.end() || it_module->first.getHash() != module_name) {
-		return out;
-	}
-
-	for (const auto& entry : it_module->second) {
-		if (entry->getEnumAttr<void>(name)) {
-			out.push_back(entry);
-		}
-	}
-
-	return out;
-}
-
-Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflectionWithAttribute(Gaff::Hash64 name) const
-{
-	Vector<const Gaff::IEnumReflectionDefinition*> out;
-
-	for (const auto& entry : _enum_reflection_map) {
-		if (entry.second->getEnumAttr<void>(name)) {
-			out.push_back(entry.second.get());
-		}
-	}
-
-	return out;
-}
-
 Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
 	const auto* bucket = getTypeBucket(Gaff::FNV1aHash64Const("*"), module_name);
@@ -278,7 +247,7 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 
 	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
 		if (hasAttribute(*ref_def, name)) {
-			out.push_back(ref_def);
+			out.emplace_back(ref_def);
 		}
 	}
 
@@ -298,7 +267,7 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 
 	for (const auto& entry : _reflection_map) {
 		if (hasAttribute(*entry.second, name)) {
-			out.push_back(entry.second.get());
+			out.emplace_back(entry.second.get());
 		}
 	}
 

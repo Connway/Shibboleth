@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_Broadcaster.h"
@@ -41,13 +42,13 @@ public:
 	App(void);
 	~App(void);
 
-	bool init(int argc, const char** argv, bool (*static_init)(void) = nullptr);
+	bool init(int argc, const char** argv);
 #ifdef PLATFORM_WINDOWS
-	bool init(bool (*static_init)(void) = nullptr);
+	bool init(void);
 #endif
 
 	void run(void);
-	void destroy(void (*static_shutdown)(void) = nullptr);
+	void destroy(void);
 
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
@@ -57,8 +58,8 @@ public:
 	Gaff::JSON& getConfigs(void) override;
 	U8String getProjectDirectory(void) const override;
 
-	const ReflectionManager& getReflectionManager(void) const override;
-	ReflectionManager& getReflectionManager(void) override;
+	const IReflectionManager& getReflectionManager(void) const override;
+	IReflectionManager& getReflectionManager(void) override;
 	Broadcaster& getBroadcaster(void) override;
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
@@ -69,7 +70,8 @@ public:
 	void quit(void) override;
 
 private:
-	using InitModuleFunc = bool (*)(IApp&);
+	using InitFileSystemModuleFunc = bool (*)(IApp&);
+	using InitModuleFunc = bool (*)(IApp&, InitMode);
 
 	struct FileSystemData
 	{
@@ -105,13 +107,15 @@ private:
 
 	ThreadAllocator _thread_allocator;
 
-	bool initInternal(bool (*static_init)(void));
+	bool initInternal(void);
 	bool loadFileSystem(void);
 	bool loadMainLoop(void);
 	bool loadModules(void);
 	bool initApp(void);
 
-	bool loadModule(const char* module_name);
+	bool loadModule(const char* module_name, InitMode mode);
+	bool createManagers(void);
+
 	void removeExtraLogs(void);
 
 	bool createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers);

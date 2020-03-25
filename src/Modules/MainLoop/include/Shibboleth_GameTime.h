@@ -34,8 +34,8 @@ struct Time final
 	double total = 0.0;
 	double delta = 0.0;
 
-	float GetTotalFloat(void) const { return static_cast<float>(total); }
-	float GetDeltaFloat(void) const { return static_cast<float>(delta); }
+	float getTotalFloat(void) const { return static_cast<float>(total); }
+	float getDeltaFloat(void) const { return static_cast<float>(delta); }
 };
 
 class GameTimeManager final : public IManager
