@@ -69,7 +69,7 @@ ResourceManager::ResourceManager(void)
 bool ResourceManager::init(void)
 {
 	IApp& app = GetApp();
-	IReflectionManager& refl_mgr = app.getReflectionManager();
+	ReflectionManager& refl_mgr = app.getReflectionManager();
 
 	refl_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
 	app.getLogManager().addChannel("Resource", "ResourceLog");

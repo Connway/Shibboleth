@@ -58,8 +58,8 @@ public:
 	Gaff::JSON& getConfigs(void) override;
 	U8String getProjectDirectory(void) const override;
 
-	const IReflectionManager& getReflectionManager(void) const override;
-	IReflectionManager& getReflectionManager(void) override;
+	const ReflectionManager& getReflectionManager(void) const override;
+	ReflectionManager& getReflectionManager(void) override;
 	Broadcaster& getBroadcaster(void) override;
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;

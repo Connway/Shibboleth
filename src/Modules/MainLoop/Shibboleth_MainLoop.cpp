@@ -82,7 +82,7 @@ bool MainLoop::init(void)
 		return false;
 	}
 
-	IReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const auto* bucket = refl_mgr.getTypeBucket(CLASS_HASH(ISystem));
 
 	_systems.set_allocator(allocator);

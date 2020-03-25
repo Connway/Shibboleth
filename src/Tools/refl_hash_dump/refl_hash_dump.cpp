@@ -40,7 +40,7 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	const Shibboleth::IReflectionManager& refl_mgr = app.getReflectionManager();
+	const Shibboleth::ReflectionManager& refl_mgr = app.getReflectionManager();
 	const auto* const class_refl = refl_mgr.getTypeBucket(Gaff::FNV1aHash64Const("*"));
 
 	if (!class_refl) {

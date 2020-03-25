@@ -337,12 +337,12 @@ U8String App::getProjectDirectory(void) const
 	return (wd.isString()) ? wd.getString() : ".";
 }
 
-const IReflectionManager& App::getReflectionManager(void) const
+const ReflectionManager& App::getReflectionManager(void) const
 {
 	return _reflection_mgr;
 }
 
-IReflectionManager& App::getReflectionManager(void)
+ReflectionManager& App::getReflectionManager(void)
 {
 	return _reflection_mgr;
 }
