@@ -22,37 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ECSComponentBase.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_IResource.h>
+#include "Shibboleth_StateMachineResource.h"
+#include <Shibboleth_ResourceComponent.h>
 
 NS_SHIBBOLETH
 
-template <class T>
-class Resource
+class StateMachine final : public ECSComponentBaseBoth<StateMachine>, public ECSComponentDestructable<StateMachine>
 {
 public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t page_index, const StateMachine& value);
+	static StateMachine GetInternal(const void* component, int32_t page_index);
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
-
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
-	static constexpr bool IsNonShared(void);
-	static constexpr bool IsShared(void);
-
-	typename ResourceType value;
+	StateMachineResourcePtr value;
 };
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"
+SHIB_REFLECTION_DECLARE(StateMachine)

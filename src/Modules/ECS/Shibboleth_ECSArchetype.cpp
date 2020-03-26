@@ -213,8 +213,7 @@ void ECSArchetype::copy(
 	void* old_data,
 	int32_t old_index,
 	void* new_data,
-	int32_t new_index
-)
+	int32_t new_index)
 {
 	copySharedInstanceData(old_archetype);
 	copyDefaultData(old_archetype);
@@ -394,6 +393,35 @@ bool ECSArchetype::isBase(void) const
 	return _is_base;
 }
 
+void ECSArchetype::destroyEntity(void* entity, int32_t entity_index) const
+{
+	for (const RefDefOffset& rdo : _vars) {
+		if (rdo.destructor_func) {
+			rdo.destructor_func(reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
+		}
+
+		if (rdo.constructor_func) {
+			rdo.constructor_func(reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
+		}
+	}
+}
+
+void ECSArchetype::constructPage(void* page, int32_t num_entities) const
+{
+	for (int32_t i = 0; i < num_entities; ++i) {
+		int8_t* const entity_start = reinterpret_cast<int8_t*>(page) + (i * size() * 4);
+
+		for (const RefDefOffset& rdo : _vars) {
+			if (rdo.constructor_func) {
+				rdo.constructor_func(entity_start + rdo.offset, 0);
+				rdo.constructor_func(entity_start + rdo.offset, 1);
+				rdo.constructor_func(entity_start + rdo.offset, 2);
+				rdo.constructor_func(entity_start + rdo.offset, 3);
+			}
+		}
+	}
+}
+
 template <bool shared>
 bool ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool has_default_values)
 {
@@ -449,6 +477,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
 	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
+	RefDefOffset::DestructorFunc destructor_func = ref_def.getStaticFunc<void, void*, int32_t>(Gaff::FNV1aHash32Const("Destructor"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log error.
@@ -477,7 +506,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 		const int32_t size_offset = (vars.empty()) ? 0 : (vars.back().ref_def->size() * size_scalar);
 		const int32_t base_offset = (vars.empty()) ? 0 : vars.back().offset;
 
-		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func });
+		vars.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func, destructor_func });
 
 	// Inserting, bump up all the offsets.
 	} else {
@@ -487,7 +516,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 			begin->offset += ref_def.size() * size_scalar;
 		}
 
-		vars.emplace(it, RefDefOffset{ &ref_def, offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func });
+		vars.emplace(it, RefDefOffset{ &ref_def, offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func, destructor_func });
 	}
 
 	// If not shared, add to the default values list if applicable.
@@ -503,7 +532,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 				const int32_t size_offset = (_vars_defaults.empty()) ? 0 : _vars_defaults.back().ref_def->size();
 				const int32_t base_offset = (_vars_defaults.empty()) ? 0 : _vars_defaults.back().offset;
 
-				_vars_defaults.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func });
+				_vars_defaults.emplace_back(RefDefOffset{ &ref_def, base_offset + size_offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func, destructor_func });
 
 			// Inserting, bump up all the offsets.
 			} else {
@@ -513,7 +542,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 					begin->offset += ref_def.size();
 				}
 
-				_vars_defaults.emplace(it_default, RefDefOffset{ &ref_def, offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func });
+				_vars_defaults.emplace(it_default, RefDefOffset{ &ref_def, offset, copy_default_to_non_shared_func, copy_shared_func, copy_func, load_func, destructor_func });
 			}
 		}
 	}

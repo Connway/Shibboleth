@@ -9,6 +9,7 @@
 
 	"components":
 	{
+		"StateMachine": { "value": "StateMachines/camera.state_machine" },
 		"Camera": {},
 		"Position": {},
 		"Rotation": {}

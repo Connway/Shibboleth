@@ -52,6 +52,12 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseBoth, T)
 	.staticFunc("IsShared", &ECSComponentBase<T>::IsShared)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBase, T)
 
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentDestructable, T)
+	.staticFunc("Constructor", &ECSComponentDestructable<T>::Constructor)
+	.staticFunc("Destructor", &ECSComponentDestructable<T>::Destructor)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentDestructable, T)
+
 NS_SHIBBOLETH
 
 template <class T, ECSComponentType type>
@@ -204,6 +210,20 @@ T ECSComponentBase<T, type>::GetInternal(const void* component, int32_t page_ind
 	GAFF_REF(component, page_index);
 	GAFF_ASSERT_MSG(IsNonShared(), "GetInternal() called on a component that doesn't support non-shared behavior.");
 	GAFF_ASSERT_MSG(false, "GetInternal() not implemented with type '%s'.", Reflection<T>::GetName());
+}
+
+
+
+template <class T>
+void ECSComponentDestructable<T>::Constructor(void* component, int32_t entity_index)
+{
+	new(reinterpret_cast<T*>(component) + entity_index) T();
+}
+
+template <class T>
+void ECSComponentDestructable<T>::Destructor(void* component, int32_t entity_index)
+{
+	(reinterpret_cast<T*>(component) + entity_index)->~T();
 }
 
 NS_END

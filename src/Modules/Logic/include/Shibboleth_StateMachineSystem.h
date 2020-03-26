@@ -22,37 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ECSComponentBase.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_ECSQuery.h>
+#include <Shibboleth_ISystem.h>
 
 NS_SHIBBOLETH
 
-template <class T>
-class Resource
+class StateMachine;
+class ECSManager;
+
+class StateMachineSystem final : public ISystem
 {
 public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	bool init(void) override;
+	void update(void) override;
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
-
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
-
-	static void CopyShared(const void* old_value, void* new_value);
-
-	static constexpr bool IsNonShared(void);
-	static constexpr bool IsShared(void);
-
-	typename ResourceType value;
+private:
+	ECSQuery::SharedOutput<StateMachine> _state_machines;
+	ECSQuery::Output _entities;
+	ECSManager* _ecs_mgr = nullptr;
 };
 
 NS_END
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"

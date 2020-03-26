@@ -123,6 +123,9 @@ public:
 	void add(const Gaff::IReflectionDefinition& ref_def, Output& output, bool optional = false);
 	void add(const Gaff::IReflectionDefinition& ref_def);
 
+	// Used when only querying for shared components and still want to iterate over entities.
+	void addEntities(Output& output);
+
 	void addArchetypeCallbacks(eastl::function<void (const ECSArchetype&)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback);
 	void removeArchetype(const void* entity_data);
 
@@ -153,6 +156,7 @@ private:
 
 	Vector<QueryDataShared> _shared_components;
 	Vector<QueryData> _components;
+	Vector<Output*> _entities;
 	Vector<Callbacks> _callbacks;
 	Vector<void*> _entity_data;
 

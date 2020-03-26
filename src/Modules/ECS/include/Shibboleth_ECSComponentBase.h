@@ -100,11 +100,22 @@ public:
 	T value;
 };
 
+// Only supports single argument components.
+template <class T>
+class ECSComponentDestructable
+{
+public:
+	static void Constructor(void* component, int32_t entity_index);
+	static void Destructor(void* component, int32_t entity_index);
+};
+
 NS_END
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T)
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T)
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
+
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
 
 #include "Shibboleth_ECSComponentBase.inl"
 
