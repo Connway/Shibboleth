@@ -59,6 +59,11 @@ void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def)
 	_components.emplace_back(QueryData{ &ref_def, nullptr, false });
 }
 
+void ECSQuery::addEntities(Output& output)
+{
+	_entities.emplace_back(&output);
+}
+
 void ECSQuery::addArchetypeCallbacks(eastl::function<void (const ECSArchetype&)>&& added_callback, eastl::function<void (int32_t)>&& removed_callback)
 {
 	_callbacks.emplace_back(Callbacks{ std::move(added_callback), std::move(removed_callback) });
@@ -140,6 +145,10 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 		if (data.output) {
 			data.output->emplace_back(ECSQueryResult{ offset, entity_data });
 		}
+	}
+
+	for (Output* output : _entities) {
+		output->emplace_back(ECSQueryResult{ -1, entity_data });
 	}
 
 	for (const Callbacks& callbacks : _callbacks) {

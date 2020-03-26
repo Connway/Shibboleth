@@ -94,8 +94,20 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	const EntityID entity_id = static_cast<EntityID>(instance_data->integers[_entity_id_index]);
 	
 	if (entity_id == EntityID_None) {
-		// $TODO: Log error.
+		// $TODO: Log error periodic.
 		return;
+	}
+
+	if (!_ecs_mgr->hasComponent<PlayerOwner>(entity_id)) {
+		// $TODO: Log error periodic.
+	}
+
+	if (!_ecs_mgr->hasComponent<Position>(entity_id)) {
+		// $TODO: Log error periodic.
+	}
+
+	if (!_ecs_mgr->hasComponent<Rotation>(entity_id)) {
+		// $TODO: Log error periodic.
 	}
 
 	PlayerOwner player_owner = PlayerOwner::Get(*_ecs_mgr, entity_id);

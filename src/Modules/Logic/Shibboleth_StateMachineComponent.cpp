@@ -22,37 +22,38 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ECSComponentBase.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_IResource.h>
+#include "Shibboleth_StateMachineComponent.h"
+
+SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Logic")
+	)
+
+	.base< ECSComponentBaseBoth<StateMachine> >()
+	.base< ECSComponentDestructable<StateMachine> >()
+
+	.var("value", &StateMachine::value)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(StateMachine)
 
 NS_SHIBBOLETH
 
-template <class T>
-class Resource
+void StateMachine::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
-public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	const StateMachine* const old_comp = reinterpret_cast<const StateMachine*>(old_begin) + old_index;
+	StateMachine* const new_comp = reinterpret_cast<StateMachine*>(new_begin) + new_index;
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
+	*new_comp = *old_comp;
+}
 
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
+void StateMachine::SetInternal(void* component, int32_t page_index, const StateMachine& value)
+{
+	*(reinterpret_cast<StateMachine*>(component) + page_index) = value;
+}
 
-	static void CopyShared(const void* old_value, void* new_value);
-
-	static constexpr bool IsNonShared(void);
-	static constexpr bool IsShared(void);
-
-	typename ResourceType value;
-};
+StateMachine StateMachine::GetInternal(const void* component, int32_t page_index)
+{
+	return *(reinterpret_cast<const StateMachine*>(component) + page_index);
+}
 
 NS_END
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"

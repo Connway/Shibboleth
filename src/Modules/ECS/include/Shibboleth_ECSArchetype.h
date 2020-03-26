@@ -188,6 +188,9 @@ public:
 
 	bool isBase(void) const;
 
+	void destroyEntity(void* entity, int32_t entity_index) const;
+	void constructPage(void* page, int32_t num_entities) const;
+
 private:
 	struct RefDefOffset final
 	{
@@ -195,6 +198,8 @@ private:
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
 		using LoadFunc = bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
+		using ConstructorFunc = void (*)(void*, int32_t);
+		using DestructorFunc = void (*)(void*, int32_t);
 
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;
@@ -203,6 +208,9 @@ private:
 		CopySharedFunc copy_shared_func;
 		CopyFunc copy_func;
 		LoadFunc load_func;
+
+		ConstructorFunc constructor_func;
+		DestructorFunc destructor_func;
 	};
 
 	Vector<RefDefOffset> _shared_vars;

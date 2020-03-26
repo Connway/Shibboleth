@@ -9,16 +9,24 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineReflection.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineResource.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineSystem.cpp" />
   </ItemGroup>
 </Project>

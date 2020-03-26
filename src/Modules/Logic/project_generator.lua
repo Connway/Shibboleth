@@ -27,7 +27,9 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Esprit/include",
-			base_dir .. "../../Modules/Resource/include"
+			base_dir .. "../../Modules/MainLoop/include",
+			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/ECS/include"
 		}
 
 	project "LogicModule"
@@ -50,7 +52,8 @@ local GenerateProject = function()
 		local deps =
 		{
 			"Esprit",
-			"Resource"
+			"Resource",
+			"ECS"
 		}
 
 		dependson(deps)
@@ -61,6 +64,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Logic")
 	table.insert(deps, "Esprit")
 	table.insert(deps, "Resource")
+	table.insert(deps, "ECS")
 
 	dependson(deps)
 	links(deps)

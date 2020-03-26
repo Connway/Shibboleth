@@ -20,39 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_ECSComponentBase.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_IResource.h>
+#include "Shibboleth_StateMachineSystem.h"
+#include "Shibboleth_StateMachineComponent.h"
+#include <Shibboleth_ECSManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-template <class T>
-class Resource
+bool StateMachineSystem::init(void)
 {
-public:
-	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value);
+	ECSQuery query;
+	query.addShared<StateMachine>(_state_machines);
+	query.addEntities(_entities);
 
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, EntityID id);
+	_ecs_mgr->registerQuery(std::move(query));
 
-	static void CopyShared(const void* old_value, void* new_value);
+	return true;
+}
 
-	static constexpr bool IsNonShared(void);
-	static constexpr bool IsShared(void);
-
-	typename ResourceType value;
-};
+void StateMachineSystem::update(void)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(_entities.size()); ++i) {
+		_ecs_mgr->iterate([](EntityID id) -> void
+		{
+			GAFF_REF(id);
+		},
+		_entities[i]);
+	}
+}
 
 NS_END
-
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
-
-#include "Shibboleth_ResourceComponent.inl"

@@ -98,9 +98,21 @@ public:
 	}
 
 	template <class T>
+	const void* getComponent(EntityID id) const
+	{
+		return getComponent(id, Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	void* getComponent(EntityID id)
 	{
 		return getComponent(id, Reflection<T>::GetHash());
+	}
+
+	template <class T>
+	bool hasComponent(EntityID id) const
+	{
+		return hasComponent(id, Reflection<T>::GetHash());
 	}
 
 	template <class... Components>
@@ -212,7 +224,7 @@ public:
 	template <class Callback, class... Components, class... QueryResults>
 	void iterate(Callback&& callback, const QueryResults&... query_results)
 	{
-		static_assert(sizeof...(Components) == sizeof...(QueryResults));
+		static_assert(sizeof...(Components) == sizeof...(QueryResults) || sizeof...(Components) == 0);
 		EntityData* const data = getEntityData(query_results...);
 
 		int32_t count = 0;
@@ -222,7 +234,12 @@ public:
 				continue;
 			}
 
-			callback(data->entity_ids[i], get<Components>(query_results, i)...);
+			if constexpr (sizeof...(Components) == 0) {
+				callback(data->entity_ids[i]);
+			} else {
+				callback(data->entity_ids[i], get<Components>(query_results, i)...);
+			}
+
 			++count;
 		}
 	}
@@ -275,7 +292,6 @@ public:
 		iterate<Callback, T>(std::forward<Callback>(callback), query_result);
 	}
 
-
 	~ECSManager(void);
 
 	bool initAllModulesLoaded(void) override;
@@ -300,7 +316,11 @@ public:
 
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
 	void* getComponentShared(EntityID id, Gaff::Hash64 component);
+
+	const void* getComponent(EntityID id, Gaff::Hash64 component) const;
 	void* getComponent(EntityID id, Gaff::Hash64 component);
+
+	bool hasComponent(EntityID id, Gaff::Hash64 component) const;
 
 	int32_t getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
 	int32_t getPageIndex(EntityID id) const;

@@ -107,8 +107,10 @@ ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
 template <class... Components>
 ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
 {
+	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
-	archetype.copy(getArchetype(id), true);
+
+	archetype.copy(base_archetype, true);
 	RemoveComponentHelper<Components...>(archetype);
 	archetype.finalize();
 

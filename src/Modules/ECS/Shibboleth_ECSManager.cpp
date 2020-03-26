@@ -50,6 +50,12 @@ ECSManager::~ECSManager(void)
 
 bool ECSManager::initAllModulesLoaded(void)
 {
+	//const Vector<const Gaff::IReflectionDefinition*>* const ecs_comps = GetApp().getReflectionManager().getAttributeBucket(CLASS_HASH(ECSClassAttribute));
+
+	//if (ecs_comps) {
+	//	// Cache all components.
+	//}
+
 	const Gaff::JSON starting_scene = GetApp().getConfigs()["starting_scene"];
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
@@ -219,17 +225,30 @@ void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
 	return reinterpret_cast<int8_t*>(entity.data->archetype.getSharedData()) + component_offset;
 }
 
+const void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component) const
+{
+	return const_cast<ECSManager*>(this)->getComponent(id, component);
+}
+
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	const Entity& entity = _entities[id];
 
-	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
 	const int32_t component_offset = entity.data->archetype.getComponentOffset(component);
 
-	GAFF_ASSERT(component_offset > -1);
+	if (component_offset < 0) {
+		return nullptr;
+	}
+
+	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
 
 	return reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset + component_offset;
+}
+
+bool ECSManager::hasComponent(EntityID id, Gaff::Hash64 component) const
+{
+	return getComponent(id, component) != nullptr;
 }
 
 int32_t ECSManager::getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const
@@ -310,6 +329,11 @@ void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 	const int32_t page_index = static_cast<int32_t>(eastl::distance(entity.data->pages.begin(), it));
 	const int32_t page_ids_start = page_index * entity.data->num_entities_per_page;
 	const int32_t global_index = entity.index + page_ids_start;
+
+	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
+	void* const comp_data = reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset;
+
+	entity.data->archetype.destroyEntity(comp_data, entity.index % 4);
 
 	if (entity.page->num_entities > 0) {
 		entity.data->free_indices.emplace_back(global_index);
@@ -415,8 +439,10 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 	// Didn't find a free index. Need to allocate a new page.
 	ProxyAllocator allocator("ECS");
 	EntityPage* const page = reinterpret_cast<EntityPage*>(SHIB_ALLOC_ALIGNED(data.page_size, 16, allocator));
-	
+
 	memset(page, 1, data.page_size);
+
+	data.archetype.constructPage(page + 1, data.num_entities_per_page);
 
 	page->num_entities = 1;
 	page->next_index = 1;

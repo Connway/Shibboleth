@@ -1,0 +1,29 @@
+{
+	"variables":
+	{
+		"integers": [
+			"entity_id"
+		]
+	},
+
+	"states":
+	{
+		"fly_camera":
+		{
+			"processes": [
+				{
+					"process_type": "FlyCameraProcess"
+				}
+			]
+		}
+	},
+
+	"edges":
+	[
+		{
+			"source": "Start",
+			"destination": "fly_camera",
+			"conditions": []
+		}
+	]
+}
