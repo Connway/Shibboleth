@@ -668,8 +668,10 @@ void RenderCommandSystem::DeviceJob(void* data)
 			);
 
 			const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-			const glm::mat4x4 camera_transform = glm::translate(glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z), cam_pos.value);
-			const glm::mat4x4 final_camera = projection * camera_transform;
+			glm::mat4x4 camera_transform = /*glm::translate(*/glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z)/*, cam_pos.value)*/;
+			camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
+
+			const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
 
 			if (num_objects > 0) {
 				for (int32_t i = 0; i < num_objects; ++i) {

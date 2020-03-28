@@ -97,7 +97,8 @@ T& ECSComponentBase<T, type>::GetShared(ECSManager& ecs_mgr, EntityID id)
 }
 
 template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const T& value)
+template <class Value>
+void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Value& value)
 {
 	void* const component = ecs_mgr.getComponent(query_result, entity_index);
 	const int32_t page_index = ecs_mgr.getPageIndex(query_result, entity_index) % 4;
@@ -106,7 +107,8 @@ void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& q
 }
 
 template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, EntityID id, const T& value)
+template <class Value>
+void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, EntityID id, const Value& value)
 {
 	void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;
@@ -115,7 +117,7 @@ void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, EntityID id, const T& v
 }
 
 template <class T, ECSComponentType type>
-T ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
+decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
 	const void* const component = ecs_mgr.getComponent(query_result, entity_index);
 	const int32_t page_index = ecs_mgr.getPageIndex(query_result, entity_index) % 4;
@@ -124,7 +126,7 @@ T ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, const ECSQueryResult& quer
 }
 
 template <class T, ECSComponentType type>
-T ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, EntityID id)
+decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, EntityID id)
 {
 	const void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;

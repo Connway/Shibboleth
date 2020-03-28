@@ -118,6 +118,8 @@ void MouseMP::update(void)
 		}
 
 		_prev_data = _data;
+		_data.delta.x = 0;
+		_data.delta.y = 0;
 	}
 }
 

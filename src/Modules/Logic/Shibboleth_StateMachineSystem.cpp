@@ -26,15 +26,21 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(StateMachineSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(StateMachineSystem)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(StateMachineSystem)
 
 bool StateMachineSystem::init(void)
 {
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 
 	ECSQuery query;
-	query.addShared<StateMachine>(_state_machines);
-	query.addEntities(_entities);
+	query.add<StateMachine>(_state_machines);
 
 	_ecs_mgr->registerQuery(std::move(query));
 
@@ -43,12 +49,32 @@ bool StateMachineSystem::init(void)
 
 void StateMachineSystem::update(void)
 {
-	for (int32_t i = 0; i < static_cast<int32_t>(_entities.size()); ++i) {
-		_ecs_mgr->iterate([](EntityID id) -> void
+	// $TODO: Jobify this loop.
+	for (const auto& sm_arch : _state_machines) {
+		_ecs_mgr->iterate<StateMachine>([](EntityID id, StateMachine::View state_machine) -> void
 		{
-			GAFF_REF(id);
+			const Esprit::StateMachine* const sm = state_machine.resource->getStateMachine();
+
+			if (!sm) {
+				// $TODO: Log error
+				return;
+			}
+
+			if (!state_machine.instance) {
+				// $TODO: Log error
+				return;
+			}
+
+			const Esprit::VariableSet& vars = sm->getVariables();
+			const int32_t var_index = vars.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
+
+			if (var_index > -1) {
+				state_machine.instance->variables.integers[var_index] = id;
+			}
+
+			sm->update(*state_machine.instance);
 		},
-		_entities[i]);
+		sm_arch);
 	}
 }
 

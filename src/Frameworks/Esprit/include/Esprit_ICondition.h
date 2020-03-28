@@ -34,7 +34,7 @@ public:
 	virtual ~ICondition(void) {}
 
 	virtual bool init(const StateMachine& /*owner*/) { return true; }
-	virtual bool evaluate(const StateMachine& owner, VariableSet::VariableInstance* instance_data) const = 0;
+	virtual bool evaluate(const StateMachine& owner, VariableSet::Instance& variables) const = 0;
 };
 
 NS_END

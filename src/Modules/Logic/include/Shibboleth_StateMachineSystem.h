@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 
@@ -37,9 +38,12 @@ public:
 	void update(void) override;
 
 private:
-	ECSQuery::SharedOutput<StateMachine> _state_machines;
-	ECSQuery::Output _entities;
+	ECSQuery::Output _state_machines;
 	ECSManager* _ecs_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(StateMachineSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(StateMachineSystem)

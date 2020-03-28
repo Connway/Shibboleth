@@ -33,7 +33,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::MouseCode)
 	.entry("Mouse Button 7", Gleam::MouseCode::MOUSE_BUTTON7)
 	.entry("Mouse Wheel Up", Gleam::MouseCode::MOUSE_WHEEL_UP)
 	.entry("Mouse Wheel Down", Gleam::MouseCode::MOUSE_WHEEL_DOWN)
-SHIB_REFLECTION_DEFINE_END(Gleam::MouseCode)
+
+	.entry("Mouse Delta X", Gleam::MouseCode::MOUSE_DELTA_X)
+	.entry("Mouse Delta Y", Gleam::MouseCode::MOUSE_DELTA_Y)
+	SHIB_REFLECTION_DEFINE_END(Gleam::MouseCode)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::KeyCode)
 	.entry("Backspace", Gleam::KeyCode::KEY_BACKSPACE)

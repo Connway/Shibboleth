@@ -95,8 +95,7 @@ public:
 
 	const IReflection& getReflectionInstance(void) const override;
 	int32_t size(void) const override;
-	bool isStandardLayout(void) const override;
-	bool isTrivial(void) const override;
+	bool isPolymorphic(void) const override;
 
 	int32_t getNumVars(void) const override;
 	const char* getVarName(int32_t index) const override;
@@ -609,8 +608,7 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 	public: \
 		const IReflection& getReflectionInstance(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<class_type>::GetInstance(); } \
 		int32_t size(void) const override { return sizeof(class_type); } \
-		bool isStandardLayout(void) const override { return std::is_standard_layout<class_type>::value; } \
-		bool isTrivial(void) const override { return std::is_trivial<class_type>::value; } \
+		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
 		void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
 		bool load(const ISerializeReader& reader, class_type& out, bool refl_load = false) const \

@@ -47,7 +47,7 @@ public:
 	~CheckVariableCondition(void);
 
 	bool init(const StateMachine& owner) override;
-	bool evaluate(const StateMachine& owner, VariableSet::VariableInstance* instance_data) const override;
+	bool evaluate(const StateMachine& owner, VariableSet::Instance& variables) const override;
 
 	// These two functions are only safe to call before init() is called.
 	const OptimizedHashString32<>& getVariableName(void) const;

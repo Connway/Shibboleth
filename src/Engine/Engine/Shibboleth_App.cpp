@@ -450,10 +450,6 @@ bool App::initInternal(void)
 	}
 #endif
 
-	if (!createManagers()) {
-		return false;
-	}
-
 	if (!loadMainLoop()) {
 		return false;
 	}
@@ -688,11 +684,6 @@ bool App::loadModules(void)
 		return false;
 	});
 
-	return true;
-}
-
-bool App::createManagers(void)
-{
 	return true;
 }
 

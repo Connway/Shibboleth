@@ -27,14 +27,28 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class StateMachine final : public ECSComponentBaseBoth<StateMachine>, public ECSComponentDestructable<StateMachine>
+class StateMachine final : public ECSComponentBaseBoth<StateMachine>
 {
 public:
-	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-	static void SetInternal(void* component, int32_t page_index, const StateMachine& value);
-	static StateMachine GetInternal(const void* component, int32_t page_index);
+	struct View final
+	{
+		StateMachineResource* resource;
+		Esprit::StateMachine::Instance* instance;
+	};
 
-	StateMachineResourcePtr value;
+	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
+	static void SetInternal(void* component, int32_t entity_index, const View& value);
+	static View GetInternal(const void* component, int32_t entity_index);
+
+	static void Constructor(void* component, int32_t entity_index);
+	static void Destructor(void* component, int32_t entity_index);
+
+	StateMachine& operator=(const StateMachine& rhs);
+	StateMachine& operator=(StateMachine&& rhs);
+
+	StateMachineResourcePtr resource;
+	UniquePtr<Esprit::StateMachine::Instance> instance;
 };
 
 NS_END

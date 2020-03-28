@@ -25,9 +25,12 @@ THE SOFTWARE.
 #ifdef SHIB_STATIC
 
 	#include <Shibboleth_Utilities.h>
+	#include <Esprit_Global.h>
 
 	namespace Logic
 	{
+		static Shibboleth::ProxyAllocator g_logic_allocator;
+
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
 			if (mode == Shibboleth::InitMode::Regular) {
@@ -37,11 +40,13 @@ THE SOFTWARE.
 				// Initialize Attributes.
 				Gaff::InitAttributeReflection();
 
-				app.getReflectionManager().registerAttributeBucket(CLASS_HASH(Epsrit::ICondition));
-				app.getReflectionManager().registerAttributeBucket(CLASS_HASH(Epsrit::IProcess));
+				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
+				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
 			}
 
 			Shibboleth::SetApp(app);
+			Esprit::SetAllocator(&g_logic_allocator);
+
 			Logic::Gen::InitReflection(mode);
 
 			return true;

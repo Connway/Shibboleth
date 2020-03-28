@@ -32,20 +32,36 @@ NS_ESPRIT
 class StateMachine final
 {
 public:
+	struct Instance final
+	{
+		VariableSet::Instance variables;
+		int32_t current_state = 0;
+
+		Instance* clone(void) const
+		{
+			Instance* const instance_data = GAFF_ALLOCT(Instance, *GetAllocator());
+			instance_data->variables = variables;
+			instance_data->current_state = current_state;
+
+			return instance_data;
+		}
+	};
+
 	StateMachine(void);
 
-	bool isActive(void) const;
+	Instance* createInstanceData(void) const;
 
-	void update(VariableSet::VariableInstance* instance_data);
+	bool isActive(const Instance& instance) const;
+
+	void update(Instance& instance) const;
 	bool finalize(void);
 
 	const StateMachine* getParent(void) const;
 	StateMachine* getParent(void);
 	void setParent(StateMachine* parent);
 
-	const VariableSet* getVariables(void) const;
-	VariableSet* getVariables(void);
-	void setVariables(VariableSet* variables);
+	const VariableSet& getVariables(void) const;
+	VariableSet& getVariables(void);
 
 	// Add states first.
 	int32_t getStateIndex(const HashStringTemp32<>& name) const;
@@ -92,14 +108,13 @@ private:
 		OptimizedHashString32<> name;
 	};
 
-	UniquePtr<VariableSet> _variables;
+	VariableSet _variables;
 	Vector<State> _states;
-	int32_t _current_state = 0;
 
 	StateMachine* _parent = nullptr;
 
 	int32_t findStateIndex(const HashStringTemp32<>& state_name) const;
-	bool doState(const State& state, VariableSet::VariableInstance* instance_data);
+	bool doState(const State& state, Instance& instance) const;
 };
 
 NS_END
