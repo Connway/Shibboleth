@@ -79,7 +79,7 @@ public:
 	virtual void executeCommandList(ICommandList& command_list) = 0;
 	virtual bool finishCommandList(ICommandList& command_list) = 0;
 
-	virtual void resetRenderState(void) = 0;
+	virtual void clearRenderState(void) = 0;
 	virtual void renderNoVertexInput(int32_t vert_count) = 0;
 
 	int32_t getAdapterID(void) const { return _adapter_id; }

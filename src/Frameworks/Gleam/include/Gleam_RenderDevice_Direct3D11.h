@@ -46,7 +46,7 @@ public:
 	void executeCommandList(ICommandList& command_list) override;
 	bool finishCommandList(ICommandList& command_list) override;
 
-	void resetRenderState(void) override;
+	void clearRenderState(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
 
 	ID3D11DeviceContext3* getDeviceContext(void);

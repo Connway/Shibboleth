@@ -223,6 +223,8 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 		},
 		job_data.system->_camera[camera_index]);
 	}
+
+	job_data.device->clearRenderState();
 }
 
 NS_END
