@@ -736,6 +736,8 @@ void RenderCommandSystem::DeviceJob(void* data)
 	for (const auto& render_job_data : job_data.render_job_data_cache) {
 		device.executeCommandList(*render_job_data.cmd_list);
 	}
+
+	device.clearRenderState();
 }
 
 NS_END

@@ -395,11 +395,14 @@ bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 	return true;
 }
 
-void RenderDeviceD3D11::resetRenderState(void)
+void RenderDeviceD3D11::clearRenderState(void)
 {
-	_context->OMSetDepthStencilState(NULL, 0);
-	_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-	_context->RSSetState(NULL);
+	//_context->OMSetDepthStencilState(NULL, 0);
+	//_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+	//_context->RSSetState(NULL);
+	//_context->OMSetRenderTargets(0, NULL, NULL);
+
+	_context->ClearState();
 }
 
 void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
