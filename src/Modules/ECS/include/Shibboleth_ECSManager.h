@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
+#include <EAThread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
@@ -371,6 +372,8 @@ private:
 		int32_t index = -1;
 	};
 
+	mutable EA::Thread::Mutex _entity_page_lock;
+
 	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
 	Vector<ECSQuery> _queries;
 	Vector<Entity> _entities;
@@ -413,7 +416,7 @@ private:
 	ArchetypeReference* addComponentsInternal(EntityID id);
 
 	template <class Component>
-	Component get(const ECSQueryResult& query_result, int32_t entity_index);
+	decltype(auto) get(const ECSQueryResult& query_result, int32_t entity_index);
 
 	template <class... QueryResults>
 	EntityData* getEntityData(const ECSQueryResult& query_result, const QueryResults&... query_results);

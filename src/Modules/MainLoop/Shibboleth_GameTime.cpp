@@ -41,6 +41,8 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(GameTimeManager)
 SHIB_REFLECTION_CLASS_DEFINE(GameTimeSystem)
 
+constexpr double k_max_delta_game_time = 0.75;
+
 void GameTimeManager::update(void)
 {
 	using DoubleSeconds = eastl::chrono::duration<double>;
@@ -52,7 +54,7 @@ void GameTimeManager::update(void)
 	_real_time.delta = delta.count();
 	_real_time.total += _real_time.delta;
 
-	_game_time.delta = _real_time.delta * _game_time_scale;
+	_game_time.delta = Gaff::Min(_real_time.delta, k_max_delta_game_time) * _game_time_scale;
 	_game_time.total += _game_time.delta;
 }
 

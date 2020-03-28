@@ -99,11 +99,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 						const char* const name = reader.readString();
 
-						if (!_state_machine->getVariables()) {
-							_state_machine->setVariables(SHIB_ALLOCT(Esprit::VariableSet, allocator));
-						}
-
-						if (!_state_machine->getVariables()->addVariable(Esprit::HashString32<>(name), static_cast<Esprit::VariableSet::VariableType>(i))) {
+						if (!_state_machine->getVariables().addVariable(Esprit::HashString32<>(name), static_cast<Esprit::VariableSet::VariableType>(i))) {
 							// $TODO: Log error (duplicate name).
 						}
 
@@ -231,103 +227,91 @@ void StateMachineResource::loadStateMachine(IFile* file)
 			if (reader.isArray() && reader.size() > 0) {
 				reader.forEachInArray([&](int32_t) -> bool
 				{
-					const char* destination = nullptr;
-					const char* source = nullptr;
+					int32_t source_index = -1;
+					int32_t dest_index = -1;
 
 					{
 						const auto guard_src = reader.enterElementGuard("source");
 
 						if (reader.isString()) {
-							source = reader.readString();
+							const char* const source = reader.readString();
+							source_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(source));
+							reader.freeString(source);
 						} else {
 							// $TODO: Log error.
 						}
 					}
 
 					{
-						const auto guard_src = reader.enterElementGuard("destination");
+						const auto guard_dest = reader.enterElementGuard("destination");
 
 						if (reader.isString()) {
-							destination = reader.readString();
+							const char* const destination = reader.readString();
+							dest_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(destination));
+							reader.freeString(destination);
 						} else {
 							// $TODO: Log error.
 						}
 					}
 
-					if (source && destination) {
-						const int32_t source_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(source));
-						const int32_t dest_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(destination));
+					if (source_index < 0) {
+						// $TODO: Log error.
+					}
 
-						if (source_index < 0) {
-							// $TODO: Log error.
-						}
+					if (dest_index < 0) {
+						// $TODO: Log error.
+					}
 
-						if (dest_index < 0) {
-							// $TODO: Log error.
-						}
+					if (source_index > -1 && dest_index > -1) {
+						const int32_t edge_index = _state_machine->addEdge(source_index, dest_index);
 
-						if (source_index > -1 && dest_index > -1) {
-							const int32_t edge_index = _state_machine->addEdge(source_index, dest_index);
+						if (edge_index > -1) {
+							const auto guard_conditions = reader.enterElementGuard("conditions");
 
-							if (edge_index > -1) {
-								const auto guard_conditions = reader.enterElementGuard("conditions");
+							if (reader.isArray()) {
+								reader.forEachInArray([&](int32_t) -> bool
+								{
+									const Gaff::IReflectionDefinition* ref_def = nullptr;
 
-								if (reader.isArray()) {
-									reader.forEachInArray([&](int32_t) -> bool
 									{
-										const Gaff::IReflectionDefinition* ref_def = nullptr;
+										const auto guard_type = reader.enterElementGuard("condition_type");
 
-										{
-											const auto guard_type = reader.enterElementGuard("condition_type");
+										if (reader.isString()) {
+											const char* const type = reader.readString();
+											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
+											reader.freeString(type);
 
-											if (reader.isString()) {
-												const char* const type = reader.readString();
-												const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
-												reader.freeString(type);
+											const auto it = Gaff::LowerBound(*cond_bucket, type_hash, ReflectionManager::CompareRefHash);
 
-												const auto it = Gaff::LowerBound(*cond_bucket, type_hash, ReflectionManager::CompareRefHash);
-
-												if (it == cond_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
-													ref_def = *it;
-												}
-
-											} else {
-												// $TODO: Log error.
+											if (it == cond_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
+												ref_def = *it;
 											}
-										}
 
-										if (!ref_def) {
-											// $TODO: Log error.
-											return false;
-										}
-
-										Esprit::ICondition* const condition = ref_def->createT<Esprit::ICondition>(CLASS_HASH(Esprit::ICondition), allocator);
-
-										if (condition) {
-											if (ref_def->load(reader, ref_def->getBasePointer(CLASS_HASH(Esprit::ICondition), condition))) {
-												_state_machine->addCondition(source_index, edge_index, condition);
-											} else {
-												// $TODO: Log error.
-											}
 										} else {
 											// $TODO: Log error.
 										}
+									}
 
+									if (!ref_def) {
+										// $TODO: Log error.
 										return false;
-									});
-								}
+									}
 
-							} else {
-								// $TODO: Log error.
+									Esprit::ICondition* const condition = ref_def->createT<Esprit::ICondition>(CLASS_HASH(Esprit::ICondition), allocator);
+
+									if (condition) {
+										if (ref_def->load(reader, ref_def->getBasePointer(CLASS_HASH(Esprit::ICondition), condition))) {
+											_state_machine->addCondition(source_index, edge_index, condition);
+										} else {
+											// $TODO: Log error.
+										}
+									} else {
+										// $TODO: Log error.
+									}
+
+									return false;
+								});
 							}
-						}
-
-						if (source) {
-							reader.freeString(source);
-						}
-
-						if (destination) {
-							reader.freeString(destination);
 						}
 					}
 

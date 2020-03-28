@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSEntity.h>
 #include <Esprit_IProcess.h>
+#include <vec3.hpp>
 
 NS_SHIBBOLETH
 
@@ -32,20 +33,30 @@ class GameTimeManager;
 class InputManager;
 class ECSManager;
 
-class FlyCameraProcess final : public Esprit::IProcess
+class FlyCameraProcess final : public Esprit::IProcess, public Gaff::IReflectionObject
 {
 public:
 	bool init(const Esprit::StateMachine& owner) override;
-	void update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::VariableInstance* instance_data) override;
+	void update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::Instance& variables) override;
 
 private:
 	GameTimeManager* _time_mgr = nullptr;
 	InputManager* _input_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
+
+	glm::vec3 _angular_speed = glm::vec3{ 1.0f, 1.0f, 1.0f };
+	float _linear_speed = 1.0f;
+
 	int32_t _entity_id_index = -1;
 
+	int32_t _camera_vert_alias_index = -1;
 	int32_t _horiz_alias_index = -1;
 	int32_t _vert_alias_index = -1;
+
+	int32_t _pitch_index = -1;
+	int32_t _yaw_index = -1;
+
+	SHIB_REFLECTION_CLASS_DECLARE(FlyCameraProcess);
 };
 
 NS_END

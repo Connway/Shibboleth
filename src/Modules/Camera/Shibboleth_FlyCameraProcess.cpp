@@ -28,26 +28,28 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Esprit_StateMachine.h>
+#include <Gleam_IncludeQuaternion.h>
+#include <Gleam_IncludeMatrix.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(FlyCameraProcess)
 	.BASE(Esprit::IProcess)
 	.ctor<>()
+
+	.var("angular_speed", &FlyCameraProcess::_angular_speed)
+	.var("linear_speed", &FlyCameraProcess::_linear_speed)
 SHIB_REFLECTION_DEFINE_END(FlyCameraProcess)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(FlyCameraProcess);
+
 bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 {
-	const Esprit::VariableSet* const variables = owner.getVariables();
-
-	if (!variables) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_entity_id_index = variables->getVariableIndex(Esprit::HashStringTemp32<>("entity_id"), Esprit::VariableSet::VariableType::Integer);
+	const Esprit::VariableSet& variables = owner.getVariables();
+	_entity_id_index = variables.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
 
 	if (_entity_id_index < 0) {
+		// $TODO: Log error.
 		return false;
 	}
 
@@ -57,8 +59,17 @@ bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 	_input_mgr = &app.getManagerTFast<InputManager>();
 	_ecs_mgr = &app.getManagerTFast<ECSManager>();
 
+	_camera_vert_alias_index = _input_mgr->getAliasIndex("Camera_Vertical");
 	_horiz_alias_index = _input_mgr->getAliasIndex("Horizontal");
 	_vert_alias_index = _input_mgr->getAliasIndex("Vertical");
+
+	_pitch_index = _input_mgr->getAliasIndex("Camera_Pitch");
+	_yaw_index = _input_mgr->getAliasIndex("Camera_Yaw");
+
+	if (_camera_vert_alias_index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
 
 	if (_horiz_alias_index < 0) {
 		// $TODO: Log error.
@@ -70,11 +81,25 @@ bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 		return false;
 	}
 
+	if (_pitch_index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (_yaw_index < 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	return true;
 }
 
-void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::VariableInstance* instance_data)
+void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::Instance& variables)
 {
+	if (_camera_vert_alias_index < 0) {
+		return;
+	}
+
 	if (_horiz_alias_index < 0) {
 		return;
 	}
@@ -87,11 +112,15 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 		return;
 	}
 
-	if (!instance_data) {
+	if (_pitch_index < 0) {
 		return;
 	}
 
-	const EntityID entity_id = static_cast<EntityID>(instance_data->integers[_entity_id_index]);
+	if (_yaw_index < 0) {
+		return;
+	}
+
+	const EntityID entity_id = static_cast<EntityID>(variables.integers[_entity_id_index]);
 	
 	if (entity_id == EntityID_None) {
 		// $TODO: Log error periodic.
@@ -100,14 +129,17 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 
 	if (!_ecs_mgr->hasComponent<PlayerOwner>(entity_id)) {
 		// $TODO: Log error periodic.
+		return;
 	}
 
 	if (!_ecs_mgr->hasComponent<Position>(entity_id)) {
 		// $TODO: Log error periodic.
+		return;
 	}
 
 	if (!_ecs_mgr->hasComponent<Rotation>(entity_id)) {
 		// $TODO: Log error periodic.
+		return;
 	}
 
 	PlayerOwner player_owner = PlayerOwner::Get(*_ecs_mgr, entity_id);
@@ -117,15 +149,30 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	glm::vec3 local_move_dir = glm::zero<glm::vec3>();
 
 	local_move_dir.x = _input_mgr->getAliasValue(_horiz_alias_index, player_owner.value);
-	//local_move_dir.y = _input_mgr->getAliasValue(_vert_alias_index, player_owner.value);
+	local_move_dir.y = _input_mgr->getAliasValue(_camera_vert_alias_index, player_owner.value);
 	local_move_dir.z = _input_mgr->getAliasValue(_vert_alias_index, player_owner.value);
 
-	local_move_dir = glm::normalize(local_move_dir);
+	if (local_move_dir != glm::zero<glm::vec3>()) {
+		local_move_dir = glm::normalize(local_move_dir);
+	}
 
-	// update rotation
+	// Update rotation.
+	rotation.value += _angular_speed * glm::vec3{
+		_input_mgr->getAliasValue(_pitch_index, player_owner.value),
+		_input_mgr->getAliasValue(_yaw_index, player_owner.value),
+		0.0f
+	};
+
+	// Update position.
+	const glm::mat3x3 rot = glm::mat3_cast(glm::qua(rotation.value * Gaff::TurnsToRad));
+	glm::vec3 camera_dir = rot * local_move_dir;
+
+	if (camera_dir != glm::zero<glm::vec3>()) {
+		camera_dir = glm::normalize(camera_dir);
+	}
 
 	const float dt = _time_mgr->getRealTime().getDeltaFloat();
-	position.value += local_move_dir * dt;
+	position.value += camera_dir * _linear_speed * dt;
 
 	Position::Set(*_ecs_mgr, entity_id, position);
 	Rotation::Set(*_ecs_mgr, entity_id, rotation);

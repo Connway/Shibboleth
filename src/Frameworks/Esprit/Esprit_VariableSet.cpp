@@ -72,19 +72,7 @@ void VariableSet::finalize(void)
 	}
 }
 
-VariableSet::VariableInstance* VariableSet::createInstanceData(void) const
-{
-	VariableInstance* const instance_data = GAFF_ALLOCT(VariableInstance, *GetAllocator());
-	instance_data->references.resize(_names[static_cast<size_t>(VariableType::Reference)].size());
-	instance_data->strings.resize(_names[static_cast<size_t>(VariableType::String)].size());
-	instance_data->floats.resize(_names[static_cast<size_t>(VariableType::Float)].size());
-	instance_data->integers.resize(_names[static_cast<size_t>(VariableType::Integer)].size());
-	instance_data->bools.resize(_names[static_cast<size_t>(VariableType::Bool)].size());
-
-	return instance_data;
-}
-
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, void*& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, void*& result) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
 
@@ -97,7 +85,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, void* value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, void* value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
 
@@ -110,7 +98,7 @@ bool VariableSet::setVariable(VariableInstance& variables, int32_t index, void* 
 	return true;
 }
 
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, const U8String*& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, const U8String*& result) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
@@ -123,7 +111,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, U8String& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, U8String& result) const
 {
 	const U8String* string_ptr = nullptr;
 
@@ -135,7 +123,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, const U8String& value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, const U8String& value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
@@ -148,7 +136,7 @@ bool VariableSet::setVariable(VariableInstance& variables, int32_t index, const 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, U8String&& value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, U8String&& value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
@@ -161,7 +149,7 @@ bool VariableSet::setVariable(VariableInstance& variables, int32_t index, U8Stri
 	return true;
 }
 
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, float& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, float& result) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Float)];
 
@@ -174,7 +162,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, float value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, float value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Float)];
 
@@ -187,7 +175,7 @@ bool VariableSet::setVariable(VariableInstance& variables, int32_t index, float 
 	return true;
 }
 
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, int64_t& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, int64_t& result) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Integer)];
 
@@ -200,7 +188,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, int64_t value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, int64_t value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Integer)];
 
@@ -213,7 +201,7 @@ bool VariableSet::setVariable(VariableInstance& variables, int32_t index, int64_
 	return true;
 }
 
-bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, bool& result) const
+bool VariableSet::getVariable(const Instance& variables, int32_t index, bool& result) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Bool)];
 
@@ -226,7 +214,7 @@ bool VariableSet::getVariable(const VariableInstance& variables, int32_t index, 
 	return true;
 }
 
-bool VariableSet::setVariable(VariableInstance& variables, int32_t index, bool value) const
+bool VariableSet::setVariable(Instance& variables, int32_t index, bool value) const
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Bool)];
 

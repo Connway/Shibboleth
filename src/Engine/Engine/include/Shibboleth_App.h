@@ -114,7 +114,6 @@ private:
 	bool initApp(void);
 
 	bool loadModule(const char* module_name, InitMode mode);
-	bool createManagers(void);
 
 	void removeExtraLogs(void);
 

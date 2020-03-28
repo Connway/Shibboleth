@@ -257,7 +257,7 @@ void InputManager::update()
 
 				// We have been set for at least one frame or we have exceeded the tap time. Reset.
 				if (!binding.first_frame && binding.curr_tap == binding.taps) {
-					_alias_values[i][binding.alias_index].value = 0.0f;
+					_alias_values[i].at(binding.alias_index).second.value = 0.0f;
 					binding.curr_tap_time = 0.0f;
 					binding.curr_tap = 0;
 
@@ -328,7 +328,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 
 				// All the bindings have been pressed.
 				if (binding.count == binding_size) {
-					auto& alias = _alias_values[_km_player_id][binding.alias_index];
+					auto& alias = _alias_values[_km_player_id].at(binding.alias_index).second;
 
 					if (binding.taps <= 0) {
 						alias.value += binding.scale;
@@ -338,7 +338,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 			} else {
 				// All the bindings have been released.
 				if (binding.count == binding_size) {
-					auto& alias = _alias_values[_km_player_id][binding.alias_index];
+					auto& alias = _alias_values[_km_player_id].at(binding.alias_index).second;
 
 					// Check that we've reached the tap count.
 					if (binding.taps > 0) {
@@ -374,7 +374,7 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 
 		if (it != binding.mouse_codes.end()) {
 			if (binding_size == 1 && !is_button) {
-				_alias_values[_km_player_id][binding.alias_index].value = binding.scale * value;
+				_alias_values[_km_player_id].at(binding.alias_index).second.value = binding.scale * value;
 
 			} else {
 				if (value != 0.0f) {
@@ -382,7 +382,7 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 
 					// All the bindings have been pressed.
 					if (binding.count == binding_size) {
-						auto& alias = _alias_values[_km_player_id][binding.alias_index];
+						auto& alias = _alias_values[_km_player_id].at(binding.alias_index).second;
 
 						if (binding.taps <= 0) {
 							alias.value += binding.scale;
@@ -392,7 +392,7 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 				} else {
 					// All the bindings have been released.
 					if (binding.count == binding_size) {
-						auto& alias = _alias_values[_km_player_id][binding.alias_index];
+						auto& alias = _alias_values[_km_player_id].at(binding.alias_index).second;
 
 						// Check that we've reached the tap count.
 						if (binding.taps > 0) {

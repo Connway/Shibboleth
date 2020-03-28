@@ -54,11 +54,14 @@ public:
 	static T& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
 	static T& GetShared(ECSManager& ecs_mgr, EntityID id);
 
-	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const T& value);
-	static void Set(ECSManager& ecs_mgr, EntityID id, const T& value);
+	template <class Value>
+	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Value& value);
 
-	static T Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static T Get(ECSManager& ecs_mgr, EntityID id);
+	template <class Value>
+	static void Set(ECSManager& ecs_mgr, EntityID id, const Value& value);
+
+	static decltype(auto) Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
+	static decltype(auto) Get(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
 	static void CopyShared(const void* old_value, void* new_value);

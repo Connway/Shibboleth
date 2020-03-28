@@ -54,25 +54,29 @@ StateMachine::StateMachine(void)
 	}
 }
 
-bool StateMachine::isActive(void) const
+StateMachine::Instance* StateMachine::createInstanceData(void) const
 {
-	return _current_state >= static_cast<int32_t>(SpecialStates::Count);
+	Instance* const instance_data = GAFF_ALLOCT(Instance, *GetAllocator());
+	instance_data->variables.init(_variables);
+	instance_data->current_state = static_cast<int32_t>(SpecialStates::StartState);
+
+	return instance_data;
 }
 
-void StateMachine::update(VariableSet::VariableInstance* instance_data)
+bool StateMachine::isActive(const Instance& instance) const
 {
-	if (_variables && !instance_data) {
+	return instance.current_state >= static_cast<int32_t>(SpecialStates::Count);
+}
+
+void StateMachine::update(Instance& instance) const
+{
+	if (!Gaff::Between(instance.current_state, 0, static_cast<int32_t>(_states.size()))) {
 		// $TODO: Log error.
 		return;
 	}
 
-	if (!Gaff::Between(_current_state, 0, static_cast<int32_t>(_states.size()))) {
-		// $TODO: Log error.
-		return;
-	}
-
-	if (!doState(_states[static_cast<int32_t>(SpecialStates::AnyState)], instance_data)) {
-		doState(_states[_current_state], instance_data);
+	if (!doState(_states[static_cast<int32_t>(SpecialStates::AnyState)], instance)) {
+		doState(_states[instance.current_state], instance);
 	}
 }
 
@@ -114,19 +118,14 @@ void StateMachine::setParent(StateMachine* parent)
 	_parent = parent;
 }
 
-const VariableSet* StateMachine::getVariables(void) const
+const VariableSet& StateMachine::getVariables(void) const
 {
-	return _variables.get();
+	return _variables;
 }
 
-VariableSet* StateMachine::getVariables(void)
+VariableSet& StateMachine::getVariables(void)
 {
-	return _variables.get();
-}
-
-void StateMachine::setVariables(VariableSet* variables)
-{
-	_variables.reset(variables);
+	return _variables;
 }
 
 int32_t StateMachine::getStateIndex(const HashStringTemp32<>& name) const
@@ -446,13 +445,13 @@ int32_t StateMachine::findStateIndex(const HashStringTemp32<>& state_name) const
 		return lhs.name == rhs;
 	});
 
-	return static_cast<int32_t>(eastl::distance(_states.begin(), it));
+	return (it == _states.end()) ? -1 : static_cast<int32_t>(eastl::distance(_states.begin(), it));
 }
 
-bool StateMachine::doState(const State& state, VariableSet::VariableInstance* instance_data)
+bool StateMachine::doState(const State& state, Instance& instance) const
 {
 	for (const UniquePtr<IProcess>& process : state.processes) {
-		process->update(*this, instance_data);
+		process->update(*this, instance.variables);
 	}
 
 	int32_t next_state = -1;
@@ -461,7 +460,7 @@ bool StateMachine::doState(const State& state, VariableSet::VariableInstance* in
 		bool can_transition = true;
 
 		for (const UniquePtr<ICondition>& condition : edge.conditions) {
-			if (!condition->evaluate(*this, instance_data)) {
+			if (!condition->evaluate(*this, instance.variables)) {
 				can_transition = false;
 				break;
 			}
@@ -474,7 +473,7 @@ bool StateMachine::doState(const State& state, VariableSet::VariableInstance* in
 	}
 
 	if (next_state > -1) {
-		_current_state = next_state;
+		instance.current_state = next_state;
 		return true;
 	}
 

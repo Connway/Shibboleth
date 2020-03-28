@@ -32,13 +32,22 @@ NS_ESPRIT
 class VariableSet final
 {
 public:
-	struct VariableInstance final
+	struct Instance final
 	{
 		Vector<void*> references;
 		Vector<U8String> strings;
 		Vector<float> floats;
 		Vector<int64_t> integers;
 		BitVector bools;
+
+		void init(const VariableSet& vars)
+		{
+			references.resize(vars._names[static_cast<size_t>(VariableType::Reference)].size());
+			strings.resize(vars._names[static_cast<size_t>(VariableType::String)].size());
+			floats.resize(vars._names[static_cast<size_t>(VariableType::Float)].size());
+			integers.resize(vars._names[static_cast<size_t>(VariableType::Integer)].size());
+			bools.resize(vars._names[static_cast<size_t>(VariableType::Bool)].size());
+		}
 	};
 
 	enum class VariableType
@@ -59,24 +68,22 @@ public:
 	// Once called, add/remove functions should not be called.
 	void finalize(void);
 
-	VariableInstance* createInstanceData(void) const;
+	bool getVariable(const Instance& variables, int32_t index, void*& result) const;
+	bool setVariable(Instance& variables, int32_t index, void* value) const;
 
-	bool getVariable(const VariableInstance& variables, int32_t index, void*& result) const;
-	bool setVariable(VariableInstance& variables, int32_t index, void* value) const;
+	bool getVariable(const Instance& variables, int32_t index, const U8String*& result) const;
+	bool getVariable(const Instance& variables, int32_t index, U8String& result) const;
+	bool setVariable(Instance& variables, int32_t index, const U8String& value) const;
+	bool setVariable(Instance& variables, int32_t index, U8String&& value) const;
 
-	bool getVariable(const VariableInstance& variables, int32_t index, const U8String*& result) const;
-	bool getVariable(const VariableInstance& variables, int32_t index, U8String& result) const;
-	bool setVariable(VariableInstance& variables, int32_t index, const U8String& value) const;
-	bool setVariable(VariableInstance& variables, int32_t index, U8String&& value) const;
+	bool getVariable(const Instance& variables, int32_t index, float& result) const;
+	bool setVariable(Instance& variables, int32_t index, float value) const;
 
-	bool getVariable(const VariableInstance& variables, int32_t index, float& result) const;
-	bool setVariable(VariableInstance& variables, int32_t index, float value) const;
+	bool getVariable(const Instance& variables, int32_t index, int64_t& result) const;
+	bool setVariable(Instance& variables, int32_t index, int64_t value) const;
 
-	bool getVariable(const VariableInstance& variables, int32_t index, int64_t& result) const;
-	bool setVariable(VariableInstance& variables, int32_t index, int64_t value) const;
-
-	bool getVariable(const VariableInstance& variables, int32_t index, bool& result) const;
-	bool setVariable(VariableInstance& variables, int32_t index, bool value) const;
+	bool getVariable(const Instance& variables, int32_t index, bool& result) const;
+	bool setVariable(Instance& variables, int32_t index, bool value) const;
 
 #ifdef _DEBUG
 	// Add debug query functions here.

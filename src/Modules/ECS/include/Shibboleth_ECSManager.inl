@@ -151,9 +151,9 @@ ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 }
 
 template <class Component>
-Component ECSManager::get(const ECSQueryResult& query_result, int32_t entity_index)
+decltype(auto) ECSManager::get(const ECSQueryResult& query_result, int32_t entity_index)
 {
-	return Component{ Component::Get(*this, query_result, entity_index) };
+	return Component::Get(*this, query_result, entity_index);
 }
 
 template <class... QueryResults>

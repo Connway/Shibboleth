@@ -34,7 +34,7 @@ public:
 	virtual ~IProcess(void) {}
 
 	virtual bool init(const StateMachine& /*owner*/) { return true; }
-	virtual void update(const StateMachine& /*owner*/, VariableSet::VariableInstance* /*instance_data*/) = 0;
+	virtual void update(const StateMachine& /*owner*/, VariableSet::Instance& /*instance_data*/) = 0;
 };
 
 NS_END

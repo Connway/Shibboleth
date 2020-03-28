@@ -147,15 +147,8 @@ bool CheckVariableCondition::init(const StateMachine& owner)
 		return false;
 	}
 
-	const VariableSet* const variables = owner.getVariables();
-
-	if (!variables) {
-		_operation = static_cast<Operation>(static_cast<int32_t>(_operation) + static_cast<int32_t>(Operation::Count));
-		// $TODO: Log error.
-		return false;
-	}
-
-	const int32_t index = variables->getVariableIndex(_var_name, _var_type);
+	const VariableSet& variables = owner.getVariables();
+	const int32_t index = variables.getVariableIndex(_var_name, _var_type);
 
 	if (index < 0) {
 		_operation = static_cast<Operation>(static_cast<int32_t>(_operation) + static_cast<int32_t>(Operation::Count));
@@ -168,22 +161,22 @@ bool CheckVariableCondition::init(const StateMachine& owner)
 	return true;
 }
 
-bool CheckVariableCondition::evaluate(const StateMachine& owner, VariableSet::VariableInstance* instance_data) const
+bool CheckVariableCondition::evaluate(const StateMachine& owner, VariableSet::Instance& variables) const
 {
 	GAFF_REF(owner);
 
 	switch (_var_type) {
 		case VariableSet::VariableType::String:
-			return Evaluate(instance_data->strings[_var_index], _string, _operation);
+			return Evaluate(variables.strings[_var_index], _string, _operation);
 
 		case VariableSet::VariableType::Float:
-			return Evaluate(instance_data->floats[_var_index], _float, _operation);
+			return Evaluate(variables.floats[_var_index], _float, _operation);
 
 		case VariableSet::VariableType::Integer:
-			return Evaluate(instance_data->integers[_var_index], _integer, _operation);
+			return Evaluate(variables.integers[_var_index], _integer, _operation);
 
 		case VariableSet::VariableType::Bool:
-			return Evaluate<bool>(instance_data->bools[_var_index], _bool, _operation);
+			return Evaluate<bool>(variables.bools[_var_index], _bool, _operation);
 	}
 
 	return false;
