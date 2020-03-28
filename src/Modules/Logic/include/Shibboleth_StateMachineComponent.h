@@ -41,8 +41,8 @@ public:
 	static void SetInternal(void* component, int32_t entity_index, const View& value);
 	static View GetInternal(const void* component, int32_t entity_index);
 
-	static void Constructor(void* component, int32_t entity_index);
-	static void Destructor(void* component, int32_t entity_index);
+	static void Constructor(EntityID, void* component, int32_t entity_index);
+	static void Destructor(EntityID, void* component, int32_t entity_index);
 
 	StateMachine& operator=(const StateMachine& rhs);
 	StateMachine& operator=(StateMachine&& rhs);

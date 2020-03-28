@@ -40,6 +40,9 @@ public:
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs);
 	bool operator==(const ProxyAllocator& rhs) const;
 
+	void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line);
+	void* realloc(void* old_ptr, size_t new_size, const char* file, int line);
+
 	// For EASTL support.
 	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override;
 	void* allocate(size_t n, int flags = 0) override;

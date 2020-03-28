@@ -393,15 +393,15 @@ bool ECSArchetype::isBase(void) const
 	return _is_base;
 }
 
-void ECSArchetype::destroyEntity(void* entity, int32_t entity_index) const
+void ECSArchetype::destroyEntity(EntityID id, void* entity, int32_t entity_index) const
 {
 	for (const RefDefOffset& rdo : _vars) {
 		if (rdo.destructor_func) {
-			rdo.destructor_func(reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
+			rdo.destructor_func(id, reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
 		}
 
 		if (rdo.constructor_func) {
-			rdo.constructor_func(reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
+			rdo.constructor_func(EntityID_None, reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
 		}
 	}
 }
@@ -413,10 +413,10 @@ void ECSArchetype::constructPage(void* page, int32_t num_entities) const
 
 		for (const RefDefOffset& rdo : _vars) {
 			if (rdo.constructor_func) {
-				rdo.constructor_func(entity_start + rdo.offset, 0);
-				rdo.constructor_func(entity_start + rdo.offset, 1);
-				rdo.constructor_func(entity_start + rdo.offset, 2);
-				rdo.constructor_func(entity_start + rdo.offset, 3);
+				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 0);
+				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 1);
+				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 2);
+				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 3);
 			}
 		}
 	}
@@ -477,8 +477,8 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
 	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
-	RefDefOffset::ConstructorFunc constructor_func = ref_def.getStaticFunc<void, void*, int32_t>(Gaff::FNV1aHash32Const("Constructor"));
-	RefDefOffset::DestructorFunc destructor_func = ref_def.getStaticFunc<void, void*, int32_t>(Gaff::FNV1aHash32Const("Destructor"));
+	RefDefOffset::ConstructorFunc constructor_func = ref_def.getStaticFunc<void, EntityID, void*, int32_t>(Gaff::FNV1aHash32Const("Constructor"));
+	RefDefOffset::DestructorFunc destructor_func = ref_def.getStaticFunc<void, EntityID, void*, int32_t>(Gaff::FNV1aHash32Const("Destructor"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log error.

@@ -23,8 +23,10 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/lua",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/sol2/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Esprit/include",
 			base_dir .. "../../Modules/MainLoop/include",
@@ -53,7 +55,8 @@ local GenerateProject = function()
 		{
 			"Esprit",
 			"Resource",
-			"ECS"
+			"ECS",
+			"Lua"
 		}
 
 		dependson(deps)
@@ -65,6 +68,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Esprit")
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
+	table.insert(deps, "Lua")
 
 	dependson(deps)
 	links(deps)

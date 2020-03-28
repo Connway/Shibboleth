@@ -35,11 +35,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-enum LogType
+enum class LogType
 {
-	LOG_NORMAL = 0,
-	LOG_WARNING,
-	LOG_ERROR
+	Normal = 0,
+	Warning,
+	Error
 };
 
 class LogManager final
@@ -100,24 +100,24 @@ private:
 	GAFF_NO_MOVE(LogManager);
 };
 
-constexpr Gaff::Hash32 LOG_CHANNEL_DEFAULT = Gaff::FNV1aHash32Const("Default");
+static constexpr Gaff::Hash32 k_log_channel_default = Gaff::FNV1aHash32Const("Default");
 
 NS_END
 
 #define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, message, ##__VA_ARGS__)
 
 #define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, ##__VA_ARGS__)
-#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, "[ERROR] " message, ##__VA_ARGS__)
-#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, "[WARNING] " message, ##__VA_ARGS__)
-#define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, channel, message, ##__VA_ARGS__)
-#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, Shibboleth::LOG_CHANNEL_DEFAULT, "[ERROR] " message, ##__VA_ARGS__)
-#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, Shibboleth::LOG_CHANNEL_DEFAULT, "[WARNING] " message, ##__VA_ARGS__)
-#define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, Shibboleth::LOG_CHANNEL_DEFAULT, message, ##__VA_ARGS__)
+#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, "[ERROR] " message, ##__VA_ARGS__)
+#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, channel, "[WARNING] " message, ##__VA_ARGS__)
+#define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, channel, message, ##__VA_ARGS__)
+#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, "[ERROR] " message, ##__VA_ARGS__)
+#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, "[WARNING] " message, ##__VA_ARGS__)
+#define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__)
 
 #define LogAndReturn(return_value, type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, ##__VA_ARGS__); return return_value
-#define LogErrorAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, message, ##__VA_ARGS__); return return_value
-#define LogWarningAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, message, ##__VA_ARGS__); return return_value
-#define LogInfoAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, channel, message, ##__VA_ARGS__); return return_value
-#define LogErrorAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, Shibboleth::LOG_CHANNEL_DEFAULT, message, ##__VA_ARGS__); return return_value
-#define LogWarningAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, Shibboleth::LOG_CHANNEL_DEFAULT, message, ##__VA_ARGS__); return return_value
-#define LogInfoAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, Shibboleth::LOG_CHANNEL_DEFAULT, message, ##__VA_ARGS__); return return_value
+#define LogErrorAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, message, ##__VA_ARGS__); return return_value
+#define LogWarningAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, channel, message, ##__VA_ARGS__); return return_value
+#define LogInfoAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, channel, message, ##__VA_ARGS__); return return_value
+#define LogErrorAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value
+#define LogWarningAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value
+#define LogInfoAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value

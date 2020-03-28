@@ -51,6 +51,16 @@ bool ProxyAllocator::operator==(const ProxyAllocator& rhs) const
 	return _pool_index == rhs._pool_index;
 }
 
+void* ProxyAllocator::realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line)
+{
+	return _allocator.realloc(old_ptr, new_size, alignment, _pool_index, file, line);
+}
+
+void* ProxyAllocator::realloc(void* old_ptr, size_t new_size, const char* file, int line)
+{
+	return _allocator.realloc(old_ptr, new_size, _pool_index, file, line);
+}
+
 // For EASTL support.
 void* ProxyAllocator::allocate(size_t n, size_t alignment, size_t, int flags)
 {

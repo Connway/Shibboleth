@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_ISystem.h>
 #include <Gleam_IKeyboard.h>
 #include <Gleam_IMouse.h>
+#include <EASTL/chrono.h>
 
 NS_SHIBBOLETH
 
@@ -51,6 +52,7 @@ public:
 
 	bool initAllModulesLoaded(void) override;
 	void update(void);
+	void resetTimer(void);
 
 	float getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const;
 	float getAliasValue(const char* alias_name, int32_t player_id) const;
@@ -98,6 +100,11 @@ private:
 
 	UniquePtr<Gleam::IKeyboard> _keyboard;
 	UniquePtr<Gleam::IMouse> _mouse;
+
+	// Maintaining our own timer to avoid dependencies, as we are using real-time and don't need
+	// anything from GameTime.
+	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _start;
+	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _end;
 
 	int32_t _km_player_id = 0;
 

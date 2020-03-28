@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <EASTL/functional.h>
 #include <atomic>
 
-#define LogErrorResource(msg, ...) LogError(LOG_CHANNEL_RESOURCE, msg, ##__VA_ARGS__)
+#define LogErrorResource(msg, ...) LogError(k_log_channel_resource, msg, ##__VA_ARGS__)
 
 #define RES_FAIL_MSG(cond, msg, ...) \
 	if (cond) { \
@@ -41,7 +41,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-constexpr Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
+static constexpr Gaff::Hash32 k_log_channel_resource = Gaff::FNV1aHash32Const("Resource");
 
 
 class ResourceManager;

@@ -188,7 +188,7 @@ public:
 
 	bool isBase(void) const;
 
-	void destroyEntity(void* entity, int32_t entity_index) const;
+	void destroyEntity(EntityID id, void* entity, int32_t entity_index) const;
 	void constructPage(void* page, int32_t num_entities) const;
 
 private:
@@ -198,8 +198,8 @@ private:
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
 		using LoadFunc = bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
-		using ConstructorFunc = void (*)(void*, int32_t);
-		using DestructorFunc = void (*)(void*, int32_t);
+		using ConstructorFunc = void (*)(EntityID, void*, int32_t);
+		using DestructorFunc = void (*)(EntityID, void*, int32_t);
 
 		const Gaff::IReflectionDefinition* ref_def;
 		int32_t offset;

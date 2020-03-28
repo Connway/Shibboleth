@@ -375,6 +375,9 @@
     <ProjectReference Include="..\frameworks\Esprit.vcxproj">
       <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\Lua.vcxproj">
+      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

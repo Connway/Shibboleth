@@ -339,7 +339,7 @@ void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
 	void* const comp_data = reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset;
 
-	entity.data->archetype.destroyEntity(comp_data, entity.index % 4);
+	entity.data->archetype.destroyEntity(id, comp_data, entity.index % 4);
 
 	if (entity.page->num_entities > 0) {
 		entity.data->free_indices.emplace_back(global_index);

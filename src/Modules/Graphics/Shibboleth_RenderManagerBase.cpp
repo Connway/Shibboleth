@@ -306,8 +306,9 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	GAFF_ASSERT(it == _render_devices.end());
 	_render_devices.emplace_back(device);
 
-	for (auto& pair : _deferred_devices) {
-		pair.second.emplace_back(device->createDeferredRenderDevice());
+	for (int32_t i = 0; i < 2; ++i) {
+		auto& cache = _cached_render_commands[i][device];
+		cache.set_allocator(ProxyAllocator("Graphics"));
 	}
 }
 
@@ -490,6 +491,11 @@ const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(EntityID id,
 	return nullptr;
 }
 
+bool RenderManagerBase::removeGBuffer(EntityID id)
+{
+	return _g_buffers.erase(id) > 0;
+}
+
 bool RenderManagerBase::hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const
 {
 	const auto it = _g_buffers.find(id);
@@ -504,6 +510,24 @@ bool RenderManagerBase::hasGBuffer(EntityID id, const Gleam::IRenderDevice& devi
 bool RenderManagerBase::hasGBuffer(EntityID id) const
 {
 	return _g_buffers.find(id) != _g_buffers.end();
+}
+
+const Vector<RenderManagerBase::RenderCommand>& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const
+{
+	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
+	const auto it = _cached_render_commands[cache_index].find(&device);
+	GAFF_ASSERT(it != _cached_render_commands[cache_index].end());
+
+	return it->second;
+}
+
+Vector<RenderManagerBase::RenderCommand>& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index)
+{
+	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
+	const auto it = _cached_render_commands[cache_index].find(&device);
+	GAFF_ASSERT(it != _cached_render_commands[cache_index].end());
+
+	return it->second;
 }
 
 void RenderManagerBase::presentAllOutputs(void)

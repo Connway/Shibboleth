@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
@@ -31,6 +32,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Camera)
 	)
 
 	.base< ECSComponentBaseNonShared<Camera> >()
+
+	.staticFunc("Destructor", Camera::Destructor)
 
 	.var("device_tag", &Camera::device_tag, HashStringAttribute())
 	.var("v_fov", &Camera::v_fov, OptionalAttribute())
@@ -78,6 +81,12 @@ Camera Camera::GetInternal(const void* component, int32_t page_index)
 	camera.device_tag = *device;
 
 	return camera;
+}
+
+void Camera::Destructor(EntityID id, void*, int32_t)
+{
+	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	render_mgr.removeGBuffer(id);
 }
 
 glm_vec4 Camera::GetVerticalFOVDegrees(const void* component, int32_t page_index)
