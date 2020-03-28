@@ -33,6 +33,7 @@ THE SOFTWARE.
 namespace Gleam
 {
 	class IRenderDevice;
+	class ICommandList;
 }
 
 NS_SHIBBOLETH
@@ -68,13 +69,15 @@ private:
 		UniquePtr<Gleam::IProgramBuffers> program_buffers;
 		UniquePtr<Gleam::IRasterState> raster_state;
 		UniquePtr<Gleam::ISamplerState> sampler;
+		UniquePtr<Gleam::IRenderDevice> device;
+		Gleam::ICommandList* cmd_list;
 		CameraPostRenderSystem* system = nullptr;
-		Gleam::IRenderDevice* device = nullptr;
 	};
 
 	Vector<CameraRenderData> _camera_job_data_cache{ ProxyAllocator("Graphics") };
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
+	int32_t _cache_index = 0;
 
 	MaterialResourcePtr _camera_material;
 

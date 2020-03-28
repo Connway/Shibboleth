@@ -31,8 +31,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
 
 	.base< ECSComponentBaseBoth<StateMachine> >()
 
-	.staticFunc("Constructor", &StateMachine::Constructor)
-	.staticFunc("Destructor", &StateMachine::Destructor)
+	.staticFunc("Constructor", StateMachine::Constructor)
+	.staticFunc("Destructor", StateMachine::Destructor)
 
 	.var("value", &StateMachine::resource)
 	.ctor<>()
@@ -95,7 +95,7 @@ StateMachine::View StateMachine::GetInternal(const void* component, int32_t enti
 	return view;
 }
 
-void StateMachine::Constructor(void* component, int32_t entity_index)
+void StateMachine::Constructor(EntityID, void* component, int32_t entity_index)
 {
 	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
 	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
@@ -104,7 +104,7 @@ void StateMachine::Constructor(void* component, int32_t entity_index)
 	new(inst) UniquePtr<Esprit::StateMachine::Instance>();
 }
 
-void StateMachine::Destructor(void* component, int32_t entity_index)
+void StateMachine::Destructor(EntityID, void* component, int32_t entity_index)
 {
 	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
 	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;

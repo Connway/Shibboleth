@@ -85,11 +85,10 @@ bool MainLoop::init(void)
 	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const auto* bucket = refl_mgr.getTypeBucket(CLASS_HASH(ISystem));
 
-	_systems.set_allocator(allocator);
-	_systems.resize(reader.size());
+	_blocks.resize(reader.size());
 
-	_job_data.set_allocator(allocator);
-	_job_data.resize(reader.size());
+	//_systems.resize(reader.size());
+	//_job_data.resize(reader.size());
 
 	for (int32_t i = 0; i < reader.size(); ++i) {
 		const auto guard_1 = reader.enterElementGuard(i);
@@ -99,11 +98,8 @@ bool MainLoop::init(void)
 			return false;
 		}
 
-		_systems[i].set_allocator(allocator);
-		_systems[i].resize(reader.size());
-
-		_job_data[i].set_allocator(allocator);
-		_job_data[i].resize(reader.size());
+		UpdateBlock& block = _blocks[i];
+		block.rows.resize(reader.size());
 
 		for (int32_t j = 0; j < reader.size(); ++j) {
 			const auto guard_2 = reader.enterElementGuard(j);
@@ -113,11 +109,9 @@ bool MainLoop::init(void)
 				return false;
 			}
 
-			_systems[i][j].set_allocator(allocator);
-			_systems[i][j].resize(reader.size());
-
-			_job_data[i][j].set_allocator(allocator);
-			_job_data[i][j].resize(reader.size());
+			UpdateRow& row = block.rows[j];
+			row.job_data.resize(reader.size());
+			row.systems.resize(reader.size());
 
 			for (int32_t k = 0; k < reader.size(); ++k) {
 				const auto guard_3 = reader.enterElementGuard(k);
@@ -153,10 +147,11 @@ bool MainLoop::init(void)
 				}
 
 				reader.freeString(system_name);
-				_systems[i][j][k].reset(system);
 
-				_job_data[i][j][k].job_func = UpdateSystemJob;
-				_job_data[i][j][k].job_data = system;
+				row.systems[k].reset(system);
+
+				row.job_data[k].job_func = UpdateSystemJob;
+				row.job_data[k].job_data = system;
 			}
 		}
 	}
@@ -166,31 +161,74 @@ bool MainLoop::init(void)
 
 void MainLoop::destroy(void)
 {
+	_blocks.clear();
 }
 
 void MainLoop::update(void)
 {
-	_render_mgr->updateWindows(); // This has to happen in the main thread.
+	// This has to happen in the main thread.
+	_render_mgr->updateWindows();
 
-	if (_counter) {
-		GetApp().getJobPool().doAJob();
+	const int32_t num_blocks = static_cast<int32_t>(_blocks.size());
 
-	// Jobs are done. Move up to the next section.
-	} else {
-		++_system_group;
+	for (int32_t i = 0; i < num_blocks; ++i) {
+		UpdateBlock& block = _blocks[i];
+		const int32_t job_counter = block.counter;
 
-		while (_system_group >= static_cast<int32_t>(_systems[_update_block].size())) {
-			_system_group = 0;
-			++_update_block;
+		// This block is already active, leave it alone.
+		if (job_counter > 0) {
+			continue;
+		}
 
-			if (_update_block >= static_cast<int32_t>(_systems.size())) {
-				_update_block = 0;
+		// We finished our jobs, increment the current row.
+		if (job_counter == 0) {
+			++block.curr_row;
+
+			// We finished our block, increment the frame count and reset current row.
+			if (block.curr_row >= static_cast<int32_t>(block.rows.size())) {
+				block.frame = (block.frame + 1) % 3;
+				block.curr_row = -1;
 			}
 		}
 
-		const auto& job_data = _job_data[_update_block][_system_group];
-		GetApp().getJobPool().addJobs(job_data.data(), job_data.size(), _counter);
+		// We're waiting for another block.
+		if (block.curr_row < 0) {
+			// Check previous block.
+			if (i > 0) {
+				// If we're on the same frame, then it hasn't given us anything to act on. Wait for it to finish.
+				if (block.frame == _blocks[i - 1].frame) {
+					block.counter = -1;
+					continue;
+				}
+			}
+
+			// Check next block.
+			if (i < (num_blocks - 1)) {
+				const int32_t next_block_curr_frame = _blocks[i + 1].frame;
+				const int32_t next_block_next_frame = (_blocks[i + 1].frame + 1) % 3;
+
+				// We're getting too far ahead of the next section. Wait for it to finish.
+				if (block.frame != next_block_curr_frame && block.frame != next_block_next_frame) {
+					block.counter = -1;
+					continue;
+				}
+			}
+
+			block.curr_row = 0;
+		}
+
+		// Process the next row.
+		block.counter = 0;
+
+		GetApp().getJobPool().addJobs(
+			block.rows[block.curr_row].job_data.data(),
+			block.rows[block.curr_row].job_data.size(),
+			block.counter
+		);
 	}
+
+	// Help out a little before the next iteration.
+	GetApp().getJobPool().doAJob();
 
 	// Give some time to other threads.
 	EA::Thread::ThreadSleep();

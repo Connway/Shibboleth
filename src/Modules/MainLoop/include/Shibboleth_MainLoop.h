@@ -40,13 +40,31 @@ public:
 	void update(void) override;
 
 private:
-	Vector< Vector< Vector< UniquePtr<ISystem> > > > _systems;
-	Vector< Vector< Vector<Gaff::JobData> > > _job_data;
+	struct UpdateRow final
+	{
+		Vector< UniquePtr<ISystem> > systems{ ProxyAllocator("MainLoop") };
+		Vector<Gaff::JobData> job_data{ ProxyAllocator("MainLoop") };
+	};
 
-	Gaff::Counter _counter = 0;
-	int32_t _update_block = 0;
-	int32_t _system_group = -1;
+	struct UpdateBlock final
+	{
+		Vector<UpdateRow> rows{ ProxyAllocator("MainLoop") };
+		Gaff::Counter counter = -1;
+		int32_t curr_row = -1;
+		int32_t frame = 0;
 
+		UpdateBlock(void) = default;
+
+		UpdateBlock(UpdateBlock&& block):
+			rows(std::move(block.rows)),
+			counter(static_cast<int32_t>(block.counter)),
+			curr_row(block.curr_row),
+			frame(block.frame)
+		{
+		}
+	};
+
+	Vector<UpdateBlock> _blocks{ ProxyAllocator("MainLoop") };
 	IRenderManager* _render_mgr = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);

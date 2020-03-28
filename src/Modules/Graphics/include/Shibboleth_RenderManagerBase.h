@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ISamplerState.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
@@ -78,6 +79,12 @@ public:
 		SRVPtr final_srv;
 	};
 
+	struct RenderCommand final
+	{
+		UniquePtr<Gleam::ICommandList> cmd_list;
+		//Gleam::IRenderTarget* target = nullptr;
+	};
+
 	RenderManagerBase(void);
 
 	bool initAllModulesLoaded(void) override;
@@ -114,8 +121,12 @@ public:
 
 	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const glm::ivec2& size, bool create_render_texture = false);
 	const GBufferData* getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
+	bool removeGBuffer(EntityID id);
 	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool hasGBuffer(EntityID id) const;
+
+	const Vector<RenderCommand>& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const;
+	Vector<RenderCommand>& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index);
 
 	void presentAllOutputs(void);
 
@@ -126,7 +137,11 @@ private:
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
-	VectorMap< EA::Thread::ThreadId, Vector<RenderDevicePtr> > _deferred_devices{ ProxyAllocator("Graphics") };
+
+	VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> > _cached_render_commands[2] = {
+		VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> >{ ProxyAllocator("Graphics") },
+		VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> >{ ProxyAllocator("Graphics") }
+	};
 
 	SamplerStateResourcePtr _default_sampler;
 

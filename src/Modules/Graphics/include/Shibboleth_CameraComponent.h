@@ -41,6 +41,8 @@ public:
 	static void SetInternal(void* component, int32_t page_index, const Camera& value);
 	static Camera GetInternal(const void* component, int32_t page_index);
 
+	static void Destructor(EntityID id, void* component, int32_t entity_index);
+
 	static glm_vec4 GetVerticalFOVDegrees(const void* component, int32_t page_index);
 	static glm_vec4 GetVerticalFOV(const void* component, int32_t page_index);
 	static glm_vec4 GetFocalLength(const void* component, int32_t page_index);

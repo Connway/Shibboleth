@@ -175,10 +175,10 @@ void LogManager::addChannel(HashStringTemp32<> channel, const char* file)
 
 		} else {
 			// If this is not the channel added in the constructor, then log the error in that channel.
-			if (channel.getHash() != LOG_CHANNEL_DEFAULT) {
+			if (channel.getHash() != k_log_channel_default) {
 				logMessage(
-					LOG_ERROR,
-					LOG_CHANNEL_DEFAULT,
+					LogType::Error,
+					k_log_channel_default,
 					"Failed to create channel '%s'! Failed to open file '%s'!",
 					channel.getBuffer(),
 					file_name
@@ -193,16 +193,16 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* form
 	va_list vl;
 	va_start(vl, format);
 
-	if (!logMessageHelper(type, channel, format, vl) && channel != LOG_CHANNEL_DEFAULT) {
+	if (!logMessageHelper(type, channel, format, vl) && channel != k_log_channel_default) {
 		logMessage(
-			LOG_ERROR,
-			LOG_CHANNEL_DEFAULT,
+			LogType::Error,
+			k_log_channel_default,
 			"Failed to find channel with hash '%u'!",
 			channel
 		);
 
 		// Log the message to the default channel.
-		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
+		logMessageHelper(type, k_log_channel_default, format, vl);
 	}
 
 	va_end(vl);

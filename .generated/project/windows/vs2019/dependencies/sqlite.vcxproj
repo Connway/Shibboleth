@@ -192,6 +192,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\sqlite\sqlite3.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\sqlite\sqlite3ext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\sqlite\sqlite3.c" />

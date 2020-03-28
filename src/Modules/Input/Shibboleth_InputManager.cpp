@@ -248,7 +248,14 @@ void InputManager::update()
 	_keyboard->update();
 	_mouse->update();
 
-	const float dt = static_cast<float>(GetApp().getManagerTFast<GameTimeManager>().getRealTime().delta);
+	using DoubleSeconds = eastl::chrono::duration<double>;
+	_end = eastl::chrono::high_resolution_clock::now();
+
+	DoubleSeconds delta = _end - _start;
+	_start = _end;
+
+	// Delta time is real-time.
+	const float dt = static_cast<float>(delta.count());
 
 	for (int32_t i = 0; i < g_max_local_players; ++i) {
 		for (auto& binding : _bindings[i]) {
@@ -270,6 +277,11 @@ void InputManager::update()
 			}
 		}
 	}
+}
+
+void InputManager::resetTimer(void)
+{
+	_start = _end = eastl::chrono::high_resolution_clock::now();
 }
 
 float InputManager::getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const
@@ -422,6 +434,7 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 bool InputSystem::init(void)
 {
 	_input_mgr = &GetApp().getManagerTFast<InputManager>();
+	_input_mgr->resetTimer();
 	return true;
 }
 

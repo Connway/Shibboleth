@@ -30,10 +30,10 @@ THE SOFTWARE.
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
 #include <Gleam_IncludeMatrix.h>
-#include <Gleam_ICommandList.h>
 
 NS_GLEAM
 	class IRenderTarget;
+	class ICommandList;
 NS_END
 
 NS_SHIBBOLETH
@@ -41,6 +41,31 @@ NS_SHIBBOLETH
 class RenderManagerBase;
 class ResourceManager;
 class ECSManager;
+
+class RenderCommandSubmissionSystem final : public ISystem
+{
+public:
+	bool init(void) override;
+	void update(void) override;
+
+private:
+	struct SubmissionData final
+	{
+		RenderCommandSubmissionSystem* rcss;
+		Gleam::IRenderDevice* device;
+	};
+
+	Vector<SubmissionData> _submission_job_data_cache{ ProxyAllocator("Graphics") };
+	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
+	Gaff::Counter _job_counter = 0;
+
+	RenderManagerBase* _render_mgr = nullptr;
+	int32_t _cache_index = 0;
+
+	static void SubmitCommands(void* data);
+
+	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSubmissionSystem);
+};
 
 class RenderCommandSystem final : public ISystem
 {
@@ -50,7 +75,7 @@ public:
 	static constexpr const char* ConstBufferFormat = "RenderCommandSystem:ConstBuffer:%s:%llu";
 
 	bool init(void) override;
-	void update() override;
+	void update(void) override;
 
 private:
 	struct InstanceData final
@@ -91,7 +116,7 @@ private:
 		RenderCommandSystem* rcs;
 		int32_t index;
 
-		UniquePtr<Gleam::ICommandList> cmd_list;
+		Gleam::ICommandList* cmd_list;
 		UniquePtr<Gleam::IRenderDevice> device;
 		Gleam::IRenderTarget* target;
 
@@ -144,6 +169,8 @@ private:
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
 
+	int32_t _cache_index = 0;
+
 	void newObjectArchetype(const ECSArchetype& archetype);
 	void removedObjectArchetype(int32_t index);
 
@@ -194,4 +221,5 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(RenderCommandSubmissionSystem)
 SHIB_REFLECTION_DECLARE(RenderCommandSystem)

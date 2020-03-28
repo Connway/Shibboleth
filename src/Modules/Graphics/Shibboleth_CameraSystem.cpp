@@ -60,27 +60,27 @@ void CameraPreRenderSystem::update(void)
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Camera>([&](EntityID id, const Camera& camera) -> void
 		{
-			if (_render_mgr->hasGBuffer(id)) {
-				return;
-			}
+			if (!_render_mgr->hasGBuffer(id)) {
+				bool create_render_texture = false;
+				glm::ivec2 size(0, 0);
 
-			bool create_render_texture = false;
-			glm::ivec2 size(0, 0);
+				if (camera.size.x > 0 && camera.size.y > 0) {
+					create_render_texture = true;
+					size = camera.size;
 
-			if (camera.size.x > 0 && camera.size.y > 0) {
-				create_render_texture = true;
-				size = camera.size;
-
-			} else {
-				if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
-					size = window->getSize();
 				} else {
-					// $TODO: Log Error
-					return;
+					if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
+						size = window->getSize();
+					} else {
+						// $TODO: Log Error
+						return;
+					}
+				}
+
+				if (!_render_mgr->createGBuffer(id, camera.device_tag, size, create_render_texture)) {
+					// $TODO: Log error.
 				}
 			}
-
-			_render_mgr->createGBuffer(id, camera.device_tag, size, create_render_texture);
 		},
 		_camera[camera_index]);
 	}
@@ -118,17 +118,27 @@ void CameraPostRenderSystem::update(void)
 	const int32_t num_devices = _render_mgr->getNumDevices();
 
 	if (num_devices > starting_index) {
-
 		_camera_job_data_cache.resize(num_devices);
 		_job_data_cache.resize(num_devices);
+	}
 
-		for (int32_t i = starting_index; i < num_devices; ++i) {
-			Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
+	for (int32_t i = 0; i < num_devices; ++i) {
+		// Do per-frame setup.
+		Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
+		Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
 
+		Vector<RenderManagerBase::RenderCommand>& render_cmds = _render_mgr->getRenderCommands(device, _cache_index);
+		auto& cmd = render_cmds.emplace_back();
+		cmd.cmd_list.reset(cmd_list);
+
+		_camera_job_data_cache[i].cmd_list = cmd_list;
+
+		// Do one time setup.
+		if (i >= starting_index) {
 			_camera_job_data_cache[i].program_buffers.reset(_render_mgr->createProgramBuffers());
 			_camera_job_data_cache[i].raster_state.reset(_render_mgr->createRasterState());
 			_camera_job_data_cache[i].sampler.reset(_render_mgr->createSamplerState());
-			_camera_job_data_cache[i].device = &device;
+			_camera_job_data_cache[i].device.reset(device.createDeferredRenderDevice());
 			_camera_job_data_cache[i].system = this;
 
 			Gleam::ISamplerState::SamplerSettings sampler_settings = {
@@ -155,6 +165,11 @@ void CameraPostRenderSystem::update(void)
 					Gleam::IShader::SHADER_PIXEL,
 					_camera_job_data_cache[i].sampler.get()
 				);
+
+				//_camera_job_data_cache[i].program_buffers->addConstantBuffer(
+				//	Gleam::IShader::SHADER_PIXEL,
+				//	_camera_job_data_cache[i].constant_buffer.get()
+				//);
 			}
 
 			_job_data_cache[i].job_data = &_camera_job_data_cache[i];
@@ -163,11 +178,10 @@ void CameraPostRenderSystem::update(void)
 	}
 
 	auto& job_pool = GetApp().getJobPool();
-	
 	job_pool.addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
 	job_pool.helpWhileWaiting(_job_counter);
 
-	_render_mgr->presentAllOutputs();
+	_cache_index = (_cache_index + 1) % 2;
 }
 
 void CameraPostRenderSystem::RenderCameras(void* data)
@@ -175,7 +189,7 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 	CameraRenderData& job_data = *reinterpret_cast<CameraRenderData*>(data);
 	const int32_t num_cameras = static_cast<int32_t>(job_data.system->_camera.size());
 
-	Gleam::IProgram* const program = job_data.system->_camera_material->getProgram(*job_data.device);
+	Gleam::IProgram* const program = job_data.system->_camera_material->getProgram(*job_data.device->getOwningDevice());
 
 	if (!program) {
 		return;
@@ -189,11 +203,11 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 		{
 			const auto* const devices = job_data.system->_render_mgr->getDevicesByTag(camera.device_tag);
 
-			if (!devices || Gaff::Find(*devices, job_data.device) == devices->end()) {
+			if (!devices || Gaff::Find(*devices, job_data.device->getOwningDevice()) == devices->end()) {
 				return;
 			}
 
-			const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device);
+			const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device->getOwningDevice());
 
 			if (!g_buffer) {
 				return;
@@ -224,7 +238,7 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 		job_data.system->_camera[camera_index]);
 	}
 
-	job_data.device->clearRenderState();
+	job_data.device->finishCommandList(*job_data.cmd_list);
 }
 
 NS_END

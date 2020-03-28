@@ -27,6 +27,11 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <gtx/euler_angles.hpp>
 
+SHIB_REFLECTION_DEFINE_BEGIN(RenderCommandSubmissionSystem)
+	.BASE(ISystem)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(RenderCommandSubmissionSystem)
+
 SHIB_REFLECTION_DEFINE_BEGIN(RenderCommandSystem)
 	.BASE(ISystem)
 	.ctor<>()
@@ -34,6 +39,7 @@ SHIB_REFLECTION_DEFINE_END(RenderCommandSystem)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSubmissionSystem)
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSystem)
 
 static constexpr const char* k_mtp_mat_name = "_model_to_proj_matrix";
@@ -110,6 +116,62 @@ static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& 
 	}
 }
 
+
+
+//RenderCommandSubmissionSystem
+bool RenderCommandSubmissionSystem::init(void)
+{
+	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	return true;
+}
+
+void RenderCommandSubmissionSystem::update()
+{
+	const int32_t starting_index = static_cast<int32_t>(_job_data_cache.size());
+	const int32_t num_devices = _render_mgr->getNumDevices();
+
+	if (num_devices > starting_index) {
+		_submission_job_data_cache.resize(num_devices);
+		_job_data_cache.resize(num_devices);
+
+		for (int32_t i = starting_index; i < num_devices; ++i) {
+			Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
+
+			_submission_job_data_cache[i].device = &device;
+			_submission_job_data_cache[i].rcss = this;
+
+			_job_data_cache[i].job_data = &_submission_job_data_cache[i];
+			_job_data_cache[i].job_func = SubmitCommands;
+		}
+	}
+
+	auto& job_pool = GetApp().getJobPool();
+	job_pool.addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+	job_pool.helpWhileWaiting(_job_counter);
+
+	_cache_index = (_cache_index + 1) % 2;
+	_render_mgr->presentAllOutputs();
+}
+
+void RenderCommandSubmissionSystem::SubmitCommands(void* data)
+{
+	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
+	Vector<RenderManagerBase::RenderCommand>& cmds = job_data.rcss->_render_mgr->getRenderCommands(
+		*job_data.device,
+		job_data.rcss->_cache_index
+	);
+
+	for (RenderManagerBase::RenderCommand& cmd : cmds) {
+		job_data.device->executeCommandList(*cmd.cmd_list);
+	}
+
+	job_data.device->clearRenderState();
+	cmds.clear();
+}
+
+
+
+// RenderCommandSystem
 bool RenderCommandSystem::init(void)
 {
 	ECSQuery camera_query;
@@ -145,7 +207,7 @@ bool RenderCommandSystem::init(void)
 	return true;
 }
 
-void RenderCommandSystem::update()
+void RenderCommandSystem::update(void)
 {
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
@@ -194,6 +256,8 @@ void RenderCommandSystem::update()
 
 	_job_pool->addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
 	_job_pool->helpWhileWaiting(_job_counter);
+
+	_cache_index = (_cache_index + 1) % 2;
 }
 
 void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
@@ -638,8 +702,10 @@ void RenderCommandSystem::DeviceJob(void* data)
 	const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
 
 	Gleam::IRenderDevice& device = *job_data.device;
-	//job_data.render_job_data_cache.resize(num_cameras * num_objects);
 	job_data.render_job_data_cache.clear();
+
+	Vector<RenderManagerBase::RenderCommand>& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(*job_data.device, job_data.rcs->_cache_index);
+	render_cmds.clear();
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
@@ -657,38 +723,60 @@ void RenderCommandSystem::DeviceJob(void* data)
 				return;
 			}
 
+			Gleam::ICommandList* cmd_list = job_data.rcs->_render_mgr->createCommandList();
+			Gleam::IRenderDevice* deferred_context = device.createDeferredRenderDevice();
 			Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
 
-			const glm::ivec2& size = render_target->getSize();
-			const glm::mat4x4 projection = glm::perspectiveFovLH(
-				camera.GetVerticalFOV() * Gaff::TurnsToRad,
-				static_cast<float>(size.x),
-				static_cast<float>(size.y),
-				camera.z_near, camera.z_far
-			);
+			{
+				auto& cmd = render_cmds.emplace_back();
+				cmd.cmd_list.reset(cmd_list);
+			}
 
-			const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-			glm::mat4x4 camera_transform = /*glm::translate(*/glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z)/*, cam_pos.value)*/;
-			camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
-
-			const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
+			// $TODO: Make the clearing type an option.
+			render_target->bind(*deferred_context);
+			render_target->clear(*deferred_context, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
 			if (num_objects > 0) {
+				const glm::ivec2& size = render_target->getSize();
+				const glm::mat4x4 projection = glm::perspectiveFovLH(
+					camera.GetVerticalFOV() * Gaff::TurnsToRad,
+					static_cast<float>(size.x),
+					static_cast<float>(size.y),
+					camera.z_near, camera.z_far
+					);
+
+				const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
+				glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+				camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
+
+				const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
+
 				for (int32_t i = 0; i < num_objects; ++i) {
 					const int32_t cache_index = camera_index * num_objects + i;
 
 					// Cache these somehow?
-					Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
-					Gleam::IRenderDevice* const deferred_context = device.createDeferredRenderDevice();
+					if (!cmd_list) {
+						cmd_list = job_data.rcs->_render_mgr->createCommandList();
+						deferred_context = device.createDeferredRenderDevice();
+
+						auto& cmd = render_cmds.emplace_back();
+						cmd.cmd_list.reset(cmd_list);
+					}
 
 					RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
 					render_data.rcs = job_data.rcs;
 					render_data.index = i;
-					render_data.cmd_list.reset(cmd_list);
+					render_data.cmd_list = cmd_list;
 					render_data.device.reset(deferred_context);
 					render_data.target = render_target;
 					render_data.view_projection = final_camera;
+
+					deferred_context = nullptr;
+					cmd_list = nullptr;
 				}
+
+			} else {
+				deferred_context->finishCommandList(*cmd_list);
 			}
 		},
 		job_data.rcs->_camera_position[camera_index],
@@ -705,39 +793,7 @@ void RenderCommandSystem::DeviceJob(void* data)
 	}
 
 	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), job_data.job_data_cache.size(), job_data.job_counter);
-
-	// Do the clear while jobs are running to not waste too much time.
-	// $TODO: Make the clearing type an option.
-	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		job_data.rcs->_ecs_mgr->iterate<Camera>([&](EntityID id, const Camera& camera) -> void
-		{
-			const auto* const devices = job_data.rcs->_render_mgr->getDevicesByTag(camera.device_tag);
-
-			if (!devices || Gaff::Find(*devices, &device) == devices->end()) {
-				return;
-			}
-
-			const auto* const g_buffer = job_data.rcs->_render_mgr->getGBuffer(id, device);
-
-			if (!g_buffer) {
-				return;
-			}
-
-			Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-
-			render_target->bind(device);
-			render_target->clear(device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
-		},
-		job_data.rcs->_camera[camera_index]);
-	}
-
 	job_data.rcs->_job_pool->helpWhileWaiting(job_data.job_counter);
-
-	for (const auto& render_job_data : job_data.render_job_data_cache) {
-		device.executeCommandList(*render_job_data.cmd_list);
-	}
-
-	device.clearRenderState();
 }
 
 NS_END
