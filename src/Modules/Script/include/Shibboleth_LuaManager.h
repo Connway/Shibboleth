@@ -20,60 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaManager.h"
-#include <Shibboleth_LogManager.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaManager)
-	.BASE(IManager)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaManager)
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
+
+struct lua_State;
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaManager)
-
-static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
-static ProxyAllocator g_allocator("Lua");
-
-bool LuaManager::initAllModulesLoaded(void)
+class LuaManager final : public IManager
 {
-	GetApp().getLogManager().addChannel("Lua", "LuaLog");
+public:
+	bool initAllModulesLoaded(void) override;
 
-	_state.open_libraries(
-		sol::lib::base,
-		sol::lib::coroutine,
-		sol::lib::debug,
-		sol::lib::math,
-		sol::lib::package,
-		sol::lib::table,
-		sol::lib::string,
-		sol::lib::utf8
-	);
+private:
+	lua_State* _state = nullptr;
 
-	return true;
-}
+	static void* alloc(void*, void* ptr, size_t, size_t new_size);
+	static int panic(lua_State* L);
 
-void* LuaManager::alloc(void*, void* ptr, size_t, size_t new_size)
-{
-	if (new_size == 0) {
-		SHIB_FREE(ptr, g_allocator);
-		return nullptr;
-	} else {
-		return SHIB_REALLOC(ptr, new_size, g_allocator);
-	}
-}
+	//void registerMath(void);
 
-int LuaManager::panic(lua_State* L)
-{
-	size_t size;
-	const char* const message = lua_tolstring(L, -1, &size);
-
-	if (message) {
-		GetApp().getLogManager().logMessage(LogType::Error, k_lua_log_channel, message);
-	}
-
-	lua_settop(L, 0);
-	return -1;
-}
+	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(LuaManager)

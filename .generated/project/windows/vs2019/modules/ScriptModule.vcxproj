@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{19790A89-852E-837E-0E23-7D557AD77982}</ProjectGuid>
+    <ProjectGuid>{60750258-4CD8-91FC-F55D-CAB2E19F5D7F}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LogicModule</RootNamespace>
+    <RootNamespace>ScriptModule</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,29 +72,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Debug\LogicModule\</IntDir>
-    <TargetName>LogicModule64d</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Debug\ScriptModule\</IntDir>
+    <TargetName>ScriptModule64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Release\LogicModule\</IntDir>
-    <TargetName>LogicModule64</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Release\ScriptModule\</IntDir>
+    <TargetName>ScriptModule64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Profile\LogicModule\</IntDir>
-    <TargetName>LogicModule64p</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Profile\ScriptModule\</IntDir>
+    <TargetName>ScriptModule64p</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Optimized_Debug\LogicModule\</IntDir>
-    <TargetName>LogicModule64od</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Optimized_Debug\ScriptModule\</IntDir>
+    <TargetName>ScriptModule64od</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,7 +104,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Logic\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Script\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Debug\LogicModule64d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Debug\ScriptModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -131,7 +131,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName)\ (x
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Logic\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Script\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -150,7 +150,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName)\ (x
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Release\LogicModule64.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Release\ScriptModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -165,7 +165,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName)\ 
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Logic\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Script\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -184,7 +184,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName)\ 
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Profile\LogicModule64p.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Profile\ScriptModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -199,7 +199,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName)\ 
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Logic\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Script\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -218,7 +218,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName)\ 
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\LogicModule64od.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\ScriptModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -227,7 +227,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_ScriptModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\Memory.vcxproj">
@@ -245,17 +245,17 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
-    <ProjectReference Include="Logic.vcxproj">
-      <Project>{93E89C0D-FFFC-C4BE-C87E-681E3452C1EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Esprit.vcxproj">
-      <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
+    <ProjectReference Include="Script.vcxproj">
+      <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\Lua.vcxproj">
+      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

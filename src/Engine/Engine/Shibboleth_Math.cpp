@@ -48,6 +48,12 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
 SHIB_REFLECTION_DEFINE_END(glm::vec4)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
+	.ctor<const glm::vec2&, float>()
+	.ctor<const glm::vec3&>()
+	.ctor<float, float, float>()
+	.ctor<float>()
+	.ctor<>()
+
 	.var("x", &glm::vec3::x, OptionalAttribute())
 	.var("y", &glm::vec3::y, OptionalAttribute())
 	.var("z", &glm::vec3::z, OptionalAttribute())

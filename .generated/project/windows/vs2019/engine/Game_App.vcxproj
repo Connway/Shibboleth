@@ -375,14 +375,8 @@
     <ProjectReference Include="..\frameworks\Esprit.vcxproj">
       <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\Lua.vcxproj">
-      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
@@ -399,8 +393,17 @@
     <ProjectReference Include="..\dependencies\libtiff.vcxproj">
       <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\Script.vcxproj">
+      <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\ECS.vcxproj">
+      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\Lua.vcxproj">
+      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsDirect3D11.vcxproj">
       <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
