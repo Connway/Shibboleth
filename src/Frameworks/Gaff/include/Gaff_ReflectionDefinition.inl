@@ -1208,6 +1208,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::setInsta
 }
 
 template <class T, class Allocator>
+IReflectionDefinition::StackCtorFunc ReflectionDefinition<T, Allocator>::getCtorStackFunc(void) const
+{
+	return _stack_ctor_func;
+}
+
+template <class T, class Allocator>
 const void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, const void* object) const
 {
 	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
@@ -1687,6 +1693,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 }
 
 template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::stackCtor(StackCtorFunc func)
+{
+	_stack_ctor_func = func;
+	return *this;
+}
+
+template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(Hash64 factory_hash)
 {
@@ -2057,18 +2070,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::serializ
 }
 
 template <class T, class Allocator>
-template <class T2>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::dependsOn(void)
-{
-	if (!GAFF_REFLECTION_NAMESPACE::Reflection<T2>::IsDefined()) {
-		eastl::function<void(void)> cb(&FinishAfterDependent);
-		GAFF_REFLECTION_NAMESPACE::Reflection<T2>::RegisterOnDefinedCallback(std::move(cb));
-	}
-
-	return *this;
-}
-
-template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
 	if (!_dependents_remaining) {
@@ -2112,18 +2113,6 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 	ref_def.finish();
 }
 
-template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::FinishAfterDependent(void)
-{
-	ReflectionDefinition<T, Allocator>& ref_def = const_cast<ReflectionDefinition<T, Allocator>&>(
-		GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition()
-	);
-
-	--ref_def._dependents_remaining;
-	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
-
-	ref_def.finish();
-}
 
 
 // Variables

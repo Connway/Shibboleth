@@ -405,6 +405,10 @@ public:
 class IReflectionDefinition
 {
 public:
+	using StackEntry = eastl::pair<const IReflectionDefinition*, void*>;
+	using CtorStack = Vector<StackEntry>;
+	using StackCtorFunc = void (*)(void*, const CtorStack&);
+
 	template <class... Args>
 	using ConstructFunc = void (*)(void*, Args&&...);
 
@@ -894,6 +898,7 @@ public:
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 
 	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
+	virtual StackCtorFunc getCtorStackFunc(void) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;

@@ -22,6 +22,13 @@ THE SOFTWARE.
 
 NS_GAFF
 
+enum class VersionValues
+{
+	HasStackCtor,
+	HasSerializeFuncs,
+	HasInstanceFunc
+};
+
 template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name)
@@ -43,6 +50,13 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 	_hash = FNV1aHash64T(offset, _hash);
 	_hash = FNV1aHash64T(version, _hash);
 
+	return *this;
+}
+
+template <class T>
+ReflectionVersion<T>& ReflectionVersion<T>::stackCtor(StackCtorFunc /*func*/)
+{
+	_hash = FNV1aHash64T(VersionValues::HasStackCtor, _hash);
 	return *this;
 }
 
@@ -157,50 +171,26 @@ ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
+ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc /*serialize_load*/, SaveFunc /*serialize_save*/)
 {
-	GAFF_REF(serialize_load, serialize_save);
+	_hash = FNV1aHash64T(VersionValues::HasSerializeFuncs, _hash);
 	return *this;
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::setInstanceHash(InstanceHashFunc hash_func)
+ReflectionVersion<T>& ReflectionVersion<T>::setInstanceHash(InstanceHashFunc /*hash_func*/)
 {
-	GAFF_REF(hash_func);
-	return *this;
-}
-
-template <class T>
-template <class T2>
-ReflectionVersion<T>& ReflectionVersion<T>::dependsOn(void)
-{
-	_hash = FNV1aHash64T(GAFF_REFLECTION_NAMESPACE::Reflection<T2>::GetHash(), _hash);
+	_hash = FNV1aHash64T(VersionValues::HasInstanceFunc, _hash);
 	return *this;
 }
 
 template <class T>
 template <size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::entry(const char(&name)[size], T value, const Attrs&... attrs)
+ReflectionVersion<T>& ReflectionVersion<T>::entry(const char(&name)[size], T value)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(value, _hash);
 
-	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = CalcTemplateHash<Attrs...>(_hash);
-		_hash = getAttributeHashes(_hash, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::enumAttrs(const Attrs&... attrs)
-{
-	static_assert(sizeof...(Attrs) > 0, "enumAttrs() called with no arguments.");
-	_hash = FNV1aHash64String("enum", _hash);
-	_hash = CalcTemplateHash<Attrs...>(_hash);
-	_hash = getAttributeHashes(_hash, attributes...);
 	return *this;
 }
 

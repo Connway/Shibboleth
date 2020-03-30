@@ -23,6 +23,97 @@ THE SOFTWARE.
 #include "Shibboleth_Math.h"
 #include "Shibboleth_EngineAttributesCommon.h"
 
+namespace
+{
+	bool CastNumberToFloat(const Gaff::IReflectionDefinition::StackEntry& entry, float& out)
+	{
+		if (entry.first == &Shibboleth::Reflection<double>::GetReflectionDefinition()) {
+			out = static_cast<float>(*reinterpret_cast<double*>(entry.second));
+			return true;
+		} else if (entry.first == &Shibboleth::Reflection<float>::GetReflectionDefinition()) {
+			out = *reinterpret_cast<float*>(entry.second);
+			return true;
+		} else if (entry.first == &Shibboleth::Reflection<int64_t>::GetReflectionDefinition()) {
+			out = static_cast<float>(*reinterpret_cast<int64_t*>(entry.second));
+			return true;
+		} else if (entry.first == &Shibboleth::Reflection<int32_t>::GetReflectionDefinition()) {
+			out = static_cast<float>(*reinterpret_cast<int32_t*>(entry.second));
+			return true;
+		} else if (entry.first == &Shibboleth::Reflection<int16_t>::GetReflectionDefinition()) {
+			out = static_cast<float>(*reinterpret_cast<int16_t*>(entry.second));
+			return true;
+		} else if (entry.first == &Shibboleth::Reflection<int8_t>::GetReflectionDefinition()) {
+			out = static_cast<float>(*reinterpret_cast<int8_t*>(entry.second));
+			return true;
+		}
+
+		return false;
+	}
+
+	void Vec3StackCtor(void* instance, const Gaff::IReflectionDefinition::CtorStack& stack)
+	{
+		auto* const vec = reinterpret_cast<glm::vec3*>(instance);
+		const size_t size = stack.size();
+
+		if (size == 3) {
+			float x = 0.0f;
+			float y = 0.0f;
+			float z = 0.0f;
+
+			const bool x_success = CastNumberToFloat(stack[0], x);
+			const bool y_success = CastNumberToFloat(stack[1], y);
+			const bool z_success = CastNumberToFloat(stack[2], z);
+
+			if (!x_success) {
+				// $TODO: Log error.
+			}
+
+			if (!y_success) {
+				// $TODO: Log error.
+			}
+
+			if (!z_success) {
+				// $TODO: Log error.
+			}
+
+			new(vec) glm::vec3(x, y, z);
+
+		} else if (size == 2) {
+			if (stack[0].first == &Shibboleth::Reflection<glm::vec2>::GetReflectionDefinition()) {
+				const glm::vec2& vec2 = *reinterpret_cast<glm::vec2*>(stack[0].second);
+
+				if (stack[1].first == &Shibboleth::Reflection<glm::vec3>::GetReflectionDefinition()) {
+					new(vec) glm::vec3(*reinterpret_cast<glm::vec3*>(stack[1].second));
+				} else if (float value; CastNumberToFloat(stack[1], value)) {
+					new(vec) glm::vec3(vec2, value);
+				} else {
+					// $TODO: Log error.
+					new(vec) glm::vec3(vec2, 0.0f);
+				}
+
+			} else {
+				// $TODO: Log error.
+				new(vec) glm::vec3();
+			}
+
+		} else if (size == 1) {
+			if (stack[0].first == &Shibboleth::Reflection<glm::vec3>::GetReflectionDefinition()) {
+				new(vec) glm::vec3(*reinterpret_cast<glm::vec3*>(stack[0].second));
+			} else if (stack[0].first == &Shibboleth::Reflection<glm::vec2>::GetReflectionDefinition()) {
+				new(vec) glm::vec3(*reinterpret_cast<glm::vec2*>(stack[0].second), 0.0f);
+			} else if (float value; CastNumberToFloat(stack[0], value)) {
+				new(vec) glm::vec3(value);
+			} else {
+				// $TODO: Log error.
+				new(vec) glm::vec3();
+			}
+
+		} else if (size == 0) {
+			new(vec) glm::vec3();
+		}
+	}
+}
+
 SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
 	.var("x", &glm::quat::x)
 	.var("y", &glm::quat::y)
@@ -48,6 +139,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
 SHIB_REFLECTION_DEFINE_END(glm::vec4)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
+	.stackCtor(Vec3StackCtor)
+
 	.ctor<const glm::vec2&, float>()
 	.ctor<const glm::vec3&>()
 	.ctor<float, float, float>()
