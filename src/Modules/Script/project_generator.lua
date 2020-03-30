@@ -1,7 +1,7 @@
 local GenerateProject = function()
-	local base_dir = GetModulesDirectory("Logic")
+	local base_dir = GetModulesDirectory("Script")
 
-	project "Logic"
+	project "Script"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -12,7 +12,7 @@ local GenerateProject = function()
 		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
-		ModuleGen("Logic")
+		ModuleGen("Script")
 		SetupConfigMap()
 
 		flags { "FatalWarnings" }
@@ -24,16 +24,18 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/lua",
+			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/sol2/include",
 			base_dir .. "../../Frameworks/Gaff/include",
-			base_dir .. "../../Frameworks/Esprit/include",
+			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Modules/ECS/include"
 		}
 
-	project "LogicModule"
+	project "ScriptModule"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -41,20 +43,20 @@ local GenerateProject = function()
 		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_LogicModule.cpp" }
+		files { base_dir .. "Shibboleth_ScriptModule.cpp" }
 
 		ModuleCopy()
 
 		flags { "FatalWarnings" }
 
-		ModuleIncludesAndLinks("Logic")
+		ModuleIncludesAndLinks("Script")
 		SetupConfigMap()
 
 		local deps =
 		{
-			"Esprit",
 			"Resource",
 			"ECS",
+			"Lua"
 		}
 
 		dependson(deps)
@@ -62,10 +64,10 @@ local GenerateProject = function()
 end
 
 local LinkDependencies = function()
-	local deps = ModuleDependencies("Logic")
-	table.insert(deps, "Esprit")
+	local deps = ModuleDependencies("Script")
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
+	table.insert(deps, "Lua")
 
 	dependson(deps)
 	links(deps)
