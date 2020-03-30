@@ -87,6 +87,8 @@ public:
 	Hash64 getInstanceHash(const T& object, Hash64 init = INIT_HASH64) const;
 	ReflectionDefinition& setInstanceHash(InstanceHashFunc hash_func);
 
+	StackCtorFunc getCtorStackFunc(void) const override;
+
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
 	void* getInterface(Hash64 class_hash, void* object) const override;
 	bool hasInterface(Hash64 class_hash) const override;
@@ -144,6 +146,8 @@ public:
 	template <class Base>
 	ReflectionDefinition& base(void);
 
+	ReflectionDefinition& stackCtor(StackCtorFunc func);
+
 	template <class... Args>
 	ReflectionDefinition& ctor(Hash64 factory_hash);
 
@@ -181,9 +185,6 @@ public:
 	ReflectionDefinition& version(uint32_t version);
 
 	ReflectionDefinition& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
-
-	template <class T2>
-	ReflectionDefinition& dependsOn(void);
 
 	void finish(void);
 
@@ -555,6 +556,7 @@ private:
 	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
+	StackCtorFunc _stack_ctor_func = nullptr;
 
 	mutable Allocator _allocator;
 
@@ -562,8 +564,6 @@ private:
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
-
-	static void FinishAfterDependent(void);
 
 	// Variables
 	template <class Var, class First, class... Rest>
@@ -622,6 +622,7 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		} \
 		void save(ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
 		Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), init); } \
+		StackCtorFunc getCtorStackFunc(void) const override { return nullptr; } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \

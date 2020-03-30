@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
+class IReflectionDefinition;
 class ISerializeReader;
 class ISerializeWriter;
 
@@ -34,15 +35,20 @@ template <class T>
 class ReflectionVersion final
 {
 public:
+	using CtorStack = Vector< eastl::pair<const IReflectionDefinition*, void*> >;
+
 	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
 	using InstanceHashFunc = Hash64 (*)(const T&, Hash64);
+	using StackCtorFunc = void (*)(void*, const CtorStack&);
 
 	template <class Base>
 	ReflectionVersion& base(const char* name);
 
 	template <class Base>
 	ReflectionVersion& base(void);
+
+	ReflectionVersion& stackCtor(StackCtorFunc func);
 
 	template <class... Args>
 	ReflectionVersion& ctor(Hash64 factory_hash);
@@ -73,15 +79,9 @@ public:
 	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
 	ReflectionVersion& setInstanceHash(InstanceHashFunc hash_func);
 
-	template <class T2>
-	ReflectionVersion& dependsOn(void);
-
 	// Enum
 	template <size_t size, class... Attrs>
-	ReflectionVersion& entry(const char(&name)[size], T value, const Attrs&... attrs);
-
-	template <class... Attrs>
-	ReflectionVersion& enumAttrs(const Attrs&... attrs);
+	ReflectionVersion& entry(const char(&name)[size], T value);
 
 	Hash64 getHash(void) const;
 
