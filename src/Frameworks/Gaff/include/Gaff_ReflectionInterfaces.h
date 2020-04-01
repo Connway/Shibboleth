@@ -51,6 +51,7 @@ NS_GAFF
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
 class IAllocator;
+struct FunctionStackEntry;
 
 class IReflection
 {
@@ -385,6 +386,10 @@ public:
 	IReflectionFunctionBase(void) {}
 	virtual ~IReflectionFunctionBase(void) {}
 
+	virtual bool call(const void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const = 0;
+	virtual bool call(void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const = 0;
+
+	virtual int32_t numArgs(void) const = 0;
 	virtual bool isConst(void) const = 0;
 	virtual bool isBase(void) const { return false; }
 	virtual const IReflectionDefinition& getBaseRefDef(void) const = 0;
@@ -396,18 +401,40 @@ class IReflectionFunction : public IReflectionFunctionBase
 public:
 	virtual ~IReflectionFunction(void) {}
 
-	virtual Ret call(const void* obj, Args... args) const = 0;
-	virtual Ret call(void* obj, Args... args) const = 0;
+	int32_t numArgs(void) const override { return static_cast<int32_t>(sizeof...(Args)); }
+	virtual Ret call(const void* object, Args&&... args) const = 0;
+	virtual Ret call(void* object, Args&&... args) const = 0;
 };
 
 #define CREATET(Class, allocator, ...) template createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator ##__VA_ARGS__)
 
+struct FunctionStackEntry final
+{
+	union Value
+	{
+		void* vp;
+		bool b;
+		int8_t i8;
+		int16_t i16;
+		int32_t i32;
+		int64_t i64;
+		uint8_t u8;
+		uint16_t u16;
+		uint32_t u32;
+		uint64_t u64;
+		float f;
+		double d;
+	};
+
+	const IEnumReflectionDefinition* enum_ref_def = nullptr;
+	const IReflectionDefinition* ref_def = nullptr;
+	Value value;
+};
+
 class IReflectionDefinition
 {
 public:
-	using StackEntry = eastl::pair<const IReflectionDefinition*, void*>;
-	using CtorStack = Vector<StackEntry>;
-	using StackCtorFunc = void (*)(void*, const CtorStack&);
+	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
 
 	template <class... Args>
 	using ConstructFunc = void (*)(void*, Args&&...);
@@ -892,7 +919,11 @@ public:
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
+
 	virtual bool isPolymorphic(void) const = 0;
+	virtual bool isBuiltIn(void) const = 0;
+
+	virtual const char* getFriendlyName(void) const = 0;
 
 	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
@@ -904,6 +935,8 @@ public:
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
 	virtual bool hasInterface(Hash64 class_hash) const = 0;
 
+	virtual IAllocator& getAllocator(void) = 0;
+
 	virtual int32_t getNumVars(void) const = 0;
 	virtual const char* getVarName(int32_t index) const = 0;
 	virtual Hash32 getVarHash(int32_t index) const = 0;
@@ -911,6 +944,7 @@ public:
 	virtual IReflectionVar* getVar(Hash32 name) const = 0;
 
 	virtual int32_t getNumFuncs(void) const = 0;
+	virtual int32_t getNumFuncOverrides(int32_t index) const = 0;
 	virtual Hash32 getFuncHash(int32_t index) const = 0;
 
 	virtual int32_t getNumStaticFuncs(void) const = 0;
@@ -935,7 +969,8 @@ public:
 	virtual VoidFunc getConstructor(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
-	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
+	virtual IReflectionFunctionBase* getFunc(int32_t name_index, int32_t override_index) const = 0;
+	virtual IReflectionFunctionBase* getFunc(Hash32 name, Hash64 args) const = 0;
 
 	virtual void destroyInstance(void* data) const = 0;
 
@@ -950,6 +985,7 @@ public:
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
+	virtual int32_t size(void) const = 0;
 
 	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
 

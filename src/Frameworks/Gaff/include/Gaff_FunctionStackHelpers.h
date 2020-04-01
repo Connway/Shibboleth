@@ -22,27 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+#include "Gaff_ReflectionInterfaces.h"
 
-struct lua_State;
+NS_GAFF
 
-NS_SHIBBOLETH
+template <class T>
+static bool CastNumberToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
 
-class LuaManager final : public IManager
-{
-public:
-	bool initAllModulesLoaded(void) override;
+template <class T>
+static bool CastFloatToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
 
-private:
-	lua_State* _state = nullptr;
+template <class T>
+static bool CastIntegerToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
 
-	static void* alloc(void*, void* ptr, size_t, size_t new_size);
-	static int panic(lua_State* L);
+template <class T>
+static bool CastNumberToType(const FunctionStackEntry& entry, T& out);
 
-	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
-};
+template <class T>
+static T GetNumber(const FunctionStackEntry& entry, T& out);
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(LuaManager)
+#include "Gaff_FunctionStackHelper.inl"

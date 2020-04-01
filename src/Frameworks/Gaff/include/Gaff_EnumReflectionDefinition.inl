@@ -29,6 +29,12 @@ const IReflection& EnumReflectionDefinition<Enum, Allocator>::getReflectionInsta
 }
 
 template <class Enum, class Allocator>
+int32_t EnumReflectionDefinition<Enum, Allocator>::size(void) const
+{
+	return Size();
+}
+
+template <class Enum, class Allocator>
 bool EnumReflectionDefinition<Enum, Allocator>::load(const ISerializeReader& reader, void* value) const
 {
 	return load(reader, *reinterpret_cast<Enum*>(value));
@@ -126,11 +132,11 @@ void EnumReflectionDefinition<Enum, Allocator>::setAllocator(const Allocator& al
 }
 
 template <class Enum, class Allocator>
-template <size_t size, class... Attrs>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value)
+template <size_t name_size, class... Attrs>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[name_size], Enum value)
 {
 	eastl::pair<HashString32<Allocator>, Enum> pair(
-		HashString32<Allocator>(name, size - 1, _allocator),
+		HashString32<Allocator>(name, name_size - 1, _allocator),
 		value
 	);
 

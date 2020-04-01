@@ -41,7 +41,10 @@ public:
 	GAFF_NO_COPY(EnumReflectionDefinition);
 	GAFF_NO_MOVE(EnumReflectionDefinition);
 
+	constexpr static int32_t Size(void) { return static_cast<int32_t>(sizeof(Enum)); }
+
 	const IReflection& getReflectionInstance(void) const override;
+	int32_t size(void) const override;
 
 	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object, sizeof(Enum)), init); }
 	Hash64 getInstanceHash(Enum value, Hash64 init = INIT_HASH64) const { return getInstanceHash(&value, init); }
@@ -67,8 +70,8 @@ public:
 
 	void setAllocator(const Allocator& allocator);
 
-	template <size_t size, class... Attrs>
-	EnumReflectionDefinition& entry(const char (&name)[size], Enum value);
+	template <size_t name_size, class... Attrs>
+	EnumReflectionDefinition& entry(const char (&name)[name_size], Enum value);
 
 	void finish(void);
 

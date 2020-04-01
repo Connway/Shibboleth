@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_ReflectionInterfaces.h"
+#include "Gaff_FunctionStackHelpers.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
@@ -75,8 +75,12 @@ public:
 	GAFF_NO_COPY(ReflectionDefinition);
 	GAFF_NO_MOVE(ReflectionDefinition);
 
+	constexpr static bool IsBuiltIn(void) { return false; }
+
 	template <class... Args>
 	T* create(Args&&... args) const;
+
+	const char* getFriendlyName(void) const override;
 
 	bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override;
 	void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
@@ -94,10 +98,13 @@ public:
 	bool hasInterface(Hash64 class_hash) const override;
 
 	void setAllocator(const Allocator& allocator);
+	IAllocator& getAllocator(void) override;
 
 	const IReflection& getReflectionInstance(void) const override;
 	int32_t size(void) const override;
+
 	bool isPolymorphic(void) const override;
+	bool isBuiltIn(void) const override;
 
 	int32_t getNumVars(void) const override;
 	const char* getVarName(int32_t index) const override;
@@ -106,7 +113,9 @@ public:
 	IReflectionVar* getVar(Hash32 name) const override;
 
 	int32_t getNumFuncs(void) const override;
+	int32_t getNumFuncOverrides(int32_t index) const override;
 	Hash32 getFuncHash(int32_t index) const override;
+
 
 	int32_t getNumStaticFuncs(void) const override;
 	Hash32 getStaticFuncHash(int32_t index) const override;
@@ -130,7 +139,8 @@ public:
 	VoidFunc getConstructor(Hash64 ctor_hash) const override;
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
-	void* getFunc(Hash32 name, Hash64 args) const override;
+	IReflectionFunctionBase* getFunc(int32_t name_index, int32_t override_index) const override;
+	IReflectionFunctionBase* getFunc(Hash32 name, Hash64 args) const override;
 
 	void destroyInstance(void* data) const override;
 
@@ -139,6 +149,8 @@ public:
 
 	const HashString32<Allocator>& getFuncName(int32_t index) const;
 	const HashString32<Allocator>& getStaticFuncName(int32_t index) const;
+
+	ReflectionDefinition& friendlyName(const char* name);
 
 	template <class Base>
 	ReflectionDefinition& base(const char* name);
@@ -381,55 +393,87 @@ private:
 
 	using IRefFuncPtr = UniquePtr<IReflectionFunctionBase, Allocator>;
 
-	template <class Ret, class... Args>
+	template <bool is_const, class Ret, class... Args>
 	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
 	{
 	public:
-		using MemFuncConst = Ret(T::*)(Args...) const;
-		using MemFunc = Ret(T::*)(Args...);
+		template <bool is_const>
+		struct MemFuncTypeHelper;
 
-		ReflectionFunction(MemFuncConst func, bool is_const) :
-			_is_const(is_const)
+		template <>
+		struct MemFuncTypeHelper<true> final
 		{
-			_func.const_func = func;
+			using Type = Ret (T::*)(Args...) const;
+		};
+
+		template <>
+		struct MemFuncTypeHelper<false> final
+		{
+			using Type = Ret (T::*)(Args...);
+		};
+
+		using MemFuncType = typename MemFuncTypeHelper<is_const>::Type;
+
+		ReflectionFunction(typename MemFuncType func)
+		{
+			_func = func;
 		}
 
-		ReflectionFunction(MemFunc func, bool is_const) :
-			_is_const(is_const)
+		bool call(const void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const override
 		{
-			_func.non_const_func = func;
+			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
+			return call(const_cast<void*>(object), args, ret);
 		}
 
-		Ret call(const void* obj, Args... args) const override
+		bool call(void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const override
 		{
-			GAFF_ASSERT(_is_const);
-			const T* const object = reinterpret_cast<const T*>(obj);
-			return (object->*_func.const_func)(args...);
-		}
-
-		Ret call(void* obj, Args... args) const override
-		{
-			T* const object = reinterpret_cast<T*>(obj);
-
-			if (_is_const) {
-				return (object->*_func.const_func)(args...);
+			if constexpr (sizeof...(Args) > 0) {
+				return callInternal<Args...>(object, args, ret, 0);
+			} else {
+				GAFF_REF(args);
+				return callInternal(object, ret);
 			}
-
-			return (object->*_func.non_const_func)(args...);
 		}
 
-		bool isConst(void) const override { return _is_const; }
+		Ret call(const void* object, Args&&... args) const override
+		{
+			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
+			return call(const_cast<void*>(object), std::forward<Args>(args)...);
+		}
+
+		Ret call(void* object, Args&&... args) const override
+		{
+			return (reinterpret_cast<T*>(object)->*_func)(std::forward<Args>(args)...);
+		}
+
+		bool isConst(void) const override { return is_const; }
 		const IReflectionDefinition& getBaseRefDef(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition(); }
 
 	private:
-		union Func
-		{
-			MemFuncConst const_func;
-			MemFunc non_const_func;
-		};
+		typename MemFuncType _func;
 
-		Func _func;
-		bool _is_const;
+		template <class First, class... Rest, class... CurrentArgs>
+		bool callInternal(
+			void* object,
+			const Vector<FunctionStackEntry>& args, 
+			FunctionStackEntry& ret,
+			int32_t arg_index,
+			CurrentArgs&&... current_args
+		) const;
+
+		template <class... CurrentArgs>
+		bool callInternal(
+			void* object,
+			const Vector<FunctionStackEntry>& args, 
+			FunctionStackEntry& ret,
+			int32_t arg_index,
+			CurrentArgs&&... current_args
+		) const;
+
+		bool callInternal(
+			void* object,
+			FunctionStackEntry& ret
+		) const;
 	};
 
 	class ReflectionBaseFunction final : public IReflectionFunctionBase
@@ -440,12 +484,23 @@ private:
 		{
 		}
 
+		bool call(const void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const override
+		{
+			return _func->call(object, args, ret);
+		}
+
+		bool call(void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const override
+		{
+			return _func->call(object, args, ret);
+		}
+
+		int32_t numArgs(void) const override { return _func->numArgs(); }
 		bool isConst(void) const override { return _func->isConst(); }
 		bool isBase(void) const override { return true; }
 		const IReflectionDefinition& getBaseRefDef(void) const override { return _base_ref_def; }
 
 		template <class Ret, class... Args>
-		Ret call(const void* obj, Args... args) const
+		Ret call(const void* obj, Args&&... args) const
 		{
 			GAFF_ASSERT(isConst());
 
@@ -453,22 +508,22 @@ private:
 			const void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
 
 			if (_func->isBase()) {
-				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
+				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
 			} else {
-				return reinterpret_cast<const ReflectionFunction<Ret, Args...>*>(_func)->call(object, args...);
+				return reinterpret_cast<const ReflectionFunction<Ret, Args...>*>(_func)->call(object, std::forward<Args>(args)...);
 			}
 		}
 
 		template <class Ret, class... Args>
-		Ret call(void* obj, Args... args) const
+		Ret call(void* obj, Args&&... args) const
 		{
 			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
 			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
 
 			if (_func->isBase()) {
-				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, args...);
+				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
 			} else {
-				return reinterpret_cast< const ReflectionFunction<Ret, Args...>* >(_func)->call(object, args...);
+				return reinterpret_cast< const ReflectionFunction<Ret, Args...>* >(_func)->call(object, std::forward<Args>(args)...);
 			}
 		}
 
@@ -479,7 +534,7 @@ private:
 
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
-	struct FuncData
+	struct FuncData final
 	{
 		FuncData(void) = default;
 
@@ -553,6 +608,8 @@ private:
 	VectorMap<Hash64, AttributeList, Allocator> _static_func_attrs;
 	AttributeList _class_attrs;
 
+	U8String<Allocator> _friendly_name;
+
 	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
@@ -606,9 +663,12 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 	class ReflectionDefinition<class_type, Allocator> final : public IReflectionDefinition \
 	{ \
 	public: \
+		constexpr static bool IsBuiltIn(void) { return true; } \
 		const IReflection& getReflectionInstance(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<class_type>::GetInstance(); } \
 		int32_t size(void) const override { return sizeof(class_type); } \
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
+		bool isBuiltIn(void) const { return true; } \
+		const char* getFriendlyName(void) const override { return GAFF_STR(class_type); } \
 		bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
 		void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
 		bool load(const ISerializeReader& reader, class_type& out, bool refl_load = false) const \
@@ -626,12 +686,14 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \
+		IAllocator& getAllocator(void) override { return _allocator; } \
 		int32_t getNumVars(void) const override { return 0; } \
 		const char* getVarName(int32_t) const override { return nullptr; } \
 		Hash32 getVarHash(int32_t) const override { return 0; } \
 		IReflectionVar* getVar(int32_t) const override { return nullptr; } \
 		IReflectionVar* getVar(Hash32) const override { return nullptr; } \
 		int32_t getNumFuncs(void) const override { return 0; } \
+		int32_t getNumFuncOverrides(int32_t) const override { return 0; } \
 		Hash32 getFuncHash(int32_t) const override { return 0; } \
 		int32_t getNumStaticFuncs(void) const override { return 0; } \
 		Hash32 getStaticFuncHash(int32_t) const override { return 0; } \
@@ -670,11 +732,13 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 			return nullptr; \
 		} \
 		VoidFunc getStaticFunc(Hash32, Hash64) const override { return nullptr; } \
-		void* getFunc(Hash32, Hash64) const override { return nullptr; } \
+		IReflectionFunctionBase* getFunc(int32_t, int32_t) const override { return nullptr; } \
+		IReflectionFunctionBase* getFunc(Hash32, Hash64) const override { return nullptr; } \
 		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \
 		void setAllocator(const Allocator&) {} \
 		void finish(void) {} \
 	private: \
+		Allocator _allocator; \
 		ptrdiff_t getBasePointerOffset(Hash64) const override { return 0; } \
 		void instantiated(void*) const override {} \
 	}
