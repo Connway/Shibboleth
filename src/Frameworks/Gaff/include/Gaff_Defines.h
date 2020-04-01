@@ -172,3 +172,10 @@ THE SOFTWARE.
 	#include <cstdlib> // For size_t
 	#include <sched.h> // For sched_yield
 #endif
+
+NS_GAFF
+	template <class... Args>
+	void VarArgRef(Args&&...)
+	{
+	}
+NS_END

@@ -1099,12 +1099,155 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 
 
 
+// ReflectionFunction
+template <class T, class Allocator>
+template <bool is_const, class Ret, class... Args>
+template <class First, class... Rest, class... CurrentArgs>
+bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
+	void* object,
+	const Vector<FunctionStackEntry>& args,
+	FunctionStackEntry& ret,
+	int32_t arg_index,
+	CurrentArgs&&... current_args) const
+{
+	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
+
+	// Get current value from arg stack.
+	const FunctionStackEntry& entry = args[arg_index];
+
+	if constexpr (std::is_enum<ArgType>::value) {
+		//if (entry.enum_ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<ArgType>::GetReflectionDefinition()) {
+		//	// $TODO: Log error.
+		//	return FunctionStackEntry();
+		//}
+
+		ArgType value;
+
+		if (!CastNumberToType<ArgType>(entry, value)) {
+			// $TOOD: Log error.
+			return false;
+		}
+
+		return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
+
+	} else if constexpr (ReflectionDefinition<ArgType, Allocator>::IsBuiltIn()) {
+		ArgType value;
+
+		if (entry.ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<bool>::GetReflectionDefinition()) {
+			value = static_cast<ArgType>(entry.value.b);
+			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
+
+		} else {
+			if (!Gaff::CastNumberToType<ArgType>(entry, value)) {
+				// $TOOD: Log error.
+				return false;
+			}
+
+			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
+		}
+
+	} else {
+		if (entry.ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition()) {
+			// $TOOD: Log error.
+			return false;
+		}
+
+		T* const value = reinterpret_cast<T*>(entry.value.vp);
+
+		if constexpr (std::is_pointer<ArgType>::value) {
+			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
+		} else {
+			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., *value);
+		}
+	}
+}
+
+template <class T, class Allocator>
+template <bool is_const, class Ret, class... Args>
+template <class... CurrentArgs>
+bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
+	void* object,
+	const Vector<FunctionStackEntry>& args, 
+	FunctionStackEntry& ret,
+	int32_t arg_index,
+	CurrentArgs&&... current_args) const
+{
+	GAFF_REF(args, arg_index);
+
+	if constexpr (std::is_void<Ret>::value) {
+		call(object, std::forward<CurrentArgs>(current_args)...);
+		GAFF_REF(ret);
+
+	} else {
+		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+
+		Ret return_value = call(object, std::forward<CurrentArgs>(current_args)...);
+		GAFF_REF(ret, return_value);
+
+		if constexpr (std::is_enum<RetType>::value) {
+			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
+
+		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
+			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
+
+		} else {
+			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			reinterpret_cast<RetType*>(ret.value.vp) = GAFF_ALLOCT(RetType, const_cast<IReflectionDefinition*>(ret.ref_def)->getAllocator(), return_value);
+		}
+	}
+
+	return true;
+}
+
+template <class T, class Allocator>
+template <bool is_const, class Ret, class... Args>
+bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
+	void* object,
+	FunctionStackEntry& ret) const
+{
+	if constexpr (std::is_void<Ret>::value) {
+		call(object);
+		GAFF_REF(ret);
+
+	} else {
+		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+
+		Ret return_value = call(object);
+		GAFF_REF(ret, return_value);
+
+		if constexpr (std::is_enum<RetType>::value) {
+			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
+
+		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
+			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
+
+		} else {
+			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
+			reinterpret_cast<RetType*>(ret.value.vp) = GAFF_ALLOCT(RetType, const_cast<IReflectionDefinition*>(ret.ref_def)->getAllocator(), return_value);
+		}
+	}
+
+	return true;
+}
+
+
+
 // ReflectionDefinition
 template <class T, class Allocator>
 template <class... Args>
 T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
 {
 	return createT<T>(_allocator, std::forward<Args>(args)...);
+}
+
+template <class T, class Allocator>
+const char* ReflectionDefinition<T, Allocator>::getFriendlyName(void) const
+{
+	return _friendly_name.data();
 }
 
 template <class T, class Allocator>
@@ -1261,7 +1404,15 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 	_class_attrs.set_allocator(allocator);
 	_static_func_attrs.set_allocator(allocator);
 
+	_friendly_name.set_allocator(allocator);
+
 	_allocator = allocator;
+}
+
+template <class T, class Allocator>
+IAllocator& ReflectionDefinition<T, Allocator>::getAllocator(void)
+{
+	return _allocator;
 }
 
 template <class T, class Allocator>
@@ -1280,6 +1431,12 @@ template <class T, class Allocator>
 bool ReflectionDefinition<T, Allocator>::isPolymorphic(void) const
 {
 	return std::is_polymorphic<T>::value;
+}
+
+template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::isBuiltIn(void) const
+{
+	return false;
 }
 
 template <class T, class Allocator>
@@ -1320,6 +1477,24 @@ template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumFuncs(void) const
 {
 	return static_cast<int32_t>(_funcs.size());
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumFuncOverrides(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+
+	int32_t count = 0;
+
+	for (const IRefFuncPtr& func : (_funcs.begin() + index)->second.func) {
+		if (!func) {
+			break;
+		}
+
+		++count;
+	}
+
+	return count;
 }
 
 template <class T, class Allocator>
@@ -1495,7 +1670,16 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFun
 }
 
 template <class T, class Allocator>
-void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) const
+IReflectionFunctionBase* ReflectionDefinition<T, Allocator>::getFunc(int32_t name_index, int32_t override_index) const
+{
+	GAFF_ASSERT(name_index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(override_index < FuncData::NUM_OVERLOADS);
+
+	return (_funcs.begin() + name_index)->second.func[override_index].get();
+}
+
+template <class T, class Allocator>
+IReflectionFunctionBase* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) const
 {
 	const auto it = _funcs.find(name);
 
@@ -1544,6 +1728,13 @@ const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getStaticFunc
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
 	return (_static_funcs.begin() + index)->first;
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::friendlyName(const char* name)
+{
+	_friendly_name = name;
+	return *this;
 }
 
 template <class T, class Allocator>
@@ -1889,11 +2080,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
+		ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 			_allocator,
-			ptr,
-			true
+			ptr
 		);
 
 		eastl::pair<HashString32<Allocator>, FuncData> pair(
@@ -1913,10 +2103,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
+				ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+					GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 					_allocator,
-					ptr, true
+					ptr
 				);
 
 				func_data.func[i].reset(ref_func);
@@ -1950,11 +2140,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
+		ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 			_allocator,
-			ptr,
-			false
+			ptr
 		);
 
 		it = _funcs.emplace(
@@ -1973,10 +2162,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
+				ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+					GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 					_allocator,
-					ptr, false
+					ptr
 				);
 
 				func_data.func[i].reset(ref_func);
@@ -2093,6 +2282,17 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 		for (auto& it : _static_func_attrs) {
 			for (IAttributePtr& attr : it.second) {
 				attr->finish(*this);
+			}
+		}
+
+		if (_friendly_name.empty()) {
+			_friendly_name = getReflectionInstance().getName();
+
+			// Strip out all the namespaces.
+			const int32_t index = static_cast<int32_t>(_friendly_name.find_last_of(':'));
+
+			if (index != U8String<Allocator>::npos) {
+				_friendly_name.erase(0, index + 1);
 			}
 		}
 	}

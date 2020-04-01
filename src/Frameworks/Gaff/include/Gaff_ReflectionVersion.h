@@ -30,17 +30,18 @@ NS_GAFF
 class IReflectionDefinition;
 class ISerializeReader;
 class ISerializeWriter;
+struct FunctionStackEntry;
 
 template <class T>
 class ReflectionVersion final
 {
 public:
-	using CtorStack = Vector< eastl::pair<const IReflectionDefinition*, void*> >;
-
 	using LoadFunc = bool (*)(const ISerializeReader&, T&);
 	using SaveFunc = void (*)(ISerializeWriter&, const T&);
 	using InstanceHashFunc = Hash64 (*)(const T&, Hash64);
-	using StackCtorFunc = void (*)(void*, const CtorStack&);
+	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
+
+	ReflectionVersion& friendlyName(const char* name);
 
 	template <class Base>
 	ReflectionVersion& base(const char* name);

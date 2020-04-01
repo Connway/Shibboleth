@@ -30,6 +30,13 @@ enum class VersionValues
 };
 
 template <class T>
+ReflectionVersion<T>& ReflectionVersion<T>::friendlyName(const char* name)
+{
+	_hash = FNV1aHash64String(name, _hash);
+	return *this;
+}
+
+template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name)
 {

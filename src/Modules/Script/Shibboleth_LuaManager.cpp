@@ -21,11 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaManager.h"
+#include "Shibboleth_LuaHelpers.h"
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Math.h>
 #include <lua.hpp>
-
-//#include <sol/sol.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(LuaManager)
 	.BASE(IManager)
@@ -35,6 +34,7 @@ SHIB_REFLECTION_DEFINE_END(LuaManager)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(LuaManager)
+
 
 static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
 static ProxyAllocator g_allocator("Lua");
@@ -74,7 +74,11 @@ bool LuaManager::initAllModulesLoaded(void)
 	luaL_requiref(_state, "utf8", luaopen_utf8, 1);
 	lua_pop(_state, 1);
 
-	//registerMath();
+	Reflection<glm::vec3>::Init();
+	RegisterType(_state, Reflection<glm::vec3>::GetReflectionDefinition());
+
+	luaL_loadstring(_state, "local v = Vec3.new(1, 2, 3)\nlocal v2 = Vec3.new(v)\nlocal x = v2.x");
+	lua_pcall(_state, 0, 0, 0);
 
 	return true;
 }
@@ -101,65 +105,5 @@ int LuaManager::panic(lua_State* L)
 	lua_settop(L, 0);
 	return -1;
 }
-
-//static int NewVec3(lua_State* state)
-//{
-//	const int32_t num_args = lua_gettop(state);
-//
-//	Gaff::Hash64 hash = Gaff::INIT_HASH64;
-//
-//	for (int32_t i = 0; i < num_args; ++i) {
-//		const int32_t index = -i - 1;
-//		const int32_t type = lua_type(state, index);
-//
-//		switch (type) {
-//			case LUA_TNIL:
-//				break;
-//			case LUA_TBOOLEAN:
-//				hash = Gaff::CalcTemplateHash<bool>(hash);
-//				break;
-//			case LUA_TLIGHTUSERDATA:
-//				break;
-//			case LUA_TNUMBER:
-//				if (lua_isinteger(state, index)) {
-//					hash = Gaff::CalcTemplateHash<int32_t>(hash);
-//				} else {
-//					hash = Gaff::CalcTemplateHash<float>(hash);
-//				}
-//				break;
-//			case LUA_TSTRING:
-//				hash = Gaff::CalcTemplateHash<const U8String&>(hash);
-//				break;
-//			case LUA_TTABLE:
-//				break;
-//			case LUA_TFUNCTION:
-//				break;
-//			case LUA_TUSERDATA:
-//				break;
-//			case LUA_TTHREAD:
-//				break;
-//		}
-//	}
-//
-//	Reflection<glm::vec3>::GetReflectionDefinition().getConstructor(hash);
-//
-//	return 0;
-//}
-//
-//void LuaManager::registerMath(void)
-//{
-//	static const luaL_Reg vec3_reg[] = {
-//		{ "new", NewVec3 },
-//		{ NULL, NULL }
-//	};
-//
-//	//luaL_newmetatable(_state, "glm::vec3");
-//	luaL_newlib(_state, vec3_reg);
-//	lua_setglobal(_state, "Vec3");
-//	//lua_register(_state, "vec3", vec3_reg);
-//
-//	luaL_loadstring(_state, "local v = Vec3.new(1, 2, 3)");
-//	lua_pcall(_state, 0, 0, 0);
-//}
 
 NS_END

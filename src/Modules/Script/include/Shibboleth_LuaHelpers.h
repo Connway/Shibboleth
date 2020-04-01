@@ -22,27 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_IManager.h>
+#include <Shibboleth_ReflectionInterfaces.h>
+#include <Shibboleth_Vector.h>
 
 struct lua_State;
 
 NS_SHIBBOLETH
 
-class LuaManager final : public IManager
-{
-public:
-	bool initAllModulesLoaded(void) override;
 
-private:
-	lua_State* _state = nullptr;
+void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack);
+void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
+void RegisterBuiltIns(lua_State* state);
 
-	static void* alloc(void*, void* ptr, size_t, size_t new_size);
-	static int panic(lua_State* L);
-
-	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
-};
+int UserTypeFunctionCall(lua_State* state);
+int UserTypeIndex(lua_State* state);
+int UserTypeNew(lua_State* state);
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(LuaManager)

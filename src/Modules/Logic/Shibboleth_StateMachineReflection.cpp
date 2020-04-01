@@ -23,39 +23,39 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachineReflection.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::U8String)
-	.setInstanceHash(HashStringInstance<Esprit::ProxyAllocator>)
-	.serialize(LoadString<Esprit::ProxyAllocator>, SaveString<Esprit::ProxyAllocator>)
+	.setInstanceHash(Gaff::HashStringInstance<Esprit::ProxyAllocator>)
+	.serialize(Gaff::LoadString<Esprit::ProxyAllocator>, Gaff::SaveString<Esprit::ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(Esprit::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString32<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
+	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>
+		Gaff::LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
+		Gaff::SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString64<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
+	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>
+		Gaff::LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
+		Gaff::SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString32<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
+	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>
+		Gaff::LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
+		Gaff::SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString64<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
+	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>
+		Gaff::LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
+		Gaff::SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashStringNoString64<>)
 
