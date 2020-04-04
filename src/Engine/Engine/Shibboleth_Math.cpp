@@ -249,21 +249,22 @@ namespace
 	}
 
 	template <class T>
-	void VecToString(const T& value, char* buffer, int32_t size)
+	int32_t VecToString(const T& value, char* buffer, int32_t size)
 	{
 		if constexpr (std::is_same<T, glm::quat>::value) {
-			snprintf(buffer, static_cast<size_t>(size), "quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(buffer, static_cast<size_t>(size), "quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, glm::vec4>::value) {
-			snprintf(buffer, static_cast<size_t>(size), "vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(buffer, static_cast<size_t>(size), "vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, glm::vec3>::value) {
-			snprintf(buffer, static_cast<size_t>(size), "vec3(%f, %f, %f)", value.x, value.y, value.z);
+			return snprintf(buffer, static_cast<size_t>(size), "vec3(%f, %f, %f)", value.x, value.y, value.z);
 		} else if constexpr (std::is_same<T, glm::vec2>::value) {
-			snprintf(buffer, static_cast<size_t>(size), "vec2(%f, %f)", value.x, value.y);
+			return snprintf(buffer, static_cast<size_t>(size), "vec2(%f, %f)", value.x, value.y);
 		}
 	}
 }
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
+	.classAttrs(RegisterWithScriptAttribute())
 	.friendlyName("Quat")
 
 	.stackCtor(VecStackCtor<glm::quat>)
@@ -297,6 +298,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
 SHIB_REFLECTION_DEFINE_END(glm::quat)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
+	.classAttrs(RegisterWithScriptAttribute())
 	.friendlyName("Vec4")
 
 	.stackCtor(VecStackCtor<glm::vec4>)
@@ -343,6 +345,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
 SHIB_REFLECTION_DEFINE_END(glm::vec4)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
+	.classAttrs(RegisterWithScriptAttribute())
 	.friendlyName("Vec3")
 
 	.stackCtor(VecStackCtor<glm::vec3>)
@@ -385,6 +388,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
 SHIB_REFLECTION_DEFINE_END(glm::vec3)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec2)
+	.classAttrs(RegisterWithScriptAttribute())
 	.friendlyName("Vec2")
 
 	.ctor<const glm::vec2&>()

@@ -431,11 +431,11 @@ ReflectionVersion<T>& ReflectionVersion<T>::opPlus(void)
 }
 
 template <class T>
-template <void (*to_string_func)(const T&, char*, int32_t)>
+template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 ReflectionVersion<T>& ReflectionVersion<T>::opToString(void)
 {
-	return staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
-	//return staticFunc(OP_TO_STRING_NAME, to_string_func);
+	staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
+	return staticFunc(OP_TO_STRING_NAME, to_string_func);
 }
 
 template <class T>

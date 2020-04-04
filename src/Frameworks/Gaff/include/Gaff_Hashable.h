@@ -107,6 +107,7 @@ constexpr Gaff::Hash64 GetHash(void)
 }
 
 GAFF_CLASS_HASHABLE(void)
+GAFF_CLASS_HASHABLE(char)
 
 NS_END
 

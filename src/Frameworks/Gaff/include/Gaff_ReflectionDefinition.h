@@ -263,7 +263,7 @@ public:
 	ReflectionDefinition& opMinus(void);
 	ReflectionDefinition& opPlus(void);
 
-	template <void (*to_string_func)(const T&, char*, int32_t)>
+	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 	ReflectionDefinition& opToString(void);
 
 	// apply() is not called on these functions. Mainly for use with the attribute file.

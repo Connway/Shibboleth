@@ -142,7 +142,7 @@ public:
 	ReflectionVersion& opMinus(void);
 	ReflectionVersion& opPlus(void);
 
-	template <void (*to_string_func)(const T&, char*, int32_t)>
+	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 	ReflectionVersion& opToString(void);
 
 	template <class... Attrs>

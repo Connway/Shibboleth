@@ -37,7 +37,7 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 private:
-	lua_State* _state = nullptr;
+	Vector<lua_State*> _states{ ProxyAllocator("Lua") };
 
 	static void* alloc(void*, void* ptr, size_t, size_t new_size);
 	static int panic(lua_State* L);
