@@ -70,6 +70,8 @@ public:
 	int32_t getNumTotalThreads(void) const;
 	void getThreadIDs(EA::Thread::ThreadId* out) const;
 
+	//void addPool(const HashString32<Allocator>& name, int8_t max_concurrent_threads = 1);
+
 private:
 	struct JobQueue
 	{
@@ -78,6 +80,9 @@ private:
 		UniquePtr<EA::Thread::Futex, Allocator> thread_lock;
 		//EA::Thread::Futex read_write_lock;
 		//EA::Thread::Futex thread_lock;
+
+		//std::atomic_int8_t curr_thread_count;
+		//int8_t max_threads;
 	};
 
 	struct ThreadData
@@ -87,9 +92,14 @@ private:
 		bool terminate;
 	};
 
+	//VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
+
 	Vector<JobQueue, Allocator> _job_pools;
+	//JobQueue _main_queue;
+
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
+	EA::Thread::ThreadId _main_thread_id;
 
 	Allocator _allocator;
 

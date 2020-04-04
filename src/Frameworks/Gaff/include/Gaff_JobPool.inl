@@ -70,6 +70,7 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads, ThreadInit
 		}
 	}
 
+	_main_thread_id = EA::Thread::GetThreadId();
 	return true;
 }
 
@@ -243,15 +244,17 @@ void JobPool<Allocator>::doAJob(void)
 template <class Allocator>
 int32_t JobPool<Allocator>::getNumTotalThreads(void) const
 {
-	return static_cast<int32_t>(_threads.size());
+	return static_cast<int32_t>(_threads.size() + 1);
 }
 
 template <class Allocator>
 void JobPool<Allocator>::getThreadIDs(EA::Thread::ThreadId* out) const
 {
-	for (size_t i = 0; i < _threads.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_threads.size()); ++i) {
 		out[i] = _threads[i].GetId();
 	}
+
+	out[_threads.size()] = _main_thread_id;
 }
 
 template <class Allocator>

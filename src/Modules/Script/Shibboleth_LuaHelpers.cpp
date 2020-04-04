@@ -22,6 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaHelpers.h"
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_LogManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_Flags.h>
 #include <lua.hpp>
 
@@ -152,7 +155,7 @@ namespace
 
 				case LUA_TNUMBER:
 					if (lua_isinteger(state, i + 1)) {
-						final_string.append_sprintf("%ill", luaL_checkinteger(state, i + 1));
+						final_string.append_sprintf("%lli", luaL_checkinteger(state, i + 1));
 					} else {
 						final_string.append_sprintf("%f", luaL_checknumber(state, i + 1));
 					}
@@ -178,14 +181,17 @@ namespace
 					const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
 					lua_pop(state, 2);
 
-					const UserData& user_data = *reinterpret_cast<UserData*>(lua_touserdata(state, -1));
+					const UserData& user_data = *reinterpret_cast<UserData*>(lua_touserdata(state, i + 1));
 					const void* const object = user_data.getData();
 
-					Gaff::IReflectionStaticFunction<Shibboleth::U8String, const void*>* const func =
-						ref_def.getStaticFunc<Shibboleth::U8String, const void*>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
+					auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
 
 					if (func) {
-						final_string += func->getFunc()(object);
+						char buffer[256];
+						func->getFunc()(object, buffer, sizeof(buffer));
+
+						final_string += buffer;
+
 					} else {
 						final_string.append_sprintf("%p", object);
 					}
@@ -198,6 +204,9 @@ namespace
 			}
 		}
 
+		Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Normal, Shibboleth::k_lua_log_channel, final_string.data());
+		Gaff::DebugPrintf(final_string.data());
+		Gaff::DebugPrintf("\n");
 		return 0;
 	}
 }
@@ -323,11 +332,19 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 	const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
 	int32_t num_operators = 0;
 
+	Vector<luaL_Reg> mt(g_allocator);
+
 	for (int32_t i = 0; i < num_static_funcs; ++i) {
 		const char* const name = ref_def.getStaticFuncName(i);
 
 		// Is not an operator function.
-		if (name[0] != '_' || name[1] != '_') {
+		if (Gaff::FindFirstOf(name, "__") != 0) {
+			continue;
+		}
+
+		// Is the tostring function.
+		if (Gaff::FindFirstOf(name, OP_TO_STRING_NAME) == 0) {
+			mt.emplace_back(luaL_Reg{ "__tostring", UserTypeToString });
 			continue;
 		}
 
@@ -341,7 +358,6 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		++num_operators;
 	}
 
-	Vector<luaL_Reg> mt(g_allocator);
 	mt.emplace_back(luaL_Reg{ "__newindex", UserTypeNewIndex });
 	mt.emplace_back(luaL_Reg{ "__index", UserTypeIndex });
 	mt.emplace_back(luaL_Reg{ "__gc", UserTypeDestroy });
@@ -433,6 +449,25 @@ int UserTypeFunctionCall(lua_State* state)
 
 			return PushReturnValue(state, ret);
 		}
+	}
+
+	// $TODO: Log error. Can't find function with the correct number of arguments or argument type mismatch.
+	return 0;
+}
+
+int UserTypeToString(lua_State* state)
+{
+	const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	const UserData& user_data = *reinterpret_cast<UserData*>(lua_touserdata(state, -1));
+
+	auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
+
+	if (func) {
+		char buffer[256];
+		const int32_t size = func->getFunc()(user_data.getData(), buffer, sizeof(buffer));
+
+		lua_pushlstring(state, buffer, static_cast<size_t>(size));
+		return 1;
 	}
 
 	// $TODO: Log error. Can't find function with the correct number of arguments or argument type mismatch.

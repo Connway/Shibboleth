@@ -250,10 +250,10 @@ static auto Index(T& value, const Idx& index)
 template <class T>
 struct ToStringHelper final
 {
-	template <void (*to_string_func)(const T&, char*, int32_t)>
-	static void ToString(const void* value, char* buffer, int32_t size)
+	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
+	static int32_t ToString(const void* value, char* buffer, int32_t size)
 	{
-		to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
+		return to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
 	}
 };
 

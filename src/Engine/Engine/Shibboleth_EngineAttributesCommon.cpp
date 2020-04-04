@@ -28,6 +28,7 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(ReadOnlyAttribute, Gaff::IAttrib
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(RangeAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(HashStringAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(OptionalAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(RegisterWithScriptAttribute, Gaff::IAttribute)
 
 NS_SHIBBOLETH
 
@@ -35,6 +36,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(RangeAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(HashStringAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(OptionalAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(RegisterWithScriptAttribute)
 
 
 
@@ -86,6 +88,14 @@ Gaff::IAttribute* OptionalAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(OptionalAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+
+Gaff::IAttribute* RegisterWithScriptAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(RegisterWithScriptAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END

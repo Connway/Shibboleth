@@ -2415,11 +2415,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opPlus(v
 }
 
 template <class T, class Allocator>
-template <void (*to_string_func)(const T&, char*, int32_t)>
+template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opToString()
 {
-	return staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
-	//return staticFunc(OP_TO_STRING_NAME, to_string_func);
+	staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
+	return staticFunc(OP_TO_STRING_NAME, to_string_func);
 }
 
 template <class T, class Allocator>

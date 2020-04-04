@@ -29,6 +29,7 @@ struct lua_State;
 
 NS_SHIBBOLETH
 
+static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
 
 void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
 int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret);
@@ -37,6 +38,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
 void RegisterBuiltIns(lua_State* state);
 
 int UserTypeFunctionCall(lua_State* state);
+int UserTypeToString(lua_State* state);
 int UserTypeDestroy(lua_State* state);
 int UserTypeNewIndex(lua_State* state);
 int UserTypeIndex(lua_State* state);
