@@ -232,7 +232,7 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& wri
 // VarFuncPtrWithCache
 template <class T, class Allocator>
 template <class Ret, class Var>
-ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::VarFuncPtrWithCache(Getter getter, Setter setter) :
+ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::VarFuncPtrWithCache(Getter getter, Setter setter):
 	_getter(getter), _setter(setter)
 {
 	GAFF_ASSERT(getter);

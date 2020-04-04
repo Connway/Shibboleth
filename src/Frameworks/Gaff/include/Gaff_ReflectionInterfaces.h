@@ -62,9 +62,6 @@ public:
 
 	virtual void init(void) = 0;
 
-	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
-	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
@@ -96,57 +93,39 @@ class Reflection final : public Gaff::IReflection
 {
 public:
 	constexpr static bool HasReflection = false;
+
 	Reflection(void)
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
+
 	bool isEnum(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return false;
 	}
+
 	void init(void) override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
-	bool load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/, bool refl_load = false) const override
-	{
-		GAFF_REF(refl_load);
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		return false;
-	}
-	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/, bool refl_save = false) const override
-	{
-		GAFF_REF(refl_save);
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-	}
+
 	const char* getName(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return "Unknown";
 	}
+
 	Gaff::Hash64 getHash(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return 0;
 	}
+
 	Gaff::Hash64 getVersion(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return 0;
-	}
-	static bool IsDefined(void)
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		return false;
-	}
-	static void RegisterOnDefinedCallback(const eastl::function<void (void)>&)
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-	}
-	static void RegisterOnDefinedCallback(eastl::function<void (void)>&&)
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 };
 

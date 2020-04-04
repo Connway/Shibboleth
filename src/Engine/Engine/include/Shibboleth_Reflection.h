@@ -32,30 +32,30 @@ THE SOFTWARE.
 
 #ifndef GAFF_REF_DEF_INIT
 	#define GAFF_REF_DEF_INIT \
-		GAFF_ASSERT(!g_ref_def); \
+		GAFF_ASSERT(!g_instance._ref_def); \
 		const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* ref_def_interface = nullptr; \
 		if constexpr (std::is_enum<ThisType>::value) { \
 			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(GetApp().getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 		} else { \
 			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(GetApp().getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 		} \
-		g_ref_def = static_cast< typename Gaff::RefDefType<ThisType, ProxyAllocator>* >( \
+		g_instance._ref_def = static_cast< typename Gaff::RefDefType<ThisType, ProxyAllocator>* >( \
 			const_cast< typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(ref_def_interface) \
 		); \
-		if (g_ref_def) { \
+		if (g_instance._ref_def) { \
 			GAFF_ASSERT_MSG( \
-				g_version.getHash() == g_ref_def->getReflectionInstance().getVersion(), \
+				g_instance._version.getHash() == g_instance._ref_def->getReflectionInstance().getVersion(), \
 				"Version hash for %s does not match!", \
 				GetName() \
 			); \
 		} else { \
 			ProxyAllocator allocator("Reflection"); \
-			g_ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<ThisType, ProxyAllocator>), allocator); \
-			g_ref_def->setAllocator(allocator); \
-			BuildReflection(*g_ref_def); \
-			GetApp().getReflectionManager().registerReflection(g_ref_def); \
+			g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<ThisType, ProxyAllocator>), allocator); \
+			g_instance._ref_def->setAllocator(allocator); \
+			BuildReflection(*g_instance._ref_def); \
+			GetApp().getReflectionManager().registerReflection(g_instance._ref_def); \
 		} \
-		g_defined = true;
+		g_instance._defined = true;
 #endif
 
 #include "Shibboleth_ReflectionManager.h"
