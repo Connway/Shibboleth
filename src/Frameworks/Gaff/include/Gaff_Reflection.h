@@ -40,19 +40,19 @@ THE SOFTWARE.
 		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void) \
 		{ \
-			if (g_defined) { \
+			if (g_instance._defined) { \
 				return; \
 			} \
-			BuildReflection(g_version); \
+			BuildReflection(g_instance._version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			if (!g_defined) { \
-				BuildReflection(*g_ref_def); \
-				g_defined = true; \
+			if (!g_instance._defined) { \
+				BuildReflection(*g_instance._ref_def); \
+				g_instance._defined = true; \
 			} \
-			for (auto& func : g_on_defined_callbacks) { \
+			for (auto& func : g_instance._on_defined_callbacks) { \
 				func(); \
 			} \
-			g_on_defined_callbacks.clear(); \
+			g_instance._on_defined_callbacks.clear(); \
 		}
 
 	#define GAFF_TEMPLATE_REF_DEF_DECLARE(type, allocator, ...)
@@ -62,19 +62,19 @@ THE SOFTWARE.
 		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 		void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
-			if (g_defined) { \
+			if (g_instance._defined) { \
 				return; \
 			} \
-			BuildReflection(g_version); \
+			BuildReflection(g_instance._version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			if (!g_defined) { \
-				BuildReflection(*g_ref_def); \
-				g_defined = true; \
+			if (!g_instance._defined) { \
+				BuildReflection(*g_instance._ref_def); \
+				g_instance._defined = true; \
 			} \
-			for (auto& func : g_on_defined_callbacks) { \
+			for (auto& func : g_instance._on_defined_callbacks) { \
 				func(); \
 			} \
-			g_on_defined_callbacks.clear(); \
+			g_instance._on_defined_callbacks.clear(); \
 		}
 
 	#ifndef GAFF_REF_DEF_INIT
@@ -87,25 +87,25 @@ THE SOFTWARE.
 		#define GAFF_REF_DEF_INIT
 	#endif
 
-	#define GAFF_REF_DEF_DECLARE(type, allocator) static typename Gaff::RefDefType<type, allocator> g_reflection_definition;
+	#define GAFF_REF_DEF_DECLARE(type, allocator) typename Gaff::RefDefType<type, allocator> g_reflection_definition;
 	#define GAFF_REF_DEF_DEFINE(type, allocator) \
 		typename Gaff::RefDefType<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
 		GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 		void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void) \
 		{ \
-			if (g_defined) { \
+			if (g_instance._defined) { \
 				return; \
 			} \
-			BuildReflection(g_version); \
+			BuildReflection(g_instance._version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			if (!g_defined) { \
-				BuildReflection(*g_ref_def); \
-				g_defined = true; \
+			if (!g_instance._defined) { \
+				BuildReflection(*g_instance._ref_def); \
+				g_instance._defined = true; \
 			} \
-			for (auto& func : g_on_defined_callbacks) { \
+			for (auto& func : g_instance._on_defined_callbacks) { \
 				func(); \
 			} \
-			g_on_defined_callbacks.clear(); \
+			g_instance._on_defined_callbacks.clear(); \
 		}
 
 	#define GAFF_TEMPLATE_REF_DEF_DECLARE(type, allocator, ...) \
@@ -120,23 +120,23 @@ THE SOFTWARE.
 		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 		void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
-			if (g_defined) { \
+			if (g_instance._instance._defined) { \
 				return; \
 			} \
-			BuildReflection(g_version); \
+			BuildReflection(g_instance._version); \
 			GAFF_REF_DEF_INIT_INTERNAL; \
-			if (!g_defined) { \
-				BuildReflection(*g_ref_def); \
-				g_defined = true; \
+			if (!g_instance._defined) { \
+				BuildReflection(*g_instance._ref_def); \
+				g_instance._defined = true; \
 			} \
-			for (auto& func : g_on_defined_callbacks) { \
+			for (auto& func : g_instance._on_defined_callbacks) { \
 				func(); \
 			} \
-			g_on_defined_callbacks.clear(); \
+			g_instance._on_defined_callbacks.clear(); \
 		}
 
 	#define GAFF_REF_DEF_INIT_INTERNAL \
-		g_ref_def = &g_reflection_definition; \
+		g_instance._ref_def = &g_reflection_definition; \
 		GAFF_REF_DEF_INIT
 #endif
 
@@ -161,8 +161,28 @@ THE SOFTWARE.
 			} \
 			static const typename Gaff::RefDefType<type, allocator>& GetReflectionDefinition(void) \
 			{ \
-				GAFF_ASSERT(g_ref_def); \
-				return *g_ref_def; \
+				GAFF_ASSERT(g_instance._ref_def); \
+				return *g_instance._ref_def; \
+			} \
+			static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback) \
+			{ \
+				g_instance._on_defined_callbacks.emplace_back(callback); \
+			} \
+			static void RegisterOnDefinedCallback(eastl::function<void(void)>&& callback) \
+			{ \
+				g_instance._on_defined_callbacks.emplace_back(std::move(callback)); \
+			} \
+			static bool Load(const Gaff::ISerializeReader& reader, type& object, bool refl_load = false) \
+			{ \
+				return g_instance._ref_def->load(reader, object, refl_load); \
+			} \
+			static void Save(Gaff::ISerializeWriter& writer, const type& object, bool refl_save = false) \
+			{ \
+				g_instance._ref_def->save(writer, object, refl_save); \
+			} \
+			static bool IsDefined(void) \
+			{ \
+				return g_instance._defined; \
 			} \
 			void init(void) override \
 			{ \
@@ -231,8 +251,28 @@ THE SOFTWARE.
 			} \
 			static const typename Gaff::RefDefType<ThisType, allocator>& GetReflectionDefinition(void) \
 			{ \
-				GAFF_ASSERT(g_ref_def); \
-				return *g_ref_def; \
+				GAFF_ASSERT(g_instance._ref_def); \
+				return *g_instance._ref_def; \
+			} \
+			static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback) \
+			{ \
+				g_instance._on_defined_callbacks.emplace_back(callback); \
+			} \
+			static void RegisterOnDefinedCallback(eastl::function<void(void)>&& callback) \
+			{ \
+				g_instance._on_defined_callbacks.emplace_back(std::move(callback)); \
+			} \
+			static bool Load(const Gaff::ISerializeReader& reader, ThisType& object, bool refl_load = false) \
+			{ \
+				return g_instance._ref_def->load(reader, object, refl_load); \
+			} \
+			static void Save(Gaff::ISerializeWriter& writer, const ThisType& object, bool refl_save = false) \
+			{ \
+				g_instance._ref_def->save(writer, object, refl_save); \
+			} \
+			static bool IsDefined(void) \
+			{ \
+				return g_instance._defined; \
 			} \
 			void init(void) override \
 			{ \

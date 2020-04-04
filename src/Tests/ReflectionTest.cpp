@@ -116,8 +116,6 @@ TEST_CASE("shibboleth_reflection_basic")
 
 TEST_CASE("shibboleth_reflection_class")
 {
-	Shibboleth::Reflection<Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
-	Shibboleth::Reflection<Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 	Shibboleth::AllocatorThreadInit();
 
 	//g_app.init(0, nullptr);
@@ -146,7 +144,7 @@ TEST_CASE("shibboleth_reflection_class")
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
 
-	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetVersion();
+	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetInstance().getVersion();
 	printf("Version Hash: %llu\n", hash);
 
 	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);

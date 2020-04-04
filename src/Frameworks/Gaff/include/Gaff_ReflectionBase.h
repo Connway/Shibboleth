@@ -74,36 +74,15 @@ template <class T, class Allocator>
 class ReflectionBase : public IReflection
 {
 public:
-	//constexpr static bool HasReflection = true;
-
-	constexpr static Hash64 GetHash(void);
 	constexpr static const char* GetName(void);
+	constexpr static Hash64 GetHash(void);
 
 	constexpr static int32_t Size(void);
-
 	constexpr static bool IsEnum(void);
-
-	static Hash64 GetInstanceHash(const T& object, Hash64 init = INIT_HASH64);
-	static Hash64 GetVersion(void);
-
-	static const typename RefDefType<T, Allocator>& GetReflectionDefinition(void);
-
-	static bool IsDefined(void);
-
-	static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback);
-	static void RegisterOnDefinedCallback(eastl::function<void (void)>&& callback);
-
-	static bool Load(const ISerializeReader& reader, T& object, bool refl_load = false);
-	static void Save(ISerializeWriter& writer, const T& object, bool refl_save = false);
-
-	static void SetAllocator(const Allocator& a);
 
 	ReflectionBase(void);
 
 	bool isEnum(void) const override;
-
-	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override;
-	Hash64 getInstanceHash(const T& object, Hash64 init = INIT_HASH64) const;
 
 	const char* getName(void) const override;
 	Hash64 getHash(void) const override;
@@ -115,14 +94,11 @@ public:
 	const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const override;
 	const IReflectionDefinition& getReflectionDefinition(void) const override;
 
-	bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const override;
-	void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
-
 protected:
-	static Vector<eastl::function<void (void)>, Allocator> g_on_defined_callbacks;
-	static typename RefDefType<T, Allocator>* g_ref_def;
-	static ReflectionVersion<T> g_version;
-	static bool g_defined;
+	Vector<eastl::function<void (void)>, Allocator> _on_defined_callbacks;
+	typename RefDefType<T, Allocator>* _ref_def = nullptr;
+	ReflectionVersion<T> _version;
+	bool _defined = false;
 };
 
 #include "Gaff_ReflectionBase.inl"

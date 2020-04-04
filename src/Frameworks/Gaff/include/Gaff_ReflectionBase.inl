@@ -23,27 +23,15 @@ THE SOFTWARE.
 #pragma once
 
 template <class T, class Allocator>
-Vector<eastl::function<void(void)>, Allocator> ReflectionBase<T, Allocator>::g_on_defined_callbacks;
-
-template <class T, class Allocator>
-typename RefDefType<T, Allocator>* ReflectionBase<T, Allocator>::g_ref_def = nullptr;
-
-template <class T, class Allocator>
-ReflectionVersion<T> ReflectionBase<T, Allocator>::g_version;
-
-template <class T, class Allocator>
-bool ReflectionBase<T, Allocator>::g_defined = false;
+constexpr const char* ReflectionBase<T, Allocator>::GetName(void)
+{
+	return GAFF_HASHABLE_NAMESPACE::GetName<T>();
+}
 
 template <class T, class Allocator>
 constexpr Hash64 ReflectionBase<T, Allocator>::GetHash(void)
 {
 	return GAFF_HASHABLE_NAMESPACE::GetHash<T>();
-}
-
-template <class T, class Allocator>
-constexpr const char* ReflectionBase<T, Allocator>::GetName(void)
-{
-	return GAFF_HASHABLE_NAMESPACE::GetName<T>();
 }
 
 template <class T, class Allocator>
@@ -56,63 +44,6 @@ template <class T, class Allocator>
 constexpr bool ReflectionBase<T, Allocator>::IsEnum(void)
 {
 	return std::is_enum<T>::value;
-}
-
-template <class T, class Allocator>
-Hash64 ReflectionBase<T, Allocator>::GetInstanceHash(const T& object, Hash64 init)
-{
-	return GetReflectionDefinition().getInstanceHash(&object, init);
-}
-
-template <class T, class Allocator>
-Hash64 ReflectionBase<T, Allocator>::GetVersion(void)
-{
-	return g_version.getHash();
-}
-
-template <class T, class Allocator>
-const typename RefDefType<T, Allocator>& ReflectionBase<T, Allocator>::GetReflectionDefinition(void)
-{
-	GAFF_ASSERT(g_ref_def);
-	return *g_ref_def;
-}
-
-template <class T, class Allocator>
-bool ReflectionBase<T, Allocator>::IsDefined(void)
-{
-	return g_defined;
-}
-
-template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::RegisterOnDefinedCallback(const eastl::function<void (void)>& callback)
-{
-	g_on_defined_callbacks.emplace_back(callback);
-}
-
-template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::RegisterOnDefinedCallback(eastl::function<void (void)>&& callback)
-{
-	g_on_defined_callbacks.emplace_back(std::move(callback));
-}
-
-template <class T, class Allocator>
-bool ReflectionBase<T, Allocator>::Load(const ISerializeReader& reader, T& object, bool refl_load)
-{
-	return g_ref_def->load(reader, object, refl_load);
-}
-
-template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::Save(ISerializeWriter& writer, const T& object, bool refl_save)
-{
-	g_ref_def->save(writer, object, refl_save);
-}
-
-template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::SetAllocator(const Allocator& a)
-{
-	GAFF_ASSERT(g_ref_def);
-	g_on_defined_callbacks.set_allocator(a);
-	g_ref_def->setAllocator(a);
 }
 
 template <class T, class Allocator>
@@ -137,18 +68,6 @@ bool ReflectionBase<T, Allocator>::isEnum(void) const
 }
 
 template <class T, class Allocator>
-Hash64 ReflectionBase<T, Allocator>::getInstanceHash(const void* object, Hash64 init) const
-{
-	return GetInstanceHash(*reinterpret_cast<const T*>(object), init);
-}
-
-template <class T, class Allocator>
-Hash64 ReflectionBase<T, Allocator>::getInstanceHash(const T& object, Hash64 init) const
-{
-	return GetInstanceHash(object, init);
-}
-
-template <class T, class Allocator>
 const char* ReflectionBase<T, Allocator>::getName(void) const
 {
 	return GetName();
@@ -163,7 +82,7 @@ Hash64 ReflectionBase<T, Allocator>::getHash(void) const
 template <class T, class Allocator>
 Hash64 ReflectionBase<T, Allocator>::getVersion(void) const
 {
-	return GetVersion();
+	return _version.getHash();
 }
 
 template <class T, class Allocator>
@@ -176,7 +95,7 @@ template <class T, class Allocator>
 const IEnumReflectionDefinition& ReflectionBase<T, Allocator>::getEnumReflectionDefinition(void) const
 {
 	if constexpr (std::is_enum<T>::value) {
-		return reinterpret_cast<const IEnumReflectionDefinition&>(GetReflectionDefinition()); /* To calm the compiler, even though this should be compiled out ... */
+		return reinterpret_cast<const IEnumReflectionDefinition&>(*_ref_def); /* To calm the compiler, even though this should be compiled out ... */
 	} else {
 		return IReflection::getEnumReflectionDefinition();
 	}
@@ -188,20 +107,6 @@ const IReflectionDefinition& ReflectionBase<T, Allocator>::getReflectionDefiniti
 	if constexpr (std::is_enum<T>::value) {
 		return IReflection::getReflectionDefinition();
 	} else {
-		return reinterpret_cast<const IReflectionDefinition&>(GetReflectionDefinition()); /* To calm the compiler, even though this should be compiled out ... */
+		return reinterpret_cast<const IReflectionDefinition&>(*_ref_def); /* To calm the compiler, even though this should be compiled out ... */
 	}
-}
-
-template <class T, class Allocator>
-bool ReflectionBase<T, Allocator>::load(const ISerializeReader& reader, void* object, bool refl_load) const
-{
-	GAFF_ASSERT(object);
-	return Load(reader, *reinterpret_cast<T*>(object), refl_load);
-}
-
-template <class T, class Allocator>
-void ReflectionBase<T, Allocator>::save(ISerializeWriter& writer, const void* object, bool refl_save) const
-{
-	GAFF_ASSERT(object);
-	return Save(writer, *reinterpret_cast<const T*>(object), refl_save);
 }
