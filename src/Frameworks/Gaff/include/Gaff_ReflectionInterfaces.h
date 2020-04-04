@@ -386,8 +386,8 @@ public:
 	IReflectionFunctionBase(void) {}
 	virtual ~IReflectionFunctionBase(void) {}
 
-	virtual bool call(const void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const = 0;
-	virtual bool call(void* object, const Vector<FunctionStackEntry>& args, FunctionStackEntry& ret) const = 0;
+	virtual bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const = 0;
+	virtual bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const = 0;
 
 	virtual int32_t numArgs(void) const = 0;
 	virtual bool isConst(void) const = 0;
@@ -399,12 +399,54 @@ template <class Ret, class... Args>
 class IReflectionFunction : public IReflectionFunctionBase
 {
 public:
-	virtual ~IReflectionFunction(void) {}
-
 	int32_t numArgs(void) const override { return static_cast<int32_t>(sizeof...(Args)); }
+
 	virtual Ret call(const void* object, Args&&... args) const = 0;
 	virtual Ret call(void* object, Args&&... args) const = 0;
 };
+
+class IReflectionStaticFunctionBase
+{
+public:
+	using VoidFunc = void (*)(void);
+
+	explicit IReflectionStaticFunctionBase(VoidFunc func):
+		_func(func)
+	{
+	}
+
+	virtual ~IReflectionStaticFunctionBase(void) {}
+
+	VoidFunc getFunc(void) const { return _func; }
+
+	virtual bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const = 0;
+
+	virtual int32_t numArgs(void) const = 0;
+	virtual IReflectionStaticFunctionBase* clone(IAllocator& allocator) const = 0;
+
+protected:
+	VoidFunc _func = nullptr;
+};
+
+template <class Ret, class... Args>
+class IReflectionStaticFunction : public IReflectionStaticFunctionBase
+{
+public:
+	using Func = Ret (*)(Args...);
+
+	explicit IReflectionStaticFunction(Func func) :
+		IReflectionStaticFunctionBase(reinterpret_cast<VoidFunc>(func))
+	{
+	}
+
+	Func getFunc(void) const { return reinterpret_cast<Func>(_func); }
+
+	Ret call(Args&&... args) const
+	{
+		return reinterpret_cast<Func>(_func)(std::forward<Args>(args)...);
+	}
+};
+
 
 #define CREATET(Class, allocator, ...) template createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator ##__VA_ARGS__)
 
@@ -893,23 +935,23 @@ public:
 	IReflectionFunction<Ret, Args...>* getFunc(Hash32 name) const
 	{
 		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
-		void* functor = getFunc(name, arg_hash);
+		IReflectionFunctionBase* const functor = getFunc(name, arg_hash);
 
 		if (functor) {
-			return reinterpret_cast< IReflectionFunction<Ret, Args...>* >(functor);
+			return static_cast<IReflectionFunction<Ret, Args...>*>(functor);
 		}
 
 		return nullptr;
 	}
 
 	template <class Ret, class... Args>
-	TemplateFunc<Ret, Args...> getStaticFunc(Hash32 name) const
+	IReflectionStaticFunction<Ret, Args...>* getStaticFunc(Hash32 name) const
 	{
 		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
-		VoidFunc func = getStaticFunc(name, arg_hash);
+		IReflectionStaticFunctionBase* const func = getStaticFunc(name, arg_hash);
 		
 		if (func) {
-			return reinterpret_cast< TemplateFunc<Ret, Args...> >(func);
+			return static_cast<IReflectionStaticFunction<Ret, Args...>*>(func);
 		}
 
 		return nullptr;
@@ -945,10 +987,15 @@ public:
 
 	virtual int32_t getNumFuncs(void) const = 0;
 	virtual int32_t getNumFuncOverrides(int32_t index) const = 0;
+	virtual const char* getFuncName(int32_t index) const = 0;
 	virtual Hash32 getFuncHash(int32_t index) const = 0;
+	virtual int32_t getFuncIndex(Hash32 name) const = 0;
 
 	virtual int32_t getNumStaticFuncs(void) const = 0;
+	virtual int32_t getNumStaticFuncOverrides(int32_t index) const = 0;
+	virtual const char* getStaticFuncName(int32_t) const = 0;
 	virtual Hash32 getStaticFuncHash(int32_t index) const = 0;
+	virtual int32_t getStaticFuncIndex(Hash32 name) const = 0;
 
 	virtual int32_t getNumClassAttrs(void) const = 0;
 	virtual const IAttribute* getClassAttr(Hash64 attr_name) const = 0;
@@ -968,7 +1015,9 @@ public:
 
 	virtual VoidFunc getConstructor(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
-	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
+
+	virtual IReflectionStaticFunctionBase* getStaticFunc(int32_t name_index, int32_t override_index) const = 0;
+	virtual IReflectionStaticFunctionBase* getStaticFunc(Hash32 name, Hash64 args) const = 0;
 	virtual IReflectionFunctionBase* getFunc(int32_t name_index, int32_t override_index) const = 0;
 	virtual IReflectionFunctionBase* getFunc(Hash32 name, Hash64 args) const = 0;
 

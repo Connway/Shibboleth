@@ -39,7 +39,45 @@ template <class T>
 static bool CastNumberToType(const FunctionStackEntry& entry, T& out);
 
 template <class T>
-static T GetNumber(const FunctionStackEntry& entry, T& out);
+static bool CastFloatToType(const FunctionStackEntry& entry, T& out);
+
+template <class T>
+static bool CastIntegerToType(const FunctionStackEntry& entry, T& out);
+
+
+template <class Callable, class Allocator, class Ret, class First, class... Rest, class... CurrentArgs>
+bool CallFunc(
+	const Callable& callable,
+	void* object,
+	const FunctionStackEntry* args, 
+	FunctionStackEntry& ret,
+	int32_t arg_index,
+	IAllocator& allocator,
+	CurrentArgs&&... current_args
+);
+
+template <class Callable, class Allocator, class Ret, class... CurrentArgs>
+bool CallFunc(
+	const Callable& callable,
+	void* object,
+	FunctionStackEntry& ret,
+	IAllocator& allocator,
+	CurrentArgs&&... current_args
+);
+
+//template <class Callable, class Allocator, class Ret, class... CurrentArgs>
+//bool CallFunc(
+//	const Callable* callable,
+//	void* object,
+//	FunctionStackEntry& ret,
+//	IAllocator& allocator
+//);
+
+template <class Ret, class... Args, class... CurrentArgs>
+Ret CallCallable(const IReflectionFunction<Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
+
+template <class Ret, class... Args, class... CurrentArgs>
+Ret CallCallable(const IReflectionStaticFunction<Ret, Args...>& func, void*, CurrentArgs&&... current_args);
 
 NS_END
 

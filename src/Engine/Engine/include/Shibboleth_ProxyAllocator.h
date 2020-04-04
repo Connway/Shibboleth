@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ProxyAllocator : public Gaff::IAllocator
+class ProxyAllocator final : public Gaff::IAllocator
 {
 public:
 	static ProxyAllocator& GetGlobal(void);

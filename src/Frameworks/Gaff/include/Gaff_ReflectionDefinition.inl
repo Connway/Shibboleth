@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#pragma once
+
 NS_GAFF
 
 template <bool is_pointer>
@@ -1099,143 +1101,6 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 
 
 
-// ReflectionFunction
-template <class T, class Allocator>
-template <bool is_const, class Ret, class... Args>
-template <class First, class... Rest, class... CurrentArgs>
-bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
-	void* object,
-	const Vector<FunctionStackEntry>& args,
-	FunctionStackEntry& ret,
-	int32_t arg_index,
-	CurrentArgs&&... current_args) const
-{
-	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
-
-	// Get current value from arg stack.
-	const FunctionStackEntry& entry = args[arg_index];
-
-	if constexpr (std::is_enum<ArgType>::value) {
-		//if (entry.enum_ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<ArgType>::GetReflectionDefinition()) {
-		//	// $TODO: Log error.
-		//	return FunctionStackEntry();
-		//}
-
-		ArgType value;
-
-		if (!CastNumberToType<ArgType>(entry, value)) {
-			// $TOOD: Log error.
-			return false;
-		}
-
-		return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
-
-	} else if constexpr (ReflectionDefinition<ArgType, Allocator>::IsBuiltIn()) {
-		ArgType value;
-
-		if (entry.ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<bool>::GetReflectionDefinition()) {
-			value = static_cast<ArgType>(entry.value.b);
-			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
-
-		} else {
-			if (!Gaff::CastNumberToType<ArgType>(entry, value)) {
-				// $TOOD: Log error.
-				return false;
-			}
-
-			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
-		}
-
-	} else {
-		if (entry.ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition()) {
-			// $TOOD: Log error.
-			return false;
-		}
-
-		T* const value = reinterpret_cast<T*>(entry.value.vp);
-
-		if constexpr (std::is_pointer<ArgType>::value) {
-			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., std::forward<ArgType>(value));
-		} else {
-			return callInternal(object, args, ret, arg_index + 1, std::forward<CurrentArgs>(current_args)..., *value);
-		}
-	}
-}
-
-template <class T, class Allocator>
-template <bool is_const, class Ret, class... Args>
-template <class... CurrentArgs>
-bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
-	void* object,
-	const Vector<FunctionStackEntry>& args, 
-	FunctionStackEntry& ret,
-	int32_t arg_index,
-	CurrentArgs&&... current_args) const
-{
-	GAFF_REF(args, arg_index);
-
-	if constexpr (std::is_void<Ret>::value) {
-		call(object, std::forward<CurrentArgs>(current_args)...);
-		GAFF_REF(ret);
-
-	} else {
-		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
-
-		Ret return_value = call(object, std::forward<CurrentArgs>(current_args)...);
-		GAFF_REF(ret, return_value);
-
-		if constexpr (std::is_enum<RetType>::value) {
-			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-
-		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
-			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-
-		} else {
-			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			reinterpret_cast<RetType*>(ret.value.vp) = GAFF_ALLOCT(RetType, const_cast<IReflectionDefinition*>(ret.ref_def)->getAllocator(), return_value);
-		}
-	}
-
-	return true;
-}
-
-template <class T, class Allocator>
-template <bool is_const, class Ret, class... Args>
-bool ReflectionDefinition<T, Allocator>::ReflectionFunction<is_const, Ret, Args...>::callInternal(
-	void* object,
-	FunctionStackEntry& ret) const
-{
-	if constexpr (std::is_void<Ret>::value) {
-		call(object);
-		GAFF_REF(ret);
-
-	} else {
-		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
-
-		Ret return_value = call(object);
-		GAFF_REF(ret, return_value);
-
-		if constexpr (std::is_enum<RetType>::value) {
-			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-
-		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
-			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-
-		} else {
-			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			reinterpret_cast<RetType*>(ret.value.vp) = GAFF_ALLOCT(RetType, const_cast<IReflectionDefinition*>(ret.ref_def)->getAllocator(), return_value);
-		}
-	}
-
-	return true;
-}
-
-
-
 // ReflectionDefinition
 template <class T, class Allocator>
 template <class... Args>
@@ -1469,7 +1334,6 @@ IReflectionVar* ReflectionDefinition<T, Allocator>::getVar(int32_t index) const
 template <class T, class Allocator>
 IReflectionVar* ReflectionDefinition<T, Allocator>::getVar(Hash32 name) const
 {
-	GAFF_ASSERT(_vars.find(name) != _vars.end());
 	return getVarT(name);
 }
 
@@ -1498,10 +1362,24 @@ int32_t ReflectionDefinition<T, Allocator>::getNumFuncOverrides(int32_t index) c
 }
 
 template <class T, class Allocator>
+const char* ReflectionDefinition<T, Allocator>::getFuncName(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+	return (_funcs.begin() + index)->first.getBuffer();
+}
+
+template <class T, class Allocator>
 Hash32 ReflectionDefinition<T, Allocator>::getFuncHash(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
-	return getFuncName(index).getHash();
+	return (_funcs.begin() + index)->first.getHash();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getFuncIndex(Hash32 name) const
+{
+	const auto it = _funcs.find(name);
+	return (it == _funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_funcs.begin(), it));
 }
 
 template <class T, class Allocator>
@@ -1511,10 +1389,42 @@ int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncs(void) const
 }
 
 template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncOverrides(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+
+	int32_t count = 0;
+
+	for (const IRefStaticFuncPtr& func : (_static_funcs.begin() + index)->second.func) {
+		if (!func) {
+			break;
+		}
+
+		++count;
+	}
+
+	return count;
+}
+
+template <class T, class Allocator>
+const char* ReflectionDefinition<T, Allocator>::getStaticFuncName(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+	return (_static_funcs.begin() + index)->first.getBuffer();
+}
+
+template <class T, class Allocator>
 Hash32 ReflectionDefinition<T, Allocator>::getStaticFuncHash(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
-	return getStaticFuncName(index).getHash();
+	return (_static_funcs.begin() + index)->first.getHash();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getStaticFuncIndex(Hash32 name) const
+{
+	const auto it = _static_funcs.find(name);
+	return (it == _static_funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_static_funcs.begin(), it));
 }
 
 template <class T, class Allocator>
@@ -1654,14 +1564,23 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(H
 }
 
 template <class T, class Allocator>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFunc(Hash32 name, Hash64 args) const
+IReflectionStaticFunctionBase* ReflectionDefinition<T, Allocator>::getStaticFunc(int32_t name_index, int32_t override_index) const
+{
+	GAFF_ASSERT(name_index < static_cast<int32_t>(_static_funcs.size()));
+	GAFF_ASSERT(override_index < StaticFuncData::NUM_OVERLOADS);
+
+	return (_static_funcs.begin() + name_index)->second.func[override_index].get();
+}
+
+template <class T, class Allocator>
+IReflectionStaticFunctionBase* ReflectionDefinition<T, Allocator>::getStaticFunc(Hash32 name, Hash64 args) const
 {
 	const auto it = _static_funcs.find(name);
 
 	if (it != _static_funcs.end()) {
 		for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
 			if (it->second.hash[i] == args) {
-				return it->second.func[i];
+				return it->second.func[i].get();
 			}
 		}
 	}
@@ -1672,7 +1591,7 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFun
 template <class T, class Allocator>
 IReflectionFunctionBase* ReflectionDefinition<T, Allocator>::getFunc(int32_t name_index, int32_t override_index) const
 {
-	GAFF_ASSERT(name_index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(name_index < static_cast<int32_t>(_funcs.size()));
 	GAFF_ASSERT(override_index < FuncData::NUM_OVERLOADS);
 
 	return (_funcs.begin() + name_index)->second.func[override_index].get();
@@ -1712,22 +1631,7 @@ template <class T, class Allocator>
 typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVarT(Hash32 name) const
 {
 	const auto it = _vars.find(name);
-	GAFF_ASSERT(it != _vars.end());
-	return it->second.get();
-}
-
-template <class T, class Allocator>
-const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getFuncName(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
-	return (_funcs.begin() + index)->first;
-}
-
-template <class T, class Allocator>
-const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getStaticFuncName(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
-	return (_static_funcs.begin() + index)->first;
+	return (it == _vars.end()) ? nullptr : it->second.get();
 }
 
 template <class T, class Allocator>
@@ -1808,7 +1712,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != it.first);
 
 				if (!func_data.func[i]) {
-					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
+					ReflectionBaseFunction* const ref_func = GAFF_ALLOCT(
 						ReflectionBaseFunction,
 						_allocator,
 						it.second.func[i]->getBaseRefDef(),
@@ -1843,7 +1747,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		for (auto& it : base_ref_def._static_funcs) {
 			GAFF_ASSERT(_static_funcs.find(it.first) == _static_funcs.end());
 
-			_static_funcs.emplace(it.first, it.second.template toDerived<T, Allocator>());
+			_static_funcs.emplace(it.first, it.second.template toDerived<T, Allocator>(_allocator));
 
 			// Copy attributes
 			StaticFuncData& static_func_data = _static_funcs[it.first.getHash()];
@@ -2080,7 +1984,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+		ReflectionFunction<true, Ret, Args...>* const ref_func = GAFF_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 			_allocator,
 			ptr
@@ -2103,7 +2007,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+				ReflectionFunction<true, Ret, Args...>* const ref_func = GAFF_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 					_allocator,
 					ptr
@@ -2140,7 +2044,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+		ReflectionFunction<false, Ret, Args...>* const ref_func = GAFF_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 			_allocator,
 			ptr
@@ -2162,7 +2066,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+				ReflectionFunction<false, Ret, Args...>* const ref_func = GAFF_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 					_allocator,
 					ptr
@@ -2198,13 +2102,15 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 	auto it = _static_funcs.find(FNV1aHash32Const(name));
 
+	using StaticFuncType = StaticFunction<Ret, Args...>;
+
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
 			HashString32<Allocator>(name, name_size - 1, _allocator),
-			StaticFuncData()
+			StaticFuncData(_allocator)
 		).first;
 
-		it->second.func[0] = reinterpret_cast<VoidFunc>(func);
+		it->second.func[0].reset(GAFF_ALLOCT(StaticFuncType, _allocator, func));
 		it->second.hash[0] = arg_hash;
 
 	} else {
@@ -2216,9 +2122,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 				continue;
 			}
 
-			func_data.func[i] = reinterpret_cast<VoidFunc>(func);
+			func_data.func[i].reset(GAFF_ALLOCT(StaticFuncType, _allocator, func));
 			func_data.hash[i] = arg_hash;
 			found = true;
+			break;
 		}
 
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
@@ -2235,6 +2142,284 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 	}
 
 	return *this;
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opAdd(void)
+{
+	staticFunc(OP_ADD_NAME, Add<T, Other>);
+	return staticFunc(OP_ADD_NAME, Add<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opSub(void)
+{
+	staticFunc(OP_SUB_NAME, Sub<T, Other>);
+	return staticFunc(OP_SUB_NAME, Sub<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opMul(void)
+{
+	staticFunc(OP_MUL_NAME, Mul<T, Other>);
+	return staticFunc(OP_MUL_NAME, Mul<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opDiv(void)
+{
+	staticFunc(OP_DIV_NAME, Div<T, Other>);
+	return staticFunc(OP_DIV_NAME, Div<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opMod(void)
+{
+	staticFunc(OP_MOD_NAME, Mod<T, Other>);
+	return staticFunc(OP_MOD_NAME, Mod<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitAnd(void)
+{
+	staticFunc(OP_BIT_AND_NAME, BitAnd<T, Other>);
+	return staticFunc(OP_BIT_AND_NAME, BitAnd<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitOr(void)
+{
+	staticFunc(OP_BIT_OR_NAME, BitOr<T, Other>);
+	return staticFunc(OP_BIT_OR_NAME, BitOr<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitXor(void)
+{
+	staticFunc(OP_BIT_XOR_NAME, BitXor<T, Other>);
+	return staticFunc(OP_BIT_XOR_NAME, BitXor<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitShiftLeft(void)
+{
+	staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitShiftRight(void)
+{
+	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opAnd(void)
+{
+	staticFunc(OP_LOGIC_AND_NAME, LogicAnd<T, Other>);
+	return staticFunc(OP_LOGIC_AND_NAME, LogicAnd<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opOr(void)
+{
+	staticFunc(OP_LOGIC_OR_NAME, LogicOr<T, Other>);
+	return staticFunc(OP_LOGIC_OR_NAME, LogicOr<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opEqual(void)
+{
+	staticFunc(OP_EQUAL_NAME, Equal<T, Other>);
+	return staticFunc(OP_EQUAL_NAME, Equal<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opLessThan(void)
+{
+	staticFunc(OP_LESS_THAN_NAME, LessThan<T, Other>);
+	return staticFunc(OP_LESS_THAN_NAME, LessThan<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opGreaterThan(void)
+{
+	staticFunc(OP_GREATER_THAN_NAME, GreaterThan<T, Other>);
+	return staticFunc(OP_GREATER_THAN_NAME, GreaterThan<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opLessThanOrEqual(void)
+{
+	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<T, Other>);
+	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opGreaterThanOrEqual(void)
+{
+	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<T, Other>);
+	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<Other, T>);
+}
+
+template <class T, class Allocator>
+template <class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opCall(void)
+{
+	return staticFunc(OP_CALL_NAME, Call<T, Args...>);
+}
+
+template <class T, class Allocator>
+template <class Other>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opIndex(void)
+{
+	return staticFunc(OP_INDEX_NAME, Index<T, Other>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opAdd(void)
+{
+	return staticFunc(OP_ADD_NAME, Add<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opSub(void)
+{
+	return staticFunc(OP_SUB_NAME, Sub<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opMul(void)
+{
+	return staticFunc(OP_MUL_NAME, Mul<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opDiv(void)
+{
+	return staticFunc(OP_DIV_NAME, Div<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opMod(void)
+{
+	return staticFunc(OP_MOD_NAME, Mod<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitAnd(void)
+{
+	return staticFunc(OP_BIT_AND_NAME, BitAnd<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitOr(void)
+{
+	return staticFunc(OP_BIT_OR_NAME, BitOr<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitXor(void)
+{
+	return staticFunc(OP_BIT_XOR_NAME, BitXor<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitNot(void)
+{
+	return staticFunc(OP_BIT_NOT_NAME, BitNot<T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitShiftLeft(void)
+{
+	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opBitShiftRight(void)
+{
+	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opAnd(void)
+{
+	return staticFunc(OP_LOGIC_AND_NAME, LogicAnd<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opOr(void)
+{
+	return staticFunc(OP_LOGIC_OR_NAME, LogicOr<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opEqual(void)
+{
+	return staticFunc(OP_EQUAL_NAME, Equal<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opLessThan(void)
+{
+	return staticFunc(OP_LESS_THAN_NAME, LessThan<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opGreaterThan(void)
+{
+	return staticFunc(OP_GREATER_THAN_NAME, GreaterThan<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opLessThanOrEqual(void)
+{
+	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opGreaterThanOrEqual(void)
+{
+	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<T, T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opMinus(void)
+{
+	return staticFunc(OP_MINUS_NAME, Minus<T>);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opPlus(void)
+{
+	return staticFunc(OP_PLUS_NAME, Plus<T>);
+}
+
+template <class T, class Allocator>
+template <void (*to_string_func)(const T&, char*, int32_t)>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opToString()
+{
+	return staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
+	//return staticFunc(OP_TO_STRING_NAME, to_string_func);
 }
 
 template <class T, class Allocator>

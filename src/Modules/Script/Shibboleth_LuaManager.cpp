@@ -39,6 +39,13 @@ SHIB_REFLECTION_CLASS_DEFINE(LuaManager)
 static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
 static ProxyAllocator g_allocator("Lua");
 
+LuaManager::~LuaManager(void)
+{
+	if (_state) {
+		lua_close(_state);
+	}
+}
+
 bool LuaManager::initAllModulesLoaded(void)
 {
 	GetApp().getLogManager().addChannel("Lua", "LuaLog");
@@ -49,6 +56,8 @@ bool LuaManager::initAllModulesLoaded(void)
 		// $TODO: Log error.
 		return false;
 	}
+
+	lua_atpanic(_state, &LuaManager::panic);
 
 	luaL_requiref(_state, "base", luaopen_base, 1);
 	lua_pop(_state, 1);
@@ -74,10 +83,12 @@ bool LuaManager::initAllModulesLoaded(void)
 	luaL_requiref(_state, "utf8", luaopen_utf8, 1);
 	lua_pop(_state, 1);
 
+	RegisterBuiltIns(_state);
+
 	Reflection<glm::vec3>::Init();
 	RegisterType(_state, Reflection<glm::vec3>::GetReflectionDefinition());
 
-	luaL_loadstring(_state, "local v = Vec3.new(1, 2, 3)\nlocal v2 = Vec3.new(v)\nlocal x = v2.x");
+	luaL_loadstring(_state, "local v = Vec3.new(1, 2, 3)\nlocal v2 = Vec3.new(v)\nlocal x = v2.x\nlocal v3 = v + v2\nx = v3[2]\nv3 = Vec3.length()");
 	lua_pcall(_state, 0, 0, 0);
 
 	return true;

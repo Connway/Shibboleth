@@ -75,6 +75,42 @@ THE SOFTWARE.
 		} \
 	};
 
+
+NS_HASHABLE
+
+template <class... T>
+struct TemplateClassHashableHelper final
+{
+	static constexpr const char* GetName(void)
+	{
+		static_assert(false, "Did not overload GetName() for type.");
+		return "ERROR: No Class Name";
+	}
+
+	static constexpr Gaff::Hash64 GetHash(void)
+	{
+		static_assert(false, "Did not overload GetHash() for type.");
+		return Gaff::INIT_HASH64;
+	}
+};
+
+template <class T>
+constexpr const char* GetName(void)
+{
+	return TemplateClassHashableHelper<T>::GetName();
+}
+
+template <class T>
+constexpr Gaff::Hash64 GetHash(void)
+{
+	return TemplateClassHashableHelper<T>::GetHash();
+}
+
+GAFF_CLASS_HASHABLE(void)
+
+NS_END
+
+
 NS_GAFF
 
 template <class... T>
@@ -218,40 +254,5 @@ constexpr Hash64 CalcTemplateHash(Hash64 init)
 		return CalcTemplateHashHelper<T...>(init);
 	}
 }
-
-NS_END
-
-
-NS_HASHABLE
-
-template <class... T>
-struct TemplateClassHashableHelper final
-{
-	static constexpr const char* GetName(void)
-	{
-		static_assert(false, "Did not overload GetName() for type.");
-		return "ERROR: No Class Name";
-	}
-
-	static constexpr Gaff::Hash64 GetHash(void)
-	{
-		static_assert(false, "Did not overload GetHash() for type.");
-		return Gaff::INIT_HASH64;
-	}
-};
-
-template <class T>
-constexpr const char* GetName(void)
-{
-	return TemplateClassHashableHelper<T>::GetName();
-}
-
-template <class T>
-constexpr Gaff::Hash64 GetHash(void)
-{
-	return TemplateClassHashableHelper<T>::GetHash();
-}
-
-GAFF_CLASS_HASHABLE(void)
 
 NS_END
