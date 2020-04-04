@@ -30,11 +30,15 @@ struct lua_State;
 NS_SHIBBOLETH
 
 
-void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack);
+void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
+int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret);
+
 void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
 void RegisterBuiltIns(lua_State* state);
 
 int UserTypeFunctionCall(lua_State* state);
+int UserTypeDestroy(lua_State* state);
+int UserTypeNewIndex(lua_State* state);
 int UserTypeIndex(lua_State* state);
 int UserTypeNew(lua_State* state);
 

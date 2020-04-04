@@ -27,6 +27,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+template <class Ret, class... Args>
+static Gaff::IReflectionDefinition::TemplateFunc<Ret, Args...> GetStaticFunc(const Gaff::IReflectionDefinition& ref_def, Gaff::Hash32 name)
+{
+	const auto* const func = ref_def.getStaticFunc<Ret, Args...>(name);
+	return (func) ? static_cast<const Gaff::IReflectionStaticFunction<Ret, Args...>*>(func)->getFunc() : nullptr;
+}
+
 ECSArchetype::ECSArchetype(ECSArchetype&& archetype):
 	_shared_vars(std::move(archetype._shared_vars)),
 	_vars(std::move(archetype._vars)),
@@ -440,7 +447,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 	if constexpr (shared) {
 		const auto is_shared = ref_def.getStaticFunc<bool>(Gaff::FNV1aHash32Const("IsShared"));
 
-		if (!is_shared || !is_shared()) {
+		if (!is_shared || !is_shared->call()) {
 			// $TODO: Log error.
 			return false;
 		}
@@ -450,7 +457,7 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 
 		const auto is_non_shared = ref_def.getStaticFunc<bool>(Gaff::FNV1aHash32Const("IsNonShared"));
 
-		if (!is_non_shared || !is_non_shared()) {
+		if (!is_non_shared || !is_non_shared->call()) {
 			// $TODO: Log error.
 			return false;
 		}
@@ -473,12 +480,12 @@ bool ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def, bool has_defa
 		return false;
 	}
 
-	RefDefOffset::CopyDefaultToNonSharedFunc copy_default_to_non_shared_func = ref_def.getStaticFunc<void, ECSManager&, EntityID, const void*>(Gaff::FNV1aHash32Const("CopyDefaultToNonShared"));
-	RefDefOffset::CopySharedFunc copy_shared_func = ref_def.getStaticFunc<void, const void*, void*>(Gaff::FNV1aHash32Const("CopyShared"));
-	RefDefOffset::CopyFunc copy_func = ref_def.getStaticFunc<void, const void*, int32_t, void*, int32_t>(Gaff::FNV1aHash32Const("Copy"));
-	RefDefOffset::LoadFunc load_func = ref_def.getStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(Gaff::FNV1aHash32Const("Load"));
-	RefDefOffset::ConstructorFunc constructor_func = ref_def.getStaticFunc<void, EntityID, void*, int32_t>(Gaff::FNV1aHash32Const("Constructor"));
-	RefDefOffset::DestructorFunc destructor_func = ref_def.getStaticFunc<void, EntityID, void*, int32_t>(Gaff::FNV1aHash32Const("Destructor"));
+	RefDefOffset::CopyDefaultToNonSharedFunc copy_default_to_non_shared_func = GetStaticFunc<void, ECSManager&, EntityID, const void*>(ref_def, Gaff::FNV1aHash32Const("CopyDefaultToNonShared"));
+	RefDefOffset::CopySharedFunc copy_shared_func = GetStaticFunc<void, const void*, void*>(ref_def, Gaff::FNV1aHash32Const("CopyShared"));
+	RefDefOffset::CopyFunc copy_func = GetStaticFunc<void, const void*, int32_t, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Copy"));
+	RefDefOffset::LoadFunc load_func = GetStaticFunc<bool, ECSManager&, EntityID, const Gaff::ISerializeReader&>(ref_def, Gaff::FNV1aHash32Const("Load"));
+	RefDefOffset::ConstructorFunc constructor_func = GetStaticFunc<void, EntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Constructor"));
+	RefDefOffset::DestructorFunc destructor_func = GetStaticFunc<void, EntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Destructor"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log error.

@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_ReflectionInterfaces.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
+#include "Gaff_Ops.h"
 
 NS_GAFF
 
-class IReflectionDefinition;
 class ISerializeReader;
 class ISerializeWriter;
 struct FunctionStackEntry;
@@ -71,6 +72,78 @@ public:
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
 	ReflectionVersion& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
+
+	template <class Other>
+	ReflectionVersion& opAdd(void);
+	template <class Other>
+	ReflectionVersion& opSub(void);
+	template <class Other>
+	ReflectionVersion& opMul(void);
+	template <class Other>
+	ReflectionVersion& opDiv(void);
+	template <class Other>
+	ReflectionVersion& opMod(void);
+
+	template <class Other>
+	ReflectionVersion& opBitAnd(void);
+	template <class Other>
+	ReflectionVersion& opBitOr(void);
+	template <class Other>
+	ReflectionVersion& opBitXor(void);
+	template <class Other>
+	ReflectionVersion& opBitShiftLeft(void);
+	template <class Other>
+	ReflectionVersion& opBitShiftRight(void);
+
+	template <class Other>
+	ReflectionVersion& opAnd(void);
+	template <class Other>
+	ReflectionVersion& opOr(void);
+
+	template <class Other>
+	ReflectionVersion& opEqual(void);
+	template <class Other>
+	ReflectionVersion& opLessThan(void);
+	template <class Other>
+	ReflectionVersion& opGreaterThan(void);
+	template <class Other>
+	ReflectionVersion& opLessThanOrEqual(void);
+	template <class Other>
+	ReflectionVersion& opGreaterThanOrEqual(void);
+
+	template <class... Args>
+	ReflectionVersion& opCall(void);
+
+	template <class Other>
+	ReflectionVersion& opIndex(void);
+
+	ReflectionVersion& opAdd(void);
+	ReflectionVersion& opSub(void);
+	ReflectionVersion& opMul(void);
+	ReflectionVersion& opDiv(void);
+	ReflectionVersion& opMod(void);
+
+	ReflectionVersion& opBitAnd(void);
+	ReflectionVersion& opBitOr(void);
+	ReflectionVersion& opBitXor(void);
+	ReflectionVersion& opBitNot(void);
+	ReflectionVersion& opBitShiftLeft(void);
+	ReflectionVersion& opBitShiftRight(void);
+
+	ReflectionVersion& opAnd(void);
+	ReflectionVersion& opOr(void);
+
+	ReflectionVersion& opEqual(void);
+	ReflectionVersion& opLessThan(void);
+	ReflectionVersion& opGreaterThan(void);
+	ReflectionVersion& opLessThanOrEqual(void);
+	ReflectionVersion& opGreaterThanOrEqual(void);
+
+	ReflectionVersion& opMinus(void);
+	ReflectionVersion& opPlus(void);
+
+	template <void (*to_string_func)(const T&, char*, int32_t)>
+	ReflectionVersion& opToString(void);
 
 	template <class... Attrs>
 	ReflectionVersion& classAttrs(const Attrs&...);

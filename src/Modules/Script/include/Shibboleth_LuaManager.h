@@ -32,6 +32,8 @@ NS_SHIBBOLETH
 class LuaManager final : public IManager
 {
 public:
+	~LuaManager(void);
+
 	bool initAllModulesLoaded(void) override;
 
 private:
