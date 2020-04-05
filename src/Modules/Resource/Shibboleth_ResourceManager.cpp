@@ -234,7 +234,7 @@ const IFile* ResourceManager::loadFileAndWait(const char* file_path)
 	Gaff::Counter counter = 0;
 	auto& job_pool = GetApp().getJobPool();
 
-	job_pool.addJobs(&job_data, 1, counter, JPI_READ_FILE);
+	job_pool.addJobs(&job_data, 1, counter, k_read_file_pool);
 	job_pool.helpWhileWaiting(counter);
 
 	return data.out_file;
@@ -362,7 +362,7 @@ void ResourceManager::requestLoad(IResource& resource)
 
 	resource._state = IResource::RS_PENDING;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_READ_FILE);
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, k_read_file_pool);
 }
 
 

@@ -25,7 +25,7 @@ namespace
 	void InitReflectionT(Shibboleth::InitMode mode)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			if (mode == Shibboleth::InitMode::Enums) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				Shibboleth::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
@@ -271,7 +271,7 @@ namespace
 	void InitReflectionT(Shibboleth::InitMode mode)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			if (mode == Shibboleth::InitMode::Enums) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				Shibboleth::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}

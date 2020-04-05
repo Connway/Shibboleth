@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
+#include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>
 #include <EAThread/eathread_futex.h>
 #include <EASTL/chrono.h>
@@ -53,11 +54,15 @@ public:
 	JobPool(const Allocator& allocator = Allocator());
 	~JobPool(void);
 
-	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
+	bool init(int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
 	void destroy(void);
+	void run(void);
 
-	void addJobs(const JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
-	void addJobs(const JobData* jobs, size_t num_jobs, Counter& counter, int32_t pool = 0);
+	void addPool(const HashStringTemp32<>& name, int32_t max_concurrent_threads = 1);
+
+	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Gaff::Hash32 pool = 0);
+	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Gaff::Hash32 pool = 0);
+
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter& counter);
 	void freeCounter(Counter* counter);
@@ -70,32 +75,26 @@ public:
 	int32_t getNumTotalThreads(void) const;
 	void getThreadIDs(EA::Thread::ThreadId* out) const;
 
-	//void addPool(const HashString32<Allocator>& name, int8_t max_concurrent_threads = 1);
-
 private:
-	struct JobQueue
+	struct JobQueue final
 	{
 		Queue<JobPair, Allocator> jobs;
 		UniquePtr<EA::Thread::Futex, Allocator> read_write_lock;
-		UniquePtr<EA::Thread::Futex, Allocator> thread_lock;
+		UniquePtr<EA::Thread::Semaphore, Allocator> thread_lock;
 		//EA::Thread::Futex read_write_lock;
-		//EA::Thread::Futex thread_lock;
-
-		//std::atomic_int8_t curr_thread_count;
-		//int8_t max_threads;
+		//EA::Thread::Semaphore thread_lock;
 	};
 
-	struct ThreadData
+	struct ThreadData final
 	{
-		JobPool<Allocator>* job_pool;
-		ThreadInitFunc init_func;
-		bool terminate;
+		JobPool<Allocator>* job_pool = nullptr;
+		ThreadInitFunc init_func = nullptr;
+		bool terminate : 1;
+		bool pause : 1;
 	};
 
-	//VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
-
-	Vector<JobQueue, Allocator> _job_pools;
-	//JobQueue _main_queue;
+	VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
+	JobQueue _main_queue;
 
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;

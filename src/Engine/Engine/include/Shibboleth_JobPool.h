@@ -29,16 +29,8 @@ NS_SHIBBOLETH
 
 using JobPool = Gaff::JobPool<ProxyAllocator>;
 
-enum JobPoolIndices
-{
-	// Engine level pools.
-	JPI_ANY = 0,
-	JPI_READ_FILE,
-
-	// User defined pools.
-	JPI_SCRIPT,
-
-	JPI_SIZE
-};
+constexpr const char* const k_read_file_pool_name = "Read File";
+constexpr Gaff::Hash32 k_read_file_pool = Gaff::FNV1aHash32Const(k_read_file_pool_name);
+constexpr int32_t k_read_file_pool_default_threads = 1;
 
 NS_END

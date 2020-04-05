@@ -222,7 +222,7 @@ void MainLoop::update(void)
 
 		GetApp().getJobPool().addJobs(
 			block.rows[block.curr_row].job_data.data(),
-			block.rows[block.curr_row].job_data.size(),
+			static_cast<int32_t>(block.rows[block.curr_row].job_data.size()),
 			block.counter
 		);
 	}

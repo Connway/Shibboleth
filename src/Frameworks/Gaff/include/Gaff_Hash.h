@@ -150,22 +150,22 @@ Hash32 FNV1Hash32T(const T& value, Hash32 init = INIT_HASH32)
 
 constexpr Hash64 FNV1aHash64Const(const char* key, size_t len, Hash64 init)
 {
-	return (len) ? FNV1aHash64Const(key + 1, len - 1, (init ^ static_cast<Hash64>(*key)) * 1099511628211ULL) : init;
+	return (len > 0) ? FNV1aHash64Const(key + 1, len - 1, (init ^ static_cast<Hash64>(*key)) * 1099511628211ULL) : init;
 }
 
 constexpr Hash64 FNV1Hash64Const(const char* key, size_t len, Hash64 init)
 {
-	return (len) ? FNV1Hash64Const(key + 1, len - 1, (init ^ 1099511628211ULL) * static_cast<Hash64>(*key)) : init;
+	return (len > 0) ? FNV1Hash64Const(key + 1, len - 1, (init ^ 1099511628211ULL) * static_cast<Hash64>(*key)) : init;
 }
 
 constexpr Hash32 FNV1aHash32Const(const char* key, size_t len, Hash32 init = INIT_HASH32)
 {
-	return (len) ? FNV1aHash32Const(key + 1, len - 1, (init ^ static_cast<Hash32>(*key)) * 16777619U) : init;
+	return (len > 0) ? FNV1aHash32Const(key + 1, len - 1, (init ^ static_cast<Hash32>(*key)) * 16777619U) : init;
 }
 
 constexpr Hash32 FNV1Hash32Const(const char* key, size_t len, Hash32 init = INIT_HASH32)
 {
-	return (len) ? FNV1Hash32Const(key + 1, len - 1, (init ^ 16777619U) * static_cast<Hash32>(*key)) : init;
+	return (len > 0) ? FNV1Hash32Const(key + 1, len - 1, (init ^ 16777619U) * static_cast<Hash32>(*key)) : init;
 }
 
 template <size_t size>

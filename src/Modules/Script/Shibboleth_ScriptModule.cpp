@@ -25,6 +25,9 @@ THE SOFTWARE.
 #ifdef SHIB_STATIC
 
 	#include <Shibboleth_Utilities.h>
+	#include <Shibboleth_JobPool.h>
+	#include <Shibboleth_IApp.h>
+	#include <Gaff_JSON.h>
 
 	namespace Script
 	{
@@ -32,7 +35,13 @@ THE SOFTWARE.
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
+				const int32_t num_threads = script_threads.getInt32(Shibboleth::LuaManager::k_default_num_threads);
+
+				app.getJobPool().addPool(Shibboleth::HashStringTemp32<>(Shibboleth::LuaManager::k_thread_pool_name), num_threads);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();
 

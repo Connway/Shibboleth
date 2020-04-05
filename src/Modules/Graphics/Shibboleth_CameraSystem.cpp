@@ -178,7 +178,7 @@ void CameraPostRenderSystem::update(void)
 	}
 
 	auto& job_pool = GetApp().getJobPool();
-	job_pool.addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+	job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
 	job_pool.helpWhileWaiting(_job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;

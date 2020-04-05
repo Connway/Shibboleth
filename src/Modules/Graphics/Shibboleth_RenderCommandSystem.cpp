@@ -146,7 +146,7 @@ void RenderCommandSubmissionSystem::update()
 	}
 
 	auto& job_pool = GetApp().getJobPool();
-	job_pool.addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+	job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
 	job_pool.helpWhileWaiting(_job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;
@@ -254,7 +254,7 @@ void RenderCommandSystem::update(void)
 		_job_data_cache[i].job_func = DeviceJob;
 	}
 
-	_job_pool->addJobs(_job_data_cache.data(), _job_data_cache.size(), _job_counter);
+	_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
 	_job_pool->helpWhileWaiting(_job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;
@@ -792,7 +792,7 @@ void RenderCommandSystem::DeviceJob(void* data)
 		job_data.job_data_cache[i].job_func = GenerateCommandListJob;
 	}
 
-	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), job_data.job_data_cache.size(), job_data.job_counter);
+	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
 	job_data.rcs->_job_pool->helpWhileWaiting(job_data.job_counter);
 }
 
