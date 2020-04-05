@@ -42,7 +42,7 @@ class IManager;
 
 enum class InitMode : int8_t
 {
-	Enums,
+	EnumsAndFirstInits,
 	Attributes,
 	Regular,
 

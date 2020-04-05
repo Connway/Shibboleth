@@ -38,8 +38,6 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(LuaManager)
 
-
-static constexpr int32_t k_default_num_threads = 4;
 static ProxyAllocator g_allocator("Lua");
 
 LuaManager::~LuaManager(void)
@@ -54,11 +52,7 @@ bool LuaManager::initAllModulesLoaded(void)
 	IApp& app = GetApp();
 	app.getLogManager().addChannel("Lua", "LuaLog");
 
-	// Add pool.
-	JobPool& job_pool = app.getJobPool();
-	GAFF_REF(job_pool);
-
-	const Gaff::JSON& script_threads = app.getConfigs()["script_threads"];
+	const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
 	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);
 
 	_states.resize(static_cast<size_t>(num_threads));

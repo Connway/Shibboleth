@@ -412,10 +412,13 @@ bool App::initInternal(void)
 		AllocatorThreadInit();
 	};
 
-	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
+	if (!_job_pool.init(static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
 		LogErrorDefault("Failed to initialize thread pool.");
 		return false;
 	}
+
+	const Gaff::JSON read_file_threads = _configs["read_file_threads"];
+	_job_pool.addPool(HashStringTemp32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
 
 	_broadcaster.init();
 
@@ -591,6 +594,11 @@ bool App::loadModules(void)
 					}
 				}
 			}
+		}
+
+		// After the first chance to load, all the modules should have registered their job pools.
+		if (mode_count == 0) {
+			_job_pool.run();
 		}
 	}
 

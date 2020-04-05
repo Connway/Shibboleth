@@ -72,7 +72,7 @@ void IResource::load(void)
 		);
 
 		Gaff::JobData job_data = { LoadJob, res_data };
-		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, cb_attr->getPool());
+		GetApp().getJobPool().addJobs(&job_data, 1U, nullptr, cb_attr->getPool());
 
 	} else {
 		failed();

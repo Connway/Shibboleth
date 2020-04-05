@@ -32,7 +32,7 @@ class IFile;
 class ILoadFileCallbackAttribute : public Gaff::IAttribute
 {
 public:
-	ILoadFileCallbackAttribute(bool callback_closes_file, int32_t pool):
+	ILoadFileCallbackAttribute(bool callback_closes_file, Gaff::Hash32 pool):
 		_callback_closes_file(callback_closes_file),
 		_pool(pool)
 	{
@@ -45,21 +45,21 @@ public:
 		return _callback_closes_file;
 	}
 
-	int32_t getPool(void) const
+	Gaff::Hash32 getPool(void) const
 	{
 		return _pool;
 	}
 
 private:
 	const bool _callback_closes_file;
-	const int32_t _pool;
+	const Gaff::Hash32 _pool;
 };
 
 template <class T>
 class LoadFileCallbackAttribute final : public ILoadFileCallbackAttribute
 {
 public:
-	LoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, int32_t pool = JPI_ANY):
+	LoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, Gaff::Hash32 pool = 0):
 		ILoadFileCallbackAttribute(callback_closes_file, pool), _callback(callback)
 	{
 	}
@@ -85,7 +85,7 @@ private:
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(LoadFileCallbackAttribute, T)
 
 template <class T>
-LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, int32_t pool = JPI_ANY)
+LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, Gaff::Hash32 pool = 0)
 {
 	return LoadFileCallbackAttribute<T>(callback, callback_closes_file, pool);
 }
