@@ -84,7 +84,7 @@ function ModuleCopy(dir)
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/Modules",
+		"{MKDIR} ../../../../../workingdir/" .. dir,
 		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/" .. dir
 	}
 end

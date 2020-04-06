@@ -198,6 +198,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsBase", "modules\GraphicsBase.vcxproj", "{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsDirect3D11", "modules\GraphicsDirect3D11.vcxproj", "{EA402CAF-D624-ED04-3F85-E7572B88D786}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71} = {F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsDirect3D11Module", "modules\GraphicsDirect3D11Module.vcxproj", "{B076C607-9C9B-1588-C5E6-FA17B16A14A6}"
 	ProjectSection(ProjectDependencies) = postProject

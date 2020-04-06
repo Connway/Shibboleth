@@ -120,7 +120,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -154,7 +154,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Debug\$(TargetFileName)\ (x
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -188,7 +188,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Release\$(TargetFileName)\ 
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -222,7 +222,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Profile\$(TargetFileName)\ 
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\EditorModules (mkdir ..\..\..\..\..\workingdir\EditorModules)
 IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\EditorModules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

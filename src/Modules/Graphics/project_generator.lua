@@ -88,6 +88,13 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Modules/MainLoop/include"
 		}
 
+		local deps =
+		{
+			"GraphicsBase"
+		}
+
+		dependson(deps)
+
 
 	project(project_name .. "Module")
 		if _ACTION then
@@ -113,7 +120,7 @@ function DoGraphicsModule(renderer)
 		ModuleIncludesAndLinks(project_name, "Graphics")
 		SetupConfigMap()
 
-		local deps =
+		deps =
 		{
 			"GraphicsBase",
 			"Gleam",
