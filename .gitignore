@@ -1,4 +1,3 @@
-*.exe
 *.suo
 *.user
 *.ncb
@@ -11,6 +10,7 @@
 **/.vs/*
 **/Gen_ReflectionInit.h
 .generated/build/*
+workingdir/**/*.exe
 workingdir/editor_logs/*
 workingdir/logs/*
 workingdir/bin/*
