@@ -13,6 +13,7 @@ steps:
 - script: |
     dir /w
     cd utils
+    premake5 build --config=Debug --project=vs2019
   displayName: 'Build'
 
 - script: |
