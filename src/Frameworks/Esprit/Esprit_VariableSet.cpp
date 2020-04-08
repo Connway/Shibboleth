@@ -227,4 +227,34 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, bool value) co
 	return true;
 }
 
+const U8String& VariableSet::getString(const Instance& variables, int32_t index) const
+{
+	const U8String* result = nullptr;
+	getVariable(variables, index, result);
+
+	GAFF_ASSERT(result);
+	return *result;
+}
+
+float VariableSet::getFloat(const Instance& variables, int32_t index) const
+{
+	float result = 0.0f;
+	getVariable(variables, index, result);
+	return result;
+}
+
+int64_t VariableSet::getInteger(const Instance& variables, int32_t index) const
+{
+	int64_t result = 0;
+	getVariable(variables, index, result);
+	return result;
+}
+
+bool VariableSet::getBool(const Instance& variables, int32_t index) const
+{
+	bool result = false;
+	getVariable(variables, index, result);
+	return result;
+}
+
 NS_END

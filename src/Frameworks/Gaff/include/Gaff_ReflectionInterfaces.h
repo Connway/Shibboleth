@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_SerializeInterfaces.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
+#include "Gaff_Flags.h"
 #include "Gaff_Hash.h"
 #include <EASTL/array.h>
 
@@ -431,8 +432,24 @@ public:
 
 struct FunctionStackEntry final
 {
+	enum class Flag
+	{
+		IsReference,
+		IsArray,
+		IsMap,
+
+		Count
+	};
+
+	struct ArrayData final
+	{
+		void* data;
+		int32_t size;
+	};
+
 	union Value
 	{
+		ArrayData arr;
 		void* vp;
 		bool b;
 		int8_t i8;
@@ -449,6 +466,7 @@ struct FunctionStackEntry final
 
 	const IEnumReflectionDefinition* enum_ref_def = nullptr;
 	const IReflectionDefinition* ref_def = nullptr;
+	Gaff::Flags<Flag> flags;
 	Value value;
 };
 
@@ -1029,6 +1047,9 @@ public:
 	virtual int32_t getEntryValue(int32_t index) const = 0;
 	virtual int32_t getEntryValue(const char* name) const = 0;
 	virtual int32_t getEntryValue(Hash32 name) const = 0;
+
+	virtual int32_t getNumEnumAttrs(void) const = 0;
+	virtual const IAttribute* getEnumAttr(int32_t index) const = 0;
 };
 
 template <class Derived, class Base>

@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Esprit_StateMachineCommonConditions.h>
 #include <Shibboleth_Reflection.h>
+#include <Esprit_StateMachineCommonConditions.h>
+#include <Esprit_StateMachine.h>
 
 SHIB_REFLECTION_DECLARE(Esprit::U8String)
 SHIB_REFLECTION_DECLARE(Esprit::HashString32<>)
@@ -35,3 +36,7 @@ SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
 SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
 
 SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
+
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet::Instance)
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet)
+SHIB_REFLECTION_DECLARE(Esprit::StateMachine)

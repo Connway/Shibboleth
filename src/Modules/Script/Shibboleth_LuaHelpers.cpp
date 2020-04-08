@@ -233,10 +233,6 @@ void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack
 				stack[i - start + 1].value.b = lua_toboolean(state, i + 1);
 				break;
 
-			//case LUA_TLIGHTUSERDATA:
-			//	// $TODO: Log error.
-			//	break;
-
 			case LUA_TNUMBER:
 				if (lua_isinteger(state, i + 1)) {
 					stack[i - start + 1].ref_def = &Reflection<int64_t>::GetReflectionDefinition();
@@ -283,35 +279,76 @@ void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack
 int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret)
 {
 	if (ret.enum_ref_def) {
-		lua_pushinteger(state, ret.value.i64);
+		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
+			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			//lua_createtable(state, ret.value.arr.size, 0);
+
+			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+			//	lua_pushinteger(state, *reinterpret_cast<const int64_t*>(begin));
+			//	lua_seti(state, -1, i);
+			//	begin += sizeof(int64_t);
+			//}
+
+			//if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			//	SHIB_FREE(ret.value.vp, g_allocator);
+			//}
+
+		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+			// $TODO: impl
+
+		} else {
+			lua_pushinteger(state, ret.value.i64);
+		}
+
 		return 1;
 
 	} else if (ret.ref_def) {
-		if (ret.ref_def->isBuiltIn()) {
+		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
+			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.vp);
+			//const int32_t size = *reinterpret_cast<int32_t*>(ret.value.vp);
+			//const int32_t data_size = ret.ref_def->size();
+			//Gaff::FunctionStackEntry element;
+
+			//element.ref_def = ret.ref_def;
+			//lua_createtable(state, size, 0);
+
+			//for (int32_t i = 0; i < size; ++i) {
+			//	if (ret.ref_def->isBuiltIn()) {
+			//		memcpy(&element.value.vp, begin, data_size);
+			//		PushReturnValue(state, element);
+			//		lua_seti(state, -1, i);
+
+			//	} else {
+			//		// User data is already on the stack.
+			//		lua_seti(state, -1, (i - size) - 1);
+			//	}
+
+			//	begin += data_size;
+			//}
+
+		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+			// $TODO: impl
+
+		} else if (ret.ref_def->isBuiltIn()) {
 			if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
 				lua_pushnumber(state, num_value);
-				return 1;
 
 			} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
 				lua_pushinteger(state, int_value);
-				return 1;
 
 			// Value is a boolean.
 			} else {
 				lua_pushboolean(state, ret.value.b);
-				return 1;
 			}
 
 		// Is a user defined type.
 		} else {
-			//UserData* const value = reinterpret_cast<UserData*>(reinterpret_cast<int8_t*>(ret.value.vp) - k_alloc_size_no_reference);
-
 			// Allocator already pushed it into the stack.
 			luaL_getmetatable(state, ret.ref_def->getFriendlyName());
 			lua_setmetatable(state, -2);
-
-			return 1;
 		}
+
+		return 1;
 
 	} else {
 		return 0;

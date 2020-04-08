@@ -24,23 +24,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <bool is_pointer>
-struct ValueHelper;
-
-template <>
-struct ValueHelper<true>
-{
-	template <class T>
-	using type = typename std::add_pointer<T>::type;
-};
-
-template <>
-struct ValueHelper<false>
-{
-	template <class T>
-	using type = T;
-};
-
 template <class T, class... Args>
 void ConstructFunc(void* obj, Args&&... args)
 {
@@ -1829,7 +1812,10 @@ template <class T, class Allocator>
 template <class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
 {
-	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Type is not reflected!");
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Var type is not reflected!");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, name_size - 1, _allocator),
@@ -1858,15 +1844,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using RetNoRef = typename std::remove_reference<Ret>::type;
 	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
 	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::template type<RetNoConst>;
 
 	using VarNoRef = typename std::remove_reference<Var>::type;
 	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
 	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
 
-	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetFinal>::HasReflection, "Getter return type is not reflected!");
-	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarFinal>::HasReflection, "Setter arg type is not reflected!");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair;
 
@@ -1903,7 +1887,11 @@ template <class T, class Allocator>
 template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes)
 {
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Vector data type is not reflected!");
+
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
@@ -1928,7 +1916,11 @@ template <class T, class Allocator>
 template <class Var, size_t array_size, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
 {
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Array data type is not reflected!");
+
 	using PtrType = ArrayPtr<Var, array_size>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
@@ -1953,8 +1945,15 @@ template <class T, class Allocator>
 template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char(&name)[name_size], VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
 {
-	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Key>::HasReflection, "Key type is not reflected!");
-	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Value>::HasReflection, "Value type is not reflected!");
+	static_assert(!std::is_reference<Key>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Key>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Key>::value, "Cannot reflect const values.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Key>::HasReflection, "Key data type is not reflected!");
+
+	static_assert(!std::is_reference<Value>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Value>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Value>::value, "Cannot reflect const values.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Value>::HasReflection, "Value data type is not reflected!");
 
 	using PtrType = VectorMapPtr<Key, Value, VecMap_Allocator>;
 

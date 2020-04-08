@@ -878,6 +878,27 @@ REF_DEF_BUILTIN(float, Float);
 REF_DEF_BUILTIN(double, Double);
 REF_DEF_BUILTIN(bool, Bool);
 
+
+template <class T>
+struct IsVectorHelper final
+{
+	using type = T;
+	static constexpr bool value = false;
+};
+
+template <class T, class Allocator>
+struct IsVectorHelper< Vector<T, Allocator> > final
+{
+	using type = typename std::remove_const<T>::type;
+	static constexpr bool value = true;
+};
+
+template <class T>
+static constexpr bool IsVector = IsVectorHelper<T>::value;
+
+template <class T>
+using IsVectorType = typename IsVectorHelper<T>::type;
+
 NS_END
 
 #include "Gaff_ReflectionDefinition.inl"

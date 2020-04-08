@@ -68,7 +68,13 @@ public:
 
 	const char* getEntryName(Enum value) const;
 
+	int32_t getNumEnumAttrs(void) const override;
+	const IAttribute* getEnumAttr(int32_t index) const override;
+
 	void setAllocator(const Allocator& allocator);
+
+	template <class... Attrs>
+	EnumReflectionDefinition& enumAttrs(const Attrs&... attrs);
 
 	template <size_t name_size, class... Attrs>
 	EnumReflectionDefinition& entry(const char (&name)[name_size], Enum value);
@@ -77,8 +83,12 @@ public:
 
 private:
 	VectorMap<HashString32<Allocator>, Enum, Allocator> _entries;
+	Vector<IAttributePtr, Allocator> _enum_attrs;
 
 	Allocator _allocator;
+
+	template <class First, class... Rest>
+	EnumReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 };
 
 NS_END

@@ -30,6 +30,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Esprit/include",
 			base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/Script/include",
 			base_dir .. "../../Modules/ECS/include"
 		}
 
@@ -48,13 +49,17 @@ local GenerateProject = function()
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("Logic")
+		NewDeleteLinkFix()
 		SetupConfigMap()
 
 		local deps =
 		{
 			"Esprit",
 			"Resource",
+			"Script",
 			"ECS",
+
+			"Lua"
 		}
 
 		dependson(deps)
@@ -65,7 +70,9 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Logic")
 	table.insert(deps, "Esprit")
 	table.insert(deps, "Resource")
+	table.insert(deps, "Script")
 	table.insert(deps, "ECS")
+	table.insert(deps, "Lua")
 
 	dependson(deps)
 	links(deps)

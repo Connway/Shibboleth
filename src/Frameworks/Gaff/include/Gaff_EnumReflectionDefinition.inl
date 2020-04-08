@@ -125,10 +125,34 @@ const char* EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) 
 }
 
 template <class Enum, class Allocator>
+int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEnumAttrs(void) const
+{
+	return static_cast<int32_t>(_enum_attrs.size());
+}
+
+template <class Enum, class Allocator>
+const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEnumAttr(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_enum_attrs.size()));
+	return _enum_attrs[index].get();
+}
+
+template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_entries.set_allocator(allocator);
 	_allocator = allocator;
+}
+
+template <class Enum, class Allocator>
+template <class... Attrs>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::enumAttrs(const Attrs&... attrs)
+{
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(_entry_attrs, attrs...);
+	}
+
+	return *this;
 }
 
 template <class Enum, class Allocator>
@@ -149,6 +173,19 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
+}
+
+template <class Enum, class Allocator>
+template <class First, class... Rest>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	attrs.emplace_back(IAttributePtr(first->clone()));
+
+	if constexpr (sizeof...(Rest) > 0) {
+		return addAttributes(attrs, rest...);
+	} else {
+		return *this;
+	}
 }
 
 NS_END

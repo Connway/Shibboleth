@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
+#include <EAThread/eathread_futex.h>
 
 struct lua_State;
 
@@ -32,6 +33,8 @@ NS_SHIBBOLETH
 class LuaManager final : public IManager
 {
 public:
+	static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
+
 	static constexpr const char* k_thread_pool_name = "Lua";
 	static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name);
 	static constexpr int32_t k_default_num_threads = 4;
@@ -40,8 +43,19 @@ public:
 
 	bool initAllModulesLoaded(void) override;
 
+	bool loadBuffer(const char* buffer, size_t size, const char* name);
+
+	lua_State* requestState(void);
+	void returnState(lua_State* state);
+
 private:
-	Vector<lua_State*> _states{ ProxyAllocator("Lua") };
+	struct LuaStateData final
+	{
+		UniquePtr<EA::Thread::Futex> lock;
+		lua_State* state = nullptr;
+	};
+
+	Vector<LuaStateData> _states{ ProxyAllocator("Lua") };
 
 	static void* alloc(void*, void* ptr, size_t, size_t new_size);
 	static int panic(lua_State* L);

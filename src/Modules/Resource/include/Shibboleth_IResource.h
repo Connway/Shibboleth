@@ -93,7 +93,7 @@ protected:
 private:
 	mutable std::atomic_int32_t _count = 0;
 
-	ResourceState _state = RS_DELAYED;
+	ResourceState _state = ResourceState::RS_DELAYED;
 	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;

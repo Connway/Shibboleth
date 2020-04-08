@@ -247,64 +247,82 @@ bool CallFunc(
 
 	} else {
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
-		RetType return_value;
-
-		if constexpr (std::is_pointer<Ret>::value) {
-			return_value = *CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
-		} else {
-			return_value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
-		}
 
 		if constexpr (std::is_enum<RetType>::value) {
+			RetType value;
+
+			if constexpr (std::is_pointer<Ret>::value) {
+				value = *CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+			} else {
+				value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+			}
+
 			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			ret.value.i64 = static_cast<int64_t>(return_value);
+			ret.value.i64 = static_cast<int64_t>(value);
 
 		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
+			RetType value;
+
+			if constexpr (std::is_pointer<Ret>::value) {
+				value = *CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+			} else {
+				value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+			}
+
 			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
+			*reinterpret_cast<RetType*>(&ret.value.vp) = value;
 
 		} else {
-			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-			ret.value.vp = GAFF_ALLOCT(RetType, allocator, return_value);
+			using FinalType = typename IsVectorType<RetType>;
+
+			if constexpr (std::is_enum<FinalType>::value) {
+				ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition();
+			} else {
+				ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition();
+			}
+
+			if constexpr (std::is_pointer<Ret>::value || std::is_reference<Ret>::value) {
+				ret.flags.set(true, FunctionStackEntry::Flag::IsReference);
+
+				if constexpr (std::is_pointer<Ret>::value) {
+					ret.value.vp = const_cast<RetType*>(CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...));
+
+				// Is a reference.
+				} else {
+					ret.value.vp = const_cast<RetType*>(&CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...));
+				}
+
+				if constexpr (IsVector<RetType>) {
+					const size_t size = reinterpret_cast<RetType*>(ret.value.vp)->size();
+					ret.value.arr.vp = reinterpret_cast<RetType*>(ret.value.vp)->data();
+					ret.value.arr.size = static_cast<int32_t>(size);
+
+					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
+				}
+
+			} else {
+				RetType value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+
+				if constexpr (IsVector<RetType>) {
+					ret.value.arr.data = GAFF_ALLOC(sizeof(FinalType) * value.size(), allocator);
+					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
+
+					FinalType* data = reinterpret_cast<FinalType*>(ret.value.arr.data);
+
+					for (auto& v : value) {
+						new(data) FinalType(std::move(v));
+						++data;
+					}
+
+				} else {
+					ret.value.vp = GAFF_ALLOCT(RetType, allocator, value);
+				}
+			}
 		}
 	}
 
 	return true;
 }
-
-//template <class Callable, class Allocator, class Ret, class... CurrentArgs>
-//bool CallFunc(
-//	const Callable* callable,
-//	void* object,
-//	FunctionStackEntry& ret,
-//	IAllocator& allocator)
-//{
-//	if constexpr (std::is_void<Ret>::value) {
-//		call(object);
-//		GAFF_REF(ret);
-//
-//	} else {
-//		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
-//
-//		Ret return_value = call(object);
-//		GAFF_REF(ret, return_value);
-//
-//		if constexpr (std::is_enum<RetType>::value) {
-//			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-//			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-//
-//		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
-//			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-//			*reinterpret_cast<RetType*>(&ret.value.vp) = return_value;
-//
-//		} else {
-//			ret.ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
-//			reinterpret_cast<RetType*>(ret.value.vp) = GAFF_ALLOCT(RetType, const_cast<IReflectionDefinition*>(ret.ref_def)->getAllocator(), return_value);
-//		}
-//	}
-//
-//	return true;
-//}
 
 template <class Ret, class... Args, class... CurrentArgs>
 Ret CallCallable(const IReflectionFunction<Ret, Args...>& func, void* object, CurrentArgs&&... current_args)

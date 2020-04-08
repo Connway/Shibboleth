@@ -235,7 +235,7 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 	if constexpr (sizeof...(Rest) == 0) {
 		return CalcTypeHash<First>(init, GAFF_HASHABLE_NAMESPACE::GetName<V>());
 	} else {
-		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GAFF_REFLECTION_NAMESPACE::GetName<V>()));
+		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GAFF_HASHABLE_NAMESPACE::GetName<V>()));
 	}
 }
 

@@ -65,14 +65,6 @@ bool CallFunc(
 	CurrentArgs&&... current_args
 );
 
-//template <class Callable, class Allocator, class Ret, class... CurrentArgs>
-//bool CallFunc(
-//	const Callable* callable,
-//	void* object,
-//	FunctionStackEntry& ret,
-//	IAllocator& allocator
-//);
-
 template <class Ret, class... Args, class... CurrentArgs>
 Ret CallCallable(const IReflectionFunction<Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
 

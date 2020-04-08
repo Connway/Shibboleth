@@ -171,7 +171,7 @@ private:
 
 
 template <class T>
-bool LoadRefPtr(const Gaff::ISerializeReader& reader, Gaff::RefPtr<T>& out)
+static bool LoadRefPtr(const Gaff::ISerializeReader& reader, Gaff::RefPtr<T>& out)
 {
 	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
 
@@ -187,7 +187,7 @@ bool LoadRefPtr(const Gaff::ISerializeReader& reader, Gaff::RefPtr<T>& out)
 }
 
 template <class T>
-void SaveRefPtr(Gaff::ISerializeWriter& writer, const Gaff::RefPtr<T>& value)
+static void SaveRefPtr(Gaff::ISerializeWriter& writer, const Gaff::RefPtr<T>& value)
 {
 	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
 	writer.writeString(value->getFilePath().getBuffer());

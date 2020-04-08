@@ -42,8 +42,8 @@ static ProxyAllocator g_allocator("Lua");
 
 LuaManager::~LuaManager(void)
 {
-	for (lua_State* state : _states) {
-		lua_close(state);
+	for (LuaStateData& data : _states) {
+		lua_close(data.state);
 	}
 }
 
@@ -67,7 +67,8 @@ bool LuaManager::initAllModulesLoaded(void)
 			return false;
 		}
 
-		_states[i] = state;
+		_states[i].lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
+		_states[i].state = state;
 
 		lua_atpanic(state, &LuaManager::panic);
 
@@ -95,6 +96,9 @@ bool LuaManager::initAllModulesLoaded(void)
 		luaL_requiref(state, "utf8", luaopen_utf8, 1);
 		lua_pop(state, 1);
 
+		lua_createtable(state, 0, 0);
+		lua_setglobal(state, k_loaded_chunks_name);
+
 		RegisterBuiltIns(state);
 
 		for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
@@ -115,16 +119,85 @@ print(tostring(1) .. " test ")
 print(tostring(1) .. " test " .. tostring(v3))
 )";
 
-	const int32_t err = luaL_loadstring(_states[0], test);
+	const int32_t err = luaL_loadstring(_states[0].state, test);
 
 	if (err) {
-		const char* const error = lua_tostring(_states[0], -1);
+		const char* const error = lua_tostring(_states[0].state, -1);
 		GAFF_REF(error);
 	} else {
-		lua_pcall(_states[0], 0, 0, 0);
+		lua_pcall(_states[0].state, 0, 0, 0);
 	}
 
 	return true;
+}
+
+bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
+{
+	bool success = true;
+
+	for (LuaStateData& data: _states) {
+		EA::Thread::AutoFutex lock(*data.lock);
+
+		const int32_t err = luaL_loadbuffer(data.state, buffer, size, name);
+
+		if (err != LUA_OK) {
+			// $TODO: Get error message from top of stack and log.
+			success = false;
+			continue;
+		}
+
+		lua_getglobal(data.state, k_loaded_chunks_name);
+		lua_getfield(data.state, -1, name);
+
+		if (lua_isnoneornil(data.state, -1)) {
+			// $TODO: Log error.
+			lua_pop(data.state, 3); // top -> bottom: nil, chunk_table, func
+			success = false;
+			continue;
+		}
+
+		lua_pop(data.state, 1); // Pop off the nil.
+		lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
+		lua_pcall(data.state, 0, 1, 0); // Call the func. The function will return a table.
+		luaL_checktype(data.state, -1, LUA_TTABLE);
+		lua_setfield(data.state, -1, name); // Set the table to the chunk_table.
+
+		lua_pop(data.state, 2); // Pop off the chunk table and function.
+	}
+
+	return success;
+}
+
+lua_State* LuaManager::requestState(void)
+{
+	lua_State* state = nullptr;
+
+	while (!state) {
+		for (LuaStateData& data : _states) {
+			if (!data.lock->TryLock()) {
+				continue;
+			}
+
+			state = data.state;
+			break;
+		}
+
+		if (!state) {
+			EA::Thread::ThreadSleep();
+		}
+	}
+
+	return state;
+}
+
+void LuaManager::returnState(lua_State* state)
+{
+	for (LuaStateData& data : _states) {
+		if (data.state == state) {
+			data.lock->Unlock();
+			break;
+		}
+	}
 }
 
 void* LuaManager::alloc(void*, void* ptr, size_t, size_t new_size)
