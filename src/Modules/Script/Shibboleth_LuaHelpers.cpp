@@ -46,12 +46,17 @@ namespace
 		};
 
 		Gaff::Flags<HeaderFlag> flags;
+		//UserDataMetadata* root = nullptr;
+
+		//UserDataMetadata* getRoot(void)
+		//{
+		//	return (flags.testAll(HeaderFlag::IsReference)) ? root : nullptr;
+		//}
 	};
 
 	struct UserData final
 	{
 		UserDataMetadata meta;
-
 		// Only valid if the IsReference flag in metadata is set.
 		void* reference;
 
@@ -122,8 +127,8 @@ namespace
 
 		void* alloc(size_t size_bytes, const char*, int)
 		{
-			UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(_state, sizeof(UserData) + size_bytes));
-			new(value) UserData();
+			UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(_state, sizeof(UserDataMetadata) + size_bytes));
+			new(value) UserDataMetadata();
 
 			return &value->reference;
 		}
@@ -280,14 +285,31 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret)
 {
 	if (ret.enum_ref_def) {
 		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
-			//lua_createtable(state, ret.value.arr.size, 0);
+			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
-			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
-			//	lua_pushinteger(state, *reinterpret_cast<const int64_t*>(begin));
-			//	lua_seti(state, -1, i);
-			//	begin += sizeof(int64_t);
-			//}
+			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			const int32_t data_size = ret.enum_ref_def->size();
+			lua_createtable(state, ret.value.arr.size, 0);
+
+			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+				int64_t value = 0;
+
+				if (data_size <= sizeof(int8_t)) {
+					value = static_cast<int64_t>(*begin);
+				} else if (data_size <= sizeof(int16_t)) {
+					value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
+				} else if (data_size <= sizeof(int32_t)) {
+					value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
+				} else if (data_size <= sizeof(int64_t)) {
+					value = *reinterpret_cast<const int64_t*>(begin);
+				} else {
+					GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
+				}
+
+				lua_pushinteger(state, value);
+				lua_seti(state, -1, i);
+				begin += data_size;
+			}
 
 			//if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
 			//	SHIB_FREE(ret.value.vp, g_allocator);
@@ -304,27 +326,39 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret)
 
 	} else if (ret.ref_def) {
 		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.vp);
-			//const int32_t size = *reinterpret_cast<int32_t*>(ret.value.vp);
-			//const int32_t data_size = ret.ref_def->size();
-			//Gaff::FunctionStackEntry element;
+			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
-			//element.ref_def = ret.ref_def;
-			//lua_createtable(state, size, 0);
+			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			const int32_t data_size = ret.ref_def->size();
+			lua_createtable(state, ret.value.arr.size, 0);
 
-			//for (int32_t i = 0; i < size; ++i) {
-			//	if (ret.ref_def->isBuiltIn()) {
-			//		memcpy(&element.value.vp, begin, data_size);
-			//		PushReturnValue(state, element);
-			//		lua_seti(state, -1, i);
+			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+				if (ret.ref_def->isBuiltIn()) {
+					if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
+						lua_pushnumber(state, num_value);
 
-			//	} else {
-			//		// User data is already on the stack.
-			//		lua_seti(state, -1, (i - size) - 1);
-			//	}
+					} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
+						lua_pushinteger(state, int_value);
 
-			//	begin += data_size;
-			//}
+					// Value is a boolean.
+					} else {
+						lua_pushboolean(state, ret.value.b);
+					}
+
+				} else {
+					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
+
+					new(value) UserData();
+					value->meta.flags.set(true, UserDataMetadata::HeaderFlag::IsReference);
+					value->reference = const_cast<int8_t*>(begin);
+
+					luaL_getmetatable(state, ret.ref_def->getFriendlyName());
+					lua_setmetatable(state, -2);
+				}
+
+				lua_seti(state, -1, i);
+				begin += data_size;
+			}
 
 		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
@@ -343,7 +377,15 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret)
 
 		// Is a user defined type.
 		} else {
-			// Allocator already pushed it into the stack.
+			if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
+
+				new(value) UserData();
+				value->meta.flags.set(true, UserDataMetadata::HeaderFlag::IsReference);
+				value->reference = ret.value.vp;
+			}
+			// In else case allocator already pushed it onto the stack.
+
 			luaL_getmetatable(state, ret.ref_def->getFriendlyName());
 			lua_setmetatable(state, -2);
 		}
@@ -422,7 +464,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		const char* const name = ref_def.getStaticFuncName(i);
 
 		// Is an operator function.
-		if (name[0] == '_' && name[1] == '_') {
+		if (!strncmp(name, "__", 2)) {
 			continue;
 		}
 
@@ -457,8 +499,8 @@ int UserTypeFunctionCall(lua_State* state)
 	const int32_t num_overrides = (is_static) ? ref_def.getNumStaticFuncOverrides(func_index) : ref_def.getNumFuncOverrides(func_index);
 	const int32_t num_args = (is_static) ? lua_gettop(state) : lua_gettop(state) - 1;
 
-	LuaTypeInstanceAllocator allocator(state);
 	Vector<Gaff::FunctionStackEntry> args(g_allocator);
+	LuaTypeInstanceAllocator allocator(state);
 	Gaff::FunctionStackEntry ret;
 
 	for (int32_t i = 0; i < num_overrides; ++i) {
@@ -525,7 +567,147 @@ int UserTypeDestroy(lua_State* state)
 
 int UserTypeNewIndex(lua_State* state)
 {
-	GAFF_REF(state);
+	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
+	void* input = user_data->getData();
+
+	if (lua_type(state, 2) == LUA_TSTRING) {
+		size_t len = 0;
+		const char* const name = luaL_checklstring(state, 2, &len);
+		const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
+
+		// Find a variable with name.
+		if (auto* const var = ref_def.getVar(hash)) {
+			if (var->isFixedArray() || var->isVector()) {
+				// $TODO: Add support for arrays.
+				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
+
+			} else if (var->isMap()) {
+				// $TODO: Add support for maps.
+				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
+
+			} else {
+				const Gaff::IReflection& var_refl = var->getReflection();
+				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
+
+				if (var_ref_def.isBuiltIn()) {
+					if (&var_ref_def == &Reflection<double>::GetReflectionDefinition()) {
+						if (lua_isnumber(state, 3)) {
+							const double value = lua_tonumber(state, 3);
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<float>::GetReflectionDefinition()) {
+						if (lua_isnumber(state, 3)) {
+							const float value = static_cast<float>(lua_tonumber(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int64_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const int64_t value = lua_tointeger(state, 3);
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int32_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const int32_t value = static_cast<int32_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int16_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const int16_t value = static_cast<int16_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int8_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const int8_t value = static_cast<int8_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint64_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const uint64_t value = static_cast<uint64_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint32_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const uint32_t value = static_cast<uint32_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint16_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const uint16_t value = static_cast<uint16_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint8_t>::GetReflectionDefinition()) {
+						if (lua_isinteger(state, 3)) {
+							const uint8_t value = static_cast<uint8_t>(lua_tointeger(state, 3));
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+						if (lua_isboolean(state, 3)) {
+							const bool value = lua_toboolean(state, 3);
+							var->setDataT(input, value);
+
+						} else {
+							// $TODO: Log error.
+						}
+					}
+
+				// Is a user defined type.
+				} else {
+					if (&ref_def == &var_ref_def) {
+						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, ref_def.getFriendlyName()));
+						var->setData(input, value->getData());
+
+					} else {
+						// $TODO: Log error.
+					}
+				}
+			}
+		}
+
+	// Index function?
+	} else {
+	}
+
 	return 0;
 }
 
@@ -544,8 +726,10 @@ int UserTypeIndex(lua_State* state)
 		if (const auto* const var = ref_def.getVar(hash)) {
 			if (var->isFixedArray() || var->isVector()) {
 				// $TODO: Add support for arrays.
+				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
 			} else if (var->isMap()) {
 				// $TODO: Add support for maps.
+				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
 
 			} else {
 				const Gaff::IReflection& var_refl = var->getReflection();
@@ -576,12 +760,15 @@ int UserTypeIndex(lua_State* state)
 
 				// Push user defined type reference.
 				} else {
-					const size_t var_size = static_cast<size_t>(ref_def.size());
 					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
 
 					new(value) UserData();
 					value->meta.flags.set(true, UserDataMetadata::HeaderFlag::IsReference);
 					value->reference = const_cast<void*>(input);
+
+					//if (auto* const root = user_data->meta.getRoot()) {
+					//	value->meta.root = root;
+					//}
 
 					luaL_getmetatable(state, var_ref_def.getFriendlyName());
 					lua_setmetatable(state, -2);
@@ -602,8 +789,8 @@ int UserTypeIndex(lua_State* state)
 			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
 			const int32_t num_args = lua_gettop(state);
 
-			LuaTypeInstanceAllocator allocator(state);
 			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			LuaTypeInstanceAllocator allocator(state);
 			Gaff::FunctionStackEntry ret;
 
 			for (int32_t i = 0; i < num_overloads; ++i) {
@@ -634,8 +821,8 @@ int UserTypeIndex(lua_State* state)
 			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
 			const int32_t num_args = lua_gettop(state);
 
-			LuaTypeInstanceAllocator allocator(state);
 			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			LuaTypeInstanceAllocator allocator(state);
 			Gaff::FunctionStackEntry ret;
 
 			for (int32_t i = 0; i < num_overloads; ++i) {
@@ -669,10 +856,11 @@ int UserTypeNew(lua_State* state)
 	FillArgumentStack(state, arg_stack);
 
 	const size_t var_size = static_cast<size_t>(ref_def.size());
-	void* const value = lua_newuserdata(state, var_size + k_alloc_size_no_reference);
+	UserDataMetadata* const value = reinterpret_cast<UserDataMetadata*>(lua_newuserdata(state, var_size + k_alloc_size_no_reference));
 
 	// Initialize metadata at the beginning.
 	new(value) UserDataMetadata();
+	//value->root = value;
 
 	// Initialize our data.
 	ref_def.getCtorStackFunc()(&reinterpret_cast<UserData*>(value)->reference, arg_stack.data(), static_cast<int32_t>(arg_stack.size()));

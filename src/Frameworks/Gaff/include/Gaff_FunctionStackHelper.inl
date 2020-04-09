@@ -304,15 +304,16 @@ bool CallFunc(
 				RetType value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 
 				if constexpr (IsVector<RetType>) {
-					ret.value.arr.data = GAFF_ALLOC(sizeof(FinalType) * value.size(), allocator);
-					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
+					static_assert(false, "Stack functions do not support returning a vector by value.");
+					//ret.value.arr.data = GAFF_ALLOC(sizeof(FinalType) * value.size(), allocator);
+					//ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
 
-					FinalType* data = reinterpret_cast<FinalType*>(ret.value.arr.data);
+					//FinalType* data = reinterpret_cast<FinalType*>(ret.value.arr.data);
 
-					for (auto& v : value) {
-						new(data) FinalType(std::move(v));
-						++data;
-					}
+					//for (auto& v : value) {
+					//	new(data) FinalType(std::move(v));
+					//	++data;
+					//}
 
 				} else {
 					ret.value.vp = GAFF_ALLOCT(RetType, allocator, value);

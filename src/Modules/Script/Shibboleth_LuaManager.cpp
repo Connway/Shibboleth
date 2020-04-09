@@ -113,6 +113,7 @@ local v2 = Vec3.new(v)
 local x = v2.x
 local v3 = v + v2
 x = v3[2]
+v3.x = 200
 print(v)
 print(v3)
 print(tostring(1) .. " test ")
