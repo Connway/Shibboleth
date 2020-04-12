@@ -254,6 +254,7 @@ namespace
 	}
 }
 
+
 NS_SHIBBOLETH
 
 TableState::~TableState(void)

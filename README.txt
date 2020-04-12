@@ -13,9 +13,6 @@ of the application framework.
 The primary goal is to develop a game engine and editor that is highly extensible and as data driven
 as possible (where it makes sense).
 
-I am always looking for feedback from code reviews! If you wish to spend your valuable time giving
-feedback, send me a message on Bitbucket!
-
 ===============
     LICENSE
 ===============
