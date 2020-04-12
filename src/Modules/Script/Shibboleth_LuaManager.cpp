@@ -106,28 +106,28 @@ bool LuaManager::initAllModulesLoaded(void)
 		}
 	}
 
-	constexpr const char* const test =
-R"(
-local v = Vec3.new(1, 2, 3)
-local v2 = Vec3.new(v)
-local x = v2.x
-local v3 = v + v2
-x = v3[2]
-v3.x = 200
-print(v)
-print(v3)
-print(tostring(1) .. " test ")
-print(tostring(1) .. " test " .. tostring(v3))
-)";
-
-	const int32_t err = luaL_loadstring(_states[0].state, test);
-
-	if (err) {
-		const char* const error = lua_tostring(_states[0].state, -1);
-		GAFF_REF(error);
-	} else {
-		lua_pcall(_states[0].state, 0, 0, 0);
-	}
+//	constexpr const char* const test =
+//R"(
+//local v = Vec3.new(1, 2, 3)
+//local v2 = Vec3.new(v)
+//local x = v2.x
+//local v3 = v + v2
+//x = v3[2]
+//v3.x = 200
+//print(v)
+//print(v3)
+//print(tostring(1) .. " test ")
+//print(tostring(1) .. " test " .. tostring(v3))
+//)";
+//
+//	const int32_t err = luaL_loadstring(_states[0].state, test);
+//
+//	if (err) {
+//		const char* const error = lua_tostring(_states[0].state, -1);
+//		GAFF_REF(error);
+//	} else {
+//		lua_pcall(_states[0].state, 0, 0, 0);
+//	}
 
 	return true;
 }
@@ -143,16 +143,19 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 
 		if (err != LUA_OK) {
 			// $TODO: Get error message from top of stack and log.
+			const char* const error = lua_tostring(data.state, -1);
 			success = false;
+
+			GAFF_REF(error);
 			continue;
 		}
 
 		lua_getglobal(data.state, k_loaded_chunks_name);
 		lua_getfield(data.state, -1, name);
 
-		if (lua_isnoneornil(data.state, -1)) {
+		if (!lua_isnoneornil(data.state, -1)) {
 			// $TODO: Log error.
-			lua_pop(data.state, 3); // top -> bottom: nil, chunk_table, func
+			lua_pop(data.state, 3); // top -> bottom: something, chunk_table, func
 			success = false;
 			continue;
 		}
@@ -160,8 +163,8 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		lua_pop(data.state, 1); // Pop off the nil.
 		lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
 		lua_pcall(data.state, 0, 1, 0); // Call the func. The function will return a table.
-		luaL_checktype(data.state, -1, LUA_TTABLE);
-		lua_setfield(data.state, -1, name); // Set the table to the chunk_table.
+		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
+		lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
 
 		lua_pop(data.state, 2); // Pop off the chunk table and function.
 	}

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_LuaResource.h>
+#include <Shibboleth_LuaHelpers.h>
 #include <Esprit_IProcess.h>
 
 NS_SHIBBOLETH
@@ -36,8 +37,10 @@ public:
 	void update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables) override;
 
 private:
-	LuaManager* _lua_mgr = nullptr;
+	TableState _table_state;
+
 	LuaResourcePtr _script;
+	LuaManager* _lua_mgr = nullptr;
 	bool _log_error = true;
 
 	SHIB_REFLECTION_CLASS_DECLARE(LuaProcess);

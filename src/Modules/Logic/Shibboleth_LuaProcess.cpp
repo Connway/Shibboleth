@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 
 #include "Shibboleth_LuaProcess.h"
+#include "Shibboleth_StateMachineReflection.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LuaManager.h>
+#include <Shibboleth_LuaHelpers.h>
 #include <lua.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(LuaProcess)
@@ -40,15 +42,76 @@ SHIB_REFLECTION_CLASS_DEFINE(LuaProcess);
 bool LuaProcess::init(const Esprit::StateMachine& owner)
 {
 	_lua_mgr = &GetApp().getManagerTFast<LuaManager>();
+	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_script);
 
-	GAFF_REF(owner);
-	return true;
+	if (!_script->isLoaded()) {
+		return false;
+	}
+
+	lua_State* const state = _lua_mgr->requestState();
+
+	lua_getglobal(state, LuaManager::k_loaded_chunks_name);
+	lua_getfield(state, -1, _script->getFilePath().getBuffer());
+
+	// Should never happen, but check anyways.
+	if (!lua_istable(state, -1)) {
+		if (_log_error) {
+			// $TODO: Log error once.
+			_log_error = false;
+		}
+
+		lua_pop(state, 2);
+		_lua_mgr->returnState(state);
+		return false;
+	}
+
+	lua_getfield(state, -1, "init");
+
+	if (lua_isnoneornil(state, -1)) {
+		SaveTable(state, _table_state);
+
+		lua_pop(state, 3);
+		_lua_mgr->returnState(state);
+		return true;
+	}
+
+	if (!lua_isfunction(state, -1)) {
+		// $TODO: Log error.
+
+		lua_pop(state, 3);
+		_lua_mgr->returnState(state);
+		return false;
+	}
+
+	lua_pushvalue(state, -2);
+	PushUserTypeReference(state, owner);
+	const int32_t err = lua_pcall(state, 2, 1, 0);
+	bool success = false;
+
+	if (err != LUA_OK) {
+		size_t len = 0;
+		const char* const error = lua_tolstring(state, -1, &len);
+
+		// $TODO: Log error.
+		GAFF_REF(error);
+		lua_pop(state, 1);
+
+	} else {
+		success = lua_toboolean(state, -1);
+	}
+
+	lua_pop(state, 1); // bool/err_string, table, chunk_table
+
+	SaveTable(state, _table_state);
+
+	lua_pop(state, 2); // table, chunk_table
+	_lua_mgr->returnState(state);
+
+	return success;
 }
 
 void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables)
 {
-	GAFF_REF(owner, variables);
-
 	if (!_script->isLoaded()) {
 		return;
 	}
@@ -70,7 +133,7 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 		return;
 	}
 
-	lua_getfield(state, -1, "update");
+	lua_getfield(state, -1, "update"); // top -> bottom: function, table, chunk_table
 
 	if (!lua_isfunction(state, -1)) {
 		if (_log_error) {
@@ -84,13 +147,27 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 	}
 
 	// Restore state of table.
+	lua_pushvalue(state, -2); // Push table to the top of the stack.
+	RestoreTable(state, _table_state);
 
-	if (lua_isfunction(state, -1)) {
-		// Push Args
-		lua_pcall(state, 2, 0, 0);
+	// Call the function.
+	PushUserTypeReference(state, owner);
+	PushUserTypeReference(state, variables);
+	const int32_t err = lua_pcall(state, 3, 0, 0);
+
+	if (err != LUA_OK) {
+		size_t len = 0;
+		const char* const error = lua_tolstring(state, -1, &len);
+
+		// $TODO: Log error.
+		GAFF_REF(error);
+		lua_pop(state, 1);
 	}
 
-	lua_pop(state, 3);
+	// Save the state of the table.
+	SaveTable(state, _table_state);
+
+	lua_pop(state, 2);
 	_lua_mgr->returnState(state);
 }
 

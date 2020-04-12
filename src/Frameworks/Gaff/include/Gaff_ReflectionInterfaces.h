@@ -464,6 +464,13 @@ struct FunctionStackEntry final
 		double d;
 	};
 
+	FunctionStackEntry(void)
+	{
+		// Zero out everything.
+		value.arr.data = nullptr;
+		value.arr.size = 0;
+	}
+
 	const IEnumReflectionDefinition* enum_ref_def = nullptr;
 	const IReflectionDefinition* ref_def = nullptr;
 	Gaff::Flags<Flag> flags;
