@@ -28,7 +28,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(ProgramBuffersResource)
 	.classAttrs(CreatableAttribute())
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ProgramBuffersResource)
 

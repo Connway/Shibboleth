@@ -37,7 +37,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(MaterialResource)
 		MakeLoadFileCallbackAttribute(&MaterialResource::loadMaterial)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(MaterialResource)
 

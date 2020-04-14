@@ -23,9 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 template <class T, class Allocator>
-constexpr const char* ReflectionBase<T, Allocator>::GetName(void)
+/*constexpr*/ const char* ReflectionBase<T, Allocator>::GetName(void)
 {
-	return GAFF_HASHABLE_NAMESPACE::GetName<T>();
+	static const auto name = GAFF_HASHABLE_NAMESPACE::GetName<T>();
+	return name.data.data();
 }
 
 template <class T, class Allocator>

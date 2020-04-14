@@ -56,17 +56,17 @@ struct ResourceCallbackID final
 	int32_t cb_id = -1;
 };
 
+enum class ResourceState
+{
+	Pending = 0,
+	Failed,
+	Loaded,
+	Delayed
+};
+
 class IResource : public Gaff::IRefCounted, public Gaff::IReflectionObject
 {
 public:
-	enum ResourceState
-	{
-		RS_PENDING = 0,
-		RS_FAILED,
-		RS_LOADED,
-		RS_DELAYED
-	};
-
 	static constexpr bool Creatable = false;
 
 	void requestLoad(void);
@@ -93,12 +93,17 @@ protected:
 private:
 	mutable std::atomic_int32_t _count = 0;
 
-	ResourceState _state = ResourceState::RS_DELAYED;
+	ResourceState _state = ResourceState::Delayed;
 	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;
 
 	friend class ResourceManager;
+
+	SHIB_REFLECTION_CLASS_DECLARE(IResource);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ResourceState)
+SHIB_REFLECTION_DECLARE(IResource)

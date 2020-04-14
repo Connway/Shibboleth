@@ -31,7 +31,15 @@ THE SOFTWARE.
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(ResourceManager, IManager)
+SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
+	.BASE(IManager)
+	.ctor<>()
+
+	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, bool)>(&ResourceManager::requestResource))
+	//.func("createResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, const Gaff::IReflectionDefinition&)>(&ResourceManager::createResource))
+	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::getResource))
+SHIB_REFLECTION_DEFINE_END(ResourceManager)
+
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(ResourceSystem, ISystem)
 
 NS_SHIBBOLETH
@@ -71,10 +79,10 @@ bool ResourceManager::init(void)
 	IApp& app = GetApp();
 	ReflectionManager& refl_mgr = app.getReflectionManager();
 
-	refl_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	refl_mgr.registerTypeBucket(Reflection<IResource>::GetHash());
 	app.getLogManager().addChannel("Resource", "ResourceLog");
 
-	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Reflection<IResource>::GetHash());
 
 	if (!type_bucket) {
 		return true;
@@ -221,7 +229,7 @@ IResourcePtr ResourceManager::getResource(HashStringTemp64<> name)
 
 void ResourceManager::waitForResource(const IResource& resource) const
 {
-	while (resource._state == IResource::RS_PENDING) {
+	while (resource._state == ResourceState::Pending) {
 		// $TODO: Help out?
 		EA::Thread::ThreadSleep();
 	}
@@ -245,7 +253,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 	bool already_loaded = true;
 
 	for (IResource* res : resources) {
-		if (res->getState() == IResource::RS_PENDING) {
+		if (res->getState() == ResourceState::Pending) {
 			already_loaded = false;
 			break;
 		}
@@ -292,7 +300,7 @@ void ResourceManager::checkAndRemoveResources(void)
 	EA::Thread::AutoMutex lock(_removal_lock);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
-		if (_pending_removals[i]->getState() == IResource::RS_PENDING) {
+		if (_pending_removals[i]->getState() == ResourceState::Pending) {
 			++i;
 		} else {
 			_pending_removals.erase_unsorted(_pending_removals.begin() + i);
@@ -311,7 +319,7 @@ void ResourceManager::checkCallbacks(void)
 		bool not_loaded = false;
 
 		for (IResource* res : cb_data.resources) {
-			if (res->getState() == IResource::RS_PENDING) {
+			if (res->getState() == ResourceState::Pending) {
 				not_loaded = true;
 				break;
 			}
@@ -334,7 +342,7 @@ void ResourceManager::checkCallbacks(void)
 void ResourceManager::removeResource(const IResource& resource)
 {
 	// Resource load job has already been submitted. Wait until it is finished.
-	if (resource.getState() == IResource::RS_PENDING) {
+	if (resource.getState() == ResourceState::Pending) {
 		EA::Thread::AutoMutex lock(_removal_lock);
 		_pending_removals.emplace_back(&resource);
 
@@ -351,7 +359,7 @@ void ResourceManager::removeResource(const IResource& resource)
 
 void ResourceManager::requestLoad(IResource& resource)
 {
-	if (resource._state != IResource::RS_DELAYED) {
+	if (resource._state != ResourceState::Delayed) {
 		LogErrorResource(
 			"Call to ResourceManager::requestLoad() called on resource '%s' and is not marked for delayed load.",
 			resource._file_path.getBuffer()
@@ -360,7 +368,7 @@ void ResourceManager::requestLoad(IResource& resource)
 		return;
 	}
 
-	resource._state = IResource::RS_PENDING;
+	resource._state = ResourceState::Pending;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
 	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, k_read_file_pool);
 }

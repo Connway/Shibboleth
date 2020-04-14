@@ -35,7 +35,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(StateMachineResource)
 		MakeLoadFileCallbackAttribute(&StateMachineResource::loadStateMachine)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(StateMachineResource)
 

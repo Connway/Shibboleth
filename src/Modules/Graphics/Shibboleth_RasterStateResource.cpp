@@ -38,7 +38,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(RasterStateResource)
 		MakeLoadFileCallbackAttribute(&RasterStateResource::loadRasterState)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(RasterStateResource)
 

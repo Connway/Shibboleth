@@ -41,7 +41,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(TextureResource)
 		MakeLoadFileCallbackAttribute(&TextureResource::loadTexture)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(TextureResource)
 

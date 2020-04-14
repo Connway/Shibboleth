@@ -31,7 +31,25 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <EASTL/algorithm.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(ResourceState)
+	.entry("Pending", ResourceState::Pending)
+	.entry("Failed", ResourceState::Failed)
+	.entry("Loaded", ResourceState::Loaded)
+	.entry("Delayed", ResourceState::Delayed)
+SHIB_REFLECTION_DEFINE_END(ResourceState)
+
+SHIB_REFLECTION_DEFINE_BEGIN(IResource)
+	.func("requestLoad", &IResource::requestLoad)
+	.func("getFilePath", &IResource::getFilePath)
+	.func("getState", &IResource::getState)
+	.func("hasFailed", &IResource::hasFailed)
+	.func("isPending", &IResource::isPending)
+	.func("isLoaded", &IResource::isLoaded)
+SHIB_REFLECTION_DEFINE_END(IResource)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(IResource)
 
 static void LoadJob(void* data)
 {
@@ -49,7 +67,7 @@ static void LoadJob(void* data)
 
 void IResource::requestLoad(void)
 {
-	if (_state != RS_DELAYED) {
+	if (_state != ResourceState::Delayed) {
 		return;
 	}
 
@@ -104,24 +122,24 @@ const HashString64<>& IResource::getFilePath(void) const
 	return _file_path;
 }
 
-IResource::ResourceState IResource::getState(void) const
+ResourceState IResource::getState(void) const
 {
 	return _state;
 }
 
 bool IResource::hasFailed(void) const
 {
-	return _state == RS_FAILED;
+	return _state == ResourceState::Failed;
 }
 
 bool IResource::isPending(void) const
 {
-	return _state == RS_PENDING;
+	return _state == ResourceState::Pending;
 }
 
 bool IResource::isLoaded(void) const
 {
-	return _state == RS_LOADED;
+	return _state == ResourceState::Loaded;
 }
 
 const IFile* IResource::loadFile(const char* file_path)
@@ -141,12 +159,12 @@ const IFile* IResource::loadFile(const char* file_path)
 
 void IResource::succeeded(void)
 {
-	_state = RS_LOADED;
+	_state = ResourceState::Loaded;
 }
 
 void IResource::failed(void)
 {
-	_state = RS_FAILED;
+	_state = ResourceState::Failed;
 }
 
 NS_END

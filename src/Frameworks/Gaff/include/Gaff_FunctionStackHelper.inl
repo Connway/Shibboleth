@@ -138,9 +138,13 @@ bool CallFunc(
 	CurrentArgs&&... current_args)
 {
 	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
+	using FinalType = typename IsVectorType<ArgType>;
+	constexpr bool is_vector = IsVector<ArgType>;
+
+	// $TODO: Add vector support.
 
 	// We don't support passing in void pointers or unreflected types as arguments.
-	if constexpr (std::is_void<ArgType>::value || !GAFF_REFLECTION_NAMESPACE::Reflection<ArgType>::HasReflection) {
+	if constexpr (std::is_void<FinalType>::value || !GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::HasReflection) {
 		GAFF_REF(callable, object, args, ret, arg_index, allocator);
 		VarArgRef<CurrentArgs...>(std::forward<CurrentArgs>(current_args)...);
 
@@ -151,15 +155,15 @@ bool CallFunc(
 		// Get current value from arg stack.
 		const FunctionStackEntry& entry = args[arg_index];
 
-		if constexpr (std::is_enum<ArgType>::value) {
-			//if (entry.enum_ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<ArgType>::GetReflectionDefinition()) {
+		if constexpr (!is_vector && std::is_enum<FinalType>::value) {
+			//if (entry.enum_ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition()) {
 			//	// $TODO: Log error.
 			//	return FunctionStackEntry();
 			//}
 
-			ArgType value;
+			FinalType value;
 
-			if (!CastNumberToType<ArgType>(entry, value)) {
+			if (!CastNumberToType<FinalType>(entry, value)) {
 				// $TOOD: Log error.
 				return false;
 			}
@@ -179,14 +183,14 @@ bool CallFunc(
 				}
 			}
 
-		} else if constexpr (ReflectionDefinition<ArgType, Allocator>::IsBuiltIn()) {
-			ArgType value;
+		} else if constexpr (!is_vector && ReflectionDefinition<FinalType, Allocator>::IsBuiltIn()) {
+			FinalType value;
 
 			if (entry.ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<bool>::GetReflectionDefinition()) {
-				value = static_cast<ArgType>(entry.value.b);
+				value = static_cast<FinalType>(entry.value.b);
 
 			} else {
-				if (!Gaff::CastNumberToType<ArgType>(entry, value)) {
+				if (!Gaff::CastNumberToType<FinalType>(entry, value)) {
 					// $TOOD: Log error.
 					return false;
 				}
@@ -207,13 +211,16 @@ bool CallFunc(
 				}
 			}
 
+		} else if constexpr (is_vector) {
+			static_assert(false, "Currently can't pass vector's to functions from script.");
+
 		} else {
-			if (entry.ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<ArgType>::GetReflectionDefinition()) {
+			if (entry.ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition()) {
 				// $TOOD: Log error.
 				return false;
 			}
 
-			ArgType* const value = reinterpret_cast<ArgType*>(entry.value.vp);
+			FinalType* const value = reinterpret_cast<FinalType*>(entry.value.vp);
 
 			if constexpr (sizeof...(Rest) > 0) {
 				if constexpr (std::is_pointer<First>::value) {
@@ -247,8 +254,10 @@ bool CallFunc(
 
 	} else {
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+		using FinalType = typename IsVectorType<RetType>;
+		constexpr bool is_vector = IsVector<RetType>;
 
-		if constexpr (std::is_enum<RetType>::value) {
+		if constexpr (!is_vector && std::is_enum<FinalType>::value) {
 			RetType value;
 
 			if constexpr (std::is_pointer<Ret>::value) {
@@ -260,7 +269,7 @@ bool CallFunc(
 			ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
 			ret.value.i64 = static_cast<int64_t>(value);
 
-		} else if constexpr (ReflectionDefinition<RetType, Allocator>::IsBuiltIn()) {
+		} else if constexpr (!is_vector && ReflectionDefinition<FinalType, Allocator>::IsBuiltIn()) {
 			RetType value;
 
 			if constexpr (std::is_pointer<Ret>::value) {
@@ -273,8 +282,6 @@ bool CallFunc(
 			*reinterpret_cast<RetType*>(&ret.value.vp) = value;
 
 		} else {
-			using FinalType = typename IsVectorType<RetType>;
-
 			if constexpr (std::is_enum<FinalType>::value) {
 				ret.enum_ref_def = &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition();
 			} else {
@@ -292,7 +299,7 @@ bool CallFunc(
 					ret.value.vp = const_cast<RetType*>(&CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...));
 				}
 
-				if constexpr (IsVector<RetType>) {
+				if constexpr (is_vector) {
 					const size_t size = reinterpret_cast<RetType*>(ret.value.vp)->size();
 					ret.value.arr.vp = reinterpret_cast<RetType*>(ret.value.vp)->data();
 					ret.value.arr.size = static_cast<int32_t>(size);
@@ -303,7 +310,7 @@ bool CallFunc(
 			} else {
 				RetType value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 
-				if constexpr (IsVector<RetType>) {
+				if constexpr (is_vector) {
 					static_assert(false, "Stack functions do not support returning a vector by value.");
 					//ret.value.arr.data = GAFF_ALLOC(sizeof(FinalType) * value.size(), allocator);
 					//ret.flags.set(true, FunctionStackEntry::Flag::IsArray);

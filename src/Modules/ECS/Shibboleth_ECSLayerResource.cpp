@@ -37,7 +37,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ECSLayerResource)
 		MakeLoadFileCallbackAttribute(&ECSLayerResource::loadLayer)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ECSLayerResource)
 

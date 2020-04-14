@@ -30,7 +30,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ShaderResource)
 		CreatableAttribute()
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ShaderResource)
 

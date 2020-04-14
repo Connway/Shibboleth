@@ -36,7 +36,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ECSArchetypeResource)
 		MakeLoadFileCallbackAttribute(&ECSArchetypeResource::loadArchetype)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ECSArchetypeResource)
 

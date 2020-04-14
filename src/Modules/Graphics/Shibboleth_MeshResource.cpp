@@ -31,7 +31,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(MeshResource)
 	.classAttrs(CreatableAttribute())
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(MeshResource)
 

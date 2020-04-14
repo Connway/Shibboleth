@@ -527,9 +527,13 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 				lua_pushboolean(state, ret.value.b);
 			}
 
-		//} else if (ret.ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
-		//	const U8String& str = *reinterpret_cast<U8String*>(ret.value.vp);
-		//	lua_pushlstring(state, str.data(), str.size());
+		// Is a string.
+		} else if (ret.ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
+			U8String* const str = reinterpret_cast<U8String*>(ret.value.vp);
+			lua_pushlstring(state, str->data(), str->size());
+
+			// Destroy, as we have pushed a copy.
+			str->~U8String();
 
 		// Is a user defined type.
 		} else {

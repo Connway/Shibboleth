@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ArrayString.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Assert.h">
       <Filter>include</Filter>
     </ClInclude>

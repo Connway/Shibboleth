@@ -38,7 +38,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(SamplerStateResource)
 		MakeLoadFileCallbackAttribute(&SamplerStateResource::loadSamplerState)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(SamplerStateResource)
 

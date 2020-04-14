@@ -20,41 +20,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
-#include <lua.hpp>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
-	.classAttrs(
-		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
-	)
+#include "Gaff_Defines.h"
+#include <EASTL/string_view.h>
+#include <EASTL/array.h>
 
-	.base<IResource>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+NS_GAFF
 
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
-
-void LuaResource::loadScript(IFile* file)
+template <class T, size_t size>
+class ArrayString final
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-		succeeded();
-
-	} else {
-		// $TODO: Log error.
-		failed();
+public:
+	constexpr ArrayString(const ArrayString<T, size>& str):
+		data()
+	{
+		for (size_t i = 0; i < size; ++i) {
+			data.mValue[i] = str.data.mValue[i];
+		}
 	}
+
+	explicit constexpr ArrayString(const T(&str)[size]):
+		data()
+	{
+		for (size_t i = 0; i < size; ++i) {
+			data.mValue[i] = str[i];
+		}
+	}
+
+	constexpr ArrayString(void):
+		data()
+	{
+		data.mValue[0] = 0;
+		data.mValue[size > 0 ? size - 1 : 1] = 0;
+	}
+
+	// size + rhs_size - 1 because we assume size includes the null terminator.
+	template <size_t rhs_size>
+	constexpr ArrayString<T, size + rhs_size - 1> operator+(const ArrayString<T, rhs_size>& rhs) const
+	{
+		ArrayString<T, size + rhs_size - 1> new_str;
+
+		for (size_t i = 0; i < (size - 1); ++i) {
+			new_str.data.mValue[i] = data.mValue[i];
+		}
+
+		for (size_t i = 0; i < rhs_size; ++i) {
+			new_str.data.mValue[size + i - 1] = rhs.data.mValue[i];
+		}
+
+		return new_str;
+	}
+
+	eastl::array<T, size> data;
+};
+
+template <size_t size>
+constexpr ArrayString<char, size> MakeArrayString(const char (&str)[size])
+{
+	return ArrayString<char, size>(str);
 }
 
 NS_END

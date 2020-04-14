@@ -211,6 +211,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ArrayString.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.inl" />

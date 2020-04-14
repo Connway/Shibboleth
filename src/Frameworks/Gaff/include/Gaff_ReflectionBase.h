@@ -74,7 +74,7 @@ template <class T, class Allocator>
 class ReflectionBase : public IReflection
 {
 public:
-	constexpr static const char* GetName(void);
+	/*constexpr*/ static const char* GetName(void);
 	constexpr static Hash64 GetHash(void);
 
 	constexpr static int32_t Size(void);

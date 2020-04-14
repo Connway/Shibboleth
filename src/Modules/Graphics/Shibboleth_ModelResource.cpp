@@ -41,7 +41,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ModelResource)
 		MakeLoadFileCallbackAttribute(&ModelResource::loadModel)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ModelResource)
 

@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_Hash.h>
+#include "Gaff_ArrayString.h"
+#include "Gaff_Hash.h"
 
 #ifndef GAFF_HASHABLE_NAMESPACE
 	#define GAFF_HASHABLE_NAMESPACE Gaff
@@ -36,9 +37,14 @@ THE SOFTWARE.
 
 #define GAFF_CLASS_HASHABLE(type) \
 	template <> \
-	constexpr const char* GetName<type>(void) \
+	constexpr auto GetName<type>(void) \
 	{ \
-		return #type; \
+		const char* const name = #type; \
+		Gaff::ArrayString<char, eastl::CharStrlen(name) + 1> name_arr; \
+		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+			name_arr.data.mValue[i] = name[i]; \
+		} \
+		return name_arr; \
 	} \
 	template <> \
 	constexpr Gaff::Hash64 GetHash<type>(void) \
@@ -50,24 +56,14 @@ THE SOFTWARE.
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	struct TemplateClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>) > final \
 	{ \
-		static constexpr const char* GetName(void) \
+		static constexpr auto GetName(void) \
 		{ \
-			static char s_name[128] = { 0 }; \
-			if (!s_name[0]) { \
-				char format[64] = { 0 }; \
-				int32_t index = snprintf(format, 32, "%s<", #type); \
-				for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
-					if (i > 0) { \
-						format[index++] = ','; \
-						format[index++] = ' '; \
-					} \
-					format[index++] = '%'; \
-					format[index++] = 's'; \
-				} \
-				format[index++] = '>'; \
-				snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
-			} \
-			return s_name; \
+			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
+			const auto name = Gaff::MakeArrayString(#type); \
+			const auto lb = Gaff::MakeArrayString("<"); \
+			const auto rb = Gaff::MakeArrayString("<"); \
+			const auto final_str = name + lb + rest_names + rb; \
+			return final_str; \
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
@@ -78,13 +74,29 @@ THE SOFTWARE.
 
 NS_HASHABLE
 
+template <class First, class... Rest>
+constexpr auto GetNameHelper(void)
+{
+	if constexpr (sizeof...(Rest) > 0) {
+		const auto name = GetNameHelper<First>();
+		const auto rest_name = GetNameHelper<Rest...>();
+		const auto comma = Gaff::MakeArrayString(", ");
+
+		const auto final_str = name + comma + rest_name;
+		return final_str;
+
+	} else {
+		return GetName<First>();
+	}
+}
+
 template <class... T>
 struct TemplateClassHashableHelper final
 {
-	static constexpr const char* GetName(void)
+	static constexpr auto GetName(void)
 	{
 		static_assert(false, "Did not overload GetName() for type.");
-		return "ERROR: No Class Name";
+		return Gaff::MakeArrayString("ERROR: No Class Name");
 	}
 
 	static constexpr Gaff::Hash64 GetHash(void)
@@ -95,7 +107,7 @@ struct TemplateClassHashableHelper final
 };
 
 template <class T>
-constexpr const char* GetName(void)
+constexpr auto GetName(void)
 {
 	return TemplateClassHashableHelper<T>::GetName();
 }
@@ -232,10 +244,13 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 	using NoRef = typename std::remove_reference<NoPtr>::type;
 	using V = typename std::remove_const<NoRef>::type;
 
+	const auto name = GAFF_HASHABLE_NAMESPACE::GetName<V>();
+	const Gaff::Hash64 hash = CalcTypeHash<First>(init, name.data.data());
+
 	if constexpr (sizeof...(Rest) == 0) {
-		return CalcTypeHash<First>(init, GAFF_HASHABLE_NAMESPACE::GetName<V>());
+		return hash;
 	} else {
-		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GAFF_HASHABLE_NAMESPACE::GetName<V>()));
+		return CalcTemplateHashHelper<Rest...>(hash);
 	}
 }
 

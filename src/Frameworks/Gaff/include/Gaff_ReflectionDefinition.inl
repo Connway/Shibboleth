@@ -1653,7 +1653,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 	// Add vars, funcs, and static funcs and attrs from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::IsDefined()) {
 		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();
-		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
+		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName()); // Name is one character short
 
 		// For calling base class functions.
 		_base_classes.emplace(

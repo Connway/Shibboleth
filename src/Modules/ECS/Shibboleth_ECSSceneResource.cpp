@@ -37,7 +37,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ECSSceneResource)
 		MakeLoadFileCallbackAttribute(&ECSSceneResource::loadScene)
 	)
 
-	.BASE(IResource)
+	.base<IResource>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ECSSceneResource)
 
@@ -90,7 +90,7 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 	Vector<IResource*> resources;
 
 	for (LayerData& layer_data : _layers) {
-		if (layer_data.layer->getState() != IResource::RS_DELAYED) {
+		if (layer_data.layer->getState() != ResourceState::Delayed) {
 			resources.emplace_back(layer_data.layer.get());
 		}
 	}
