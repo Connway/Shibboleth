@@ -64,6 +64,17 @@ const Gaff::IEnumReflectionDefinition* ReflectionManager::getEnumReflection(Gaff
 	return (it == _enum_reflection_map.end()) ? nullptr : it->second.get();
 }
 
+Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflection(void) const
+{
+	Vector<const Gaff::IEnumReflectionDefinition*> ret;
+
+	for (const auto& pair : _enum_reflection_map) {
+		ret.emplace_back(pair.second.get());
+	}
+
+	return ret;
+}
+
 void ReflectionManager::registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def)
 {
 	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();

@@ -92,6 +92,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 void RestoreTable(lua_State* state, const TableState& table);
 void SaveTable(lua_State* state, TableState& table);
 
+void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_ref_def);
 void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
 void RegisterBuiltIns(lua_State* state);
 

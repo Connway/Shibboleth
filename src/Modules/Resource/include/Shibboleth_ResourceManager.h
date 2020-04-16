@@ -113,7 +113,8 @@ public:
 	}
 
 	IResourcePtr createResource(HashStringTemp64<> name, const Gaff::IReflectionDefinition& ref_def);
-	IResourcePtr requestResource(HashStringTemp64<> name, bool delay_load = false);
+	IResourcePtr requestResource(HashStringTemp64<> name, bool delay_load);
+	IResourcePtr requestResource(HashStringTemp64<> name);
 	IResourcePtr getResource(HashStringTemp64<> name);
 	void waitForResource(const IResource& resource) const;
 

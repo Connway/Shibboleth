@@ -49,6 +49,7 @@ public:
 	void destroy(void);
 
 	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const;
+	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflection(void) const;
 	void registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def);
 	void registerEnumOwningModule(Gaff::Hash64 name, const char* module_name);
 	void registerReflection(Gaff::IEnumReflectionDefinition* ref_def);

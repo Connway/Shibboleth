@@ -36,6 +36,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
 	.ctor<>()
 
 	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, bool)>(&ResourceManager::requestResource))
+	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::requestResource))
 	//.func("createResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, const Gaff::IReflectionDefinition&)>(&ResourceManager::createResource))
 	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::getResource))
 SHIB_REFLECTION_DEFINE_END(ResourceManager)
@@ -204,6 +205,11 @@ IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name, bool dela
 	}
 
 	return IResourcePtr(res);
+}
+
+IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name)
+{
+	return requestResource(name, false);
 }
 
 IResourcePtr ResourceManager::getResource(HashStringTemp64<> name)

@@ -59,6 +59,7 @@ bool LuaManager::initAllModulesLoaded(void)
 
 	const auto ref_defs = app.getReflectionManager().getReflectionWithAttribute<RegisterWithScriptAttribute>();
 	const auto manager_ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(IManager));
+	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
 
 	for (int32_t i = 0; i < num_threads; ++i) {
 		lua_State* const state = lua_newstate(alloc, nullptr);
@@ -102,6 +103,10 @@ bool LuaManager::initAllModulesLoaded(void)
 
 		RegisterBuiltIns(state);
 
+		for (const Gaff::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
+			RegisterEnum(state, *enum_ref_def);
+		}
+
 		for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
 			RegisterType(state, *ref_def);
 		}
@@ -127,7 +132,7 @@ print(tostring(1) .. " test ")
 print(tostring(1) .. " test " .. tostring(v3))
 
 local res_mgr = GetManager(ResourceManager)
-local sampler_res = res_mgr:requestResource("Resources/SamplerStates/anisotropic_16x.sampler_state", false)
+local sampler_res = res_mgr:requestResource("Resources/SamplerStates/anisotropic_16x.sampler_state")
 local sampler = sampler_res:get()
 )";
 

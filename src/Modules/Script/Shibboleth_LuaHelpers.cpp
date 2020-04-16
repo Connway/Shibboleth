@@ -666,6 +666,64 @@ void SaveTable(lua_State* state, TableState& table)
 	}
 }
 
+void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_ref_def)
+{
+	const U8String name = enum_ref_def.getReflectionInstance().getName();
+
+	size_t prev_index = 0;
+	size_t curr_index = name.find_first_of(':');
+
+	int32_t table_count = 0;
+
+	// Create all sub-tables.
+	do {
+		const U8String substr = name.substr(prev_index, curr_index - prev_index);
+
+		// Create first, global table.
+		if (table_count == 0) {
+			if (lua_getglobal(state, substr.data()) <= 0) {
+				lua_pop(state, 1);
+
+				lua_createtable(state, 0, 0);
+				lua_pushvalue(state, -1);
+				lua_setglobal(state, substr.data());
+			}
+
+		// Create sub-table.
+		} else {
+			if (lua_getfield(state, -1, substr.data()) <= 0) {
+				lua_pop(state, 1);
+
+				lua_createtable(state, 0, 0);
+				lua_pushvalue(state, -1);
+				lua_setfield(state, -3, substr.data());
+			}
+		}
+
+		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
+		curr_index = name.find_first_of(':', prev_index);
+
+		++table_count;
+	} while (prev_index != SIZE_T_FAIL);
+
+	// Add all the enum entries.
+	const int32_t num_entries = enum_ref_def.getNumEntries();
+
+	for (int32_t i = 0; i < num_entries; ++i) {
+		const char* const entry_name = enum_ref_def.getEntryNameFromIndex(i);
+		const int32_t entry_value = enum_ref_def.getEntryValue(i);
+
+		lua_pushinteger(state, entry_value);
+		lua_setfield(state, -2, entry_name);
+
+		// For reverse lookup.
+		lua_pushstring(state, entry_name);
+		lua_seti(state, -2, entry_value);
+	}
+
+	lua_pop(state, table_count);
+}
+
 void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 {
 	const char* const friendly_name = ref_def.getFriendlyName();
