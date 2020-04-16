@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResource.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ISystem.h>
@@ -199,8 +200,11 @@ SHIB_REFLECTION_DECLARE(ResourceManager)
 SHIB_REFLECTION_DECLARE(ResourceSystem)
 
 // Gaff::RefPtr
-SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T);
+SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T)
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Gaff::RefPtr, T)
+	.classAttrs(RegisterWithScriptAttribute())
+
 	.serialize(LoadRefPtr<T>, SaveRefPtr<T>)
+	.func("get", &Gaff::RefPtr<T>::get)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(Gaff::RefPtr, T)

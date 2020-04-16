@@ -435,6 +435,7 @@ struct FunctionStackEntry final
 	enum class Flag
 	{
 		IsReference,
+		IsString,
 		IsArray,
 		IsMap,
 

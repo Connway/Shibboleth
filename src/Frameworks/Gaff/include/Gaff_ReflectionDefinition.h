@@ -714,6 +714,7 @@ private:
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<HashString32<Allocator>, StaticFuncData, Allocator> _static_funcs;
+	// $TODO: Use IRefStaticFuncPtr to make constructors integrate with scripting without having to write stack constructors.
 	VectorMap<Hash64, VoidFunc, Allocator> _factories;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
@@ -730,6 +731,8 @@ private:
 	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
+
+	// $TODO: Remove this.
 	StackCtorFunc _stack_ctor_func = nullptr;
 
 	mutable Allocator _allocator;
@@ -898,6 +901,49 @@ static constexpr bool IsVector = IsVectorHelper<T>::value;
 
 template <class T>
 using IsVectorType = typename IsVectorHelper<T>::type;
+
+
+template <class T>
+struct IsU8StringRef final
+{
+	static constexpr bool value = false;
+};
+
+template <class Allocator>
+struct IsU8StringRef<const U8String<Allocator>&> final
+{
+	static constexpr bool value = true;
+};
+
+template <class T>
+struct IsU8String final
+{
+	static constexpr bool value = false;
+};
+
+template <class Allocator>
+struct IsU8String< U8String<Allocator> > final
+{
+	static constexpr bool value = true;
+};
+
+template <class T>
+struct IsHashStringTemp final
+{
+	static constexpr bool value = false;
+};
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+struct IsHashStringTemp< const HashStringTemp<T, HashType, HashingFunc>& > final
+{
+	static constexpr bool value = true;
+};
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc>
+struct IsHashStringTemp< HashStringTemp<T, HashType, HashingFunc> > final
+{
+	static constexpr bool value = true;
+};
 
 NS_END
 

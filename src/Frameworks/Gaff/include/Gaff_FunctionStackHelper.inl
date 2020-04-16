@@ -143,8 +143,45 @@ bool CallFunc(
 
 	// $TODO: Add vector support.
 
+	if constexpr (std::is_same<const char*, First>::value || IsU8StringRef<First>::value || IsU8String<First>::value || IsHashStringTemp<First>::value) {
+		// Get current value from arg stack.
+		const FunctionStackEntry& entry = args[arg_index];
+		const char* str = nullptr;
+
+		if (entry.flags.testAll(FunctionStackEntry::Flag::IsString)) {
+			str = reinterpret_cast<char*>(entry.value.vp);
+
+		// It's a U8String.
+		} else if (Gaff::FindFirstOf(entry.ref_def->getReflectionInstance().getName(), "U8String") != SIZE_T_FAIL) {
+			// I think this *SHOULD* be safe, since the string data is stored in the first part. So even if the allocator is a different size,
+			// the memory for the actual string should be in the same offset.
+			str = reinterpret_cast<U8String<>*>(entry.value.vp)->data();
+		}
+		
+		if (!str) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		if constexpr (sizeof...(Rest) > 0) {
+			if constexpr (std::is_same<const char*, First>::value) {
+				return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+			} else {
+				ArgType value(str);
+				return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+			}
+
+		} else {
+			if constexpr (std::is_same<const char*, First>::value) {
+				return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+			} else {
+				ArgType value(str);
+				return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+			}
+		}
+
 	// We don't support passing in void pointers or unreflected types as arguments.
-	if constexpr (std::is_void<FinalType>::value || !GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::HasReflection) {
+	} else if constexpr (std::is_void<FinalType>::value || !GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::HasReflection) {
 		GAFF_REF(callable, object, args, ret, arg_index, allocator);
 		VarArgRef<CurrentArgs...>(std::forward<CurrentArgs>(current_args)...);
 
@@ -252,6 +289,23 @@ bool CallFunc(
 		CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 		GAFF_REF(ret);
 
+	} else if constexpr (std::is_same<const char*, Ret>::value) {
+		ret.flags.set(true, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
+		ret.value.vp = const_cast<char*>(CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...));
+
+	} else if constexpr (IsU8StringRef<Ret>::value || IsU8String<Ret>::value) {
+		Ret string = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+		ret.flags.set(true, FunctionStackEntry::Flag::IsString);
+
+		if constexpr (IsU8StringRef<Ret>::value) {
+			ret.flags.set(true, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
+			ret.value.vp = const_cast<char*>(string.data());
+
+		} else {
+			ret.value.vp = GAFF_ALLOC(string.size() + 1, allocator);
+			memcpy(ret.value.vp, string.data(), string.size() + 1);
+		}
+
 	} else {
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
 		using FinalType = typename IsVectorType<RetType>;
@@ -305,6 +359,10 @@ bool CallFunc(
 					ret.value.arr.size = static_cast<int32_t>(size);
 
 					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
+
+				} else if constexpr (std::is_base_of<Gaff::IReflectionObject, RetType>::value) {
+					ret.ref_def = &reinterpret_cast<RetType*>(ret.value.vp)->getReflectionDefinition();
+					ret.value.vp = reinterpret_cast<RetType*>(ret.value.vp)->getBasePointer();
 				}
 
 			} else {

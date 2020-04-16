@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResource.h"
 #include "Shibboleth_LoadFileCallbackAttribute.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include "Shibboleth_ResourceManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
@@ -39,6 +40,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(ResourceState)
 SHIB_REFLECTION_DEFINE_END(ResourceState)
 
 SHIB_REFLECTION_DEFINE_BEGIN(IResource)
+	.classAttrs(RegisterWithScriptAttribute())
+
 	.func("requestLoad", &IResource::requestLoad)
 	.func("getFilePath", &IResource::getFilePath)
 	.func("getState", &IResource::getState)
