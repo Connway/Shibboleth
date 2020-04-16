@@ -481,10 +481,14 @@ struct FunctionStackEntry final
 class IReflectionDefinition
 {
 public:
-	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
+	template <class T, class... Args>
+	using ConstructFuncT = void (*)(T*, Args&&...);
 
 	template <class... Args>
 	using ConstructFunc = void (*)(void*, Args&&...);
+
+	template <class T, class... Args>
+	using FactoryFuncT = T* (*)(IAllocator&, Args&&...);
 
 	template <class... Args>
 	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
@@ -976,7 +980,6 @@ public:
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 
 	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
-	virtual StackCtorFunc getCtorStackFunc(void) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
@@ -1018,7 +1021,10 @@ public:
 	virtual const IAttribute* getStaticFuncAttr(Hash32 name, Hash64 attr_name) const = 0;
 	virtual const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const = 0;
 
+	virtual int32_t getNumConstructors(void) const = 0;
+	virtual IReflectionStaticFunctionBase* getConstructor(int32_t index) const = 0;
 	virtual VoidFunc getConstructor(Hash64 ctor_hash) const = 0;
+
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 
 	virtual IReflectionStaticFunctionBase* getStaticFunc(int32_t name_index, int32_t override_index) const = 0;

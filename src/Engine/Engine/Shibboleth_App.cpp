@@ -197,7 +197,7 @@ void App::destroy(void)
 				}
 
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager), Gaff::FNV1aHash64String(module_name));
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_refls) {
 					for (const Gaff::IReflectionDefinition* ref_def : *manager_refls) {
@@ -428,7 +428,7 @@ bool App::initInternal(void)
 
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+	_reflection_mgr.registerTypeBucket(Reflection<IManager>::GetHash());
 
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
@@ -619,7 +619,7 @@ bool App::loadModules(void)
 
 	// Create manager instances.
 	if (!no_managers) {
-		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager));
+		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
@@ -650,7 +650,7 @@ bool App::loadModules(void)
 				name_view = name_view.substr(delimeter + 1);
 			}
 
-			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(IManager), Gaff::FNV1aHash64(name_view.data(), name_view.size()));
+			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64(name_view.data(), name_view.size()));
 
 			if (manager_bucket) {
 				for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
@@ -819,7 +819,7 @@ bool App::createManagersInternal(const Vector<const Gaff::IReflectionDefinition*
 			continue;
 		}
 
-		IManager* manager = ref_def->CREATET(IManager, allocator);
+		IManager* const manager = ref_def->createT<IManager>(allocator);
 
 		if (!manager->init()) {
 			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());

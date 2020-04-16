@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Broadcaster.h>
 #include <Shibboleth_Reflection.h>
+#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
@@ -82,12 +83,38 @@ public:
 };
 
 
-class RegisterWithScriptAttribute final : public Gaff::IAttribute
+class ScriptFlagsAttribute final : public Gaff::IAttribute
 {
 public:
+	enum class Flag
+	{
+		ReferenceOnly,
+		NoRegister,
+
+		Count
+	};
+
+	template <class... Flags>
+	ScriptFlagsAttribute(Flags... flags)
+	{
+		if constexpr (sizeof...(Flags) > 0) {
+			_flags.set(true, flags...);
+		}
+	}
+
+	ScriptFlagsAttribute(Gaff::Flags<Flag> flags):
+		_flags(flags)
+	{
+	}
+
 	IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RegisterWithScriptAttribute);
+	Gaff::Flags<Flag> getFlags(void) const { return _flags; }
+
+private:
+	Gaff::Flags<Flag> _flags;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ScriptFlagsAttribute);
 };
 
 
@@ -153,7 +180,7 @@ SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(RangeAttribute)
 SHIB_REFLECTION_DECLARE(HashStringAttribute)
 SHIB_REFLECTION_DECLARE(OptionalAttribute)
-SHIB_REFLECTION_DECLARE(RegisterWithScriptAttribute)
+SHIB_REFLECTION_DECLARE(ScriptFlagsAttribute)
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
 

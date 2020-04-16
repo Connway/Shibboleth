@@ -257,7 +257,7 @@ bool CallFunc(
 				return false;
 			}
 
-			FinalType* const value = reinterpret_cast<FinalType*>(entry.value.vp);
+			FinalType* value = reinterpret_cast<FinalType*>(entry.value.vp);
 
 			if constexpr (sizeof...(Rest) > 0) {
 				if constexpr (std::is_pointer<First>::value) {

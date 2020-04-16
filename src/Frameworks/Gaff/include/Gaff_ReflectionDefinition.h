@@ -92,8 +92,6 @@ public:
 	Hash64 getInstanceHash(const T& object, Hash64 init = INIT_HASH64) const;
 	ReflectionDefinition& setInstanceHash(InstanceHashFunc hash_func);
 
-	StackCtorFunc getCtorStackFunc(void) const override;
-
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
 	void* getInterface(Hash64 class_hash, void* object) const override;
 	bool hasInterface(Hash64 class_hash) const override;
@@ -141,7 +139,10 @@ public:
 	const IAttribute* getStaticFuncAttr(Hash32 name, Hash64 attr_name) const override;
 	const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const override;
 
+	int32_t getNumConstructors(void) const override;
+	IReflectionStaticFunctionBase* getConstructor(int32_t index) const override;
 	VoidFunc getConstructor(Hash64 ctor_hash) const override;
+
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 
 	IReflectionStaticFunctionBase* getStaticFunc(int32_t name_index, int32_t override_index) const override;
@@ -161,8 +162,6 @@ public:
 
 	template <class Base>
 	ReflectionDefinition& base(void);
-
-	ReflectionDefinition& stackCtor(StackCtorFunc func);
 
 	template <class... Args>
 	ReflectionDefinition& ctor(Hash64 factory_hash);
@@ -714,9 +713,8 @@ private:
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<HashString32<Allocator>, StaticFuncData, Allocator> _static_funcs;
-	// $TODO: Use IRefStaticFuncPtr to make constructors integrate with scripting without having to write stack constructors.
 	VectorMap<Hash64, VoidFunc, Allocator> _factories;
-	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
+	VectorMap<Hash64, IRefStaticFuncPtr, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 
 	using AttributeList = Vector<IAttributePtr, Allocator>;
@@ -731,9 +729,6 @@ private:
 	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
-
-	// $TODO: Remove this.
-	StackCtorFunc _stack_ctor_func = nullptr;
 
 	mutable Allocator _allocator;
 
@@ -802,7 +797,6 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		} \
 		void save(ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
 		Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), init); } \
-		StackCtorFunc getCtorStackFunc(void) const override { return nullptr; } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \
@@ -834,13 +828,15 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		int32_t getNumStaticFuncAttrs(Hash32) const override { return 0; } \
 		const IAttribute* getStaticFuncAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getStaticFuncAttr(Hash32, int32_t) const override { return nullptr; } \
+		int32_t getNumConstructors(void) const override { return 0; } \
+		IReflectionStaticFunctionBase* getConstructor(int32_t) const { return nullptr; } \
 		VoidFunc getConstructor(Hash64 ctor_hash) const override \
 		{ \
 			if (ctor_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
-				ConstructFunc<class_type> construct_func = Gaff::ConstructFunc<class_type, class_type>; \
+				ConstructFuncT<class_type, class_type> construct_func = Gaff::ConstructFunc<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
 			} else if (ctor_hash == CalcTemplateHash<>(INIT_HASH64)) { \
-				ConstructFunc<> construct_func = Gaff::ConstructFunc<class_type>; \
+				ConstructFuncT<class_type> construct_func = Gaff::ConstructFunc<class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
 			} \
 			return nullptr; \
@@ -848,10 +844,10 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		VoidFunc getFactory(Hash64 factory_hash) const override \
 		{ \
 			if (factory_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
-				FactoryFunc<class_type> factory_func = Gaff::FactoryFunc<class_type, class_type>; \
+				FactoryFuncT<class_type, class_type> factory_func = Gaff::FactoryFunc<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
 			} else if (factory_hash == CalcTemplateHash<>(INIT_HASH64)) { \
-				FactoryFunc<> factory_func = Gaff::FactoryFunc<class_type>; \
+				FactoryFuncT<class_type> factory_func = Gaff::FactoryFunc<class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
 			} \
 			return nullptr; \

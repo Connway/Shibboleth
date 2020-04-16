@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(DevWebServerManager)
-	.BASE(IManager)
+	.base<IManager>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(DevWebServerManager)
 

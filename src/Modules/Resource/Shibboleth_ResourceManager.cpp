@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
-	.BASE(IManager)
+	.base<IManager>()
 	.ctor<>()
 
 	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, bool)>(&ResourceManager::requestResource))

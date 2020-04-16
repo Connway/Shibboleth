@@ -67,7 +67,8 @@ THE SOFTWARE.
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
-			return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
+			const auto name = GetName(); \
+			return Gaff::FNV1aHash64StringConst(name.data.data()); \
 		} \
 	};
 

@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <lua.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(LuaManager)
-	.BASE(IManager)
+	.base<IManager>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(LuaManager)
 
@@ -57,8 +57,7 @@ bool LuaManager::initAllModulesLoaded(void)
 
 	_states.resize(static_cast<size_t>(num_threads));
 
-	const auto ref_defs = app.getReflectionManager().getReflectionWithAttribute<RegisterWithScriptAttribute>();
-	const auto manager_ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(IManager));
+	const auto ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
 	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
 
 	for (int32_t i = 0; i < num_threads; ++i) {
@@ -107,43 +106,39 @@ bool LuaManager::initAllModulesLoaded(void)
 			RegisterEnum(state, *enum_ref_def);
 		}
 
-		for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-			RegisterType(state, *ref_def);
-		}
-
-		if (manager_ref_defs) {
-			for (const Gaff::IReflectionDefinition* ref_def : *manager_ref_defs) {
+		if (ref_defs) {
+			for (const Gaff::IReflectionDefinition* ref_def : *ref_defs) {
 				RegisterType(state, *ref_def);
 			}
 		}
 	}
 
-	constexpr const char* const test =
-R"(
-local v = Vec3.new(1, 2, 3)
-local v2 = Vec3.new(v)
-local x = v2.x
-local v3 = v + v2
-x = v3[2]
-v3.x = 200
-print(v)
-print(v3)
-print(tostring(1) .. " test ")
-print(tostring(1) .. " test " .. tostring(v3))
-
-local res_mgr = GetManager(ResourceManager)
-local sampler_res = res_mgr:requestResource("Resources/SamplerStates/anisotropic_16x.sampler_state")
-local sampler = sampler_res:get()
-)";
-
-	const int32_t err = luaL_loadstring(_states[0].state, test);
-
-	if (err) {
-		const char* const error = lua_tostring(_states[0].state, -1);
-		GAFF_REF(error);
-	} else {
-		lua_pcall(_states[0].state, 0, 0, 0);
-	}
+//	constexpr const char* const test =
+//R"(
+//local v = Vec3.new(1, 2, 3)
+//local v2 = Vec3.new(v)
+//local x = v2.x
+//local v3 = v + v2
+//x = v3[2]
+//v3.x = 200
+//print(v)
+//print(v3)
+//print(tostring(1) .. " test ")
+//print(tostring(1) .. " test " .. tostring(v3))
+//
+//local res_mgr = GetManager(ResourceManager)
+//local sampler_res = res_mgr:requestResource("Resources/SamplerStates/anisotropic_16x.sampler_state")
+//local sampler = sampler_res:get()
+//)";
+//
+//	const int32_t err = luaL_loadstring(_states[0].state, test);
+//
+//	if (err) {
+//		const char* const error = lua_tostring(_states[0].state, -1);
+//		GAFF_REF(error);
+//	} else {
+//		lua_pcall(_states[0].state, 0, 0, 0);
+//	}
 
 	return true;
 }

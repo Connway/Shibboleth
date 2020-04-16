@@ -22,21 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionInterfaces.h>
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
 class IManager : public Gaff::IReflectionObject
 {
 public:
-	IManager(void) {}
-	virtual ~IManager(void) {}
+	IManager(void) = default;
 
 	virtual bool initAllModulesLoaded(void) { return true; }
 	virtual bool init(void) { return true; }
 
 	GAFF_NO_COPY(IManager);
 	GAFF_NO_MOVE(IManager);
+
+	SHIB_REFLECTION_CLASS_DECLARE(IManager);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(IManager)

@@ -20,14 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_GameTime.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
-	.BASE(IManager)
+	.base<IManager>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(GameTimeManager)
 

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(ECSManager)
-	.BASE(IManager)
+	.base<IManager>()
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ECSManager)
 

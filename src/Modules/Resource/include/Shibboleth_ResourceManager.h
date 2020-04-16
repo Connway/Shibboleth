@@ -204,8 +204,6 @@ SHIB_REFLECTION_DECLARE(ResourceSystem)
 SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T)
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Gaff::RefPtr, T)
-	.classAttrs(RegisterWithScriptAttribute())
-
 	.serialize(LoadRefPtr<T>, SaveRefPtr<T>)
 	.func("get", &Gaff::RefPtr<T>::get)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(Gaff::RefPtr, T)

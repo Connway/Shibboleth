@@ -25,13 +25,13 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
-void ConstructFunc(void* obj, Args&&... args)
+void ConstructFunc(T* obj, Args&&... args)
 {
-	Gaff::Construct(reinterpret_cast<T*>(obj), std::forward<Args>(args)...);
+	Gaff::Construct(obj, std::forward<Args>(args)...);
 }
 
 template <class T, class... Args>
-void* FactoryFunc(IAllocator& allocator, Args&&... args)
+T* FactoryFunc(IAllocator& allocator, Args&&... args)
 {
 	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }
@@ -1199,12 +1199,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::setInsta
 }
 
 template <class T, class Allocator>
-IReflectionDefinition::StackCtorFunc ReflectionDefinition<T, Allocator>::getCtorStackFunc(void) const
-{
-	return _stack_ctor_func;
-}
-
-template <class T, class Allocator>
 const void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, const void* object) const
 {
 	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
@@ -1533,10 +1527,23 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash32 n
 }
 
 template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumConstructors(void) const
+{
+	return static_cast<int32_t>(_ctors.size());
+}
+
+template <class T, class Allocator>
+IReflectionStaticFunctionBase* ReflectionDefinition<T, Allocator>::getConstructor(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_ctors.size()));
+	return ((_ctors.begin()) + index)->second.get();
+}
+
+template <class T, class Allocator>
 IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getConstructor(Hash64 ctor_hash) const
 {
 	const auto it = _ctors.find(ctor_hash);
-	return it == _ctors.end() ? nullptr : it->second;
+	return it == _ctors.end() ? nullptr : it->second->getFunc();
 }
 
 template <class T, class Allocator>
@@ -1650,10 +1657,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 {
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
+	if (_base_class_offsets.find(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash()) == _base_class_offsets.end()) {
+		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
+	}
+
 	// Add vars, funcs, and static funcs and attrs from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::IsDefined()) {
 		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();
-		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName()); // Name is one character short
 
 		// For calling base class functions.
 		_base_classes.emplace(
@@ -1771,23 +1781,18 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 }
 
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::stackCtor(StackCtorFunc func)
-{
-	_stack_ctor_func = func;
-	return *this;
-}
-
-template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(Hash64 factory_hash)
 {
 	GAFF_ASSERT(!getFactory(factory_hash));
 
-	ConstructFunc<Args...> construct_func = Gaff::ConstructFunc<T, Args...>;
-	FactoryFunc<Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
+	ConstructFuncT<T, Args...> construct_func = Gaff::ConstructFunc<T, Args...>;
+	FactoryFuncT<T, Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
 
+	using ConstructorFunction = StaticFunction<void, T*, Args&&...>;
+
+	_ctors[factory_hash].reset(GAFF_ALLOCT(ConstructorFunction, _allocator, construct_func));
 	_factories.emplace(factory_hash, reinterpret_cast<VoidFunc>(factory_func));
-	_ctors.emplace(factory_hash, reinterpret_cast<VoidFunc>(construct_func));	
 
 	return *this;
 }
@@ -1797,15 +1802,7 @@ template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
 	constexpr Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
-	GAFF_ASSERT(!getFactory(hash));
-
-	ConstructFunc<Args...> construct_func = Gaff::ConstructFunc<T, Args...>;
-	FactoryFunc<Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
-
-	_factories.emplace(hash, reinterpret_cast<VoidFunc>(factory_func));
-	_ctors.emplace(hash, reinterpret_cast<VoidFunc>(construct_func));
-
-	return *this;
+	return ctor<Args...>(hash);
 }
 
 template <class T, class Allocator>
@@ -2494,7 +2491,10 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
 
 	ref_def.base<Base>();
-	ref_def.finish();
+
+	if (ref_def._dependents_remaining == 0) {
+		ref_def.finish();
+	}
 }
 
 

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaHelpers.h"
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>
@@ -726,7 +726,17 @@ void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_
 
 void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 {
+	// We do not need to register attributes.
+	if (ref_def.hasInterface(CLASS_HASH(Gaff::IAttribute))) {
+		return;
+	}
+
 	const char* const friendly_name = ref_def.getFriendlyName();
+	const auto* const flags = ref_def.getClassAttr<ScriptFlagsAttribute>();
+
+	if (flags && flags->getFlags().testAll(ScriptFlagsAttribute::Flag::NoRegister)) {
+		return;
+	}
 
 	// Type Metatable
 	luaL_newmetatable(state, friendly_name);
@@ -780,7 +790,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 	Vector<luaL_Reg> reg(g_allocator);
 
 	// Add constructor.
-	if (ref_def.getCtorStackFunc()) {
+	if ((!flags || !flags->getFlags().testAll(ScriptFlagsAttribute::Flag::ReferenceOnly))) {
 		reg.emplace_back(luaL_Reg{ "new", UserTypeNew });
 	}
 
@@ -1188,17 +1198,36 @@ int UserTypeNew(lua_State* state)
 	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
 
 	Vector<Gaff::FunctionStackEntry> arg_stack(g_allocator);
+	Gaff::FunctionStackEntry ret;
+
 	FillArgumentStack(state, arg_stack);
 
 	const size_t var_size = static_cast<size_t>(ref_def.size());
-	UserData::MetaData* const value = reinterpret_cast<UserData::MetaData*>(lua_newuserdata(state, var_size + k_alloc_size_no_reference));
+	UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, var_size + k_alloc_size_no_reference));
 
 	// Initialize metadata at the beginning.
 	new(value) UserData::MetaData();
 	//value->root = value;
 
+	Gaff::FunctionStackEntry obj;
+	obj.value.vp = value->getData();
+	obj.ref_def = &ref_def;
+
+	arg_stack.insert(arg_stack.begin(), obj);
+
 	// Initialize our data.
-	ref_def.getCtorStackFunc()(&reinterpret_cast<UserData*>(value)->reference, arg_stack.data(), static_cast<int32_t>(arg_stack.size()));
+	const int32_t num_ctors = ref_def.getNumConstructors();
+	const int32_t num_args = static_cast<int32_t>(arg_stack.size());
+
+	for (int32_t i = 0; i < num_ctors; ++i) {
+		auto* const ctor = ref_def.getConstructor(i);
+
+		if (ctor->numArgs() == num_args) {
+			if (ctor->call(arg_stack.data(), num_args, ret, g_allocator)) {
+				break;
+			}
+		}
+	}
 
 	lua_pushvalue(state, k_metatable_index);
 	lua_setmetatable(state, -2);

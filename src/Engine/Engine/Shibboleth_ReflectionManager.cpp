@@ -335,7 +335,7 @@ void ReflectionManager::addToTypeBuckets(const Gaff::IReflectionDefinition* ref_
 
 	// Check if this type implements an interface that has a type bucket request.
 	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
-		if (ref_def->hasInterface(it->first)) {
+		if (ref_def->getReflectionInstance().getHash() != it->first && ref_def->hasInterface(it->first)) {
 			insertType(it->second, ref_def);
 			was_inserted = true;
 		}

@@ -40,8 +40,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(ResourceState)
 SHIB_REFLECTION_DEFINE_END(ResourceState)
 
 SHIB_REFLECTION_DEFINE_BEGIN(IResource)
-	.classAttrs(RegisterWithScriptAttribute())
-
 	.func("requestLoad", &IResource::requestLoad)
 	.func("getFilePath", &IResource::getFilePath)
 	.func("getState", &IResource::getState)
