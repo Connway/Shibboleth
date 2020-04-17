@@ -57,7 +57,7 @@ StateMachine::StateMachine(void)
 StateMachine::Instance* StateMachine::createInstanceData(void) const
 {
 	Instance* const instance_data = GAFF_ALLOCT(Instance, *GetAllocator());
-	instance_data->variables.init(_variables);
+	instance_data->variables = _variables.getDefaults();
 	instance_data->current_state = static_cast<int32_t>(SpecialStates::StartState);
 
 	return instance_data;

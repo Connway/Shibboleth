@@ -51,6 +51,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VectorMap.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Global.cpp" />

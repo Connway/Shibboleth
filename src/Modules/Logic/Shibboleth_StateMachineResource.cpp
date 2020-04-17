@@ -78,32 +78,86 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 		if (!reader.isNull()) {
 			if (reader.isObject()) {
+				Esprit::VariableSet& variables = _state_machine->getVariables();
+				Esprit::VariableSet::Instance& defaults = variables.getDefaults();
+
 				for (int32_t i = 0; i < static_cast<int32_t>(Esprit::VariableSet::VariableType::Count); ++i) {
 					const auto guard_var_type = reader.enterElementGuard(g_variable_names[i]);
+					const Esprit::VariableSet::VariableType var_type = static_cast<Esprit::VariableSet::VariableType>(i);
 
 					if (reader.isNull()) {
 						continue;
 					}
 
-					if (!reader.isArray()) {
+					if (!reader.isObject()) {
 						// $TODO: Log error.
 						continue;
 					}
 
-					reader.forEachInArray([&](int32_t) -> bool
+					// Add the variables.
+					reader.forEachInObject([&](const char* var_name) -> bool
 					{
-						if (!reader.isString()) {
-							// $TODO: Log error.
-							return false;
-						}
+						const Esprit::HashString32<> name(var_name);
 
-						const char* const name = reader.readString();
-
-						if (!_state_machine->getVariables().addVariable(Esprit::HashString32<>(name), static_cast<Esprit::VariableSet::VariableType>(i))) {
+						if (!variables.addVariable(name, var_type)) {
 							// $TODO: Log error (duplicate name).
 						}
 
-						reader.freeString(name);
+						return false;
+					});
+
+					variables.finalize();
+
+					reader.forEachInObject([&](const char* var_name) -> bool
+					{
+						if (var_type == Esprit::VariableSet::VariableType::Reference) {
+							return false;
+						} else if (var_type == Esprit::VariableSet::VariableType::String) {
+							if (!reader.isNull() && !reader.isString()) {
+								// $TODO: Log error.
+								return false;
+							}
+						} else if (var_type == Esprit::VariableSet::VariableType::Float) {
+							if (!reader.isNull() && !reader.isNumber()) {
+								// $TODO: Log error.
+								return false;
+							}
+						} else if (var_type == Esprit::VariableSet::VariableType::Integer) {
+							if (!reader.isNull() && !reader.isInt64()) {
+								// $TODO: Log error.
+								return false;
+							}
+						} else if (var_type == Esprit::VariableSet::VariableType::Bool) {
+							if (!reader.isNull() && !reader.isBool()) {
+								// $TODO: Log error.
+								return false;
+							}
+						}
+
+						const Esprit::HashStringTemp32<> name(var_name);
+						const int32_t var_index = variables.getVariableIndex(name, var_type);
+
+						if (var_index < 0) {
+							// $TODO: Log error?
+							return false;
+						}
+
+						if (var_type == Esprit::VariableSet::VariableType::Reference) {
+							// Do nothing.
+						} else if (var_type == Esprit::VariableSet::VariableType::String) {
+							if (reader.isString()) {
+								const char* str = reader.readString();
+								variables.setVariable(defaults, var_index, str);
+								reader.freeString(str);
+							}
+						} else if (var_type == Esprit::VariableSet::VariableType::Float) {
+							variables.setVariable(defaults, var_index, reader.readFloat(0.0f));
+						} else if (var_type == Esprit::VariableSet::VariableType::Integer) {
+							variables.setVariable(defaults, var_index, reader.readInt64(0));
+						} else if (var_type == Esprit::VariableSet::VariableType::Bool) {
+							variables.setVariable(defaults, var_index, reader.readBool(false));
+						}
+
 						return false;
 					});
 				}

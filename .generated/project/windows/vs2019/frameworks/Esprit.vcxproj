@@ -226,6 +226,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VariableSet.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_Vector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Esprit\include\Esprit_VectorMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_Global.cpp" />

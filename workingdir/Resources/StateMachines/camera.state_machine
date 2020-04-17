@@ -2,9 +2,10 @@
 	"variables":
 	{
 		"integers":
-		[
-			"entity_id"
-		]
+		{
+			"entity_id": -1,
+			"test": 123
+		}
 	},
 
 	"states":

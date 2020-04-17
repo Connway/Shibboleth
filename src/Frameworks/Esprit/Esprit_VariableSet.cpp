@@ -65,11 +65,27 @@ bool VariableSet::addVariable(const HashStringTemp32<>& name, VariableType type)
 	return true;
 }
 
+const VariableSet::Instance& VariableSet::getDefaults(void) const
+{
+	return _defaults;
+}
+
+VariableSet::Instance& VariableSet::getDefaults(void)
+{
+	return _defaults;
+}
+
 void VariableSet::finalize(void)
 {
 	for (int32_t i = 0; i < static_cast<int32_t>(VariableType::Count); ++i) {
 		eastl::sort(_names[i].begin(), _names[i].end());
 	}
+
+	_defaults.references.resize(_names[static_cast<size_t>(VariableType::Reference)].size(), nullptr);
+	_defaults.strings.resize(_names[static_cast<size_t>(VariableType::String)].size());
+	_defaults.floats.resize(_names[static_cast<size_t>(VariableType::Float)].size(), 0.0f);
+	_defaults.integers.resize(_names[static_cast<size_t>(VariableType::Integer)].size(), 0);
+	_defaults.bools.resize(_names[static_cast<size_t>(VariableType::Bool)].size(), false);
 }
 
 bool VariableSet::getVariable(const Instance& variables, int32_t index, void*& result) const

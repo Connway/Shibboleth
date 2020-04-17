@@ -115,8 +115,10 @@ bool LuaManager::initAllModulesLoaded(void)
 
 //	constexpr const char* const test =
 //R"(
-//local v = Vec3.new(1, 2, 3)
-//local v2 = Vec3.new(v)
+//print(glm ~= nil)
+//print(glm.vec3 ~= nil)
+//local v = glm.vec3.new(1, 2, 3)
+//local v2 = glm.vec3.new(v)
 //local x = v2.x
 //local v3 = v + v2
 //x = v3[2]
@@ -173,7 +175,15 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 
 		lua_pop(data.state, 1); // Pop off the nil.
 		lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
-		lua_pcall(data.state, 0, 1, 0); // Call the func. The function will return a table.
+
+		// Call the func. The function will return a table.
+		if (lua_pcall(data.state, 0, 1, 0) != LUA_OK) {
+			// $TODO: Log error.
+
+			lua_pop(data.state, lua_gettop(data.state));
+			return false;
+		}
+
 		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
 		lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
 

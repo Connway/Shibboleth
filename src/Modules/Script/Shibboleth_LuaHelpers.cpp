@@ -731,15 +731,20 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		return;
 	}
 
-	const char* const friendly_name = ref_def.getFriendlyName();
 	const auto* const flags = ref_def.getClassAttr<ScriptFlagsAttribute>();
 
 	if (flags && flags->getFlags().testAll(ScriptFlagsAttribute::Flag::NoRegister)) {
 		return;
 	}
 
+	U8String friendly_name = ref_def.getFriendlyName();
+
+	if (Gaff::EndsWith(friendly_name.data(), "<>")) {
+		friendly_name = friendly_name.substr(0, friendly_name.size() - 2);
+	}
+
 	// Type Metatable
-	luaL_newmetatable(state, friendly_name);
+	luaL_newmetatable(state, friendly_name.data());
 
 	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
 	lua_setfield(state, -2, k_ref_def_field_name);
@@ -787,6 +792,43 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 
 	// Library Table.
+	size_t prev_index = 0;
+	size_t curr_index = friendly_name.find_first_of(':');
+
+	int32_t table_count = 0;
+
+	// Create all sub-tables.
+	do {
+		const U8String substr = friendly_name.substr(prev_index, curr_index - prev_index);
+
+		// Create first, global table.
+		if (table_count == 0) {
+			if (lua_getglobal(state, substr.data()) <= 0) {
+				lua_pop(state, 1);
+
+				lua_createtable(state, 0, 0);
+				lua_pushvalue(state, -1);
+				lua_setglobal(state, substr.data());
+			}
+
+		// Create sub-table.
+		} else {
+			if (lua_getfield(state, -1, substr.data()) <= 0) {
+				lua_pop(state, 1);
+
+				lua_createtable(state, 0, 0);
+				lua_pushvalue(state, -1);
+				lua_setfield(state, -3, substr.data());
+			}
+		}
+
+		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
+		curr_index = friendly_name.find_first_of(':', prev_index);
+
+		++table_count;
+	} while (prev_index != SIZE_T_FAIL);
+
+
 	Vector<luaL_Reg> reg(g_allocator);
 
 	// Add constructor.
@@ -796,17 +838,15 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	reg.emplace_back(luaL_Reg{ nullptr, nullptr });
 
-	lua_createtable(state, 0, static_cast<int32_t>(reg.size()) + num_static_funcs - num_operators);
-
 	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
 	lua_setfield(state, -2, k_ref_def_field_name);
 
 	// Add static funcs.
 	for (int32_t i = 0; i < num_static_funcs; ++i) {
-		const char* const name = ref_def.getStaticFuncName(i);
+		const char* const func_name = ref_def.getStaticFuncName(i);
 
 		// Is an operator function.
-		if (!strncmp(name, "__", 2)) {
+		if (!strncmp(func_name, "__", 2)) {
 			continue;
 		}
 
@@ -815,15 +855,15 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		lua_pushboolean(state, true); // Is static.
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-		lua_setfield(state, -2, name);
+		lua_setfield(state, -2, func_name);
 	}
 
 	// Push up values.
 	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-	luaL_getmetatable(state, friendly_name);
+	luaL_getmetatable(state, friendly_name.data());
 
 	luaL_setfuncs(state, reg.data(), 2);
-	lua_setglobal(state, friendly_name);
+	lua_pop(state, table_count);
 }
 
 void RegisterBuiltIns(lua_State* state)

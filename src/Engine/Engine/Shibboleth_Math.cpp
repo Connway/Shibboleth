@@ -29,20 +29,18 @@ namespace
 	int32_t VecToString(const T& value, char* buffer, int32_t size)
 	{
 		if constexpr (std::is_same<T, glm::quat>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(buffer, static_cast<size_t>(size), "glm::quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, glm::vec4>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(buffer, static_cast<size_t>(size), "glm::vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, glm::vec3>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "vec3(%f, %f, %f)", value.x, value.y, value.z);
+			return snprintf(buffer, static_cast<size_t>(size), "glm::vec3(%f, %f, %f)", value.x, value.y, value.z);
 		} else if constexpr (std::is_same<T, glm::vec2>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "vec2(%f, %f)", value.x, value.y);
+			return snprintf(buffer, static_cast<size_t>(size), "glm::vec2(%f, %f)", value.x, value.y);
 		}
 	}
 }
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
-	.friendlyName("Quat")
-
 	//.ctor<const glm::mat4x4&>()
 	//.ctor<const glm::mat3x3&>()
 	.ctor<const glm::vec3&>()
@@ -73,8 +71,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
 SHIB_REFLECTION_DEFINE_END(glm::quat)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
-	.friendlyName("Vec4")
-
 	.ctor<const glm::vec4&>()
 	.ctor<const glm::vec2&, float, float>()
 	.ctor<const glm::vec3&, float>()
@@ -118,8 +114,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
 SHIB_REFLECTION_DEFINE_END(glm::vec4)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
-	.friendlyName("Vec3")
-
 	.ctor<const glm::vec2&, float>()
 	.ctor<const glm::vec3&>()
 	.ctor<float, float, float>()
@@ -159,8 +153,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
 SHIB_REFLECTION_DEFINE_END(glm::vec3)
 
 SHIB_REFLECTION_DEFINE_BEGIN(glm::vec2)
-	.friendlyName("Vec2")
-
 	.ctor<const glm::vec2&>()
 	.ctor<float, float>()
 	.ctor<float>()

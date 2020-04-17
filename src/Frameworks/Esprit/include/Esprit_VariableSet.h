@@ -39,15 +39,6 @@ public:
 		Vector<float> floats;
 		Vector<int64_t> integers;
 		BitVector bools;
-
-		void init(const VariableSet& vars)
-		{
-			references.resize(vars._names[static_cast<size_t>(VariableType::Reference)].size());
-			strings.resize(vars._names[static_cast<size_t>(VariableType::String)].size());
-			floats.resize(vars._names[static_cast<size_t>(VariableType::Float)].size());
-			integers.resize(vars._names[static_cast<size_t>(VariableType::Integer)].size());
-			bools.resize(vars._names[static_cast<size_t>(VariableType::Bool)].size());
-		}
 	};
 
 	enum class VariableType
@@ -64,6 +55,9 @@ public:
 	int32_t getVariableIndex(const HashStringTemp32<>& name, VariableType type) const;
 	bool removeVariable(const HashStringTemp32<>& name, VariableType type);
 	bool addVariable(const HashStringTemp32<>& name, VariableType type);
+
+	const Instance& getDefaults(void) const;
+	Instance& getDefaults(void);
 
 	// Once called, add/remove functions should not be called.
 	void finalize(void);
@@ -95,8 +89,8 @@ public:
 #endif
 
 private:
-
 	Vector< OptimizedHashString32<> > _names[static_cast<size_t>(VariableType::Count)];
+	Instance _defaults;
 };
 
 NS_END

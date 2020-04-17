@@ -21,8 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_StateMachineReflection.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::U8String)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstance<Esprit::ProxyAllocator>)
 	.serialize(Gaff::LoadString<Esprit::ProxyAllocator>, Gaff::SaveString<Esprit::ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(Esprit::U8String)
@@ -44,6 +49,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString64<>)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString32<>)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
 	.serialize(
 		Gaff::LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
@@ -52,6 +61,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString32<>)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString64<>)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
 	.serialize(
 		Gaff::LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,

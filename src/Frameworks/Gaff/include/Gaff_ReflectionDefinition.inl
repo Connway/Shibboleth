@@ -2468,13 +2468,6 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 
 		if (_friendly_name.empty()) {
 			_friendly_name = getReflectionInstance().getName();
-
-			// Strip out all the namespaces.
-			const int32_t index = static_cast<int32_t>(_friendly_name.find_last_of(':'));
-
-			if (index != U8String<Allocator>::npos) {
-				_friendly_name.erase(0, index + 1);
-			}
 		}
 	}
 }

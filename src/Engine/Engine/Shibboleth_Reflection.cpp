@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Reflection.h"
+#include "Shibboleth_EngineAttributesCommon.h"
 
 #ifdef LoadString
 	#undef LoadString
@@ -39,6 +40,10 @@ SHIB_REFLECTION_DEFINE(double)
 SHIB_REFLECTION_DEFINE(bool)
 
 SHIB_REFLECTION_DEFINE_BEGIN(U8String)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstance<ProxyAllocator>)
 	.serialize(Gaff::LoadString<ProxyAllocator>, Gaff::SaveString<ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(U8String)
@@ -60,6 +65,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(HashString64<>)
 SHIB_REFLECTION_DEFINE_END(HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString32<>)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>)
 	.serialize(
 		Gaff::LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>,
@@ -68,6 +77,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString32<>)
 SHIB_REFLECTION_DEFINE_END(HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString64<>)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Gaff::HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>)
 	.serialize(
 		Gaff::LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>,
