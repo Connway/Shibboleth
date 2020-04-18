@@ -37,8 +37,6 @@ static void SendDefaultPage(mg_connection* conn)
 	mg_printf(conn, "<html><body>\r\n");
 	mg_printf(conn, "<h1>Available Commands</h1>\r\n");
 	mg_printf(conn, "Foo\r\n");
-	mg_printf(conn, "<script src=\"/react/react.development.js\"></script>\r\n");
-	mg_printf(conn, "<script src=\"/react/react-dom.development.js\"></script>\r\n");
 	mg_printf(conn, "</body></html>\r\n");
 }
 
