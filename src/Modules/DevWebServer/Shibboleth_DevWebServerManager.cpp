@@ -51,7 +51,7 @@ bool DevWebServerManager::init(void)
 {
 	const char* options[] =
 	{
-		"document_root", "WebRoot", "listening_ports", "8888", 0
+		"listening_ports", "8888", 0
 	};
 
 	ProxyAllocator allocator("DevWeb");
@@ -68,6 +68,8 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 {
 	const auto ref_defs = GetApp().getReflectionManager().getReflectionWithAttribute<DevWebCommandAttribute>();
 	ProxyAllocator allocator("DevWeb");
+
+	_server->addHandler("", _default_handler);
 
 	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
 		if (!ref_def->hasInterface(CLASS_HASH(CivetHandler))) {
@@ -88,7 +90,6 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 		_handlers.emplace_back(handler);
 	}
 
-	_server->addHandler("", _default_handler);
 	return true;
 }
 
