@@ -57,6 +57,7 @@ public:
 	IFile* openFile(const char* file_name) override;
 	void closeFile(const IFile* file) override;
 
+	bool forEachFile(const char* directory, eastl::function<bool(const char*, IFile*)>& callback, const char* extension, bool recursive = false) override;
 	bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive = false) override;
 
 private:

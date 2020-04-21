@@ -150,7 +150,7 @@ public:
 
 	ReflectionVersion& version(uint32_t version);
 
-	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
+	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
 	ReflectionVersion& setInstanceHash(InstanceHashFunc hash_func);
 
 	// Enum

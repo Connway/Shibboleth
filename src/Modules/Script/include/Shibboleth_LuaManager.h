@@ -44,6 +44,7 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 	bool loadBuffer(const char* buffer, size_t size, const char* name);
+	void unloadBuffer(const char* name);
 
 	lua_State* requestState(void);
 	void returnState(lua_State* state);
@@ -59,6 +60,8 @@ private:
 
 	static void* alloc(void*, void* ptr, size_t, size_t new_size);
 	static int panic(lua_State* L);
+
+	bool loadLuaManager(const char* file_name, IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
 };

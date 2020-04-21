@@ -1657,6 +1657,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 {
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
+	// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
 	if (_base_class_offsets.find(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash()) == _base_class_offsets.end()) {
 		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 	}
@@ -1699,57 +1700,88 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		// Base class funcs
 		for (auto& it : base_ref_def._funcs) {
 			FuncData& func_data = _funcs[it.first.getHash()];
-			bool found = false;
 
 			for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
-				GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != it.first);
-
-				if (!func_data.func[i]) {
-					ReflectionBaseFunction* const ref_func = GAFF_ALLOCT(
-						ReflectionBaseFunction,
-						_allocator,
-						it.second.func[i]->getBaseRefDef(),
-						it.second.func[i].get()
-					);
-
-					func_data.hash[i] = it.second.hash[i];
-					func_data.func[i].reset(ref_func);
-					found = true;
-
-					// Copy attributes
-					const Hash64 attr_hash = FNV1aHash64T(func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
-					const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
-
-					if (attr_it != base_ref_def._func_attrs.end()) {
-						auto& attrs = _func_attrs[attr_hash];
-						attrs.set_allocator(_allocator);
-
-						for (const IAttributePtr& attr : attr_it->second) {
-							attrs.emplace_back(attr->clone());
-						}
-					}
-
+				if (!it.second.func[i]) {
 					break;
 				}
-			}
 
-			GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+				int32_t index = -1;
+
+				for (int32_t j = 0; j < FuncData::NUM_OVERLOADS; ++j) {
+					if (!func_data.func[j]) {
+						index = j;
+						break;
+					}
+
+					if (it.second.hash[i] == func_data.hash[j]) {
+						break;
+					}
+
+					--index;
+				}
+
+				if (index < 0) {
+					GAFF_ASSERT_MSG(index > -(FuncData::NUM_OVERLOADS + 1), "Function overloading only supports %i overloads per function name!", FuncData::NUM_OVERLOADS);
+					continue;
+				}
+
+				ReflectionBaseFunction* const ref_func = GAFF_ALLOCT(
+					ReflectionBaseFunction,
+					_allocator,
+					it.second.func[i]->getBaseRefDef(),
+					it.second.func[i].get()
+				);
+
+				func_data.hash[index] = it.second.hash[i];
+				func_data.func[index].reset(ref_func);
+
+				// Copy attributes.
+				const Hash64 attr_hash = FNV1aHash64T(func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
+				const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
+
+				if (attr_it != base_ref_def._func_attrs.end()) {
+					auto& attrs = _func_attrs[attr_hash];
+					attrs.set_allocator(_allocator);
+
+					for (const IAttributePtr& attr : attr_it->second) {
+						attrs.emplace_back(attr->clone());
+					}
+				}
+			}
 		}
 
 		// Base class static funcs
 		for (auto& it : base_ref_def._static_funcs) {
-			GAFF_ASSERT(_static_funcs.find(it.first) == _static_funcs.end());
-
-			_static_funcs.emplace(it.first, it.second.template toDerived<T, Allocator>(_allocator));
-
-			// Copy attributes
 			StaticFuncData& static_func_data = _static_funcs[it.first.getHash()];
 
 			for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
-				if (!static_func_data.func[i]) {
+				if (!it.second.func[i]) {
 					break;
 				}
 
+				int32_t index = -1;
+
+				for (int32_t j = 0; j < StaticFuncData::NUM_OVERLOADS; ++j) {
+					if (!static_func_data.func[j]) {
+						index = j;
+						break;
+					}
+
+					if (it.second.hash[i] == static_func_data.hash[j]) {
+						break;
+					}
+				}
+
+				if (index < 0) {
+					GAFF_ASSERT_MSG(index > -(StaticFuncData::NUM_OVERLOADS + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::NUM_OVERLOADS);
+					continue;
+				}
+
+				static_func_data.hash[index] = it.second.hash[i];
+				static_func_data.func[index].reset(it.second.func[i]->clone(_allocator));
+
+				// Copy attributes.
 				const Hash64 attr_hash = FNV1aHash64T(static_func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
 				const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
 
@@ -2114,7 +2146,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 		bool found = false;
 
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
-			if (func_data.func[i]) {
+			// Replace an open slot or replace an already existing overload.
+			if (func_data.func[i] && func_data.hash[i] != arg_hash) {
 				continue;
 			}
 

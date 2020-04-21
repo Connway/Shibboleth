@@ -34,6 +34,9 @@ public:
 	static constexpr bool Creatable = true;
 
 	const Esprit::StateMachine* getStateMachine(void) const;
+	Esprit::StateMachine* getStateMachine(void);
+
+	void readValues(const Gaff::ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const;
 
 private:
 	UniquePtr<Esprit::StateMachine> _state_machine;

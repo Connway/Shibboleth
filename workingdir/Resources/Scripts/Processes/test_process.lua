@@ -2,16 +2,10 @@ local TestProcess =
 {
 	test_vec = glm.vec3.new(1, 2, 3),
 	test_var = 0,
-	test_index = -1
 }
 
 function TestProcess:init(owner)
 	print("Test Process - Init")
-
-	self.test_index = owner:getVariables():getVariableIndex("test", Esprit.VariableSet.VariableType.Integer)
-
-	print("Test Index: ", self.test_index)
-
 	return true
 end
 

@@ -44,6 +44,12 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
 
+LuaResource::~LuaResource(void)
+{
+	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	lua_mgr.unloadBuffer(getFilePath().getBuffer());
+}
+
 void LuaResource::loadScript(IFile* file)
 {
 	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();

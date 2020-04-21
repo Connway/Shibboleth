@@ -9,10 +9,10 @@
 
 	"components":
 	{
-		"StateMachine": { "value": "StateMachines/camera.state_machine" },
 		"PlayerOwner": { "value": 0 },
 		"Camera": {},
 		"Position": {},
-		"Rotation": {}
+		"Rotation": {},
+		"StateMachine": { "resource": "StateMachines/camera.state_machine" }
 	}
 }

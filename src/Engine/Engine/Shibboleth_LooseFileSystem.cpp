@@ -141,8 +141,12 @@ void LooseFileSystem::closeFile(const IFile* file)
 	}
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive)
+bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool(const char*, IFile*)>& callback, const char* extension, bool recursive)
 {
+	if (!std::filesystem::is_directory(directory)) {
+		return false;
+	}
+
 	for (const auto& dir_entry : std::filesystem::directory_iterator(directory)) {
 		if (!recursive && !dir_entry.is_regular_file()) {
 			continue;
@@ -152,11 +156,15 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 		CONVERT_STRING(char, temp, file_name);
 
 		if (recursive && dir_entry.is_directory()) {
-			forEachFile(temp, callback, recursive);
+			forEachFile(temp, callback, extension, recursive);
 			continue;
 		}
 
 		if (!dir_entry.is_regular_file()) {
+			continue;
+		}
+
+		if (extension && !Gaff::EndsWith(temp, extension)) {
 			continue;
 		}
 
@@ -173,6 +181,11 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 	}
 
 	return false;
+}
+
+bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive)
+{
+	return forEachFile(directory, callback, nullptr, recursive);
 }
 
 NS_END

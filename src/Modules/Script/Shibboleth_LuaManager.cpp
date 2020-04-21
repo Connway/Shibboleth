@@ -23,9 +23,11 @@ THE SOFTWARE.
 #include "Shibboleth_LuaManager.h"
 #include "Shibboleth_LuaHelpers.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Math.h>
+#include <Gaff_Function.h>
 #include <Gaff_JSON.h>
 #include <lua.hpp>
 
@@ -111,12 +113,14 @@ bool LuaManager::initAllModulesLoaded(void)
 				RegisterType(state, *ref_def);
 			}
 		}
+
+		// Load all Lua files from Scripts/Managers
+		auto func = Gaff::MemberFunc(this, &LuaManager::loadLuaManager);
+		GetApp().getFileSystem().forEachFile("Resources/Scripts/Globals", func, ".lua", true);
 	}
 
 //	constexpr const char* const test =
 //R"(
-//print(glm ~= nil)
-//print(glm.vec3 ~= nil)
 //local v = glm.vec3.new(1, 2, 3)
 //local v2 = glm.vec3.new(v)
 //local x = v2.x
@@ -163,18 +167,20 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 			continue;
 		}
 
-		lua_getglobal(data.state, k_loaded_chunks_name);
-		lua_getfield(data.state, -1, name);
+		if (name) {
+			lua_getglobal(data.state, k_loaded_chunks_name);
+			lua_getfield(data.state, -1, name);
 
-		if (!lua_isnoneornil(data.state, -1)) {
-			// $TODO: Log error.
-			lua_pop(data.state, 3); // top -> bottom: something, chunk_table, func
-			success = false;
-			continue;
+			if (!lua_isnoneornil(data.state, -1)) {
+				// $TODO: Log error.
+				lua_pop(data.state, lua_gettop(data.state));
+				success = false;
+				continue;
+			}
+
+			lua_pop(data.state, 1); // Pop off the nil.
+			lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
 		}
-
-		lua_pop(data.state, 1); // Pop off the nil.
-		lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
 
 		// Call the func. The function will return a table.
 		if (lua_pcall(data.state, 0, 1, 0) != LUA_OK) {
@@ -184,13 +190,26 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 			return false;
 		}
 
-		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
-		lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
+		if (name) {
+			luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
+			lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
+		}
 
-		lua_pop(data.state, 2); // Pop off the chunk table and function.
+		lua_pop(data.state, lua_gettop(data.state));
 	}
 
 	return success;
+}
+
+void LuaManager::unloadBuffer(const char* name)
+{
+	for (LuaStateData& data : _states) {
+		EA::Thread::AutoFutex lock(*data.lock);
+
+		lua_getglobal(data.state, k_loaded_chunks_name);
+		lua_pushnil(data.state);
+		lua_setfield(data.state, -2, name);
+	}
 }
 
 lua_State* LuaManager::requestState(void)
@@ -245,6 +264,12 @@ int LuaManager::panic(lua_State* L)
 	}
 
 	return 0;
+}
+
+bool LuaManager::loadLuaManager(const char* /*file_name*/, IFile* file)
+{
+	loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), nullptr);
+	return false;
 }
 
 NS_END

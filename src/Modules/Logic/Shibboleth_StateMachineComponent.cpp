@@ -30,11 +30,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
 	)
 
 	.base< ECSComponentBaseBoth<StateMachine> >()
+	.serialize(StateMachine::Load)
 
 	.staticFunc("Constructor", StateMachine::Constructor)
 	.staticFunc("Destructor", StateMachine::Destructor)
 
-	.var("value", &StateMachine::resource)
+	.staticFunc("Load", static_cast<bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&)>(StateMachine::Load))
+
+	.var("resource", &StateMachine::resource)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(StateMachine)
 
@@ -111,6 +114,46 @@ void StateMachine::Destructor(EntityID, void* component, int32_t entity_index)
 
 	res->~StateMachineResourcePtr();
 	inst->~UniquePtr<Esprit::StateMachine::Instance>();
+}
+
+bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+{
+	void* const component = ecs_mgr.getComponent<StateMachine>(id);
+	const int32_t entity_index = ecs_mgr.getPageIndex(id) % 4;
+
+	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
+	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
+
+	if (!(*res) || (*res)->hasFailed()) {
+		return false;
+	}
+
+	(*res)->readValues(reader, (*inst)->variables);
+
+	return true;
+}
+
+bool StateMachine::Load(const Gaff::ISerializeReader& reader, StateMachine& out)
+{
+	if (!Reflection<StateMachine>::Load(reader, out, true)) {
+		return false;
+	}
+
+	while (out.resource->getState() == ResourceState::Pending) {
+		// $TODO: Help out?
+		EA::Thread::ThreadSleep();
+	}
+
+	if (out.resource->hasFailed()) {
+		return false;
+	}
+
+	const Esprit::StateMachine& sm = *out.resource->getStateMachine();
+	out.instance.reset(sm.createInstanceData());
+
+	out.resource->readValues(reader, out.instance->variables);
+
+	return true;
 }
 
 StateMachine& StateMachine::operator=(const StateMachine& rhs)

@@ -271,7 +271,7 @@ public:
 
 	ReflectionDefinition& version(uint32_t version);
 
-	ReflectionDefinition& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
+	ReflectionDefinition& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
 
 	void finish(void);
 
@@ -684,23 +684,6 @@ private:
 
 			memcpy(hash, rhs.hash, sizeof(hash));
 			return *this;
-		}
-
-		template <class T2, class A2>
-		typename ReflectionDefinition<T2, A2>::StaticFuncData toDerived(A2& allocator) const
-		{
-			typename ReflectionDefinition<T2, A2>::StaticFuncData func_data;
-			memcpy(func_data.hash, hash, sizeof(hash));
-
-			for (int32_t i = 0; i < NUM_OVERLOADS; ++i) {
-				if (!func[i]) {
-					break;
-				}
-
-				func_data.func[i].reset(func[i]->clone(allocator));
-			}
-
-			return func_data;
 		}
 
 		Allocator _allocator;

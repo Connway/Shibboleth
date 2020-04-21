@@ -30,6 +30,9 @@ class LuaManager;
 
 class LuaResource final : public IResource
 {
+public:
+	~LuaResource(void);
+
 private:
 	void loadScript(IFile* file);
 
