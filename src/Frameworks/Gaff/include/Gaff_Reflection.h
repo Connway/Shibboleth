@@ -439,3 +439,7 @@ static void SaveString(Gaff::ISerializeWriter& writer, const Gaff::U8String<Allo
 }
 
 NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Gaff::IReflectionDefinition)
+NS_END

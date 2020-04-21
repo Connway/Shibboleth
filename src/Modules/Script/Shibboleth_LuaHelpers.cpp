@@ -35,6 +35,7 @@ namespace
 	constexpr int32_t k_func_index_index = lua_upvalueindex(2);
 	constexpr int32_t k_func_is_static_index = lua_upvalueindex(3);
 
+	constexpr const char* const k_is_type_table_field_name = "__is_type_table";
 	constexpr const char* const k_ref_def_field_name = "__ref_def";
 
 	static Shibboleth::ProxyAllocator g_allocator("Lua");
@@ -386,10 +387,24 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 
 			break;
 
-		case LUA_TTABLE:
+		case LUA_TTABLE: {
+			lua_getfield(state, stack_index, k_is_type_table_field_name);
+			const bool is_type_table = lua_isboolean(state, -1);
+
+			lua_pop(state, 1);
+
+			// This is a type table, only pass the ReflectionDefinition.
+			if (is_type_table) {
+				lua_getfield(state, stack_index, k_ref_def_field_name);
+				entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+
+				lua_pop(state, 1);
+				break;
+			}
+
 			// Fill vector or vectormap.
 			// $TODO: Log error.
-			break;
+		} break;
 
 		case LUA_TFUNCTION:
 			// $TODO: Log error.

@@ -87,6 +87,18 @@ public:
 	};
 
 	template <class T>
+	const typename T* getComponentShared(Gaff::Hash64 archetype) const
+	{
+		return reinterpret_cast<T*>(getComponentShared(archetype, Reflection<T>::GetHash()));
+	}
+
+	template <class T>
+	const typename T* getComponentShared(EntityID id) const
+	{
+		return reinterpret_cast<T*>(getComponentShared(id, Reflection<T>::GetHash()));
+	}
+
+	template <class T>
 	typename T* getComponentShared(Gaff::Hash64 archetype)
 	{
 		return reinterpret_cast<T*>(getComponentShared(archetype, Reflection<T>::GetHash()));
@@ -99,15 +111,33 @@ public:
 	}
 
 	template <class T>
+	const void* getComponent(Gaff::Hash64 archetype) const
+	{
+		return getComponent(archetype, Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	const void* getComponent(EntityID id) const
 	{
 		return getComponent(id, Reflection<T>::GetHash());
 	}
 
 	template <class T>
+	void* getComponent(Gaff::Hash64 archetype)
+	{
+		return getComponent(archetype, Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	void* getComponent(EntityID id)
 	{
 		return getComponent(id, Reflection<T>::GetHash());
+	}
+
+	template <class T>
+	bool hasComponent(Gaff::Hash64 archetype) const
+	{
+		return hasComponent(archetype, Reflection<T>::GetHash());
 	}
 
 	template <class T>
@@ -315,12 +345,22 @@ public:
 
 	void destroyEntity(EntityID id);
 
+	const void* getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component) const;
+	const void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component) const;
+	const void* getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component) const;
+	const void* getComponentShared(EntityID id, Gaff::Hash64 component) const;
+
+	void* getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component);
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
+	void* getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component);
 	void* getComponentShared(EntityID id, Gaff::Hash64 component);
 
+	const void* getComponent(EntityID id, const Gaff::IReflectionDefinition& component) const;
 	const void* getComponent(EntityID id, Gaff::Hash64 component) const;
+	void* getComponent(EntityID id, const Gaff::IReflectionDefinition& component);
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 
+	bool hasComponent(EntityID id, const Gaff::IReflectionDefinition& component) const;
 	bool hasComponent(EntityID id, Gaff::Hash64 component) const;
 
 	int32_t getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const;

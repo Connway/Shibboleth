@@ -24,6 +24,37 @@ THE SOFTWARE.
 
 NS_GAFF
 
+template <class First, class... Rest>
+static constexpr bool IsLastRefDef(void)
+{
+	if constexpr (sizeof...(Rest) > 0) {
+		return IsLastRefDef<Rest...>();
+	} else {
+		return std::is_same<const IReflectionDefinition&, First>::value || std::is_same<const IReflectionDefinition*, First>::value;
+	}
+}
+
+template <class First, class... Rest>
+static constexpr bool IsLastReference(void)
+{
+	if constexpr (sizeof...(Rest) > 0) {
+		return IsLastReference<Rest...>();
+	} else {
+		return std::is_reference<First>::value;
+	}
+}
+
+template <class First, class... Rest>
+static auto&& GetLastArg(First&& first, Rest&&... rest)
+{
+	if constexpr (sizeof...(Rest) > 0) {
+		GAFF_REF(first);
+		return GetLastArg<Rest...>(std::forward<Rest>(rest)...);
+	} else {
+		return std::forward<First>(first);
+	}
+}
+
 template <class T>
 static bool CastNumberToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
@@ -180,6 +211,21 @@ bool CallFunc(
 			}
 		}
 
+	} else if constexpr (std::is_same<const IReflectionDefinition&, First>::value || std::is_same<const IReflectionDefinition*, First>::value) {
+		// Get current value from arg stack.
+		const FunctionStackEntry& entry = args[arg_index];
+
+		if (!entry.ref_def) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		if constexpr (std::is_reference<First>::value) {
+			return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(*entry.ref_def));
+		} else {
+			return CallFunc<Callable, Allocator, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(entry.ref_def));
+		}
+
 	// We don't support passing in void pointers or unreflected types as arguments.
 	} else if constexpr (std::is_void<FinalType>::value || !GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::HasReflection) {
 		GAFF_REF(callable, object, args, ret, arg_index, allocator);
@@ -289,6 +335,20 @@ bool CallFunc(
 		CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 		GAFF_REF(ret);
 
+	} else if constexpr (std::is_same<const void*, Ret>::value || std::is_same<void*, Ret>::value) {
+		if constexpr (IsLastRefDef<CurrentArgs...>()) {
+			if constexpr (IsLastReference<CurrentArgs...>()) {
+				ret.ref_def = &GetLastArg(std::forward<CurrentArgs>(current_args)...);
+			} else {
+				ret.ref_def = GetLastArg(std::forward<CurrentArgs>(current_args)...);
+			}
+
+			ret.value.vp = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+
+		} else {
+			static_assert(false, "Cannot return void* when we don't know what to cast to. Last arg to function must be a const IReflectionDefinition[&/*].");
+		}
+
 	} else if constexpr (std::is_same<const char*, Ret>::value) {
 		ret.flags.set(true, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
 		ret.value.vp = const_cast<char*>(CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...));
@@ -304,6 +364,15 @@ bool CallFunc(
 		} else {
 			ret.value.vp = GAFF_ALLOC(string.size() + 1, allocator);
 			memcpy(ret.value.vp, string.data(), string.size() + 1);
+		}
+
+	} else if constexpr (std::is_same<const IReflectionDefinition&, Ret>::value || std::is_same<const IReflectionDefinition*, Ret>::value) {
+		Ret ref_def = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
+
+		if constexpr (std::is_reference<Ret>::value) {
+			ret.ref_def = &ref_def;
+		} else {
+			ret.ref_def = ref_def;
 		}
 
 	} else {

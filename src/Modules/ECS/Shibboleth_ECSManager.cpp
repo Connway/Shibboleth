@@ -207,6 +207,31 @@ void ECSManager::destroyEntity(EntityID id)
 	destroyEntityInternal(id, true);
 }
 
+const void* ECSManager::getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component) const
+{
+	return const_cast<ECSManager*>(this)->getComponentShared(archetype, component);
+}
+
+const void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component) const
+{
+	return const_cast<ECSManager*>(this)->getComponentShared(archetype, component);
+}
+
+const void* ECSManager::getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component) const
+{
+	return const_cast<ECSManager*>(this)->getComponentShared(id, component);
+}
+
+const void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component) const
+{
+	return const_cast<ECSManager*>(this)->getComponentShared(id, component);
+}
+
+void* ECSManager::getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component)
+{
+	return getComponentShared(archetype, component.getReflectionInstance().getHash());
+}
+
 void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component)
 {
 	EA::Thread::AutoMutex lock(_entity_page_lock);
@@ -217,6 +242,11 @@ void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 compon
 	GAFF_ASSERT(component_offset > -1);
 
 	return reinterpret_cast<int8_t*>(archetype_instance.getSharedData()) + component_offset;
+}
+
+void* ECSManager::getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component)
+{
+	return getComponentShared(id, component.getReflectionInstance().getHash());
 }
 
 void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
@@ -230,9 +260,19 @@ void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
 	return reinterpret_cast<int8_t*>(entity.data->archetype.getSharedData()) + component_offset;
 }
 
+const void* ECSManager::getComponent(EntityID id, const Gaff::IReflectionDefinition& component) const
+{
+	return const_cast<ECSManager*>(this)->getComponent(id, component);
+}
+
 const void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component) const
 {
 	return const_cast<ECSManager*>(this)->getComponent(id, component);
+}
+
+void* ECSManager::getComponent(EntityID id, const Gaff::IReflectionDefinition& component)
+{
+	return getComponent(id, component.getReflectionInstance().getHash());
 }
 
 void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
@@ -249,6 +289,11 @@ void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
 	const int32_t entity_offset = (entity.index / 4) * entity.data->archetype.size() * 4;
 
 	return reinterpret_cast<int8_t*>(entity.page) + sizeof(EntityPage) + entity_offset + component_offset;
+}
+
+bool ECSManager::hasComponent(EntityID id, const Gaff::IReflectionDefinition& component) const
+{
+	return getComponent(id, component) != nullptr;
 }
 
 bool ECSManager::hasComponent(EntityID id, Gaff::Hash64 component) const
