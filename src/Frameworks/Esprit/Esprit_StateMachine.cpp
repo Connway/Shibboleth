@@ -168,8 +168,8 @@ int32_t StateMachine::addProcess(const HashStringTemp32<>& name, IProcess* proce
 {
 	const int32_t index = findStateIndex(name);
 
-	// Special states can't have processes.
-	if (index < static_cast<int32_t>(SpecialStates::Count)) {
+	// Special states, except Any State, can't have processes.
+	if (index < static_cast<int32_t>(SpecialStates::Count) && index != static_cast<int32_t>(SpecialStates::AnyState)) {
 		return -1;
 	}
 
