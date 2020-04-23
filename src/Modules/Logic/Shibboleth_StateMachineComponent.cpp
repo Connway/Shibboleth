@@ -29,7 +29,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
 		ECSClassAttribute(nullptr, "Logic")
 	)
 
-	.base< ECSComponentBaseBoth<StateMachine> >()
+	.base< ECSComponentBaseBoth<StateMachine, StateMachineView> >()
 	.serialize(StateMachine::Load)
 
 	.staticFunc("Constructor", StateMachine::Constructor)
@@ -69,7 +69,7 @@ void StateMachine::SetInternal(void* component, int32_t entity_index, const Stat
 	}
 }
 
-void StateMachine::SetInternal(void* component, int32_t entity_index, const View& value)
+void StateMachine::SetInternal(void* component, int32_t entity_index, const StateMachineView& value)
 {
 	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
 	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
@@ -85,9 +85,9 @@ void StateMachine::SetInternal(void* component, int32_t entity_index, const View
 	}
 }
 
-StateMachine::View StateMachine::GetInternal(const void* component, int32_t entity_index)
+StateMachineView StateMachine::GetInternal(const void* component, int32_t entity_index)
 {
-	View view;
+	StateMachineView view;
 
 	const auto* const res = reinterpret_cast<const StateMachineResourcePtr*>(component) + entity_index;
 	const auto* const inst = reinterpret_cast<const UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;

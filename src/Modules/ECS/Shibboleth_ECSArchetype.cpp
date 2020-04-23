@@ -415,9 +415,10 @@ void ECSArchetype::destroyEntity(EntityID id, void* entity, int32_t entity_index
 
 void ECSArchetype::constructPage(void* page, int32_t num_entities) const
 {
-	for (int32_t i = 0; i < num_entities; ++i) {
-		int8_t* const entity_start = reinterpret_cast<int8_t*>(page) + (i * size() * 4);
+	int8_t* entity_start = reinterpret_cast<int8_t*>(page);
+	const int32_t entity_size = size();
 
+	for (int32_t i = 0; i < num_entities; i += 4) {
 		for (const RefDefOffset& rdo : _vars) {
 			if (rdo.constructor_func) {
 				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 0);
@@ -426,6 +427,8 @@ void ECSArchetype::constructPage(void* page, int32_t num_entities) const
 				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 3);
 			}
 		}
+
+		entity_start += entity_size * 4;
 	}
 }
 

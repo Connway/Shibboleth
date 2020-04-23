@@ -18,10 +18,6 @@
 
 					"angular_speed": { "x": 0.005, "y": 0.005, "z": 0.0 },
 					"linear_speed": 5.0
-				},
-				{
-					"process_type": "LuaProcess",
-					"script": "Scripts/Processes/test_process.lua"
 				}
 			]
 		}

@@ -196,6 +196,10 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		}
 
 		lua_pop(data.state, lua_gettop(data.state));
+
+		// Make the garbage collector more aggressive so we don't have frames where we have huge
+		// stalls due to the garbage collector.
+		lua_gc(data.state, LUA_GCSETPAUSE, 50);
 	}
 
 	return success;

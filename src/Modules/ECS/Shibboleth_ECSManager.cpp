@@ -551,18 +551,23 @@ ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 		return it->second->arch_ref;
 	}
 
+	const int32_t entity_size = archetype.size();
 	int32_t page_size_bytes = EA_KIBIBYTE(64);
 
 	if (const PageSize* const page_size = archetype.getSharedComponent<PageSize>()) {
-		if (page_size->value > sizeof(EntityPage)) {
-			page_size_bytes = page_size->value;
-		}
+		page_size_bytes = Gaff::Max(page_size->value, static_cast<int32_t>(sizeof(EntityPage)) + entity_size * 4);
 	}
 
 	ProxyAllocator allocator("ECS");
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (page_size_bytes - sizeof(EntityPage)) / archetype.size();
+	data->num_entities_per_page = (page_size_bytes - sizeof(EntityPage)) / entity_size;
+	// Scale num_entities_per_page down to the nearest multiple of 4.
+	data->num_entities_per_page = static_cast<int32_t>(floor(static_cast<float>(data->num_entities_per_page) / 4.0f) * 4.0f);
+
+	// If even after 64kb of data we still have less than 4 entities, then our entities are seriously way too big.
+	GAFF_ASSERT(data->num_entities_per_page >= 4);
+
 	data->page_size = page_size_bytes;
 	data->arch_ref = SHIB_ALLOCT(ArchetypeReference, allocator, *this, archetype_hash);
 	data->archetype = std::move(archetype);

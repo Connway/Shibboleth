@@ -210,7 +210,7 @@ namespace
 	{
 		const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
 
-		if (entry.ref_def && (entry.ref_def != &new_ref_def) || (is_reference != new_is_reference)) {
+		if (entry.ref_def && ((entry.ref_def != &new_ref_def) || (is_reference != new_is_reference))) {
 			if (!is_reference && !entry.ref_def->isBuiltIn()) {
 				entry.ref_def->destroyInstance(entry.value.vp);
 				SHIB_FREE(entry.value.vp, g_allocator);
@@ -741,8 +741,8 @@ void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_
 
 void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 {
-	// We do not need to register attributes.
-	if (ref_def.hasInterface(CLASS_HASH(Gaff::IAttribute))) {
+	// We do not need to register attributes or built-in types.
+	if (ref_def.hasInterface(CLASS_HASH(Gaff::IAttribute)) || ref_def.isBuiltIn()) {
 		return;
 	}
 
@@ -1172,6 +1172,8 @@ int UserTypeIndex(lua_State* state)
 
 					luaL_getmetatable(state, var_ref_def.getFriendlyName());
 					lua_setmetatable(state, -2);
+
+					return 1;
 				}
 			}
 

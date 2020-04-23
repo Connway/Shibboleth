@@ -90,6 +90,7 @@ public:
 	{
 		ReferenceOnly,
 		NoRegister,
+		NoInherit,
 
 		Count
 	};
@@ -109,6 +110,7 @@ public:
 
 	IAttribute* clone(void) const override;
 
+	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
 	Gaff::Flags<Flag> getFlags(void) const { return _flags; }
 
 private:

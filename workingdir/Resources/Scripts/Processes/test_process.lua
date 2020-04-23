@@ -1,23 +1,35 @@
 local TestProcess =
 {
-	test_vec = glm.vec3.new(1, 2, 3),
-	test_var = 0,
+	entity_id_index = -1,
+	rot_speed_index = -1,
+	game_time = nil,
+	ecs_mgr = nil
 }
 
 function TestProcess:init(owner)
-	print("Test Process - Init")
+	local variables = owner:getVariables()
+	self.entity_id_index = variables:getVariableIndex("entity_id", Esprit.VariableSet.VariableType.Integer)
+	self.rot_speed_index = variables:getVariableIndex("rot_speed", Esprit.VariableSet.VariableType.Float)
+
+	self.game_time = GetManager(GameTimeManager).game_time
+	self.ecs_mgr = GetManager(ECSManager)
+
 	return true
 end
 
-function TestProcess:update(owner, variables)
-	print("Test Process - Update ", self.test_var)
-	self.test_var = self.test_var + 1
+function TestProcess:update(owner, var_inst)
+	local variables = owner:getVariables()
+	local entity_id = variables:getInteger(var_inst, self.entity_id_index)
+	local rot_speed = variables:getFloat(var_inst, self.rot_speed_index)
 
-	if self.test_var == 1 then
-		self.test_vec = glm.vec4.new(4, 3, 2, 1)
-	elseif self.test_var == 2 then
-		self.test_vec.w = 20
-	end
+	-- local pos = Position.Get(self.ecs_mgr, entity_id)
+	-- pos.value.x = pos.value.x + 0.5 * self.game_time.delta
+	-- Position.Set(self.ecs_mgr, entity_id, pos)
+
+	local rot = Rotation.Get(self.ecs_mgr, entity_id)
+	rot.value.y = rot.value.y + rot_speed * self.game_time.delta
+	Rotation.Set(self.ecs_mgr, entity_id, rot)
+
 end
 
 return TestProcess

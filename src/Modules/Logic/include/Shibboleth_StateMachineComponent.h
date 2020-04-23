@@ -27,19 +27,27 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class StateMachine final : public ECSComponentBaseBoth<StateMachine>
+struct StateMachineView final
+{
+	StateMachineResource* resource;
+	Esprit::StateMachine::Instance* instance;
+};
+
+NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(StateMachineView)
+NS_END
+
+NS_SHIBBOLETH
+
+class StateMachine final : public ECSComponentBaseBoth<StateMachine, StateMachineView>
 {
 public:
-	struct View final
-	{
-		StateMachineResource* resource;
-		Esprit::StateMachine::Instance* instance;
-	};
-
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
-	static void SetInternal(void* component, int32_t entity_index, const View& value);
-	static View GetInternal(const void* component, int32_t entity_index);
+	static void SetInternal(void* component, int32_t entity_index, const StateMachineView& value);
+	static StateMachineView GetInternal(const void* component, int32_t entity_index);
 
 	static void Constructor(EntityID, void* component, int32_t entity_index);
 	static void Destructor(EntityID, void* component, int32_t entity_index);

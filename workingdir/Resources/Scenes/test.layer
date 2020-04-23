@@ -27,7 +27,7 @@
 				"components":
 				{
 					"Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
-					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+					//"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
 				}
 			}
 		},
@@ -56,7 +56,14 @@
 				"components":
 				{
 					"Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
-					"Rotation": { "value": {"x": 0.0, "y": 0.5, "z": 0.0} }
+					//"Rotation": { "value": {"x": 0.0, "y": 0.5, "z": 0.0} },
+					"StateMachine":
+					{
+						"floats":
+						{
+							"rot_speed": -0.5
+						}
+					}
 				}
 			}
 		},

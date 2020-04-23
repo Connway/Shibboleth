@@ -1692,7 +1692,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				attrs.set_allocator(_allocator);
 
 				for (const IAttributePtr& attr : attr_it->second) {
-					attrs.emplace_back(attr->clone());
+					if (attr->canInherit()) {
+						attrs.emplace_back(attr->clone());
+					}
 				}
 			}
 		}
@@ -1745,7 +1747,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 					attrs.set_allocator(_allocator);
 
 					for (const IAttributePtr& attr : attr_it->second) {
-						attrs.emplace_back(attr->clone());
+						if (attr->canInherit()) {
+							attrs.emplace_back(attr->clone());
+						}
 					}
 				}
 			}
@@ -1790,7 +1794,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 					attrs.set_allocator(_allocator);
 
 					for (const IAttributePtr& attr : attr_it->second) {
-						attrs.emplace_back(attr->clone());
+						if (attr->canInherit()) {
+							attrs.emplace_back(attr->clone());
+						}
 					}
 				}
 			}
@@ -1798,7 +1804,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class class attrs
 		for (const IAttributePtr& attr : base_ref_def._class_attrs) {
-			_class_attrs.emplace_back(attr->clone());
+			if (attr->canInherit()) {
+				_class_attrs.emplace_back(attr->clone());
+			}
 		}
 
 	// Register for callback if base class hasn't been defined yet.

@@ -244,7 +244,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 											const auto it = Gaff::LowerBound(*process_bucket, type_hash, ReflectionManager::CompareRefHash);
 
-											if (it == process_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
+											if (it != process_bucket->end() && (*it)->getReflectionInstance().getHash() == type_hash) {
 												ref_def = *it;
 											}
 
@@ -365,7 +365,7 @@ void StateMachineResource::loadStateMachine(IFile* file)
 
 											const auto it = Gaff::LowerBound(*cond_bucket, type_hash, ReflectionManager::CompareRefHash);
 
-											if (it == cond_bucket->end() || (*it)->getReflectionInstance().getHash() == type_hash) {
+											if (it != cond_bucket->end() && (*it)->getReflectionInstance().getHash() == type_hash) {
 												ref_def = *it;
 											}
 

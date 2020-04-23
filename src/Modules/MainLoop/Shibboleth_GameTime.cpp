@@ -21,18 +21,32 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_GameTime.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
 	.base<IManager>()
 	.ctor<>()
+
+	.var("game_time_scale", &GameTimeManager::_game_time_scale)
+	.var("real_time", &GameTimeManager::_real_time)
+	.var("game_time", &GameTimeManager::_game_time)
 SHIB_REFLECTION_DEFINE_END(GameTimeManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(GameTimeSystem)
 	.BASE(ISystem)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(GameTimeSystem)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Time)
+	.classAttrs(
+		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::ReferenceOnly)
+	)
+
+	.var("total", &Time::total)
+	.var("delta", &Time::delta)
+SHIB_REFLECTION_DEFINE_END(Time)
 
 NS_SHIBBOLETH
 

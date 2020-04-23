@@ -20,85 +20,113 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseNonShared, T)
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseNonShared<T>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseNonShared<T>::CopyShared)
-	.staticFunc("Copy", &ECSComponentBaseNonShared<T>::Copy)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseNonShared, T, GetT)
+	.classAttrs(
+		ScriptFlagsAttribute(
+			ScriptFlagsAttribute::Flag::NoRegister,
+			ScriptFlagsAttribute::Flag::NoInherit
+		)
+	)
 
-	.staticFunc("Load", &ECSComponentBaseNonShared<T>::Load)
+	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseNonShared<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &ECSComponentBaseNonShared<T, GetT>::CopyShared)
+	.staticFunc("Copy", &ECSComponentBaseNonShared<T, GetT>::Copy)
 
-	.staticFunc("IsNonShared", &ECSComponentBaseNonShared<T>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBaseNonShared<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseNonShared, T)
+	.staticFunc("Load", &ECSComponentBaseNonShared<T, GetT>::Load)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseShared, T)
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseShared<T>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseShared<T>::CopyShared)
+	.staticFunc("IsNonShared", &ECSComponentBaseNonShared<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &ECSComponentBaseNonShared<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseNonShared, T, GetT)
 
-	.staticFunc("Load", &ECSComponentBaseShared<T>::Load)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseShared, T, GetT)
+	.classAttrs(
+		ScriptFlagsAttribute(
+			ScriptFlagsAttribute::Flag::NoRegister,
+			ScriptFlagsAttribute::Flag::NoInherit
+		)
+	)
 
-	.staticFunc("IsNonShared", &ECSComponentBaseShared<T>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBaseShared<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseShared, T)
+	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseShared<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &ECSComponentBaseShared<T, GetT>::CopyShared)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseBoth, T)
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseBoth<T>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseBoth<T>::CopyShared)
-	.staticFunc("Copy", &ECSComponentBaseBoth<T>::Copy)
+	.staticFunc("Load", &ECSComponentBaseShared<T, GetT>::Load)
 
-	.staticFunc("Load", &ECSComponentBaseBoth<T>::Load)
+	.staticFunc("IsNonShared", &ECSComponentBaseShared<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &ECSComponentBaseShared<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseShared, T, GetT)
 
-	.staticFunc("IsNonShared", &ECSComponentBase<T>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBase<T>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBase, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseBoth, T, GetT)
+	.classAttrs(
+		ScriptFlagsAttribute(
+			ScriptFlagsAttribute::Flag::NoRegister,
+			ScriptFlagsAttribute::Flag::NoInherit
+		)
+	)
+
+	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseBoth<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &ECSComponentBaseBoth<T, GetT>::CopyShared)
+	.staticFunc("Copy", &ECSComponentBaseBoth<T, GetT>::Copy)
+
+	.staticFunc("Load", &ECSComponentBaseBoth<T, GetT>::Load)
+
+	.staticFunc("IsNonShared", &ECSComponentBaseBoth<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &ECSComponentBaseBoth<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBase, T, GetT)
 
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentDestructable, T)
+	.classAttrs(
+		ScriptFlagsAttribute(
+			ScriptFlagsAttribute::Flag::NoRegister,
+			ScriptFlagsAttribute::Flag::NoInherit
+		)
+	)
+
 	.staticFunc("Constructor", &ECSComponentDestructable<T>::Constructor)
 	.staticFunc("Destructor", &ECSComponentDestructable<T>::Destructor)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentDestructable, T)
 
 NS_SHIBBOLETH
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value)
 {
 	*ecs_mgr.getComponentShared<T>(archetype) = value;
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::SetShared(ECSManager& ecs_mgr, EntityID id, const T& value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, EntityID id, const T& value)
 {
 	*ecs_mgr.getComponentShared<T>(id) = value;
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, T&& value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, T&& value)
 {
 	*ecs_mgr.getComponentShared<T>(archetype) = std::move(value);
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::SetShared(ECSManager& ecs_mgr, EntityID id, T&& value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, EntityID id, T&& value)
 {
 	*ecs_mgr.getComponentShared<T>(id) = std::move(value);
 }
 
-template <class T, ECSComponentType type>
-T& ECSComponentBase<T, type>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
+template <class T, class GetT, ECSComponentType type>
+T& ECSComponentBase<T, GetT, type>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype)
 {
 	return *ecs_mgr.getComponentShared<T>(archetype);
 }
 
-template <class T, ECSComponentType type>
-T& ECSComponentBase<T, type>::GetShared(ECSManager& ecs_mgr, EntityID id)
+template <class T, class GetT, ECSComponentType type>
+T& ECSComponentBase<T, GetT, type>::GetShared(ECSManager& ecs_mgr, EntityID id)
 {
-	return *ecs_mgr.getComponentShared<T>(archetype);
+	return *ecs_mgr.getComponentShared<T>(id);
 }
 
-template <class T, ECSComponentType type>
+template <class T, class GetT, ECSComponentType type>
 template <class Value>
-void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Value& value)
+void ECSComponentBase<T, GetT, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Value& value)
 {
 	void* const component = ecs_mgr.getComponent(query_result, entity_index);
 	const int32_t page_index = ecs_mgr.getPageIndex(query_result, entity_index) % 4;
@@ -106,9 +134,9 @@ void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, const ECSQueryResult& q
 	T::SetInternal(component, page_index, value);
 }
 
-template <class T, ECSComponentType type>
+template <class T, class GetT, ECSComponentType type>
 template <class Value>
-void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, EntityID id, const Value& value)
+void ECSComponentBase<T, GetT, type>::Set(ECSManager& ecs_mgr, EntityID id, const Value& value)
 {
 	void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;
@@ -116,8 +144,8 @@ void ECSComponentBase<T, type>::Set(ECSManager& ecs_mgr, EntityID id, const Valu
 	T::SetInternal(component, page_index, value);
 }
 
-template <class T, ECSComponentType type>
-decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
+template <class T, class GetT, ECSComponentType type>
+GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index)
 {
 	const void* const component = ecs_mgr.getComponent(query_result, entity_index);
 	const int32_t page_index = ecs_mgr.getPageIndex(query_result, entity_index) % 4;
@@ -125,8 +153,8 @@ decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, const ECSQuer
 	return T::GetInternal(component, page_index);
 }
 
-template <class T, ECSComponentType type>
-decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, EntityID id)
+template <class T, class GetT, ECSComponentType type>
+GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, EntityID id)
 {
 	const void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;
@@ -134,8 +162,8 @@ decltype(auto) ECSComponentBase<T, type>::Get(ECSManager& ecs_mgr, EntityID id)
 	return T::GetInternal(component, page_index);
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared)
 {
 	if constexpr (IsNonShared()) {
 		T::Set(ecs_mgr, id, *reinterpret_cast<const T*>(shared));
@@ -145,20 +173,20 @@ void ECSComponentBase<T, type>::CopyDefaultToNonShared(ECSManager& ecs_mgr, Enti
 	}
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::CopyShared(const void* old_value, void* new_value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::CopyShared(const void* old_value, void* new_value)
 {
 	*reinterpret_cast<T*>(new_value) = *reinterpret_cast<const T*>(old_value);
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
 	T::CopyInternal(old_begin, old_index, new_begin, new_index);
 }
 
-template <class T, ECSComponentType type>
-bool ECSComponentBase<T, type>::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+template <class T, class GetT, ECSComponentType type>
+bool ECSComponentBase<T, GetT, type>::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
 {
 	if constexpr (IsNonShared()) {
 		T value;
@@ -178,36 +206,36 @@ bool ECSComponentBase<T, type>::Load(ECSManager& ecs_mgr, EntityID id, const Gaf
 	}
 }
 
-template <class T, ECSComponentType type>
-constexpr bool ECSComponentBase<T, type>::IsNonShared(void)
+template <class T, class GetT, ECSComponentType type>
+constexpr bool ECSComponentBase<T, GetT, type>::IsNonShared(void)
 {
 	return type != ECSComponentType::Shared;
 }
 
-template <class T, ECSComponentType type>
-constexpr bool ECSComponentBase<T, type>::IsShared(void)
+template <class T, class GetT, ECSComponentType type>
+constexpr bool ECSComponentBase<T, GetT, type>::IsShared(void)
 {
 	return type != ECSComponentType::NonShared;
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
 	GAFF_REF(old_begin, old_index, new_begin, new_index);
 	GAFF_ASSERT_MSG(IsNonShared(), "CopyInternal() called on a component that doesn't support non-shared behavior.");
 	GAFF_ASSERT_MSG(false, "CopyInternal() not implemented with type '%s'.", Reflection<T>::GetName());
 }
 
-template <class T, ECSComponentType type>
-void ECSComponentBase<T, type>::SetInternal(void* component, int32_t page_index, const T& value)
+template <class T, class GetT, ECSComponentType type>
+void ECSComponentBase<T, GetT, type>::SetInternal(void* component, int32_t page_index, const T& value)
 {
 	GAFF_REF(component, page_index, value);
 	GAFF_ASSERT_MSG(IsNonShared(), "SetInternal() called on a component that doesn't support non-shared behavior.");
 	GAFF_ASSERT_MSG(false, "SetInternal() not implemented with type '%s'.", Reflection<T>::GetName());
 }
 
-template <class T, ECSComponentType type>
-T ECSComponentBase<T, type>::GetInternal(const void* component, int32_t page_index)
+template <class T, class GetT, ECSComponentType type>
+GetT ECSComponentBase<T, GetT, type>::GetInternal(const void* component, int32_t page_index)
 {
 	GAFF_REF(component, page_index);
 	GAFF_ASSERT_MSG(IsNonShared(), "GetInternal() called on a component that doesn't support non-shared behavior.");

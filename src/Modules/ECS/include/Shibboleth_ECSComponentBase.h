@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 #include "Shibboleth_ECSManager.h"
 #include "Shibboleth_ECSEntity.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 
 NS_GAFF
 	class ISerializeReader;
@@ -42,10 +43,12 @@ enum class ECSComponentType
 	Both
 };
 
-template <class T, ECSComponentType type = ECSComponentType::Both>
+template <class T, class GetT, ECSComponentType type = ECSComponentType::Both>
 class ECSComponentBase
 {
 public:
+	using GetType = GetT;
+
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value);
 	static void SetShared(ECSManager& ecs_mgr, EntityID id, const T& value);
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, T&& value);
@@ -60,8 +63,8 @@ public:
 	template <class Value>
 	static void Set(ECSManager& ecs_mgr, EntityID id, const Value& value);
 
-	static decltype(auto) Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static decltype(auto) Get(ECSManager& ecs_mgr, EntityID id);
+	static GetT Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
+	static GetT Get(ECSManager& ecs_mgr, EntityID id);
 
 	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
 	static void CopyShared(const void* old_value, void* new_value);
@@ -75,21 +78,21 @@ public:
 protected:
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t page_index, const T& value);
-	static T GetInternal(const void* component, int32_t page_index);
+	static GetT GetInternal(const void* component, int32_t page_index);
 };
 
-template <class T>
-class ECSComponentBaseNonShared : public ECSComponentBase<T, ECSComponentType::NonShared>
+template <class T, class GetT = T>
+class ECSComponentBaseNonShared : public ECSComponentBase<T, GetT, ECSComponentType::NonShared>
 {
 };
 
-template <class T>
-class ECSComponentBaseShared : public ECSComponentBase<T, ECSComponentType::Shared>
+template <class T, class GetT = T>
+class ECSComponentBaseShared : public ECSComponentBase<T, GetT, ECSComponentType::Shared>
 {
 };
 
-template <class T>
-class ECSComponentBaseBoth : public ECSComponentBase<T, ECSComponentType::Both>
+template <class T, class GetT = T>
+class ECSComponentBaseBoth : public ECSComponentBase<T, GetT, ECSComponentType::Both>
 {
 };
 
@@ -114,9 +117,9 @@ public:
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T, GetT)
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
 
@@ -172,4 +175,17 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(type, name, category, ...) \
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
 		.var("value", &type::value, ##__VA_ARGS__); \
-	SHIB_REFLECTION_DEFINE_END(type) \
+		if constexpr (type::IsNonShared()) { \
+			builder \
+				.staticFunc("Get", static_cast<typename type::GetType (*)(ECSManager&, EntityID)>(&type::Get)) \
+				.staticFunc("Set", static_cast<void (*)(ECSManager&, EntityID, const type&)>(&type::Set)); \
+		} \
+		if constexpr (type::IsShared()) { \
+			builder \
+				.staticFunc("GetShared", static_cast<type& (*)(ECSManager&, EntityID)>(&type::GetShared)) \
+				.staticFunc("SetShared", static_cast<void (*)(ECSManager&, EntityID, const type&)>(&type::SetShared)); \
+		} \
+	SHIB_REFLECTION_DEFINE_END(type)
+
+//.staticFunc("GetShared", static_cast<PlayerOwner & (*)(ECSManager&, Gaff::Hash64)>(&PlayerOwner::GetShared))
+//.staticFunc("SetShared", static_cast<void (*)(ECSManager&, Gaff::Hash64, const PlayerOwner&)>(&PlayerOwner::SetShared))

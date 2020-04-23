@@ -330,6 +330,7 @@ public:
 	virtual IAttribute* clone(void) const = 0;
 
 	virtual Hash64 applyVersioning(Hash64 hash) const { return hash; }
+	virtual bool canInherit(void) const { return true; }
 
 	virtual void finish(const Gaff::IReflectionDefinition& /*ref_def*/) {}
 	virtual void finish(const Gaff::IEnumReflectionDefinition& /*ref_def*/) {}

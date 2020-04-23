@@ -1,0 +1,37 @@
+{
+	"variables":
+	{
+		"integers":
+		{
+			"entity_id": -1
+		},
+
+		"floats":
+		{
+			"rot_speed": 0.5
+		}
+	},
+
+	"states":
+	{
+		"spin":
+		{
+			"processes":
+			[
+				{
+					"process_type": "LuaProcess",
+					"script": "Scripts/Processes/test_process.lua"
+				}
+			]
+		}
+	},
+
+	"edges":
+	[
+		{
+			"source": "Start",
+			"destination": "spin",
+			"conditions": []
+		}
+	]
+}
