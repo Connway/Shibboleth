@@ -15,3 +15,6 @@ Libraries Affected:
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
 	zlib-ng
 		Adding OF macro and STDC defines for compatability with minizip.
+	PhysX
+		Changed #include <typeinfo.h> -> #include <typeinfo>.
+		Changed GetModuleHandle() -> GetModuleHandleA().

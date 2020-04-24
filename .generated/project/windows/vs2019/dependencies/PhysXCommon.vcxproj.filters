@@ -204,9 +204,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmBlockArray.h">
       <Filter>source\common\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmBoxPruning.h">
-      <Filter>source\common\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.h">
       <Filter>source\common\src</Filter>
     </ClInclude>
@@ -281,9 +278,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmVisualization.h">
       <Filter>source\common\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuAxes.h">
-      <Filter>source\geomutils\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuBox.h">
       <Filter>source\geomutils\include</Filter>
@@ -704,9 +698,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmBoxPruning.cpp">
-      <Filter>source\common\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.cpp">
       <Filter>source\common\src</Filter>
     </ClCompile>

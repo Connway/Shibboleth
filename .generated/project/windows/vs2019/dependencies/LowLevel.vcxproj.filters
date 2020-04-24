@@ -28,9 +28,6 @@
     <Filter Include="common\src">
       <UniqueIdentifier>{C5631BB1-B11B-5DFE-1A23-365A06FAF7EE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\src\collision">
-      <UniqueIdentifier>{40F31141-2C82-9B0A-D5A0-AF05C10EACB0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common\src\pipeline">
       <UniqueIdentifier>{AAB5A7B0-1617-85BE-9F84-CB700BE5BB7D}</UniqueIdentifier>
     </Filter>
@@ -72,9 +69,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\collision\PxcContactMethodImpl.h">
       <Filter>common\include\collision</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcCCDStateStreamPair.h">
-      <Filter>common\include\pipeline</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcConstraintBlockStream.h">
       <Filter>common\include\pipeline</Filter>
     </ClInclude>
@@ -103,9 +97,6 @@
       <Filter>common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpWorkUnit.h">
-      <Filter>common\include\pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcRigidBody.h">
       <Filter>common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\utils\PxcScratchAllocator.h">
@@ -181,9 +172,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\src\px_globals.cpp">
       <Filter>api\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\collision\PxcContact.cpp">
-      <Filter>common\src\collision</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcContactCache.cpp">
       <Filter>common\src\pipeline</Filter>

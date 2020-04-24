@@ -36,10 +36,16 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.h">
       <Filter>source\filebuf\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.inl">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsFileBuffer.h">
       <Filter>source\filebuf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.h">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.inl">
       <Filter>source\filebuf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsMemoryBuffer.h">

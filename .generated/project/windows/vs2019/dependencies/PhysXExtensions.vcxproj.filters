@@ -177,6 +177,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\ExtJoint.h">
       <Filter>source\physxextensions\src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\ExtJointData.h">
+      <Filter>source\physxextensions\src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\ExtJointMetaDataExtensions.h">
       <Filter>source\physxextensions\src</Filter>
     </ClInclude>

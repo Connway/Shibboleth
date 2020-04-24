@@ -7,6 +7,9 @@
     <Filter Include="physx\include">
       <UniqueIdentifier>{746AE077-E02A-5CAE-A965-A52B15E5A08A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="physx\include\foundation">
+      <UniqueIdentifier>{5A8AFD56-46AF-4CD7-6FFA-31675B7E4BF5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="physx\source">
       <UniqueIdentifier>{0189D322-EDEB-62C7-9671-9B7D82B32E4A}</UniqueIdentifier>
     </Filter>
@@ -41,6 +44,15 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\PxFoundation.h">
       <Filter>physx\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\foundation\PxAssert.h">
+      <Filter>physx\include\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\foundation\PxFoundationConfig.h">
+      <Filter>physx\include\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\foundation\PxMathUtils.h">
+      <Filter>physx\include\foundation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include\Ps.h">
       <Filter>physx\source\foundation\include</Filter>
@@ -192,9 +204,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxAllocatorCallback.h">
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxAssert.h">
-      <Filter>pxshared\include\foundation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxBitAndData.h">
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
@@ -225,9 +234,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxMath.h">
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxMathUtils.h">
-      <Filter>pxshared\include\foundation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxMemory.h">
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
@@ -241,6 +247,9 @@
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxQuat.h">
+      <Filter>pxshared\include\foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxSharedAssert.h">
       <Filter>pxshared\include\foundation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\pxshared\include\foundation\PxSimpleTypes.h">

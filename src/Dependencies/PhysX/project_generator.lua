@@ -17,6 +17,11 @@ function PhysXProject(proj_name, lib_type)
 
 	dofile(string.lower(proj_name) .. "_files.lua")
 
+	defines
+	{
+		"PX_PHYSX_STATIC_LIB"
+	}
+
 	filter { "configurations:Debug*" }
 		defines
 		{
@@ -59,11 +64,6 @@ end
 group "Dependencies/PhysX"
 
 PhysXProject("FastXml", "StaticLib")
-	defines
-	{
-		"PX_FOUNDATION_DLL=0"
-	}
-
 	includedirs
 	{
 		"physx/source/fastxml/include"
@@ -108,7 +108,6 @@ PhysXProject("LowLevel", "StaticLib")
 		}
 
 	filter {}
-
 
 PhysXProject("LowLevelAABB", "StaticLib")
 	includedirs
@@ -165,8 +164,6 @@ PhysXProject("LowLevelDynamics", "StaticLib")
 	filter {}
 
 PhysXProject("PhysXCharacterKinematic", "StaticLib")
-	defines { "PX_PHYSX_CHARACTER_STATIC_LIB" }
-
 	includedirs
 	{
 		"physx/include/common",
@@ -225,8 +222,6 @@ PhysXProject("PhysXExtensions", "StaticLib")
 	}
 
 PhysXProject("PhysXPvdSDK", "StaticLib")
-	defines { "PX_PHYSX_STATIC_LIB" }
-
 	includedirs
 	{
 		"physx/source/filebuf/include",
@@ -240,8 +235,6 @@ PhysXProject("PhysXTask", "StaticLib")
 	}
 
 PhysXProject("PhysXVehicle", "StaticLib")
-	defines { "PX_PHYSX_STATIC_LIB" }
-
 	includedirs
 	{
 		"physx/include/common",
@@ -327,13 +320,7 @@ PhysXProject("SimulationController", "StaticLib")
 		"physx/source/simulationcontroller/src"
 	}
 
-PhysXProject("PhysXCommon", "SharedLib")
-	defines
-	{
-		"PX_FOUNDATION_DLL=1",
-		"PX_PHYSX_COMMON_EXPORTS"
-	}
-
+PhysXProject("PhysXCommon", "StaticLib")
 	includedirs
 	{
 		"physx/include/common",
@@ -362,23 +349,10 @@ PhysXProject("PhysXCommon", "SharedLib")
 
 	filter {}
 
-	local common_deps =
-	{
-		"PhysXFoundation"
-	}
-
-	dependson(common_deps)
-	links(common_deps)
-
-PhysXProject("PhysXCooking", "SharedLib")
+PhysXProject("PhysXCooking", "StaticLib")
 	defines
 	{
-		"PX_COOKING",
-		"PX_FOUNDATION_DLL=1",
-		"PX_PHYSX_COMMON_EXPORTS",
-		"PX_PHYSX_COOKING_EXPORTS",
-		"PX_PHYSX_LOADER_EXPORTS",
-		"PX_PHYSX_CORE_EXPORTS"
+		"PX_COOKING"
 	}
 
 	includedirs
@@ -413,21 +387,7 @@ PhysXProject("PhysXCooking", "SharedLib")
 
 	filter {}
 
-	local cooking_deps =
-	{
-		"PhysXCommon",
-		"PhysXFoundation"
-	}
-
-	dependson(cooking_deps)
-	links(cooking_deps)
-
-PhysXProject("PhysXFoundation", "SharedLib")
-	defines
-	{
-		"PX_FOUNDATION_DLL=1"
-	}
-
+PhysXProject("PhysXFoundation", "StaticLib")
 	includedirs
 	{
 		"physx/source/foundation/include",
@@ -446,23 +406,17 @@ PhysXProject("PhysXFoundation", "SharedLib")
 	filter {}
 
 
-PhysXProject("PhysX", "SharedLib")
-	defines
-	{
-		"PX_FOUNDATION_DLL=1",
-		"PX_PHYSX_CORE_EXPORTS",
-	}
-
+PhysXProject("PhysX", "StaticLib")
 	filter { "system:windows", "configurations:Debug*" }
 		defines { "PX_PHYSX_GPU_SHARED_LIB_NAME=PhysXGpu_64d.dll" }
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp",
-			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp"
+			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
+			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
+			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
 		}
 
 	filter { "system:windows", "configurations:Release*" }
@@ -470,24 +424,18 @@ PhysXProject("PhysX", "SharedLib")
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/temp",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp",
-			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/temp"
+			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp",
+			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
+			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
+			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp"
 		}
-
-	filter { "system:windows", "configurations:Profile*" }
-		-- targetsuffix "64p"
-
-	filter { "system:windows", "configurations:Optimized_Debug*" }
-		-- targetsuffix "64od"
 
 	filter { "system:not windows" }
 		excludes
 		{
 			"physx/source/physx/src/device/windows/*.*",
-			"physx/source/physx/src/windows/*.*" 
+			"physx/source/physx/src/windows/*.*"
 		}
 
 		files { "physx/source/physx/src/device/linux/*.*" }
@@ -535,22 +483,5 @@ PhysXProject("PhysX", "SharedLib")
 		"physx/source/simulationcontroller/include",
 		"physx/source/simulationcontroller/src"
 	}
-
-	local physx_deps =
-	{
-		"LowLevel",
-		"LowLevelAABB",
-		"LowLevelDynamics",
-		"PhysXCommon",
-		"PhysXFoundation",
-		"PhysXPvdSDK",
-		"PhysXTask",
-		"SceneQuery",
-		"SimulationController"
-	}
-
-	dependson(physx_deps)
-	links(physx_deps)
-
 
 group "Dependencies"

@@ -159,10 +159,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DySpatial.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSDynamics.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSContactPrep.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSPartition.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSDynamics.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyThreadContext.h">
@@ -252,9 +252,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSDynamics.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyTGSPartition.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\src\DyThreadContext.cpp">

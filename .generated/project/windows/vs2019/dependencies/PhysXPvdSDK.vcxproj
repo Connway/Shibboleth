@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -118,7 +118,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;PX_SUPPORT_PVD=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_SUPPORT_PVD=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -145,7 +145,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -172,7 +172,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -198,8 +198,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd\PxPvd.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd\PxPvdTransport.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsFileBuffer.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsMemoryBuffer.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PsPvd.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxProfileAllocatorWrapper.h" />

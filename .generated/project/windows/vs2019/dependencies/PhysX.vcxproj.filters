@@ -10,6 +10,9 @@
     <Filter Include="include\common\windows">
       <UniqueIdentifier>{1B506F9A-074A-98EC-F0B6-2EFDDC4FFE58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\cudamanager">
+      <UniqueIdentifier>{B062492F-1CC4-263D-A531-6DEF11925DFC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\gpu">
       <UniqueIdentifier>{E4D6C031-508C-3927-D980-33FE4535302B}</UniqueIdentifier>
     </Filter>
@@ -236,6 +239,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\windows\PxWindowsDelayLoadHook.h">
       <Filter>include\common\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\cudamanager\PxCudaContextManager.h">
+      <Filter>include\cudamanager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\cudamanager\PxCudaMemoryManager.h">
+      <Filter>include\cudamanager</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\gpu\PxGpu.h">
       <Filter>include\gpu</Filter>
