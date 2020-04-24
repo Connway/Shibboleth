@@ -66,6 +66,7 @@ private:
 
 	Vector<UpdateBlock> _blocks{ ProxyAllocator("MainLoop") };
 	IRenderManager* _render_mgr = nullptr;
+	JobPool* _job_pool = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
 };

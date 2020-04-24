@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 namespace physx
 {
-	class PxDefaultCpuDispatcher;
 	class PxFoundation;
 	class PxPhysics;
 	class PxScene;
@@ -37,19 +36,25 @@ namespace physx
 
 NS_SHIBBOLETH
 
+struct Time;
+
 class PhysicsManager final : public IManager
 {
 public:
 	~PhysicsManager(void);
 
 	bool init(void) override;
+	void update(void);
 
 private:
 	VectorMap<Gaff::Hash32, physx::PxScene*> _scenes{ ProxyAllocator("Physics") };
 
-	physx::PxDefaultCpuDispatcher* _dispatcher = nullptr;
 	physx::PxFoundation* _foundation = nullptr;
 	physx::PxPhysics* _physics = nullptr;
+
+	const Time* _game_time = nullptr;
+	float _remaining_time = 0.0f;
+	JobPool* _job_pool = nullptr;
 
 #ifdef _DEBUG
 	physx::PxPvd* _pvd = nullptr;
@@ -65,7 +70,7 @@ public:
 	void update(void) override;
 
 private:
-	PhysicsManager* _Physics_mgr = nullptr;
+	PhysicsManager* _physics_mgr = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsSystem);
 };

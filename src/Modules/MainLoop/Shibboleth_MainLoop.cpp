@@ -60,6 +60,7 @@ bool MainLoop::init(void)
 	IApp& app = GetApp();
 
 	_render_mgr = &app.GETMANAGERT(IRenderManager, RenderManager);
+	_job_pool = &app.getJobPool();
 
 	const auto* const systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(ISystem));
 
@@ -220,7 +221,7 @@ void MainLoop::update(void)
 		// Process the next row.
 		block.counter = 0;
 
-		GetApp().getJobPool().addJobs(
+		_job_pool->addJobs(
 			block.rows[block.curr_row].job_data.data(),
 			static_cast<int32_t>(block.rows[block.curr_row].job_data.size()),
 			block.counter
@@ -228,7 +229,7 @@ void MainLoop::update(void)
 	}
 
 	// Help out a little before the next iteration.
-	GetApp().getJobPool().doAJob();
+	_job_pool->doAJob();
 
 	// Give some time to other threads.
 	EA::Thread::ThreadSleep();

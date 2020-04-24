@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_PhysicsManager.h"
+#include <Shibboleth_GameTime.h>
+#include <Shibboleth_JobPool.h>
 #include <PxPhysicsAPI.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
@@ -28,43 +30,78 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 
-
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
+
+
+namespace
+{
+	class PhysicsAllocator final : public physx::PxAllocatorCallback
+	{
+	public:
+		void* allocate(size_t size, const char* type_name, const char* filename, int line) override
+		{
+			GAFF_REF(type_name);
+			return _allocator.alloc(size, 16, filename, line);
+		}
+
+		void deallocate(void* ptr) override
+		{
+			_allocator.free(ptr);
+		}
+
+	private:
+		Shibboleth::ProxyAllocator _allocator{ "Physics" };
+	};
+
+	class PhysicsErrorHandler final : public physx::PxErrorCallback
+	{
+	public:
+		void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
+		{
+			GAFF_REF(code, message, file, line);
+		}
+	};
+
+	class PhysicsTaskDispatcher final : public physx::PxCpuDispatcher
+	{
+	public:
+		void init(void)
+		{
+			_job_pool = &Shibboleth::GetApp().getJobPool();
+		}
+
+		void submitTask(physx::PxBaseTask& task) override
+		{
+			Gaff::JobData job_data{ RunTask, &task };
+			_job_pool->addJobs(&job_data, 1);
+		}
+
+		uint32_t getWorkerCount() const override
+		{
+			return static_cast<uint32_t>(_job_pool->getNumTotalThreads());
+		}
+
+	private:
+		Shibboleth::JobPool* _job_pool = nullptr;
+
+		static void RunTask(void* data)
+		{
+			physx::PxBaseTask& task = *reinterpret_cast<physx::PxBaseTask*>(data);
+			task.run();
+			task.release();
+		}
+	};
+
+	static PhysicsTaskDispatcher g_physics_task_dispatcher;
+	static PhysicsErrorHandler g_physics_error_handler;
+	static PhysicsAllocator g_physics_allocator;
+}
+
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsManager)
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
-
-class PhysicsAllocator final : public physx::PxAllocatorCallback
-{
-public:
-	void* allocate(size_t size, const char* type_name, const char* filename, int line) override
-	{
-		GAFF_REF(type_name);
-		return _allocator.alloc(size, 16, filename, line);
-	}
-
-	void deallocate(void* ptr) override
-	{
-		_allocator.free(ptr);
-	}
-
-private:
-	ProxyAllocator _allocator{ "Physics" };
-};
-
-class PhysicsErrorHandler final : public physx::PxErrorCallback
-{
-public:
-	void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
-	{
-		GAFF_REF(code, message, file, line);
-	}
-};
-
-static PhysicsErrorHandler g_physics_error_handler;
-static PhysicsAllocator g_physics_allocator;
 
 PhysicsManager::~PhysicsManager(void)
 {
@@ -72,7 +109,6 @@ PhysicsManager::~PhysicsManager(void)
 		SAFEGAFFRELEASE(pair.second);
 	}
 
-	SAFEGAFFRELEASE(_dispatcher);
 	SAFEGAFFRELEASE(_physics);
 
 #ifdef _DEBUG
@@ -86,6 +122,11 @@ PhysicsManager::~PhysicsManager(void)
 
 bool PhysicsManager::init(void)
 {
+	_game_time = &GetApp().getManagerTFast<GameTimeManager>().getGameTime();
+	_job_pool = &GetApp().getJobPool();
+
+	g_physics_task_dispatcher.init();
+
 	_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, g_physics_allocator, g_physics_error_handler);
 	physx::PxPvd* pvd = nullptr;
 	bool track_allocs = false;
@@ -100,11 +141,10 @@ bool PhysicsManager::init(void)
 #endif
 
 	_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_foundation, physx::PxTolerancesScale(), track_allocs, pvd);
-	_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 
 	physx::PxSceneDesc scene_desc(_physics->getTolerancesScale());
 	scene_desc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
-	scene_desc.cpuDispatcher = _dispatcher;
+	scene_desc.cpuDispatcher = &g_physics_task_dispatcher;
 	scene_desc.filterShader = physx::PxDefaultSimulationFilterShader;
 	physx::PxScene* main_scene = _physics->createScene(scene_desc);
 
@@ -130,15 +170,40 @@ bool PhysicsManager::init(void)
 	return true;
 }
 
+void PhysicsManager::update(void)
+{
+	// $TODO: Add to a config file.
+	constexpr float k_frame_step = 1.0f / 60.0f;
+
+	_remaining_time += _game_time->getDeltaFloat();
+
+	while (_remaining_time > k_frame_step) {
+		for (auto& pair : _scenes) {
+			pair.second->simulate(k_frame_step);
+		}
+
+		_remaining_time -= k_frame_step;
+		
+		for (auto& pair : _scenes) {
+			while (!pair.second->fetchResults()) {
+				_job_pool->doAJob();
+				EA::Thread::ThreadSleep();
+			}
+		}
+	}
+}
+
 
 
 bool PhysicsSystem::init(void)
 {
+	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
 	return true;
 }
 
 void PhysicsSystem::update(void)
 {
+	_physics_mgr->update();
 }
 
 NS_END
