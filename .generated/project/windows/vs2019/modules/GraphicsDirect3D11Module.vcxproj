@@ -256,11 +256,14 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
-      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    <ProjectReference Include="MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>

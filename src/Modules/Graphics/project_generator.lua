@@ -123,8 +123,9 @@ function DoGraphicsModule(renderer)
 		deps =
 		{
 			"GraphicsBase",
-			"Gleam",
+			"MainLoop",
 			"Resource",
+			"Gleam",
 			"ECS",
 			"assimp",
 			"mpack",
@@ -150,8 +151,9 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("")
 	table.remove(deps) -- remove module name dependency
 	table.insert(deps, "GraphicsBase")
-	table.insert(deps, "Gleam")
+	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "Gleam")
 	table.insert(deps, "ECS")
 	table.insert(deps, "assimp")
 	table.insert(deps, "mpack")

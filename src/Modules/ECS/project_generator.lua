@@ -55,9 +55,12 @@ local GenerateProject = function()
 		local deps =
 		{
 			"Gleam",
-			"CivetWeb",
+
 			"DevWebServer",
-			"Resource"
+			"MainLoop",
+			"Resource",
+
+			"CivetWeb"
 		}
 
 		dependson(deps)
@@ -67,9 +70,10 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("ECS")
 	table.insert(deps, "Gleam")
-	table.insert(deps, "CivetWeb")
 	table.insert(deps, "DevWebServer")
+	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "CivetWeb")
 
 	dependson(deps)
 	links(deps)

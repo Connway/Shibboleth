@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
   </ItemGroup>

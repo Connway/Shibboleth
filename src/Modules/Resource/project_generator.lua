@@ -45,10 +45,19 @@ local GenerateProject = function()
 		ModuleIncludesAndLinks("Resource")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+
+		local deps =
+		{
+			"MainLoop"
+		}
+
+		dependson(deps)
+		links(deps)
 end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Resource")
+	table.insert(deps, "MainLoop")
 
 	dependson(deps)
 	links(deps)

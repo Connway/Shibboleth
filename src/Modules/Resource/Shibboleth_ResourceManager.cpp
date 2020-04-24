@@ -41,7 +41,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
 	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::getResource))
 SHIB_REFLECTION_DEFINE_END(ResourceManager)
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(ResourceSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(ResourceSystem, ISystem)
 
 NS_SHIBBOLETH
 

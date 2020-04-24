@@ -354,11 +354,11 @@
     <ProjectReference Include="..\modules\Camera.vcxproj">
       <Project>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
-      <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\DevWebServer.vcxproj">
       <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
+      <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
       <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
@@ -375,9 +375,6 @@
     <ProjectReference Include="..\frameworks\Esprit.vcxproj">
       <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\MainLoop.vcxproj">
-      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
     </ProjectReference>
@@ -393,8 +390,56 @@
     <ProjectReference Include="..\dependencies\libtiff.vcxproj">
       <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\Physics.vcxproj">
+      <Project>{888B590D-F46A-D8A8-FD82-637F69E13E0A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\LowLevel.vcxproj">
+      <Project>{4F63ED1A-3B30-4826-6449-36CE50757DB4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\LowLevelAABB.vcxproj">
+      <Project>{B534A1CE-A197-3073-4A1D-6929365FFCF5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\LowLevelDynamics.vcxproj">
+      <Project>{87D47AF5-73CD-9947-9CFF-7ECC88577953}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXCharacterKinematic.vcxproj">
+      <Project>{83304542-EF67-8DD9-F871-F1FC6428B4D2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXFoundation.vcxproj">
+      <Project>{584C81A5-C4D7-EE69-CDE8-715E39F34A6A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXExtensions.vcxproj">
+      <Project>{311D5C31-9DA8-C9F5-A6B9-4CEA12C425F6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXVehicle.vcxproj">
+      <Project>{A1CA1E15-8D2D-AEB9-36B3-E66F22F5793C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXCooking.vcxproj">
+      <Project>{ABBC5F76-971F-EF1A-40A5-27D12CE7BA9D}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXCommon.vcxproj">
+      <Project>{4A347687-B6E9-EE7C-3FDE-E853AB92E580}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXPvdSDK.vcxproj">
+      <Project>{4D8C42A6-B941-BB9B-4236-B572AEEAB19F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysXTask.vcxproj">
+      <Project>{F475AEC8-60E0-623F-A91E-14E515C84094}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\PhysX.vcxproj">
+      <Project>{C1C1E10D-2DD6-09BF-F657-AD1E622B06F0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\SceneQuery.vcxproj">
+      <Project>{89654ECC-751D-9019-DE24-6975CAFB2A0A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\SimulationController.vcxproj">
+      <Project>{AEFD6AD8-9A8C-F4A1-43AB-089D2F190548}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\Script.vcxproj">
       <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>

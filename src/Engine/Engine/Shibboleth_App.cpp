@@ -407,7 +407,7 @@ bool App::initInternal(void)
 
 	LogInfoDefault("Initializing...");
 
-	auto thread_init = []()
+	const auto thread_init = []() -> void
 	{
 		AllocatorThreadInit();
 	};

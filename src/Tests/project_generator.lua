@@ -79,7 +79,8 @@ local tests = {
 			"Gaff", "Gleam",
 			"Memory", "EASTL",
 			"Engine", "ECS",
-			"mpack", "Resource"
+			"mpack", "Resource",
+			"MainLoop"
 		},
 
 		extra = function ()
@@ -92,41 +93,7 @@ local tests = {
 
 			filter {}
 		end
-
 	}
-	-- {
-	-- 	name = "ScriptTest",
-
-	-- 	includedirs =
-	-- {
-	-- 		"../Dependencies/EASTL/include",
-	-- 		"../Dependencies/doctest",
-	-- 		"../Dependencies/angelscript/angelscript/include",
-	-- 		"../Dependencies/angelscript/add_on/scriptbuilder",
-	-- 		"../Dependencies/rapidjson",
-
-	-- 		"../Frameworks/Gaff/include",
-	-- 		"../Engine/Engine/include",
-	-- 		"../Engine/Memory/include",
-	-- 		"../Modules/Scripting/include"
-	-- 	},
-
-	-- 	links =
-	-- {
-	-- 		"Gaff", "Memory",
-	-- 		"EASTL", "Engine",
-	-- 		"Scripting", "Entity",
-	-- 		"Resource", "Gleam",
-	-- 		"angelscript"
-	-- 	},
-
-	-- 	extra = function ()
-	-- 		filter { "system:windows" }
-	-- 			links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
-
-	-- 		filter {}
-	-- 	end
-	-- }
 }
 
 function GenTest(settings)

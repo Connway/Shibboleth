@@ -22,18 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionInterfaces.h>
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
 class ISystem : public Gaff::IReflectionObject
 {
 public:
-	ISystem(void) {}
-	virtual ~ISystem(void) {}
+	ISystem(void) = default;
 
 	virtual bool init(void) = 0;
 	virtual void update(void) = 0;
+
+	GAFF_NO_COPY(ISystem);
+	GAFF_NO_MOVE(ISystem);
+
+	SHIB_REFLECTION_CLASS_DECLARE(ISystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ISystem)

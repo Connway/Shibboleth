@@ -54,6 +54,7 @@ local GenerateProject = function()
 
 		local deps =
 		{
+			"MainLoop",
 			"Resource",
 			"ECS",
 			"Lua",
@@ -67,6 +68,7 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Script")
+	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
 	table.insert(deps, "Lua")

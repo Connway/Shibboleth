@@ -256,6 +256,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="Script.vcxproj">
       <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>
+    <ProjectReference Include="MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
+    </ProjectReference>
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
