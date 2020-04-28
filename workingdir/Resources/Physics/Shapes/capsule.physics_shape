@@ -1,0 +1,8 @@
+{
+	"material": "Physics/Materials/test.physics_material",
+	"capsule":
+	{
+		"half_height": 1.0,
+		"radius": 0.5
+	}
+}

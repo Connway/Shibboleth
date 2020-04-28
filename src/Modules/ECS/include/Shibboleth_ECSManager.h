@@ -78,6 +78,8 @@ void AddComponentHelper(ECSArchetype& archetype)
 class ECSManager final : public IManager
 {
 public:
+	static constexpr const char* const k_empty_archetype_res_name = "EmptyECSArchetype";
+
 	struct ArchetypeModifier final
 	{
 		void (*removeShared)(ECSArchetype&);
@@ -252,29 +254,6 @@ public:
 		modifyInternal(id, modifier);
 	}
 
-	template <class Callback, class... Components, class... QueryResults>
-	void iterate(Callback&& callback, const QueryResults&... query_results)
-	{
-		static_assert(sizeof...(Components) == sizeof...(QueryResults) || sizeof...(Components) == 0);
-		EntityData* const data = getEntityData(query_results...);
-
-		int32_t count = 0;
-
-		for (int32_t i = 0; count < data->num_entities && i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
-			if (data->entity_ids[i] == -1) {
-				continue;
-			}
-
-			if constexpr (sizeof...(Components) == 0) {
-				callback(data->entity_ids[i]);
-			} else {
-				callback(data->entity_ids[i], get<Components>(query_results, i)...);
-			}
-
-			++count;
-		}
-	}
-
 	template <class T1, class T2, class T3, class T4, class T5, class Callback>
 	void iterate(
 		Callback&& callback,
@@ -284,7 +263,7 @@ public:
 		const ECSQueryResult& query_result4,
 		const ECSQueryResult& query_result5)
 	{
-		iterate<Callback, T1, T2, T3, T4, T5>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4, query_result5);
+		iterateInternal<Callback, T1, T2, T3, T4, T5>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4, query_result5);
 	}
 
 	template <class T1, class T2, class T3, class T4, class Callback>
@@ -295,7 +274,7 @@ public:
 		const ECSQueryResult& query_result3,
 		const ECSQueryResult& query_result4)
 	{
-		iterate<Callback, T1, T2, T3, T4>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4);
+		iterateInternal<Callback, T1, T2, T3, T4>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4);
 	}
 
 	template <class T1, class T2, class T3, class Callback>
@@ -305,7 +284,7 @@ public:
 		const ECSQueryResult& query_result2,
 		const ECSQueryResult& query_result3)
 	{
-		iterate<Callback, T1, T2, T3>(std::forward<Callback>(callback), query_result1, query_result2, query_result3);
+		iterateInternal<Callback, T1, T2, T3>(std::forward<Callback>(callback), query_result1, query_result2, query_result3);
 	}
 
 	template <class T1, class T2, class Callback>
@@ -314,13 +293,13 @@ public:
 		const ECSQueryResult& query_result1,
 		const ECSQueryResult& query_result2)
 	{
-		iterate<Callback, T1, T2>(std::forward<Callback>(callback), query_result1, query_result2);
+		iterateInternal<Callback, T1, T2>(std::forward<Callback>(callback), query_result1, query_result2);
 	}
 
 	template <class T, class Callback>
 	void iterate(Callback&& callback, const ECSQueryResult& query_result)
 	{
-		iterate<Callback, T>(std::forward<Callback>(callback), query_result);
+		iterateInternal<Callback, T>(std::forward<Callback>(callback), query_result);
 	}
 
 	~ECSManager(void);
@@ -363,6 +342,9 @@ public:
 	bool hasComponent(EntityID id, const Gaff::IReflectionDefinition& component) const;
 	bool hasComponent(EntityID id, Gaff::Hash64 component) const;
 
+	int32_t getComponentIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
+	int32_t getComponentIndex(EntityID id) const;
+
 	int32_t getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
 	int32_t getPageIndex(EntityID id) const;
 
@@ -376,6 +358,8 @@ public:
 	void switchScene(const ECSSceneResourcePtr scene);
 
 	bool isValid(EntityID id) const;
+
+	const ECSArchetype& getEmptyArchetype(void) const;
 
 private:
 	struct EntityData;
@@ -421,6 +405,7 @@ private:
 	Vector<EntityID> _free_ids;
 	EntityID _next_id = 0;
 
+	ECSArchetypeResourcePtr _empty_arch_res;
 	ECSSceneResourcePtr _curr_scene;
 
 	//bool loadFile(const char* file_name, IFile* file);
@@ -460,6 +445,9 @@ private:
 
 	template <class... QueryResults>
 	EntityData* getEntityData(const ECSQueryResult& query_result, const QueryResults&... query_results);
+
+	template <class Callback, class... Components, class... QueryResults>
+	void iterateInternal(Callback&& callback, const QueryResults&... query_results);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };

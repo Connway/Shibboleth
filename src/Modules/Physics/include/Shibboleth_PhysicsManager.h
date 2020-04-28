@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 
 namespace physx
@@ -36,6 +38,7 @@ namespace physx
 
 NS_SHIBBOLETH
 
+class ECSManager;
 struct Time;
 
 class PhysicsManager final : public IManager
@@ -46,14 +49,26 @@ public:
 	bool init(void) override;
 	void update(void);
 
+	physx::PxFoundation* getFoundation(void);
+	physx::PxPhysics* getPhysics(void);
+
 private:
 	VectorMap<Gaff::Hash32, physx::PxScene*> _scenes{ ProxyAllocator("Physics") };
+
+	ECSQuery::SharedOutput<Scene> _scene_comps{ ProxyAllocator("Physics") };
+	ECSQuery::Output _rigid_bodies{ ProxyAllocator("Physics") };
+	ECSQuery::Output _positions{ ProxyAllocator("Physics") };
+	ECSQuery::Output _rotations{ ProxyAllocator("Physics") };
+	ECSQuery::Output _scales{ ProxyAllocator("Physics") };
 
 	physx::PxFoundation* _foundation = nullptr;
 	physx::PxPhysics* _physics = nullptr;
 
+	ECSManager* _ecs_mgr = nullptr;
+
 	const Time* _game_time = nullptr;
 	float _remaining_time = 0.0f;
+
 	JobPool* _job_pool = nullptr;
 
 #ifdef _DEBUG

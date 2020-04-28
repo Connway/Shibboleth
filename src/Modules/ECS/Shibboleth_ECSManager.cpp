@@ -56,6 +56,17 @@ bool ECSManager::initAllModulesLoaded(void)
 	//	// Cache all components.
 	//}
 
+	// Add empty base archetype.
+	ECSArchetype default_archetype;
+	
+	if (!default_archetype.finalize(true)) {
+		// $TODO: Log error. (somehow failed to initialize an empty archetype?)
+		return false;
+	}
+
+	_empty_arch_res = GetApp().getManagerTFast<ResourceManager>().createResourceT<ECSArchetypeResource>(k_empty_archetype_res_name);
+	addArchetype(std::move(default_archetype), _empty_arch_res->_archetype_ref);
+
 	const Gaff::JSON starting_scene = GetApp().getConfigs()["starting_scene"];
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
@@ -301,6 +312,20 @@ bool ECSManager::hasComponent(EntityID id, Gaff::Hash64 component) const
 	return getComponent(id, component) != nullptr;
 }
 
+int32_t ECSManager::getComponentIndex(const ECSQueryResult& query_result, int32_t entity_index) const
+{
+	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
+	GAFF_ASSERT(entity_index < static_cast<int32_t>(data->entity_ids.size()));
+
+	return getComponentIndex(data->entity_ids[entity_index]);
+}
+
+int32_t ECSManager::getComponentIndex(EntityID id) const
+{
+	GAFF_ASSERT(ValidEntityID(id) && id < _next_id&& _entities[id].data);
+	return _entities[id].index % 4;
+}
+
 int32_t ECSManager::getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const
 {
 	EntityData* const data = reinterpret_cast<EntityData*>(query_result.entity_data);
@@ -365,6 +390,11 @@ void ECSManager::switchScene(const ECSSceneResourcePtr scene)
 bool ECSManager::isValid(EntityID id) const
 {
 	return ValidEntityID(id) && id < _next_id;
+}
+
+const ECSArchetype& ECSManager::getEmptyArchetype(void) const
+{
+	return getArchetype(Gaff::INIT_HASH64);
 }
 
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
@@ -561,14 +591,21 @@ ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 	ProxyAllocator allocator("ECS");
 
 	EntityData* const data = SHIB_ALLOCT(EntityData, allocator);
-	data->num_entities_per_page = (page_size_bytes - sizeof(EntityPage)) / entity_size;
-	// Scale num_entities_per_page down to the nearest multiple of 4.
-	data->num_entities_per_page = static_cast<int32_t>(floor(static_cast<float>(data->num_entities_per_page) / 4.0f) * 4.0f);
 
-	// If even after 64kb of data we still have less than 4 entities, then our entities are seriously way too big.
-	GAFF_ASSERT(data->num_entities_per_page >= 4);
+	if (archetype.isBase()) {
+		data->num_entities_per_page = 0;
+		data->page_size = 0;
 
-	data->page_size = page_size_bytes;
+	} else {
+		data->num_entities_per_page = (page_size_bytes - sizeof(EntityPage)) / entity_size;
+		// Scale num_entities_per_page down to the nearest multiple of 4.
+		data->num_entities_per_page = static_cast<int32_t>(floor(static_cast<float>(data->num_entities_per_page) / 4.0f) * 4.0f);
+
+		// If even after 64kb of data we still have less than 4 entities, then our entities are seriously way too big.
+		GAFF_ASSERT(data->num_entities_per_page >= 4);
+		data->page_size = page_size_bytes;
+	}
+
 	data->arch_ref = SHIB_ALLOCT(ArchetypeReference, allocator, *this, archetype_hash);
 	data->archetype = std::move(archetype);
 

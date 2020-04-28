@@ -23,13 +23,14 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_StateMachineComponent.h"
+#include <Shibboleth_ResourceManager.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
 	.classAttrs(
 		ECSClassAttribute(nullptr, "Logic")
 	)
 
-	.base< ECSComponentBaseBoth<StateMachine, StateMachineView> >()
+	.base< ECSComponentBaseBoth<StateMachine, StateMachine&> >()
 	.serialize(StateMachine::Load)
 
 	.staticFunc("Constructor", StateMachine::Constructor)
@@ -45,90 +46,41 @@ NS_SHIBBOLETH
 
 void StateMachine::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
 {
-	const auto* const old_res = reinterpret_cast<const StateMachineResourcePtr*>(old_begin) + old_index;
-	auto* const new_res = reinterpret_cast<StateMachineResourcePtr*>(new_begin) + new_index;
+	const auto* const old_sm = reinterpret_cast<const StateMachine*>(old_begin) + old_index;
+	auto* const new_sm = reinterpret_cast<StateMachine*>(new_begin) + new_index;
 
-	const auto* const old_vars = reinterpret_cast<const UniquePtr<Esprit::StateMachine::Instance>*>(old_res - old_index + 4) + old_index;
-	auto* const new_vars = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(new_res - new_index + 4) + new_index;
-
-	*new_res= *old_res;
-	new_vars->reset((*old_vars)->clone());
+	*new_sm = *old_sm;
 }
 
-void StateMachine::SetInternal(void* component, int32_t entity_index, const StateMachine& value)
+void StateMachine::SetInternal(void* component, int32_t comp_index, const StateMachine& value)
 {
-	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
-	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	*res = value.resource;
-
-	if (value.instance) {
-		inst->reset(value.instance->clone());
-	} else if (value.resource && value.resource->isLoaded() && value.resource->getStateMachine()) {
-		inst->reset(value.resource->getStateMachine()->createInstanceData());
-	}
+	GetInternal(component, comp_index) = value;
 }
 
-void StateMachine::SetInternal(void* component, int32_t entity_index, const StateMachineView& value)
+StateMachine& StateMachine::GetInternal(const void* component, int32_t comp_index)
 {
-	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
-	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	*res = value.resource;
-
-	if (inst->get() != value.instance) {
-		inst->reset(value.instance);
-	}
-
-	if (!*inst && value.resource && value.resource->isLoaded() && value.resource->getStateMachine()) {
-		inst->reset(value.resource->getStateMachine()->createInstanceData());
-	}
+	return *(reinterpret_cast<StateMachine*>(const_cast<void*>(component)) + comp_index);
 }
 
-StateMachineView StateMachine::GetInternal(const void* component, int32_t entity_index)
+void StateMachine::Constructor(EntityID, void* component, int32_t comp_index)
 {
-	StateMachineView view;
-
-	const auto* const res = reinterpret_cast<const StateMachineResourcePtr*>(component) + entity_index;
-	const auto* const inst = reinterpret_cast<const UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	view.resource = res->get();
-	view.instance = inst->get();
-
-	return view;
+	new(&GetInternal(component, comp_index)) StateMachine();
 }
 
-void StateMachine::Constructor(EntityID, void* component, int32_t entity_index)
+void StateMachine::Destructor(EntityID, void* component, int32_t comp_index)
 {
-	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
-	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	new(res) StateMachineResourcePtr();
-	new(inst) UniquePtr<Esprit::StateMachine::Instance>();
-}
-
-void StateMachine::Destructor(EntityID, void* component, int32_t entity_index)
-{
-	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
-	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	res->~StateMachineResourcePtr();
-	inst->~UniquePtr<Esprit::StateMachine::Instance>();
+	GetInternal(component, comp_index).~StateMachine();
 }
 
 bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
 {
-	void* const component = ecs_mgr.getComponent<StateMachine>(id);
-	const int32_t entity_index = ecs_mgr.getPageIndex(id) % 4;
+	StateMachine& sm = GetInternal(ecs_mgr.getComponent<StateMachine>(id), ecs_mgr.getComponentIndex(id));
 
-	auto* const res = reinterpret_cast<StateMachineResourcePtr*>(component) + entity_index;
-	auto* const inst = reinterpret_cast<UniquePtr<Esprit::StateMachine::Instance>*>(res - entity_index + 4) + entity_index;
-
-	if (!(*res) || (*res)->hasFailed()) {
+	if (!sm.resource || sm.resource->hasFailed()) {
 		return false;
 	}
 
-	(*res)->readValues(reader, (*inst)->variables);
+	sm.resource->readValues(reader, sm.instance->variables);
 
 	return true;
 }
@@ -152,7 +104,6 @@ bool StateMachine::Load(const Gaff::ISerializeReader& reader, StateMachine& out)
 	out.instance.reset(sm.createInstanceData());
 
 	out.resource->readValues(reader, out.instance->variables);
-
 	return true;
 }
 
@@ -166,13 +117,6 @@ StateMachine& StateMachine::operator=(const StateMachine& rhs)
 		instance.reset(resource->getStateMachine()->createInstanceData());
 	}
 
-	return *this;
-}
-
-StateMachine& StateMachine::operator=(StateMachine&& rhs)
-{
-	resource = std::move(rhs.resource);
-	instance = std::move(rhs.instance);
 	return *this;
 }
 

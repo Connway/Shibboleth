@@ -629,7 +629,7 @@ JSON JSON::getValue(int32_t index) const
 
 const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
 {
-	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size - 1);
+	return (_value.IsNull()) ? strncpy(buffer, default_value, buf_size - 1) : strncpy(buffer, _value.GetString(), buf_size - 1);
 }
 
 const char* JSON::getString(const char* default_value) const

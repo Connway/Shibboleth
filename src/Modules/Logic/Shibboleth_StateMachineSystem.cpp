@@ -51,8 +51,13 @@ void StateMachineSystem::update(void)
 {
 	// $TODO: Jobify this loop.
 	for (const auto& sm_arch : _state_machines) {
-		_ecs_mgr->iterate<StateMachine>([](EntityID id, StateMachineView state_machine) -> void
+		_ecs_mgr->iterate<StateMachine>([](EntityID id, StateMachine& state_machine) -> void
 		{
+			if (!state_machine.resource) {
+				// $TODO: Log error
+				return;
+			}
+
 			const Esprit::StateMachine* const sm = state_machine.resource->getStateMachine();
 
 			if (!sm) {

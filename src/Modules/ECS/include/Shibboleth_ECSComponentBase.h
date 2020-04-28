@@ -186,6 +186,3 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
 				.staticFunc("SetShared", static_cast<void (*)(ECSManager&, EntityID, const type&)>(&type::SetShared)); \
 		} \
 	SHIB_REFLECTION_DEFINE_END(type)
-
-//.staticFunc("GetShared", static_cast<PlayerOwner & (*)(ECSManager&, Gaff::Hash64)>(&PlayerOwner::GetShared))
-//.staticFunc("SetShared", static_cast<void (*)(ECSManager&, Gaff::Hash64, const PlayerOwner&)>(&PlayerOwner::SetShared))

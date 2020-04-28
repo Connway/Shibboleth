@@ -24,12 +24,15 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glm",
+			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/PhysX/physx/include",
 			base_dir .. "../../Dependencies/PhysX/pxshared/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
-			-- base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Modules/MainLoop/include"
+			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Modules/MainLoop/include",
+			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/ECS/include"
 		}
 
 	project "PhysicsModule"
@@ -52,7 +55,9 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			-- "Gleam",
+			"Gleam",
+			"mpack",
+
 			"LowLevel",
 			"LowLevelAABB",
 			"LowLevelDynamics",
@@ -68,7 +73,9 @@ local GenerateProject = function()
 			"SceneQuery",
 			"SimulationController",
 
-			"MainLoop"
+			"MainLoop",
+			"Resource",
+			"ECS"
 		}
 
 		dependson(deps)
@@ -77,7 +84,9 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Physics")
-	-- table.insert(deps, "Gleam")
+	table.insert(deps, "Gleam")
+	table.insert(deps, "mpack")
+
 	table.insert(deps, "LowLevel")
 	table.insert(deps, "LowLevelAABB")
 	table.insert(deps, "LowLevelDynamics")
@@ -94,6 +103,8 @@ local LinkDependencies = function()
 	table.insert(deps, "SimulationController")
 
 	table.insert(deps, "MainLoop")
+	table.insert(deps, "Resource")
+	table.insert(deps, "ECS")
 
 	dependson(deps)
 	links(deps)

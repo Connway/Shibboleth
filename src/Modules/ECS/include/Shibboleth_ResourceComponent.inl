@@ -21,6 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Resource, T)
+	.classAttrs(
+		ScriptFlagsAttribute(
+			ScriptFlagsAttribute::Flag::NoRegister,
+			ScriptFlagsAttribute::Flag::NoInherit
+		)
+	)
+
 	.staticFunc("CopyShared", &Resource<T>::CopyShared)
 	.staticFunc("IsNonShared", &Resource<T>::IsNonShared)
 	.staticFunc("IsShared", &Resource<T>::IsShared)

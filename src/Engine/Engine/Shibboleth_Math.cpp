@@ -193,6 +193,11 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)
 	.var("scale", &Gleam::Transform::getScale, &Gleam::Transform::setScale)
 SHIB_REFLECTION_DEFINE_END(Gleam::Transform)
 
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Plane)
+	.var("normal", &Gleam::Plane::getNormal, &Gleam::Plane::setNormal)
+	.var("distance", &Gleam::Plane::getDistance, &Gleam::Plane::setDistance)
+SHIB_REFLECTION_DEFINE_END(Gleam::Plane)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::AABB)
 	.var("min", &Gleam::AABB::getMin, &Gleam::AABB::setMin)
 	.var("max", &Gleam::AABB::getMax, &Gleam::AABB::setMax)

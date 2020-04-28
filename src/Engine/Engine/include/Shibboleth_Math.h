@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Reflection.h"
 #include <Gleam_Transform.h>
+#include <Gleam_Plane.h>
 #include <Gleam_AABB.h>
 
 SHIB_REFLECTION_DECLARE(glm::quat)
@@ -32,4 +33,5 @@ SHIB_REFLECTION_DECLARE(glm::vec3)
 SHIB_REFLECTION_DECLARE(glm::vec2)
 
 SHIB_REFLECTION_DECLARE(Gleam::Transform)
+SHIB_REFLECTION_DECLARE(Gleam::Plane)
 SHIB_REFLECTION_DECLARE(Gleam::AABB)

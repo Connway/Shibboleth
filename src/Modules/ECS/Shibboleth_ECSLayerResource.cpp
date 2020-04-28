@@ -63,6 +63,7 @@ bool ECSLayerResource::loadOverrides(
 	ECSManager& ecs_mgr,
 	const ECSArchetype& base_archetype,
 	Gaff::Hash32 layer_name,
+	Gaff::Hash32 scene_name,
 	Gaff::Hash64& outArchetype)
 {
 	if (reader.isNull()) {
@@ -97,6 +98,7 @@ bool ECSLayerResource::loadOverrides(
 	new_archetype.copy(base_archetype);
 
 	new_archetype.addShared<Layer>(); // Ensure we have a Layer component.
+	new_archetype.addShared<Scene>(); // Ensure we have a Scene component.
 
 	const bool success = new_archetype.finalize(reader, base_archetype, false);
 
@@ -106,6 +108,9 @@ bool ECSLayerResource::loadOverrides(
 
 	Layer* const layer = new_archetype.getSharedComponent<Layer>();
 	layer->value = layer_name;
+
+	Scene* const scene = new_archetype.getSharedComponent<Scene>();
+	scene->value = scene_name;
 
 	new_archetype.calculateHash();
 	outArchetype = new_archetype.getHash();
@@ -120,24 +125,34 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 	_callback_id.res_id = Gaff::INIT_HASH64;
 	_callback_id.cb_id = -1;
 
-	Gaff::Hash32 layer_name = Gaff::FNV1aHash32Const("<default>");
+	Gaff::Hash32 layer_name;
+	Gaff::Hash32 scene_name;
 	int32_t index = 0;
 
 	const auto& reader = *_reader_wrapper.getReader();
 
 	{
-		const auto name_guard = reader.enterElementGuard("name");
+		const auto name_guard = reader.enterElementGuard("layer");
 
 		if (!reader.isNull() && !reader.isString()) {
-			LogErrorResource("ECSLayerResource - 'name' field is not a string.");
+			LogErrorResource("ECSLayerResource - 'layer' field is not a string.");
 		}
 
-		if (reader.isString()) {
-			char name_temp[256] = { 0 };
-			reader.readString(name_temp, sizeof(name_temp), "<default>");
+		char name_temp[256] = { 0 };
+		reader.readString(name_temp, sizeof(name_temp), "<default>");
+		layer_name = Gaff::FNV1aHash32String(name_temp);
+	}
 
-			layer_name = Gaff::FNV1aHash32String(name_temp);
+	{
+		const auto name_guard = reader.enterElementGuard("scene");
+
+		if (!reader.isNull() && !reader.isString()) {
+			LogErrorResource("ECSLayerResource - 'scene' field is not a string.");
 		}
+
+		char name_temp[256] = { 0 };
+		reader.readString(name_temp, sizeof(name_temp), "main");
+		scene_name = Gaff::FNV1aHash32String(name_temp);
 	}
 
 	const auto objects_guard = reader.enterElementGuard("objects");
@@ -152,7 +167,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 		const auto override_guard = reader.enterElementGuard("overrides");
 		Gaff::Hash64 archetype = 0;
 
-		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, archetype)) {
+		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, scene_name, archetype)) {
 			const auto comps_guard = reader.enterElementGuard("components");
 
 			if (reader.isNull()) {
@@ -181,10 +196,7 @@ void ECSLayerResource::loadLayer(IFile* file)
 	}
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
-	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
 	const auto& reader = *_reader_wrapper.getReader();
-
-	GAFF_REF(ecs_mgr);
 
 	char name[256] = { 0 };
 
@@ -214,15 +226,20 @@ void ECSLayerResource::loadLayer(IFile* file)
 			{
 				const auto guard = reader.enterElementGuard("archetype");
 
-				if (!reader.isString()) {
-					LogErrorDefault("Failed to load object at index %i. Malformed object definition.", index);
+				if (!reader.isNull() && !reader.isString()) {
+					LogErrorDefault("Failed to load object at index %i. Archetype not specified.", index);
 					return false;
-				}
 
-				reader.readString(archetype, ARRAY_SIZE(archetype));
+				} else if (!reader.isNull()) {
+					reader.readString(archetype, ARRAY_SIZE(archetype));
+				}
 			}
 
-			_archetypes.emplace_back(res_mgr.requestResourceT<ECSArchetypeResource>(archetype));
+			if (archetype[0] == 0) {
+				_archetypes.emplace_back(res_mgr.getResourceT<ECSArchetypeResource>(ECSManager::k_empty_archetype_res_name));
+			} else {
+				_archetypes.emplace_back(res_mgr.requestResourceT<ECSArchetypeResource>(archetype));
+			}
 
 			{
 				const auto guard = reader.enterElementGuard("overrides");

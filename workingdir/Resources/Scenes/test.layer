@@ -7,23 +7,6 @@
 
 			"overrides":
 			{
-				"shared_components":
-				{
-					"Material":
-					{
-						"material": "Materials/test.material",
-
-						"textures_pixel":
-						[
-							{ "key": "tex", "value": "Models/ninja.texture" }
-						]
-					},
-
-					"Model": { "value": "Models/ninja.model" },
-
-					"InstanceBufferCount": { "value": 4 }
-				},
-
 				"components":
 				{
 					"Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
@@ -36,27 +19,10 @@
 
 			"overrides":
 			{
-				"shared_components":
-				{
-					"Material":
-					{
-						"material": "Materials/test.material",
-
-						"textures_pixel":
-						[
-							{ "key": "tex", "value": "Models/ninja.texture" }
-						]
-					},
-
-					"Model": { "value": "Models/ninja.model" },
-
-					"InstanceBufferCount": { "value": 4 }
-				},
-
 				"components":
 				{
 					"Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
-					//"Rotation": { "value": {"x": 0.0, "y": 0.5, "z": 0.0} },
+					//"Rotation": { "value": {"x": 0.25, "y": 0.0, "z": 0.0} },
 					"StateMachine":
 					{
 						"floats":
@@ -77,6 +43,34 @@
 				{
 					"Position": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
 					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+				}
+			}
+		},
+		// floor
+		{
+			"overrides":
+			{
+				"components":
+				{
+					"RigidBody": { "shape": "Physics/Shapes/plane.physics_shape", "static": true },
+					"Position": { "value": {"x": 0.0, "y": -10.0, "z": 0.0} },
+					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
+					"Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
+				}
+			}
+		},
+		// test ninja
+		{
+			"archetype": "Archetypes/test.archetype",
+
+			"overrides":
+			{
+				"components":
+				{
+					"RigidBody": { "shape": "Physics/Shapes/capsule.physics_shape" },
+					"Position": { "value": {"x": 0.0, "y": 10.0, "z": 15.0} },
+					"Rotation": { "value": {"x": 0.1, "y": 0.0, "z": 0.0} },
+					"Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
 		}

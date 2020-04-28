@@ -1184,10 +1184,6 @@ Hash64 ReflectionDefinition<T, Allocator>::getInstanceHash(const void* object, G
 template <class T, class Allocator>
 Hash64 ReflectionDefinition<T, Allocator>::getInstanceHash(const T& object, Gaff::Hash64 init) const
 {
-	if (_instance_hash) {
-		return _instance_hash(object, init);
-	}
-
 	return (_instance_hash) ? _instance_hash(object, init) : Gaff::FNV1aHash64T(object, init);
 }
 

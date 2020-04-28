@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 #define GAFF_TEMPLATE_GET_NAME(x) GAFF_HASHABLE_NAMESPACE::GetName<x>()
 
-#define GAFF_CLASS_HASHABLE(type) \
+#define GAFF_CLASS_HASHABLE_NO_REF(type) \
 	template <> \
 	constexpr auto GetName<type>(void) \
 	{ \
@@ -52,7 +52,60 @@ THE SOFTWARE.
 		return Gaff::FNV1aHash64Const(#type); \
 	}
 
+#define GAFF_CLASS_HASHABLE(type) \
+	template <> \
+	constexpr auto GetName<type&>(void) \
+	{ \
+		const char* const name = #type; \
+		Gaff::ArrayString<char, eastl::CharStrlen(name) + 2> name_arr; \
+		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+			name_arr.data.mValue[i] = name[i]; \
+		} \
+		name_arr.data.mValue[name_arr.data.size() - 2] = '&'; \
+		return name_arr; \
+	} \
+	template <> \
+	constexpr Gaff::Hash64 GetHash<type&>(void) \
+	{ \
+		return Gaff::FNV1aHash64Const(#type "&"); \
+	} \
+	template <> \
+	constexpr auto GetName<type*>(void) \
+	{ \
+		const char* const name = #type; \
+		Gaff::ArrayString<char, eastl::CharStrlen(name) + 2> name_arr; \
+		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+			name_arr.data.mValue[i] = name[i]; \
+		} \
+		name_arr.data.mValue[name_arr.data.size() - 2] = '*'; \
+		return name_arr; \
+	} \
+	template <> \
+	constexpr Gaff::Hash64 GetHash<type*>(void) \
+	{ \
+		return Gaff::FNV1aHash64Const(#type "*"); \
+	} \
+	GAFF_CLASS_HASHABLE_NO_REF(type)
+
 #define GAFF_TEMPLATE_CLASS_HASHABLE(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	struct TemplateClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>&) > final \
+	{ \
+		static constexpr auto GetName(void) \
+		{ \
+			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
+			const auto name = Gaff::MakeArrayString(#type); \
+			const auto lb = Gaff::MakeArrayString("<"); \
+			const auto rb = Gaff::MakeArrayString(">&"); \
+			const auto final_str = name + lb + rest_names + rb; \
+			return final_str; \
+		} \
+		static constexpr Gaff::Hash64 GetHash(void) \
+		{ \
+			const auto name = GetName(); \
+			return Gaff::FNV1aHash64Const("&", Gaff::FNV1aHash64StringConst(name.data.data())); \
+		} \
+	}; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	struct TemplateClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>) > final \
 	{ \
@@ -61,7 +114,7 @@ THE SOFTWARE.
 			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
 			const auto name = Gaff::MakeArrayString(#type); \
 			const auto lb = Gaff::MakeArrayString("<"); \
-			const auto rb = Gaff::MakeArrayString("<"); \
+			const auto rb = Gaff::MakeArrayString(">"); \
 			const auto final_str = name + lb + rest_names + rb; \
 			return final_str; \
 		} \
@@ -119,7 +172,7 @@ constexpr Gaff::Hash64 GetHash(void)
 	return TemplateClassHashableHelper<T>::GetHash();
 }
 
-GAFF_CLASS_HASHABLE(void)
+GAFF_CLASS_HASHABLE_NO_REF(void)
 GAFF_CLASS_HASHABLE(char)
 
 NS_END

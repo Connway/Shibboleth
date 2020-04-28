@@ -23,14 +23,15 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetypeResource.h>
+#include "Shibboleth_ECSManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
-#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_LogManager.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(ECSArchetypeResource)
 	.classAttrs(
+		CreatableAttribute(),
 		ResExtAttribute(".archetype.bin"),
 		ResExtAttribute(".archetype"),
 		MakeLoadFileCallbackAttribute(&ECSArchetypeResource::loadArchetype)

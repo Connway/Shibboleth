@@ -109,7 +109,6 @@ void IResource::release(void) const
 
 	if (!new_count) {
 		_res_mgr->removeResource(*this);
-		SHIB_FREET(this, GetAllocator());
 	}
 }
 

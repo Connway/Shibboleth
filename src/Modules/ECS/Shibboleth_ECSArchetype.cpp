@@ -629,19 +629,21 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 		reader.enterElementGuard("components");
 
 	GAFF_REF(base_archetype); // Silence warning in non-shared version.
+
 	bool read_data = true;
+	bool success = true;
 
 	// Not gonna lie, this would probably be easier to read with a goto.
 	if (!reader.isNull()) {
 		if (!reader.isObject()) {
 			// $TODO: Log error
 			read_data = false;
+			success = false;
 		}
 	} else {
+		// Nothing to read.
 		read_data = false;
 	}
-
-	bool success = read_data;
 
 	if (read_data) {
 		const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
@@ -679,7 +681,9 @@ bool ECSArchetype::finalize(const Gaff::ISerializeReader& reader, const ECSArche
 
 			return false;
 		});
+	}
 
+	if (success) {
 		if constexpr (shared) {
 			initShared(reader, base_archetype);
 			GAFF_REF(read_default_overrides);
@@ -704,22 +708,24 @@ void ECSArchetype::initShared(const Gaff::ISerializeReader& reader, const ECSArc
 		copySharedInstanceData(*base_archetype);
 	}
 
-	reader.forEachInObject([&](const char* component) -> bool
-	{
-		const Gaff::Hash64 component_hash = Gaff::FNV1aHash64String(component);
-
-		const auto it = Gaff::LowerBound(_shared_vars, component_hash, SearchPredicate);
-
-		if (it == _shared_vars.end() || it->ref_def->getReflectionInstance().getHash() != component_hash)
+	if (!reader.isNull()) {
+		reader.forEachInObject([&](const char* component) -> bool
 		{
+			const Gaff::Hash64 component_hash = Gaff::FNV1aHash64String(component);
+
+			const auto it = Gaff::LowerBound(_shared_vars, component_hash, SearchPredicate);
+
+			if (it == _shared_vars.end() || it->ref_def->getReflectionInstance().getHash() != component_hash)
+			{
+				return false;
+			}
+
+			void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + it->offset;
+			it->ref_def->load(reader, instance);
+
 			return false;
-		}
-
-		void* const instance = reinterpret_cast<int8_t*>(_shared_instances) + it->offset;
-		it->ref_def->load(reader, instance);
-
-		return false;
-	});
+		});
+	}
 }
 
 void ECSArchetype::initShared(void)

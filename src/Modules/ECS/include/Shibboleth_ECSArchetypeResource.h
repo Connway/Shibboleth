@@ -30,6 +30,8 @@ NS_SHIBBOLETH
 class ECSArchetypeResource final : public IResource
 {
 public:
+	static constexpr bool Creatable = true;
+
 	ECSArchetypeResource(void);
 	~ECSArchetypeResource(void);
 
@@ -41,6 +43,7 @@ private:
 	ArchetypeReferencePtr _archetype_ref;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSArchetypeResource);
+	friend class ECSManager;
 };
 
 using ECSArchetypeResourcePtr = Gaff::RefPtr<ECSArchetypeResource>;

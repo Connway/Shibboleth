@@ -151,6 +151,7 @@ IResourcePtr ResourceManager::createResource(HashStringTemp64<> name, const Gaff
 
 	void* const data = factory(_allocator);
 	IResource* resource = ref_def.GET_INTERFACE(IResource, data);
+	resource->_state = ResourceState::Loaded;
 	resource->_file_path = name;
 	resource->_res_mgr = this;
 
@@ -306,9 +307,11 @@ void ResourceManager::checkAndRemoveResources(void)
 	EA::Thread::AutoMutex lock(_removal_lock);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
+		// Don't remove if a thread is still loading it.
 		if (_pending_removals[i]->getState() == ResourceState::Pending) {
 			++i;
 		} else {
+			SHIB_FREET(_pending_removals[i], GetAllocator());
 			_pending_removals.erase_unsorted(_pending_removals.begin() + i);
 		}
 	}

@@ -162,3 +162,26 @@ ECSManager::EntityData* ECSManager::getEntityData(const ECSQueryResult& query_re
 	// Assumes all the query results are from the same query and index. So they should all share the same entity data.
 	return reinterpret_cast<EntityData*>(query_result.entity_data);
 }
+
+template <class Callback, class... Components, class... QueryResults>
+void ECSManager::iterateInternal(Callback&& callback, const QueryResults&... query_results)
+{
+	static_assert(sizeof...(Components) == sizeof...(QueryResults) || sizeof...(Components) == 0);
+	EntityData* const data = getEntityData(query_results...);
+
+	int32_t count = 0;
+
+	for (int32_t i = 0; count < data->num_entities && i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
+		if (data->entity_ids[i] == -1) {
+			continue;
+		}
+
+		if constexpr (sizeof...(Components) == 0) {
+			callback(data->entity_ids[i]);
+		} else {
+			callback(data->entity_ids[i], get<Components>(query_results, i)...);
+		}
+
+		++count;
+	}
+}

@@ -49,8 +49,12 @@ public:
 	GAFF_STRUCTORS_DEFAULT(Plane);
 	GAFF_COPY_DEFAULT(Plane);
 
-	glm::vec3 getNormal(void) const;
 	glm::vec3 getPoint(void) const;
+
+	void setNormal(const glm::vec3& normal);
+	glm::vec3 getNormal(void) const;
+
+	void setDistance(float distance);
 	float getDistance(void) const;
 
 	ContainResult contains(const AABB& aabb) const;

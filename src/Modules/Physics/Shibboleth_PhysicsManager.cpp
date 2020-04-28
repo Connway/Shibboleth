@@ -21,6 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_PhysicsManager.h"
+#include "Shibboleth_RigidBodyComponent.h"
+#include <Shibboleth_ECSComponentCommon.h>
+#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
 #include <PxPhysicsAPI.h>
@@ -156,7 +159,7 @@ bool PhysicsManager::init(void)
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 
-	//gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	//gMaterial = _physics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	//PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
 	//gScene->addActor(*groundPlane);
@@ -166,6 +169,16 @@ bool PhysicsManager::init(void)
 
 	//if (!interactive)
 	//	createDynamic(PxTransform(PxVec3(0, 40, 100)), PxSphereGeometry(10), PxVec3(0, -50, -100));
+
+	ECSQuery rb_query;
+	rb_query.addShared(_scene_comps);
+	rb_query.add<RigidBody>(_rigid_bodies);
+	rb_query.add<Position>(_positions);
+	rb_query.add<Rotation>(_rotations);
+	rb_query.add<Scale>(_scales);
+
+	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_ecs_mgr->registerQuery(std::move(rb_query));
 
 	return true;
 }
@@ -183,6 +196,8 @@ void PhysicsManager::update(void)
 		}
 
 		_remaining_time -= k_frame_step;
+
+		// $TODO: While the sim is running, run threads to create new bodies.
 		
 		for (auto& pair : _scenes) {
 			while (!pair.second->fetchResults()) {
@@ -191,7 +206,86 @@ void PhysicsManager::update(void)
 			}
 		}
 	}
+
+	// Create new bodies and update transforms.
+	const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
+
+	// $TODO: Thread this loop.
+	for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
+		_ecs_mgr->iterate<RigidBody, Position, Rotation, Scale>(
+				[&](EntityID id,
+				RigidBody& rb,
+				Position position,
+				Rotation rotation,
+				Scale scale) -> void
+			{
+				GAFF_REF(scale);
+
+				// Update transform data to reflect physics state.
+				if (rb.body.body_dynamic) {
+					const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
+
+					position.value = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+
+					const glm::quat rot(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+					rotation.value = glm::eulerAngles(rot) * Gaff::RadToTurns;
+
+					// $TODO: Scale
+
+					Position::Set(*_ecs_mgr, id, position);
+					Rotation::Set(*_ecs_mgr, id, rotation);
+
+				// Body needs to be created.
+				} else {
+					if (!rb.shape->isLoaded()) {
+						return;
+					}
+
+					const glm::qua rot(rotation.value * Gaff::TurnsToRad);
+
+					const physx::PxTransform transform = physx::PxTransform(
+						physx::PxVec3(position.value.x, position.value.y, position.value.z),
+						physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+					);
+
+					physx::PxActor* actor = nullptr;
+
+					if (rb.is_static) {
+						rb.body.body_static = physx::PxCreateStatic(*_physics, transform, *rb.shape->getShape());
+						actor = rb.body.body_static;
+					} else {
+						rb.body.body_dynamic = physx::PxCreateDynamic(*_physics, transform, *rb.shape->getShape(), rb.density);
+						actor = rb.body.body_dynamic;
+					}
+
+					const auto it = _scenes.find(_scene_comps[rb_index]->value);
+
+					if (it == _scenes.end()) {
+						// $TODO: Log error.
+						return;
+					}
+
+					it->second->addActor(*actor);
+				}
+			},
+			_rigid_bodies[rb_index],
+			_positions[rb_index],
+			_rotations[rb_index],
+			_scales[rb_index]
+		);
+	}
 }
+
+physx::PxFoundation* PhysicsManager::getFoundation(void)
+{
+	return _foundation;
+}
+
+physx::PxPhysics* PhysicsManager::getPhysics(void)
+{
+	return _physics;
+}
+
 
 
 

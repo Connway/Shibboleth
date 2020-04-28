@@ -28,6 +28,7 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PageSize, nullptr, "Memory")
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Position, nullptr, "Transform", OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Rotation, nullptr, "Transform", OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scale, nullptr, "Transform", OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scene, nullptr, "Scene", HashStringAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Layer, nullptr, "Scene", HashStringAttribute())
 
 NS_SHIBBOLETH

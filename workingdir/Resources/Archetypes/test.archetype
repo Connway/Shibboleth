@@ -15,8 +15,8 @@
 		},
 
 		"Model": { "value": "Models/ninja.model" },
-		"RasterState": { "value": "RasterStates/opaque.raster_state" }//,
-		//"InstanceBufferCount": { "value": 4 },
+		"RasterState": { "value": "RasterStates/opaque.raster_state" },
+		"InstanceBufferCount": { "value": 4 },
 		//"PageSize": { "value": 512 }
 	},
 

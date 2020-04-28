@@ -45,14 +45,24 @@ Plane::Plane(const glm::vec3& normal, float distance):
 {
 }
 
+glm::vec3 Plane::getPoint(void) const
+{
+	return _normal * _distance;
+}
+
+void Plane::setNormal(const glm::vec3& normal)
+{
+	_normal = normal;
+}
+
 glm::vec3 Plane::getNormal(void) const
 {
 	return _normal;
 }
 
-glm::vec3 Plane::getPoint(void) const
+void Plane::setDistance(float distance)
 {
-	return _normal * _distance;
+	_distance = distance;
 }
 
 float Plane::getDistance(void) const
