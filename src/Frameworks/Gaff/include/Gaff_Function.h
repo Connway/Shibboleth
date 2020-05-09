@@ -77,6 +77,13 @@ eastl::function<Fn> Func(T functor)
 	return eastl::function<Fn>(functor);
 }
 
+template <class Fn>
+eastl::function<Fn> Func(Fn* func)
+{
+	static_assert(std::is_function<Fn>::value, "Gaff::Func requires template argument Func to be a function type!");
+	return eastl::function<Fn>(func);
+}
+
 template <class T, class Ret, class... Args>
 eastl::function<Ret (Args...)> MemberFunc(const T* obj, Ret (T::*func)(Args...) const)
 {

@@ -43,6 +43,7 @@ void WindowLeftButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l)
 void WindowRightButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 void WindowMiddleButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 void WindowXButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowMouseWheelHorizontal(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 void WindowMouseWheel(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 void WindowSetFocus(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 void WindowKillFocus(AnyMessage& message, Window* window, WPARAM w, LPARAM l);

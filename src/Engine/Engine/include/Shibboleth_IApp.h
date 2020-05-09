@@ -55,12 +55,14 @@ public:
 	template <class T>
 	const T& getManagerTFast(void) const
 	{
+		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
 		return *static_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	T& getManagerTFast(void)
 	{
+		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
 		return *static_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
@@ -81,6 +83,7 @@ public:
 	template <class T>
 	const T& getManagerT(void) const
 	{
+		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
 		const IManager* const manager = getManager(Reflection<T>::GetHash());
 		return *Gaff::ReflectionCast<T>(*manager);
 	}
@@ -88,6 +91,7 @@ public:
 	template <class T>
 	T& getManagerT(void)
 	{
+		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
 		IManager* const manager = getManager(Reflection<T>::GetHash());
 		return *Gaff::ReflectionCast<T>(*manager);
 	}

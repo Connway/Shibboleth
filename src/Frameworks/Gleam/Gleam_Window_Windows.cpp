@@ -43,6 +43,23 @@ static int32_t g_global_next_id = 0;
 VectorMap<uint16_t, KeyCode> Window::g_right_keys;
 VectorMap<uint16_t, KeyCode> Window::g_left_keys;
 
+void SetCursor(Cursor cursor)
+{
+	::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(static_cast<int32_t>(cursor))));
+}
+
+//Cursor GetCursor(void)
+//{
+//	//const HCURSOR cursor = ::GetCursor();
+//
+//	//if (cursor == IDC_ARROW) {
+//	//	return Cursor::Arrow;
+//	//} else {
+//	//}
+//
+//	return Cursor::None;
+//}
+
 static void InitWindowProcHelpers(void)
 {
 	//WindowMode::MOUSELEAVE
@@ -63,6 +80,7 @@ static void InitWindowProcHelpers(void)
 	g_window_helpers.emplace(WM_RBUTTONUP, WindowRightButtonUp);
 	g_window_helpers.emplace(WM_MBUTTONUP, WindowMiddleButtonUp);
 	g_window_helpers.emplace(WM_XBUTTONUP, WindowXButtonUp);
+	g_window_helpers.emplace(WM_MOUSEHWHEEL, WindowMouseWheelHorizontal);
 	g_window_helpers.emplace(WM_MOUSEWHEEL, WindowMouseWheel);
 	g_window_helpers.emplace(WM_SETFOCUS, WindowSetFocus);
 	//g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
@@ -525,6 +543,11 @@ bool Window::setIcon(const char* icon)
 
 	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
 	return true;
+}
+
+void* Window::getPlatformHandle(void) const
+{
+	return _hwnd;
 }
 
 HINSTANCE Window::getHInstance(void) const

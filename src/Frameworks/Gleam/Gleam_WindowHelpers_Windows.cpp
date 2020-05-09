@@ -208,6 +208,12 @@ void WindowXButtonUp(AnyMessage& message, Window*, WPARAM w, LPARAM)
 	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::MOUSE_BACK : MouseCode::MOUSE_FORWARD;
 }
 
+void WindowMouseWheelHorizontal(AnyMessage& message, Window*, WPARAM w, LPARAM)
+{
+	message.base.type = EventType::IN_MOUSEHWHEEL;
+	message.mouse_state.wheel = static_cast<short>(HIWORD(w) / WHEEL_DELTA);
+}
+
 void WindowMouseWheel(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
 	message.base.type = EventType::IN_MOUSEWHEEL;

@@ -64,6 +64,9 @@ public:
 	void setKeyboardMousePlayerID(int32_t player_id);
 	int32_t getKeyboardMousePlayerID(void) const;
 
+	Gleam::IKeyboard* getKeyboard(void);
+	Gleam::IMouse* getMouse(void);
+
 private:
 	struct Binding final
 	{

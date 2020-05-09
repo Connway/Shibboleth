@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugModule.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Modules\Debug\project_generator.lua" />
+  </ItemGroup>
+</Project>

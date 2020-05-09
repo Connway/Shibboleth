@@ -30,7 +30,7 @@ NS_GLEAM
 class IKeyboard : public IInputDevice
 {
 public:
-	using CharacterHandler = eastl::function<void (IKeyboard*, int32_t)>;
+	using CharacterHandler = eastl::function<void (IKeyboard*, uint32_t)>;
 
 	IKeyboard(void) {}
 	virtual ~IKeyboard(void) {}

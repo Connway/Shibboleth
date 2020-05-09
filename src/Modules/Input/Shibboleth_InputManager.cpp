@@ -330,6 +330,16 @@ int32_t InputManager::getKeyboardMousePlayerID(void) const
 	return _km_player_id;
 }
 
+Gleam::IKeyboard* InputManager::getKeyboard(void)
+{
+	return _keyboard.get();
+}
+
+Gleam::IMouse* InputManager::getMouse(void)
+{
+	return _mouse.get();
+}
+
 void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
 	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, g_max_local_players));

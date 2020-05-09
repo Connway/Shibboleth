@@ -42,6 +42,7 @@ enum class EventType : uint8_t
 	IN_MOUSEMOVE,
 	IN_MOUSEDOWN,
 	IN_MOUSEUP,
+	IN_MOUSEHWHEEL,
 	IN_MOUSEWHEEL
 };
 
@@ -62,9 +63,13 @@ enum class MouseCode : uint8_t
 	MOUSE_POS_X,
 	MOUSE_POS_Y,
 
-	MOUSE_WHEEL,
+	MOUSE_WHEEL_VERT,
 	MOUSE_WHEEL_UP,
-	MOUSE_WHEEL_DOWN
+	MOUSE_WHEEL_DOWN,
+
+	MOUSE_WHEEL_HORIZ,
+	MOUSE_WHEEL_LEFT,
+	MOUSE_WHEEL_RIGHT
 };
 
 #ifdef PLATFORM_WINDOWS
@@ -193,7 +198,33 @@ enum class KeyCode
 	KEY_APOSTROPHE,
 	KEY_NUMPADENTER = 0x0D
 };
+
+enum class Cursor
+{
+	None = -1,
+
+	Arrow = 32512,
+	IBeam = 32513,
+	Wait = 32514,
+	Cross = 32515,
+	UpArrow = 32516,
+	Size = 32640,
+	Icon = 32641,
+	SizeNWSE = 32642,
+	SizeNESW = 32643,
+	SizeWE = 32644,
+	SizeNS = 32645,
+	SizeAll = 32646,
+	No = 32648,
+	Hand = 32649,
+	AppStarting = 32650,
+	Help = 32651,
+	Pin = 32671,
+	Person = 32672
+};
+
 #elif defined(PLATFORM_LINUX)
+
 enum KeyCode
 {
 	// KEY_CANCEL = 0xff69,
@@ -320,6 +351,7 @@ enum KeyCode
 	KEY_APOSTROPHE = 48,
 	KEY_NUMPADENTER = 104
 };
+
 #endif
 
 struct MessageBase final

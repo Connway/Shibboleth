@@ -73,6 +73,8 @@ public:
 
 	bool setIcon(const char* icon) override;
 
+	void* getPlatformHandle(void) const override;
+
 	HINSTANCE getHInstance(void) const;
 	HWND getHWnd(void) const;
 

@@ -28,6 +28,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+void SetCursor(Cursor cursor);
+//Cursor GetCursor(void);
+
 using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 
 class IWindow
@@ -68,6 +71,8 @@ public:
 	virtual bool isFullScreen(void) const = 0;
 
 	virtual bool setIcon(const char* icon) = 0;
+
+	virtual void* getPlatformHandle(void) const = 0;
 };
 
 NS_END
