@@ -248,7 +248,7 @@ bool InputManager::initAllModulesLoaded(void)
 	return true;
 }
 
-void InputManager::update()
+void InputManager::update(void)
 {
 	_keyboard->update();
 	_mouse->update();
@@ -453,7 +453,7 @@ bool InputSystem::init(void)
 	return true;
 }
 
-void InputSystem::update(void)
+void InputSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_input_mgr->update();
 }

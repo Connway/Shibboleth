@@ -125,7 +125,7 @@ bool RenderCommandSubmissionSystem::init(void)
 	return true;
 }
 
-void RenderCommandSubmissionSystem::update()
+void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 {
 	const int32_t starting_index = static_cast<int32_t>(_job_data_cache.size());
 	const int32_t num_devices = _render_mgr->getNumDevices();
@@ -145,15 +145,17 @@ void RenderCommandSubmissionSystem::update()
 		}
 	}
 
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
 	auto& job_pool = GetApp().getJobPool();
 	job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
-	job_pool.helpWhileWaiting(_job_counter);
+	job_pool.helpWhileWaiting(thread_id, _job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;
 	_render_mgr->presentAllOutputs();
 }
 
-void RenderCommandSubmissionSystem::SubmitCommands(void* data)
+void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, void* data)
 {
 	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
 	Vector<RenderManagerBase::RenderCommand>& cmds = job_data.rcss->_render_mgr->getRenderCommands(
@@ -163,6 +165,11 @@ void RenderCommandSubmissionSystem::SubmitCommands(void* data)
 
 	for (RenderManagerBase::RenderCommand& cmd : cmds) {
 		job_data.device->executeCommandList(*cmd.cmd_list);
+
+		// Do not deallocate.
+		if (!cmd.owns_command) {
+			cmd.cmd_list.release();
+		}
 	}
 
 	job_data.device->clearRenderState();
@@ -207,7 +214,7 @@ bool RenderCommandSystem::init(void)
 	return true;
 }
 
-void RenderCommandSystem::update(void)
+void RenderCommandSystem::update(uintptr_t thread_id_int)
 {
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
@@ -254,8 +261,10 @@ void RenderCommandSystem::update(void)
 		_job_data_cache[i].job_func = DeviceJob;
 	}
 
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
 	_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
-	_job_pool->helpWhileWaiting(_job_counter);
+	_job_pool->helpWhileWaiting(thread_id, _job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;
 }
@@ -532,7 +541,7 @@ void RenderCommandSystem::addSamplers(
 	}
 }
 
-void RenderCommandSystem::GenerateCommandListJob(void* data)
+void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* data)
 {
 	RenderJobData& job_data = *reinterpret_cast<RenderJobData*>(data);
 
@@ -551,7 +560,9 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		return;
 	}
 
-	Gleam::IRenderDevice& owning_device = *job_data.device->getOwningDevice();
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	Gleam::IRenderDevice& owning_device = *job_data.device;
+	Gleam::IRenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(owning_device, thread_id);
 
 	const int32_t num_meshes = job_data.rcs->_models[job_data.index]->value->getNumMeshes();
 
@@ -588,10 +599,10 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		return;
 	}
 
-	job_data.target->bind(*job_data.device);
-	raster_state->bind(*job_data.device);
-	program->bind(*job_data.device);
-	layout->bind(*job_data.device);
+	job_data.target->bind(*deferred_device);
+	raster_state->bind(*deferred_device);
+	program->bind(*deferred_device);
+	layout->bind(*deferred_device);
 
 	const int32_t stride = instance_data.instance_data->pages[0].buffer->getBuffer(owning_device)->getStride();
 	const int32_t object_count = job_data.rcs->_ecs_mgr->getNumEntities(job_data.rcs->_position[job_data.index]);
@@ -633,7 +644,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, ProxyAllocator("Graphics"));
 
 	for (int32_t j = 0; j < static_cast<int32_t>(buffer_cache.size()); ++j) {
-		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*job_data.device);
+		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);
 	}
 
 	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
@@ -658,7 +669,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 	job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index]);
 
 	for (const auto& page : instance_data.instance_data->pages) {
-		page.buffer->getBuffer(owning_device)->unmap(*job_data.device);
+		page.buffer->getBuffer(owning_device)->unmap(*deferred_device);
 	}
 
 
@@ -689,19 +700,20 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 				}
 			}
 
-			pb->bind(*job_data.device);
-			mesh->renderInstanced(*job_data.device, object_count);
+			pb->bind(*deferred_device);
+			mesh->renderInstanced(*deferred_device, object_count);
 		}
 	}
 
-	job_data.device->finishCommandList(*job_data.cmd_list);
+	deferred_device->finishCommandList(*job_data.cmd_list);
 }
 
-void RenderCommandSystem::DeviceJob(void* data)
+void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
 	const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
 	Gleam::IRenderDevice& device = *job_data.device;
 	job_data.render_job_data_cache.clear();
@@ -725,18 +737,26 @@ void RenderCommandSystem::DeviceJob(void* data)
 				return;
 			}
 
-			Gleam::ICommandList* cmd_list = job_data.rcs->_render_mgr->createCommandList();
-			Gleam::IRenderDevice* deferred_context = device.createDeferredRenderDevice();
 			Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
 
 			{
+				// $TODO: Cache this command list.
+				Gleam::IRenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(device, thread_id);
+				Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
+
+				// $TODO: Make the clearing type an option.
+				render_target->bind(*deferred_device);
+				render_target->clear(*deferred_device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+
+				if (!deferred_device->finishCommandList(*cmd_list)) {
+					// $TODO: Log error periodic.
+					SHIB_FREET(cmd_list, GetAllocator());
+					return;
+				}
+
 				auto& cmd = render_cmds.emplace_back();
 				cmd.cmd_list.reset(cmd_list);
 			}
-
-			// $TODO: Make the clearing type an option.
-			render_target->bind(*deferred_context);
-			render_target->clear(*deferred_context, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
 
 			if (num_objects > 0) {
 				const glm::ivec2& size = render_target->getSize();
@@ -745,7 +765,7 @@ void RenderCommandSystem::DeviceJob(void* data)
 					static_cast<float>(size.x),
 					static_cast<float>(size.y),
 					camera.z_near, camera.z_far
-					);
+				);
 
 				const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
 				glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
@@ -754,31 +774,20 @@ void RenderCommandSystem::DeviceJob(void* data)
 				const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
 
 				for (int32_t i = 0; i < num_objects; ++i) {
-					const int32_t cache_index = camera_index * num_objects + i;
+					Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
 
-					// Cache these somehow?
-					if (!cmd_list) {
-						cmd_list = job_data.rcs->_render_mgr->createCommandList();
-						deferred_context = device.createDeferredRenderDevice();
-
-						auto& cmd = render_cmds.emplace_back();
-						cmd.cmd_list.reset(cmd_list);
-					}
+					// $TODO: Make a command list cache.
+					auto& cmd = render_cmds.emplace_back();
+					cmd.cmd_list.reset(cmd_list);
 
 					RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
 					render_data.rcs = job_data.rcs;
 					render_data.index = i;
 					render_data.cmd_list = cmd_list;
-					render_data.device.reset(deferred_context);
+					render_data.device = &device;
 					render_data.target = render_target;
 					render_data.view_projection = final_camera;
-
-					deferred_context = nullptr;
-					cmd_list = nullptr;
 				}
-
-			} else {
-				deferred_context->finishCommandList(*cmd_list);
 			}
 		},
 		job_data.rcs->_camera_position[camera_index],
@@ -795,7 +804,7 @@ void RenderCommandSystem::DeviceJob(void* data)
 	}
 
 	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
-	job_data.rcs->_job_pool->helpWhileWaiting(job_data.job_counter);
+	job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
 }
 
 NS_END

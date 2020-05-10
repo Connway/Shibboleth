@@ -82,6 +82,7 @@ public:
 	struct RenderCommand final
 	{
 		UniquePtr<Gleam::ICommandList> cmd_list;
+		bool owns_command = true;
 		//Gleam::IRenderTarget* target = nullptr;
 	};
 
@@ -130,6 +131,9 @@ public:
 
 	void presentAllOutputs(void);
 
+	const Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const;
+	Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id);
+
 private:
 	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
 	VectorMap<EntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
@@ -137,6 +141,11 @@ private:
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+
+	VectorMap<
+		const Gleam::IRenderDevice*,
+		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
+	> _deferred_contexts{ ProxyAllocator("Graphics") };
 
 	VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> > _cached_render_commands[2] = {
 		VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> >{ ProxyAllocator("Graphics") },

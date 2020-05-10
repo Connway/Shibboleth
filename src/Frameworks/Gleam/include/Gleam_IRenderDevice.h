@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 #include "Gleam_Vector.h"
 #include <Gaff_Assert.h>
+#include <vec4.hpp>
+#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -81,6 +83,9 @@ public:
 
 	virtual void clearRenderState(void) = 0;
 	virtual void renderNoVertexInput(int32_t vert_count) = 0;
+
+	virtual void setScissorRect(const glm::ivec2& pos, const glm::ivec2& size) = 0;
+	virtual void setScissorRect(const glm::ivec4& rect) = 0;
 
 	int32_t getAdapterID(void) const { return _adapter_id; }
 

@@ -63,6 +63,32 @@ void MeshD3D11::addBuffer(IBuffer* buffer, uint32_t offset)
 	cacheBuffers();
 }
 
+void MeshD3D11::setIndiceBuffer(IBuffer* buffer)
+{
+	MeshBase::setIndiceBuffer(buffer);
+
+	_indice_format = DXGI_FORMAT_R32_UINT;
+
+	if (_indices) {
+		switch (_indices->getElementSize()) {
+			case 4:
+				_indice_format = DXGI_FORMAT_R32_UINT;
+				break;
+
+			case 2:
+				_indice_format = DXGI_FORMAT_R16_UINT;
+				break;
+
+			case 1:
+				_indice_format = DXGI_FORMAT_R8_UINT;
+				break;
+
+			default:
+				GAFF_ASSERT(false);
+		}
+	}
+}
+
 void MeshD3D11::setTopologyType(TopologyType topology)
 {
 	_d3d_topology = g_topology_map[static_cast<size_t>(topology)];
@@ -124,27 +150,6 @@ void MeshD3D11::cacheBuffers(void)
 		GAFF_ASSERT(temp && temp->getRendererType() == RendererType::DIRECT3D11);
 		_buffers.emplace_back(static_cast<BufferD3D11*>(temp)->getBuffer());
 		_strides.emplace_back(temp->getStride());
-	}
-
-	_indice_format = DXGI_FORMAT_R32_UINT;
-
-	if (_indices) {
-		switch (_indices->getElementSize()) {
-			case 4:
-				_indice_format = DXGI_FORMAT_R32_UINT;
-				break;
-
-			case 2:
-				_indice_format = DXGI_FORMAT_R16_UINT;
-				break;
-
-			case 1:
-				_indice_format = DXGI_FORMAT_R8_UINT;
-				break;
-
-			default:
-				GAFF_ASSERT(false);
-		}
 	}
 }
 

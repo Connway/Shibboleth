@@ -52,7 +52,7 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(IResource)
 
-static void LoadJob(void* data)
+static void LoadJob(uintptr_t /*id_int*/, void* data)
 {
 	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
 

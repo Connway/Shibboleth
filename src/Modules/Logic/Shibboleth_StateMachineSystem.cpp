@@ -47,7 +47,7 @@ bool StateMachineSystem::init(void)
 	return true;
 }
 
-void StateMachineSystem::update(void)
+void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 {
 	// $TODO: Jobify this loop.
 	for (const auto& sm_arch : _state_machines) {

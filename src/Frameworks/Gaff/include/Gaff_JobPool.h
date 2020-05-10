@@ -37,7 +37,7 @@ NS_GAFF
 
 struct JobData final
 {
-	using JobFunc = void (*)(void*);
+	using JobFunc = void (*)(uintptr_t, void*);
 
 	JobFunc job_func;
 	void* job_data;
@@ -66,14 +66,20 @@ public:
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter& counter);
 	void freeCounter(Counter* counter);
+
+	void helpWhileWaiting(EA::Thread::ThreadId thread_id, const Counter& counter);
 	void helpWhileWaiting(const Counter& counter);
+	void helpAndFreeCounter(EA::Thread::ThreadId thread_id, Counter* counter);
 	void helpAndFreeCounter(Counter* counter);
 
+	void help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
 	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
+	void doAJob(EA::Thread::ThreadId thread_id);
 	void doAJob(void);
 
 	int32_t getNumTotalThreads(void) const;
 	void getThreadIDs(EA::Thread::ThreadId* out) const;
+	EA::Thread::ThreadId getMainThreadID(void) const;
 
 private:
 	struct JobQueue final
@@ -102,8 +108,8 @@ private:
 
 	Allocator _allocator;
 
-	static bool ProcessJobQueue(JobQueue& job_queue, eastl::chrono::milliseconds ms);
-	static void DoJob(JobPair& job);
+	static bool ProcessJobQueue(JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms);
+	static void DoJob(EA::Thread::ThreadId thread_id, JobPair& job);
 
 	static intptr_t JobThread(void* data);
 

@@ -387,7 +387,10 @@ bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
 	ID3D11CommandList* cl = nullptr;
 
-	if (FAILED(_context->FinishCommandList(FALSE, &cl))) {
+	const HRESULT result = _context->FinishCommandList(FALSE, &cl);
+
+	if (FAILED(result)) {
+		cmd_list.setCommandList(nullptr);
 		return false;
 	}
 
@@ -412,6 +415,30 @@ void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->Draw(vert_count, 0);
+}
+
+void RenderDeviceD3D11::setScissorRect(const glm::ivec2& pos, const glm::ivec2& size)
+{
+	const D3D11_RECT rect = {
+		pos.x,
+		pos.y,
+		pos.x + size.x,
+		pos.y + size.y
+	};
+
+	_context->RSSetScissorRects(1, &rect);
+}
+
+void RenderDeviceD3D11::setScissorRect(const glm::ivec4& rect)
+{
+	const D3D11_RECT d3d_rect = {
+		rect.x,
+		rect.y,
+		rect.z,
+		rect.w
+	};
+
+	_context->RSSetScissorRects(1, &d3d_rect);
 }
 
 ID3D11DeviceContext3* RenderDeviceD3D11::getDeviceContext(void)

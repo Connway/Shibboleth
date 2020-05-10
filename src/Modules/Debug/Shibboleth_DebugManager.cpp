@@ -244,7 +244,18 @@ bool DebugManager::initAllModulesLoaded(void)
 
 	_main_device = devices->front();
 
-	// Shaders.
+
+	// Command List
+	_cmd_list[0].reset(_render_mgr->createCommandList());
+	_cmd_list[1].reset(_render_mgr->createCommandList());
+
+	if (!_cmd_list[0] || !_cmd_list[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Shaders
 	_vertex_shader.reset(_render_mgr->createShader());
 
 	if (!_vertex_shader) {
@@ -280,7 +291,7 @@ bool DebugManager::initAllModulesLoaded(void)
 	_program->attach(_pixel_shader.get());
 
 
-	// Blend State.
+	// Blend State
 	_blend_state.reset(_render_mgr->createBlendState());
 
 	if (!_blend_state) {
@@ -362,23 +373,23 @@ bool DebugManager::initAllModulesLoaded(void)
 			0,
 			Gleam::ITexture::Format::RG_32_F,
 			0,
-			0,
-			Gleam::ILayout::PerDataType::Vertex
-		},
-		{
-			Gleam::ILayout::Semantic::Color,
-			0,
-			Gleam::ITexture::Format::RGBA_8_UNORM,
-			1,
-			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->pos)),
 			Gleam::ILayout::PerDataType::Vertex
 		},
 		{
 			Gleam::ILayout::Semantic::TexCoord,
 			0,
 			Gleam::ITexture::Format::RG_32_F,
-			2,
 			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->uv)),
+			Gleam::ILayout::PerDataType::Vertex
+		},
+		{
+			Gleam::ILayout::Semantic::Color,
+			0,
+			Gleam::ITexture::Format::RGBA_8_UNORM,
+			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->col)),
 			Gleam::ILayout::PerDataType::Vertex
 		}
 	};
@@ -495,6 +506,8 @@ bool DebugManager::initAllModulesLoaded(void)
 		return false;
 	}
 
+	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+
 	return true;
 }
 
@@ -564,30 +577,36 @@ void DebugManager::update(void)
 		}
 	}
 
-	//ImGui::NewFrame();
+	ImGui::NewFrame();
 }
 
-void DebugManager::render(void)
+void DebugManager::render(uintptr_t thread_id_int)
 {
-	//ImGui::Render();
+	ImGui::Render();
 	const ImDrawData* const draw_data = ImGui::GetDrawData();
 
 	// Avoid rendering when minimized
 	if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f) {
+		_cache_index = (_cache_index + 1) % 2;
 		return;
 	}
 
-	_mesh->setIndexCount(draw_data->TotalIdxCount);
+	if (draw_data->TotalIdxCount <= 0 || draw_data->TotalVtxCount <= 0) {
+		_cache_index = (_cache_index + 1) % 2;
+		return;
+	}
+
+	bool buffers_changed = false;
 
 	if (const size_t size = (_vertex_buffer) ? _vertex_buffer->getSize() : 0;
 		size < (draw_data->TotalVtxCount * sizeof(ImDrawVert))) {
 
-		_mesh->clear();
-
 		_vertex_buffer.reset(_render_mgr->createBuffer());
+		buffers_changed = true;
 
 		if (!_vertex_buffer) {
 			// $TODO: Log error periodic.
+			_cache_index = (_cache_index + 1) % 2;
 			return;
 		}
 
@@ -603,22 +622,20 @@ void DebugManager::render(void)
 
 		if (!_vertex_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
+			_cache_index = (_cache_index + 1) % 2;
 			return;
 		}
-
-		_mesh->setIndiceBuffer(_index_buffer.get());
-		_mesh->addBuffer(_vertex_buffer.get());
 	}
 
 	if (const size_t size = (_index_buffer) ? _index_buffer->getSize() : 0;
 		size < (draw_data->TotalIdxCount * sizeof(ImDrawIdx))) {
 
-		_mesh->clear();
-
 		_index_buffer.reset(_render_mgr->createBuffer());
+		buffers_changed = true;
 
 		if (!_index_buffer) {
 			// $TODO: Log error periodic.
+			_cache_index = (_cache_index + 1) % 2;
 			return;
 		}
 
@@ -627,46 +644,59 @@ void DebugManager::render(void)
 			draw_data->TotalIdxCount * sizeof(ImDrawIdx),
 			static_cast<int32_t>(sizeof(ImDrawIdx)),
 			static_cast<int32_t>(sizeof(ImDrawIdx)),
-			Gleam::IBuffer::Type::VertexData,
+			Gleam::IBuffer::Type::IndexData,
 			Gleam::IBuffer::MapType::Write,
 			true
 		};
 
 		if (!_index_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
+			_cache_index = (_cache_index + 1) % 2;
 			return;
+		}
+	}
+
+	if (buffers_changed) {
+		_mesh->clear();
+
+		if (_vertex_buffer) {
+			_mesh->addBuffer(_vertex_buffer.get());
 		}
 
 		_mesh->setIndiceBuffer(_index_buffer.get());
-		_mesh->addBuffer(_vertex_buffer.get());
 	}
 
-	ImDrawVert* verts = reinterpret_cast<ImDrawVert*>(_vertex_buffer->map(*_main_device));
-	ImDrawIdx* indices = reinterpret_cast<ImDrawIdx*>(_index_buffer->map(*_main_device));
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	Gleam::IRenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*_main_device, thread_id);
+
+	ImDrawVert* verts = reinterpret_cast<ImDrawVert*>(_vertex_buffer->map(*deferred_device));
+	ImDrawIdx* indices = reinterpret_cast<ImDrawIdx*>(_index_buffer->map(*deferred_device));
 
 	if (!verts) {
 		// $TODO: Log error periodic.
+		_cache_index = (_cache_index + 1) % 2;
 		return;
 	}
 
 	if (!indices) {
 		// $TODO: Log error periodic.
-		_vertex_buffer->unmap(*_main_device);
+		_vertex_buffer->unmap(*deferred_device);
+		_cache_index = (_cache_index + 1) % 2;
 		return;
 	}
 
 	for (int32_t i = 0; i < draw_data->CmdListsCount; ++i) {
 		const ImDrawList* const cmd_list = draw_data->CmdLists[i];
 
-		memcpy(verts, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
 		memcpy(indices, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+		memcpy(verts, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
 
-		verts += cmd_list->VtxBuffer.Size;
 		indices += cmd_list->IdxBuffer.Size;
+		verts += cmd_list->VtxBuffer.Size;
 	}
 
-	_vertex_buffer->unmap(*_main_device);
-	_index_buffer->unmap(*_main_device);
+	_vertex_buffer->unmap(*deferred_device);
+	_index_buffer->unmap(*deferred_device);
 
 	const float L = draw_data->DisplayPos.x;
 	const float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
@@ -680,24 +710,27 @@ void DebugManager::render(void)
 		{ (R + L) / (L - R),	(T + B) / (B - T),	0.5f,	1.0f },
 	};
 
-	void* const vert_const_data = _vert_constant_buffer->map(*_main_device);
+	void* const vert_const_data = _vert_constant_buffer->map(*deferred_device);
 
 	if (!vert_const_data) {
 		// $TODO: Log error periodic.
+		_cache_index = (_cache_index + 1) % 2;
 		return;
 	}
 
 	memcpy(vert_const_data, mvp, sizeof(mvp));
-	_vert_constant_buffer->unmap(*_main_device);
+	_vert_constant_buffer->unmap(*deferred_device);
 
 	_program_buffers->clearResourceViews();
 	_program_buffers->addResourceView(Gleam::IShader::Type::Pixel, _font_srv.get());
 
-	_main_output->getRenderTarget().bind(*_main_device);
-	_program->bind(*_main_device);
-	_program_buffers->bind(*_main_device);
-	_blend_state->bind(*_main_device);
-	_layout->bind(*_main_device);
+	_main_output->getRenderTarget().bind(*deferred_device);
+	_depth_stencil_state->bind(*deferred_device);
+	_raster_state->bind(*deferred_device);
+	_blend_state->bind(*deferred_device);
+	_program->bind(*deferred_device);
+	_program_buffers->bind(*deferred_device);
+	_layout->bind(*deferred_device);
 
 	int32_t index_offset_start = 0;
 	int32_t vert_offset_start = 0;
@@ -716,17 +749,40 @@ void DebugManager::render(void)
 					reinterpret_cast<Gleam::IShaderResourceView*>(cmd->TextureId)
 				);
 
-				_program_buffers->bind(*_main_device);
+				_program_buffers->bind(*deferred_device);
 			}
 
-			_mesh->render(*_main_device, index_offset_start + cmd->IdxOffset, vert_offset_start + cmd->VtxOffset);
+			// Apply scissor/clipping rectangle
+			const glm::ivec4 rect {
+				static_cast<int32_t>(cmd->ClipRect.x - draw_data->DisplayPos.x),
+				static_cast<int32_t>(cmd->ClipRect.y - draw_data->DisplayPos.y),
+				static_cast<int32_t>(cmd->ClipRect.z - draw_data->DisplayPos.x),
+				static_cast<int32_t>(cmd->ClipRect.w - draw_data->DisplayPos.y)
+			};
 
-			index_offset_start += cmd_list->IdxBuffer.Size;
-			vert_offset_start += cmd_list->VtxBuffer.Size;
+			deferred_device->setScissorRect(rect);
+
+			_mesh->setIndexCount(cmd->ElemCount);
+			_mesh->render(*deferred_device, index_offset_start + cmd->IdxOffset, vert_offset_start + cmd->VtxOffset);
 		}
+
+		index_offset_start += cmd_list->IdxBuffer.Size;
+		vert_offset_start += cmd_list->VtxBuffer.Size;
 	}
 
-	// submit command list
+	if (!deferred_device->finishCommandList(*_cmd_list[_cache_index])) {
+		// $TODO: Log error periodic.
+		_cache_index = (_cache_index + 1) % 2;
+		return;
+	}
+
+	// Submit command
+	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, _cache_index);
+	auto& cmd = render_cmds.emplace_back();
+	cmd.cmd_list.reset(_cmd_list[_cache_index].get());
+	cmd.owns_command = false;
+
+	_cache_index = (_cache_index + 1) % 2;
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const
@@ -742,9 +798,9 @@ bool DebugRenderSystem::init(void)
 	return true;
 }
 
-void DebugRenderSystem::update(void)
+void DebugRenderSystem::update(uintptr_t thread_id_int)
 {
-	_debug_mgr->render();
+	_debug_mgr->render(thread_id_int);
 }
 
 bool DebugSystem::init(void)
@@ -753,7 +809,7 @@ bool DebugSystem::init(void)
 	return true;
 }
 
-void DebugSystem::update(void)
+void DebugSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_debug_mgr->update();
 }

@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Keyboard_MessagePump.h>
 #include <Gleam_Mouse_MessagePump.h>
@@ -277,6 +278,31 @@ bool RenderManagerBase::init(void)
 	});
 
 	fs.closeFile(file);
+
+	const auto& job_pool = GetApp().getJobPool();
+	Vector<EA::Thread::ThreadId> thread_ids(job_pool.getNumTotalThreads(), ProxyAllocator("Graphics"));
+
+	job_pool.getThreadIDs(thread_ids.data());
+	_deferred_contexts.reserve(_render_devices.size());
+
+	// Loop over all devices.
+	for (const auto& rd : _render_devices) {
+		auto& context_map = _deferred_contexts[rd.get()];
+		context_map.reserve(thread_ids.size());
+
+		// Loop over all thread ids and create deferred contexts for them.
+		for (EA::Thread::ThreadId id : thread_ids) {
+			Gleam::IRenderDevice* const deferred_device = rd->createDeferredRenderDevice();
+
+			if (!deferred_device) {
+				LogErrorDefault("Failed to create deferred render device for threads.");
+				return false;
+			}
+
+			context_map[id].reset(deferred_device);
+		}
+	}
+
 	return true;
 }
 
@@ -535,6 +561,22 @@ void RenderManagerBase::presentAllOutputs(void)
 	for (auto& pair : _window_outputs) {
 		pair.second.second->present();
 	}
+}
+
+const Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const
+{
+	return const_cast<RenderManagerBase*>(this)->getDeferredDevice(device, thread_id);
+}
+
+Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id)
+{
+	const auto device_it = _deferred_contexts.find(&device);
+	GAFF_ASSERT(device_it != _deferred_contexts.end());
+
+	const auto thread_it = device_it->second.find(thread_id);
+	GAFF_ASSERT(thread_it != device_it->second.end());
+
+	return thread_it->second.get();
 }
 
 Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)

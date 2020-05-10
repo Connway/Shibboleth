@@ -104,7 +104,7 @@ bool GameTimeSystem::init(void)
 	return true;
 }
 
-void GameTimeSystem::update()
+void GameTimeSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_manager->update();
 }

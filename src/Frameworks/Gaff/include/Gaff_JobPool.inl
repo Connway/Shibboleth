@@ -196,11 +196,26 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 }
 
 template <class Allocator>
+void JobPool<Allocator>::helpWhileWaiting(EA::Thread::ThreadId thread_id, const Counter& counter)
+{
+	while (counter > 0) {
+		doAJob(thread_id);
+	}
+}
+
+template <class Allocator>
 void JobPool<Allocator>::helpWhileWaiting(const Counter& counter)
 {
 	while (counter > 0) {
 		doAJob();
 	}
+}
+
+template <class Allocator>
+void JobPool<Allocator>::helpAndFreeCounter(EA::Thread::ThreadId thread_id, Counter* counter)
+{
+	helpWhileWaiting(thread_id, *counter);
+	freeCounter(counter);
 }
 
 template <class Allocator>
@@ -211,7 +226,7 @@ void JobPool<Allocator>::helpAndFreeCounter(Counter* counter)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::help(eastl::chrono::milliseconds ms)
+void JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
 	// Do jobs until we can't do any more.
 	bool earlied_out = false;
@@ -221,19 +236,25 @@ void JobPool<Allocator>::help(eastl::chrono::milliseconds ms)
 		typename JobPool<Allocator>::JobQueue& job_queue = pair.second;
 
 		if (job_queue.thread_lock->Wait(EA::Thread::kTimeoutImmediate) >= 0) {
-			earlied_out = ProcessJobQueue(job_queue, ms);
+			earlied_out = ProcessJobQueue(job_queue, thread_id, ms);
 			job_queue.thread_lock->Post();
 		}
 	}
 
 	// Conversely, hopefully the main pool doesn't constantly get new tasks pushed to it and stop the other pools from being processed.
 	if (!earlied_out) {
-		ProcessJobQueue(_main_queue, ms);
+		ProcessJobQueue(_main_queue, thread_id, ms);
 	}
 }
 
 template <class Allocator>
-void JobPool<Allocator>::doAJob(void)
+void JobPool<Allocator>::help(eastl::chrono::milliseconds ms)
+{
+	help(EA::Thread::GetThreadId(), ms);
+}
+
+template <class Allocator>
+void JobPool<Allocator>::doAJob(EA::Thread::ThreadId thread_id)
 {
 	for (auto& pair : _job_pools) {
 		typename JobPool<Allocator>::JobQueue& job_queue = pair.second;
@@ -245,7 +266,7 @@ void JobPool<Allocator>::doAJob(void)
 			} else {
 				JobPair job = job_queue.jobs.front();
 				job_queue.jobs.pop();
-				DoJob(job);
+				DoJob(thread_id, job);
 
 				job_queue.thread_lock->Post();
 				return;
@@ -263,8 +284,14 @@ void JobPool<Allocator>::doAJob(void)
 		_main_queue.jobs.pop();
 
 		_main_queue.read_write_lock->Unlock();
-		DoJob(job);
+		DoJob(thread_id, job);
 	}
+}
+
+template <class Allocator>
+void JobPool<Allocator>::doAJob(void)
+{
+	doAJob(EA::Thread::GetThreadId());
 }
 
 template <class Allocator>
@@ -284,7 +311,13 @@ void JobPool<Allocator>::getThreadIDs(EA::Thread::ThreadId* out) const
 }
 
 template <class Allocator>
-bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, eastl::chrono::milliseconds ms)
+EA::Thread::ThreadId JobPool<Allocator>::getMainThreadID(void) const
+{
+	return _main_thread_id;
+}
+
+template <class Allocator>
+bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
 	auto start = eastl::chrono::high_resolution_clock::now();
 	JobPair job;
@@ -303,7 +336,7 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 			job_queue.jobs.pop();
 
 			job_queue.read_write_lock->Unlock();
-			DoJob(job);
+			DoJob(thread_id, job);
 		}
 
 		if (ms > eastl::chrono::milliseconds::zero() && (eastl::chrono::high_resolution_clock::now() - start) >= ms) {
@@ -316,9 +349,10 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 }
 
 template <class Allocator>
-void JobPool<Allocator>::DoJob(JobPair& job)
+void JobPool<Allocator>::DoJob(EA::Thread::ThreadId thread_id, JobPair& job)
 {
-	job.first.job_func(job.first.job_data);
+	uintptr_t id_int = (uintptr_t)&thread_id;
+	job.first.job_func(id_int, job.first.job_data);
 
 	if (job.second) {
 		//Gaff::DebugPrintf("FUNC: %p\n", job.front);
@@ -344,9 +378,11 @@ intptr_t JobPool<Allocator>::JobThread(void* data)
 		thread_data.init_func();
 	}
 
+	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+
 	while (!thread_data.terminate) {
 		if (!thread_data.pause) {
-			job_pool->help();
+			job_pool->help(thread_id);
 		}
 
 		EA::Thread::ThreadSleep(); // Probably a good idea to give some time back to the CPU for other stuff.

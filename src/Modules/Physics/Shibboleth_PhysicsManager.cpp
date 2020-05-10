@@ -87,7 +87,7 @@ namespace
 	private:
 		Shibboleth::JobPool* _job_pool = nullptr;
 
-		static void RunTask(void* data)
+		static void RunTask(uintptr_t /*id_int*/, void* data)
 		{
 			physx::PxBaseTask& task = *reinterpret_cast<physx::PxBaseTask*>(data);
 			task.run();
@@ -183,8 +183,9 @@ bool PhysicsManager::init(void)
 	return true;
 }
 
-void PhysicsManager::update(void)
+void PhysicsManager::update(uintptr_t thread_id_int)
 {
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	// $TODO: Add to a config file.
 	constexpr float k_frame_step = 1.0f / 60.0f;
 
@@ -198,10 +199,10 @@ void PhysicsManager::update(void)
 		_remaining_time -= k_frame_step;
 
 		// $TODO: While the sim is running, run threads to create new bodies.
-		
+
 		for (auto& pair : _scenes) {
 			while (!pair.second->fetchResults()) {
-				_job_pool->doAJob();
+				_job_pool->doAJob(thread_id);
 				EA::Thread::ThreadSleep();
 			}
 		}
@@ -295,9 +296,9 @@ bool PhysicsSystem::init(void)
 	return true;
 }
 
-void PhysicsSystem::update(void)
+void PhysicsSystem::update(uintptr_t thread_id_int)
 {
-	_physics_mgr->update();
+	_physics_mgr->update(thread_id_int);
 }
 
 NS_END

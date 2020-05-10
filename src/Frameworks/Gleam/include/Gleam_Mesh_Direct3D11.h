@@ -37,6 +37,8 @@ public:
 
 	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
 
+	void setIndiceBuffer(IBuffer* buffer) override;
+
 	void setTopologyType(TopologyType topology) override;
 	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset = 0) override;
 	void renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset = 0, int32_t vert_offset = 0, int32_t instance_offset = 0) override;

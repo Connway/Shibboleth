@@ -28,7 +28,9 @@ THE SOFTWARE.
 #include <Shibboleth_ISystem.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IDepthStencilState.h>
+#include <Gleam_IRenderDevice.h>
 #include <Gleam_ISamplerState.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IBlendState.h>
 #include <Gleam_IProgram.h>
@@ -52,16 +54,19 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 	void update(void);
-	void render(void);
+	void render(uintptr_t thread_id_int);
 
 	ImGuiContext* getImGuiContext(void) const override;
 
 private:
 	const Time* _time = nullptr;
 	int32_t _prev_cursor = -1;
+	int32_t _cache_index = 0;
 
 	Gleam::IRenderOutput* _main_output = nullptr;
 	Gleam::IRenderDevice* _main_device = nullptr;
+
+	UniquePtr<Gleam::ICommandList> _cmd_list[2];
 
 	RenderManagerBase* _render_mgr = nullptr;
 	UniquePtr<Gleam::IBuffer> _vertex_buffer;
@@ -88,7 +93,7 @@ class DebugRenderSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	DebugManager* _debug_mgr = nullptr;
@@ -100,7 +105,7 @@ class DebugSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	DebugManager* _debug_mgr = nullptr;

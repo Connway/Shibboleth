@@ -63,7 +63,6 @@ uint32_t MeshBase::getBufferOffset(int32_t index) const
 
 void MeshBase::setIndiceBuffer(IBuffer* buffer)
 {
-	GAFF_ASSERT(buffer);
 	_indices = buffer;
 }
 

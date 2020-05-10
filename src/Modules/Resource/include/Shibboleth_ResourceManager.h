@@ -163,7 +163,7 @@ class ResourceSystem : public ISystem
 {
 public:
 	bool init(void) override;
-	void update() override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	ResourceManager* _res_mgr = nullptr;

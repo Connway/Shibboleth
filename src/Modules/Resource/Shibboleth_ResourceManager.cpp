@@ -54,7 +54,7 @@ struct RawJobData final
 	const IFile* out_file;
 };
 
-static void ResourceFileLoadRawJob(void* data)
+static void ResourceFileLoadRawJob(uintptr_t /*id_int*/, void* data)
 {
 	RawJobData* job_data = reinterpret_cast<RawJobData*>(data);
 
@@ -64,7 +64,7 @@ static void ResourceFileLoadRawJob(void* data)
 	job_data->out_file = GetApp().getFileSystem().openFile(temp);
 }
 
-static void ResourceFileLoadJob(void* data)
+static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
 {
 	IResource* res = reinterpret_cast<IResource*>(data);
 	res->load();
@@ -390,7 +390,7 @@ bool ResourceSystem::init(void)
 	return true;
 }
 
-void ResourceSystem::update()
+void ResourceSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_res_mgr->checkCallbacks();
 	_res_mgr->checkAndRemoveResources();

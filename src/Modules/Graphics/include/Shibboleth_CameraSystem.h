@@ -45,7 +45,7 @@ class CameraPreRenderSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
@@ -59,7 +59,7 @@ class CameraPostRenderSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	// $TODO: Camera render order dependencies.
@@ -69,8 +69,8 @@ private:
 		UniquePtr<Gleam::IProgramBuffers> program_buffers;
 		UniquePtr<Gleam::IRasterState> raster_state;
 		UniquePtr<Gleam::ISamplerState> sampler;
-		UniquePtr<Gleam::IRenderDevice> device;
-		Gleam::ICommandList* cmd_list;
+		const Gleam::IRenderDevice* device = nullptr;
+		Gleam::ICommandList* cmd_list = nullptr;
 		CameraPostRenderSystem* system = nullptr;
 	};
 
@@ -85,7 +85,7 @@ private:
 	RenderManagerBase* _render_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 
-	static void RenderCameras(void* data);
+	static void RenderCameras(uintptr_t id_int, void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(CameraPostRenderSystem);
 };

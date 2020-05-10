@@ -49,10 +49,10 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(MainLoop)
 
-static void UpdateSystemJob(void* data)
+static void UpdateSystemJob(uintptr_t thread_id_int, void* data)
 {
 	ISystem* const system = reinterpret_cast<ISystem*>(data);
-	system->update();
+	system->update(thread_id_int);
 }
 
 bool MainLoop::init(void)
@@ -229,7 +229,7 @@ void MainLoop::update(void)
 	}
 
 	// Help out a little before the next iteration.
-	_job_pool->doAJob();
+	_job_pool->doAJob(_job_pool->getMainThreadID());
 
 	// Give some time to other threads.
 	EA::Thread::ThreadSleep();

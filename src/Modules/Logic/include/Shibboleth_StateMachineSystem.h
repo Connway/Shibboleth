@@ -35,7 +35,7 @@ class StateMachineSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	ECSQuery::Output _state_machines;

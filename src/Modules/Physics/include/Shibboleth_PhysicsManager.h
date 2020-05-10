@@ -47,7 +47,7 @@ public:
 	~PhysicsManager(void);
 
 	bool init(void) override;
-	void update(void);
+	void update(uintptr_t thread_id_int);
 
 	physx::PxFoundation* getFoundation(void);
 	physx::PxPhysics* getPhysics(void);
@@ -82,7 +82,7 @@ class PhysicsSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	PhysicsManager* _physics_mgr = nullptr;

@@ -46,7 +46,7 @@ class RenderCommandSubmissionSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	struct SubmissionData final
@@ -62,7 +62,7 @@ private:
 	RenderManagerBase* _render_mgr = nullptr;
 	int32_t _cache_index = 0;
 
-	static void SubmitCommands(void* data);
+	static void SubmitCommands(uintptr_t id_int, void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSubmissionSystem);
 };
@@ -75,7 +75,7 @@ public:
 	static constexpr const char* ConstBufferFormat = "RenderCommandSystem:ConstBuffer:%s:%llu";
 
 	bool init(void) override;
-	void update(void) override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	struct InstanceData final
@@ -116,8 +116,8 @@ private:
 		RenderCommandSystem* rcs;
 		int32_t index;
 
+		Gleam::IRenderDevice* device;
 		Gleam::ICommandList* cmd_list;
-		UniquePtr<Gleam::IRenderDevice> device;
 		Gleam::IRenderTarget* target;
 
 		glm::mat4x4 view_projection;
@@ -213,8 +213,8 @@ private:
 		Gleam::IShader::Type shader_type
 	);
 
-	static void GenerateCommandListJob(void* data);
-	static void DeviceJob(void* data);
+	static void GenerateCommandListJob(uintptr_t id_int, void* data);
+	static void DeviceJob(uintptr_t id_int, void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandSystem);
 };

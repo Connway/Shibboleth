@@ -53,7 +53,7 @@ bool CameraPreRenderSystem::init(void)
 	return true;
 }
 
-void CameraPreRenderSystem::update(void)
+void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 {
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
@@ -112,7 +112,7 @@ bool CameraPostRenderSystem::init(void)
 	return true;
 }
 
-void CameraPostRenderSystem::update(void)
+void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 {
 	const int32_t starting_index = static_cast<int32_t>(_job_data_cache.size());
 	const int32_t num_devices = _render_mgr->getNumDevices();
@@ -138,7 +138,7 @@ void CameraPostRenderSystem::update(void)
 			_camera_job_data_cache[i].program_buffers.reset(_render_mgr->createProgramBuffers());
 			_camera_job_data_cache[i].raster_state.reset(_render_mgr->createRasterState());
 			_camera_job_data_cache[i].sampler.reset(_render_mgr->createSamplerState());
-			_camera_job_data_cache[i].device.reset(device.createDeferredRenderDevice());
+			_camera_job_data_cache[i].device = &device;
 			_camera_job_data_cache[i].system = this;
 
 			Gleam::ISamplerState::Settings sampler_settings = {
@@ -177,37 +177,43 @@ void CameraPostRenderSystem::update(void)
 		}
 	}
 
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
 	auto& job_pool = GetApp().getJobPool();
 	job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
-	job_pool.helpWhileWaiting(_job_counter);
+	job_pool.helpWhileWaiting(thread_id, _job_counter);
 
 	_cache_index = (_cache_index + 1) % 2;
 }
 
-void CameraPostRenderSystem::RenderCameras(void* data)
+void CameraPostRenderSystem::RenderCameras(uintptr_t thread_id_int, void* data)
 {
 	CameraRenderData& job_data = *reinterpret_cast<CameraRenderData*>(data);
 	const int32_t num_cameras = static_cast<int32_t>(job_data.system->_camera.size());
 
-	Gleam::IProgram* const program = job_data.system->_camera_material->getProgram(*job_data.device->getOwningDevice());
+	Gleam::IProgram* const program = job_data.system->_camera_material->getProgram(*job_data.device);
 
 	if (!program) {
 		return;
 	}
 
-	job_data.raster_state->bind(*job_data.device);
-	program->bind(*job_data.device);
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
+	Gleam::IRenderDevice* const deferred_device = job_data.system->_render_mgr->getDeferredDevice(*job_data.device, thread_id);
+
+	job_data.raster_state->bind(*deferred_device);
+	program->bind(*deferred_device);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.system->_ecs_mgr->iterate<Camera>([&](EntityID id, const Camera& camera) -> void
 		{
 			const auto* const devices = job_data.system->_render_mgr->getDevicesByTag(camera.device_tag);
 
-			if (!devices || Gaff::Find(*devices, job_data.device->getOwningDevice()) == devices->end()) {
+			if (!devices || Gaff::Find(*devices, job_data.device) == devices->end()) {
 				return;
 			}
 
-			const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device->getOwningDevice());
+			const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device);
 
 			if (!g_buffer) {
 				return;
@@ -222,23 +228,23 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
 			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
 
-			pb.bind(*job_data.device);
+			pb.bind(*deferred_device);
 
 			if (g_buffer->final_render_target) {
-				g_buffer->final_render_target->bind(*job_data.device);
+				g_buffer->final_render_target->bind(*deferred_device);
 			} else if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
-				output->getRenderTarget().bind(*job_data.device);
+				output->getRenderTarget().bind(*deferred_device);
 			} else {
 				// $TODO: Log error.
 				return;
 			}
 
-			job_data.device->renderNoVertexInput(6);
+			deferred_device->renderNoVertexInput(6);
 		},
 		job_data.system->_camera[camera_index]);
 	}
 
-	job_data.device->finishCommandList(*job_data.cmd_list);
+	deferred_device->finishCommandList(*job_data.cmd_list);
 }
 
 NS_END

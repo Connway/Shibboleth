@@ -66,7 +66,7 @@ class GameTimeSystem final : public ISystem
 {
 public:
 	bool init(void) override;
-	void update() override;
+	void update(uintptr_t thread_id_int) override;
 
 private:
 	GameTimeManager* _manager = nullptr;

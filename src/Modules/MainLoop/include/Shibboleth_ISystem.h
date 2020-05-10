@@ -32,7 +32,7 @@ public:
 	ISystem(void) = default;
 
 	virtual bool init(void) = 0;
-	virtual void update(void) = 0;
+	virtual void update(uintptr_t thread_id_int) = 0;
 
 	GAFF_NO_COPY(ISystem);
 	GAFF_NO_MOVE(ISystem);
