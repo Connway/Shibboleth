@@ -50,36 +50,34 @@ NS_GLEAM
 
 enum class StencilOp
 {
-	KEEP = 1,
-	ZERO,
-	REPLACE,
-	INCREMENT_CLAMP,
-	DECREMENT_CLAMP,
-	INVERT,
-	INCREMENT_WRAP,
-	DECREMENT_WRAP,
-	
-	SIZE = DECREMENT_WRAP
+	Keep = 1,
+	Zero,
+	Replace,
+	IncrementClamp,
+	DecrementClanp,
+	Invert,
+	IncrementWrap,
+	DecrementWrap
 };
 
 enum class ComparisonFunc
 {
-	NEVER = 1,
-	LESS,
-	EQUAL,
-	LESS_EQUAL,
-	GREATER,
-	NOT_EQUAL,
-	GREATER_EQUAL,
-	ALWAYS,
-
-	SIZE = ALWAYS
+	Never = 1,
+	Less,
+	Equal,
+	LessEqual,
+	Greater,
+	NotEqual,
+	GreaterEqual,
+	Always
 };
 
 enum class RendererType
 {
 	DIRECT3D11 = 0,
-	VULKAN
+	Vulkan,
+
+	Count
 };
 
 NS_END

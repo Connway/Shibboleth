@@ -63,35 +63,40 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	_meshes.reserve(devices.size());
 
-	Gleam::IBuffer::BufferSettings settings{ nullptr, 0, 0, Gleam::IBuffer::BT_VERTEX_DATA, Gleam::IBuffer::MT_NONE, true };
+	Gleam::IBuffer::Settings settings{ nullptr, 0, 0, 0, Gleam::IBuffer::Type::VertexData, Gleam::IBuffer::MapType::None, true };
 
 	// Options for packing here?
 
-	constexpr size_t PosSize = sizeof(float) * 3;
-	constexpr size_t NrmSize = sizeof(float) * 3;
-	constexpr size_t TanSize = sizeof(float) * 3;
-	constexpr size_t UVSize = sizeof(float);
-	constexpr size_t ClrSize = sizeof(float) * 4;
+	constexpr size_t k_pos_size = sizeof(float) * 3;
+	constexpr size_t k_norm_size = sizeof(float) * 3;
+	constexpr size_t k_tan_size = sizeof(float) * 3;
+	constexpr size_t k_uv_size = sizeof(float);
+	constexpr size_t k_color_size = sizeof(float) * 4;
 
 	// Calculate total buffer size.
 	if (mesh.HasPositions()) {
-		settings.size += PosSize * mesh.mNumVertices;
+		settings.size += k_pos_size * mesh.mNumVertices;
+		settings.element_size += k_pos_size;
 	}
 
 	if (mesh.HasNormals()) {
-		settings.size += NrmSize * mesh.mNumVertices;
+		settings.size += k_norm_size * mesh.mNumVertices;
+		settings.element_size += k_norm_size;
 	}
 
 	if (mesh.HasTangentsAndBitangents()) {
-		settings.size += TanSize * 2 * mesh.mNumVertices;
+		settings.size += k_tan_size * 2 * mesh.mNumVertices;
+		settings.element_size += k_tan_size;
 	}
 
 	for (int32_t j = 0; j < static_cast<int32_t>(mesh.GetNumUVChannels()); ++j) {
-		settings.size += UVSize * mesh.mNumUVComponents[j] * mesh.mNumVertices;
+		settings.size += k_uv_size * mesh.mNumUVComponents[j] * mesh.mNumVertices;
+		settings.element_size += k_uv_size * mesh.mNumUVComponents[j];
 	}
 
 	for (int32_t j = 0; j < static_cast<int32_t>(mesh.GetNumColorChannels()); ++j) {
-		settings.size += ClrSize * mesh.mNumVertices;
+		settings.size += k_color_size * mesh.mNumVertices;
+		settings.element_size += k_color_size;
 	}
 
 	settings.stride = static_cast<int32_t>(settings.size / mesh.mNumVertices);
@@ -103,35 +108,35 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	for (int32_t j = 0; j < static_cast<int32_t>(mesh.mNumVertices); ++j) {
 		if (mesh.HasPositions()) {
-			memcpy(curr, &mesh.mVertices[j], PosSize);
-			curr += PosSize;
+			memcpy(curr, &mesh.mVertices[j], k_pos_size);
+			curr += k_pos_size;
 		}
 
 		if (mesh.HasNormals()) {
 			const auto normal = mesh.mNormals[j].NormalizeSafe();
-			memcpy(curr, &normal, NrmSize);
-			curr += NrmSize;
+			memcpy(curr, &normal, k_norm_size);
+			curr += k_norm_size;
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
 			const auto tan = mesh.mTangents[j].NormalizeSafe();
 			const auto bitan = mesh.mBitangents[j].NormalizeSafe();
 
-			memcpy(curr, &tan, TanSize);
-			curr += TanSize;
+			memcpy(curr, &tan, k_tan_size);
+			curr += k_tan_size;
 
-			memcpy(curr, &bitan, TanSize);
-			curr += TanSize;
+			memcpy(curr, &bitan, k_tan_size);
+			curr += k_tan_size;
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
-			memcpy(curr, &mesh.mTextureCoords[k][j], UVSize * mesh.mNumUVComponents[k]);
-			curr += UVSize * mesh.mNumUVComponents[k];
+			memcpy(curr, &mesh.mTextureCoords[k][j], k_uv_size * mesh.mNumUVComponents[k]);
+			curr += k_uv_size * mesh.mNumUVComponents[k];
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumColorChannels()); ++k) {
-			memcpy(curr, &mesh.mColors[k], ClrSize);
-			curr += ClrSize;
+			memcpy(curr, &mesh.mColors[k], k_color_size);
+			curr += k_color_size;
 		}
 	}
 
@@ -148,7 +153,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 	SHIB_FREE(data, GetAllocator());
 
 	// Create indice data.
-	settings = Gleam::IBuffer::BufferSettings{ nullptr, static_cast<size_t>(mesh.mNumFaces) * 3 * sizeof(uint32_t), 0, Gleam::IBuffer::BT_INDEX_DATA, Gleam::IBuffer::MT_NONE, true };
+	settings = Gleam::IBuffer::Settings{ nullptr, static_cast<size_t>(mesh.mNumFaces) * 3 * sizeof(uint32_t), 0, sizeof(uint32_t), Gleam::IBuffer::Type::IndexData, Gleam::IBuffer::MapType::None, true };
 	data = SHIB_ALLOC_POOL(settings.size, GetAllocator().getPoolIndex("Graphics"), GetAllocator());
 	uint32_t* index = reinterpret_cast<uint32_t*>(data);
 
@@ -189,7 +194,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		Gleam::IMesh* const gpu_mesh = render_mgr.createMesh();
 		_meshes[rd].reset(gpu_mesh);
 
-		gpu_mesh->setTopologyType(Gleam::IMesh::TRIANGLE_LIST);
+		gpu_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
 		gpu_mesh->setIndiceBuffer(indice_buffer);
 		gpu_mesh->setIndexCount(static_cast<int32_t>(mesh.mNumFaces * 3));
 
@@ -198,30 +203,30 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 		if (mesh.HasPositions()) {
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(PosSize);
+			offset += static_cast<uint32_t>(k_pos_size);
 		}
 
 		if (mesh.HasNormals()) {
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(NrmSize);
+			offset += static_cast<uint32_t>(k_norm_size);
 		}
 
 		if (mesh.HasTangentsAndBitangents()) {
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(TanSize);
+			offset += static_cast<uint32_t>(k_tan_size);
 
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(TanSize);
+			offset += static_cast<uint32_t>(k_tan_size);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumUVChannels()); ++k) {
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(UVSize * mesh.mNumUVComponents[k]);
+			offset += static_cast<uint32_t>(k_uv_size * mesh.mNumUVComponents[k]);
 		}
 
 		for (int32_t k = 0; k < static_cast<int32_t>(mesh.GetNumColorChannels()); ++k) {
 			gpu_mesh->addBuffer(vertex_buffer, offset);
-			offset += static_cast<uint32_t>(ClrSize);
+			offset += static_cast<uint32_t>(k_color_size);
 		}
 	}
 

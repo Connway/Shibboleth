@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static D3D11_FILTER g_filter_map[ISamplerState::FILTER_SIZE] = {
+static D3D11_FILTER g_filter_map[static_cast<size_t>(ISamplerState::Filter::Count)] = {
 	D3D11_FILTER_MIN_MAG_MIP_POINT,
 	D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR,
 	D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
@@ -52,7 +52,7 @@ SamplerStateD3D11::~SamplerStateD3D11(void)
 	destroy();
 }
 
-bool SamplerStateD3D11::init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
+bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && Gaff::Between(sampler_settings.max_anisotropy, 1, 16));
 
@@ -65,7 +65,7 @@ bool SamplerStateD3D11::init(IRenderDevice& rd, const SamplerSettings& sampler_s
 	desc.BorderColor[2] = sampler_settings.border_color.b;
 	desc.BorderColor[3] = sampler_settings.border_color.a;
 	desc.ComparisonFunc = static_cast<D3D11_COMPARISON_FUNC>(sampler_settings.compare_func);
-	desc.Filter = g_filter_map[sampler_settings.filter];
+	desc.Filter = g_filter_map[static_cast<size_t>(sampler_settings.filter)];
 	desc.MaxAnisotropy = static_cast<UINT>(sampler_settings.max_anisotropy);
 	desc.MaxLOD = sampler_settings.max_lod;
 	desc.MinLOD = sampler_settings.min_lod;

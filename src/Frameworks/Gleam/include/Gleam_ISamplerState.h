@@ -32,31 +32,31 @@ class IRenderDevice;
 class ISamplerState
 {
 public:
-	enum Wrap
+	enum class Wrap
 	{
-		WRAP_REPEAT = 1,
-		WRAP_MIRROR,
-		WRAP_CLAMP,
-		WRAP_BORDER,
-		/*WRAP_MIRROR_ONCE,*/
-		WRAP_SIZE = WRAP_BORDER/*WRAP_MIRROR_ONCE*/
+		Repeat = 1,
+		Mirror,
+		Clamp,
+		Border//,
+		/*MirrorOnce,*/
 	};
 	
-	enum Filter
+	enum class Filter
 	{
-		FILTER_NEAREST_NEAREST_NEAREST = 0,
-		FILTER_NEAREST_NEAREST_LINEAR,
-		FILTER_NEAREST_LINEAR_NEAREST,
-		FILTER_NEAREST_LINEAR_LINEAR,
-		FILTER_LINEAR_NEAREST_NEAREST,
-		FILTER_LINEAR_NEAREST_LINEAR,
-		FILTER_LINEAR_LINEAR_NEAREST,
-		FILTER_LINEAR_LINEAR_LINEAR,
-		FILTER_ANISOTROPIC,
-		FILTER_SIZE
+		NearestNearestNearest = 0,
+		NearestNearestLinear,
+		NearestLinearNearest,
+		NearestLinearLinear,
+		LinearNearestNearest,
+		LinearNearestLinear,
+		LinearLinearNearest,
+		LinearLinearLinear,
+		Anisotropic,
+
+		Count
 	};
 
-	struct SamplerSettings
+	struct Settings
 	{
 		Filter filter;
 		Wrap wrap_u, wrap_v, wrap_w;
@@ -64,13 +64,13 @@ public:
 		float lod_bias;
 		int32_t max_anisotropy;
 		Color border_color = COLOR_BLACK;
-		ComparisonFunc compare_func = ComparisonFunc::NEVER;
+		ComparisonFunc compare_func = ComparisonFunc::Never;
 	};
 
 	ISamplerState(void) {}
 	virtual ~ISamplerState(void) {}
 
-	virtual bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings) = 0;
+	virtual bool init(IRenderDevice& rd, const Settings& sampler_settings) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;

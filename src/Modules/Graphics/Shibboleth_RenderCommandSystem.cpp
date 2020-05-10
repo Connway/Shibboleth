@@ -44,28 +44,28 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSystem)
 
 static constexpr const char* k_mtp_mat_name = "_model_to_proj_matrix";
 
-static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::ShaderType shader_type)
+static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
 {
 	const Material::TextureMap* texture_map = nullptr;
 
 	switch (shader_type) {
-		case Gleam::IShader::SHADER_VERTEX:
+		case Gleam::IShader::Type::Vertex:
 			texture_map = &material.textures_vertex;
 			break;
 
-		case Gleam::IShader::SHADER_PIXEL:
+		case Gleam::IShader::Type::Pixel:
 			texture_map = &material.textures_pixel;
 			break;
 
-		case Gleam::IShader::SHADER_DOMAIN:
+		case Gleam::IShader::Type::Domain:
 			texture_map = &material.textures_domain;
 			break;
 
-		case Gleam::IShader::SHADER_GEOMETRY:
+		case Gleam::IShader::Type::Geometry:
 			texture_map = &material.textures_geometry;
 			break;
 
-		case Gleam::IShader::SHADER_HULL:
+		case Gleam::IShader::Type::Hull:
 			texture_map = &material.textures_hull;
 			break;
 
@@ -76,33 +76,33 @@ static const Material::TextureMap* GetTextureMap(const Material& material, Gleam
 	return texture_map;
 }
 
-static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::ShaderType shader_type)
+static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::Type shader_type)
 {
 	const Material::SamplerMap* sampler_map = nullptr;
 
 	switch (shader_type) {
-	case Gleam::IShader::SHADER_VERTEX:
-		sampler_map = &material.samplers_vertex;
-		break;
+		case Gleam::IShader::Type::Vertex:
+			sampler_map = &material.samplers_vertex;
+			break;
 
-	case Gleam::IShader::SHADER_PIXEL:
-		sampler_map = &material.samplers_pixel;
-		break;
+		case Gleam::IShader::Type::Pixel:
+			sampler_map = &material.samplers_pixel;
+			break;
 
-	case Gleam::IShader::SHADER_DOMAIN:
-		sampler_map = &material.samplers_domain;
-		break;
+		case Gleam::IShader::Type::Domain:
+			sampler_map = &material.samplers_domain;
+			break;
 
-	case Gleam::IShader::SHADER_GEOMETRY:
-		sampler_map = &material.samplers_geometry;
-		break;
+		case Gleam::IShader::Type::Geometry:
+			sampler_map = &material.samplers_geometry;
+			break;
 
-	case Gleam::IShader::SHADER_HULL:
-		sampler_map = &material.samplers_hull;
-		break;
+		case Gleam::IShader::Type::Hull:
+			sampler_map = &material.samplers_hull;
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 
 	return sampler_map;
@@ -313,8 +313,8 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 		return;
 	}
 
-	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::SHADER_PIPELINE_COUNT); ++i) {
-		const Gleam::IShader::ShaderType shader_type = static_cast<Gleam::IShader::ShaderType>(i);
+	for (int32_t i = 0; i < static_cast<int32_t>(Gleam::IShader::Type::PipelineCount); ++i) {
+		const Gleam::IShader::Type shader_type = static_cast<Gleam::IShader::Type>(i);
 
 		addStructuredBuffersSRVs(instance_data, material, archetype, devices, shader_type);
 
@@ -334,7 +334,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 			auto& var_srvs = instance_data.pipeline_data[i].srv_vars[rd];
 			var_srvs = std::move(shader_vars);
 
-			if (shader_type == Gleam::IShader::SHADER_VERTEX) {
+			if (shader_type == Gleam::IShader::Type::Vertex) {
 				for (const auto& sb_refl : shader_refl.structured_buffers) {
 					const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char* rhs) -> bool { return lhs.name == rhs; });
 
@@ -380,7 +380,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 	const Material& material,
 	const ECSArchetype& archetype,
 	const Vector<Gleam::IRenderDevice*>& devices,
-	Gleam::IShader::ShaderType shader_type)
+	Gleam::IShader::Type shader_type)
 {
 	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
 	const Gleam::IShader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
@@ -393,12 +393,13 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 	InstanceData::BufferVarMap var_map{ ProxyAllocator("Graphics") };
 
 	for (const auto& sb_refl : refl.structured_buffers) {
-		const Gleam::IBuffer::BufferSettings settings = {
+		const Gleam::IBuffer::Settings settings = {
 			nullptr,
 			sb_refl.size_bytes * static_cast<size_t>(instance_data.buffer_instance_count), // size
 			static_cast<int32_t>(sb_refl.size_bytes), // stride
-			Gleam::IBuffer::BT_STRUCTURED_DATA,
-			Gleam::IBuffer::MT_WRITE,
+			static_cast<int32_t>(sb_refl.size_bytes), // elem_size
+			Gleam::IBuffer::Type::StructuredData,
+			Gleam::IBuffer::MapType::Write,
 			true
 		};
 
@@ -433,7 +434,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 		page.buffer = std::move(buffer);
 	}
 
-	instance_data.pipeline_data[shader_type].buffer_vars = std::move(var_map);
+	instance_data.pipeline_data[static_cast<int32_t>(shader_type)].buffer_vars = std::move(var_map);
 }
 
 void RenderCommandSystem::addTextureSRVs(
@@ -441,7 +442,7 @@ void RenderCommandSystem::addTextureSRVs(
 	const Gleam::ShaderReflection& refl,
 	InstanceData::VarMap& var_map,
 	Gleam::IRenderDevice& rd,
-	Gleam::IShader::ShaderType shader_type)
+	Gleam::IShader::Type shader_type)
 {
 	const Material::TextureMap* const texture_map = GetTextureMap(material, shader_type);
 	GAFF_ASSERT(texture_map);
@@ -473,15 +474,16 @@ void RenderCommandSystem::addConstantBuffers(
 	Gleam::IRenderDevice& rd,
 	const ECSArchetype& archetype,
 	const Vector<Gleam::IRenderDevice*>& devices,
-	Gleam::IShader::ShaderType shader_type)
+	Gleam::IShader::Type shader_type)
 {
 	for (const Gleam::ConstBufferReflection& const_buf_refl : refl.const_buff_reflection) {
-		const Gleam::IBuffer::BufferSettings settings = {
+		const Gleam::IBuffer::Settings settings = {
 			nullptr,
 			const_buf_refl.size_bytes, // size
 			static_cast<int32_t>(const_buf_refl.size_bytes), // stride
-			Gleam::IBuffer::BT_SHADER_DATA,
-			Gleam::IBuffer::MT_WRITE,
+			static_cast<int32_t>(const_buf_refl.size_bytes), // elem_size
+			Gleam::IBuffer::Type::ShaderConstantData,
+			Gleam::IBuffer::MapType::Write,
 			true
 		};
 
@@ -502,7 +504,7 @@ void RenderCommandSystem::addSamplers(
 	const Gleam::ShaderReflection& refl,
 	Gleam::IProgramBuffers& pb,
 	Gleam::IRenderDevice& rd,
-	Gleam::IShader::ShaderType shader_type)
+	Gleam::IShader::Type shader_type)
 {
 	SamplerStateResourcePtr& default_sampler_res = _render_mgr->getDefaultSamplerState();
 	Gleam::ISamplerState* const default_sampler = default_sampler_res->getSamplerState(rd);
@@ -671,7 +673,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 		}
 
 		for (int32_t k = 0; k < num_pages; ++k) {
-			for (int32_t j = 0; j < Gleam::IShader::SHADER_PIPELINE_COUNT; ++j) {
+			for (int32_t j = 0; j < static_cast<int32_t>(Gleam::IShader::Type::PipelineCount); ++j) {
 				InstanceData::BufferVarMap& var_map = instance_data.pipeline_data[j].buffer_vars;
 
 				for (auto& id : var_map) {
@@ -680,7 +682,7 @@ void RenderCommandSystem::GenerateCommandListJob(void* data)
 					}
 
 					pb->setResourceView(
-						static_cast<Gleam::IShader::ShaderType>(j),
+						static_cast<Gleam::IShader::Type>(j),
 						id.second.srv_index,
 						id.second.pages[k].srv_map[&owning_device].get()
 					);

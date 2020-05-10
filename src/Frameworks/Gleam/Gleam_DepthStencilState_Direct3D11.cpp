@@ -37,7 +37,7 @@ DepthStencilStateD3D11::~DepthStencilStateD3D11(void)
 	destroy();
 }
 
-bool DepthStencilStateD3D11::init(IRenderDevice& rd, const DepthStencilStateSettings& settings)
+bool DepthStencilStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 

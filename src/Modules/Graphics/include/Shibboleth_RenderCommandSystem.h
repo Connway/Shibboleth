@@ -102,7 +102,7 @@ private:
 			VectorMap<const Gleam::IRenderDevice*, VarMap> srv_vars{ ProxyAllocator("Graphics") };
 		};
 
-		PipelineData pipeline_data[Gleam::IShader::SHADER_PIPELINE_COUNT];
+		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
 		ProgramBuffersResourcePtr program_buffers;
 
 		InstanceBufferData* instance_data = nullptr;
@@ -185,7 +185,7 @@ private:
 		const Material& material,
 		const ECSArchetype& archetype,
 		const Vector<Gleam::IRenderDevice*>& devices,
-		Gleam::IShader::ShaderType shader_type
+		Gleam::IShader::Type shader_type
 	);
 
 	void addTextureSRVs(
@@ -193,7 +193,7 @@ private:
 		const Gleam::ShaderReflection& refl,
 		InstanceData::VarMap& var_map,
 		Gleam::IRenderDevice& rd,
-		Gleam::IShader::ShaderType shader_type
+		Gleam::IShader::Type shader_type
 	);
 
 	void addConstantBuffers(
@@ -202,7 +202,7 @@ private:
 		Gleam::IRenderDevice& rd,
 		const ECSArchetype& archetype,
 		const Vector<Gleam::IRenderDevice*>& devices,
-		Gleam::IShader::ShaderType shader_type
+		Gleam::IShader::Type shader_type
 	);
 
 	void addSamplers(
@@ -210,7 +210,7 @@ private:
 		const Gleam::ShaderReflection& refl,
 		Gleam::IProgramBuffers& pb,
 		Gleam::IRenderDevice& rd,
-		Gleam::IShader::ShaderType shader_type
+		Gleam::IShader::Type shader_type
 	);
 
 	static void GenerateCommandListJob(void* data);

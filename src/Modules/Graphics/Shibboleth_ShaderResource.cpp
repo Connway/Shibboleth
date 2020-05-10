@@ -50,7 +50,7 @@ Vector<Gleam::IRenderDevice*> ShaderResource::getDevices(void) const
 	return out;
 }
 
-bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::ShaderType shader_type)
+bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type)
 {
 	bool success = true;
 
@@ -61,7 +61,7 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& 
 	return success;
 }
 
-bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::ShaderType shader_type)
+bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
 {
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IShader* const shader = render_mgr.createShader();
@@ -75,7 +75,7 @@ bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const c
 	ShaderLayoutPair& pair = _shader_data[&device];
 	pair.first.reset(shader);
 
-	if (shader_type == Gleam::IShader::SHADER_VERTEX) {
+	if (shader_type == Gleam::IShader::Type::Vertex) {
 		Gleam::ILayout* const layout = render_mgr.createLayout();
 
 		if (!layout->init(device, *shader)) {

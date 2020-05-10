@@ -30,8 +30,7 @@ NS_GLEAM
 class MeshBase : public IMesh
 {
 public:
-	MeshBase(void);
-	~MeshBase(void);
+	void clear(void) override;
 
 	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
 	const IBuffer* getBuffer(int32_t index) const override;
@@ -50,19 +49,12 @@ public:
 
 protected:
 	Vector<IBuffer*> _vert_data;
-	IBuffer* _indices;
-	TopologyType _topology;
-
 	Vector<uint32_t> _offsets;
-
-	bool addVertDataHelper(
-		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
-		int32_t* indices, int32_t index_count, TopologyType primitive_type,
-		IBuffer* index_buffer, IBuffer* vert_buffer
-	);
+	IBuffer* _indices = nullptr;
+	TopologyType _topology = TopologyType::TriangleList;
 
 private:
-	int32_t _index_count;
+	int32_t _index_count = 0;
 };
 
 NS_END

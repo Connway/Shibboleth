@@ -34,7 +34,7 @@ public:
 	SamplerStateD3D11(void);
 	~SamplerStateD3D11(void);
 
-	bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings) override;
+	bool init(IRenderDevice& rd, const Settings& sampler_settings) override;
 	void destroy(void) override;
 
 	RendererType getRendererType(void) const;

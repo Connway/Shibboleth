@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static const char* _semantic_names[SEMANTIC_SIZE] = {
+static const char* _semantic_names[static_cast<size_t>(ILayout::Semantic::Count)] = {
 	"COLOR",
 	"NORMAL",
 	"POSITION",
@@ -52,19 +52,19 @@ LayoutD3D11::~LayoutD3D11(void)
 	destroy();
 }
 
-bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader& shader)
+bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && shader.getRendererType() == RendererType::DIRECT3D11);
 
 	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
 	for (size_t i = 0; i < layout_desc_size; ++i) {
-		input_desc[i].SemanticName = _semantic_names[layout_desc[i].semantic];
+		input_desc[i].SemanticName = _semantic_names[static_cast<size_t>(layout_desc[i].semantic)];
 		input_desc[i].SemanticIndex = static_cast<UINT>(layout_desc[i].semantic_index);
 		input_desc[i].Format = TextureD3D11::GetD3DFormat(layout_desc[i].format);
 		input_desc[i].InputSlot = static_cast<UINT>(layout_desc[i].input_slot);
 		input_desc[i].AlignedByteOffset = static_cast<UINT>(layout_desc[i].aligned_byte_offset);
-		input_desc[i].InputSlotClass = (layout_desc->per_data_type == PDT_PER_VERTEX) ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
+		input_desc[i].InputSlotClass = (layout_desc->per_data_type == PerDataType::Vertex) ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 

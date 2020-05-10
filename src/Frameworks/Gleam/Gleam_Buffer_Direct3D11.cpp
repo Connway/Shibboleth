@@ -29,14 +29,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static const D3D11_BIND_FLAG g_type_map[IBuffer::BUFFER_TYPE_SIZE] = {
+static const D3D11_BIND_FLAG g_type_map[static_cast<size_t>(IBuffer::Type::Count)] = {
 	D3D11_BIND_VERTEX_BUFFER,
 	D3D11_BIND_INDEX_BUFFER,
 	D3D11_BIND_CONSTANT_BUFFER,
 	D3D11_BIND_SHADER_RESOURCE
 };
 
-static const D3D11_MAP g_map_map[IBuffer::MAP_TYPE_SIZE] = {
+static const D3D11_MAP g_map_map[static_cast<size_t>(IBuffer::MapType::Count)] = {
 	D3D11_MAP_READ,
 	D3D11_MAP_READ,
 	D3D11_MAP_WRITE_DISCARD,
@@ -54,7 +54,7 @@ BufferD3D11::~BufferD3D11(void)
 	destroy();
 }
 
-bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
+bool BufferD3D11::init(IRenderDevice& rd, const Settings& buffer_settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && !_buffer);
 
@@ -63,14 +63,16 @@ bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = g_type_map[buffer_settings.type];
+	desc.BindFlags = g_type_map[static_cast<size_t>(buffer_settings.type)];
 	desc.ByteWidth = static_cast<UINT>(buffer_settings.size);
-	desc.MiscFlags = (buffer_settings.type == BT_STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
-	desc.StructureByteStride = (buffer_settings.type == BT_STRUCTURED_DATA) ? static_cast<UINT>(buffer_settings.stride) : 0;
+	desc.MiscFlags = (buffer_settings.type == Type::StructuredData) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
+	desc.StructureByteStride = (buffer_settings.type == Type::StructuredData) ? static_cast<UINT>(buffer_settings.stride) : 0;
 	desc.CPUAccessFlags = 0;
 
-	const bool cpu_read = buffer_settings.cpu_access == MT_READ || buffer_settings.cpu_access == MT_READ_WRITE;
-	const bool cpu_write = buffer_settings.cpu_access == MT_WRITE || buffer_settings.cpu_access == MT_WRITE_NO_OVERWRITE;
+	const bool cpu_read = (buffer_settings.cpu_access == MapType::Read) || (buffer_settings.cpu_access == MapType::ReadWrite);
+	const bool cpu_write = (buffer_settings.cpu_access == MapType::ReadWrite) ||
+		(buffer_settings.cpu_access == MapType::Write) ||
+		(buffer_settings.cpu_access == MapType::WriteNoOverwrite);
 
 	if (buffer_settings.gpu_read_only) {
 		if (cpu_read) {
@@ -97,6 +99,7 @@ bool BufferD3D11::init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	}
 
 	_buffer_type = buffer_settings.type;
+	_elem_size = buffer_settings.element_size;
 	_stride = buffer_settings.stride;
 	_size = buffer_settings.size;
 
@@ -135,12 +138,12 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 
 void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && map_type != MT_NONE);
+	GAFF_ASSERT((rd.getRendererType() == RendererType::DIRECT3D11) && (map_type != MapType::None));
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
-	HRESULT result = context->Map(_buffer, 0, g_map_map[map_type], 0, &mapped_resource);
+	HRESULT result = context->Map(_buffer, 0, g_map_map[static_cast<size_t>(map_type)], 0, &mapped_resource);
 	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 

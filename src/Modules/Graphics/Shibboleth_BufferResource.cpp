@@ -48,7 +48,7 @@ Vector<Gleam::IRenderDevice*> BufferResource::getDevices(void) const
 	return out;
 }
 
-bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings)
+bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::Settings& buffer_settings)
 {
 	bool success = true;
 
@@ -59,7 +59,7 @@ bool BufferResource::createBuffer(const Vector<Gleam::IRenderDevice*>& devices, 
 	return success;
 }
 
-bool BufferResource::createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings)
+bool BufferResource::createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::Settings& buffer_settings)
 {
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IBuffer* const buffer = render_mgr.createBuffer();

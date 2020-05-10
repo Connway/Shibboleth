@@ -112,23 +112,24 @@ public:
 		".glsl"
 	};
 
-	enum ShaderType
+	enum class Type
 	{
-		SHADER_VERTEX = 0,
-		SHADER_PIXEL,
-		SHADER_DOMAIN,
-		SHADER_GEOMETRY,
-		SHADER_HULL,
-		SHADER_COMPUTE,
-		SHADER_TYPE_SIZE,
-		SHADER_PIPELINE_COUNT = SHADER_COMPUTE
+		Vertex = 0,
+		Pixel,
+		Domain,
+		Geometry,
+		Hull,
+		Compute,
+		
+		Count,
+		PipelineCount = Compute
 	};
 
 	virtual ~IShader(void) {}
 
-	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, ShaderType shader_type) = 0;
-	virtual bool initSource(IRenderDevice& rd, const char* shader_source, ShaderType shader_type) = 0;
-	virtual bool init(IRenderDevice& rd, const char* file_path, ShaderType shader_type) = 0;
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type) = 0;
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, Type shader_type) = 0;
+	virtual bool init(IRenderDevice& rd, const char* file_path, Type shader_type) = 0;
 
 	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
 	virtual bool initPixel(IRenderDevice&, const char* file_path) = 0;
@@ -150,10 +151,10 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	ShaderType getType(void) const { return _type; }
+	Type getType(void) const { return _type; }
 
 protected:
-	ShaderType _type;
+	Type _type;
 };
 
 NS_END

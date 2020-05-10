@@ -26,13 +26,11 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-MeshBase::MeshBase(void):
-	_indices(nullptr), _index_count(0)
+void MeshBase::clear(void)
 {
-}
-
-MeshBase::~MeshBase(void)
-{
+	_vert_data.clear();
+	_offsets.clear();
+	_indices = nullptr;
 }
 
 void MeshBase::addBuffer(IBuffer* buffer, uint32_t offset)
@@ -92,52 +90,6 @@ void MeshBase::setIndexCount(int32_t count)
 int32_t MeshBase::getIndexCount(void) const
 {
 	return _index_count;
-}
-
-bool MeshBase::addVertDataHelper(
-	IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
-	int32_t* indices, int32_t index_count, TopologyType primitive_type,
-	IBuffer* index_buffer, IBuffer* vert_buffer
-)
-{
-	GAFF_ASSERT(vert_data && vert_count && vert_size && indices && index_count &&
-			index_buffer && vert_buffer);
-
-	IBuffer::BufferSettings vert_settings
-	{
-		vert_data,
-		static_cast<size_t>(vert_count) * vert_size,
-		vert_size,
-		IBuffer::BT_VERTEX_DATA,
-		IBuffer::MT_NONE,
-		true
-	};
-
-	if (!vert_buffer->init(rd, vert_settings)) {
-		return false;
-	}
-
-	IBuffer::BufferSettings index_settings
-	{
-		indices,
-		sizeof(uint32_t) * index_count,
-		sizeof(uint32_t),
-		IBuffer::BT_INDEX_DATA,
-		IBuffer::MT_NONE,
-		true
-	};
-
-	if (!index_buffer->init(rd, index_settings)) {
-		return false;
-	}
-
-	addBuffer(vert_buffer);
-	setIndiceBuffer(index_buffer);
-	_index_count = index_count;
-
-	setTopologyType(primitive_type);
-
-	return true;
 }
 
 NS_END

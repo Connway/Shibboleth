@@ -34,7 +34,7 @@ public:
 	DepthStencilStateD3D11(void);
 	~DepthStencilStateD3D11(void);
 
-	bool init(IRenderDevice& rd, const DepthStencilStateSettings& settings) override;
+	bool init(IRenderDevice& rd, const Settings& settings) override;
 	void destroy(void) override;
 
 	void bind(IRenderDevice& rd) const override;

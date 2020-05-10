@@ -33,22 +33,20 @@ public:
 	MeshD3D11(void);
 	~MeshD3D11(void);
 
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
-		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
-	);
+	void clear(void) override;
 
 	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
 
-	void setTopologyType(TopologyType topology);
-	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location = 0);
-	void renderInstanced(IRenderDevice& rd, int32_t count);
-	void render(IRenderDevice& rd);
+	void setTopologyType(TopologyType topology) override;
+	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset = 0) override;
+	void renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset = 0, int32_t vert_offset = 0, int32_t instance_offset = 0) override;
+	void render(IRenderDevice& rd, int32_t index_offset = 0, int32_t vert_offset = 0) override;
 
 	RendererType getRendererType(void) const;
 
 private:
 	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology;
+	DXGI_FORMAT _indice_format;
 
 	Vector<ID3D11Buffer*> _buffers;
 	Vector<UINT> _strides;

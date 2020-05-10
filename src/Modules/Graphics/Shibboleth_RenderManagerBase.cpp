@@ -550,16 +550,16 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
 	manageRenderDevice(rd);
 
 	Gleam::ISamplerState* const sampler_state = createSamplerState();
-	const Gleam::ISamplerState::SamplerSettings sampler_settings = {
-		Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST,
-		Gleam::ISamplerState::WRAP_CLAMP,
-		Gleam::ISamplerState::WRAP_CLAMP,
-		Gleam::ISamplerState::WRAP_CLAMP,
+	const Gleam::ISamplerState::Settings sampler_settings = {
+		Gleam::ISamplerState::Filter::NearestNearestNearest,
+		Gleam::ISamplerState::Wrap::Clamp,
+		Gleam::ISamplerState::Wrap::Clamp,
+		Gleam::ISamplerState::Wrap::Clamp,
 		0.0f, 0.0f,
 		0.0f,
 		1,
 		Gleam::COLOR_BLACK,
-		Gleam::ComparisonFunc::NEVER
+		Gleam::ComparisonFunc::Never
 	};
 
 	if (!sampler_state->init(*rd, sampler_settings)) {

@@ -32,23 +32,23 @@ class IRenderDevice;
 class IBuffer
 {
 public:
-	enum BufferType {
-		BT_VERTEX_DATA = 0,
-		BT_INDEX_DATA,
-		BT_SHADER_DATA,
-		BT_STRUCTURED_DATA,
-		
-		BUFFER_TYPE_SIZE
+	enum class Type {
+		VertexData = 0,
+		IndexData,
+		ShaderConstantData,
+		StructuredData,
+
+		Count
 	};
 
-	enum MapType {
-		MT_NONE = 0,
-		MT_READ,
-		MT_WRITE,
-		MT_READ_WRITE,
-		MT_WRITE_NO_OVERWRITE,
+	enum class MapType {
+		None = 0,
+		Read,
+		Write,
+		ReadWrite,
+		WriteNoOverwrite,
 
-		MAP_TYPE_SIZE
+		Count
 	};
 
 	template <class T>
@@ -63,34 +63,37 @@ public:
 		return update(rd, (void*)&data, sizeof(T));
 	}
 
-	struct BufferSettings
+	struct Settings final
 	{
 		const void* data = nullptr;
 		size_t size = 0;
 		int32_t stride = 0;
-		BufferType type = BT_SHADER_DATA;
-		MapType cpu_access = MT_NONE;
+		int32_t element_size = 0;
+		Type type = Type::ShaderConstantData;
+		MapType cpu_access = MapType::None;
 		bool gpu_read_only = true;
 	};
 
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
-	virtual bool init(IRenderDevice& rd, const BufferSettings& buffer_settings) = 0;
+	virtual bool init(IRenderDevice& rd, const Settings& buffer_settings) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) = 0;
-	virtual void* map(IRenderDevice& rd, MapType map_type = MT_WRITE) = 0;
+	virtual void* map(IRenderDevice& rd, MapType map_type = MapType::Write) = 0;
 	virtual void unmap(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	BufferType getBufferType(void) const { return _buffer_type; }
+	Type getBufferType(void) const { return _buffer_type; }
+	int32_t getElementSize(void) const { return _elem_size; }
 	int32_t getStride(void) const { return _stride; }
 	size_t getSize(void) const { return _size; }
 
 protected:
-	BufferType _buffer_type;
+	Type _buffer_type;
+	int32_t _elem_size;
 	int32_t _stride;
 	size_t _size;
 

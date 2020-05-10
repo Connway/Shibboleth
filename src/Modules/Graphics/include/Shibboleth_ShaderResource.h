@@ -35,8 +35,8 @@ public:
 
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
-	bool createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::ShaderType shader_type);
-	bool createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::ShaderType shader_type);
+	bool createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type);
+	bool createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type);
 
 	const Gleam::IShader* getShader(const Gleam::IRenderDevice& rd) const;
 	Gleam::IShader* getShader(const Gleam::IRenderDevice& rd);

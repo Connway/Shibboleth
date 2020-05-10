@@ -34,11 +34,11 @@ public:
 	BufferD3D11(void);
 	~BufferD3D11(void);
 
-	bool init(IRenderDevice& rd, const BufferSettings& buffer_settings) override;
+	bool init(IRenderDevice& rd, const Settings& buffer_settings) override;
 	void destroy(void) override;
 
 	bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) override;
-	void* map(IRenderDevice& rd, MapType map_type = MT_WRITE) override;
+	void* map(IRenderDevice& rd, MapType map_type = MapType::Write) override;
 	void unmap(IRenderDevice& rd) override;
 
 	RendererType getRendererType(void) const override;

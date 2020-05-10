@@ -33,9 +33,9 @@ public:
 	ShaderD3D11(void);
 	~ShaderD3D11(void);
 
-	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, ShaderType shader_type);
-	bool initSource(IRenderDevice& rd, const char* shader_source, ShaderType shader_type);
-	bool init(IRenderDevice& rd, const char* file_path, ShaderType shader_type);
+	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type);
+	bool initSource(IRenderDevice& rd, const char* shader_source, Type shader_type);
+	bool init(IRenderDevice& rd, const char* file_path, Type shader_type);
 
 	bool initVertex(IRenderDevice& rd, const char* file_path);
 	bool initPixel(IRenderDevice& rd, const char* file_path);

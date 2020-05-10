@@ -32,42 +32,43 @@ class IRenderDevice;
 class IShader;
 class IMesh;
 
-enum Semantic
-{
-	SEMANTIC_COLOR = 0,
-	SEMANTIC_NORMAL,
-	SEMANTIC_POSITION,
-	SEMANTIC_TEXCOORD,
-	SEMANTIC_TANGENT,
-	SEMANTIC_BITANGENT,
-	SEMANTIC_BLEND_INDICES,
-	SEMANTIC_BLEND_WEIGHT,
-	SEMANTIC_SIZE
-};
-
-enum PerDataType
-{
-	PDT_PER_VERTEX = 0,
-	PDT_PER_INSTANCE
-};
-
-struct LayoutDescription
-{
-	Semantic semantic;
-	int32_t semantic_index;
-	ITexture::Format format;
-	int32_t input_slot;
-	int32_t aligned_byte_offset;
-	PerDataType per_data_type;
-};
-
 class ILayout
 {
 public:
+	enum class Semantic
+	{
+		Color = 0,
+		Normal,
+		Position,
+		TexCoord,
+		Tangent,
+		Bitangent,
+		BlendIndices,
+		BlendWeight,
+
+		Count
+	};
+
+	enum class PerDataType
+	{
+		Vertex = 0,
+		Instance
+	};
+
+	struct Description final
+	{
+		Semantic semantic;
+		int32_t semantic_index;
+		ITexture::Format format;
+		int32_t input_slot;
+		int32_t aligned_byte_offset;
+		PerDataType per_data_type;
+	};
+
 	ILayout(void) {}
 	virtual ~ILayout(void) {}
 
-	virtual bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader& shader) = 0;
+	virtual bool init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader) = 0;
 	virtual bool init(IRenderDevice& rd, const IShader& shader) = 0;
 	virtual void destroy(void) = 0;
 

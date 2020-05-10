@@ -37,7 +37,7 @@ RasterStateD3D11::~RasterStateD3D11(void)
 	destroy();
 }
 
-bool RasterStateD3D11::init(IRenderDevice& rd, const RasterSettings& settings)
+bool RasterStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 

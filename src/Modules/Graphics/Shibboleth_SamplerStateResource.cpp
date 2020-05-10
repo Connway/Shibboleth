@@ -58,7 +58,7 @@ Vector<Gleam::IRenderDevice*> SamplerStateResource::getDevices(void) const
 	return out;
 }
 
-bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
+bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings)
 {
 	bool success = true;
 
@@ -69,7 +69,7 @@ bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*
 	return success;
 }
 
-bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings)
+bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings)
 {
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
@@ -132,9 +132,9 @@ void SamplerStateResource::loadSamplerState(IFile* file)
 		return;
 	}
 
-	Gleam::ISamplerState::SamplerSettings sampler_state_settings;
+	Gleam::ISamplerState::Settings sampler_state_settings;
 
-	if (!Reflection<Gleam::ISamplerState::SamplerSettings>::Load(reader, sampler_state_settings)) {
+	if (!Reflection<Gleam::ISamplerState::Settings>::Load(reader, sampler_state_settings)) {
 		LogErrorResource("Failed to load sampler state '%s'. Failed to deserialize sampler settings.", getFilePath().getBuffer());
 		failed();
 		return;

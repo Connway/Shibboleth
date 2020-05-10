@@ -116,27 +116,27 @@ bool MaterialResource::createProgram(
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	if (vert) {
-		_shaders[Gleam::IShader::SHADER_VERTEX] = vertex;
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)] = vertex;
 		program->attach(vert);
 	}
 
 	if (pix) {
-		_shaders[Gleam::IShader::SHADER_PIXEL] = pixel;
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Pixel)] = pixel;
 		program->attach(pix);
 	}
 
 	if (dom) {
-		_shaders[Gleam::IShader::SHADER_DOMAIN] = domain;
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Domain)] = domain;
 		program->attach(dom);
 	}
 
 	if (geo) {
-		_shaders[Gleam::IShader::SHADER_GEOMETRY] = geometry;
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Geometry)] = geometry;
 		program->attach(geo);
 	}
 
 	if (hul) {
-		_shaders[Gleam::IShader::SHADER_HULL] = hull;
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Hull)] = hull;
 		program->attach(hul);
 	}
 
@@ -180,7 +180,7 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
-	_shaders[Gleam::IShader::SHADER_COMPUTE] = compute;
+	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
 	program->attach(shader);
 
 	_programs[&device].reset(program);
@@ -202,13 +202,13 @@ Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device
 
 const Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device) const
 {
-	const ShaderResourcePtr& shader = _shaders[Gleam::IShader::SHADER_VERTEX];
+	const ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
 	return (shader) ? shader->getLayout(device) : nullptr;
 }
 
 Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
 {
-	ShaderResourcePtr& shader = _shaders[Gleam::IShader::SHADER_VERTEX];
+	ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
 	return (shader) ? shader->getLayout(device) : nullptr;
 }
 
@@ -249,7 +249,7 @@ void MaterialResource::loadMaterial(IFile* file)
 		return;
 	}
 
-	ShaderResourcePtr shaders[Gleam::IShader::SHADER_TYPE_SIZE];
+	ShaderResourcePtr shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	// Process the compute section first.
 	{
@@ -284,7 +284,7 @@ void MaterialResource::loadMaterial(IFile* file)
 				const bool success = compute->createShaderAndLayout(
 					*devices,
 					reinterpret_cast<const char*>(compute_file->getBuffer()),
-					Gleam::IShader::SHADER_COMPUTE);
+					Gleam::IShader::Type::Compute);
 
 				if (!success) {
 					LogErrorResource("Failed to load material '%s'. Failed to create compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
@@ -313,7 +313,7 @@ void MaterialResource::loadMaterial(IFile* file)
 		}
 	}
 
-	constexpr const char* shader_elements[Gleam::IShader::SHADER_TYPE_SIZE] = {
+	constexpr const char* shader_elements[static_cast<size_t>(Gleam::IShader::Type::Count)] = {
 		"vertex",
 		"pixel",
 		"domain",
@@ -368,7 +368,7 @@ void MaterialResource::loadMaterial(IFile* file)
 			const bool success = shaders[index]->createShaderAndLayout(
 				*devices,
 				reinterpret_cast<const char*>(shader_file->getBuffer()),
-				static_cast<Gleam::IShader::ShaderType>(index));
+				static_cast<Gleam::IShader::Type>(index));
 
 			if (!success) {
 				LogErrorResource("Failed to load material '%s'. Failed to create compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
@@ -382,11 +382,11 @@ void MaterialResource::loadMaterial(IFile* file)
 
 	const bool success = createProgram(
 		*devices,
-		shaders[Gleam::IShader::SHADER_VERTEX],
-		shaders[Gleam::IShader::SHADER_PIXEL],
-		shaders[Gleam::IShader::SHADER_DOMAIN],
-		shaders[Gleam::IShader::SHADER_GEOMETRY],
-		shaders[Gleam::IShader::SHADER_HULL]
+		shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)],
+		shaders[static_cast<int32_t>(Gleam::IShader::Type::Pixel)],
+		shaders[static_cast<int32_t>(Gleam::IShader::Type::Domain)],
+		shaders[static_cast<int32_t>(Gleam::IShader::Type::Geometry)],
+		shaders[static_cast<int32_t>(Gleam::IShader::Type::Hull)]
 	);
 
 	if (success) {

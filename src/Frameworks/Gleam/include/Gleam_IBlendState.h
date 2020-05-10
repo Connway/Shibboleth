@@ -31,68 +31,65 @@ class IRenderDevice;
 class IBlendState
 {
 public:
-	enum BlendFactor
+	enum class BlendFactor
 	{
-		BLEND_FACTOR_ZERO = 1,
-		BLEND_FACTOR_ONE,
-		BLEND_FACTOR_SRC_COLOR,
-		BLEND_FACTOR_INV_SRC_COLOR,
-		BLEND_FACTOR_SRC_ALPHA,
-		BLEND_FACTOR_INV_SRC_ALPHA,
-		BLEND_FACTOR_DEST_ALPHA,
-		BLEND_FACTOR_INV_DEST_ALPHA,
-		BLEND_FACTOR_DEST_COLOR,
-		BLEND_FACTOR_INV_DEST_COLOR,
-		BLEND_FACTOR_SRC_ALPHA_SATURATE,
-		//FACTOR,
-		//INV_BLEND_FACTOR,
-		BLEND_FACTOR_SRC1_COLOR = 14,
-		BLEND_FACTOR_INV_SRC1_COLOR,
-		BLEND_FACTOR_SRC1_ALPHA,
-		BLEND_FACTOR_INV_SRC1_ALPHA,
-		BLEND_FACTOR_SIZE = BLEND_FACTOR_INV_SRC1_ALPHA
+		Zero = 1,
+		One,
+		SourceColor,
+		InverseSourceColor,
+		SourceAlpha,
+		InverseSourceAlpha,
+		DestAlpha,
+		InverseDestAlpha,
+		DestColor,
+		InverseDestColor,
+		SourceAlphaSaturate,
+		// Factor,
+		// InverseFactor,
+		FactorSource1Color,
+		FactorInverseSource1Color,
+		FactorSource1Alpha,
+		FactorInverseSource1Alpha
 	};
 
-	enum BlendOp
+	enum class BlendOp
 	{
-		BLEND_OP_ADD = 1,
-		BLEND_OP_SUBTRACT,
-		BLEND_OP_REVERSE_SUBTRACT,
-		BLEND_OP_MIN,
-		BLEND_OP_MAX,
-		BLEND_OP_SIZE = BLEND_OP_MAX
+		Add = 1,
+		Subtract,
+		ReverseSubract,
+		Min,
+		Max
 	};
 
-	enum ColorMask
+	enum class ColorMask
 	{
-		COLOR_RED = 1,
-		COLOR_GREEN = 2,
-		COLOR_BLUE = 4,
-		COLOR_ALPHA = 8,
-		COLOR_ALL = COLOR_RED | COLOR_GREEN | COLOR_BLUE | COLOR_ALPHA
+		Red = 1,
+		Green = 2,
+		Blue  = 4,
+		Alpha = 8,
+		All = Red | Green| Blue | Alpha
 	};
 
-	struct BlendStateSettings
+	struct Settings
 	{
-		BlendFactor blend_src_color = BLEND_FACTOR_SRC_COLOR;
-		BlendFactor blend_dst_color = BLEND_FACTOR_DEST_COLOR;
-		BlendOp blend_op_color = BLEND_OP_ADD;
-		BlendFactor blend_src_alpha = BLEND_FACTOR_SRC_ALPHA;
-		BlendFactor blend_dst_alpha = BLEND_FACTOR_DEST_ALPHA;
-		BlendOp blend_op_alpha = BLEND_OP_ADD;
-		char color_write_mask = COLOR_ALL;
+		BlendFactor blend_src_color = BlendFactor::SourceColor;
+		BlendFactor blend_dst_color = BlendFactor::DestColor;
+		BlendOp blend_op_color = BlendOp::Add;
+		BlendFactor blend_src_alpha = BlendFactor::SourceAlpha;
+		BlendFactor blend_dst_alpha = BlendFactor::DestAlpha;
+		BlendOp blend_op_alpha = BlendOp::Add;
+		ColorMask color_write_mask = ColorMask::All;
 		bool enable_alpha_blending = false;
 	};
 
 	IBlendState(void) {}
 	virtual ~IBlendState(void) {}
 
-	virtual bool init(IRenderDevice& rd, const BlendStateSettings& settings) = 0;
-	virtual bool init(IRenderDevice& rd, const BlendStateSettings* settings) = 0;
+	virtual bool init(IRenderDevice& rd, const Settings& settings) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void set(IRenderDevice& rd) const = 0;
-	virtual void unset(IRenderDevice& rd) const = 0;
+	virtual void bind(IRenderDevice& rd) const = 0;
+	virtual void unbind(IRenderDevice& rd) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 };

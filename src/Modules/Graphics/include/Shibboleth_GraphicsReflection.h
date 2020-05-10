@@ -30,10 +30,10 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Filter)
 SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Wrap)
-SHIB_REFLECTION_DECLARE(Gleam::IShader::ShaderType)
+SHIB_REFLECTION_DECLARE(Gleam::IShader::Type)
 SHIB_REFLECTION_DECLARE(Gleam::IWindow::WindowMode)
 SHIB_REFLECTION_DECLARE(Gleam::ComparisonFunc)
 SHIB_REFLECTION_DECLARE(Gleam::StencilOp)
 
-SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::SamplerSettings)
-SHIB_REFLECTION_DECLARE(Gleam::IRasterState::RasterSettings)
+SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Settings)
+SHIB_REFLECTION_DECLARE(Gleam::IRasterState::Settings)

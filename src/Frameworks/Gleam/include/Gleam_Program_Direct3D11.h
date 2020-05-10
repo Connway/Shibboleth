@@ -43,18 +43,18 @@ public:
 	ProgramBuffersD3D11(void);
 	~ProgramBuffersD3D11(void);
 
-	void addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer) override;
-	void removeConstantBuffer(IShader::ShaderType type, int32_t index) override;
-	void popConstantBuffer(IShader::ShaderType type, int32_t count = 1) override;
+	void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) override;
+	void removeConstantBuffer(IShader::Type type, int32_t index) override;
+	void popConstantBuffer(IShader::Type type, int32_t count = 1) override;
 
-	void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) override;
-	void removeResourceView(IShader::ShaderType type, int32_t index) override;
-	void popResourceView(IShader::ShaderType type, int32_t count = 1) override;
-	void setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view) override;
+	void addResourceView(IShader::Type type, IShaderResourceView* resource_view) override;
+	void removeResourceView(IShader::Type type, int32_t index) override;
+	void popResourceView(IShader::Type type, int32_t count = 1) override;
+	void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) override;
 
-	void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) override;
-	void removeSamplerState(IShader::ShaderType type, int32_t index) override;
-	void popSamplerState(IShader::ShaderType type, int32_t count = 1) override;
+	void addSamplerState(IShader::Type type, ISamplerState* sampler) override;
+	void removeSamplerState(IShader::Type type, int32_t index) override;
+	void popSamplerState(IShader::Type type, int32_t count = 1) override;
 
 	IProgramBuffers* clone(void) const override;
 
@@ -66,9 +66,9 @@ public:
 	RendererType getRendererType(void) const override;
 
 private:
-	Vector<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];
-	Vector<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
-	Vector<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
+	Vector<ID3D11ShaderResourceView*> _res_views[static_cast<size_t>(IShader::Type::Count)];
+	Vector<ID3D11SamplerState*> _samplers[static_cast<size_t>(IShader::Type::Count)];
+	Vector<ID3D11Buffer*> _buffers[static_cast<size_t>(IShader::Type::Count)];
 
 	friend class ProgramD3D11;
 };
@@ -81,7 +81,7 @@ public:
 	~ProgramD3D11(void);
 
 	void attach(IShader* shader);
-	void detach(IShader::ShaderType shader);
+	void detach(IShader::Type shader);
 
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);

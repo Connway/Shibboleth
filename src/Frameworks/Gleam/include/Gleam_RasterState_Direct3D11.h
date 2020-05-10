@@ -34,7 +34,7 @@ public:
 	RasterStateD3D11(void);
 	~RasterStateD3D11(void);
 
-	bool init(IRenderDevice& rd, const RasterSettings& settings) override;
+	bool init(IRenderDevice& rd, const Settings& settings) override;
 	void destroy(void) override;
 
 	void bind(IRenderDevice& rd) const override;

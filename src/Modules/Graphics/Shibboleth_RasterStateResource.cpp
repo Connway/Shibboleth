@@ -58,7 +58,7 @@ Vector<Gleam::IRenderDevice*> RasterStateResource::getDevices(void) const
 	return out;
 }
 
-bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::RasterSettings& raster_state_settings)
+bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings)
 {
 	bool success = true;
 
@@ -69,7 +69,7 @@ bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>&
 	return success;
 }
 
-bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::RasterSettings& raster_state_settings)
+bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings)
 {
 	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
 	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
@@ -132,9 +132,9 @@ void RasterStateResource::loadRasterState(IFile* file)
 		return;
 	}
 
-	Gleam::IRasterState::RasterSettings raster_state_settings;
+	Gleam::IRasterState::Settings raster_state_settings;
 	
-	if (!Reflection<Gleam::IRasterState::RasterSettings>::Load(reader, raster_state_settings)) {
+	if (!Reflection<Gleam::IRasterState::Settings>::Load(reader, raster_state_settings)) {
 		LogErrorResource("Failed to load raster state '%s'. Failed to deserialize raster settings.", getFilePath().getBuffer());
 		failed();
 		return;

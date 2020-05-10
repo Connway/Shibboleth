@@ -39,35 +39,35 @@ public:
 	IProgramBuffers(void) {}
 	virtual ~IProgramBuffers(void) {}
 
-	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::ShaderType type) const = 0;
-	virtual const IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) const = 0;
-	virtual IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) = 0;
-	virtual void addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer) = 0;
-	virtual void removeConstantBuffer(IShader::ShaderType type, int32_t index) = 0;
-	virtual void popConstantBuffer(IShader::ShaderType type, int32_t count = 1) = 0;
+	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::Type type) const = 0;
+	virtual const IBuffer* getConstantBuffer(IShader::Type type, int32_t index) const = 0;
+	virtual IBuffer* getConstantBuffer(IShader::Type type, int32_t index) = 0;
+	virtual void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) = 0;
+	virtual void removeConstantBuffer(IShader::Type type, int32_t index) = 0;
+	virtual void popConstantBuffer(IShader::Type type, int32_t count = 1) = 0;
 
-	virtual int32_t getConstantBufferCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getConstantBufferCount(IShader::Type type) const = 0;
 	virtual int32_t getConstantBufferCount(void) const = 0;
 
-	virtual const Vector<IShaderResourceView*>& getResourceViews(IShader::ShaderType type) const = 0;
-	virtual const IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) const = 0;
-	virtual IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) = 0;
-	virtual void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) = 0;
-	virtual void removeResourceView(IShader::ShaderType type, int32_t index) = 0;
-	virtual void popResourceView(IShader::ShaderType type, int32_t count = 1) = 0;
-	virtual void setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view) = 0;
+	virtual const Vector<IShaderResourceView*>& getResourceViews(IShader::Type type) const = 0;
+	virtual const IShaderResourceView* getResourceView(IShader::Type type, int32_t index) const = 0;
+	virtual IShaderResourceView* getResourceView(IShader::Type type, int32_t index) = 0;
+	virtual void addResourceView(IShader::Type type, IShaderResourceView* resource_view) = 0;
+	virtual void removeResourceView(IShader::Type type, int32_t index) = 0;
+	virtual void popResourceView(IShader::Type type, int32_t count = 1) = 0;
+	virtual void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) = 0;
 
-	virtual int32_t getResourceViewCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getResourceViewCount(IShader::Type type) const = 0;
 	virtual int32_t getResourceViewCount(void) const = 0;
 
-	virtual const Vector<ISamplerState*>& getSamplerStates(IShader::ShaderType type) const = 0;
-	virtual const ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) const = 0;
-	virtual ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) = 0;
-	virtual void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) = 0;
-	virtual void removeSamplerState(IShader::ShaderType type, int32_t index) = 0;
-	virtual void popSamplerState(IShader::ShaderType type, int32_t count = 1) = 0;
+	virtual const Vector<ISamplerState*>& getSamplerStates(IShader::Type type) const = 0;
+	virtual const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const = 0;
+	virtual ISamplerState* getSamplerState(IShader::Type type, int32_t index) = 0;
+	virtual void addSamplerState(IShader::Type type, ISamplerState* sampler) = 0;
+	virtual void removeSamplerState(IShader::Type type, int32_t index) = 0;
+	virtual void popSamplerState(IShader::Type type, int32_t count = 1) = 0;
 
-	virtual int32_t getSamplerCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getSamplerCount(IShader::Type type) const = 0;
 	virtual int32_t getSamplerCount(void) const = 0;
 
 	virtual IProgramBuffers* clone(void) const = 0;
@@ -87,15 +87,15 @@ public:
 	virtual ~IProgram(void) {}
 
 	virtual void attach(IShader* shader) = 0;
-	virtual void detach(IShader::ShaderType shader) = 0;
+	virtual void detach(IShader::Type shader) = 0;
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual const IShader* getAttachedShader(IShader::ShaderType type) const = 0;
-	virtual IShader* getAttachedShader(IShader::ShaderType type) = 0;
+	virtual const IShader* getAttachedShader(IShader::Type type) const = 0;
+	virtual IShader* getAttachedShader(IShader::Type type) = 0;
 };
 
 NS_END

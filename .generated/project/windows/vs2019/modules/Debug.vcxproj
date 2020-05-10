@@ -233,6 +233,7 @@ premake5 gen_module_header --module=Debug</Command>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_IDebugManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugManager.cpp" />

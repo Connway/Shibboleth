@@ -38,7 +38,7 @@ using ShaderSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID
 using ShaderResourceViewSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11ShaderResourceView* const*);
 using SamplerSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11SamplerState* const*);
 
-static ShaderSetFunction g_buffer_set[IShader::SHADER_TYPE_SIZE] = {
+static ShaderSetFunction g_buffer_set[static_cast<size_t>(IShader::Type::Count)] = {
 	&ID3D11DeviceContext::VSSetConstantBuffers,
 	&ID3D11DeviceContext::PSSetConstantBuffers,
 	&ID3D11DeviceContext::DSSetConstantBuffers,
@@ -47,7 +47,7 @@ static ShaderSetFunction g_buffer_set[IShader::SHADER_TYPE_SIZE] = {
 	&ID3D11DeviceContext::CSSetConstantBuffers
 };
 
-static ShaderResourceViewSetFunction g_resource_set[IShader::SHADER_TYPE_SIZE] = {
+static ShaderResourceViewSetFunction g_resource_set[static_cast<size_t>(IShader::Type::Count)] = {
 	&ID3D11DeviceContext::VSSetShaderResources,
 	&ID3D11DeviceContext::PSSetShaderResources,
 	&ID3D11DeviceContext::DSSetShaderResources,
@@ -56,7 +56,7 @@ static ShaderResourceViewSetFunction g_resource_set[IShader::SHADER_TYPE_SIZE] =
 	&ID3D11DeviceContext::CSSetShaderResources
 };
 
-static SamplerSetFunction g_sampler_set[IShader::SHADER_TYPE_SIZE] = {
+static SamplerSetFunction g_sampler_set[static_cast<size_t>(IShader::Type::Count)] = {
 	&ID3D11DeviceContext::VSSetSamplers,
 	&ID3D11DeviceContext::PSSetSamplers,
 	&ID3D11DeviceContext::DSSetSamplers,
@@ -75,74 +75,74 @@ ProgramBuffersD3D11::~ProgramBuffersD3D11(void)
 {
 }
 
-void ProgramBuffersD3D11::addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer)
+void ProgramBuffersD3D11::addConstantBuffer(IShader::Type type, IBuffer* const_buffer)
 {
 	ProgramBuffersBase::addConstantBuffer(type, const_buffer);
-	_buffers[type].emplace_back(static_cast<const BufferD3D11*>(const_buffer)->getBuffer());
+	_buffers[static_cast<int32_t>(type)].emplace_back(static_cast<const BufferD3D11*>(const_buffer)->getBuffer());
 }
 
-void ProgramBuffersD3D11::removeConstantBuffer(IShader::ShaderType type, int32_t index)
+void ProgramBuffersD3D11::removeConstantBuffer(IShader::Type type, int32_t index)
 {
 	ProgramBuffersBase::removeConstantBuffer(type, index);
-	_buffers[type].erase(_buffers[type].begin() + index);
+	_buffers[static_cast<int32_t>(type)].erase(_buffers[static_cast<int32_t>(type)].begin() + index);
 }
 
-void ProgramBuffersD3D11::popConstantBuffer(IShader::ShaderType type, int32_t count)
+void ProgramBuffersD3D11::popConstantBuffer(IShader::Type type, int32_t count)
 {
 	ProgramBuffersBase::popConstantBuffer(type, count);
 
 	while (count) {
-		_buffers[type].pop_back();
+		_buffers[static_cast<int32_t>(type)].pop_back();
 		--count;
 	}
 }
 
-void ProgramBuffersD3D11::addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view)
+void ProgramBuffersD3D11::addResourceView(IShader::Type type, IShaderResourceView* resource_view)
 {
 	ProgramBuffersBase::addResourceView(type, resource_view);
-	_res_views[type].emplace_back(static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView());
+	_res_views[static_cast<int32_t>(type)].emplace_back(static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView());
 }
 
-void ProgramBuffersD3D11::removeResourceView(IShader::ShaderType type, int32_t index)
+void ProgramBuffersD3D11::removeResourceView(IShader::Type type, int32_t index)
 {
 	ProgramBuffersBase::removeResourceView(type, index);
-	_res_views[type].erase(_res_views[type].begin() + index);
+	_res_views[static_cast<int32_t>(type)].erase(_res_views[static_cast<int32_t>(type)].begin() + index);
 }
 
-void ProgramBuffersD3D11::popResourceView(IShader::ShaderType type, int32_t count)
+void ProgramBuffersD3D11::popResourceView(IShader::Type type, int32_t count)
 {
 	ProgramBuffersBase::popResourceView(type, count);
 
 	while (count) {
-		_res_views[type].pop_back();
+		_res_views[static_cast<int32_t>(type)].pop_back();
 		--count;
 	}
 }
 
-void ProgramBuffersD3D11::setResourceView(IShader::ShaderType type, int32_t index, IShaderResourceView* resource_view)
+void ProgramBuffersD3D11::setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view)
 {
 	ProgramBuffersBase::setResourceView(type, index, resource_view);
-	_res_views[type][index] = static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView();
+	_res_views[static_cast<int32_t>(type)][index] = static_cast<const ShaderResourceViewD3D11*>(resource_view)->getResourceView();
 }
 
-void ProgramBuffersD3D11::addSamplerState(IShader::ShaderType type, ISamplerState* sampler)
+void ProgramBuffersD3D11::addSamplerState(IShader::Type type, ISamplerState* sampler)
 {
 	ProgramBuffersBase::addSamplerState(type, sampler);
-	_samplers[type].emplace_back(static_cast<const SamplerStateD3D11*>(sampler)->getSamplerState());
+	_samplers[static_cast<int32_t>(type)].emplace_back(static_cast<const SamplerStateD3D11*>(sampler)->getSamplerState());
 }
 
-void ProgramBuffersD3D11::removeSamplerState(IShader::ShaderType type, int32_t index)
+void ProgramBuffersD3D11::removeSamplerState(IShader::Type type, int32_t index)
 {
 	ProgramBuffersBase::removeSamplerState(type, index);
-	_samplers[type].erase(_samplers[type].begin() + index);
+	_samplers[static_cast<int32_t>(type)].erase(_samplers[static_cast<int32_t>(type)].begin() + index);
 }
 
-void ProgramBuffersD3D11::popSamplerState(IShader::ShaderType type, int32_t count)
+void ProgramBuffersD3D11::popSamplerState(IShader::Type type, int32_t count)
 {
 	ProgramBuffersBase::popSamplerState(type, count);
 
 	while (count) {
-		_samplers[type].pop_back();
+		_samplers[static_cast<int32_t>(type)].pop_back();
 		--count;
 	}
 }
@@ -156,7 +156,7 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 		return nullptr;
 	}
 
-	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+	for (int32_t i = 0; i < (static_cast<int32_t>(IShader::Type::Count) - 1); ++i) {
 		pb->_resource_views[i] = _resource_views[i];
 		pb->_sampler_states[i] = _sampler_states[i];
 		pb->_constant_buffers[i] = _constant_buffers[i];
@@ -170,14 +170,14 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 
 void ProgramBuffersD3D11::clearResourceViews(void)
 {
-	for (int32_t i = 0; i < static_cast<int32_t>(IShader::SHADER_TYPE_SIZE); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(IShader::Type::Count); ++i) {
 		_res_views[i].clear();
 	}
 }
 
 void ProgramBuffersD3D11::clear(void)
 {
-	for (int32_t i = 0; i < static_cast<int32_t>(IShader::SHADER_TYPE_SIZE); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(IShader::Type::Count); ++i) {
 		_resource_views[i].clear();
 		_sampler_states[i].clear();
 		_constant_buffers[i].clear();
@@ -193,7 +193,7 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
-	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(IShader::Type::Count); ++i) {
 		Vector<ID3D11ShaderResourceView*>& res_views = _res_views[i];
 		Vector<ID3D11SamplerState*>& samplers = _samplers[i];
 		Vector<ID3D11Buffer*>& buffers = _buffers[i];
@@ -226,37 +226,37 @@ ProgramD3D11::~ProgramD3D11(void)
 void ProgramD3D11::attach(IShader* shader)
 {
 	GAFF_ASSERT(shader->getRendererType() == RendererType::DIRECT3D11);
-	GAFF_ASSERT(shader->getType() < IShader::SHADER_TYPE_SIZE);
+	GAFF_ASSERT(static_cast<int32_t>(shader->getType()) < static_cast<int32_t>(IShader::Type::Count));
 
-	_attached_shaders[shader->getType()] = shader;
+	_attached_shaders[static_cast<int32_t>(shader->getType())] = shader;
 
 	switch (shader->getType()) {
-		case IShader::SHADER_VERTEX:
+		case IShader::Type::Vertex:
 			SAFERELEASE(_shader_vertex)
 			_shader_vertex = static_cast<const ShaderD3D11*>(shader)->getVertexShader();
 			break;
 
-		case IShader::SHADER_PIXEL:
+		case IShader::Type::Pixel:
 			SAFERELEASE(_shader_pixel)
 			_shader_pixel = static_cast<const ShaderD3D11*>(shader)->getPixelShader();
 			break;
 
-		case IShader::SHADER_DOMAIN:
+		case IShader::Type::Domain:
 			SAFERELEASE(_shader_domain)
 			_shader_domain = static_cast<const ShaderD3D11*>(shader)->getDomainShader();
 			break;
 
-		case IShader::SHADER_GEOMETRY:
+		case IShader::Type::Geometry:
 			SAFERELEASE(_shader_geometry)
 			_shader_geometry = static_cast<const ShaderD3D11*>(shader)->getGeometryShader();
 			break;
 
-		case IShader::SHADER_HULL:
+		case IShader::Type::Hull:
 			SAFERELEASE(_shader_hull)
 			_shader_hull = static_cast<const ShaderD3D11*>(shader)->getHullShader();
 			break;
 
-		case IShader::SHADER_COMPUTE:
+		case IShader::Type::Compute:
 			SAFERELEASE(_shader_compute)
 			_shader_compute = static_cast<const ShaderD3D11*>(shader)->getComputeShader();
 			break;
@@ -266,38 +266,38 @@ void ProgramD3D11::attach(IShader* shader)
 	}
 }
 
-void ProgramD3D11::detach(IShader::ShaderType shader)
+void ProgramD3D11::detach(IShader::Type shader)
 {
-	GAFF_ASSERT(shader < IShader::ShaderType::SHADER_TYPE_SIZE);
-	_attached_shaders[shader] = nullptr;
+	GAFF_ASSERT(static_cast<int32_t>(shader) < static_cast<int32_t>(IShader::Type::Count));
+	_attached_shaders[static_cast<size_t>(shader)] = nullptr;
 
 	switch (shader) {
-		case IShader::SHADER_VERTEX:
+		case IShader::Type::Vertex:
 			SAFERELEASE(_shader_vertex)
 			_shader_vertex = nullptr;
 			break;
 
-		case IShader::SHADER_PIXEL:
+		case IShader::Type::Pixel:
 			SAFERELEASE(_shader_pixel)
 			_shader_pixel = nullptr;
 			break;
 
-		case IShader::SHADER_DOMAIN:
+		case IShader::Type::Domain:
 			SAFERELEASE(_shader_domain)
 			_shader_domain = nullptr;
 			break;
 
-		case IShader::SHADER_GEOMETRY:
+		case IShader::Type::Geometry:
 			SAFERELEASE(_shader_geometry)
 			_shader_geometry = nullptr;
 			break;
 
-		case IShader::SHADER_HULL:
+		case IShader::Type::Hull:
 			SAFERELEASE(_shader_hull)
 			_shader_hull = nullptr;
 			break;
 
-		case IShader::SHADER_COMPUTE:
+		case IShader::Type::Compute:
 			SAFERELEASE(_shader_compute)
 			_shader_compute = nullptr;
 			break;

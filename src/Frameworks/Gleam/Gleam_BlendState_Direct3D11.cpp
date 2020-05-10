@@ -38,7 +38,7 @@ BlendStateD3D11::~BlendStateD3D11(void)
 	destroy();
 }
 
-bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings& settings)
+bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 
@@ -54,35 +54,9 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings& settings
 	blend_desc.RenderTarget[0].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(settings.blend_op_alpha);
 	blend_desc.RenderTarget[0].DestBlend = static_cast<D3D11_BLEND>(settings.blend_dst_color);
 	blend_desc.RenderTarget[0].DestBlendAlpha = static_cast<D3D11_BLEND>(settings.blend_dst_alpha);
-	blend_desc.RenderTarget[0].RenderTargetWriteMask = settings.color_write_mask;
 	blend_desc.RenderTarget[0].SrcBlend = static_cast<D3D11_BLEND>(settings.blend_src_color);
 	blend_desc.RenderTarget[0].SrcBlendAlpha = static_cast<D3D11_BLEND>(settings.blend_src_alpha);
-
-	HRESULT result = device->CreateBlendState(&blend_desc, &_blend_state);
-	return SUCCEEDED(result);
-}
-
-bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings* settings)
-{
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
-
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
-	ID3D11Device5* const device = rd3d.getDevice();
-
-	D3D11_BLEND_DESC blend_desc;
-	blend_desc.AlphaToCoverageEnable = false;
-	blend_desc.IndependentBlendEnable = true;
-
-	for (unsigned int i = 0; i < 8; ++i) {
-		blend_desc.RenderTarget[i].BlendEnable = settings[i].enable_alpha_blending;
-		blend_desc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(settings[i].blend_op_color);
-		blend_desc.RenderTarget[i].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(settings[i].blend_op_alpha);
-		blend_desc.RenderTarget[i].DestBlend = static_cast<D3D11_BLEND>(settings[i].blend_dst_color);
-		blend_desc.RenderTarget[i].DestBlendAlpha = static_cast<D3D11_BLEND>(settings[i].blend_dst_alpha);
-		blend_desc.RenderTarget[i].RenderTargetWriteMask = settings[i].color_write_mask;
-		blend_desc.RenderTarget[i].SrcBlend = static_cast<D3D11_BLEND>(settings[i].blend_src_color);
-		blend_desc.RenderTarget[i].SrcBlendAlpha = static_cast<D3D11_BLEND>(settings[i].blend_src_alpha);
-	}
+	blend_desc.RenderTarget[0].RenderTargetWriteMask = static_cast<UINT8>(settings.color_write_mask);
 
 	HRESULT result = device->CreateBlendState(&blend_desc, &_blend_state);
 	return SUCCEEDED(result);
@@ -93,7 +67,7 @@ void BlendStateD3D11::destroy(void)
 	SAFERELEASE(_blend_state);
 }
 
-void BlendStateD3D11::set(IRenderDevice& rd) const
+void BlendStateD3D11::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -102,7 +76,7 @@ void BlendStateD3D11::set(IRenderDevice& rd) const
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
 }
 
-void BlendStateD3D11::unset(IRenderDevice& rd) const
+void BlendStateD3D11::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);

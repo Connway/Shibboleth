@@ -32,36 +32,25 @@ class IBuffer;
 class IMesh
 {
 public:
-	enum TopologyType {
-		POINT_LIST = 0,
-		LINE_LIST,
-		LINE_STRIP,
-		TRIANGLE_LIST,
-		TRIANGLE_STRIP,
+	enum class TopologyType {
+		PointList = 0,
+		LineList,
+		LineStrip,
+		TriangleList,
+		TriangleStrip,
 
-		LINE_LIST_ADJ,
-		LINE_STRIP_ADJ,
-		TRIANGLE_LIST_ADJ,
-		TRIANGLE_STRIP_ADJ,
+		LineListAdjacent,
+		LineStripAdjacent,
+		TriangleListAdjacent,
+		TriangleSriptAdjacent,
 
-		TOPOLOGY_SIZE
+		Count
 	};
 
 	IMesh(void) {}
 	virtual ~IMesh(void) {}
 
-	template <class Vertex>
-	bool addVertData(
-		IRenderDevice& rd, const Vertex* vert_data, int32_t vert_count,
-		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST)
-	{
-		return addVertData(rd, vert_data, vert_count, sizeof(Vertex), indices, index_count, primitive_type);
-	}
-
-	virtual bool addVertData(
-		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
-		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
-	) = 0;
+	virtual void clear(void) = 0;
 
 	virtual void addBuffer(IBuffer* buffer, uint32_t offset = 0) = 0;
 	virtual const IBuffer* getBuffer(int32_t index) const = 0;
@@ -79,9 +68,9 @@ public:
 	virtual void setIndexCount(int32_t count) = 0;
 	virtual int32_t getIndexCount(void) const = 0;
 
-	virtual void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location = 0) = 0;
-	virtual void renderInstanced(IRenderDevice& rd, int32_t count) = 0;
-	virtual void render(IRenderDevice& rd) = 0;
+	virtual void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset = 0) = 0;
+	virtual void renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset = 0, int32_t vert_offset = 0, int32_t instance_offset = 0) = 0;
+	virtual void render(IRenderDevice& rd, int32_t index_offset = 0, int32_t vert_offset = 0) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 

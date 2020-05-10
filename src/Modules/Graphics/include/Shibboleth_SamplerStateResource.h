@@ -34,8 +34,8 @@ public:
 
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
-	bool createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings);
-	bool createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::SamplerSettings& sampler_state_settings);
+	bool createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings);
+	bool createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings);
 
 	const Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd) const;
 	Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd);

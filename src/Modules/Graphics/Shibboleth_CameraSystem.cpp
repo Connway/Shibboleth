@@ -141,17 +141,17 @@ void CameraPostRenderSystem::update(void)
 			_camera_job_data_cache[i].device.reset(device.createDeferredRenderDevice());
 			_camera_job_data_cache[i].system = this;
 
-			Gleam::ISamplerState::SamplerSettings sampler_settings = {
-				Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST,
-				Gleam::ISamplerState::WRAP_CLAMP,
-				Gleam::ISamplerState::WRAP_CLAMP,
-				Gleam::ISamplerState::WRAP_CLAMP,
+			Gleam::ISamplerState::Settings sampler_settings = {
+				Gleam::ISamplerState::Filter::NearestNearestNearest,
+				Gleam::ISamplerState::Wrap::Clamp,
+				Gleam::ISamplerState::Wrap::Clamp,
+				Gleam::ISamplerState::Wrap::Clamp,
 				0.0f, 0.0f,
 				0.0f,
 				1
 			};
 
-			Gleam::IRasterState::RasterSettings raster_settings;
+			Gleam::IRasterState::Settings raster_settings;
 			raster_settings.depth_clip_enabled = false;
 
 			const bool raster_success = _camera_job_data_cache[i].raster_state->init(device, raster_settings);
@@ -162,12 +162,12 @@ void CameraPostRenderSystem::update(void)
 
 			} else {
 				_camera_job_data_cache[i].program_buffers->addSamplerState(
-					Gleam::IShader::SHADER_PIXEL,
+					Gleam::IShader::Type::Pixel,
 					_camera_job_data_cache[i].sampler.get()
 				);
 
 				//_camera_job_data_cache[i].program_buffers->addConstantBuffer(
-				//	Gleam::IShader::SHADER_PIXEL,
+				//	Gleam::IShader::Type::Pixel,
 				//	_camera_job_data_cache[i].constant_buffer.get()
 				//);
 			}
@@ -216,11 +216,11 @@ void CameraPostRenderSystem::RenderCameras(void* data)
 			Gleam::IProgramBuffers& pb = *job_data.program_buffers;
 			pb.clearResourceViews();
 
-			pb.addResourceView(Gleam::IShader::SHADER_PIXEL, g_buffer->diffuse_srv.get());
-			pb.addResourceView(Gleam::IShader::SHADER_PIXEL, g_buffer->specular_srv.get());
-			pb.addResourceView(Gleam::IShader::SHADER_PIXEL, g_buffer->normal_srv.get());
-			pb.addResourceView(Gleam::IShader::SHADER_PIXEL, g_buffer->position_srv.get());
-			pb.addResourceView(Gleam::IShader::SHADER_PIXEL, g_buffer->depth_srv.get());
+			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
+			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
+			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
+			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
+			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
 
 			pb.bind(*job_data.device);
 

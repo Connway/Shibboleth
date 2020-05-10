@@ -35,8 +35,8 @@ public:
 
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
-	bool createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::BufferSettings& buffer_settings);
-	bool createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::BufferSettings& buffer_settings);
+	bool createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::Settings& buffer_settings);
+	bool createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::Settings& buffer_settings);
 
 	const Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd) const;
 	Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd);
