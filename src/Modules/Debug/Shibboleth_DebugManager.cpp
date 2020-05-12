@@ -109,8 +109,6 @@ GAFF_STATIC_FILE_FUNC
 	ImGui::SetAllocatorFunctions(ImGuiAlloc, ImGuiFree);
 }
 
-
-
 SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 	.BASE(IDebugManager)
 	.base<IManager>()
@@ -133,55 +131,59 @@ SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
 SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
 SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
 
-static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
-{
-	ImGui::GetIO().AddInputCharacter(character);
-}
-
 static void HandleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
-	ImGui::GetIO().KeysDown[key_code] = value > 0.0f;
+	ImGuiIO& io = ImGui::GetIO();
+	io.KeysDown[key_code] = value > 0.0f;
 
 	if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTSHIFT)) ||
 		(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTSHIFT))) {
 
-		ImGui::GetIO().KeyShift = value > 0.0f;
+		io.KeyShift = value > 0.0f;
 
 	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTCONTROL)) ||
 				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTCONTROL))) {
 
-		ImGui::GetIO().KeyCtrl = value > 0.0f;
+		io.KeyCtrl = value > 0.0f;
 
 	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTALT)) ||
 				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTALT))) {
-		ImGui::GetIO().KeyAlt = value > 0.0f;
+		io.KeyAlt = value > 0.0f;
 
 	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTWINDOWS)) ||
 				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTWINDOWS))) {
 
-		ImGui::GetIO().KeySuper = value > 0.0f;
+		io.KeySuper = value > 0.0f;
 	}
 }
 
 static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float value)
 {
+	ImGuiIO& io = ImGui::GetIO();
+
 	if (mouse_event < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT)) {
 		if (mouse_event < 5) {
-			ImGui::GetIO().MouseDown[mouse_event] = (value > 0.0f);
+			io.MouseDown[mouse_event] = (value > 0.0f);
 		}
 
 	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_WHEEL_HORIZ)) {
-		ImGui::GetIO().MouseWheelH = value;
+		io.MouseWheelH = value;
 
 	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_WHEEL_VERT)) {
-		ImGui::GetIO().MouseWheel = value;
+		io.MouseWheel = value;
 
 	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_POS_X)) {
-		ImGui::GetIO().MousePos.x = value;
+		io.MousePos.x = value;
 
 	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_POS_Y)) {
-		ImGui::GetIO().MousePos.y = value;
+		io.MousePos.y = value;
 	}
+}
+
+void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
+{
+	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
 }
 
 bool DebugManager::initAllModulesLoaded(void)
@@ -577,7 +579,41 @@ void DebugManager::update(void)
 		}
 	}
 
+	const int32_t char_buf_index = _char_buffer_cache_index;
+	_char_buffer_cache_index = (_char_buffer_cache_index + 1) % 2;
+
+	for (uint32_t character : _character_buffer[char_buf_index]) {
+		ImGui::GetIO().AddInputCharacter(character);
+	}
+
+	_character_buffer[char_buf_index].clear();
+
+
 	ImGui::NewFrame();
+
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Exit")) {
+				int i = 0;
+				i += 5;
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
+	if (ImGui::Begin("Test")) {
+		static char buf[256] = { 0 };
+
+		if (ImGui::InputText("Text Here", buf, 256)) {
+			int i = 0;
+			i += 5;
+		}
+
+		ImGui::End();
+	}
 }
 
 void DebugManager::render(uintptr_t thread_id_int)
@@ -587,12 +623,12 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 	// Avoid rendering when minimized
 	if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f) {
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
 	if (draw_data->TotalIdxCount <= 0 || draw_data->TotalVtxCount <= 0) {
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -606,7 +642,7 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 		if (!_vertex_buffer) {
 			// $TODO: Log error periodic.
-			_cache_index = (_cache_index + 1) % 2;
+			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 
@@ -622,7 +658,7 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 		if (!_vertex_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
-			_cache_index = (_cache_index + 1) % 2;
+			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 	}
@@ -635,7 +671,7 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 		if (!_index_buffer) {
 			// $TODO: Log error periodic.
-			_cache_index = (_cache_index + 1) % 2;
+			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 
@@ -651,7 +687,7 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 		if (!_index_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
-			_cache_index = (_cache_index + 1) % 2;
+			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 	}
@@ -674,14 +710,14 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 	if (!verts) {
 		// $TODO: Log error periodic.
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
 	if (!indices) {
 		// $TODO: Log error periodic.
 		_vertex_buffer->unmap(*deferred_device);
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -714,7 +750,7 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 	if (!vert_const_data) {
 		// $TODO: Log error periodic.
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -770,19 +806,19 @@ void DebugManager::render(uintptr_t thread_id_int)
 		vert_offset_start += cmd_list->VtxBuffer.Size;
 	}
 
-	if (!deferred_device->finishCommandList(*_cmd_list[_cache_index])) {
+	if (!deferred_device->finishCommandList(*_cmd_list[_render_cache_index])) {
 		// $TODO: Log error periodic.
-		_cache_index = (_cache_index + 1) % 2;
+		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
 	// Submit command
-	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, _cache_index);
+	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, _render_cache_index);
 	auto& cmd = render_cmds.emplace_back();
-	cmd.cmd_list.reset(_cmd_list[_cache_index].get());
+	cmd.cmd_list.reset(_cmd_list[_render_cache_index].get());
 	cmd.owns_command = false;
 
-	_cache_index = (_cache_index + 1) % 2;
+	_render_cache_index = (_render_cache_index + 1) % 2;
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const

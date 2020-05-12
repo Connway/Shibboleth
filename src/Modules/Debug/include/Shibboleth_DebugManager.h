@@ -41,6 +41,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 	class IRenderOutput;
+	class IKeyboard;
 NS_END
 
 NS_SHIBBOLETH
@@ -61,10 +62,16 @@ public:
 private:
 	const Time* _time = nullptr;
 	int32_t _prev_cursor = -1;
-	int32_t _cache_index = 0;
+	int32_t _char_buffer_cache_index = 0;
+	int32_t _render_cache_index = 0;
 
 	Gleam::IRenderOutput* _main_output = nullptr;
 	Gleam::IRenderDevice* _main_device = nullptr;
+
+	Vector<uint32_t> _character_buffer[2] = {
+		Vector<uint32_t>{ ProxyAllocator("Debug") },
+		Vector<uint32_t>{ ProxyAllocator("Debug") }
+	};
 
 	UniquePtr<Gleam::ICommandList> _cmd_list[2];
 
@@ -85,6 +92,8 @@ private:
 	UniquePtr<Gleam::IShader> _pixel_shader;
 	UniquePtr<Gleam::IProgram> _program;
 	UniquePtr<Gleam::ILayout> _layout;
+
+	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

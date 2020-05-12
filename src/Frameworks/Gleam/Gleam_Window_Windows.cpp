@@ -205,11 +205,11 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 				const int32_t size = static_cast<int32_t>(window->_window_callbacks.size());
 
 				for (int32_t i = 0; i < size; ++i) {
-					handled = handled || window->_window_callbacks[i](message);
+					handled = window->_window_callbacks[i](message) || handled;
 				}
 
 				for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
-					handled = handled || it_hnd->second(message);
+					handled = it_hnd->second(message) || handled;
 				}
 
 				if (handled) {
