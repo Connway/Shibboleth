@@ -52,6 +52,8 @@ struct Time;
 class DebugManager final : public IManager, public IDebugManager
 {
 public:
+	static void SetupModuleToUseImGui(void);
+
 	bool initAllModulesLoaded(void) override;
 
 	void update(void);

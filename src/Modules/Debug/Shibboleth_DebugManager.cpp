@@ -180,6 +180,12 @@ static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float va
 	}
 }
 
+void DebugManager::SetupModuleToUseImGui(void)
+{
+	const DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
+}
+
 void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
 {
 	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
@@ -588,32 +594,7 @@ void DebugManager::update(void)
 
 	_character_buffer[char_buf_index].clear();
 
-
 	ImGui::NewFrame();
-
-	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Exit")) {
-				int i = 0;
-				i += 5;
-			}
-
-			ImGui::EndMenu();
-		}
-
-		ImGui::EndMainMenuBar();
-	}
-
-	if (ImGui::Begin("Test")) {
-		static char buf[256] = { 0 };
-
-		if (ImGui::InputText("Text Here", buf, 256)) {
-			int i = 0;
-			i += 5;
-		}
-
-		ImGui::End();
-	}
 }
 
 void DebugManager::render(uintptr_t thread_id_int)
