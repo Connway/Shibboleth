@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ISystem.h>
+#include <Shibboleth_JobPool.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IDepthStencilState.h>
 #include <Gleam_IRenderDevice.h>
@@ -39,6 +40,7 @@ THE SOFTWARE.
 #include <Gleam_IBuffer.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
+#include <EAThread/eathread_spinlock.h>
 
 NS_GLEAM
 	class IRenderOutput;
@@ -68,6 +70,7 @@ public:
 	struct DebugRenderInstance final
 	{
 		Gleam::Transform transform;
+		Gleam::Color color;
 	};
 
 	class DebugRenderHandle final
@@ -114,17 +117,40 @@ public:
 
 	ImGuiContext* getImGuiContext(void) const override;
 
-	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, bool has_depth = false);
+	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 
 private:
 	struct DebugRenderData final
 	{
+		UniquePtr<Gleam::IProgramBuffers> program_buffers;
+		UniquePtr<Gleam::IShader> pixel_shader;
+		UniquePtr<Gleam::IShader> vert_shader;
+		UniquePtr<Gleam::IProgram> program;
 		UniquePtr<Gleam::IMesh> mesh;
 
-		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = { // 0 = no depth test, 1 = depth test
-			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Graphics") },
-			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Graphics") }
+		EA::Thread::SpinLock lock[2];
+
+		Vector< UniquePtr<Gleam::IShaderResourceView> > instance_data_view[2] = {
+			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") },
+			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") }
 		};
+
+		Vector< UniquePtr<Gleam::IBuffer> > instance_data[2] = {
+			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") },
+			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") }
+		};
+
+		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = { // 0 = no depth test, 1 = depth test
+			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") },
+			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") }
+		};
+	};
+
+	struct DebugRenderJobData final
+	{
+		Gleam::ICommandList* cmd_list = nullptr;
+		DebugRenderType type = DebugRenderType::Count;
+		DebugManager* debug_mgr = nullptr;
 	};
 
 
@@ -161,9 +187,12 @@ private:
 	UniquePtr<Gleam::IProgram> _program;
 	UniquePtr<Gleam::ILayout> _layout;
 
+	DebugRenderJobData _render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
+	Gaff::JobData _job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 	DebugRenderData _debug_data[static_cast<size_t>(DebugRenderType::Count)];
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
+	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 	void removeDebugRender(const DebugRenderHandle& handle);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);

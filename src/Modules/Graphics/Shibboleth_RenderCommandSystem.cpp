@@ -648,10 +648,9 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 	{
 		const glm::vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
 
-		const glm::mat4x4 transform =
-			glm::translate(glm::identity<glm::mat4x4>(), obj_pos.value) *
-			glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z) *
-			glm::scale(glm::identity<glm::mat4x4>(), obj_scale.value);
+		glm::mat4x4 transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+		transform[3] = glm::vec4(obj_pos.value, 1.0f);
+		transform = glm::scale(transform, obj_scale.value);
 
 		const int32_t instance_index = object_index % instance_data.buffer_instance_count;
 		const int32_t buffer_index = object_index / instance_data.buffer_instance_count;

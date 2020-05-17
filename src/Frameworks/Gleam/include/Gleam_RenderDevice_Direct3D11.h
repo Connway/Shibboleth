@@ -47,6 +47,8 @@ public:
 	bool finishCommandList(ICommandList& command_list) override;
 
 	void clearRenderState(void) override;
+	void renderLineNoVertexInputInstanced(int32_t line_count, int32_t instance_count) override;
+	void renderLineNoVertexInput(int32_t line_count) override;
 	void renderNoVertexInput(int32_t vert_count) override;
 
 	void setScissorRect(const glm::ivec2& pos, const glm::ivec2& size) override;

@@ -40,7 +40,7 @@ namespace
 		SHIB_FREE(ptr, g_allocator);
 	}
 
-	static constexpr const char* const g_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	static constexpr const char* const g_imgui_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
 	{
 		R"(
 			cbuffer vertexBuffer : register(b0)
@@ -75,7 +75,7 @@ namespace
 		)"
 	};
 
-	static constexpr const char* const g_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	static constexpr const char* const g_imgui_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
 	{
 		R"(
 			struct PS_INPUT
@@ -98,10 +98,60 @@ namespace
 		)"
 	};
 
+	static constexpr const char* const g_line_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	{
+		R"(
+			struct InstanceData
+			{
+				float3 color;
+				float3 start;
+				float3 end;
+			};
+
+			struct VertexInputType
+			{
+				uint instance_id : SV_InstanceID;
+				uint vertex_id : SV_VertexID;
+			};
+
+			struct PixelInputType
+			{
+				float4 position : SV_POSITION;
+				float3 color : COLOR0;
+			};
+
+			StructuredBuffer<InstanceData> instance_data;
+
+			PixelInputType VertexMain(VertexInputType input)
+			{
+				PixelInputType output;
+
+				float vert_scale = float(input.vertex_id);
+
+				output.position = instance_data[input.instance_id].start + instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
+				output.color = input.color;
+
+				return output;
+			}
+		)",
+		R"(
+		)"
+	};
+
+	static constexpr const char* const g_line_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	{
+		R"(
+		)",
+		R"(
+		)"
+	};
+
 	struct VertexConstantBuffer final
 	{
 		float mvp[4][4];
 	};
+
+	static constexpr int32_t k_num_instances_per_buffer = 128;
 }
 
 GAFF_STATIC_FILE_FUNC
@@ -186,16 +236,132 @@ static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float va
 	}
 }
 
-void DebugManager::SetupModuleToUseImGui(void)
-{
-	const DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
-	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
-}
-
 void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
 {
 	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
 	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
+}
+
+void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
+{
+	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
+
+	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
+	GAFF_ASSERT(devices && devices->size() > 0);
+
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
+
+	GAFF_REF(rd);
+
+	for (int32_t i = 0; i < 2; ++i) {
+		auto& debug_data = job_data.debug_mgr->_debug_data[i];
+
+		const int32_t num_buffers_needed = static_cast<int32_t>(
+			ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
+		);
+
+		// Make sure we have enough buffers on the GPU to hold our instance data.
+		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
+			Gleam::IBuffer* const buffer = job_data.debug_mgr->_render_mgr->createBuffer();
+
+			if (!buffer) {
+				// $TODO: Log error.
+				continue;
+			}
+
+			const Gleam::IBuffer::Settings settings = {
+				nullptr,
+				sizeof(glm::mat4x3) * k_num_instances_per_buffer,
+				static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
+				static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
+				Gleam::IBuffer::Type::StructuredData,
+				Gleam::IBuffer::MapType::Write,
+				true
+			};
+
+			if (!buffer->init(*job_data.debug_mgr->_main_device, settings)) {
+				SHIB_FREET(buffer, g_allocator);
+				// $TODO: Log error.
+				continue;
+			}
+
+			Gleam::IShaderResourceView* const view = job_data.debug_mgr->_render_mgr->createShaderResourceView();
+
+			if (!view) {
+				SHIB_FREET(buffer, g_allocator);
+				// $TODO: Log error.
+				continue;
+			}
+
+			if (!view->init(*job_data.debug_mgr->_main_device, buffer)) {
+				SHIB_FREET(buffer, g_allocator);
+				SHIB_FREET(view, g_allocator);
+				// $TODO: Log error.
+				continue;
+			}
+
+			debug_data.instance_data_view[i].emplace_back(view);
+			debug_data.instance_data[i].emplace_back(buffer);
+		}
+
+		// $TODO: Bind depth stencil state.
+		// $TODO: Bind raster state.
+		debug_data.program->bind(*rd);
+
+		int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
+		int32_t curr_index = 0;
+
+		for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
+			const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
+			int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
+
+			if (!mapped_buffer) {
+				// $TODO: Log error.
+				continue;
+			}
+
+			// Update instance buffers(s).
+			for (int32_t k = 0; k < count; ++k) {
+				const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
+
+				if (job_data.type == DebugRenderType::Line) {
+					memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+					memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
+					memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
+
+				} else {
+					const glm::mat4x3 transform = inst.transform.toMatrix();
+
+					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
+					memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+				}
+
+				mapped_buffer += sizeof(glm::mat4x3) + sizeof(float) * 3;
+				++curr_index;
+			}
+
+			debug_data.instance_data[i][j]->unmap(*rd);
+
+			debug_data.program_buffers->clearResourceViews();
+			debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+			debug_data.program_buffers->bind(*rd);
+
+			if (job_data.type == DebugRenderType::Line) {
+				rd->renderLineNoVertexInputInstanced(1, count);
+			} else {
+				debug_data.mesh->renderInstanced(*rd, count);
+			}
+
+			total_items -= k_num_instances_per_buffer;
+		}
+	}
+}
+
+void DebugManager::SetupModuleToUseImGui(void)
+{
+	const DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
 }
 
 bool DebugManager::initAllModulesLoaded(void)
@@ -277,7 +443,7 @@ bool DebugManager::initAllModulesLoaded(void)
 		return false;
 	}
 
-	if (!_vertex_shader->initVertexSource(*_main_device, g_vertex_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
+	if (!_vertex_shader->initVertexSource(*_main_device, g_imgui_vertex_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -289,7 +455,7 @@ bool DebugManager::initAllModulesLoaded(void)
 		return false;
 	}
 
-	if (!_pixel_shader->initPixelSource(*_main_device, g_pixel_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
+	if (!_pixel_shader->initPixelSource(*_main_device, g_imgui_pixel_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -521,6 +687,13 @@ bool DebugManager::initAllModulesLoaded(void)
 	}
 
 	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
+		_render_job_data_cache[i].type = static_cast<DebugRenderType>(i);
+		_render_job_data_cache[i].debug_mgr = this;
+		_job_data_cache[i].job_data = &_render_job_data_cache[i];
+		_job_data_cache[i].job_func = RenderDebugShape;
+	}
 
 	return true;
 }
@@ -814,6 +987,9 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 void DebugManager::renderPreCamera(uintptr_t thread_id_int)
 {
 	GAFF_REF(thread_id_int);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
+	}
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const
@@ -821,15 +997,18 @@ ImGuiContext* DebugManager::getImGuiContext(void) const
 	return ImGui::GetCurrentContext();
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
 {
-	auto& render_list = _debug_data[static_cast<int32_t>(DebugRenderType::Line)].render_list[has_depth];
+	auto& debug_data = _debug_data[static_cast<int32_t>(DebugRenderType::Line)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
 
-	render_list.emplace_back(instance);
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
 
 	instance->transform.setTranslation(start);
 	instance->transform.setScale(end - start);
+	instance->color = color;
 
 	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
 }
@@ -865,7 +1044,7 @@ bool DebugRenderPreCameraSystem::init(void)
 
 void DebugRenderPreCameraSystem::update(uintptr_t thread_id_int)
 {
-	_debug_mgr->renderPreCamera(thread_id_int);
+	//_debug_mgr->renderPreCamera(thread_id_int);
 }
 
 bool DebugSystem::init(void)

@@ -235,6 +235,7 @@ void Transform::setTranslation(const glm::vec3& translation)
 
 Transform Transform::concat(const Transform& rhs) const
 {
+	// $TODO: This is likely incorrect. Fix this.
 	return Transform(
 		_translation + rhs._translation,
 		_rotation * rhs._rotation,
@@ -253,6 +254,7 @@ Transform Transform::inverse(void) const
 
 Transform& Transform::concatThis(const Transform& rhs)
 {
+	// $TODO: This is likely incorrect. Fix this.
 	_translation += rhs._translation;
 	_rotation *= rhs._rotation;
 	_scale *= rhs._scale;
@@ -274,23 +276,20 @@ glm::vec3 Transform::transformVector(const glm::vec3& rhs) const
 
 glm::vec3 Transform::transformPoint(const glm::vec3& rhs) const
 {
-	return _translation * (_rotation * (_scale * rhs));
+	return _translation + transformVector(rhs);
 }
 
 glm::mat4x4 Transform::toMatrix(void) const
 {
 	glm::mat4x4 matrix = glm::mat4_cast(_rotation);
-	matrix[3][0] = _translation.x;
-	matrix[3][1] = _translation.y;
-	matrix[3][2] = _translation.z;
-
-	return glm::scale(glm::mat4x4(1.0f), _scale) * matrix;
+	matrix[3] = glm::vec4(_translation, 1.0f);
+	return glm::scale(matrix, _scale);
 }
 
 Transform Transform::lerp(const Transform& end, float t)
 {
 	return Transform(
-		_translation  + t * (end._translation - _translation),
+		_translation + t * (end._translation - _translation),
 		glm::slerp(_rotation, end._rotation, t),
 		_scale + t * (end._scale - _scale)
 	);

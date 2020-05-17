@@ -400,12 +400,25 @@ bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 
 void RenderDeviceD3D11::clearRenderState(void)
 {
-	//_context->OMSetDepthStencilState(NULL, 0);
-	//_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-	//_context->RSSetState(NULL);
-	//_context->OMSetRenderTargets(0, NULL, NULL);
-
 	_context->ClearState();
+}
+
+void RenderDeviceD3D11::renderLineNoVertexInputInstanced(int32_t line_count, int32_t instance_count)
+{
+	_context->IASetInputLayout(NULL);
+	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	_context->DrawInstanced(static_cast<UINT>(line_count * 2), static_cast<UINT>(instance_count), 0, 0);
+}
+
+void RenderDeviceD3D11::renderLineNoVertexInput(int32_t line_count)
+{
+	_context->IASetInputLayout(NULL);
+	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	_context->Draw(static_cast<UINT>(line_count * 2), 0);
 }
 
 void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
@@ -414,7 +427,7 @@ void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
 	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_context->Draw(vert_count, 0);
+	_context->Draw(static_cast<UINT>(vert_count), 0);
 }
 
 void RenderDeviceD3D11::setScissorRect(const glm::ivec2& pos, const glm::ivec2& size)
