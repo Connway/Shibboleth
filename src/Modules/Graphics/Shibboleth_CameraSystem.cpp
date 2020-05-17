@@ -127,9 +127,12 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 		Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
 		Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
 
-		Vector<RenderManagerBase::RenderCommand>& render_cmds = _render_mgr->getRenderCommands(device, _cache_index);
-		auto& cmd = render_cmds.emplace_back();
+		auto& render_cmds = _render_mgr->getRenderCommands(device, _cache_index);
+
+		render_cmds.lock.Lock();
+		auto& cmd = render_cmds.command_list.emplace_back();
 		cmd.cmd_list.reset(cmd_list);
+		render_cmds.lock.Unlock();
 
 		_camera_job_data_cache[i].cmd_list = cmd_list;
 

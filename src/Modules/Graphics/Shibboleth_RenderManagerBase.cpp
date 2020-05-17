@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
+#include <gtx/quaternion.hpp>
 
 NS_SHIBBOLETH
 
@@ -333,8 +334,7 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	_render_devices.emplace_back(device);
 
 	for (int32_t i = 0; i < 2; ++i) {
-		auto& cache = _cached_render_commands[i][device];
-		cache.set_allocator(ProxyAllocator("Graphics"));
+		_cached_render_commands[i][device];
 	}
 }
 
@@ -538,7 +538,7 @@ bool RenderManagerBase::hasGBuffer(EntityID id) const
 	return _g_buffers.find(id) != _g_buffers.end();
 }
 
-const Vector<RenderManagerBase::RenderCommand>& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const
+const RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const
 {
 	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
 	const auto it = _cached_render_commands[cache_index].find(&device);
@@ -547,7 +547,7 @@ const Vector<RenderManagerBase::RenderCommand>& RenderManagerBase::getRenderComm
 	return it->second;
 }
 
-Vector<RenderManagerBase::RenderCommand>& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index)
+RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index)
 {
 	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
 	const auto it = _cached_render_commands[cache_index].find(&device);

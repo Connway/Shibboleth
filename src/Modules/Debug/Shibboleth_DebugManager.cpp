@@ -115,10 +115,15 @@ SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
+SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderPostCameraSystem)
 	.base<ISystem>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugRenderSystem)
+SHIB_REFLECTION_DEFINE_END(DebugRenderPostCameraSystem)
+
+SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderPreCameraSystem)
+	.base<ISystem>()
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(DebugRenderPreCameraSystem)
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugSystem)
 	.base<ISystem>()
@@ -127,8 +132,9 @@ SHIB_REFLECTION_DEFINE_END(DebugSystem)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(DebugRenderPostCameraSystem)
+SHIB_REFLECTION_CLASS_DEFINE(DebugRenderPreCameraSystem)
 SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
-SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
 SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
 
 static void HandleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
@@ -616,7 +622,7 @@ void DebugManager::update(void)
 	}
 }
 
-void DebugManager::render(uintptr_t thread_id_int)
+void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 {
 	ImGui::Render();
 	const ImDrawData* const draw_data = ImGui::GetDrawData();
@@ -814,11 +820,19 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 	// Submit command
 	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, _render_cache_index);
-	auto& cmd = render_cmds.emplace_back();
+
+	render_cmds.lock.Lock();
+	auto& cmd = render_cmds.command_list.emplace_back();
 	cmd.cmd_list.reset(_cmd_list[_render_cache_index].get());
 	cmd.owns_command = false;
+	render_cmds.lock.Unlock();
 
 	_render_cache_index = (_render_cache_index + 1) % 2;
+}
+
+void DebugManager::renderPreCamera(uintptr_t thread_id_int)
+{
+	GAFF_REF(thread_id_int);
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const
@@ -826,17 +840,51 @@ ImGuiContext* DebugManager::getImGuiContext(void) const
 	return ImGui::GetCurrentContext();
 }
 
+DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, bool has_depth)
+{
+	auto& render_list = _debug_data[static_cast<int32_t>(DebugRenderType::Line)].render_list[has_depth];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	render_list.emplace_back(instance);
+
+	instance->transform.setTranslation(start);
+	instance->transform.setScale(end - start);
+
+	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
+}
+
+void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
+{
+	auto& render_list = _debug_data[static_cast<int32_t>(handle._type)].render_list[handle._depth];
+	const auto it = eastl::lower_bound(render_list.begin(), render_list.end(), handle._instance, [](const auto& lhs, auto rhs) -> bool { return lhs.get() < rhs; });
+
+	if (it != render_list.end() && it->get() == handle._instance) {
+		render_list.erase(it);
+	}
+}
 
 
-bool DebugRenderSystem::init(void)
+
+bool DebugRenderPostCameraSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
 	return true;
 }
 
-void DebugRenderSystem::update(uintptr_t thread_id_int)
+void DebugRenderPostCameraSystem::update(uintptr_t thread_id_int)
 {
-	_debug_mgr->render(thread_id_int);
+	_debug_mgr->renderPostCamera(thread_id_int);
+}
+
+bool DebugRenderPreCameraSystem::init(void)
+{
+	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+	return true;
+}
+
+void DebugRenderPreCameraSystem::update(uintptr_t thread_id_int)
+{
+	_debug_mgr->renderPreCamera(thread_id_int);
 }
 
 bool DebugSystem::init(void)

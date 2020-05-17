@@ -34,10 +34,12 @@ THE SOFTWARE.
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ISamplerState.h>
 #include <Gleam_ICommandList.h>
+#include <Gleam_Transform.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
+#include <EAThread/eathread_spinlock.h>
 #include <EAThread/eathread.h>
 
 NS_SHIBBOLETH
@@ -86,6 +88,13 @@ public:
 		//Gleam::IRenderTarget* target = nullptr;
 	};
 
+	struct RenderCommandList final
+	{
+		Vector<RenderCommand> command_list{ ProxyAllocator("Graphics") };
+		EA::Thread::SpinLock lock;
+	};
+
+
 	RenderManagerBase(void);
 
 	bool initAllModulesLoaded(void) override;
@@ -126,8 +135,8 @@ public:
 	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool hasGBuffer(EntityID id) const;
 
-	const Vector<RenderCommand>& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const;
-	Vector<RenderCommand>& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index);
+	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const;
+	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index);
 
 	void presentAllOutputs(void);
 
@@ -147,9 +156,9 @@ private:
 		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
 	> _deferred_contexts{ ProxyAllocator("Graphics") };
 
-	VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> > _cached_render_commands[2] = {
-		VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> >{ ProxyAllocator("Graphics") },
-		VectorMap< const Gleam::IRenderDevice*, Vector<RenderCommand> >{ ProxyAllocator("Graphics") }
+	VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[2] = {
+		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
 	};
 
 	SamplerStateResourcePtr _default_sampler;
