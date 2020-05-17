@@ -158,12 +158,9 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, void* data)
 {
 	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
-	Vector<RenderManagerBase::RenderCommand>& cmds = job_data.rcss->_render_mgr->getRenderCommands(
-		*job_data.device,
-		job_data.rcss->_cache_index
-	);
+	auto& cmds = job_data.rcss->_render_mgr->getRenderCommands(*job_data.device, job_data.rcss->_cache_index);
 
-	for (RenderManagerBase::RenderCommand& cmd : cmds) {
+	for (RenderManagerBase::RenderCommand& cmd : cmds.command_list) {
 		job_data.device->executeCommandList(*cmd.cmd_list);
 
 		// Do not deallocate.
@@ -173,7 +170,7 @@ void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, 
 	}
 
 	job_data.device->clearRenderState();
-	cmds.clear();
+	cmds.command_list.clear();
 }
 
 
@@ -718,8 +715,7 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 	Gleam::IRenderDevice& device = *job_data.device;
 	job_data.render_job_data_cache.clear();
 
-	Vector<RenderManagerBase::RenderCommand>& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(*job_data.device, job_data.rcs->_cache_index);
-	render_cmds.clear();
+	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(*job_data.device, job_data.rcs->_cache_index);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
@@ -754,8 +750,10 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 					return;
 				}
 
-				auto& cmd = render_cmds.emplace_back();
+				render_cmds.lock.Lock();
+				auto& cmd = render_cmds.command_list.emplace_back();
 				cmd.cmd_list.reset(cmd_list);
+				render_cmds.lock.Unlock();
 			}
 
 			if (num_objects > 0) {
@@ -777,8 +775,10 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 					Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
 
 					// $TODO: Make a command list cache.
-					auto& cmd = render_cmds.emplace_back();
+					render_cmds.lock.Lock();
+					auto& cmd = render_cmds.command_list.emplace_back();
 					cmd.cmd_list.reset(cmd_list);
+					render_cmds.lock.Unlock();
 
 					RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
 					render_data.rcs = job_data.rcs;

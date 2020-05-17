@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <Gleam_ICommandList.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IBlendState.h>
+#include <Gleam_Transform.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IShader.h>
 #include <Gleam_IBuffer.h>
@@ -52,16 +53,81 @@ struct Time;
 class DebugManager final : public IManager, public IDebugManager
 {
 public:
+	enum class DebugRenderType
+	{
+		Line,
+		Sphere,
+		Box,
+		Capsule,
+		Arrow,
+		Mesh,
+
+		Count
+	};
+
+	struct DebugRenderInstance final
+	{
+		Gleam::Transform transform;
+	};
+
+	class DebugRenderHandle final
+	{
+	public:
+		~DebugRenderHandle(void)
+		{
+			if (_instance) {
+				GetApp().getManagerTFast<DebugManager>().removeDebugRender(*this);
+			}
+		}
+
+		const DebugRenderHandle& operator=(const DebugRenderHandle& rhs)
+		{
+			_instance = rhs._instance;
+			_type = rhs._type;
+			_depth = rhs._depth;
+
+			const_cast<DebugRenderHandle&>(rhs)._instance = nullptr;
+		}
+
+	private:
+		DebugRenderHandle(DebugRenderInstance* instance, DebugRenderType type, bool depth) :
+			_instance(instance),
+			_type(type),
+			_depth(depth)
+		{
+		}
+
+		DebugRenderInstance* _instance = nullptr;
+		DebugRenderType _type = DebugRenderType::Count;
+		bool _depth = false;
+
+		friend class DebugManager;
+	};
+
 	static void SetupModuleToUseImGui(void);
 
 	bool initAllModulesLoaded(void) override;
 
 	void update(void);
-	void render(uintptr_t thread_id_int);
+	void renderPostCamera(uintptr_t thread_id_int);
+	void renderPreCamera(uintptr_t thread_id_int);
 
 	ImGuiContext* getImGuiContext(void) const override;
 
+	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, bool has_depth = false);
+
 private:
+	struct DebugRenderData final
+	{
+		UniquePtr<Gleam::IMesh> mesh;
+
+		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = { // 0 = no depth test, 1 = depth test
+			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Graphics") },
+			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Graphics") }
+		};
+	};
+
+
 	const Time* _time = nullptr;
 	int32_t _prev_cursor = -1;
 	int32_t _char_buffer_cache_index = 0;
@@ -95,12 +161,16 @@ private:
 	UniquePtr<Gleam::IProgram> _program;
 	UniquePtr<Gleam::ILayout> _layout;
 
+	DebugRenderData _debug_data[static_cast<size_t>(DebugRenderType::Count)];
+
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
+	void removeDebugRender(const DebugRenderHandle& handle);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
+	friend class DebugRenderHandle;
 };
 
-class DebugRenderSystem final : public ISystem
+class DebugRenderPostCameraSystem final : public ISystem
 {
 public:
 	bool init(void) override;
@@ -109,7 +179,19 @@ public:
 private:
 	DebugManager* _debug_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderPostCameraSystem);
+};
+
+class DebugRenderPreCameraSystem final : public ISystem
+{
+public:
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
+
+private:
+	DebugManager* _debug_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderPostCameraSystem);
 };
 
 class DebugSystem final : public ISystem
@@ -126,6 +208,7 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(DebugRenderPostCameraSystem)
+SHIB_REFLECTION_DECLARE(DebugRenderPreCameraSystem)
 SHIB_REFLECTION_DECLARE(DebugManager)
-SHIB_REFLECTION_DECLARE(DebugRenderSystem)
 SHIB_REFLECTION_DECLARE(DebugSystem)
