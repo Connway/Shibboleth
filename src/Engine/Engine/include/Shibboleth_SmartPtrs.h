@@ -30,4 +30,7 @@ NS_SHIBBOLETH
 template <class T>
 using UniquePtr = Gaff::UniquePtr<T, ProxyAllocator>;
 
+template <class T>
+using SharedPtr = Gaff::SharedPtr<T>;
+
 NS_END

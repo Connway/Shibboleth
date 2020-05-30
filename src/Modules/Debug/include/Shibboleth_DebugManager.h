@@ -120,12 +120,8 @@ public:
 	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 
 private:
-	struct DebugRenderData final
+	struct DebugRenderInstanceData final
 	{
-		UniquePtr<Gleam::IProgramBuffers> program_buffers;
-		UniquePtr<Gleam::IShader> pixel_shader;
-		UniquePtr<Gleam::IShader> vert_shader;
-		UniquePtr<Gleam::IProgram> program;
 		UniquePtr<Gleam::IMesh> mesh;
 
 		EA::Thread::SpinLock lock[2];
@@ -151,6 +147,21 @@ private:
 		Gleam::ICommandList* cmd_list = nullptr;
 		DebugRenderType type = DebugRenderType::Count;
 		DebugManager* debug_mgr = nullptr;
+	};
+
+	struct DebugRenderData final
+	{
+		UniquePtr<Gleam::IProgramBuffers> program_buffers;
+		UniquePtr<Gleam::IProgram> line_program;
+		UniquePtr<Gleam::IProgram> program;
+
+		UniquePtr<Gleam::IShader> line_vertex_shader;
+		UniquePtr<Gleam::IShader> vertex_shader;
+		UniquePtr<Gleam::IShader> pixel_shader;
+
+		DebugRenderJobData render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
+		Gaff::JobData job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
+		DebugRenderInstanceData instance_data[static_cast<size_t>(DebugRenderType::Count)];
 	};
 
 
@@ -187,13 +198,14 @@ private:
 	UniquePtr<Gleam::IProgram> _program;
 	UniquePtr<Gleam::ILayout> _layout;
 
-	DebugRenderJobData _render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
-	Gaff::JobData _job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
-	DebugRenderData _debug_data[static_cast<size_t>(DebugRenderType::Count)];
+	DebugRenderData _debug_data;
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 	void removeDebugRender(const DebugRenderHandle& handle);
+
+	bool initDebugRender(void);
+	bool initImGui(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 	friend class DebugRenderHandle;

@@ -37,6 +37,12 @@ SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args
 	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
 }
 
+template <class T, class Allocator>
+SharedPtr<T> MakeShared(T* value, const Allocator& allocator = Allocator())
+{
+	return SharedPtr<T>(value, AllocatorDeleter<T, Allocator>(), allocator);
+}
+
 
 
 template <class T, class Allocator = DefaultAllocator>

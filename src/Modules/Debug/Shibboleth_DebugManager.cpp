@@ -101,6 +101,11 @@ namespace
 	static constexpr const char* const g_line_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
 	{
 		R"(
+			cbuffer InstanceBuffer
+			{
+				matrix projection_matrix;
+			};
+
 			struct InstanceData
 			{
 				float3 color;
@@ -128,8 +133,9 @@ namespace
 
 				float vert_scale = float(input.vertex_id);
 
-				output.position = instance_data[input.instance_id].start + instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
-				output.color = input.color;
+				float3 line_pos = instance_data[input.instance_id].start + instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
+				output.position = mul(projection_matrix, float4(line_pos, 1.0));
+				output.color = instance_data[input.instance_id].color;
 
 				return output;
 			}
@@ -138,9 +144,55 @@ namespace
 		)"
 	};
 
-	static constexpr const char* const g_line_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	static constexpr const char* const g_debug_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
 	{
 		R"(
+			struct InstanceData
+			{
+				matrix mvp;
+				float3 color;
+			};
+
+			struct VertexInputType
+			{
+				float3 position : POSITION;
+				uint instance_id : SV_InstanceID;
+			};
+
+			struct PixelInputType
+			{
+				float4 position : SV_POSITION;
+				float3 color : COLOR0;
+			};
+
+			StructuredBuffer<InstanceData> instance_data;
+
+			PixelInputType VertexMain(VertexInputType input)
+			{
+				PixelInputType output;
+
+				output.position = mul(instance_data[input.instance_id].mvp, float4(input.position, 1.0));
+				output.color = instance_data[input.instance_id].color;
+
+				return output;
+			}
+		)",
+		R"(
+		)"
+	};
+	static constexpr const char* const g_debug_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
+	{
+		R"(
+			struct PixelInputType
+			{
+				float4 position : SV_POSITION;
+				float3 color : COLOR0;
+			};
+
+			float4 PixelMain(PixelInputType input) : SV_TARGET0
+			{
+				return float4(input.color, 1.0);
+			}
 		)",
 		R"(
 		)"
@@ -242,120 +294,118 @@ void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character
 	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
 }
 
-void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
+void DebugManager::RenderDebugShape(uintptr_t /*thread_id_int*/, void* /*data*/)
 {
-	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
+	//DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
 
-	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
-	GAFF_ASSERT(devices && devices->size() > 0);
+	//const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
+	//GAFF_ASSERT(devices && devices->size() > 0);
 
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
+	//const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	//Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
 
-	GAFF_REF(rd);
+	//for (int32_t i = 0; i < 2; ++i) {
+	//	auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
 
-	for (int32_t i = 0; i < 2; ++i) {
-		auto& debug_data = job_data.debug_mgr->_debug_data[i];
+	//	const int32_t num_buffers_needed = static_cast<int32_t>(
+	//		ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
+	//	);
 
-		const int32_t num_buffers_needed = static_cast<int32_t>(
-			ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
-		);
+	//	// Make sure we have enough buffers on the GPU to hold our instance data.
+	//	while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
+	//		Gleam::IBuffer* const buffer = job_data.debug_mgr->_render_mgr->createBuffer();
 
-		// Make sure we have enough buffers on the GPU to hold our instance data.
-		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
-			Gleam::IBuffer* const buffer = job_data.debug_mgr->_render_mgr->createBuffer();
+	//		if (!buffer) {
+	//			// $TODO: Log error.
+	//			continue;
+	//		}
 
-			if (!buffer) {
-				// $TODO: Log error.
-				continue;
-			}
+	//		const Gleam::IBuffer::Settings settings = {
+	//			nullptr,
+	//			sizeof(glm::mat4x3) * k_num_instances_per_buffer,
+	//			static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
+	//			static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
+	//			Gleam::IBuffer::Type::StructuredData,
+	//			Gleam::IBuffer::MapType::Write,
+	//			true
+	//		};
 
-			const Gleam::IBuffer::Settings settings = {
-				nullptr,
-				sizeof(glm::mat4x3) * k_num_instances_per_buffer,
-				static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
-				static_cast<int32_t>(sizeof(glm::mat4x3) + sizeof(float) * 3),
-				Gleam::IBuffer::Type::StructuredData,
-				Gleam::IBuffer::MapType::Write,
-				true
-			};
+	//		if (!buffer->init(*job_data.debug_mgr->_main_device, settings)) {
+	//			SHIB_FREET(buffer, g_allocator);
+	//			// $TODO: Log error.
+	//			continue;
+	//		}
 
-			if (!buffer->init(*job_data.debug_mgr->_main_device, settings)) {
-				SHIB_FREET(buffer, g_allocator);
-				// $TODO: Log error.
-				continue;
-			}
+	//		Gleam::IShaderResourceView* const view = job_data.debug_mgr->_render_mgr->createShaderResourceView();
 
-			Gleam::IShaderResourceView* const view = job_data.debug_mgr->_render_mgr->createShaderResourceView();
+	//		if (!view) {
+	//			SHIB_FREET(buffer, g_allocator);
+	//			// $TODO: Log error.
+	//			continue;
+	//		}
 
-			if (!view) {
-				SHIB_FREET(buffer, g_allocator);
-				// $TODO: Log error.
-				continue;
-			}
+	//		if (!view->init(*job_data.debug_mgr->_main_device, buffer)) {
+	//			SHIB_FREET(buffer, g_allocator);
+	//			SHIB_FREET(view, g_allocator);
+	//			// $TODO: Log error.
+	//			continue;
+	//		}
 
-			if (!view->init(*job_data.debug_mgr->_main_device, buffer)) {
-				SHIB_FREET(buffer, g_allocator);
-				SHIB_FREET(view, g_allocator);
-				// $TODO: Log error.
-				continue;
-			}
+	//		debug_data.instance_data_view[i].emplace_back(view);
+	//		debug_data.instance_data[i].emplace_back(buffer);
+	//	}
 
-			debug_data.instance_data_view[i].emplace_back(view);
-			debug_data.instance_data[i].emplace_back(buffer);
-		}
+	//	// $TODO: Bind depth stencil state.
+	//	// $TODO: Bind raster state.
+	//	debug_data.program->bind(*rd);
 
-		// $TODO: Bind depth stencil state.
-		// $TODO: Bind raster state.
-		debug_data.program->bind(*rd);
+	//	int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
+	//	int32_t curr_index = 0;
 
-		int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
-		int32_t curr_index = 0;
+	//	for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
+	//		const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
+	//		int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
 
-		for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
-			const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
-			int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
+	//		if (!mapped_buffer) {
+	//			// $TODO: Log error.
+	//			continue;
+	//		}
 
-			if (!mapped_buffer) {
-				// $TODO: Log error.
-				continue;
-			}
+	//		// Update instance buffers(s).
+	//		for (int32_t k = 0; k < count; ++k) {
+	//			const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
 
-			// Update instance buffers(s).
-			for (int32_t k = 0; k < count; ++k) {
-				const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
+	//			if (job_data.type == DebugRenderType::Line) {
+	//				memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+	//				memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
+	//				memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
 
-				if (job_data.type == DebugRenderType::Line) {
-					memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
-					memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
-					memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
+	//			} else {
+	//				const glm::mat4x3 transform = inst.transform.toMatrix();
 
-				} else {
-					const glm::mat4x3 transform = inst.transform.toMatrix();
+	//				memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
+	//				memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+	//			}
 
-					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
-					memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
-				}
+	//			mapped_buffer += sizeof(glm::mat4x3) + sizeof(float) * 3;
+	//			++curr_index;
+	//		}
 
-				mapped_buffer += sizeof(glm::mat4x3) + sizeof(float) * 3;
-				++curr_index;
-			}
+	//		debug_data.instance_data[i][j]->unmap(*rd);
 
-			debug_data.instance_data[i][j]->unmap(*rd);
+	//		debug_data.program_buffers->clearResourceViews();
+	//		debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+	//		debug_data.program_buffers->bind(*rd);
 
-			debug_data.program_buffers->clearResourceViews();
-			debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
-			debug_data.program_buffers->bind(*rd);
+	//		if (job_data.type == DebugRenderType::Line) {
+	//			rd->renderLineNoVertexInputInstanced(1, count);
+	//		} else {
+	//			debug_data.mesh->renderInstanced(*rd, count);
+	//		}
 
-			if (job_data.type == DebugRenderType::Line) {
-				rd->renderLineNoVertexInputInstanced(1, count);
-			} else {
-				debug_data.mesh->renderInstanced(*rd, count);
-			}
-
-			total_items -= k_num_instances_per_buffer;
-		}
-	}
+	//		total_items -= k_num_instances_per_buffer;
+	//	}
+	//}
 }
 
 void DebugManager::SetupModuleToUseImGui(void)
@@ -366,58 +416,11 @@ void DebugManager::SetupModuleToUseImGui(void)
 
 bool DebugManager::initAllModulesLoaded(void)
 {
-	IMGUI_CHECKVERSION();
-
-	if (!ImGui::CreateContext()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	ImGui::StyleColorsDark();
-
+	_time = &GetApp().getManagerTFast<GameTimeManager>().getRealTime();
 	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
 	_main_output = _render_mgr->getOutput("main");
 
 	GAFF_ASSERT(_main_output);
-	GAFF_ASSERT(window);
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
-	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
-	io.ImeWindowHandle = window->getPlatformHandle();
-	io.BackendRendererName = "Gleam";
-	io.BackendPlatformName = "Gleam";
-
-	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::KEY_TAB);
-	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_LEFT);
-	io.KeyMap[ImGuiKey_RightArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHT);
-	io.KeyMap[ImGuiKey_UpArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_UP);
-	io.KeyMap[ImGuiKey_DownArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_DOWN);
-	io.KeyMap[ImGuiKey_PageUp] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEUP);
-	io.KeyMap[ImGuiKey_PageDown] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEDOWN);
-	io.KeyMap[ImGuiKey_Home] = static_cast<int32_t>(Gleam::KeyCode::KEY_HOME);
-	io.KeyMap[ImGuiKey_End] = static_cast<int32_t>(Gleam::KeyCode::KEY_END);
-	io.KeyMap[ImGuiKey_Insert] = static_cast<int32_t>(Gleam::KeyCode::KEY_INSERT);
-	io.KeyMap[ImGuiKey_Delete] = static_cast<int32_t>(Gleam::KeyCode::KEY_DELETE);
-	io.KeyMap[ImGuiKey_Backspace] = static_cast<int32_t>(Gleam::KeyCode::KEY_BACKSPACE);
-	io.KeyMap[ImGuiKey_Space] = static_cast<int32_t>(Gleam::KeyCode::KEY_SPACE);
-	io.KeyMap[ImGuiKey_Enter] = static_cast<int32_t>(Gleam::KeyCode::KEY_ENTER);
-	io.KeyMap[ImGuiKey_Escape] = static_cast<int32_t>(Gleam::KeyCode::KEY_ESCAPE);
-	io.KeyMap[ImGuiKey_KeyPadEnter] = static_cast<int32_t>(Gleam::KeyCode::KEY_NUMPADENTER);
-	io.KeyMap[ImGuiKey_A] = static_cast<int32_t>(Gleam::KeyCode::KEY_A);
-	io.KeyMap[ImGuiKey_C] = static_cast<int32_t>(Gleam::KeyCode::KEY_C);
-	io.KeyMap[ImGuiKey_V] = static_cast<int32_t>(Gleam::KeyCode::KEY_V);
-	io.KeyMap[ImGuiKey_X] = static_cast<int32_t>(Gleam::KeyCode::KEY_X);
-	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::KEY_Y);
-	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::KEY_Z);
-
-	InputManager& input = GetApp().getManagerTFast<InputManager>();
-	input.getKeyboard()->addCharacterHandler(Gaff::Func(HandleKeyboardCharacter));
-	input.getKeyboard()->addInputHandler(Gaff::Func(HandleKeyboardInput));
-	input.getMouse()->addInputHandler(Gaff::Func(HandleMouseInput));
-
-	_time = &GetApp().getManagerTFast<GameTimeManager>().getRealTime();
 
 	const auto* const devices = _render_mgr->getDevicesByTag("main");
 	GAFF_ASSERT(devices && devices->size() == 1);
@@ -425,277 +428,11 @@ bool DebugManager::initAllModulesLoaded(void)
 	_main_device = devices->front();
 
 
-	// Command List
-	_cmd_list[0].reset(_render_mgr->createCommandList());
-	_cmd_list[1].reset(_render_mgr->createCommandList());
+	bool success = true;
+	success = initDebugRender() && success;
+	success = initImGui() && success;
 
-	if (!_cmd_list[0] || !_cmd_list[1]) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Shaders
-	_vertex_shader.reset(_render_mgr->createShader());
-
-	if (!_vertex_shader) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (!_vertex_shader->initVertexSource(*_main_device, g_imgui_vertex_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_pixel_shader.reset(_render_mgr->createShader());
-
-	if (!_pixel_shader) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (!_pixel_shader->initPixelSource(*_main_device, g_imgui_pixel_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_program.reset(_render_mgr->createProgram());
-
-	if (!_program) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_program->attach(_vertex_shader.get());
-	_program->attach(_pixel_shader.get());
-
-
-	// Blend State
-	_blend_state.reset(_render_mgr->createBlendState());
-
-	if (!_blend_state) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gleam::IBlendState::Settings blend_settings = {
-		Gleam::IBlendState::BlendFactor::SourceAlpha,
-		Gleam::IBlendState::BlendFactor::InverseSourceAlpha,
-		Gleam::IBlendState::BlendOp::Add,
-		Gleam::IBlendState::BlendFactor::InverseSourceAlpha,
-		Gleam::IBlendState::BlendFactor::Zero,
-		Gleam::IBlendState::BlendOp::Add,
-		Gleam::IBlendState::ColorMask::All,
-		true
-	};
-
-	if (!_blend_state->init(*_main_device, blend_settings)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Raster State
-	_raster_state.reset(_render_mgr->createRasterState());
-
-	if (!_raster_state) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gleam::IRasterState::Settings raster_settings = {
-		0.0f,
-		0.0f,
-		0,
-		true,
-		false,
-		true,
-		false,
-		false
-	};
-
-	if (!_raster_state->init(*_main_device, raster_settings)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Depth Stencil State
-	_depth_stencil_state.reset(_render_mgr->createDepthStencilState());
-
-	if (!_depth_stencil_state) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	Gleam::IDepthStencilState::Settings depth_stencil_settings;
-	depth_stencil_settings.depth_func = Gleam::ComparisonFunc::Always;
-	depth_stencil_settings.depth_test = false;
-
-	if (!_depth_stencil_state->init(*_main_device, depth_stencil_settings)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Layout
-	_layout.reset(_render_mgr->createLayout());
-
-	if (!_layout) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gleam::ILayout::Description layout_description[] = {
-		{
-			Gleam::ILayout::Semantic::Position,
-			0,
-			Gleam::ITexture::Format::RG_32_F,
-			0,
-			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->pos)),
-			Gleam::ILayout::PerDataType::Vertex
-		},
-		{
-			Gleam::ILayout::Semantic::TexCoord,
-			0,
-			Gleam::ITexture::Format::RG_32_F,
-			0,
-			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->uv)),
-			Gleam::ILayout::PerDataType::Vertex
-		},
-		{
-			Gleam::ILayout::Semantic::Color,
-			0,
-			Gleam::ITexture::Format::RGBA_8_UNORM,
-			0,
-			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->col)),
-			Gleam::ILayout::PerDataType::Vertex
-		}
-	};
-
-	if (!_layout->init(*_main_device, layout_description, ARRAY_SIZE(layout_description), *_vertex_shader)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Constant Buffer
-	_vert_constant_buffer.reset(_render_mgr->createBuffer());
-
-	if (!_vert_constant_buffer) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gleam::IBuffer::Settings constant_buffer_settings = {
-		nullptr,
-		sizeof(VertexConstantBuffer),
-		0,
-		sizeof(VertexConstantBuffer),
-		Gleam::IBuffer::Type::ShaderConstantData,
-		Gleam::IBuffer::MapType::Write,
-		true
-	};
-
-	if (!_vert_constant_buffer->init(*_main_device, constant_buffer_settings)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Font Texture
-	_font_srv.reset(_render_mgr->createShaderResourceView());
-	_font_texture.reset(_render_mgr->createTexture());
-
-	if (!_font_texture) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (!_font_srv) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	int32_t bytes_per_pixel = 0;
-	uint8_t* font = nullptr;
-	int32_t height = 0;
-	int32_t width = 0;
-
-	io.Fonts->GetTexDataAsRGBA32(&font, &width, &height, &bytes_per_pixel);
-	GAFF_ASSERT(bytes_per_pixel == 4);
-	GAFF_REF(bytes_per_pixel);
-
-	if (!_font_texture->init2D(*_main_device, width, height, Gleam::ITexture::Format::RGBA_8_UNORM, 1, font)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (!_font_srv->init(*_main_device, _font_texture.get())) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	io.Fonts->TexID = _font_srv.get();
-
-
-	// Sampler
-	_sampler.reset(_render_mgr->createSamplerState());
-
-	if (!_sampler) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const Gleam::ISamplerState::Settings sampler_settings = {
-		Gleam::ISamplerState::Filter::LinearLinearLinear,
-		Gleam::ISamplerState::Wrap::Repeat,
-		Gleam::ISamplerState::Wrap::Repeat,
-		Gleam::ISamplerState::Wrap::Repeat,
-		0.0f,
-		0.0f,
-		0.0f,
-		1,
-		Gleam::COLOR_BLACK,
-		Gleam::ComparisonFunc::Always
-	};
-
-	if (!_sampler->init(*_main_device, sampler_settings)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-
-	// Program Buffers
-	_program_buffers.reset(_render_mgr->createProgramBuffers());
-
-	if (!_program_buffers) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_program_buffers->addConstantBuffer(Gleam::IShader::Type::Vertex, _vert_constant_buffer.get());
-	_program_buffers->addResourceView(Gleam::IShader::Type::Pixel, _font_srv.get());
-	_program_buffers->addSamplerState(Gleam::IShader::Type::Pixel, _sampler.get());
-
-	_mesh.reset(_render_mgr->createMesh());
-
-	if (!_mesh) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
-
-	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
-		_render_job_data_cache[i].type = static_cast<DebugRenderType>(i);
-		_render_job_data_cache[i].debug_mgr = this;
-		_job_data_cache[i].job_data = &_render_job_data_cache[i];
-		_job_data_cache[i].job_func = RenderDebugShape;
-	}
-
-	return true;
+	return success;
 }
 
 void DebugManager::update(void)
@@ -988,7 +725,23 @@ void DebugManager::renderPreCamera(uintptr_t thread_id_int)
 {
 	GAFF_REF(thread_id_int);
 
+	// Update instance data.
+
 	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
+		//const auto& debug_data = _debug_data[i];
+
+		//_main_output->getRenderTarget().bind(*deferred_device);
+		//_depth_stencil_state->bind(*deferred_device);
+		//_raster_state->bind(*deferred_device);
+		//_blend_state->bind(*deferred_device);
+		//_program->bind(*deferred_device);
+		//_program_buffers->bind(*deferred_device);
+		//_layout->bind(*deferred_device);
+
+		if (i == static_cast<int32_t>(DebugRenderType::Line)) {
+			//debug_data.program->bind(*deferred_device);
+			//debug_data.program_buffers->bind(*deferred_device);
+		}
 	}
 }
 
@@ -999,7 +752,7 @@ ImGuiContext* DebugManager::getImGuiContext(void) const
 
 DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
 {
-	auto& debug_data = _debug_data[static_cast<int32_t>(DebugRenderType::Line)];
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Line)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
 
 	debug_data.lock[has_depth].Lock();
@@ -1015,12 +768,410 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& s
 
 void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
 {
-	auto& render_list = _debug_data[static_cast<int32_t>(handle._type)].render_list[handle._depth];
+	auto& render_list = _debug_data.instance_data[static_cast<int32_t>(handle._type)].render_list[handle._depth];
 	const auto it = eastl::lower_bound(render_list.begin(), render_list.end(), handle._instance, [](const auto& lhs, auto rhs) -> bool { return lhs.get() < rhs; });
 
 	if (it != render_list.end() && it->get() == handle._instance) {
 		render_list.erase(it);
 	}
+}
+
+bool DebugManager::initDebugRender(void)
+{
+	const size_t renderer_index = static_cast<size_t>(_render_mgr->getRendererType());
+
+	// Init line shaders and program.
+	_debug_data.line_vertex_shader.reset(_render_mgr->createShader());
+
+	if (!_debug_data.line_vertex_shader) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_debug_data.line_vertex_shader->initVertexSource(*_main_device, g_line_vertex_shader[renderer_index])) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_debug_data.pixel_shader.reset(_render_mgr->createShader());
+
+	if (!_debug_data.pixel_shader) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_debug_data.pixel_shader->initPixelSource(*_main_device, g_debug_pixel_shader[renderer_index])) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_debug_data.line_program.reset(_render_mgr->createProgram());
+
+	if (!_debug_data.line_program) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_debug_data.line_program->attach(_debug_data.line_vertex_shader.get());
+	_debug_data.line_program->attach(_debug_data.pixel_shader.get());
+
+
+	// Init regular shaders and program.
+	_debug_data.vertex_shader.reset(_render_mgr->createShader());
+
+	if (!_debug_data.vertex_shader) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_debug_data.vertex_shader->initVertexSource(*_main_device, g_debug_vertex_shader[renderer_index])) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_debug_data.program.reset(_render_mgr->createProgram());
+
+	if (!_debug_data.program) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_debug_data.program->attach(_debug_data.vertex_shader.get());
+	_debug_data.program->attach(_debug_data.pixel_shader.get());
+
+
+	// Shared program buffers.
+	_debug_data.program_buffers.reset(_render_mgr->createProgramBuffers());
+
+	if (!_debug_data.program_buffers) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// $TODO: Init meshes.
+
+	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
+		_debug_data.render_job_data_cache[i].type = static_cast<DebugRenderType>(i);
+		_debug_data.render_job_data_cache[i].debug_mgr = this;
+		_debug_data.job_data_cache[i].job_data = &_debug_data.render_job_data_cache[i];
+		_debug_data.job_data_cache[i].job_func = RenderDebugShape;
+	}
+
+	return true;
+}
+
+bool DebugManager::initImGui(void)
+{
+	IMGUI_CHECKVERSION();
+
+	if (!ImGui::CreateContext()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	ImGui::StyleColorsDark();
+
+	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
+	GAFF_ASSERT(window);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
+	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
+	io.ImeWindowHandle = window->getPlatformHandle();
+	io.BackendRendererName = "Gleam";
+	io.BackendPlatformName = "Gleam";
+
+	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::KEY_TAB);
+	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_LEFT);
+	io.KeyMap[ImGuiKey_RightArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHT);
+	io.KeyMap[ImGuiKey_UpArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_UP);
+	io.KeyMap[ImGuiKey_DownArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_DOWN);
+	io.KeyMap[ImGuiKey_PageUp] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEUP);
+	io.KeyMap[ImGuiKey_PageDown] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEDOWN);
+	io.KeyMap[ImGuiKey_Home] = static_cast<int32_t>(Gleam::KeyCode::KEY_HOME);
+	io.KeyMap[ImGuiKey_End] = static_cast<int32_t>(Gleam::KeyCode::KEY_END);
+	io.KeyMap[ImGuiKey_Insert] = static_cast<int32_t>(Gleam::KeyCode::KEY_INSERT);
+	io.KeyMap[ImGuiKey_Delete] = static_cast<int32_t>(Gleam::KeyCode::KEY_DELETE);
+	io.KeyMap[ImGuiKey_Backspace] = static_cast<int32_t>(Gleam::KeyCode::KEY_BACKSPACE);
+	io.KeyMap[ImGuiKey_Space] = static_cast<int32_t>(Gleam::KeyCode::KEY_SPACE);
+	io.KeyMap[ImGuiKey_Enter] = static_cast<int32_t>(Gleam::KeyCode::KEY_ENTER);
+	io.KeyMap[ImGuiKey_Escape] = static_cast<int32_t>(Gleam::KeyCode::KEY_ESCAPE);
+	io.KeyMap[ImGuiKey_KeyPadEnter] = static_cast<int32_t>(Gleam::KeyCode::KEY_NUMPADENTER);
+	io.KeyMap[ImGuiKey_A] = static_cast<int32_t>(Gleam::KeyCode::KEY_A);
+	io.KeyMap[ImGuiKey_C] = static_cast<int32_t>(Gleam::KeyCode::KEY_C);
+	io.KeyMap[ImGuiKey_V] = static_cast<int32_t>(Gleam::KeyCode::KEY_V);
+	io.KeyMap[ImGuiKey_X] = static_cast<int32_t>(Gleam::KeyCode::KEY_X);
+	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::KEY_Y);
+	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::KEY_Z);
+
+	InputManager& input = GetApp().getManagerTFast<InputManager>();
+	input.getKeyboard()->addCharacterHandler(Gaff::Func(HandleKeyboardCharacter));
+	input.getKeyboard()->addInputHandler(Gaff::Func(HandleKeyboardInput));
+	input.getMouse()->addInputHandler(Gaff::Func(HandleMouseInput));
+
+	// Command List
+	_cmd_list[0].reset(_render_mgr->createCommandList());
+	_cmd_list[1].reset(_render_mgr->createCommandList());
+
+	if (!_cmd_list[0] || !_cmd_list[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Shaders
+	_vertex_shader.reset(_render_mgr->createShader());
+
+	if (!_vertex_shader) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_vertex_shader->initVertexSource(*_main_device, g_imgui_vertex_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_pixel_shader.reset(_render_mgr->createShader());
+
+	if (!_pixel_shader) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_pixel_shader->initPixelSource(*_main_device, g_imgui_pixel_shader[static_cast<size_t>(_render_mgr->getRendererType())])) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_program.reset(_render_mgr->createProgram());
+
+	if (!_program) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_program->attach(_vertex_shader.get());
+	_program->attach(_pixel_shader.get());
+
+
+	// Blend State
+	_blend_state.reset(_render_mgr->createBlendState());
+
+	if (!_blend_state) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::IBlendState::Settings blend_settings = {
+		Gleam::IBlendState::BlendFactor::SourceAlpha,
+		Gleam::IBlendState::BlendFactor::InverseSourceAlpha,
+		Gleam::IBlendState::BlendOp::Add,
+		Gleam::IBlendState::BlendFactor::InverseSourceAlpha,
+		Gleam::IBlendState::BlendFactor::Zero,
+		Gleam::IBlendState::BlendOp::Add,
+		Gleam::IBlendState::ColorMask::All,
+		true
+	};
+
+	if (!_blend_state->init(*_main_device, blend_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Raster State
+	_raster_state.reset(_render_mgr->createRasterState());
+
+	if (!_raster_state) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::IRasterState::Settings raster_settings = {
+		0.0f,
+		0.0f,
+		0,
+		true,
+		false,
+		true,
+		false,
+		false
+	};
+
+	if (!_raster_state->init(*_main_device, raster_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Depth Stencil State
+	_depth_stencil_state.reset(_render_mgr->createDepthStencilState());
+
+	if (!_depth_stencil_state) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	Gleam::IDepthStencilState::Settings depth_stencil_settings;
+	depth_stencil_settings.depth_func = Gleam::ComparisonFunc::Always;
+	depth_stencil_settings.depth_test = false;
+
+	if (!_depth_stencil_state->init(*_main_device, depth_stencil_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Layout
+	_layout.reset(_render_mgr->createLayout());
+
+	if (!_layout) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::ILayout::Description layout_description[] = {
+		{
+			Gleam::ILayout::Semantic::Position,
+			0,
+			Gleam::ITexture::Format::RG_32_F,
+			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->pos)),
+			Gleam::ILayout::PerDataType::Vertex
+		},
+		{
+			Gleam::ILayout::Semantic::TexCoord,
+			0,
+			Gleam::ITexture::Format::RG_32_F,
+			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->uv)),
+			Gleam::ILayout::PerDataType::Vertex
+		},
+		{
+			Gleam::ILayout::Semantic::Color,
+			0,
+			Gleam::ITexture::Format::RGBA_8_UNORM,
+			0,
+			static_cast<int32_t>((size_t)(&((ImDrawVert*)0)->col)),
+			Gleam::ILayout::PerDataType::Vertex
+		}
+	};
+
+	if (!_layout->init(*_main_device, layout_description, ARRAY_SIZE(layout_description), *_vertex_shader)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Constant Buffer
+	_vert_constant_buffer.reset(_render_mgr->createBuffer());
+
+	if (!_vert_constant_buffer) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::IBuffer::Settings constant_buffer_settings = {
+		nullptr,
+		sizeof(VertexConstantBuffer),
+		0,
+		sizeof(VertexConstantBuffer),
+		Gleam::IBuffer::Type::ShaderConstantData,
+		Gleam::IBuffer::MapType::Write,
+		true
+	};
+
+	if (!_vert_constant_buffer->init(*_main_device, constant_buffer_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Font Texture
+	_font_srv.reset(_render_mgr->createShaderResourceView());
+	_font_texture.reset(_render_mgr->createTexture());
+
+	if (!_font_texture) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_font_srv) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	int32_t bytes_per_pixel = 0;
+	uint8_t* font = nullptr;
+	int32_t height = 0;
+	int32_t width = 0;
+
+	io.Fonts->GetTexDataAsRGBA32(&font, &width, &height, &bytes_per_pixel);
+	GAFF_ASSERT(bytes_per_pixel == 4);
+	GAFF_REF(bytes_per_pixel);
+
+	if (!_font_texture->init2D(*_main_device, width, height, Gleam::ITexture::Format::RGBA_8_UNORM, 1, font)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_font_srv->init(*_main_device, _font_texture.get())) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	io.Fonts->TexID = _font_srv.get();
+
+
+	// Sampler
+	_sampler.reset(_render_mgr->createSamplerState());
+
+	if (!_sampler) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::ISamplerState::Settings sampler_settings = {
+		Gleam::ISamplerState::Filter::LinearLinearLinear,
+		Gleam::ISamplerState::Wrap::Repeat,
+		Gleam::ISamplerState::Wrap::Repeat,
+		Gleam::ISamplerState::Wrap::Repeat,
+		0.0f,
+		0.0f,
+		0.0f,
+		1,
+		Gleam::COLOR_BLACK,
+		Gleam::ComparisonFunc::Always
+	};
+
+	if (!_sampler->init(*_main_device, sampler_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
+	// Program Buffers
+	_program_buffers.reset(_render_mgr->createProgramBuffers());
+
+	if (!_program_buffers) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_program_buffers->addConstantBuffer(Gleam::IShader::Type::Vertex, _vert_constant_buffer.get());
+	_program_buffers->addResourceView(Gleam::IShader::Type::Pixel, _font_srv.get());
+	_program_buffers->addSamplerState(Gleam::IShader::Type::Pixel, _sampler.get());
+
+	_mesh.reset(_render_mgr->createMesh());
+
+	if (!_mesh) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+	return true;
 }
 
 
@@ -1044,7 +1195,7 @@ bool DebugRenderPreCameraSystem::init(void)
 
 void DebugRenderPreCameraSystem::update(uintptr_t thread_id_int)
 {
-	//_debug_mgr->renderPreCamera(thread_id_int);
+	_debug_mgr->renderPreCamera(thread_id_int);
 }
 
 bool DebugSystem::init(void)
