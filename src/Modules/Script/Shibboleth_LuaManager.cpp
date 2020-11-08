@@ -111,7 +111,8 @@ bool LuaManager::initAllModulesLoaded(void)
 				RegisterType(state, *ref_def);
 			}
 		}
-
+		
+		// $TODO: Need functions for saving persistent sstate so that Lua managers can share data between each thread.
 		// Load all Lua files from Scripts/Managers
 		auto func = Gaff::MemberFunc(this, &LuaManager::loadLuaManager);
 		GetApp().getFileSystem().forEachFile("Resources/Scripts/Globals", func, ".lua", true);

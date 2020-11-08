@@ -41,28 +41,42 @@ JanetManager::~JanetManager(void)
 
 bool JanetManager::initAllModulesLoaded(void)
 {
+	// Size and fill _states now, so we are not trying to write to _states in initThread().
+	Vector<EA::Thread::ThreadId> thread_ids(g_allocator);
+	const auto& job_pool = GetApp().getJobPool();
+
+	thread_ids.resize(job_pool.getNumTotalThreads());
+	job_pool.getThreadIDs(thread_ids.data());
+
+	_states.reserve(thread_ids.size());
+
+	for (const auto& id : thread_ids) {
+		JanetStateData& state = _states[id];
+		state.lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
+	}
+
 	return true;
 }
 
 // Janet, unlike Lua, has no analog to lua_State. It only has global, thread local variables.
 bool JanetManager::initThread(uintptr_t thread_id_int)
 {
+	// $TODO: Modify Janet to have a lua_state equivalent.
+	// Creating a state per thread is going to be very expensive
+	// for processors with a large number of hardware threads.
 	janet_init();
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	JanetTable* const env = janet_core_env(nullptr);
+	_states[thread_id].env = env;
 
 	// Add loaded chunks table to the global environment.
 	janet_table_put(env, janet_wrap_string(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
 
-	JanetStateData& state = _states[thread_id];
-	state.lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
-	state.env = env;
-
 	return true;
 }
 
-void JanetManager::destroyThread(uintptr_t /*thread_id*/)
+void JanetManager::destroyThread(uintptr_t /*thread_id_int*/)
 {
 	janet_deinit();
 }
