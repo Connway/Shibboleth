@@ -95,8 +95,74 @@ extern JANET_THREAD_LOCAL JanetTraversalNode *janet_vm_traversal;
 extern JANET_THREAD_LOCAL JanetTraversalNode *janet_vm_traversal_top;
 extern JANET_THREAD_LOCAL JanetTraversalNode *janet_vm_traversal_base;
 
+// $TODO: Convert Janet to use JanetState.
+typedef struct
+{
+    /* Top level dynamic bindings */
+    JanetTable* janet_vm_top_dyns;
+
+    /* Cache the core environment */
+    JanetTable* janet_vm_core_env;
+
+    /* How many VM stacks have been entered */
+    int janet_vm_stackn;
+
+    /* The current running fiber on the current thread.
+        * Set and unset by janet_run. */
+    JanetFiber* janet_vm_fiber;
+    JanetFiber* janet_vm_root_fiber;
+
+    /* The current pointer to the inner most jmp_buf. The current
+        * return point for panics. */
+    jmp_buf* janet_vm_jmp_buf;
+    Janet* janet_vm_return_reg;
+
+    /* The global registry for c functions. Used to store meta-data
+        * along with otherwise bare c function pointers. */
+    JanetTable* janet_vm_registry;
+
+    /* Registry for abstract abstract types that can be marshalled.
+        * We need this to look up the constructors when unmarshalling. */
+    JanetTable* janet_vm_abstract_registry;
+
+    /* Immutable value cache */
+    const uint8_t** janet_vm_cache;
+    uint32_t janet_vm_cache_capacity;
+    uint32_t janet_vm_cache_count;
+    uint32_t janet_vm_cache_deleted;
+
+    /* Garbage collection */
+    void* janet_vm_blocks;
+    size_t janet_vm_gc_interval;
+    size_t janet_vm_next_collection;
+    size_t janet_vm_block_count;
+    int janet_vm_gc_suspend;
+
+    /* GC roots */
+    Janet* janet_vm_roots;
+    size_t janet_vm_root_count;
+    size_t janet_vm_root_capacity;
+
+    /* Scratch memory */
+    JanetScratch** janet_scratch_mem;
+    size_t janet_scratch_cap;
+    size_t janet_scratch_len;
+
+    JanetTraversalNode* janet_vm_traversal;
+    JanetTraversalNode* janet_vm_traversal_top;
+    JanetTraversalNode* janet_vm_traversal_base;
+
+#ifdef JANET_THREADS
+    JanetMailbox* janet_vm_mailbox;
+    JanetThread* janet_vm_thread_current;
+    JanetTable* janet_vm_thread_decode;
+#endif
+} JanetState;
+
 /* Setup / teardown */
 #ifdef JANET_THREADS
+//void janet_threads_init(JanetState* state);
+//void janet_threads_deinit(JanetState* state);
 void janet_threads_init(void);
 void janet_threads_deinit(void);
 #endif

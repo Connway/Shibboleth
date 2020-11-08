@@ -1442,6 +1442,70 @@ Janet janet_mcall(const char *name, int32_t argc, Janet *argv) {
 }
 
 /* Setup VM */
+//int janet_init(JanetState* state) {
+//    /* Garbage collection */
+//    state->janet_vm_blocks = NULL;
+//    state->janet_vm_next_collection = 0;
+//    state->janet_vm_gc_interval = 0x400000;
+//    state->janet_vm_block_count = 0;
+//    janet_symcache_init();
+//    /* Initialize gc roots */
+//    state->janet_vm_roots = NULL;
+//    state->janet_vm_root_count = 0;
+//    state->janet_vm_root_capacity = 0;
+//    /* Scratch memory */
+//    state->janet_scratch_mem = NULL;
+//    state->janet_scratch_len = 0;
+//    state->janet_scratch_cap = 0;
+//    /* Initialize registry */
+//    state->janet_vm_registry = janet_table(0);
+//    state->janet_vm_abstract_registry = janet_table(0);
+//    janet_gcroot(janet_wrap_table(state->janet_vm_registry));
+//    janet_gcroot(janet_wrap_table(state->janet_vm_abstract_registry));
+//    /* Traversal */
+//    state->janet_vm_traversal = NULL;
+//    state->janet_vm_traversal_base = NULL;
+//    state->janet_vm_traversal_top = NULL;
+//    /* Core env */
+//    state->janet_vm_core_env = NULL;
+//    /* Dynamic bindings */
+//    state->janet_vm_top_dyns = NULL;
+//    /* Seed RNG */
+//    janet_rng_seed(janet_default_rng(), 0);
+//    /* Fibers */
+//    state->janet_vm_fiber = NULL;
+//    state->janet_vm_root_fiber = NULL;
+//    state->janet_vm_stackn = 0;
+//    /* Threads */
+//#ifdef JANET_THREADS
+//    janet_threads_init(state);
+//#endif
+//    return 0;
+//}
+
+///* Clear all memory associated with the VM */
+//void janet_deinit(JanetState* state) {
+//    janet_clear_memory();
+//    janet_symcache_deinit();
+//    free(janet_vm_roots);
+//    janet_vm_roots = NULL;
+//    janet_vm_root_count = 0;
+//    janet_vm_root_capacity = 0;
+//    janet_vm_registry = NULL;
+//    janet_vm_abstract_registry = NULL;
+//    janet_vm_core_env = NULL;
+//    janet_vm_top_dyns = NULL;
+//    free(janet_vm_traversal_base);
+//    janet_vm_fiber = NULL;
+//    janet_vm_root_fiber = NULL;
+//#ifdef JANET_THREADS
+//    janet_threads_deinit();
+//#endif
+//#ifdef JANET_NET
+//    janet_net_deinit(state);
+//#endif
+//}
+
 int janet_init(void) {
     /* Garbage collection */
     janet_vm_blocks = NULL;
