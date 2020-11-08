@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_JanetManager.h"
 #include <Shibboleth_JobPool.h>
-#include <janet.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(JanetManager)
 	.base<IManager>()
@@ -78,7 +77,7 @@ bool JanetManager::initThread(uintptr_t thread_id_int)
 
 void JanetManager::destroyThread(uintptr_t /*thread_id_int*/)
 {
-	janet_deinit();
+	//janet_deinit();
 }
 
 bool JanetManager::loadBuffer(uintptr_t thread_id_int, const char* buffer, size_t size, const char* name)
@@ -121,6 +120,11 @@ bool JanetManager::loadBuffer(uintptr_t thread_id_int, const char* buffer, size_
 
 void JanetManager::unloadBuffer(uintptr_t thread_id_int, const char* name)
 {
+	if (!name) {
+		// $TODO: Log error.
+		return;
+	}
+
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	JanetStateData& state = _states[thread_id];
 	EA::Thread::AutoFutex lock(*state.lock);

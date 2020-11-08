@@ -25,8 +25,10 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <EAThread/eathread_futex.h>
+#include <janet.h>
 
-struct JanetTable;
+struct JanetTraversalNode;
+struct JanetScratch;
 
 NS_SHIBBOLETH
 
@@ -34,9 +36,9 @@ class JanetManager final : public IManager
 {
 public:
 	static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
-	//static constexpr const char* k_thread_pool_name = "Janet";
-	//static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name);
-	//static constexpr int32_t k_default_num_threads = 4;
+	static constexpr const char* k_thread_pool_name = "Janet";
+	static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name);
+	static constexpr int32_t k_default_num_threads = 4;
 
 	~JanetManager(void);
 
@@ -55,6 +57,72 @@ private:
 	{
 		UniquePtr<EA::Thread::Futex> lock;
 		JanetTable* env;
+
+		// Thread local variables to copy when occupying a thread.
+
+		/* Top level dynamic bindings */
+		JanetTable* janet_vm_top_dyns;
+
+		/* Cache the core environment */
+		JanetTable* janet_vm_core_env;
+
+		/* How many VM stacks have been entered */
+		int janet_vm_stackn;
+
+		/* The current running fiber on the current thread.
+		 * Set and unset by janet_run. */
+		JanetFiber* janet_vm_fiber;
+		JanetFiber* janet_vm_root_fiber;
+
+		/* The current pointer to the inner most jmp_buf. The current
+		 * return point for panics. */
+		jmp_buf* janet_vm_jmp_buf;
+		Janet* janet_vm_return_reg;
+
+		/* The global registry for c functions. Used to store meta-data
+		 * along with otherwise bare c function pointers. */
+		JanetTable* janet_vm_registry;
+
+		/* Registry for abstract abstract types that can be marshalled.
+		 * We need this to look up the constructors when unmarshalling. */
+		JanetTable* janet_vm_abstract_registry;
+
+		/* Immutable value cache */
+		const uint8_t** janet_vm_cache;
+		uint32_t janet_vm_cache_capacity;
+		uint32_t janet_vm_cache_count;
+		uint32_t janet_vm_cache_deleted;
+
+		/* Garbage collection */
+		void* janet_vm_blocks;
+		size_t janet_vm_gc_interval;
+		size_t janet_vm_next_collection;
+		size_t janet_vm_block_count;
+		int janet_vm_gc_suspend;
+
+		/* GC roots */
+		Janet* janet_vm_roots;
+		size_t janet_vm_root_count;
+		size_t janet_vm_root_capacity;
+
+		/* Scratch memory */
+		JanetScratch** janet_scratch_mem;
+		size_t janet_scratch_cap;
+		size_t janet_scratch_len;
+
+		uint8_t gensym_counters[8];
+		uint32_t janet_depth;
+		size_t orig_rootcount;
+
+		JanetTraversalNode* janet_vm_traversal;
+		JanetTraversalNode* janet_vm_traversal_top;
+		JanetTraversalNode* janet_vm_traversal_base;
+
+		JanetMailbox* janet_vm_mailbox;
+		JanetThread* janet_vm_thread_current;
+		JanetTable* janet_vm_thread_decode;
+
+		JanetRNG janet_vm_rng;
 	};
 
 	VectorMap<EA::Thread::ThreadId, JanetStateData> _states{ ProxyAllocator("Janet") };

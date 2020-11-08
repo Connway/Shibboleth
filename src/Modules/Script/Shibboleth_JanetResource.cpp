@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
-#include <janet.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(JanetResource)
 	.classAttrs(

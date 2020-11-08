@@ -207,6 +207,11 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 
 void LuaManager::unloadBuffer(const char* name)
 {
+	if (!name) {
+		// $TODO: Log error.
+		return;
+	}
+
 	for (LuaStateData& data : _states) {
 		EA::Thread::AutoFutex lock(*data.lock);
 

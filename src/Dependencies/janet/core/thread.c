@@ -568,25 +568,6 @@ static int janet_thread_start_child(JanetMailboxPair *pair) {
  * Setup/Teardown
  */
 
-//void janet_threads_init(JanetState* state)
-//{
-//    if (NULL == state->janet_vm_mailbox) {
-//        state->janet_vm_mailbox = janet_mailbox_create(1, 10);
-//    }
-//    state->janet_vm_thread_decode = NULL;
-//    state->janet_vm_thread_current = NULL;
-//}
-//
-//void janet_threads_deinit(JanetState* state)
-//{
-//    janet_mailbox_lock(state->janet_vm_mailbox);
-//    state->janet_vm_mailbox->closed = 1;
-//    janet_mailbox_ref_with_lock(state->janet_vm_mailbox, -1);
-//    state->janet_vm_mailbox = NULL;
-//    state->janet_vm_thread_current = NULL;
-//    state->janet_vm_thread_decode = NULL;
-//}
-
 void janet_threads_init(void) {
     if (NULL == janet_vm_mailbox) {
         janet_vm_mailbox = janet_mailbox_create(1, 10);

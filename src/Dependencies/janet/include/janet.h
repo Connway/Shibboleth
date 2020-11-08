@@ -1450,16 +1450,6 @@ JANET_API int janet_streq(Janet x, const char *cstring);
 JANET_API int janet_symeq(Janet x, const char *cstring);
 
 /* VM functions */
-//JANET_API int janet_init(JanetState* state);
-//JANET_API void janet_deinit(JanetState* state);
-//JANET_API JanetSignal janet_continue(JanetState* state, JanetFiber* fiber, Janet in, Janet* out);
-//JANET_API JanetSignal janet_continue_signal(JanetState* state, JanetFiber* fiber, Janet in, Janet* out, JanetSignal sig);
-//JANET_API JanetSignal janet_pcall(JanetState* state, JanetFunction* fun, int32_t argn, const Janet* argv, Janet* out, JanetFiber** f);
-//JANET_API JanetSignal janet_step(JanetState* state, JanetFiber* fiber, Janet in, Janet* out);
-//JANET_API Janet janet_call(JanetState* state, JanetFunction* fun, int32_t argc, const Janet* argv);
-//JANET_API Janet janet_mcall(JanetState* state, const char* name, int32_t argc, Janet* argv);
-//JANET_API void janet_stacktrace(JanetState* state, JanetFiber* fiber, Janet err);
-
 JANET_API int janet_init(void);
 JANET_API void janet_deinit(void);
 JANET_API JanetSignal janet_continue(JanetFiber *fiber, Janet in, Janet *out);
