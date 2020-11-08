@@ -162,6 +162,10 @@ private:
 		DebugRenderJobData render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		Gaff::JobData job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		DebugRenderInstanceData instance_data[static_cast<size_t>(DebugRenderType::Count)];
+
+		UniquePtr<Gleam::ICommandList> cmd_list[2];
+
+		Gaff::Counter job_counter = 0;
 	};
 
 
