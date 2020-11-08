@@ -9,6 +9,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaHelpers.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -20,6 +26,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaHelpers.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaResource.cpp" />

@@ -32,6 +32,7 @@ public:
 	IManager(void) = default;
 
 	virtual bool initAllModulesLoaded(void) { return true; }
+	virtual bool initThread(uintptr_t /*thread_id*/) { return true; }
 	virtual bool init(void) { return true; }
 
 	GAFF_NO_COPY(IManager);

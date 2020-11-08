@@ -72,6 +72,7 @@ namespace
 			}
 		)",
 		R"(
+			NEED TO IMPLEMENT!
 		)"
 	};
 
@@ -141,6 +142,7 @@ namespace
 			}
 		)",
 		R"(
+			NEED TO IMPLEMENT!
 		)"
 	};
 
@@ -178,6 +180,7 @@ namespace
 			}
 		)",
 		R"(
+			NEED TO IMPLEMENT!
 		)"
 	};
 	static constexpr const char* const g_debug_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
@@ -195,6 +198,7 @@ namespace
 			}
 		)",
 		R"(
+			NEED TO IMPLEMENT!
 		)"
 	};
 
