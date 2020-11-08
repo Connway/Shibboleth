@@ -73,6 +73,10 @@ bool LuaManager::initAllModulesLoaded(void)
 		_states[i].lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
 		_states[i].state = state;
 
+		// Make the garbage collector more aggressive so we don't have frames where we have huge
+		// stalls due to the garbage collector.
+		lua_gc(state, LUA_GCSETPAUSE, 50);
+
 		lua_atpanic(state, &LuaManager::panic);
 
 		luaL_requiref(state, "base", luaopen_base, 1);
@@ -81,13 +85,7 @@ bool LuaManager::initAllModulesLoaded(void)
 		luaL_requiref(state, "coroutine", luaopen_coroutine, 1);
 		lua_pop(state, 1);
 
-		luaL_requiref(state, "debug", luaopen_debug, 1);
-		lua_pop(state, 1);
-
 		luaL_requiref(state, "math", luaopen_math, 1);
-		lua_pop(state, 1);
-
-		luaL_requiref(state, "package", luaopen_package, 1);
 		lua_pop(state, 1);
 
 		luaL_requiref(state, "table", luaopen_table, 1);
@@ -151,6 +149,11 @@ bool LuaManager::initAllModulesLoaded(void)
 
 bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 {
+	if (!name) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	bool success = true;
 
 	for (LuaStateData& data: _states) {
@@ -167,20 +170,22 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 			continue;
 		}
 
-		if (name) {
-			lua_getglobal(data.state, k_loaded_chunks_name);
-			lua_getfield(data.state, -1, name);
+		lua_getglobal(data.state, k_loaded_chunks_name);
+		// Make sure no one deleted the loaded chunks table.
+		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
 
-			if (!lua_isnoneornil(data.state, -1)) {
-				// $TODO: Log error.
-				lua_pop(data.state, lua_gettop(data.state));
-				success = false;
-				continue;
-			}
+		lua_getfield(data.state, -1, name);
 
-			lua_pop(data.state, 1); // Pop off the nil.
-			lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
+		// Something is already loaded into the this spot.
+		if (!lua_isnoneornil(data.state, -1)) {
+			// $TODO: Log error.
+			lua_pop(data.state, lua_gettop(data.state));
+			success = false;
+			continue;
 		}
+
+		lua_pop(data.state, 1); // Pop off the nil.
+		lua_pushvalue(data.state, -2); // top -> bottom: chunk_table, func
 
 		// Call the func. The function will return a table.
 		if (lua_pcall(data.state, 0, 1, 0) != LUA_OK) {
@@ -190,16 +195,10 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 			return false;
 		}
 
-		if (name) {
-			luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
-			lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
-		}
+		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
+		lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
 
 		lua_pop(data.state, lua_gettop(data.state));
-
-		// Make the garbage collector more aggressive so we don't have frames where we have huge
-		// stalls due to the garbage collector.
-		lua_gc(data.state, LUA_GCSETPAUSE, 50);
 	}
 
 	return success;
@@ -211,6 +210,9 @@ void LuaManager::unloadBuffer(const char* name)
 		EA::Thread::AutoFutex lock(*data.lock);
 
 		lua_getglobal(data.state, k_loaded_chunks_name);
+		// Make sure no one deleted with the loaded chunks table.
+		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
+
 		lua_pushnil(data.state);
 		lua_setfield(data.state, -2, name);
 	}

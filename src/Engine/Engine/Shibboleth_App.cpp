@@ -168,6 +168,23 @@ void App::destroy(void)
 		_main_loop = nullptr;
 	}
 
+	const Gaff::JobData thread_deinit_job =
+	{
+		[](uintptr_t thread_id, void* data) -> void
+		{
+			App* const app = reinterpret_cast<App*>(data);
+
+			for (const auto& entry : app->_manager_map) {
+				entry.second->destroyThread(thread_id);
+			}
+		},
+		static_cast<App*>(&GetApp())
+	};
+
+	Gaff::Counter counter = 0;
+	_job_pool.addJobsForAllThreads(&thread_deinit_job, 1, counter);
+	_job_pool.helpWhileWaiting(counter);
+
 	_job_pool.destroy();
 
 	const Gaff::JSON module_unload_order = _configs["module_unload_order"];
@@ -452,7 +469,7 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	Gaff::JobData thread_init_job =
+	const Gaff::JobData thread_init_job =
 	{
 		[](uintptr_t thread_id, void* data) -> void
 		{

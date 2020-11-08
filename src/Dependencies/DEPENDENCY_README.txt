@@ -23,3 +23,4 @@ Libraries Affected:
 		Changed GetModuleHandle() -> GetModuleHandleA().
 	Janet
 		Fixed compilation errors due to potentially uninitialized pointers.
+		Added some configuration options for registering certain libraries with the VM.

@@ -36,28 +36,39 @@
 
 /* These settings all affect linking, so use cautiously. */
 /* #define JANET_SINGLE_THREADED */
-/* #define JANET_NO_DYNAMIC_MODULES */
+#define JANET_NO_DYNAMIC_MODULES 
 /* #define JANET_NO_NANBOX */
 /* #define JANET_API __attribute__((visibility ("default"))) */
 
 /* These settings should be specified before amalgamation is
- * built. Any build with these set should be considered non-standard, and
- * certain Janet libraries should be expected not to work. */
+* built. Any build with these set should be considered non-standard, and
+* certain Janet libraries should be expected not to work. */
 /* #define JANET_NO_DOCSTRINGS */
 /* #define JANET_NO_SOURCEMAPS */
-/* #define JANET_REDUCED_OS */
-/* #define JANET_NO_PROCESSES */
-/* #define JANET_NO_ASSEMBLER */
+#define JANET_REDUCED_OS 
+#define JANET_NO_PROCESSES 
+#define JANET_NO_ASSEMBLER 
 /* #define JANET_NO_PEG */
-/* #define JANET_NO_NET */
+#define JANET_NO_NET 
 /* #define JANET_NO_TYPED_ARRAY */
 /* #define JANET_NO_INT_TYPES */
-/* #define JANET_NO_REALPATH */
-/* #define JANET_NO_SYMLINKS */
-/* #define JANET_NO_UMASK */
+#define JANET_NO_REALPATH 
+#define JANET_NO_SYMLINKS 
+#define JANET_NO_UMASK 
+#define JANET_NO_THREADS  // Disables registering the thread libary. Janet library can still be multithreaded.
+#define JANET_NO_PARSER   // Disables registering the parser library. Janet library will still have parser functions.
+#define JANET_NO_COMPILE  // Disables registering the compile library. Janet library will still have parser functions.
+#define JANET_NO_OS       // Disables registering the os library.
+#define JANET_NO_FIBER    // Disables registering the fiber library. Janet library will still have fiber functions.
+#define JANET_NO_DEBUG    // Disables registering the debug library. Janet library will still have debug functions.
+#define JANET_NO_MARSHAL  // Disables registering the marshal library. Janet library will still have marshalling functions.
+#define JANET_NO_IO       // Disables registering the io library.
 
 /* Other settings */
-/* #define JANET_DEBUG */
+#ifdef _DEBUG
+	#define JANET_DEBUG 
+#endif
+
 /* #define JANET_PRF */
 /* #define JANET_NO_UTC_MKTIME */
 /* #define JANET_OUT_OF_MEMORY do { printf("janet out of memory\n"); exit(1); } while (0) */

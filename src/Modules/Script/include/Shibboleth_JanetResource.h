@@ -34,7 +34,12 @@ public:
 	~JanetResource(void);
 
 private:
+	Gaff::Counter _counter = 0;
+	U8String _source;
+
 	void loadScript(IFile* file);
+
+	static void LoadScriptJob(uintptr_t thread_id_int, void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(JanetResource);
 };

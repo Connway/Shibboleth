@@ -1006,19 +1006,33 @@ static const uint32_t cmp_asm[] = {
 
 static void janet_load_libs(JanetTable *env) {
     janet_core_cfuns(env, NULL, corelib_cfuns);
+#ifndef JANET_NO_IO
     janet_lib_io(env);
+#endif
     janet_lib_math(env);
     janet_lib_array(env);
     janet_lib_tuple(env);
     janet_lib_buffer(env);
     janet_lib_table(env);
+#ifdef JANET_NO_FIBER
     janet_lib_fiber(env);
+#endif
+#ifdef JANET_NO_OS
     janet_lib_os(env);
+#endif
+#ifndef JANET_NO_PARSER
     janet_lib_parse(env);
+#endif
+#ifndef JANET_NO_COMPILE
     janet_lib_compile(env);
+#endif
+#ifndef JANET_NO_DEBUG
     janet_lib_debug(env);
+#endif
     janet_lib_string(env);
+#ifdef JANET_NO_MARSHAL
     janet_lib_marsh(env);
+#endif
 #ifdef JANET_PEG
     janet_lib_peg(env);
 #endif
@@ -1031,7 +1045,7 @@ static void janet_load_libs(JanetTable *env) {
 #ifdef JANET_INT_TYPES
     janet_lib_inttypes(env);
 #endif
-#ifdef JANET_THREADS
+#if defined(JANET_THREADS) && !defined(JANET_NO_THREADS)
     janet_lib_thread(env);
 #endif
 #ifdef JANET_NET

@@ -194,8 +194,8 @@ void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_j
 template <class Allocator>
 void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter& counter)
 {
-	Counter* const cnt = &counter;
-	addJobs(jobs, num_jobs, &cnt);
+	Counter* cnt = &counter;
+	addJobsForAllThreads(jobs, num_jobs, &cnt);
 }
 
 template <class Allocator>
