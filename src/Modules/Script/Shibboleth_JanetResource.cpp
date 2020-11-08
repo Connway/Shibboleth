@@ -20,46 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
+#include "Shibboleth_JanetResource.h"
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
+//#include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+//#include <lua.hpp>
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
+SHIB_REFLECTION_DEFINE_BEGIN(JanetResource)
 	.classAttrs(
 		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
+		ResExtAttribute(".janet"),
+		MakeLoadFileCallbackAttribute(&JanetResource::loadScript)
 	)
 
 	.base<IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+SHIB_REFLECTION_DEFINE_END(JanetResource)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
+SHIB_REFLECTION_CLASS_DEFINE(JanetResource)
 
-LuaResource::~LuaResource(void)
+JanetResource::~JanetResource(void)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
+	//LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	//lua_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
-void LuaResource::loadScript(IFile* file)
+void JanetResource::loadScript(IFile* file)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	GAFF_REF(file);
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-		succeeded();
+	//LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
+	//if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
+	//	succeeded();
+
+	//} else {
+	//	// $TODO: Log error.
+	//	failed();
+	//}
 }
 
 NS_END

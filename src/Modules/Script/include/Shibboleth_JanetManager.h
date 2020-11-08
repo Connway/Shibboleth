@@ -20,46 +20,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
-	.classAttrs(
-		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
-	)
-
-	.base<IResource>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
+#include <EAThread/eathread_futex.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
-
-LuaResource::~LuaResource(void)
+class JanetManager final : public IManager
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
-}
+public:
+	//static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
 
-void LuaResource::loadScript(IFile* file)
-{
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	//static constexpr const char* k_thread_pool_name = "Lua";
+	//static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name);
+	//static constexpr int32_t k_default_num_threads = 4;
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-		succeeded();
+	~JanetManager(void);
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
-}
+	bool initAllModulesLoaded(void) override;
+	bool initThread(uintptr_t thread_id) override;
+
+	//bool loadBuffer(const char* buffer, size_t size, const char* name);
+	//void unloadBuffer(const char* name);
+
+	//lua_State* requestState(void);
+	//void returnState(lua_State* state);
+
+private:
+	//struct LuaStateData final
+	//{
+	//	UniquePtr<EA::Thread::Futex> lock;
+	//	lua_State* state = nullptr;
+	//};
+
+	//Vector<LuaStateData> _states{ ProxyAllocator("Lua") };
+
+	//static void* alloc(void*, void* ptr, size_t, size_t new_size);
+	//static int panic(lua_State* L);
+
+	//bool loadJanetManager(const char* file_name, IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(JanetManager);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(JanetManager)

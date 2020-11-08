@@ -20,46 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
-	.classAttrs(
-		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
-	)
-
-	.base<IResource>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+#include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
+class LuaManager;
 
-LuaResource::~LuaResource(void)
+class JanetResource final : public IResource
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
-}
+public:
+	~JanetResource(void);
 
-void LuaResource::loadScript(IFile* file)
-{
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+private:
+	void loadScript(IFile* file);
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-		succeeded();
+	SHIB_REFLECTION_CLASS_DECLARE(JanetResource);
+};
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
-}
+using JanetResourcePtr = Gaff::RefPtr<JanetResource>;
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(JanetResource)

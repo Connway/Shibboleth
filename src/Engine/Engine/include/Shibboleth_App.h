@@ -120,6 +120,8 @@ private:
 	bool createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers);
 	bool hasManager(Gaff::Hash64 name) const;
 
+	static void ThreadInit(uintptr_t thread_id);
+
 	GAFF_NO_COPY(App);
 	GAFF_NO_MOVE(App);
 };

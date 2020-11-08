@@ -407,12 +407,7 @@ bool App::initInternal(void)
 
 	LogInfoDefault("Initializing...");
 
-	const auto thread_init = []() -> void
-	{
-		AllocatorThreadInit();
-	};
-
-	if (!_job_pool.init(static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
+	if (!_job_pool.init(static_cast<int32_t>(Gaff::GetNumberOfCores()), App::ThreadInit)) {
 		LogErrorDefault("Failed to initialize thread pool.");
 		return false;
 	}
@@ -456,6 +451,24 @@ bool App::initInternal(void)
 	if (!loadMainLoop()) {
 		return false;
 	}
+
+	Gaff::JobData thread_init_job =
+	{
+		[](uintptr_t thread_id, void* data) -> void
+		{
+			App* const app = reinterpret_cast<App*>(data);
+
+			for (const auto& entry : app->_manager_map) {
+				if (!entry.second->initThread(thread_id)) {
+					LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
+					app->quit();
+				}
+			}
+		},
+		static_cast<App*>(&GetApp())
+	};
+
+	_job_pool.addJobsForAllThreads(&thread_init_job, 1);
 
 	LogInfoDefault("Game Successfully Initialized.");
 	return true;
@@ -840,6 +853,11 @@ bool App::hasManager(Gaff::Hash64 name) const
 {
 	auto it = _manager_map.find(name);
 	return it != _manager_map.end();
+}
+
+void App::ThreadInit(uintptr_t /*thread_id*/)
+{
+	AllocatorThreadInit();
 }
 
 NS_END

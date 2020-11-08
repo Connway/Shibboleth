@@ -45,7 +45,7 @@ struct JobData final
 
 using Counter = std::atomic_int32_t;
 using JobPair = eastl::pair<JobData, Counter*>;
-using ThreadInitFunc = void (*)(void);
+using ThreadInitFunc = void (*)(uintptr_t);
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -62,6 +62,8 @@ public:
 
 	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Gaff::Hash32 pool = 0);
 	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Gaff::Hash32 pool = 0);
+	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter** counter = nullptr);
+	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter& counter);
 
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter& counter);
@@ -72,8 +74,8 @@ public:
 	void helpAndFreeCounter(EA::Thread::ThreadId thread_id, Counter* counter);
 	void helpAndFreeCounter(Counter* counter);
 
-	void help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
-	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
+	bool help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
+	bool help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
 	void doAJob(EA::Thread::ThreadId thread_id);
 	void doAJob(void);
 
@@ -102,6 +104,7 @@ private:
 	VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
 	JobQueue _main_queue;
 
+	VectorMap<EA::Thread::ThreadId, JobQueue, Allocator> _per_thread_jobs;
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
 	EA::Thread::ThreadId _main_thread_id;

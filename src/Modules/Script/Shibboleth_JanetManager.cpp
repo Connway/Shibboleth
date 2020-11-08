@@ -20,46 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
+#include "Shibboleth_JanetManager.h"
+#include <Shibboleth_JobPool.h>
+#include <janet.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
-	.classAttrs(
-		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
-	)
-
-	.base<IResource>()
+SHIB_REFLECTION_DEFINE_BEGIN(JanetManager)
+	.base<IManager>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+SHIB_REFLECTION_DEFINE_END(JanetManager)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
+SHIB_REFLECTION_CLASS_DEFINE(JanetManager)
 
-LuaResource::~LuaResource(void)
+JanetManager::~JanetManager(void)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
-void LuaResource::loadScript(IFile* file)
+bool JanetManager::initAllModulesLoaded(void)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	//janet_init();
+	return true;
+}
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-		succeeded();
-
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
+bool JanetManager::initThread(uintptr_t /*thread_id*/)
+{
+	janet_init();
+	return true;
 }
 
 NS_END
