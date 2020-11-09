@@ -1745,6 +1745,9 @@ extern JANET_API const JanetAbstractType janet_thread_type;
 JANET_API int janet_thread_receive(Janet *msg_out, double timeout);
 JANET_API int janet_thread_send(JanetThread *thread, Janet msg, double timeout);
 
+JANET_API void janet_threads_get_state(JanetMailbox** out_mailbox, JanetThread** out_thread_current, JanetTable** out_thread_decode);
+JANET_API void janet_threads_set_state(JanetMailbox* mailbox, JanetThread* thread_current, JanetTable* thread_decode);
+
 #endif
 
 /***** END SECTION MAIN *****/

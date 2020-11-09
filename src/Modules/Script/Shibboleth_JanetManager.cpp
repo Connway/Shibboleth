@@ -21,7 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_JanetManager.h"
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_JobPool.h>
+#include <Gaff_JSON.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(JanetManager)
 	.base<IManager>()
@@ -36,103 +38,130 @@ static ProxyAllocator g_allocator("Janet");
 
 JanetManager::~JanetManager(void)
 {
+	for (JanetStateData& state : _states) {
+		EA::Thread::AutoFutex lock(*state.lock);
+		state.state.restoreState();
+		janet_deinit();
+	}
 }
 
 bool JanetManager::initAllModulesLoaded(void)
 {
-	// Size and fill _states now, so we are not trying to write to _states in initThread().
-	Vector<EA::Thread::ThreadId> thread_ids(g_allocator);
-	const auto& job_pool = GetApp().getJobPool();
+	IApp& app = GetApp();
+	app.getLogManager().addChannel("Lua", "LuaLog");
 
-	thread_ids.resize(job_pool.getNumTotalThreads());
-	job_pool.getThreadIDs(thread_ids.data());
+	const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
+	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);
 
-	_states.reserve(thread_ids.size());
+	_states.resize(static_cast<size_t>(num_threads));
 
-	for (const auto& id : thread_ids) {
-		JanetStateData& state = _states[id];
+	for (JanetStateData& state : _states) {
 		state.lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
+
+		janet_init();
+
+		JanetTable* const env = janet_core_env(nullptr);
+		state.env = env;
+
+		// Add loaded chunks table to the global environment.
+		janet_table_put(env, janet_wrap_string(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
+
+		state.state.saveState();
 	}
 
 	return true;
 }
 
-// Janet, unlike Lua, has no analog to lua_State. It only has global, thread local variables.
-bool JanetManager::initThread(uintptr_t thread_id_int)
-{
-	// $TODO: Modify Janet to have a lua_state equivalent.
-	// Creating a state per thread is going to be very expensive
-	// for processors with a large number of hardware threads.
-	janet_init();
-
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	JanetTable* const env = janet_core_env(nullptr);
-	_states[thread_id].env = env;
-
-	// Add loaded chunks table to the global environment.
-	janet_table_put(env, janet_wrap_string(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
-
-	return true;
-}
-
-void JanetManager::destroyThread(uintptr_t /*thread_id_int*/)
-{
-	//janet_deinit();
-}
-
-bool JanetManager::loadBuffer(uintptr_t thread_id_int, const char* buffer, size_t size, const char* name)
+bool JanetManager::loadBuffer(const char* buffer, size_t size, const char* name)
 {
 	if (!name) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	JanetStateData& state = _states[thread_id];
-	EA::Thread::AutoFutex lock(*state.lock);
+	for (JanetStateData& state : _states) {
+		EA::Thread::AutoFutex lock(*state.lock);
+		state.state.restoreState();
 
-	const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
-	const Janet key = janet_wrap_string(name);
-	GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
+		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
+		const Janet key = janet_wrap_string(name);
+		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 
-	JanetTable* const loaded_chunks_table = janet_unwrap_table(loaded_chunks);
+		JanetTable* const loaded_chunks_table = janet_unwrap_table(loaded_chunks);
 
-	// Something is already in this slot.
-	if (!janet_checktype(janet_table_get(loaded_chunks_table, key), JANET_NIL)) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	Janet value;
-	const int result = janet_dobytes(state.env, reinterpret_cast<const uint8_t*>(buffer), static_cast<int32_t>(size), nullptr, &value);
-
-	if (result) {
-		if (janet_checktype(value, JANET_STRING)) {
+		// Something is already in this slot.
+		if (!janet_checktype(janet_table_get(loaded_chunks_table, key), JANET_NIL)) {
 			// $TODO: Log error.
+			return false;
 		}
 
-		return false;
+		Janet value;
+		const int result = janet_dobytes(state.env, reinterpret_cast<const uint8_t*>(buffer), static_cast<int32_t>(size), nullptr, &value);
+
+		if (result) {
+			if (janet_checktype(value, JANET_STRING)) {
+				// $TODO: Log error.
+			}
+
+			return false;
+		}
+
+		janet_table_put(loaded_chunks_table, key, value);
+		state.state.saveState();
 	}
 
-	janet_table_put(loaded_chunks_table, key, value);
 	return true;
 }
 
-void JanetManager::unloadBuffer(uintptr_t thread_id_int, const char* name)
+void JanetManager::unloadBuffer(const char* name)
 {
 	if (!name) {
 		// $TODO: Log error.
 		return;
 	}
 
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	JanetStateData& state = _states[thread_id];
-	EA::Thread::AutoFutex lock(*state.lock);
+	for (JanetStateData& state : _states) {
+		EA::Thread::AutoFutex lock(*state.lock);
+		state.state.restoreState();
 
-	const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
-	GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
+		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
+		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 	
-	janet_table_remove(janet_unwrap_table(loaded_chunks), janet_wrap_string(name));
+		janet_table_remove(janet_unwrap_table(loaded_chunks), janet_wrap_string(name));
+		state.state.saveState();
+	}
+}
+
+JanetState* JanetManager::requestState(void)
+{
+	JanetState* state = nullptr;
+
+	while (!state) {
+		for (JanetStateData& data : _states) {
+			if (!data.lock->TryLock()) {
+				continue;
+			}
+
+			state = &data.state;
+			break;
+		}
+
+		if (!state) {
+			EA::Thread::ThreadSleep();
+		}
+	}
+
+	return state;
+}
+
+void JanetManager::returnState(JanetState* state)
+{
+	for (JanetStateData& data : _states) {
+		if (&data.state == state) {
+			data.lock->Unlock();
+			break;
+		}
+	}
 }
 
 NS_END

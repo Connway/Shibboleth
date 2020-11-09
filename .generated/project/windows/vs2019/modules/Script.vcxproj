@@ -234,6 +234,7 @@ premake5 gen_module_header --module=Script</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetResource.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetState.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaHelpers.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaResource.h" />

@@ -43,53 +43,22 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(JanetResource)
 
-static ProxyAllocator g_allocator("Janet");
-
 JanetResource::~JanetResource(void)
 {
-	//LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
-	//lua_mgr.unloadBuffer(getFilePath().getBuffer());
+	JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+	janet_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
 void JanetResource::loadScript(IFile* file)
 {
-	_source = U8String(reinterpret_cast<char8_t*>(file->getBuffer()), g_allocator);
-	_counter = GetApp().getJobPool().getNumTotalThreads();
-
-	const Gaff::JobData job_data = { LoadScriptJob, this };
-	GetApp().getJobPool().addJobsForAllThreads(&job_data, 1);
-
-
-	//if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
-	//	succeeded();
-
-	//} else {
-	//	// $TODO: Log error.
-	//	failed();
-	//}
-}
-
-void JanetResource::LoadScriptJob(uintptr_t thread_id_int, void* data)
-{
-	JanetResource* const resource = reinterpret_cast<JanetResource*>(data);
 	JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
 
-	const bool success = janet_mgr.loadBuffer(
-		thread_id_int,
-		resource->_source.data(),
-		resource->_source.size(),
-		resource->getFilePath().getBuffer()
-	);
+	if (janet_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
+		succeeded();
 
-	--resource->_counter;
-
-	if (!resource->_counter) {
-		if (success) {
-			resource->_source = U8String(g_allocator);
-			resource->succeeded();
-		} else {
-			resource->failed();
-		}
+	} else {
+		// $TODO: Log error.
+		failed();
 	}
 }
 
