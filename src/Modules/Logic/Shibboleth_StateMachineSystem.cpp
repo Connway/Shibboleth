@@ -51,35 +51,37 @@ void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 {
 	// $TODO: Jobify this loop.
 	for (const auto& sm_arch : _state_machines) {
-		_ecs_mgr->iterate<StateMachine>([](EntityID id, StateMachine& state_machine) -> void
-		{
-			if (!state_machine.resource) {
-				// $TODO: Log error
-				return;
+		_ecs_mgr->iterate<StateMachine>(
+			sm_arch,
+			[](EntityID id, StateMachine& state_machine) -> void
+			{
+				if (!state_machine.resource) {
+					// $TODO: Log error
+					return;
+				}
+
+				const Esprit::StateMachine* const sm = state_machine.resource->getStateMachine();
+
+				if (!sm) {
+					// $TODO: Log error
+					return;
+				}
+
+				if (!state_machine.instance) {
+					// $TODO: Log error
+					return;
+				}
+
+				const Esprit::VariableSet& vars = sm->getVariables();
+				const int32_t var_index = vars.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
+
+				if (var_index > -1) {
+					state_machine.instance->variables.integers[var_index] = id;
+				}
+
+				sm->update(*state_machine.instance);
 			}
-
-			const Esprit::StateMachine* const sm = state_machine.resource->getStateMachine();
-
-			if (!sm) {
-				// $TODO: Log error
-				return;
-			}
-
-			if (!state_machine.instance) {
-				// $TODO: Log error
-				return;
-			}
-
-			const Esprit::VariableSet& vars = sm->getVariables();
-			const int32_t var_index = vars.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
-
-			if (var_index > -1) {
-				state_machine.instance->variables.integers[var_index] = id;
-			}
-
-			sm->update(*state_machine.instance);
-		},
-		sm_arch);
+		);
 	}
 }
 

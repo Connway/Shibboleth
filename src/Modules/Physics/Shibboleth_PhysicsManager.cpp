@@ -214,11 +214,11 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 	// $TODO: Thread this loop.
 	for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
 		_ecs_mgr->iterate<RigidBody, Position, Rotation, Scale>(
-				[&](EntityID id,
-				RigidBody& rb,
-				Position position,
-				Rotation rotation,
-				Scale scale) -> void
+			_rigid_bodies[rb_index],
+			_positions[rb_index],
+			_rotations[rb_index],
+			_scales[rb_index],
+			[&](EntityID id, RigidBody& rb, Position position, Rotation rotation, Scale scale) -> void
 			{
 				GAFF_REF(scale);
 
@@ -268,11 +268,7 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 
 					it->second->addActor(*actor);
 				}
-			},
-			_rigid_bodies[rb_index],
-			_positions[rb_index],
-			_rotations[rb_index],
-			_scales[rb_index]
+			}
 		);
 	}
 }

@@ -87,6 +87,11 @@ bool RigidBody::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeRea
 	return Reflection<RigidBody>::Load(reader, rb);
 }
 
+bool RigidBody::Load(const Gaff::ISerializeReader& reader, RigidBody& out)
+{
+	return Reflection<RigidBody>::Load(reader, out);
+}
+
 RigidBody& RigidBody::operator=(const RigidBody& rhs)
 {
 	if (shape != rhs.shape) {

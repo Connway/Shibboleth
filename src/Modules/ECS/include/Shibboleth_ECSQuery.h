@@ -38,6 +38,7 @@ struct ECSQueryResult final
 {
 	int32_t component_offset;
 	void* entity_data;
+	bool optional;
 };
 
 class ECSQuery final

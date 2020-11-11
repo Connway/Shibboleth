@@ -218,36 +218,38 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 	_device_job_data_cache.clear();
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		_ecs_mgr->iterate<Camera>([&](EntityID, const Camera& camera) -> void
-		{
-			const auto devices = _render_mgr->getDevicesByTag(camera.device_tag);
+		_ecs_mgr->iterate<Camera>(
+			_camera[camera_index],
+			[&](EntityID, const Camera& camera) -> void
+			{
+				const auto devices = _render_mgr->getDevicesByTag(camera.device_tag);
 
-			if (!devices) {
-				// $TODO: Log error.
-				return;
-			}
+				if (!devices) {
+					// $TODO: Log error.
+					return;
+				}
 
-			for (int32_t i = 0; i < static_cast<int32_t>(devices->size()); ++i) {
-				auto it = Gaff::Find(
-					_device_job_data_cache,
-					devices->at(i),
-					[](const DeviceJobData& lhs, const Gleam::IRenderDevice* device) -> bool
-					{
-						return lhs.device == device;
-					});
+				for (int32_t i = 0; i < static_cast<int32_t>(devices->size()); ++i) {
+					auto it = Gaff::Find(
+						_device_job_data_cache,
+						devices->at(i),
+						[](const DeviceJobData& lhs, const Gleam::IRenderDevice* device) -> bool
+						{
+							return lhs.device == device;
+						});
 
-				if (it == _device_job_data_cache.end()) {
-					DeviceJobData& job_data = _device_job_data_cache.emplace_back();
-					job_data.rcs = this;
-					job_data.device = devices->at(i);
+					if (it == _device_job_data_cache.end()) {
+						DeviceJobData& job_data = _device_job_data_cache.emplace_back();
+						job_data.rcs = this;
+						job_data.device = devices->at(i);
 
-				} else {
-					it->render_job_data_cache.clear();
-					it->job_data_cache.clear();
+					} else {
+						it->render_job_data_cache.clear();
+						it->job_data_cache.clear();
+					}
 				}
 			}
-		},
-		_camera[camera_index]);
+		);
 	}
 
 	// Do a second loop so that none of our _device_job_data_cache pointers get invalidated.
@@ -283,7 +285,7 @@ void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 	AddResourcesToWaitList(material->samplers_geometry, resources);
 	AddResourcesToWaitList(material->samplers_hull, resources);
 
-	const int32_t buffer_count = (_buffer_count.empty()) ? 64 : _buffer_count.back()->value;
+	const int32_t buffer_count = (_buffer_count.empty() || !_buffer_count.back()) ? 64 : _buffer_count.back()->value;
 
 	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
 	{
@@ -644,25 +646,27 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);
 	}
 
-	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>([&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
-	{
-		const glm::vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
+	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>(
+		job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index],
+		[&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
+		{
+			const glm::vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
 
-		glm::mat4x4 transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-		transform[3] = glm::vec4(obj_pos.value, 1.0f);
-		transform = glm::scale(transform, obj_scale.value);
+			glm::mat4x4 transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+			transform[3] = glm::vec4(obj_pos.value, 1.0f);
+			transform = glm::scale(transform, obj_scale.value);
 
-		const int32_t instance_index = object_index % instance_data.buffer_instance_count;
-		const int32_t buffer_index = object_index / instance_data.buffer_instance_count;
-		void* const buffer = buffer_cache[buffer_index];
+			const int32_t instance_index = object_index % instance_data.buffer_instance_count;
+			const int32_t buffer_index = object_index / instance_data.buffer_instance_count;
+			void* const buffer = buffer_cache[buffer_index];
 
-		// Write to instance buffer.
-		glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
-		*matrix = job_data.view_projection * transform;
+			// Write to instance buffer.
+			glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
+			*matrix = job_data.view_projection * transform;
 
-		++object_index;
-	},
-	job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index]);
+			++object_index;
+		}
+	);
 
 	for (const auto& page : instance_data.instance_data->pages) {
 		page.buffer->getBuffer(owning_device)->unmap(*deferred_device);
@@ -717,81 +721,83 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(*job_data.device, job_data.rcs->_cache_index);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>([&](EntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
-		{
-			const auto devices = job_data.rcs->_render_mgr->getDevicesByTag(camera.device_tag);
-
-			if (!devices || Gaff::Find(*devices, &device) == devices->end()) {
-				return;
-			}
-
-			const auto* const g_buffer = job_data.rcs->_render_mgr->getGBuffer(id, device);
-
-			if (!g_buffer) {
-				// $TODO: Log error.
-				return;
-			}
-
-			Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-
+		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>(
+			job_data.rcs->_camera_position[camera_index],
+			job_data.rcs->_camera_rotation[camera_index],
+			job_data.rcs->_camera[camera_index],
+			[&](EntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
 			{
-				// $TODO: Cache this command list.
-				Gleam::IRenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(device, thread_id);
-				Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
+				const auto devices = job_data.rcs->_render_mgr->getDevicesByTag(camera.device_tag);
 
-				// $TODO: Make the clearing type an option.
-				render_target->bind(*deferred_device);
-				render_target->clear(*deferred_device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
-
-				if (!deferred_device->finishCommandList(*cmd_list)) {
-					// $TODO: Log error periodic.
-					SHIB_FREET(cmd_list, GetAllocator());
+				if (!devices || Gaff::Find(*devices, &device) == devices->end()) {
 					return;
 				}
 
-				render_cmds.lock.Lock();
-				auto& cmd = render_cmds.command_list.emplace_back();
-				cmd.cmd_list.reset(cmd_list);
-				render_cmds.lock.Unlock();
-			}
+				const auto* const g_buffer = job_data.rcs->_render_mgr->getGBuffer(id, device);
 
-			if (num_objects > 0) {
-				const glm::ivec2& size = render_target->getSize();
-				const glm::mat4x4 projection = glm::perspectiveFovLH(
-					camera.GetVerticalFOV() * Gaff::TurnsToRad,
-					static_cast<float>(size.x),
-					static_cast<float>(size.y),
-					camera.z_near, camera.z_far
-				);
+				if (!g_buffer) {
+					// $TODO: Log error.
+					return;
+				}
 
-				const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-				glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-				camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
+				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
 
-				const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
-
-				for (int32_t i = 0; i < num_objects; ++i) {
+				{
+					// $TODO: Cache this command list.
+					Gleam::IRenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(device, thread_id);
 					Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
 
-					// $TODO: Make a command list cache.
+					// $TODO: Make the clearing type an option.
+					render_target->bind(*deferred_device);
+					render_target->clear(*deferred_device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+
+					if (!deferred_device->finishCommandList(*cmd_list)) {
+						// $TODO: Log error periodic.
+						SHIB_FREET(cmd_list, GetAllocator());
+						return;
+					}
+
 					render_cmds.lock.Lock();
 					auto& cmd = render_cmds.command_list.emplace_back();
 					cmd.cmd_list.reset(cmd_list);
 					render_cmds.lock.Unlock();
+				}
 
-					RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
-					render_data.rcs = job_data.rcs;
-					render_data.index = i;
-					render_data.cmd_list = cmd_list;
-					render_data.device = &device;
-					render_data.target = render_target;
-					render_data.view_projection = final_camera;
+				if (num_objects > 0) {
+					const glm::ivec2& size = render_target->getSize();
+					const glm::mat4x4 projection = glm::perspectiveFovLH(
+						camera.GetVerticalFOV() * Gaff::TurnsToRad,
+						static_cast<float>(size.x),
+						static_cast<float>(size.y),
+						camera.z_near, camera.z_far
+					);
+
+					const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
+					glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+					camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
+
+					const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
+
+					for (int32_t i = 0; i < num_objects; ++i) {
+						Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
+
+						// $TODO: Make a command list cache.
+						render_cmds.lock.Lock();
+						auto& cmd = render_cmds.command_list.emplace_back();
+						cmd.cmd_list.reset(cmd_list);
+						render_cmds.lock.Unlock();
+
+						RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
+						render_data.rcs = job_data.rcs;
+						render_data.index = i;
+						render_data.cmd_list = cmd_list;
+						render_data.device = &device;
+						render_data.target = render_target;
+						render_data.view_projection = final_camera;
+					}
 				}
 			}
-		},
-		job_data.rcs->_camera_position[camera_index],
-		job_data.rcs->_camera_rotation[camera_index],
-		job_data.rcs->_camera[camera_index]);
+		);
 	}
 
 	// Do a second loop so that none of our job_data.render_job_data_cache pointers get invalidated.

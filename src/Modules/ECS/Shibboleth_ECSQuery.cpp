@@ -131,7 +131,7 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 		const int32_t offset = archetype.getComponentSharedOffset(data.ref_def->getReflectionInstance().getHash());
 
 		if (data.push_func) {
-			if (offset != -1) {
+			if (offset >= 0) {
 				data.push_func(reinterpret_cast<const int8_t*>(shared_data) + offset);
 			} else {
 				data.push_func(nullptr);
@@ -143,12 +143,12 @@ bool ECSQuery::filter(const ECSArchetype& archetype, void* entity_data)
 		const int32_t offset = archetype.getComponentOffset(data.ref_def->getReflectionInstance().getHash());
 
 		if (data.output) {
-			data.output->emplace_back(ECSQueryResult{ offset, entity_data });
+			data.output->emplace_back(ECSQueryResult{ offset, entity_data, data.optional });
 		}
 	}
 
 	for (Output* output : _entities) {
-		output->emplace_back(ECSQueryResult{ -1, entity_data });
+		output->emplace_back(ECSQueryResult{ -1, entity_data, false });
 	}
 
 	for (const Callbacks& callbacks : _callbacks) {

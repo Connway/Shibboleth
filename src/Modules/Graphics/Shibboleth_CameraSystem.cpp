@@ -58,31 +58,33 @@ void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		_ecs_mgr->iterate<Camera>([&](EntityID id, const Camera& camera) -> void
-		{
-			if (!_render_mgr->hasGBuffer(id)) {
-				bool create_render_texture = false;
-				glm::ivec2 size(0, 0);
+		_ecs_mgr->iterate<Camera>(
+			_camera[camera_index],
+			[&](EntityID id, const Camera& camera) -> void
+			{
+				if (!_render_mgr->hasGBuffer(id)) {
+					bool create_render_texture = false;
+					glm::ivec2 size(0, 0);
 
-				if (camera.size.x > 0 && camera.size.y > 0) {
-					create_render_texture = true;
-					size = camera.size;
+					if (camera.size.x > 0 && camera.size.y > 0) {
+						create_render_texture = true;
+						size = camera.size;
 
-				} else {
-					if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
-						size = window->getSize();
 					} else {
-						// $TODO: Log Error
-						return;
+						if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
+							size = window->getSize();
+						} else {
+							// $TODO: Log Error
+							return;
+						}
+					}
+
+					if (!_render_mgr->createGBuffer(id, camera.device_tag, size, create_render_texture)) {
+						// $TODO: Log error.
 					}
 				}
-
-				if (!_render_mgr->createGBuffer(id, camera.device_tag, size, create_render_texture)) {
-					// $TODO: Log error.
-				}
 			}
-		},
-		_camera[camera_index]);
+		);
 	}
 }
 
@@ -208,43 +210,45 @@ void CameraPostRenderSystem::RenderCameras(uintptr_t thread_id_int, void* data)
 	program->bind(*deferred_device);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		job_data.system->_ecs_mgr->iterate<Camera>([&](EntityID id, const Camera& camera) -> void
-		{
-			const auto* const devices = job_data.system->_render_mgr->getDevicesByTag(camera.device_tag);
+		job_data.system->_ecs_mgr->iterate<Camera>(
+			job_data.system->_camera[camera_index],
+			[&](EntityID id, const Camera& camera) -> void
+			{
+				const auto* const devices = job_data.system->_render_mgr->getDevicesByTag(camera.device_tag);
 
-			if (!devices || Gaff::Find(*devices, job_data.device) == devices->end()) {
-				return;
+				if (!devices || Gaff::Find(*devices, job_data.device) == devices->end()) {
+					return;
+				}
+
+				const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device);
+
+				if (!g_buffer) {
+					return;
+				}
+
+				Gleam::IProgramBuffers& pb = *job_data.program_buffers;
+				pb.clearResourceViews();
+
+				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
+				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
+				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
+				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
+				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
+
+				pb.bind(*deferred_device);
+
+				if (g_buffer->final_render_target) {
+					g_buffer->final_render_target->bind(*deferred_device);
+				} else if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
+					output->getRenderTarget().bind(*deferred_device);
+				} else {
+					// $TODO: Log error.
+					return;
+				}
+
+				deferred_device->renderNoVertexInput(6);
 			}
-
-			const auto* const g_buffer = job_data.system->_render_mgr->getGBuffer(id, *job_data.device);
-
-			if (!g_buffer) {
-				return;
-			}
-
-			Gleam::IProgramBuffers& pb = *job_data.program_buffers;
-			pb.clearResourceViews();
-
-			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
-			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
-			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
-			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
-			pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
-
-			pb.bind(*deferred_device);
-
-			if (g_buffer->final_render_target) {
-				g_buffer->final_render_target->bind(*deferred_device);
-			} else if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
-				output->getRenderTarget().bind(*deferred_device);
-			} else {
-				// $TODO: Log error.
-				return;
-			}
-
-			deferred_device->renderNoVertexInput(6);
-		},
-		job_data.system->_camera[camera_index]);
+		);
 	}
 
 	deferred_device->finishCommandList(*job_data.cmd_list);

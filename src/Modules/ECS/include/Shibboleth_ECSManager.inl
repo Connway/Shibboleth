@@ -20,6 +20,86 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+template <size_t index, size_t i, class First, class... Rest>
+static constexpr bool IsPtrHelper(void)
+{
+	if constexpr (index == i) {
+		return std::is_pointer<First>::value;
+	} else {
+		return IsPtrHelper<index, i + 1, Rest...>();
+	}
+}
+
+template <class Functor>
+struct IsPointerHelper /*final*/;
+//{
+//	template <size_t index>
+//	static constexpr bool IsPtr(void)
+//	{
+//		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
+//		return IsPtrHelper<index, 0, Args...>();
+//	}
+//};
+
+template <class T, class Ret, class... Args>
+struct IsPointerHelper<Ret (T::*)(Args...) const> final
+{
+	template <size_t index>
+	static constexpr bool IsPtr(void)
+	{
+		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
+		return IsPtrHelper<index, 0, Args...>();
+	}
+};
+
+template <class T, class Ret, class... Args>
+struct IsPointerHelper<Ret (T::*)(Args...)> final
+{
+	template <size_t index>
+	static constexpr bool IsPtr(void)
+	{
+		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
+		return IsPtrHelper<index, 0, Args...>();
+	}
+};
+
+template <class Ret, class... Args>
+struct IsPointerHelper<Ret (*)(Args...)> final
+{
+	template <size_t index>
+	static constexpr bool IsPtr(void)
+	{
+		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
+		return IsPtrHelper<index, 0, Args...>();
+	}
+};
+
+template <class Ret, class... Args>
+struct IsPointerHelper<Ret (Args...)> final
+{
+	template <size_t index>
+	static constexpr bool IsPtr(void)
+	{
+		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
+		return IsPtrHelper<index, 0, Args...>();
+	}
+};
+
+template <class Callback, size_t index>
+static constexpr bool IsPointer(void)
+{
+	if constexpr (std::is_class<Callback>::value) {
+		static_assert(&Callback::operator(), "Does not have operator()");
+		return IsPointerHelper<decltype(&Callback::operator())>::IsPtr<index>();
+	} else if constexpr (std::is_member_function_pointer<Callback>::value || std::is_function<Callback>::value) {
+		return IsPointerHelper<Callback>::IsPtr<index>();
+	} else if constexpr (std::is_pointer<Callback>::value && std::is_function<std::remove_pointer<Callback>::type>::value) {
+		return IsPointerHelper<Callback>::IsPtr<index>();
+	} else {
+		return false;
+	}
+}
+
 template <class... Components>
 ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 archetype_hash)
 {
@@ -150,25 +230,103 @@ ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 	return arch_ref;
 }
 
-template <class Component>
-decltype(auto) ECSManager::get(const ECSQueryResult& query_result, int32_t entity_index)
+template <class Callback, size_t index, class ComponentFirst, class... ComponentsRest, size_t array_size, class... ComponentsPrev>
+void ECSManager::iterateInternalHelper(
+	Callback&& callback,
+	EntityID entity_id,
+	int32_t entity_index,
+	const ECSQueryResult* (&query_results)[array_size],
+	ComponentsPrev&&... prev_comps)
 {
-	return Component::Get(*this, query_result, entity_index);
+	using GetType = typename std::remove_reference<ComponentFirst::GetType>::type;
+	constexpr bool is_pointer = IsPointer<Callback, index>();
+
+	const ECSQueryResult& qr = *query_results[index];
+
+	if constexpr (is_pointer) {
+		GAFF_ASSERT_MSG(qr.optional, "Function passed to ECSManager::iterate() takes a pointer to a non-optional component.");
+
+		typename GetType* const component_ptr = nullptr;
+
+		if (qr.component_offset >= 0) {
+			typename ComponentFirst::GetType component = ComponentFirst::Get(*this, qr, entity_index);
+			component_ptr = &component;
+
+			// Final argumant, call the callback.
+			if constexpr ((index + 1) == array_size) {
+				callback(
+					entity_id,
+					std::forward<ComponentsPrev>(prev_comps)...,
+					component_ptr
+				);
+
+			} else {
+				iterateInternalHelper<Callback, index + 1, ComponentsRest...>(
+					std::forward<Callback>(callback),
+					entity_id,
+					entity_index,
+					query_results,
+					std::forward<ComponentsPrev>(prev_comps)...,
+					component_ptr
+				);
+			}
+
+		} else {
+			// Final argumant, call the callback.
+			if constexpr ((index + 1) == array_size) {
+				callback(
+					entity_id,
+					std::forward<ComponentsPrev>(prev_comps)...,
+					component_ptr
+				);
+
+			} else {
+				iterateInternalHelper<Callback, index + 1, ComponentsRest...>(
+					std::forward<Callback>(callback),
+					entity_id,
+					entity_index,
+					query_results,
+					std::forward<ComponentsPrev>(prev_comps)...,
+					component_ptr
+				);
+			}
+		}
+
+	} else {
+		GAFF_ASSERT_MSG(!qr.optional, "Function passed to ECSManager::iterate() takes a reference or copy to an optional component.");
+		GAFF_ASSERT_MSG(qr.component_offset >= 0, "Somehow a non-optional component was not found in an entity.");
+
+		typename ComponentFirst::GetType component = ComponentFirst::Get(*this, qr, entity_index);
+
+		// Final argumant, call the callback.
+		if constexpr ((index + 1) == array_size) {
+			callback(
+				entity_id,
+				std::forward<ComponentsPrev>(prev_comps)...,
+				std::forward<typename ComponentFirst::GetType>(component)
+			);
+
+		} else {
+			iterateInternalHelper<Callback, index + 1, ComponentsRest...>(
+				std::forward<Callback>(callback),
+				entity_id,
+				entity_index,
+				query_results,
+				std::forward<ComponentsPrev>(prev_comps)...,
+				std::forward<typename ComponentFirst::GetType>(component)
+			);
+		}
+	}
 }
 
-template <class... QueryResults>
-ECSManager::EntityData* ECSManager::getEntityData(const ECSQueryResult& query_result, const QueryResults&...)
+template <class Callback, class... Components, size_t array_size>
+void ECSManager::iterateInternal(Callback&& callback, const ECSQueryResult* (&query_results)[array_size])
 {
-	// Assumes all the query results are from the same query and index. So they should all share the same entity data.
-	return reinterpret_cast<EntityData*>(query_result.entity_data);
-}
+	static_assert(sizeof...(Components) == array_size);
 
-template <class Callback, class... Components, class... QueryResults>
-void ECSManager::iterateInternal(Callback&& callback, const QueryResults&... query_results)
-{
-	static_assert(sizeof...(Components) == sizeof...(QueryResults) || sizeof...(Components) == 0);
-	EntityData* const data = getEntityData(query_results...);
-
+	// Assumes all query results are from the same query, and should be pointing at the same entity data.
+	const ECSQueryResult* const query_result = query_results[0];
+	EntityData* const data = reinterpret_cast<EntityData*>(query_result->entity_data);
 	int32_t count = 0;
 
 	for (int32_t i = 0; count < data->num_entities && i < static_cast<int32_t>(data->entity_ids.size()); ++i) {
@@ -179,7 +337,7 @@ void ECSManager::iterateInternal(Callback&& callback, const QueryResults&... que
 		if constexpr (sizeof...(Components) == 0) {
 			callback(data->entity_ids[i]);
 		} else {
-			callback(data->entity_ids[i], get<Components>(query_results, i)...);
+			iterateInternalHelper<Callback, 0, Components...>(std::forward<Callback>(callback), data->entity_ids[i], i, query_results);
 		}
 
 		++count;

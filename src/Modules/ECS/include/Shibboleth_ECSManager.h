@@ -256,50 +256,55 @@ public:
 
 	template <class T1, class T2, class T3, class T4, class T5, class Callback>
 	void iterate(
-		Callback&& callback,
 		const ECSQueryResult& query_result1,
 		const ECSQueryResult& query_result2,
 		const ECSQueryResult& query_result3,
 		const ECSQueryResult& query_result4,
-		const ECSQueryResult& query_result5)
+		const ECSQueryResult& query_result5,
+		Callback&& callback)
 	{
-		iterateInternal<Callback, T1, T2, T3, T4, T5>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4, query_result5);
+		const ECSQueryResult* query_results[] = { &query_result1, &query_result2, &query_result3, &query_result4, &query_result5 };
+		iterateInternal<Callback, T1, T2, T3, T4, T5>(std::forward<Callback>(callback), query_results);
 	}
 
 	template <class T1, class T2, class T3, class T4, class Callback>
 	void iterate(
-		Callback&& callback,
 		const ECSQueryResult& query_result1,
 		const ECSQueryResult& query_result2,
 		const ECSQueryResult& query_result3,
-		const ECSQueryResult& query_result4)
+		const ECSQueryResult& query_result4,
+		Callback&& callback)
 	{
-		iterateInternal<Callback, T1, T2, T3, T4>(std::forward<Callback>(callback), query_result1, query_result2, query_result3, query_result4);
+		const ECSQueryResult* query_results[] = { &query_result1, &query_result2, &query_result3, &query_result4 };
+		iterateInternal<Callback, T1, T2, T3, T4>(std::forward<Callback>(callback), query_results);
 	}
 
 	template <class T1, class T2, class T3, class Callback>
 	void iterate(
-		Callback&& callback,
 		const ECSQueryResult& query_result1,
 		const ECSQueryResult& query_result2,
-		const ECSQueryResult& query_result3)
+		const ECSQueryResult& query_result3,
+		Callback&& callback)
 	{
-		iterateInternal<Callback, T1, T2, T3>(std::forward<Callback>(callback), query_result1, query_result2, query_result3);
+		const ECSQueryResult* query_results[] = { &query_result1, &query_result2, &query_result3 };
+		iterateInternal<Callback, T1, T2, T3>(std::forward<Callback>(callback), query_results);
 	}
 
 	template <class T1, class T2, class Callback>
 	void iterate(
-		Callback&& callback,
 		const ECSQueryResult& query_result1,
-		const ECSQueryResult& query_result2)
+		const ECSQueryResult& query_result2,
+		Callback&& callback)
 	{
-		iterateInternal<Callback, T1, T2>(std::forward<Callback>(callback), query_result1, query_result2);
+		const ECSQueryResult* query_results[] = { &query_result1, &query_result2 };
+		iterateInternal<Callback, T1, T2>(std::forward<Callback>(callback), query_results);
 	}
 
 	template <class T, class Callback>
-	void iterate(Callback&& callback, const ECSQueryResult& query_result)
+	void iterate(const ECSQueryResult& query_result, Callback&& callback)
 	{
-		iterateInternal<Callback, T>(std::forward<Callback>(callback), query_result);
+		const ECSQueryResult* query_results[] = { &query_result };
+		iterateInternal<Callback, T>(std::forward<Callback>(callback), query_results);
 	}
 
 	~ECSManager(void);
@@ -440,14 +445,17 @@ private:
 	template <class... Components>
 	ArchetypeReference* addComponentsInternal(EntityID id);
 
-	template <class Component>
-	decltype(auto) get(const ECSQueryResult& query_result, int32_t entity_index);
+	template <class Callback, size_t index, class ComponentFirst, class... ComponentsRest, size_t array_size, class... ComponentsPrev>
+	void iterateInternalHelper(
+		Callback&& callback,
+		EntityID entity_id,
+		int32_t entity_index,
+		const ECSQueryResult* (&query_results)[array_size],
+		ComponentsPrev&&... prev_comps
+	);
 
-	template <class... QueryResults>
-	EntityData* getEntityData(const ECSQueryResult& query_result, const QueryResults&... query_results);
-
-	template <class Callback, class... Components, class... QueryResults>
-	void iterateInternal(Callback&& callback, const QueryResults&... query_results);
+	template <class Callback, class... Components, size_t array_size>
+	void iterateInternal(Callback&& callback, const ECSQueryResult* (&query_results)[array_size]);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
