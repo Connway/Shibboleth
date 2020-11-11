@@ -822,8 +822,8 @@ void DebugManager::renderPreCamera(uintptr_t thread_id_int)
 	//	}
 	//}
 
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	job_pool.helpWhileWaiting(thread_id, _debug_data.job_counter);
+	//const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	//job_pool.helpWhileWaiting(thread_id, _debug_data.job_counter);
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const
