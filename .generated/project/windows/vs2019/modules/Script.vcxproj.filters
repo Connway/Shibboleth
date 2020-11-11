@@ -15,6 +15,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetResource.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetState.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaHelpers.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -22,9 +25,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_JanetState.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

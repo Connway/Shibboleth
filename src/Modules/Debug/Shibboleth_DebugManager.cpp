@@ -21,9 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_DebugManager.h"
+#include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_RenderManagerBase.h>
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_InputManager.h>
+#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
+#include <gtx/euler_angles.hpp>
 #include <imgui.h>
 
 namespace
@@ -45,7 +49,7 @@ namespace
 		R"(
 			cbuffer vertexBuffer : register(b0)
 			{
-				float4x4 ProjectionMatrix;
+				float4x4 projection_matrix;
 			};
 
 			struct VS_INPUT
@@ -65,7 +69,7 @@ namespace
 			PS_INPUT VertexMain(VS_INPUT input)
 			{
 				PS_INPUT output;
-				output.pos = mul( ProjectionMatrix, float4(input.pos.xy, 0.f, 1.f));
+				output.pos = mul(projection_matrix, float4(input.pos.xy, 0.f, 1.f));
 				output.col = input.col;
 				output.uv  = input.uv;
 				return output;
@@ -104,7 +108,7 @@ namespace
 		R"(
 			cbuffer InstanceBuffer
 			{
-				float4x4 projection_matrix;
+				float4x4 view_proj_matrix;
 			};
 
 			struct InstanceData
@@ -135,7 +139,7 @@ namespace
 				float vert_scale = float(input.vertex_id);
 
 				float3 line_pos = instance_data[input.instance_id].start + instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
-				output.position = mul(projection_matrix, float4(line_pos, 1.0));
+				output.position = mul(view_proj_matrix, float4(line_pos, 1.0));
 				output.color = instance_data[input.instance_id].color;
 
 				return output;
@@ -301,6 +305,38 @@ void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character
 void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 {
 	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
+	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
+	glm::mat4x4 final_camera = glm::identity<glm::mat4x4>();
+
+	for (int32_t i = 0; i < num_cameras; ++i) {
+		job_data.debug_mgr->_ecs_mgr->iterate<Position, Rotation, Camera>(
+			job_data.debug_mgr->_camera_position[i],
+			job_data.debug_mgr->_camera_rotation[i],
+			job_data.debug_mgr->_camera[i],
+			[&](EntityID, const Position& /*position*/, const Rotation& /*rotation*/, const Camera& camera) -> void
+			{
+				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const("main");
+
+				if (camera.device_tag == main_tag) {
+					const glm::ivec2 size = job_data.debug_mgr->_main_output->getSize();
+					const glm::mat4x4 projection = glm::perspectiveFovLH(
+						camera.GetVerticalFOV() * Gaff::TurnsToRad,
+						static_cast<float>(size.x),
+						static_cast<float>(size.y),
+						camera.z_near, camera.z_far
+					);
+
+					final_camera = projection;
+
+					//const glm::vec3 euler_angles = rotation.value * Gaff::TurnsToRad;
+					//glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+					//camera_transform[3] = glm::vec4(position.value, 1.0f);
+
+					//final_camera = projection * glm::inverse(camera_transform);
+				}
+			}
+		);
+	}
 
 	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
 	GAFF_ASSERT(devices && devices->size() > 0);
@@ -308,6 +344,20 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
 	GAFF_REF(rd);
+
+	if (job_data.type == DebugRenderType::Line) {
+		Gleam::IBuffer* const const_buffer =
+			job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)].constant_buffer.get();
+
+		void* const buffer = const_buffer->map(*rd);
+
+		if (buffer) {
+			glm::mat4x4* const view_proj_matrix = reinterpret_cast<glm::mat4x4*>(buffer);
+			*view_proj_matrix = final_camera;
+
+			const_buffer->unmap(*rd);
+		}
+	}
 
 	for (int32_t i = 0; i < 2; ++i) {
 		auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
@@ -365,57 +415,69 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			debug_data.instance_data[i].emplace_back(buffer);
 		}
 
-	//	// $TODO: Bind depth stencil state.
-	//	// $TODO: Bind raster state.
-	//	debug_data.program->bind(*rd);
+		job_data.debug_mgr->_main_output->getRenderTarget().bind(*rd);
+		job_data.debug_mgr->_debug_data.depth_stencil_state[i]->bind(*rd);
+		job_data.debug_mgr->_debug_data.raster_state[i]->bind(*rd);
+		job_data.debug_mgr->_blend_state->bind(*rd);
 
-	//	int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
-	//	int32_t curr_index = 0;
+		if (job_data.type == DebugRenderType::Line) {
+			job_data.debug_mgr->_debug_data.line_program->bind(*rd);
+		} else {
+			job_data.debug_mgr->_debug_data.program->bind(*rd);
+		}
 
-	//	for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
-	//		const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
-	//		int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
+		int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
+		int32_t curr_index = 0;
 
-	//		if (!mapped_buffer) {
-	//			// $TODO: Log error.
-	//			continue;
-	//		}
+		for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
+			const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
+			int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
 
-	//		// Update instance buffers(s).
-	//		for (int32_t k = 0; k < count; ++k) {
-	//			const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
+			if (!mapped_buffer) {
+				// $TODO: Log error.
+				continue;
+			}
 
-	//			if (job_data.type == DebugRenderType::Line) {
-	//				memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
-	//				memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
-	//				memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
+			// Update instance buffers(s).
+			for (int32_t k = 0; k < count; ++k) {
+				const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
 
-	//			} else {
-	//				const glm::mat4x3 transform = inst.transform.toMatrix();
+				if (job_data.type == DebugRenderType::Line) {
+					memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+					memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
+					memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
 
-	//				memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
-	//				memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
-	//			}
+					mapped_buffer += 3 * sizeof(glm::vec3);
 
-	//			mapped_buffer += sizeof(glm::mat4x3) + sizeof(float) * 3;
-	//			++curr_index;
-	//		}
+				} else {
+					const glm::mat4x3 transform = inst.transform.toMatrix();
 
-	//		debug_data.instance_data[i][j]->unmap(*rd);
+					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
+					memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
 
-	//		debug_data.program_buffers->clearResourceViews();
-	//		debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
-	//		debug_data.program_buffers->bind(*rd);
+					mapped_buffer += sizeof(glm::mat4x3) + sizeof(glm::vec3);
+				}
 
-	//		if (job_data.type == DebugRenderType::Line) {
-	//			rd->renderLineNoVertexInputInstanced(1, count);
-	//		} else {
-	//			debug_data.mesh->renderInstanced(*rd, count);
-	//		}
+				++curr_index;
+			}
 
-	//		total_items -= k_num_instances_per_buffer;
-	//	}
+			debug_data.instance_data[i][j]->unmap(*rd);
+
+			debug_data.program_buffers->clearResourceViews();
+			debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+			debug_data.program_buffers->bind(*rd);
+
+			if (job_data.type == DebugRenderType::Line) {
+				rd->renderLineNoVertexInputInstanced(1, count);
+			} else {
+				debug_data.mesh->renderInstanced(*rd, count);
+			}
+
+			total_items -= k_num_instances_per_buffer;
+		}
 	}
+
+	//rd->finishCommandList(*job_data.cmd_list);
 }
 
 void DebugManager::SetupModuleToUseImGui(void)
@@ -437,6 +499,13 @@ bool DebugManager::initAllModulesLoaded(void)
 
 	_main_device = devices->front();
 
+	ECSQuery camera_query;
+	camera_query.add<Position>(_camera_position);
+	camera_query.add<Rotation>(_camera_rotation);
+	camera_query.add<Camera>(_camera);
+
+	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_ecs_mgr->registerQuery(std::move(camera_query));
 
 	bool success = true;
 	success = initDebugRender() && success;
@@ -735,8 +804,8 @@ void DebugManager::renderPreCamera(uintptr_t thread_id_int)
 {
 	// Update instance data.
 
-	auto& job_pool = GetApp().getJobPool();
-	job_pool.addJobs(_debug_data.job_data_cache, static_cast<int32_t>(DebugRenderType::Count), _debug_data.job_counter);
+	//auto& job_pool = GetApp().getJobPool();
+	//job_pool.addJobs(_debug_data.job_data_cache, static_cast<int32_t>(DebugRenderType::Count), _debug_data.job_counter);
 
 	//for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
 	//	_main_output->getRenderTarget().bind(*deferred_device);
@@ -852,10 +921,49 @@ bool DebugManager::initDebugRender(void)
 	_debug_data.program->attach(_debug_data.pixel_shader.get());
 
 
-	// Shared program buffers.
-	_debug_data.program_buffers.reset(_render_mgr->createProgramBuffers());
+	// Init Depth-Stencil states
+	_debug_data.depth_stencil_state[0].reset(_render_mgr->createDepthStencilState());
+	_debug_data.depth_stencil_state[1].reset(_render_mgr->createDepthStencilState());
 
-	if (!_debug_data.program_buffers) {
+	if (!_debug_data.depth_stencil_state[0] || !_debug_data.depth_stencil_state[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	Gleam::IDepthStencilState::Settings depth_stencil_settings;
+
+	if (!_debug_data.depth_stencil_state[1]->init(*_main_device, depth_stencil_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	depth_stencil_settings.depth_test = false;
+
+	if (!_debug_data.depth_stencil_state[0]->init(*_main_device, depth_stencil_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// Init Raster states
+	_debug_data.raster_state[0].reset(_render_mgr->createRasterState());
+	_debug_data.raster_state[1].reset(_render_mgr->createRasterState());
+
+	if (!_debug_data.raster_state[0] || !_debug_data.raster_state[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	Gleam::IRasterState::Settings raster_settings;
+	raster_settings.wireframe = true;
+
+	if (!_debug_data.raster_state[1]->init(*_main_device, raster_settings)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	raster_settings.depth_clip_enabled = false;
+
+	if (!_debug_data.raster_state[0]->init(*_main_device, raster_settings)) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -873,6 +981,36 @@ bool DebugManager::initDebugRender(void)
 
 		if (!_debug_data.cmd_list[0] || !_debug_data.cmd_list[1]) {
 			return false;
+		}
+
+		_debug_data.instance_data[i].program_buffers.reset(_render_mgr->createProgramBuffers());
+
+		if (!_debug_data.instance_data[i].program_buffers) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		if (static_cast<DebugRenderType>(i) == DebugRenderType::Line) {
+			_debug_data.instance_data[i].constant_buffer.reset(_render_mgr->createBuffer());
+
+			if (!_debug_data.instance_data[i].constant_buffer) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			Gleam::IBuffer::Settings cb_settings;
+			cb_settings.size = sizeof(glm::mat4x4);
+			cb_settings.cpu_access = Gleam::IBuffer::MapType::Write;
+
+			if (!_debug_data.instance_data[i].constant_buffer->init(*_main_device, cb_settings)) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			_debug_data.instance_data[i].program_buffers->addConstantBuffer(
+				Gleam::IShader::Type::Vertex,
+				_debug_data.instance_data[i].constant_buffer.get()
+			);
 		}
 	}
 

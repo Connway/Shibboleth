@@ -24,9 +24,9 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/imgui",
 			base_dir .. "../../Dependencies/EASTL/include",
-			-- base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
-			-- base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../MainLoop/include",
@@ -61,7 +61,8 @@ local GenerateProject = function()
 			"GraphicsBase",
 			"MainLoop",
 			"Resource",
-			"Input"
+			"Input",
+			"ECS"
 		}
 
 		dependson(deps)
@@ -76,6 +77,7 @@ local LinkDependencies = function()
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
+	table.insert(deps, "ECS")
 
 	dependson(deps)
 	links(deps)

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IDebugManager.h"
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
@@ -50,6 +51,7 @@ NS_END
 NS_SHIBBOLETH
 
 class RenderManagerBase;
+class ECSManager;
 struct Time;
 
 class DebugManager final : public IManager, public IDebugManager
@@ -122,21 +124,30 @@ public:
 private:
 	struct DebugRenderInstanceData final
 	{
+		UniquePtr<Gleam::IProgramBuffers> program_buffers;
+		UniquePtr<Gleam::IBuffer> constant_buffer;
 		UniquePtr<Gleam::IMesh> mesh;
 
+		// 0 = no depth test, 1 = depth test
 		EA::Thread::SpinLock lock[2];
 
+		// 0 = no depth test, 1 = depth test
+		UniquePtr<Gleam::ICommandList> cmd_list[2];
+
+		// 0 = no depth test, 1 = depth test
 		Vector< UniquePtr<Gleam::IShaderResourceView> > instance_data_view[2] = {
 			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") }
 		};
 
+		// 0 = no depth test, 1 = depth test
 		Vector< UniquePtr<Gleam::IBuffer> > instance_data[2] = {
 			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") }
 		};
 
-		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = { // 0 = no depth test, 1 = depth test
+		// 0 = no depth test, 1 = depth test
+		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = {
 			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") }
 		};
@@ -144,20 +155,22 @@ private:
 
 	struct DebugRenderJobData final
 	{
-		Gleam::ICommandList* cmd_list = nullptr;
 		DebugRenderType type = DebugRenderType::Count;
 		DebugManager* debug_mgr = nullptr;
 	};
 
 	struct DebugRenderData final
 	{
-		UniquePtr<Gleam::IProgramBuffers> program_buffers;
 		UniquePtr<Gleam::IProgram> line_program;
 		UniquePtr<Gleam::IProgram> program;
 
 		UniquePtr<Gleam::IShader> line_vertex_shader;
 		UniquePtr<Gleam::IShader> vertex_shader;
 		UniquePtr<Gleam::IShader> pixel_shader;
+
+		// 0 = no depth test, 1 = depth test
+		UniquePtr<Gleam::IDepthStencilState> depth_stencil_state[2];
+		UniquePtr<Gleam::IRasterState> raster_state[2];
 
 		DebugRenderJobData render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		Gaff::JobData job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
@@ -201,6 +214,11 @@ private:
 	UniquePtr<Gleam::IShader> _pixel_shader;
 	UniquePtr<Gleam::IProgram> _program;
 	UniquePtr<Gleam::ILayout> _layout;
+
+	ECSQuery::Output _camera_position{ ProxyAllocator("Debug") };
+	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
+	ECSQuery::Output _camera{ ProxyAllocator("Debug") };
+	ECSManager* _ecs_mgr = nullptr;
 
 	DebugRenderData _debug_data;
 
