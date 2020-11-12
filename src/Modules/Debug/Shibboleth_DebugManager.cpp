@@ -584,12 +584,6 @@ void DebugManager::update(void)
 	_character_buffer[char_buf_index].clear();
 
 	ImGui::NewFrame();
-
-	if (ImGui::Begin("Dear ImGui Demo"))
-	{
-	}
-
-	ImGui::End();
 }
 
 void DebugManager::render(uintptr_t thread_id_int)
@@ -1021,12 +1015,12 @@ bool DebugManager::initImGui(void)
 	GAFF_ASSERT(window);
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = nullptr;
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
 	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
 	io.ImeWindowHandle = window->getPlatformHandle();
 	io.BackendRendererName = "Gleam";
 	io.BackendPlatformName = "Gleam";
+	io.IniFilename = nullptr;
 
 	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::KEY_TAB);
 	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_LEFT);

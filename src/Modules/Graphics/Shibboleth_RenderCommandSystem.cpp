@@ -731,13 +731,6 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 		job_data.rcs->_cache_index
 	);
 
-	// $TODO: Move clearing render targets into a more approriate system.
-	auto& clear_render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
-		*job_data.device,
-		RenderManagerBase::RenderOrder::ClearRenderTargets,
-		job_data.rcs->_cache_index
-	);
-
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>(
 			job_data.rcs->_camera_position[camera_index],
@@ -759,27 +752,6 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 				}
 
 				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-
-				{
-					// $TODO: Cache this command list.
-					Gleam::IRenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(device, thread_id);
-					Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
-
-					// $TODO: Make the clearing type an option.
-					render_target->bind(*deferred_device);
-					render_target->clear(*deferred_device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
-
-					if (!deferred_device->finishCommandList(*cmd_list)) {
-						// $TODO: Log error periodic.
-						SHIB_FREET(cmd_list, GetAllocator());
-						return;
-					}
-
-					clear_render_cmds.lock.Lock();
-					auto& cmd = clear_render_cmds.command_list.emplace_back();
-					cmd.cmd_list.reset(cmd_list);
-					clear_render_cmds.lock.Unlock();
-				}
 
 				if (num_objects > 0) {
 					const glm::ivec2& size = render_target->getSize();
