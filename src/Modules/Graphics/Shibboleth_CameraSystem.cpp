@@ -56,6 +56,7 @@ bool CameraPreRenderSystem::init(void)
 void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 {
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
+	// Keep list of camera IDs
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Camera>(
@@ -86,6 +87,8 @@ void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 			}
 		);
 	}
+
+	// Purge G-Buffers not currently in use.
 }
 
 
@@ -124,12 +127,13 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 		_job_data_cache.resize(num_devices);
 	}
 
+	// $TODO: Need a dynamic way of determining camera render order.
 	for (int32_t i = 0; i < num_devices; ++i) {
 		// Do per-frame setup.
 		Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
 		Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
 
-		auto& render_cmds = _render_mgr->getRenderCommands(device, _cache_index);
+		auto& render_cmds = _render_mgr->getRenderCommands(device, RenderManagerBase::RenderOrder::ToRenderTarget, _cache_index);
 
 		render_cmds.lock.Lock();
 		auto& cmd = render_cmds.command_list.emplace_back();

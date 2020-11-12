@@ -225,15 +225,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderPostCameraSystem)
+SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
 	.base<ISystem>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugRenderPostCameraSystem)
-
-SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderPreCameraSystem)
-	.base<ISystem>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugRenderPreCameraSystem)
+SHIB_REFLECTION_DEFINE_END(DebugRenderSystem)
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugSystem)
 	.base<ISystem>()
@@ -242,8 +237,7 @@ SHIB_REFLECTION_DEFINE_END(DebugSystem)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugRenderPostCameraSystem)
-SHIB_REFLECTION_CLASS_DEFINE(DebugRenderPreCameraSystem)
+SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
 SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
 SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
 
@@ -590,6 +584,42 @@ void DebugManager::update(void)
 	_character_buffer[char_buf_index].clear();
 
 	ImGui::NewFrame();
+
+	if (ImGui::Begin("Dear ImGui Demo"))
+	{
+	}
+
+	ImGui::End();
+}
+
+void DebugManager::render(uintptr_t thread_id_int)
+{
+	renderPostCamera(thread_id_int);
+	renderPreCamera(thread_id_int);
+
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	GetApp().getJobPool().helpWhileWaiting(thread_id, _debug_data.job_counter);
+}
+
+ImGuiContext* DebugManager::getImGuiContext(void) const
+{
+	return ImGui::GetCurrentContext();
+}
+
+DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Line)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(start);
+	instance->transform.setScale(end - start);
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
 }
 
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
@@ -765,7 +795,7 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 			}
 
 			// Apply scissor/clipping rectangle
-			const glm::ivec4 rect {
+			const glm::ivec4 rect{
 				static_cast<int32_t>(cmd->ClipRect.x - draw_data->DisplayPos.x),
 				static_cast<int32_t>(cmd->ClipRect.y - draw_data->DisplayPos.y),
 				static_cast<int32_t>(cmd->ClipRect.z - draw_data->DisplayPos.x),
@@ -789,7 +819,7 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 	}
 
 	// Submit command
-	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, _render_cache_index);
+	auto& render_cmds = _render_mgr->getRenderCommands(*_main_device, RenderManagerBase::RenderOrder::ScreenSpaceDirect, _render_cache_index);
 
 	render_cmds.lock.Lock();
 	auto& cmd = render_cmds.command_list.emplace_back();
@@ -800,51 +830,10 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 	_render_cache_index = (_render_cache_index + 1) % 2;
 }
 
-void DebugManager::renderPreCamera(uintptr_t thread_id_int)
+void DebugManager::renderPreCamera(uintptr_t /*thread_id_int*/)
 {
-	// Update instance data.
-
 	//auto& job_pool = GetApp().getJobPool();
 	//job_pool.addJobs(_debug_data.job_data_cache, static_cast<int32_t>(DebugRenderType::Count), _debug_data.job_counter);
-
-	//for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
-	//	_main_output->getRenderTarget().bind(*deferred_device);
-	//	_depth_stencil_state->bind(*deferred_device);
-	//	_raster_state->bind(*deferred_device);
-	//	_blend_state->bind(*deferred_device);
-	//	_program->bind(*deferred_device);
-	//	_program_buffers->bind(*deferred_device);
-	//	_layout->bind(*deferred_device);
-
-	//	if (i == static_cast<int32_t>(DebugRenderType::Line)) {
-	//		debug_data.program->bind(*deferred_device);
-	//		debug_data.program_buffers->bind(*deferred_device);
-	//	}
-	//}
-
-	//const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	//job_pool.helpWhileWaiting(thread_id, _debug_data.job_counter);
-}
-
-ImGuiContext* DebugManager::getImGuiContext(void) const
-{
-	return ImGui::GetCurrentContext();
-}
-
-DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
-{
-	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Line)];
-	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
-
-	debug_data.lock[has_depth].Lock();
-	debug_data.render_list[has_depth].emplace_back(instance);
-	debug_data.lock[has_depth].Unlock();
-
-	instance->transform.setTranslation(start);
-	instance->transform.setScale(end - start);
-	instance->color = color;
-
-	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
 }
 
 void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
@@ -1032,6 +1021,7 @@ bool DebugManager::initImGui(void)
 	GAFF_ASSERT(window);
 
 	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = nullptr;
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
 	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
 	io.ImeWindowHandle = window->getPlatformHandle();
@@ -1333,27 +1323,16 @@ bool DebugManager::initImGui(void)
 
 
 
-bool DebugRenderPostCameraSystem::init(void)
+bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 5.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f));
+	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f));
 	return true;
 }
 
-void DebugRenderPostCameraSystem::update(uintptr_t thread_id_int)
+void DebugRenderSystem::update(uintptr_t thread_id_int)
 {
-	_debug_mgr->renderPostCamera(thread_id_int);
-}
-
-bool DebugRenderPreCameraSystem::init(void)
-{
-	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	return true;
-}
-
-void DebugRenderPreCameraSystem::update(uintptr_t thread_id_int)
-{
-	_debug_mgr->renderPreCamera(thread_id_int);
+	_debug_mgr->render(thread_id_int);
 }
 
 bool DebugSystem::init(void)

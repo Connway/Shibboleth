@@ -94,6 +94,17 @@ public:
 		EA::Thread::SpinLock lock;
 	};
 
+	enum class RenderOrder
+	{
+		ClearRenderTargets,
+		InWorldWithDepthTest,
+		InWorldNoDepthTest,
+		ScreenSpace,
+		ToRenderTarget,
+		ScreenSpaceDirect, // Renders directly to screen.
+
+		Count
+	};
 
 	RenderManagerBase(void);
 
@@ -135,8 +146,8 @@ public:
 	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool hasGBuffer(EntityID id) const;
 
-	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const;
-	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index);
+	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
+	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
 
 	void presentAllOutputs(void);
 
@@ -156,9 +167,31 @@ private:
 		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
 	> _deferred_contexts{ ProxyAllocator("Graphics") };
 
-	VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[2] = {
-		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[static_cast<size_t>(RenderOrder::Count)][2] = {
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		}
 	};
 
 	SamplerStateResourcePtr _default_sampler;

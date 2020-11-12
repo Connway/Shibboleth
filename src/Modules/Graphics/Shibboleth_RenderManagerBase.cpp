@@ -333,8 +333,10 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	GAFF_ASSERT(it == _render_devices.end());
 	_render_devices.emplace_back(device);
 
-	for (int32_t i = 0; i < 2; ++i) {
-		_cached_render_commands[i][device];
+	for (int32_t i = 0; i < static_cast<int32_t>(RenderOrder::Count); ++i) {
+		for (int32_t j = 0; j < 2; ++j) {
+			_cached_render_commands[i][j][device];
+		}
 	}
 }
 
@@ -538,20 +540,16 @@ bool RenderManagerBase::hasGBuffer(EntityID id) const
 	return _g_buffers.find(id) != _g_buffers.end();
 }
 
-const RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index) const
+const RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const
 {
-	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
-	const auto it = _cached_render_commands[cache_index].find(&device);
-	GAFF_ASSERT(it != _cached_render_commands[cache_index].end());
-
-	return it->second;
+	return const_cast<RenderManagerBase*>(this)->getRenderCommands(device, order, cache_index);
 }
 
-RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, int32_t cache_index)
+RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index)
 {
 	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
-	const auto it = _cached_render_commands[cache_index].find(&device);
-	GAFF_ASSERT(it != _cached_render_commands[cache_index].end());
+	const auto it = _cached_render_commands[static_cast<int32_t>(order)][cache_index].find(&device);
+	GAFF_ASSERT(it != _cached_render_commands[static_cast<int32_t>(order)][cache_index].end());
 
 	return it->second;
 }

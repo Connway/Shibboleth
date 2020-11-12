@@ -114,8 +114,7 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 	void update(void);
-	void renderPostCamera(uintptr_t thread_id_int);
-	void renderPreCamera(uintptr_t thread_id_int);
+	void render(uintptr_t thread_id_int);
 
 	ImGuiContext* getImGuiContext(void) const override;
 
@@ -224,6 +223,10 @@ private:
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
+
+	void renderPostCamera(uintptr_t thread_id_int);
+	void renderPreCamera(uintptr_t thread_id_int);
+
 	void removeDebugRender(const DebugRenderHandle& handle);
 
 	bool initDebugRender(void);
@@ -233,7 +236,7 @@ private:
 	friend class DebugRenderHandle;
 };
 
-class DebugRenderPostCameraSystem final : public ISystem
+class DebugRenderSystem final : public ISystem
 {
 public:
 	bool init(void) override;
@@ -242,19 +245,7 @@ public:
 private:
 	DebugManager* _debug_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderPostCameraSystem);
-};
-
-class DebugRenderPreCameraSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	DebugManager* _debug_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderPostCameraSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderSystem);
 };
 
 class DebugSystem final : public ISystem
@@ -271,7 +262,6 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DebugRenderPostCameraSystem)
-SHIB_REFLECTION_DECLARE(DebugRenderPreCameraSystem)
+SHIB_REFLECTION_DECLARE(DebugRenderSystem)
 SHIB_REFLECTION_DECLARE(DebugManager)
 SHIB_REFLECTION_DECLARE(DebugSystem)

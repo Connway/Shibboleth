@@ -158,19 +158,26 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, void* data)
 {
 	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
-	auto& cmds = job_data.rcss->_render_mgr->getRenderCommands(*job_data.device, job_data.rcss->_cache_index);
 
-	for (RenderManagerBase::RenderCommand& cmd : cmds.command_list) {
-		job_data.device->executeCommandList(*cmd.cmd_list);
+	for (int32_t i = 0; i < static_cast<int32_t>(RenderManagerBase::RenderOrder::Count); ++i) {
+		auto& cmds = job_data.rcss->_render_mgr->getRenderCommands(
+			*job_data.device,
+			static_cast<RenderManagerBase::RenderOrder>(i),
+			job_data.rcss->_cache_index
+		);
 
-		// Do not deallocate.
-		if (!cmd.owns_command) {
-			cmd.cmd_list.release();
+		for (RenderManagerBase::RenderCommand& cmd : cmds.command_list) {
+			job_data.device->executeCommandList(*cmd.cmd_list);
+
+			// Do not deallocate.
+			if (!cmd.owns_command) {
+				cmd.cmd_list.release();
+			}
 		}
-	}
 
-	job_data.device->clearRenderState();
-	cmds.command_list.clear();
+		job_data.device->clearRenderState();
+		cmds.command_list.clear();
+	}
 }
 
 
@@ -718,7 +725,18 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 	Gleam::IRenderDevice& device = *job_data.device;
 	job_data.render_job_data_cache.clear();
 
-	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(*job_data.device, job_data.rcs->_cache_index);
+	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
+		*job_data.device,
+		RenderManagerBase::RenderOrder::InWorldWithDepthTest,
+		job_data.rcs->_cache_index
+	);
+
+	// $TODO: Move clearing render targets into a more approriate system.
+	auto& clear_render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
+		*job_data.device,
+		RenderManagerBase::RenderOrder::ClearRenderTargets,
+		job_data.rcs->_cache_index
+	);
 
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>(
@@ -757,10 +775,10 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 						return;
 					}
 
-					render_cmds.lock.Lock();
-					auto& cmd = render_cmds.command_list.emplace_back();
+					clear_render_cmds.lock.Lock();
+					auto& cmd = clear_render_cmds.command_list.emplace_back();
 					cmd.cmd_list.reset(cmd_list);
-					render_cmds.lock.Unlock();
+					clear_render_cmds.lock.Unlock();
 				}
 
 				if (num_objects > 0) {
@@ -801,11 +819,13 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 	}
 
 	// Do a second loop so that none of our job_data.render_job_data_cache pointers get invalidated.
-	job_data.job_data_cache.resize(job_data.render_job_data_cache.size());
+	if (job_data.job_data_cache.size() != job_data.render_job_data_cache.size()) {
+		job_data.job_data_cache.resize(job_data.render_job_data_cache.size());
 
-	for (int32_t i = 0; i < static_cast<int32_t>(job_data.render_job_data_cache.size()); ++i) {
-		job_data.job_data_cache[i].job_data = &job_data.render_job_data_cache[i];
-		job_data.job_data_cache[i].job_func = GenerateCommandListJob;
+		for (int32_t i = 0; i < static_cast<int32_t>(job_data.render_job_data_cache.size()); ++i) {
+			job_data.job_data_cache[i].job_data = &job_data.render_job_data_cache[i];
+			job_data.job_data_cache[i].job_func = GenerateCommandListJob;
+		}
 	}
 
 	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
