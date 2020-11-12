@@ -353,12 +353,26 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		}
 	}
 
+	auto& no_depth_cmds = job_data.debug_mgr->_render_mgr->getRenderCommands(
+		*job_data.debug_mgr->_main_device,
+		RenderManagerBase::RenderOrder::InWorldNoDepthTest,
+		job_data.debug_mgr->_render_cache_index
+	);
+
+	auto& depth_cmds = job_data.debug_mgr->_render_mgr->getRenderCommands(
+		*job_data.debug_mgr->_main_device,
+		RenderManagerBase::RenderOrder::InWorldWithDepthTest,
+		job_data.debug_mgr->_render_cache_index
+	);
+
 	for (int32_t i = 0; i < 2; ++i) {
 		auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
 
 		const int32_t num_buffers_needed = static_cast<int32_t>(
 			ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
 		);
+
+		auto* const cmds = (i == 0) ? &no_depth_cmds : &depth_cmds;
 
 		// Make sure we have enough buffers on the GPU to hold our instance data.
 		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
@@ -469,9 +483,18 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 			total_items -= k_num_instances_per_buffer;
 		}
-	}
 
-	//rd->finishCommandList(*job_data.cmd_list);
+		if (!rd->finishCommandList(*job_data.cmd_list[job_data.debug_mgr->_render_cache_index][i])) {
+			// $TODO: Log error
+			continue;
+		}
+
+		cmds->lock.Lock();
+		auto& cmd = cmds->command_list.emplace_back();
+		cmd.cmd_list.reset(job_data.cmd_list[job_data.debug_mgr->_render_cache_index][i].get());
+		cmd.owns_command = false;
+		cmds->lock.Unlock();
+	}
 }
 
 void DebugManager::SetupModuleToUseImGui(void)
@@ -593,6 +616,8 @@ void DebugManager::render(uintptr_t thread_id_int)
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	GetApp().getJobPool().helpWhileWaiting(thread_id, _debug_data.job_counter);
+
+	_render_cache_index = (_render_cache_index + 1) % 2;
 }
 
 ImGuiContext* DebugManager::getImGuiContext(void) const
@@ -623,12 +648,10 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 	// Avoid rendering when minimized
 	if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f) {
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
 	if (draw_data->TotalIdxCount <= 0 || draw_data->TotalVtxCount <= 0) {
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -642,7 +665,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 		if (!_vertex_buffer) {
 			// $TODO: Log error periodic.
-			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 
@@ -658,7 +680,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 		if (!_vertex_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
-			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 	}
@@ -671,7 +692,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 		if (!_index_buffer) {
 			// $TODO: Log error periodic.
-			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 
@@ -687,7 +707,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 		if (!_index_buffer->init(*_main_device, settings)) {
 			// $TODO: Log error periodic.
-			_render_cache_index = (_render_cache_index + 1) % 2;
 			return;
 		}
 	}
@@ -710,14 +729,12 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 	if (!verts) {
 		// $TODO: Log error periodic.
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
 	if (!indices) {
 		// $TODO: Log error periodic.
 		_vertex_buffer->unmap(*deferred_device);
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -750,7 +767,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 	if (!vert_const_data) {
 		// $TODO: Log error periodic.
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -808,7 +824,6 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 
 	if (!deferred_device->finishCommandList(*_cmd_list[_render_cache_index])) {
 		// $TODO: Log error periodic.
-		_render_cache_index = (_render_cache_index + 1) % 2;
 		return;
 	}
 
@@ -820,14 +835,12 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 	cmd.cmd_list.reset(_cmd_list[_render_cache_index].get());
 	cmd.owns_command = false;
 	render_cmds.lock.Unlock();
-
-	_render_cache_index = (_render_cache_index + 1) % 2;
 }
 
 void DebugManager::renderPreCamera(uintptr_t /*thread_id_int*/)
 {
-	//auto& job_pool = GetApp().getJobPool();
-	//job_pool.addJobs(_debug_data.job_data_cache, static_cast<int32_t>(DebugRenderType::Count), _debug_data.job_counter);
+	auto& job_pool = GetApp().getJobPool();
+	job_pool.addJobs(_debug_data.job_data_cache, static_cast<int32_t>(DebugRenderType::Count), _debug_data.job_counter);
 }
 
 void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
@@ -959,10 +972,14 @@ bool DebugManager::initDebugRender(void)
 		_debug_data.job_data_cache[i].job_data = &_debug_data.render_job_data_cache[i];
 		_debug_data.job_data_cache[i].job_func = RenderDebugShape;
 
-		_debug_data.cmd_list[0].reset(_render_mgr->createCommandList());
-		_debug_data.cmd_list[1].reset(_render_mgr->createCommandList());
+		_debug_data.render_job_data_cache[i].cmd_list[0][0].reset(_render_mgr->createCommandList());
+		_debug_data.render_job_data_cache[i].cmd_list[1][0].reset(_render_mgr->createCommandList());
+		_debug_data.render_job_data_cache[i].cmd_list[0][1].reset(_render_mgr->createCommandList());
+		_debug_data.render_job_data_cache[i].cmd_list[1][1].reset(_render_mgr->createCommandList());
 
-		if (!_debug_data.cmd_list[0] || !_debug_data.cmd_list[1]) {
+		if (!_debug_data.render_job_data_cache[i].cmd_list[0][0] || !_debug_data.render_job_data_cache[i].cmd_list[1][0] ||
+			!_debug_data.render_job_data_cache[i].cmd_list[0][1] || !_debug_data.render_job_data_cache[i].cmd_list[1][1]) {
+			// $TODO: Log error.
 			return false;
 		}
 
@@ -1320,7 +1337,7 @@ bool DebugManager::initImGui(void)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f));
+	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f), Gleam::COLOR_RED);
 	return true;
 }
 
