@@ -111,6 +111,8 @@ public:
 
 	static void SetupModuleToUseImGui(void);
 
+	~DebugManager(void);
+
 	bool initAllModulesLoaded(void) override;
 
 	void update(void);

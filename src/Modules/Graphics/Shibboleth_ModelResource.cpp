@@ -130,7 +130,7 @@ int32_t ModelResource::getNumMeshes(void) const
 	return static_cast<int32_t>(_meshes.size());
 }
 
-void ModelResource::loadModel(IFile* file)
+void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 {
 	SerializeReaderWrapper readerWrapper;
 	
@@ -183,7 +183,7 @@ void ModelResource::loadModel(IFile* file)
 		const char* const path = reader.readString();
 
 		model_file_path = path;
-		model_file = res_mgr.loadFileAndWait(path);
+		model_file = res_mgr.loadFileAndWait(path, thread_id_int);
 
 		reader.freeString(path);
 	}

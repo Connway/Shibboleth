@@ -51,7 +51,7 @@ private:
 	);
 
 	void archetypeLoaded(const Vector<IResource*>&);
-	void loadLayer(IFile* file);
+	void loadLayer(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);
 };

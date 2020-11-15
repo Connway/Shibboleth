@@ -135,7 +135,7 @@ void StateMachineResource::readValues(const Gaff::ISerializeReader& reader, Espr
 	}
 }
 
-void StateMachineResource::loadStateMachine(IFile* file)
+void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

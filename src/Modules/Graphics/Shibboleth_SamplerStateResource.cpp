@@ -96,7 +96,7 @@ Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRender
 	return (it != _sampler_states.end()) ? it->second.get() : nullptr;
 }
 
-void SamplerStateResource::loadSamplerState(IFile* file)
+void SamplerStateResource::loadSamplerState(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

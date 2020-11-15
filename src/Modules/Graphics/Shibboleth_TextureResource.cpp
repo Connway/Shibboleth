@@ -169,10 +169,10 @@ Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::
 	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
 }
 
-void TextureResource::loadTexture(IFile* file)
+void TextureResource::loadTexture(IFile* file, uintptr_t thread_id_int)
 {
 	if (Gaff::EndsWith(getFilePath().getBuffer(), ".texture") || Gaff::EndsWith(getFilePath().getBuffer(), ".texture.bin")) {
-		loadTextureJSON(file);
+		loadTextureJSON(file, thread_id_int);
 		GetApp().getFileSystem().closeFile(file);
 	} else {
 		// Create SRV as is. No SRGB conversion.
@@ -180,7 +180,7 @@ void TextureResource::loadTexture(IFile* file)
 	}
 }
 
-void TextureResource::loadTextureJSON(const IFile* file)
+void TextureResource::loadTextureJSON(const IFile* file, uintptr_t thread_id_int)
 {
 	SerializeReaderWrapper readerWrapper;
 
@@ -222,7 +222,7 @@ void TextureResource::loadTextureJSON(const IFile* file)
  		}
 
 		const char* const path = reader.readString();
-		image_file = res_mgr.loadFileAndWait(path);
+		image_file = res_mgr.loadFileAndWait(path, thread_id_int);
 		image_path = path;
 		reader.freeString(path);
 	}

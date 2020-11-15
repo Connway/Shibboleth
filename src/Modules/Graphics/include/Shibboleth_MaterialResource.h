@@ -69,7 +69,7 @@ private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
 	ShaderResourcePtr _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
-	void loadMaterial(IFile* file);
+	void loadMaterial(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
 };

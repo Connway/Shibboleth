@@ -46,7 +46,7 @@ public:
 private:
 	Vector<MeshResourcePtr> _meshes{ ProxyAllocator("Graphics") };
 
-	void loadModel(IFile* file);
+	void loadModel(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };

@@ -70,7 +70,7 @@ physx::PxShape* PhysicsShapeResource::getShape(void)
 	return _shape;
 }
 
-void PhysicsShapeResource::loadShape(IFile* file)
+void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

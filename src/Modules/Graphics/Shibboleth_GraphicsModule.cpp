@@ -25,6 +25,7 @@ THE SOFTWARE.
 #ifdef SHIB_STATIC
 
 	#include <Shibboleth_ProxyAllocator.h>
+	#include <Shibboleth_LogManager.h>
 	#include <Shibboleth_Utilities.h>
 	#include <Gleam_RenderDevice.h>
 	#include <Gleam_Window.h>
@@ -50,6 +51,12 @@ THE SOFTWARE.
 		//	return SHIB_REALLOC(old_ptr, new_size, g_graphics_allocator);
 		//}
 
+		static void GraphicsLog(const char* msg, Gleam::LogMsgType type)
+		{
+			const Shibboleth::LogType msg_type = static_cast<Shibboleth::LogType>(type);
+			LogDefault(msg_type, msg);
+		}
+
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
 			if (mode == Shibboleth::InitMode::Regular) {
@@ -61,6 +68,7 @@ THE SOFTWARE.
 			}
 
 			Gleam::SetAllocator(&g_graphics_allocator);
+			Gleam::SetLogFunc(GraphicsLog);
 
 			Shibboleth::SetApp(app);
 			Gen::InitReflection(mode);

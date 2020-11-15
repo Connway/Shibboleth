@@ -45,7 +45,7 @@ public:
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states{ ProxyAllocator("Graphics") };
 
-	void loadRasterState(IFile* file);
+	void loadRasterState(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };

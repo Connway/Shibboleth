@@ -118,7 +118,7 @@ public:
 	IResourcePtr getResource(HashStringTemp64<> name);
 	void waitForResource(const IResource& resource) const;
 
-	const IFile* loadFileAndWait(const char* file_path);
+	const IFile* loadFileAndWait(const char* file_path, uintptr_t thread_id_int);
 
 	ResourceCallbackID registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback);
 	void removeCallback(ResourceCallbackID id);

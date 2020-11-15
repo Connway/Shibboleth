@@ -34,7 +34,7 @@ public:
 	~JanetResource(void);
 
 private:
-	void loadScript(IFile* file);
+	void loadScript(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(JanetResource);
 };

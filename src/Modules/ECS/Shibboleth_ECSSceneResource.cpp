@@ -109,7 +109,7 @@ void ECSSceneResource::layerLoaded(const Vector<IResource*>&)
 	succeeded();
 }
 
-void ECSSceneResource::loadScene(IFile* file)
+void ECSSceneResource::loadScene(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

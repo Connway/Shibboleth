@@ -52,12 +52,12 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(IResource)
 
-static void LoadJob(uintptr_t /*id_int*/, void* data)
+static void LoadJob(uintptr_t thread_id_int, void* data)
 {
 	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
 
 	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
-	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second);
+	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second, thread_id_int);
 
 	if (!cb_attr->doesCallbackCloseFile()) {
 		GetApp().getFileSystem().closeFile(job_data->second);

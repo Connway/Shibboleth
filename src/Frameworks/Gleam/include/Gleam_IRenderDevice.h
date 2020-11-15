@@ -82,8 +82,8 @@ public:
 	virtual bool finishCommandList(ICommandList& command_list) = 0;
 
 	virtual void clearRenderState(void) = 0;
-	virtual void renderLineNoVertexInputInstanced(int32_t line_count, int32_t instance_count) = 0;
-	virtual void renderLineNoVertexInput(int32_t line_count) = 0;
+	virtual void renderLineNoVertexInputInstanced(int32_t instance_count) = 0;
+	virtual void renderLineNoVertexInput(void) = 0;
 	virtual void renderNoVertexInput(int32_t vert_count) = 0;
 
 	virtual void setScissorRect(const glm::ivec2& pos, const glm::ivec2& size) = 0;

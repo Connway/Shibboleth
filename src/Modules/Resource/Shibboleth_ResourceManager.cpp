@@ -242,15 +242,17 @@ void ResourceManager::waitForResource(const IResource& resource) const
 	}
 }
 
-const IFile* ResourceManager::loadFileAndWait(const char* file_path)
+const IFile* ResourceManager::loadFileAndWait(const char* file_path, uintptr_t thread_id_int)
 {
 	RawJobData data = { file_path, nullptr };
 	Gaff::JobData job_data = { ResourceFileLoadRawJob, &data };
 	Gaff::Counter counter = 0;
 	auto& job_pool = GetApp().getJobPool();
 
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
 	job_pool.addJobs(&job_data, 1, counter, k_read_file_pool);
-	job_pool.helpWhileWaiting(counter);
+	job_pool.helpWhileWaiting(thread_id, counter);
 
 	return data.out_file;
 }

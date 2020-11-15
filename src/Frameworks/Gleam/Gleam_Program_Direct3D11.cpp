@@ -152,7 +152,7 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 	ProgramBuffersD3D11* const pb = GAFF_ALLOCT(ProgramBuffersD3D11, *GetAllocator());
 
 	if (!pb) {
-		PrintfToLog("Failed to clone ProgramBuffersD3D11.", LOG_ERROR);
+		PrintfToLog("Failed to clone ProgramBuffersD3D11.", LogMsgType::Error);
 		return nullptr;
 	}
 

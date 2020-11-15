@@ -96,7 +96,7 @@ Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDev
 	return (it != _raster_states.end()) ? it->second.get() : nullptr;
 }
 
-void RasterStateResource::loadRasterState(IFile* file)
+void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

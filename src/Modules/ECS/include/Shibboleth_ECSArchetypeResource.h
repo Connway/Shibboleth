@@ -38,7 +38,7 @@ public:
 	const ECSArchetype& getArchetype(void) const;
 
 private:
-	void loadArchetype(IFile* file);
+	void loadArchetype(IFile* file, uintptr_t thread_id_int);
 
 	ArchetypeReferencePtr _archetype_ref;
 

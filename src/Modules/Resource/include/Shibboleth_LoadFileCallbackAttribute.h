@@ -38,7 +38,7 @@ public:
 	{
 	}
 	
-	virtual void callCallback(void* object, IFile* file) const = 0;
+	virtual void callCallback(void* object, IFile* file, uintptr_t thread_id_int) const = 0;
 
 	bool doesCallbackCloseFile(void) const
 	{
@@ -59,15 +59,15 @@ template <class T>
 class LoadFileCallbackAttribute final : public ILoadFileCallbackAttribute
 {
 public:
-	LoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, Gaff::Hash32 pool = 0):
+	LoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = 0):
 		ILoadFileCallbackAttribute(callback_closes_file, pool), _callback(callback)
 	{
 	}
 
-	void callCallback(void* object, IFile* file) const override
+	void callCallback(void* object, IFile* file, uintptr_t thread_id_int) const override
 	{
 		T* const obj = reinterpret_cast<T*>(object);
-		(obj->*_callback)(file);
+		(obj->*_callback)(file, thread_id_int);
 	}
 
 	Gaff::IAttribute* clone(void) const override
@@ -77,7 +77,7 @@ public:
 	}
 
 private:
-	void (T::*_callback)(IFile*);
+	void (T::*_callback)(IFile*, uintptr_t);
 
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(LoadFileCallbackAttribute, T);
 };
@@ -85,7 +85,7 @@ private:
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(LoadFileCallbackAttribute, T)
 
 template <class T>
-LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*), bool callback_closes_file = false, Gaff::Hash32 pool = 0)
+LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = 0)
 {
 	return LoadFileCallbackAttribute<T>(callback, callback_closes_file, pool);
 }

@@ -55,7 +55,7 @@ private:
 	PhysicsMaterialResourcePtr _material;
 	physx::PxShape* _shape = nullptr;
 
-	void loadShape(IFile* file);
+	void loadShape(IFile* file, uintptr_t thread_id_int);
 
 	LoadResult loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
 	LoadResult loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);

@@ -58,7 +58,7 @@ const ECSArchetype& ECSArchetypeResource::getArchetype(void) const
 	return _archetype_ref->getArchetype();
 }
 
-void ECSArchetypeResource::loadArchetype(IFile* file)
+void ECSArchetypeResource::loadArchetype(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 

@@ -40,7 +40,7 @@ public:
 	physx::PxMaterial* getMaterial(void);
 
 private:
-	void loadMaterial(IFile* file);
+	void loadMaterial(IFile* file, uintptr_t thread_id_int);
 
 	physx::PxMaterial* _material = nullptr;
 

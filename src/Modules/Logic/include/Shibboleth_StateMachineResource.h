@@ -41,7 +41,7 @@ public:
 private:
 	UniquePtr<Esprit::StateMachine> _state_machine;
 
-	void loadStateMachine(IFile* file);
+	void loadStateMachine(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineResource);
 };

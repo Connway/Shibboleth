@@ -212,7 +212,7 @@ Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
 	return (shader) ? shader->getLayout(device) : nullptr;
 }
 
-void MaterialResource::loadMaterial(IFile* file)
+void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 {
 	SerializeReaderWrapper readerWrapper;
 
@@ -271,7 +271,7 @@ void MaterialResource::loadMaterial(IFile* file)
 			ShaderResourcePtr compute = res_mgr.getResourceT<ShaderResource>(path_hash);
 
 			if (!compute) {
-				const IFile* const compute_file = res_mgr.loadFileAndWait(final_path.data());
+				const IFile* const compute_file = res_mgr.loadFileAndWait(final_path.data(), thread_id_int);
 
 				if (!compute_file) {
 					LogErrorResource("Failed to load material '%s'. Failed to load compute shader '%s'.", getFilePath().getBuffer(), final_path.data());
@@ -355,7 +355,7 @@ void MaterialResource::loadMaterial(IFile* file)
 		shaders[index] = res_mgr.getResourceT<ShaderResource>(path_hash);
 
 		if (!shaders[index]) {
-			const IFile* const shader_file = res_mgr.loadFileAndWait(final_path.data());
+			const IFile* const shader_file = res_mgr.loadFileAndWait(final_path.data(), thread_id_int);
 
 			if (!shader_file) {
 				LogErrorResource("Failed to load material '%s'. Failed to load compute shader '%s'.", getFilePath().getBuffer(), final_path.data());

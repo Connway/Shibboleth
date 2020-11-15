@@ -49,7 +49,7 @@ JanetResource::~JanetResource(void)
 	janet_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
-void JanetResource::loadScript(IFile* file)
+void JanetResource::loadScript(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
 

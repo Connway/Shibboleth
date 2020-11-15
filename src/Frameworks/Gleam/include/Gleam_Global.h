@@ -27,14 +27,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-enum LogMsgType
+enum class LogMsgType
 {
-	LOG_NORMAL = 0,
-	LOG_WARNING,
-	LOG_ERROR
+	Normal = 0,
+	Warning,
+	Error
 };
 
-using LogFunc = void (*)(const char*, int32_t);
+using LogFunc = void (*)(const char*, LogMsgType);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 Gaff::IAllocator* GetAllocator(void);

@@ -43,7 +43,7 @@ public:
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
 
-	void loadSamplerState(IFile* file);
+	void loadSamplerState(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };

@@ -138,7 +138,9 @@ namespace
 
 				float vert_scale = float(input.vertex_id);
 
-				float3 line_pos = instance_data[input.instance_id].start + instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
+				float3 line_pos = instance_data[input.instance_id].start +
+					instance_data[input.instance_id].end * float3(vert_scale, vert_scale, vert_scale);
+
 				output.position = mul(view_proj_matrix, float4(line_pos, 1.0));
 				output.color = instance_data[input.instance_id].color;
 
@@ -353,17 +355,18 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		}
 	}
 
-	auto& no_depth_cmds = job_data.debug_mgr->_render_mgr->getRenderCommands(
-		*job_data.debug_mgr->_main_device,
-		RenderManagerBase::RenderOrder::InWorldNoDepthTest,
-		job_data.debug_mgr->_render_cache_index
-	);
-
-	auto& depth_cmds = job_data.debug_mgr->_render_mgr->getRenderCommands(
-		*job_data.debug_mgr->_main_device,
-		RenderManagerBase::RenderOrder::InWorldWithDepthTest,
-		job_data.debug_mgr->_render_cache_index
-	);
+	RenderManagerBase::RenderCommandList* const cmds[] = {
+		&job_data.debug_mgr->_render_mgr->getRenderCommands(
+			*job_data.debug_mgr->_main_device,
+			RenderManagerBase::RenderOrder::InWorldNoDepthTest,
+			job_data.debug_mgr->_render_cache_index
+		),
+		&job_data.debug_mgr->_render_mgr->getRenderCommands(
+			*job_data.debug_mgr->_main_device,
+			RenderManagerBase::RenderOrder::InWorldWithDepthTest,
+			job_data.debug_mgr->_render_cache_index
+		)
+	};
 
 	for (int32_t i = 0; i < 2; ++i) {
 		auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
@@ -371,8 +374,6 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		const int32_t num_buffers_needed = static_cast<int32_t>(
 			ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
 		);
-
-		auto* const cmds = (i == 0) ? &no_depth_cmds : &depth_cmds;
 
 		// Make sure we have enough buffers on the GPU to hold our instance data.
 		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
@@ -476,7 +477,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			debug_data.program_buffers->bind(*rd);
 
 			if (job_data.type == DebugRenderType::Line) {
-				rd->renderLineNoVertexInputInstanced(1, count);
+				rd->renderLineNoVertexInputInstanced(count);
 			} else {
 				debug_data.mesh->renderInstanced(*rd, count);
 			}
@@ -489,11 +490,11 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			continue;
 		}
 
-		cmds->lock.Lock();
-		auto& cmd = cmds->command_list.emplace_back();
+		cmds[i]->lock.Lock();
+		auto& cmd = cmds[i]->command_list.emplace_back();
 		cmd.cmd_list.reset(job_data.cmd_list[job_data.debug_mgr->_render_cache_index][i].get());
 		cmd.owns_command = false;
-		cmds->lock.Unlock();
+		cmds[i]->lock.Unlock();
 	}
 }
 
@@ -501,6 +502,11 @@ void DebugManager::SetupModuleToUseImGui(void)
 {
 	const DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
 	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
+}
+
+DebugManager::~DebugManager(void)
+{
+	ImGui::DestroyContext();
 }
 
 bool DebugManager::initAllModulesLoaded(void)
@@ -524,11 +530,7 @@ bool DebugManager::initAllModulesLoaded(void)
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
-	bool success = true;
-	success = initDebugRender() && success;
-	success = initImGui() && success;
-
-	return success;
+	return initDebugRender() && initImGui();
 }
 
 void DebugManager::update(void)
@@ -1337,7 +1339,10 @@ bool DebugManager::initImGui(void)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, -5.0f), Gleam::COLOR_RED);
+	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(5.0f, 5.0f, 5.0f), Gleam::COLOR_RED);
+	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED);
+	//static auto g = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED, true);
+	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(100.0f, 0.25f, 0.0f), glm::vec3(400.0f, 0.5f, 0.0f), Gleam::COLOR_RED);
 	return true;
 }
 

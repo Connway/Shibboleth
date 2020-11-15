@@ -403,22 +403,22 @@ void RenderDeviceD3D11::clearRenderState(void)
 	_context->ClearState();
 }
 
-void RenderDeviceD3D11::renderLineNoVertexInputInstanced(int32_t line_count, int32_t instance_count)
+void RenderDeviceD3D11::renderLineNoVertexInputInstanced(int32_t instance_count)
 {
 	_context->IASetInputLayout(NULL);
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
 	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	_context->DrawInstanced(static_cast<UINT>(line_count * 2), static_cast<UINT>(instance_count), 0, 0);
+	_context->DrawInstanced(static_cast<UINT>(2), static_cast<UINT>(instance_count), 0, 0);
 }
 
-void RenderDeviceD3D11::renderLineNoVertexInput(int32_t line_count)
+void RenderDeviceD3D11::renderLineNoVertexInput(void)
 {
 	_context->IASetInputLayout(NULL);
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
 	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	_context->Draw(static_cast<UINT>(line_count * 2), 0);
+	_context->Draw(2, 0);
 }
 
 void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)

@@ -187,7 +187,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 	succeeded();
 }
 
-void ECSLayerResource::loadLayer(IFile* file)
+void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 {	
 	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true)) {
 		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());

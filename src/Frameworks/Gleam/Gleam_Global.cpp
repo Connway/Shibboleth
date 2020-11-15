@@ -44,7 +44,7 @@ void* GleamAlloc(size_t size_bytes, const char* filename, uint32_t line_number)
 	void* data = g_allocator->alloc(size_bytes, filename, line_number);
 
 	if (!data) {
-		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LOG_ERROR, filename, line_number);
+		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LogMsgType::Error, filename, line_number);
 		return nullptr;
 	}
 

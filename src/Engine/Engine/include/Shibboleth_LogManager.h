@@ -113,6 +113,7 @@ NS_END
 #define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, "[ERROR] " message, ##__VA_ARGS__)
 #define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, "[WARNING] " message, ##__VA_ARGS__)
 #define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__)
+#define LogDefault(type, message, ...) LogWithApp(Shibboleth::GetApp(), type, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__)
 
 #define LogAndReturn(return_value, type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, ##__VA_ARGS__); return return_value
 #define LogErrorAndReturn(return_value, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, message, ##__VA_ARGS__); return return_value

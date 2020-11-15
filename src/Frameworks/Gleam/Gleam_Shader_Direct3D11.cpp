@@ -119,7 +119,7 @@ static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*mac
 	if (FAILED(result)) {
 		if (error_buffer) {
 			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
-			PrintfToLog(error_msg, LOG_ERROR);
+			PrintfToLog(error_msg, LogMsgType::Error);
 
 			error_buffer->Release();
 		}
@@ -140,7 +140,7 @@ static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_si
 		U8String msg("Failed to open shader file: ");
 		msg += file_path;
 
-		PrintfToLog(msg.data(), LOG_ERROR);
+		PrintfToLog(msg.data(), LogMsgType::Error);
 		return false;
 	}
 
@@ -161,7 +161,7 @@ static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_si
 		U8String msg("Failed to read shader file: ");
 		msg += file_path;
 
-		PrintfToLog(msg.data(), LOG_ERROR);
+		PrintfToLog(msg.data(), LogMsgType::Error);
 		return false;
 	}
 

@@ -49,7 +49,7 @@ LuaResource::~LuaResource(void)
 	lua_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
-void LuaResource::loadScript(IFile* file)
+void LuaResource::loadScript(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
 

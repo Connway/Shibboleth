@@ -58,7 +58,7 @@ physx::PxMaterial* PhysicsMaterialResource::getMaterial(void)
 	return _material;
 }
 
-void PhysicsMaterialResource::loadMaterial(IFile* file)
+void PhysicsMaterialResource::loadMaterial(IFile* file, uintptr_t /*thread_id_int*/)
 {
 	SerializeReaderWrapper readerWrapper;
 
