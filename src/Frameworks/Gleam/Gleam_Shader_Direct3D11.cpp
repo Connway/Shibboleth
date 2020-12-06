@@ -26,13 +26,15 @@ THE SOFTWARE.
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_String.h"
-#include <d3dcompiler.h>
 #include <Gaff_File.h>
+#include <d3dcompiler.h>
+
+#define BASE_SHADER_FLAGS (D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_IEEE_STRICTNESS)
 
 #ifdef _DEBUG
-	#define SHADER_FLAGS D3DCOMPILE_DEBUG | D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR
+	#define SHADER_FLAGS (BASE_SHADER_FLAGS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION)
 #else
-	#define SHADER_FLAGS D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR
+	#define SHADER_FLAGS (BASE_SHADER_FLAGS | D3DCOMPILE_OPTIMIZATION_LEVEL3)
 #endif
 
 NS_GLEAM
@@ -113,7 +115,7 @@ static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*mac
 	ID3DBlob* shader_buffer;
 	ID3DBlob* error_buffer;
 
-	HRESULT result = D3DCompile(shader_src, shader_size, NULL, NULL /*macros*/, NULL /*include*/,
+	const HRESULT result = D3DCompile(shader_src, shader_size, NULL, NULL /*macros*/, NULL /*include*/,
 		entry_point, target, SHADER_FLAGS, 0, &shader_buffer, &error_buffer);
 
 	if (FAILED(result)) {

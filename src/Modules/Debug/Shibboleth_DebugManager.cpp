@@ -301,15 +301,22 @@ void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character
 void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 {
 	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
+	auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
+
 	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
 	glm::mat4x4 final_camera = glm::identity<glm::mat4x4>();
+
+	// Nothing to render.
+	if (!debug_data.render_list[0].size() && !debug_data.render_list[1].size()) {
+		return;
+	}
 
 	for (int32_t i = 0; i < num_cameras; ++i) {
 		job_data.debug_mgr->_ecs_mgr->iterate<Position, Rotation, Camera>(
 			job_data.debug_mgr->_camera_position[i],
 			job_data.debug_mgr->_camera_rotation[i],
 			job_data.debug_mgr->_camera[i],
-			[&](EntityID, const Position& /*position*/, const Rotation& /*rotation*/, const Camera& camera) -> void
+			[&](EntityID, const Position& position, const Rotation& rotation, const Camera& camera) -> void
 			{
 				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const("main");
 
@@ -322,13 +329,11 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 						camera.z_near, camera.z_far
 					);
 
-					final_camera = projection;
+					const glm::vec3 euler_angles = rotation.value * Gaff::TurnsToRad;
+					glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+					camera_transform[3] = glm::vec4(position.value, 1.0f);
 
-					//const glm::vec3 euler_angles = rotation.value * Gaff::TurnsToRad;
-					//glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-					//camera_transform[3] = glm::vec4(position.value, 1.0f);
-
-					//final_camera = projection * glm::inverse(camera_transform);
+					final_camera = projection * glm::inverse(camera_transform);
 				}
 			}
 		);
@@ -369,11 +374,14 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 	};
 
 	for (int32_t i = 0; i < 2; ++i) {
-		auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
-
 		const int32_t num_buffers_needed = static_cast<int32_t>(
 			ceilf(static_cast<float>(debug_data.render_list[i].size()) / k_num_instances_per_buffer)
 		);
+
+		// Nothing to render.
+		if (!num_buffers_needed) {
+			continue;
+		}
 
 		// Make sure we have enough buffers on the GPU to hold our instance data.
 		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
@@ -427,7 +435,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		job_data.debug_mgr->_main_output->getRenderTarget().bind(*rd);
 		job_data.debug_mgr->_debug_data.depth_stencil_state[i]->bind(*rd);
 		job_data.debug_mgr->_debug_data.raster_state[i]->bind(*rd);
-		job_data.debug_mgr->_blend_state->bind(*rd);
+		//job_data.debug_mgr->_blend_state->bind(*rd);
 
 		if (job_data.type == DebugRenderType::Line) {
 			job_data.debug_mgr->_debug_data.line_program->bind(*rd);
@@ -894,7 +902,6 @@ bool DebugManager::initDebugRender(void)
 	_debug_data.line_program->attach(_debug_data.line_vertex_shader.get());
 	_debug_data.line_program->attach(_debug_data.pixel_shader.get());
 
-
 	// Init regular shaders and program.
 	_debug_data.vertex_shader.reset(_render_mgr->createShader());
 
@@ -1339,7 +1346,8 @@ bool DebugManager::initImGui(void)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(5.0f, 5.0f, 5.0f), Gleam::COLOR_RED);
+	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::COLOR_RED, true);
+	//static auto g = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, 5.0f), Gleam::COLOR_RED);
 	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED);
 	//static auto g = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED, true);
 	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(100.0f, 0.25f, 0.0f), glm::vec3(400.0f, 0.5f, 0.0f), Gleam::COLOR_RED);
