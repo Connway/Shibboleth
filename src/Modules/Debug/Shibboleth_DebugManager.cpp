@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
+#include <Gleam_MeshGeneration.h>
 #include <gtx/euler_angles.hpp>
 #include <imgui.h>
 
@@ -1022,6 +1023,11 @@ bool DebugManager::initDebugRender(void)
 			);
 		}
 	}
+
+	Gleam::Vector<glm::vec3> points;
+	Gleam::Vector<int16_t> indices;
+
+	Gleam::GenerateDebugSphere(4, points, indices);
 
 	return true;
 }

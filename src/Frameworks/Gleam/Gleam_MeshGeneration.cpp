@@ -23,12 +23,24 @@ THE SOFTWARE.
 #include "Gleam_MeshGeneration.h"
 #include <Gaff_Assert.h>
 #include <Gaff_Math.h>
+#include <cmath>
+#include <cfenv>
 
 NS_GLEAM
 
 void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
 {
-	GAFF_ASSERT(subdivisions > 0);
+	GAFF_ASSERT(subdivisions > 1);
+
+	// Round subdivisions to the nearest even number.
+	const int round_mode = std::fegetround();
+	std::fesetround(FE_TONEAREST);
+
+	subdivisions = static_cast<int32_t>(std::nearbyint(subdivisions * 0.5f) * 2.0f);
+
+	std::fesetround(round_mode);
+
+
 	const int32_t half_subdivisions = subdivisions / 2;
 
 	// Generate top hemisphere.
@@ -42,7 +54,7 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 			points.emplace_back(glm::vec3(
 				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * y_scale),
 				sinf(Gaff::Pi * y_scale),
-				sinf(2.0f * Gaff::Pi * x_scale) * sinf(Gaff::Pi * y_scale)
+				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * y_scale)
 			));
 
 			// Don't generate the same point multiple times. Only need one.
@@ -75,18 +87,70 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 
 	// Top hemisphere indices.
 	for (int32_t y = 0; y < half_subdivisions; ++y) {
-		const int32_t bottom_starting_index = y * subdivisions;
 		const int32_t top_starting_index = (y + 1) * subdivisions;
+		const int32_t bottom_starting_index = y * subdivisions;
 
+		// Front face clockwise.
+		// *---*
+		// | \ |
+		// |  \|
+		// *---*
 		for (int32_t x = 0; x < subdivisions; ++x) {
-			indices.emplace_back(((bottom_starting_index + 1) % subdivisions) + x);
-			indices.emplace_back(bottom_starting_index + x);
+			const int32_t bot_right = bottom_starting_index + (x + 1) % subdivisions;
+			const int32_t bot_left = bottom_starting_index + x;
+
+			indices.emplace_back(bot_right);
+			indices.emplace_back(bot_left);
 
 			// Reached north pole.
-			if (y == (half_subdivisions - 1)) {
+			if (y == (half_subdivisions - 2)) {
 				indices.emplace_back(top_starting_index);
+
 			} else {
-				indices.emplace_back(top_starting_index + x);
+				const int32_t top_right = top_starting_index + (x + 1) % subdivisions;
+				const int32_t top_left = top_starting_index + x;
+
+				indices.emplace_back(top_left);
+
+				indices.emplace_back(bot_right);
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+			}
+		}
+	}
+
+	// Bottom hemisphere indices.
+	const int32_t offset = subdivisions * (half_subdivisions - 1) + 1;
+
+	for (int32_t y = 0; y < half_subdivisions; ++y) {
+		const int32_t bottom_starting_index = (y + 1) * subdivisions;
+		const int32_t top_starting_index = y * subdivisions;
+
+		// Front face clockwise.
+		// *---*
+		// | \ |
+		// |  \|
+		// *---*
+		for (int32_t x = 0; x < subdivisions; ++x) {
+			const int32_t top_right = top_starting_index + (x + 1) % subdivisions + offset;
+			const int32_t top_left = top_starting_index + x + offset;
+
+			indices.emplace_back(top_left);
+			indices.emplace_back(top_right);
+
+			// Reached south pole.
+			if (y == (half_subdivisions - 2)) {
+				indices.emplace_back(bottom_starting_index + offset);
+
+			} else {
+				const int32_t bottom_right = bottom_starting_index + (x + 1) % subdivisions + offset;
+				const int32_t bottom_left = bottom_starting_index + x + offset;
+
+				indices.emplace_back(bottom_right);
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(bottom_right);
+				indices.emplace_back(bottom_left);
 			}
 		}
 	}
