@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ClearRenderTargetSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -60,14 +63,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_TextureResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ClearRenderTargetSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ClearRenderTargetSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsResourceComponents.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialComponent.cpp" />
@@ -81,7 +82,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_SamplerStateResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_TextureResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ClearRenderTargetSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />

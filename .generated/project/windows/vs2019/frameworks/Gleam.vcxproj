@@ -254,6 +254,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshGeneration.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_OpenGL.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse.h" />
@@ -305,6 +306,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshGeneration.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_OBB.cpp" />
