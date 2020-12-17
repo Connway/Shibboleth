@@ -169,6 +169,13 @@ private:
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
 
+	Vector< UniquePtr<Gleam::ICommandList> > _cmd_lists[2] = {
+		Vector< UniquePtr<Gleam::ICommandList> >{ ProxyAllocator("Graphics") },
+		Vector< UniquePtr<Gleam::ICommandList> >{ ProxyAllocator("Graphics") }
+	};
+
+	int32_t _cmd_list_end[2] = { 0, 0 };
+
 	int32_t _cache_index = 0;
 
 	void newObjectArchetype(const ECSArchetype& archetype);

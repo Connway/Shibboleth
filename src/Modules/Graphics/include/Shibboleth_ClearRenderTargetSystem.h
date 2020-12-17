@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
+#include <Gleam_ICommandList.h>
 
 NS_SHIBBOLETH
 
@@ -41,6 +42,8 @@ private:
 	ECSManager* _ecs_mgr = nullptr;
 	ECSQuery::Output _camera;
 	int32_t _cache_index = 0;
+
+	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
 
 	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetSystem);
 };

@@ -44,6 +44,14 @@ bool ClearRenderTargetSystem::init(void)
 
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
+	_cmd_lists[0].reset(_render_mgr->createCommandList());
+	_cmd_lists[1].reset(_render_mgr->createCommandList());
+
+	if (!_cmd_lists[0] || !_cmd_lists[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	return true;
 }
 
@@ -75,8 +83,7 @@ void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
 
 					Gleam::IRenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
 					Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-					// $TODO: Cache this command list.
-					Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
+					Gleam::ICommandList* const cmd_list = _cmd_lists[_cache_index].get();
 
 					// $TODO: Make the clearing type an option.
 					render_target->bind(*deferred_device);
@@ -97,6 +104,7 @@ void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
 					render_cmds.lock.Lock();
 					auto& cmd = render_cmds.command_list.emplace_back();
 					cmd.cmd_list.reset(cmd_list);
+					cmd.owns_command = false;
 					render_cmds.lock.Unlock();
 				}
 			}

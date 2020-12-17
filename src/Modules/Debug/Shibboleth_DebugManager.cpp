@@ -1481,6 +1481,10 @@ bool DebugManager::initImGui(void)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+
+	static auto sphere = _debug_mgr->renderDebugSphere(glm::vec3(0.0f, 0.5f, 5.0f), 1.0f, Gleam::COLOR_RED, true);
+	static auto line = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::COLOR_RED, true);
+
 	return true;
 }
 

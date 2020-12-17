@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IProgram.h>
 
@@ -80,6 +81,7 @@ private:
 	int32_t _cache_index = 0;
 
 	MaterialResourcePtr _camera_material;
+	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
 
 	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
 	RenderManagerBase* _render_mgr = nullptr;

@@ -776,12 +776,26 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 					const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
 
 					for (int32_t i = 0; i < num_objects; ++i) {
-						Gleam::ICommandList* const cmd_list = job_data.rcs->_render_mgr->createCommandList();
+						const int32_t cache_index = job_data.rcs->_cache_index;
+						const int32_t cmd_list_end = job_data.rcs->_cmd_list_end[cache_index];
+						Gleam::ICommandList* cmd_list = nullptr;
 
-						// $TODO: Make a command list cache.
+						// Grab command list from the cache.
+						if (job_data.rcs->_cmd_lists[cache_index].size() > cmd_list_end) {
+							cmd_list = job_data.rcs->_cmd_lists[cache_index][cmd_list_end].get();
+
+						// Cache is full, create a new one and add it to the cache.
+						} else {
+							cmd_list = job_data.rcs->_render_mgr->createCommandList();
+							job_data.rcs->_cmd_lists[cache_index].emplace_back(cmd_list);
+						}
+
+						++job_data.rcs->_cmd_list_end[cache_index];
+
 						render_cmds.lock.Lock();
 						auto& cmd = render_cmds.command_list.emplace_back();
 						cmd.cmd_list.reset(cmd_list);
+						cmd.owns_command = false;
 						render_cmds.lock.Unlock();
 
 						RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
@@ -808,7 +822,13 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 	}
 
 	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
+
+	// $TODO: If the cache is significantly higher than the current usage, shrink the cache.
+
 	job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
+
+	// Clear this for next run.
+	job_data.rcs->_cmd_list_end[job_data.rcs->_cache_index] = 0;
 }
 
 NS_END

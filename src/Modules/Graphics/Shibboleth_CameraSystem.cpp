@@ -102,6 +102,14 @@ bool CameraPostRenderSystem::init(void)
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
+	_cmd_lists[0].reset(_render_mgr->createCommandList());
+	_cmd_lists[1].reset(_render_mgr->createCommandList());
+
+	if (!_cmd_lists[0] || !_cmd_lists[1]) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	constexpr const char* const k_camera_material = "Materials/CameraToTexture/camera_to_texture.material";
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
@@ -130,8 +138,7 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 	// $TODO: Need a dynamic way of determining camera render order.
 	for (int32_t i = 0; i < num_devices; ++i) {
 		// Do per-frame setup.
-		// $TODO: Cache these.
-		Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
+		Gleam::ICommandList* const cmd_list = _cmd_lists[_cache_index].get();
 		Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
 
 		auto& render_cmds = _render_mgr->getRenderCommands(device, RenderManagerBase::RenderOrder::ToRenderTarget, _cache_index);
@@ -139,6 +146,7 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 		render_cmds.lock.Lock();
 		auto& cmd = render_cmds.command_list.emplace_back();
 		cmd.cmd_list.reset(cmd_list);
+		cmd.owns_command = false;
 		render_cmds.lock.Unlock();
 
 		_camera_job_data_cache[i].cmd_list = cmd_list;
