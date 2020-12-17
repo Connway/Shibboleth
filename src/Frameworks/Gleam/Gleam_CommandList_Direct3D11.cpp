@@ -75,6 +75,11 @@ RendererType CommandListD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
+bool CommandListD3D11::isValid(void) const
+{
+	return _command_list != nullptr;
+}
+
 void CommandListD3D11::setCommandList(ID3D11CommandList* command_list)
 {
 	SAFERELEASE(_command_list);

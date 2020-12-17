@@ -121,12 +121,15 @@ public:
 	ImGuiContext* getImGuiContext(void) const override;
 
 	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
+	DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 
 private:
 	struct DebugRenderInstanceData final
 	{
 		UniquePtr<Gleam::IProgramBuffers> program_buffers;
 		UniquePtr<Gleam::IBuffer> constant_buffer;
+		UniquePtr<Gleam::IBuffer> vertices;
+		UniquePtr<Gleam::IBuffer> indices;
 		UniquePtr<Gleam::IMesh> mesh;
 
 		// 0 = no depth test, 1 = depth test
@@ -165,6 +168,7 @@ private:
 	{
 		UniquePtr<Gleam::IProgram> line_program;
 		UniquePtr<Gleam::IProgram> program;
+		UniquePtr<Gleam::ILayout> layout;
 
 		UniquePtr<Gleam::IShader> line_vertex_shader;
 		UniquePtr<Gleam::IShader> vertex_shader;

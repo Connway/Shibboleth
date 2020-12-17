@@ -39,6 +39,7 @@ public:
 	virtual bool operator!=(const ICommandList& rhs) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
+	virtual bool isValid(void) const = 0;
 };
 
 NS_END

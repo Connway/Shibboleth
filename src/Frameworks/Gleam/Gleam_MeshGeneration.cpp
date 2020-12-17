@@ -30,7 +30,8 @@ NS_GLEAM
 
 void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
 {
-	GAFF_ASSERT(subdivisions > 1);
+	// Ensure at least 3 rows of vertices.
+	subdivisions = Gaff::Max(subdivisions, 4);
 
 	// Round subdivisions to the nearest even number.
 	const int round_mode = std::fegetround();
@@ -45,16 +46,17 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 
 	// Generate top hemisphere.
 	// Generate each elevation level at a time.
-	for (int32_t y = 0; y < half_subdivisions; ++y) {
-		const float y_scale = static_cast<float>(y) / half_subdivisions;
+	// Start at north pole and work our way down.
+	for (int32_t y = half_subdivisions - 1; y >= 0; --y) {
+		const float y_scale = static_cast<float>(y) / (half_subdivisions - 1);
 
 		for (int32_t x = 0; x < subdivisions; ++x) {
-			const float x_scale = static_cast<float>(x) / subdivisions;
+			const float x_scale = static_cast<float>(x) / (subdivisions - 1);
 
 			points.emplace_back(glm::vec3(
-				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * y_scale),
-				sinf(Gaff::Pi * y_scale),
-				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * y_scale)
+				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale),
+				sinf(Gaff::Pi * 0.5f * y_scale),
+				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale)
 			));
 
 			// Don't generate the same point multiple times. Only need one.
@@ -64,18 +66,24 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 		}
 	}
 
-	// Elevation 0 will be duplicates, but easier to deal with a duplicate row of points than special case it.
 	// Clone top hemisphere to make bottom hemisphere.
-	for (int32_t y = 0; y < half_subdivisions; ++y) {
-		const int32_t starting_index = y * subdivisions;
+	// Starting at half_subdivisions - 2 because the middle strip
+	// is shared between both hemispheres. No need to duplicate that strip.
+	for (int32_t y = half_subdivisions - 2; y >= 0; --y) {
+		// y == 0 is north pole.
+		const int32_t starting_index = (y > 0) ?
+			(y - 1) * subdivisions + 1 :
+			0;
 
 		// Bottom hemisphere is just top hemisphere with the y-axis inverted.
 		for (int32_t x = 0; x < subdivisions; ++x) {
 			glm::vec3 point = points[starting_index + x];
 			point.y = -point.y;
 
+			points.emplace_back(point);
+
 			// Only one point for top and bottom pole.
-			if (y == (half_subdivisions - 1)) {
+			if (y == 0) {
 				break;
 			}
 		}
@@ -83,77 +91,61 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 
 	points.shrink_to_fit();
 
+	const int32_t num_rows = subdivisions - 1;
+
 	// Create indices for each triangle strip.
-
-	// Top hemisphere indices.
-	for (int32_t y = 0; y < half_subdivisions; ++y) {
-		const int32_t top_starting_index = (y + 1) * subdivisions;
-		const int32_t bottom_starting_index = y * subdivisions;
-
-		// Front face clockwise.
+	// Start at north pole and work our way down.
+	for (int32_t y = 0; y < num_rows; ++y) {
+		// Front face clockwise. Current row is top, next row is bottom.
 		// *---*
 		// | \ |
 		// |  \|
 		// *---*
 		for (int32_t x = 0; x < subdivisions; ++x) {
-			const int32_t bot_right = bottom_starting_index + (x + 1) % subdivisions;
-			const int32_t bot_left = bottom_starting_index + x;
+			// North pole.
+			if (y == 0) {
+				const int32_t bottom_right = (x + 1) % subdivisions + 1;
+				const int32_t bottom_left = x + 1;
 
-			indices.emplace_back(bot_right);
-			indices.emplace_back(bot_left);
+				indices.emplace_back(0); // North pole.
+				indices.emplace_back(bottom_right);
+				indices.emplace_back(bottom_left);
 
-			// Reached north pole.
-			if (y == (half_subdivisions - 2)) {
-				indices.emplace_back(top_starting_index);
+			// Next strip is south pole.
+			} else if (y == (num_rows - 2)) {
+				const int32_t top_starting_index = (y - 1) * subdivisions + 1;
+				const int32_t top_right = top_starting_index + (x + 1) % subdivisions;
+				const int32_t top_left = top_starting_index + x;
+				const int32_t south_pole = y * subdivisions + 1;
 
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(south_pole);
+
+			} else if (y > (num_rows - 2)) {
+				break;
+
+			// Some strip in between north and south pole.
 			} else {
+				const int32_t bottom_starting_index = y * subdivisions + 1;
+				const int32_t top_starting_index = (y - 1) * subdivisions + 1;
+				const int32_t bottom_right = bottom_starting_index + (x + 1) % subdivisions;
+				const int32_t bottom_left = bottom_starting_index + x;
 				const int32_t top_right = top_starting_index + (x + 1) % subdivisions;
 				const int32_t top_left = top_starting_index + x;
 
+				indices.emplace_back(bottom_right);
+				indices.emplace_back(bottom_left);
 				indices.emplace_back(top_left);
 
-				indices.emplace_back(bot_right);
+				indices.emplace_back(bottom_right);
 				indices.emplace_back(top_left);
 				indices.emplace_back(top_right);
 			}
 		}
 	}
 
-	// Bottom hemisphere indices.
-	const int32_t offset = subdivisions * (half_subdivisions - 1) + 1;
-
-	for (int32_t y = 0; y < half_subdivisions; ++y) {
-		const int32_t bottom_starting_index = (y + 1) * subdivisions;
-		const int32_t top_starting_index = y * subdivisions;
-
-		// Front face clockwise.
-		// *---*
-		// | \ |
-		// |  \|
-		// *---*
-		for (int32_t x = 0; x < subdivisions; ++x) {
-			const int32_t top_right = top_starting_index + (x + 1) % subdivisions + offset;
-			const int32_t top_left = top_starting_index + x + offset;
-
-			indices.emplace_back(top_left);
-			indices.emplace_back(top_right);
-
-			// Reached south pole.
-			if (y == (half_subdivisions - 2)) {
-				indices.emplace_back(bottom_starting_index + offset);
-
-			} else {
-				const int32_t bottom_right = bottom_starting_index + (x + 1) % subdivisions + offset;
-				const int32_t bottom_left = bottom_starting_index + x + offset;
-
-				indices.emplace_back(bottom_right);
-
-				indices.emplace_back(top_left);
-				indices.emplace_back(bottom_right);
-				indices.emplace_back(bottom_left);
-			}
-		}
-	}
+	indices.shrink_to_fit();
 }
 
 NS_END

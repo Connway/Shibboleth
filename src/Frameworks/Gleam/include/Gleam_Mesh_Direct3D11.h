@@ -47,8 +47,8 @@ public:
 	RendererType getRendererType(void) const;
 
 private:
-	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology;
-	DXGI_FORMAT _indice_format;
+	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	DXGI_FORMAT _indice_format = DXGI_FORMAT_R16_UINT;
 
 	Vector<ID3D11Buffer*> _buffers;
 	Vector<UINT> _strides;

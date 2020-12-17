@@ -67,7 +67,7 @@ void MeshD3D11::setIndiceBuffer(IBuffer* buffer)
 {
 	MeshBase::setIndiceBuffer(buffer);
 
-	_indice_format = DXGI_FORMAT_R32_UINT;
+	_indice_format = DXGI_FORMAT_R16_UINT;
 
 	if (_indices) {
 		switch (_indices->getElementSize()) {

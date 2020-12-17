@@ -81,6 +81,7 @@ public:
 
 	const glm::vec3& getScale(void) const;
 	void setScale(const glm::vec3& scale);
+	void setScale(float scale);
 	const glm::quat& getRotation(void) const;
 	void setRotation(const glm::quat& rotation);
 	const glm::vec3& getTranslation(void) const;

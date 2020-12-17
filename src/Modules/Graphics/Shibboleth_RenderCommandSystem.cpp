@@ -167,6 +167,11 @@ void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, 
 		);
 
 		for (RenderManagerBase::RenderCommand& cmd : cmds.command_list) {
+			if (!cmd.cmd_list->isValid()) {
+				// $TODO: Log error.
+				continue;
+			}
+
 			job_data.device->executeCommandList(*cmd.cmd_list);
 
 			// Do not deallocate.
@@ -712,7 +717,9 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 		}
 	}
 
-	deferred_device->finishCommandList(*job_data.cmd_list);
+	if (!deferred_device->finishCommandList(*job_data.cmd_list)) {
+		// $TODO: Log error.
+	}
 }
 
 void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)

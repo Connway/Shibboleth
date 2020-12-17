@@ -130,6 +130,7 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 	// $TODO: Need a dynamic way of determining camera render order.
 	for (int32_t i = 0; i < num_devices; ++i) {
 		// Do per-frame setup.
+		// $TODO: Cache these.
 		Gleam::ICommandList* const cmd_list = _render_mgr->createCommandList();
 		Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
 
@@ -255,7 +256,9 @@ void CameraPostRenderSystem::RenderCameras(uintptr_t thread_id_int, void* data)
 		);
 	}
 
-	deferred_device->finishCommandList(*job_data.cmd_list);
+	if (!deferred_device->finishCommandList(*job_data.cmd_list)) {
+		// $TODO: Log error.
+	}
 }
 
 NS_END

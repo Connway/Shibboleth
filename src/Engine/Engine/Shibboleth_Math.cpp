@@ -190,7 +190,11 @@ SHIB_REFLECTION_DEFINE_END(glm::vec2)
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)
 	.var("translation", &Gleam::Transform::getTranslation, &Gleam::Transform::setTranslation)
 	.var("rotation", &Gleam::Transform::getRotation, &Gleam::Transform::setRotation)
-	.var("scale", &Gleam::Transform::getScale, &Gleam::Transform::setScale)
+	.var(
+		"scale",
+		static_cast<const glm::vec3& (Gleam::Transform::*)() const>(&Gleam::Transform::getScale),
+		static_cast<void (Gleam::Transform::*)(const glm::vec3&)>(&Gleam::Transform::setScale)
+	)
 SHIB_REFLECTION_DEFINE_END(Gleam::Transform)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Plane)

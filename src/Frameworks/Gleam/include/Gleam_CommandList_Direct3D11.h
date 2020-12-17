@@ -43,6 +43,7 @@ public:
 	bool operator!=(const ICommandList& rhs) const override;
 
 	RendererType getRendererType(void) const override;
+	bool isValid(void) const override;
 
 	void setCommandList(ID3D11CommandList* command_list);
 	ID3D11CommandList* getCommandList(void);

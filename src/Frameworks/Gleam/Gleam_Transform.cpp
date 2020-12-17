@@ -213,6 +213,11 @@ void Transform::setScale(const glm::vec3& scale)
 	_scale = scale;
 }
 
+void Transform::setScale(float scale)
+{
+	_scale = glm::vec3(scale);
+}
+
 const glm::quat& Transform::getRotation(void) const
 {
 	return _rotation;

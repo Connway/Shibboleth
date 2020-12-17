@@ -77,7 +77,7 @@ namespace
 			}
 		)",
 		R"(
-			NEED TO IMPLEMENT!
+			$TODO: NEED TO IMPLEMENT!
 		)"
 	};
 
@@ -149,7 +149,7 @@ namespace
 			}
 		)",
 		R"(
-			NEED TO IMPLEMENT!
+			$TODO: NEED TO IMPLEMENT!
 		)"
 	};
 
@@ -187,7 +187,7 @@ namespace
 			}
 		)",
 		R"(
-			NEED TO IMPLEMENT!
+			$TODO: NEED TO IMPLEMENT!
 		)"
 	};
 	static constexpr const char* const g_debug_pixel_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
@@ -205,7 +205,7 @@ namespace
 			}
 		)",
 		R"(
-			NEED TO IMPLEMENT!
+			$TODO: NEED TO IMPLEMENT!
 		)"
 	};
 
@@ -306,6 +306,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
 	glm::mat4x4 final_camera = glm::identity<glm::mat4x4>();
+	EntityID camera_id = EntityID_None;
 
 	// Nothing to render.
 	if (!debug_data.render_list[0].size() && !debug_data.render_list[1].size()) {
@@ -317,7 +318,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			job_data.debug_mgr->_camera_position[i],
 			job_data.debug_mgr->_camera_rotation[i],
 			job_data.debug_mgr->_camera[i],
-			[&](EntityID, const Position& position, const Rotation& rotation, const Camera& camera) -> void
+			[&](EntityID id, const Position& position, const Rotation& rotation, const Camera& camera) -> void
 			{
 				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const("main");
 
@@ -335,9 +336,15 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 					camera_transform[3] = glm::vec4(position.value, 1.0f);
 
 					final_camera = projection * glm::inverse(camera_transform);
+					camera_id = id;
 				}
 			}
 		);
+	}
+
+	if (camera_id < 0) {
+		// $TODO: Log error.
+		return;
 	}
 
 	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
@@ -346,6 +353,13 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
 	GAFF_REF(rd);
+
+	const RenderManagerBase::GBufferData* const g_buffer = job_data.debug_mgr->_render_mgr->getGBuffer(camera_id, *devices->front());
+
+	if (!g_buffer) {
+		// $TODO: Log error.
+		return;
+	}
 
 	if (job_data.type == DebugRenderType::Line) {
 		Gleam::IBuffer* const const_buffer =
@@ -433,15 +447,16 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			debug_data.instance_data[i].emplace_back(buffer);
 		}
 
-		job_data.debug_mgr->_main_output->getRenderTarget().bind(*rd);
+		g_buffer->render_target->bind(*rd);
 		job_data.debug_mgr->_debug_data.depth_stencil_state[i]->bind(*rd);
 		job_data.debug_mgr->_debug_data.raster_state[i]->bind(*rd);
-		//job_data.debug_mgr->_blend_state->bind(*rd);
+		job_data.debug_mgr->_blend_state->bind(*rd);
 
 		if (job_data.type == DebugRenderType::Line) {
 			job_data.debug_mgr->_debug_data.line_program->bind(*rd);
 		} else {
 			job_data.debug_mgr->_debug_data.program->bind(*rd);
+			job_data.debug_mgr->_debug_data.layout->bind(*rd);
 		}
 
 		int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
@@ -468,12 +483,12 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 					mapped_buffer += 3 * sizeof(glm::vec3);
 
 				} else {
-					const glm::mat4x3 transform = inst.transform.toMatrix();
+					const glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
 
-					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x3));
-					memcpy(mapped_buffer + sizeof(glm::mat4x3), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
+					memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
 
-					mapped_buffer += sizeof(glm::mat4x3) + sizeof(glm::vec3);
+					mapped_buffer += sizeof(glm::mat4x4) + sizeof(glm::vec3);
 				}
 
 				++curr_index;
@@ -509,7 +524,8 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 void DebugManager::SetupModuleToUseImGui(void)
 {
-	const DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	// Go through IDebugManager so that we get DebugModule's ImGui context.
+	const IDebugManager& dbg_mgr = GetApp().GETMANAGERT(IDebugManager, DebugManager);
 	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
 }
 
@@ -650,6 +666,22 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& s
 	instance->color = color;
 
 	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
+}
+
+DebugManager::DebugRenderHandle DebugManager::renderDebugSphere(const glm::vec3& pos, float radius, const Gleam::Color& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Sphere)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(pos);
+	instance->transform.setScale(radius * 2.0f); // Sphere is unit sphere, so radius is 0.5.
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Sphere, has_depth);
 }
 
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
@@ -927,6 +959,20 @@ bool DebugManager::initDebugRender(void)
 	_debug_data.program->attach(_debug_data.pixel_shader.get());
 
 
+	// Init layout for meshes.
+	_debug_data.layout.reset(_render_mgr->createLayout());
+
+	if (!_debug_data.layout) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_debug_data.layout->init(*_main_device, *_debug_data.vertex_shader)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+
 	// Init Depth-Stencil states
 	_debug_data.depth_stencil_state[0].reset(_render_mgr->createDepthStencilState());
 	_debug_data.depth_stencil_state[1].reset(_render_mgr->createDepthStencilState());
@@ -960,6 +1006,7 @@ bool DebugManager::initDebugRender(void)
 	}
 
 	Gleam::IRasterState::Settings raster_settings;
+	raster_settings.two_sided = true;
 	raster_settings.wireframe = true;
 
 	if (!_debug_data.raster_state[1]->init(*_main_device, raster_settings)) {
@@ -973,8 +1020,6 @@ bool DebugManager::initDebugRender(void)
 		// $TODO: Log error.
 		return false;
 	}
-
-	// $TODO: Init meshes.
 
 	for (int32_t i = 0; i < static_cast<int32_t>(DebugRenderType::Count); ++i) {
 		_debug_data.render_job_data_cache[i].type = static_cast<DebugRenderType>(i);
@@ -993,17 +1038,60 @@ bool DebugManager::initDebugRender(void)
 			return false;
 		}
 
-		_debug_data.instance_data[i].program_buffers.reset(_render_mgr->createProgramBuffers());
+		DebugRenderInstanceData& instance_data =_debug_data.instance_data[i];
 
-		if (!_debug_data.instance_data[i].program_buffers) {
+		instance_data.program_buffers.reset(_render_mgr->createProgramBuffers());
+
+		if (!instance_data.program_buffers) {
 			// $TODO: Log error.
 			return false;
 		}
 
-		if (static_cast<DebugRenderType>(i) == DebugRenderType::Line) {
-			_debug_data.instance_data[i].constant_buffer.reset(_render_mgr->createBuffer());
+		instance_data.mesh.reset(_render_mgr->createMesh());
 
-			if (!_debug_data.instance_data[i].constant_buffer) {
+		if (!instance_data.mesh) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		// Generate shape data.
+		Gleam::Vector<glm::vec3> points;
+		Gleam::Vector<int16_t> indices;
+
+		switch (static_cast<DebugRenderType>(i)) {
+			case DebugRenderType::Line:
+				//Gleam::GenerateDebugCapsule(4, points, indices);
+				break;
+
+			case DebugRenderType::Sphere:
+				Gleam::GenerateDebugSphere(8, points, indices);
+				break;
+
+			case DebugRenderType::Box:
+				//Gleam::GenerateDebugBox(4, points, indices);
+				//break;
+				continue;
+
+			case DebugRenderType::Capsule:
+				//Gleam::GenerateDebugCapsule(4, points, indices);
+				//break;
+				continue;
+
+			case DebugRenderType::Arrow:
+				//Gleam::GenerateDebugArrow(4, points, indices);
+				//break;
+				continue;
+
+			case DebugRenderType::Mesh:
+				// User defined mesh.
+				//break;
+				continue;
+		}
+
+		if (static_cast<DebugRenderType>(i) == DebugRenderType::Line) {
+			instance_data.constant_buffer.reset(_render_mgr->createBuffer());
+
+			if (!instance_data.constant_buffer) {
 				// $TODO: Log error.
 				return false;
 			}
@@ -1012,22 +1100,63 @@ bool DebugManager::initDebugRender(void)
 			cb_settings.size = sizeof(glm::mat4x4);
 			cb_settings.cpu_access = Gleam::IBuffer::MapType::Write;
 
-			if (!_debug_data.instance_data[i].constant_buffer->init(*_main_device, cb_settings)) {
+			if (!instance_data.constant_buffer->init(*_main_device, cb_settings)) {
 				// $TODO: Log error.
 				return false;
 			}
 
-			_debug_data.instance_data[i].program_buffers->addConstantBuffer(
+			instance_data.program_buffers->addConstantBuffer(
 				Gleam::IShader::Type::Vertex,
-				_debug_data.instance_data[i].constant_buffer.get()
+				instance_data.constant_buffer.get()
 			);
+
+		} else {
+			// Vertices
+			instance_data.vertices.reset(_render_mgr->createBuffer());
+
+			if (!instance_data.vertices) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			Gleam::IBuffer::Settings buffer_settings;
+			buffer_settings.type = Gleam::IBuffer::Type::VertexData;
+			buffer_settings.size = sizeof(glm::vec3) * points.size();
+			buffer_settings.element_size = sizeof(glm::vec3);
+			buffer_settings.stride = sizeof(glm::vec3);
+			buffer_settings.data = points.data();
+
+			if (!instance_data.vertices->init(*_main_device, buffer_settings)) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			// Indices
+			instance_data.indices.reset(_render_mgr->createBuffer());
+
+			if (!instance_data.indices) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			buffer_settings.type = Gleam::IBuffer::Type::IndexData;
+			buffer_settings.size = sizeof(int16_t) * indices.size();
+			buffer_settings.element_size = sizeof(int16_t);
+			buffer_settings.stride = sizeof(int16_t);
+			buffer_settings.data = indices.data();
+
+			if (!instance_data.indices->init(*_main_device, buffer_settings)) {
+				// $TODO: Log error.
+				return false;
+			}
+
+
+			instance_data.mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+			instance_data.mesh->setIndexCount(static_cast<int32_t>(indices.size()));
+			instance_data.mesh->setIndiceBuffer(instance_data.indices.get());
+			instance_data.mesh->addBuffer(instance_data.vertices.get());
 		}
 	}
-
-	Gleam::Vector<glm::vec3> points;
-	Gleam::Vector<int16_t> indices;
-
-	Gleam::GenerateDebugSphere(4, points, indices);
 
 	return true;
 }
@@ -1352,11 +1481,6 @@ bool DebugManager::initImGui(void)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	static auto f = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::COLOR_RED, true);
-	//static auto g = _debug_mgr->renderDebugLine(glm::vec3(-5.0f, 0.0f, -5.0f), glm::vec3(5.0f, 5.0f, 5.0f), Gleam::COLOR_RED);
-	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED);
-	//static auto g = _debug_mgr->renderDebugLine(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.5f, 0.5f, 0.0f), Gleam::COLOR_RED, true);
-	//static auto f = _debug_mgr->renderDebugLine(glm::vec3(100.0f, 0.25f, 0.0f), glm::vec3(400.0f, 0.5f, 0.0f), Gleam::COLOR_RED);
 	return true;
 }
 

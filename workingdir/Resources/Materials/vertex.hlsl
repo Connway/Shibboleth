@@ -42,7 +42,11 @@ PixelInputType VertexMain(VertexInputType input)
 {
 	PixelInputType output;
 
-	output.position = mul(instance_data[input.instance_id]._model_to_proj_matrix, float4(input.position, 1.0));
+	output.position = mul(
+		instance_data[input.instance_id]._model_to_proj_matrix,
+		float4(input.position, 1.0)
+	);
+
 	output.normal = float4(input.normal, 0.0);
 	output.uv = input.uv;
 
