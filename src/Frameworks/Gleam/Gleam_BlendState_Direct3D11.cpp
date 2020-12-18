@@ -58,7 +58,7 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 	blend_desc.RenderTarget[0].SrcBlendAlpha = static_cast<D3D11_BLEND>(settings.blend_src_alpha);
 	blend_desc.RenderTarget[0].RenderTargetWriteMask = static_cast<UINT8>(settings.color_write_mask);
 
-	HRESULT result = device->CreateBlendState(&blend_desc, &_blend_state);
+	const HRESULT result = device->CreateBlendState(&blend_desc, &_blend_state);
 	return SUCCEEDED(result);
 }
 

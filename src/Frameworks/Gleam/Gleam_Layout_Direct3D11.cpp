@@ -72,7 +72,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
+	const HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 
@@ -100,7 +100,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.input_params_reflection.size()), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
+	const HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.input_params_reflection.size()), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_GameTime.h>
 #include <Gleam_MeshGeneration.h>
 #include <gtx/euler_angles.hpp>
+#include <gtx/transform.hpp>
 #include <imgui.h>
 
 namespace
@@ -214,7 +215,7 @@ namespace
 		float mvp[4][4];
 	};
 
-	static constexpr int32_t k_num_instances_per_buffer = 128;
+	static constexpr int32_t k_num_instances_per_buffer = 32;
 }
 
 GAFF_STATIC_FILE_FUNC
@@ -398,8 +399,25 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			continue;
 		}
 
+		int32_t secondary_buffer_size_scalar = 0;
+
+		switch (job_data.type) {
+			case DebugRenderType::Capsule:
+				secondary_buffer_size_scalar = 2;
+				break;
+
+			case DebugRenderType::Arrow:
+				secondary_buffer_size_scalar = 1;
+				break;
+
+			default:
+				break;
+		}
+
+		const int32_t size_scalar = (secondary_buffer_size_scalar > 0) ? 2 : 1;
+
 		// Make sure we have enough buffers on the GPU to hold our instance data.
-		while (static_cast<int32_t>(debug_data.instance_data[i].size()) < num_buffers_needed) {
+		while (static_cast<int32_t>(debug_data.instance_data[i].size() / size_scalar) < num_buffers_needed) {
 			Gleam::IBuffer* const buffer = job_data.debug_mgr->_render_mgr->createBuffer();
 
 			if (!buffer) {
@@ -407,12 +425,11 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 				continue;
 			}
 
-			const int32_t data_size =
-				(job_data.type == DebugRenderType::Line) ?
+			const int32_t data_size = (job_data.type == DebugRenderType::Line) ?
 				static_cast<int32_t>(sizeof(glm::vec3) * 3) :
 				static_cast<int32_t>(sizeof(glm::mat4x4) + sizeof(glm::vec3));
 
-			const Gleam::IBuffer::Settings settings = {
+			Gleam::IBuffer::Settings settings = {
 				nullptr,
 				static_cast<size_t>(data_size) * static_cast<size_t>(k_num_instances_per_buffer),
 				data_size,
@@ -443,8 +460,57 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 				continue;
 			}
 
+			Gleam::IShaderResourceView* view2 = nullptr;
+			Gleam::IBuffer* buffer2 = nullptr;
+
+			if (secondary_buffer_size_scalar > 0) {
+				buffer2 = job_data.debug_mgr->_render_mgr->createBuffer();
+
+				if (!buffer2) {
+					// $TODO: Log error.
+					continue;
+				}
+
+				settings.size = static_cast<size_t>(data_size) * static_cast<size_t>(k_num_instances_per_buffer) * secondary_buffer_size_scalar;
+
+				if (!buffer2->init(*job_data.debug_mgr->_main_device, settings)) {
+					SHIB_FREET(buffer, g_allocator);
+					SHIB_FREET(view, g_allocator);
+					SHIB_FREET(buffer2, g_allocator);
+
+					// $TODO: Log error.
+					continue;
+				}
+
+				view2 = job_data.debug_mgr->_render_mgr->createShaderResourceView();
+
+				if (!view2) {
+					SHIB_FREET(buffer, g_allocator);
+					SHIB_FREET(view, g_allocator);
+					SHIB_FREET(buffer2, g_allocator);
+
+					// $TODO: Log error.
+					continue;
+				}
+
+				if (!view2->init(*job_data.debug_mgr->_main_device, buffer2)) {
+					SHIB_FREET(buffer, g_allocator);
+					SHIB_FREET(view, g_allocator);
+					SHIB_FREET(buffer2, g_allocator);
+					SHIB_FREET(view2, g_allocator);
+
+					// $TODO: Log error.
+					continue;
+				}
+			}
+
 			debug_data.instance_data_view[i].emplace_back(view);
 			debug_data.instance_data[i].emplace_back(buffer);
+
+			if (buffer2 && view2) {
+				debug_data.instance_data_view[i].emplace_back(view2);
+				debug_data.instance_data[i].emplace_back(buffer2);
+			}
 		}
 
 		g_buffer->render_target->bind(*rd);
@@ -462,48 +528,138 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		int32_t total_items = static_cast<int32_t>(debug_data.render_list[i].size());
 		int32_t curr_index = 0;
 
-		for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size()); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(debug_data.instance_data[i].size() / size_scalar); ++j) {
 			const int32_t count = Gaff::Min(total_items, k_num_instances_per_buffer);
-			int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j]->map(*rd));
+			int8_t* mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j * size_scalar]->map(*rd));
 
 			if (!mapped_buffer) {
 				// $TODO: Log error.
 				continue;
 			}
 
+			int8_t* secondary_mapped_buffer = nullptr;
+
+			if (size_scalar > 1) {
+				secondary_mapped_buffer = reinterpret_cast<int8_t*>(debug_data.instance_data[i][j * size_scalar + 1]->map(*rd));
+
+				if (!secondary_mapped_buffer) {
+					// $TODO: Log error.
+					continue;
+				}
+			}
+
 			// Update instance buffers(s).
 			for (int32_t k = 0; k < count; ++k) {
 				const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
 
-				if (job_data.type == DebugRenderType::Line) {
-					memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
-					memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
-					memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
+				switch (job_data.type) {
+					case DebugRenderType::Line:
+						memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
+						memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
 
-					mapped_buffer += 3 * sizeof(glm::vec3);
+						mapped_buffer += 3 * sizeof(glm::vec3);
+						break;
 
-				} else {
-					const glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
+					case DebugRenderType::Capsule: {
+						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(glm::vec3);
 
-					memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
-					memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						// Copy data for cylinder.
+						glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
 
-					mapped_buffer += sizeof(glm::mat4x4) + sizeof(glm::vec3);
+						memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
+						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+
+						// Copy data for top half-sphere of capsule.
+						const glm::vec3& scale = inst.transform.getScale(); // scale = (radius, height, radius)
+						Gleam::Transform modified_transform = inst.transform;
+
+						modified_transform.setScale(1.0f);
+						const glm::mat4x4 sphere_base_transform = modified_transform.toMatrix();
+
+						transform = glm::scale(glm::vec3(scale.x));
+						transform[3] = glm::vec4(0.0f, scale.y * 0.5f, 0.0f, 1.0f);
+
+						transform = final_camera * sphere_base_transform * transform;
+
+						memcpy(secondary_mapped_buffer, &transform, sizeof(glm::mat4x4));
+						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+
+						secondary_mapped_buffer += k_instance_size;
+
+						// Copy data for bottom half-sphere of capsule.
+						transform = glm::eulerAngleX(Gaff::Pi); // Flip upside down.
+						transform[3] = glm::vec4(0.0f, scale.y * -0.5f, 0.0f, 1.0f);
+						transform = glm::scale(transform, glm::vec3(scale.x));
+
+						transform = final_camera * sphere_base_transform * transform;
+
+						memcpy(secondary_mapped_buffer, &transform, sizeof(glm::mat4x4));
+						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+
+						secondary_mapped_buffer += k_instance_size;
+						mapped_buffer += k_instance_size;
+					} break;
+
+					case DebugRenderType::Arrow: {
+						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(glm::vec3);
+						constexpr size_t k_cone_offset = k_instance_size * k_num_instances_per_buffer;
+
+						mapped_buffer += k_instance_size;
+					} break;
+
+					default: {
+						const glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
+
+						memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
+						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+
+						mapped_buffer += sizeof(glm::mat4x4) + sizeof(glm::vec3);
+					} break;
 				}
 
 				++curr_index;
 			}
 
-			debug_data.instance_data[i][j]->unmap(*rd);
+			debug_data.instance_data[i][j * size_scalar]->unmap(*rd);
 
-			debug_data.program_buffers->clearResourceViews();
-			debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
-			debug_data.program_buffers->bind(*rd);
+			if (secondary_mapped_buffer) {
+				debug_data.instance_data[i][j * size_scalar + 1]->unmap(*rd);
+			}
 
-			if (job_data.type == DebugRenderType::Line) {
-				rd->renderLineNoVertexInputInstanced(count);
-			} else {
-				debug_data.mesh->renderInstanced(*rd, count);
+			switch (job_data.type) {
+				case DebugRenderType::Line:
+					debug_data.program_buffers->clearResourceViews();
+					debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+					debug_data.program_buffers->bind(*rd);
+
+					rd->renderLineNoVertexInputInstanced(count);
+					break;
+
+				case DebugRenderType::Capsule:
+					debug_data.program_buffers->clearResourceViews();
+					debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j * 2].get());
+					debug_data.program_buffers->bind(*rd);
+
+					debug_data.mesh[0]->renderInstanced(*rd, count);
+
+					debug_data.program_buffers->clearResourceViews();
+					debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j * 2 + 1].get());
+					debug_data.program_buffers->bind(*rd);
+
+					debug_data.mesh[1]->renderInstanced(*rd, count * 2);
+					break;
+
+				case DebugRenderType::Arrow:
+					break;
+
+				default:
+					debug_data.program_buffers->clearResourceViews();
+					debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+					debug_data.program_buffers->bind(*rd);
+
+					debug_data.mesh[0]->renderInstanced(*rd, count);
+					break;
 			}
 
 			total_items -= k_num_instances_per_buffer;
@@ -678,10 +834,42 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugSphere(const glm::vec3&
 	debug_data.lock[has_depth].Unlock();
 
 	instance->transform.setTranslation(pos);
-	instance->transform.setScale(radius * 2.0f); // Sphere is unit sphere, so radius is 0.5.
+	instance->transform.setScale(radius);
 	instance->color = color;
 
 	return DebugRenderHandle(instance, DebugRenderType::Sphere, has_depth);
+}
+
+DebugManager::DebugRenderHandle DebugManager::renderDebugBox(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Box)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(pos);
+	instance->transform.setScale(size);
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Box, has_depth);
+}
+
+DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const glm::vec3& pos, float radius, float height, const Gleam::Color& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Capsule)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(pos);
+	instance->transform.setScale(glm::vec3(radius, height, radius));
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Capsule, has_depth);
 }
 
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
@@ -1047,114 +1235,110 @@ bool DebugManager::initDebugRender(void)
 			return false;
 		}
 
-		instance_data.mesh.reset(_render_mgr->createMesh());
-
-		if (!instance_data.mesh) {
-			// $TODO: Log error.
-			return false;
-		}
-
 		// Generate shape data.
-		Gleam::Vector<glm::vec3> points;
-		Gleam::Vector<int16_t> indices;
+		Gleam::Vector<glm::vec3> points[2];
+		Gleam::Vector<int16_t> indices[2];
 
 		switch (static_cast<DebugRenderType>(i)) {
-			case DebugRenderType::Line:
-				//Gleam::GenerateDebugCapsule(4, points, indices);
-				break;
+			case DebugRenderType::Line: {
+				instance_data.constant_buffer.reset(_render_mgr->createBuffer());
+
+				if (!instance_data.constant_buffer) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				Gleam::IBuffer::Settings cb_settings;
+				cb_settings.size = sizeof(glm::mat4x4);
+				cb_settings.cpu_access = Gleam::IBuffer::MapType::Write;
+
+				if (!instance_data.constant_buffer->init(*_main_device, cb_settings)) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				instance_data.program_buffers->addConstantBuffer(
+					Gleam::IShader::Type::Vertex,
+					instance_data.constant_buffer.get()
+				);
+			} break;
 
 			case DebugRenderType::Sphere:
-				Gleam::GenerateDebugSphere(8, points, indices);
+				Gleam::GenerateDebugSphere(8, points[0], indices[0]);
 				break;
 
 			case DebugRenderType::Box:
-				//Gleam::GenerateDebugBox(4, points, indices);
-				//break;
-				continue;
+				Gleam::GenerateDebugBox(points[0], indices[0]);
+				break;
 
 			case DebugRenderType::Capsule:
-				//Gleam::GenerateDebugCapsule(4, points, indices);
-				//break;
-				continue;
+				Gleam::GenerateDebugCylinder(8, points[0], indices[0], false);
+				Gleam::GenerateDebugHalfSphere(8, points[1], indices[1]);
+				break;
 
 			case DebugRenderType::Arrow:
-				//Gleam::GenerateDebugArrow(4, points, indices);
-				//break;
-				continue;
+				//Gleam::GenerateDebugCylinder(8, points[0], indices[0]);
+				//Gleam::GenerateDebugCone(8, points[1], indices[1]);
+				break;
 
 			case DebugRenderType::Mesh:
-				// User defined mesh.
-				//break;
-				continue;
+				// User defined mesh. Nothing to generate.
+				break;
 		}
 
-		if (static_cast<DebugRenderType>(i) == DebugRenderType::Line) {
-			instance_data.constant_buffer.reset(_render_mgr->createBuffer());
+		for (int32_t j = 0; j < 2; ++j) {
+			if (!points[j].empty() && !indices[j].empty()) {
+				instance_data.mesh[j].reset(_render_mgr->createMesh());
 
-			if (!instance_data.constant_buffer) {
-				// $TODO: Log error.
-				return false;
+				if (!instance_data.mesh[j]) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				// Vertices
+				instance_data.vertices[j].reset(_render_mgr->createBuffer());
+
+				if (!instance_data.vertices[j]) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				Gleam::IBuffer::Settings buffer_settings;
+				buffer_settings.type = Gleam::IBuffer::Type::VertexData;
+				buffer_settings.size = sizeof(glm::vec3) * points[j].size();
+				buffer_settings.element_size = sizeof(glm::vec3);
+				buffer_settings.stride = sizeof(glm::vec3);
+				buffer_settings.data = points[j].data();
+
+				if (!instance_data.vertices[j]->init(*_main_device, buffer_settings)) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				// Indices
+				instance_data.indices[j].reset(_render_mgr->createBuffer());
+
+				if (!instance_data.indices[j]) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				buffer_settings.type = Gleam::IBuffer::Type::IndexData;
+				buffer_settings.size = sizeof(int16_t) * indices[j].size();
+				buffer_settings.element_size = sizeof(int16_t);
+				buffer_settings.stride = sizeof(int16_t);
+				buffer_settings.data = indices[j].data();
+
+				if (!instance_data.indices[j]->init(*_main_device, buffer_settings)) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				instance_data.mesh[j]->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+				instance_data.mesh[j]->setIndexCount(static_cast<int32_t>(indices[j].size()));
+				instance_data.mesh[j]->setIndiceBuffer(instance_data.indices[j].get());
+				instance_data.mesh[j]->addBuffer(instance_data.vertices[j].get());
 			}
-
-			Gleam::IBuffer::Settings cb_settings;
-			cb_settings.size = sizeof(glm::mat4x4);
-			cb_settings.cpu_access = Gleam::IBuffer::MapType::Write;
-
-			if (!instance_data.constant_buffer->init(*_main_device, cb_settings)) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			instance_data.program_buffers->addConstantBuffer(
-				Gleam::IShader::Type::Vertex,
-				instance_data.constant_buffer.get()
-			);
-
-		} else {
-			// Vertices
-			instance_data.vertices.reset(_render_mgr->createBuffer());
-
-			if (!instance_data.vertices) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			Gleam::IBuffer::Settings buffer_settings;
-			buffer_settings.type = Gleam::IBuffer::Type::VertexData;
-			buffer_settings.size = sizeof(glm::vec3) * points.size();
-			buffer_settings.element_size = sizeof(glm::vec3);
-			buffer_settings.stride = sizeof(glm::vec3);
-			buffer_settings.data = points.data();
-
-			if (!instance_data.vertices->init(*_main_device, buffer_settings)) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			// Indices
-			instance_data.indices.reset(_render_mgr->createBuffer());
-
-			if (!instance_data.indices) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			buffer_settings.type = Gleam::IBuffer::Type::IndexData;
-			buffer_settings.size = sizeof(int16_t) * indices.size();
-			buffer_settings.element_size = sizeof(int16_t);
-			buffer_settings.stride = sizeof(int16_t);
-			buffer_settings.data = indices.data();
-
-			if (!instance_data.indices->init(*_main_device, buffer_settings)) {
-				// $TODO: Log error.
-				return false;
-			}
-
-
-			instance_data.mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
-			instance_data.mesh->setIndexCount(static_cast<int32_t>(indices.size()));
-			instance_data.mesh->setIndiceBuffer(instance_data.indices.get());
-			instance_data.mesh->addBuffer(instance_data.vertices.get());
 		}
 	}
 
@@ -1482,8 +1666,12 @@ bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
 
+	static auto capsule = _debug_mgr->renderDebugCapsule(glm::vec3(5.0f, 0.0f, 5.0f), 1.0f, 2.0f, Gleam::COLOR_RED, true);
 	static auto sphere = _debug_mgr->renderDebugSphere(glm::vec3(0.0f, 0.5f, 5.0f), 1.0f, Gleam::COLOR_RED, true);
 	static auto line = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::COLOR_RED, true);
+	static auto box = _debug_mgr->renderDebugBox(glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(1.0f), Gleam::COLOR_RED, true);
+
+	capsule.getInstance().transform.setRotation(glm::angleAxis(Gaff::Pi * 0.25f, glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	return true;
 }

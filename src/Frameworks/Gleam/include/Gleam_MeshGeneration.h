@@ -27,6 +27,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices, bool close_off = true);
+void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
+void GenerateDebugBox(Vector<glm::vec3>& points, Vector<int16_t>& indices);
 
 NS_END

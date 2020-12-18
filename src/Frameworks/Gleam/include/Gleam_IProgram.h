@@ -75,7 +75,7 @@ public:
 	virtual void clearResourceViews(void) = 0;
 	virtual void clear(void) = 0;
 
-	virtual void bind(IRenderDevice& rd) = 0;
+	virtual void bind(IRenderDevice& rd, int32_t res_view_offset = 0, int32_t sampler_offset = 0, int32_t buffer_offset = 0) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 };

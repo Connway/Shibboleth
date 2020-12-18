@@ -78,6 +78,8 @@ public:
 	class DebugRenderHandle final
 	{
 	public:
+		DebugRenderHandle(void) = default;
+
 		~DebugRenderHandle(void)
 		{
 			if (_instance) {
@@ -94,8 +96,13 @@ public:
 			const_cast<DebugRenderHandle&>(rhs)._instance = nullptr;
 		}
 
+		const DebugRenderInstance& getInstance(void) const { return *_instance; }
+		DebugRenderInstance& getInstance(void) { return *_instance; }
+
+		bool isValid(void) const { return _instance != nullptr; }
+
 	private:
-		DebugRenderHandle(DebugRenderInstance* instance, DebugRenderType type, bool depth) :
+		DebugRenderHandle(DebugRenderInstance* instance, DebugRenderType type, bool depth):
 			_instance(instance),
 			_type(type),
 			_depth(depth)
@@ -122,15 +129,17 @@ public:
 
 	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 	DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
+	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
+	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 
 private:
 	struct DebugRenderInstanceData final
 	{
 		UniquePtr<Gleam::IProgramBuffers> program_buffers;
 		UniquePtr<Gleam::IBuffer> constant_buffer;
-		UniquePtr<Gleam::IBuffer> vertices;
-		UniquePtr<Gleam::IBuffer> indices;
-		UniquePtr<Gleam::IMesh> mesh;
+		UniquePtr<Gleam::IBuffer> vertices[2];
+		UniquePtr<Gleam::IBuffer> indices[2];
+		UniquePtr<Gleam::IMesh> mesh[2];
 
 		// 0 = no depth test, 1 = depth test
 		EA::Thread::SpinLock lock[2];

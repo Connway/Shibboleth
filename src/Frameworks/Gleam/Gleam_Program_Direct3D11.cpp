@@ -187,7 +187,7 @@ void ProgramBuffersD3D11::clear(void)
 	}
 }
 
-void ProgramBuffersD3D11::bind(IRenderDevice& rd)
+void ProgramBuffersD3D11::bind(IRenderDevice& rd, int32_t res_view_offset, int32_t sampler_offset, int32_t buffer_offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -198,9 +198,9 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 		Vector<ID3D11SamplerState*>& samplers = _samplers[i];
 		Vector<ID3D11Buffer*>& buffers = _buffers[i];
 
-		(context->*g_resource_set[i])(0, static_cast<UINT>(res_views.size()), res_views.data());
-		(context->*g_sampler_set[i])(0, static_cast<UINT>(samplers.size()), samplers.data());
-		(context->*g_buffer_set[i])(0, static_cast<UINT>(buffers.size()), buffers.data());
+		(context->*g_resource_set[i])(static_cast<UINT>(res_view_offset), static_cast<UINT>(res_views.size()), res_views.data());
+		(context->*g_sampler_set[i])(static_cast<UINT>(sampler_offset), static_cast<UINT>(samplers.size()), samplers.data());
+		(context->*g_buffer_set[i])(static_cast<UINT>(buffer_offset), static_cast<UINT>(buffers.size()), buffers.data());
 	}
 }
 

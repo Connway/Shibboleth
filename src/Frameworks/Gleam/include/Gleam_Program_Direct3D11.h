@@ -61,7 +61,7 @@ public:
 	void clearResourceViews(void) override;
 	void clear(void) override;
 
-	void bind(IRenderDevice& rd) override;
+	void bind(IRenderDevice& rd, int32_t res_view_offset = 0, int32_t sampler_offset = 0, int32_t buffer_offset = 0) override;
 
 	RendererType getRendererType(void) const override;
 

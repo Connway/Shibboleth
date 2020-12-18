@@ -95,13 +95,13 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 
 	GAFF_ASSERT(resource);
 
-	HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
+	const HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
 	_texture = texture;
 
 	return SUCCEEDED(result);
 }
 
-bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
+bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
 	GAFF_ASSERT(buffer);
@@ -113,14 +113,14 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
 	res_desc.Format = DXGI_FORMAT_UNKNOWN;
-	res_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	res_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
-	// The union will set this for all texture types.
-	res_desc.Buffer.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStride());
-	res_desc.Buffer.FirstElement = 0;
+	res_desc.BufferEx.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStride());
+	res_desc.BufferEx.FirstElement = static_cast<UINT>(offset); // $TODO: This seems to not be working is set to anything other than 0. Possibly related to format being unknown?
+	res_desc.BufferEx.Flags = 0;
 
 	ID3D11Resource* const resource = static_cast<const BufferD3D11*>(buffer)->getBuffer();
-	HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
+	const HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
 	_buffer = buffer;
 
 	return SUCCEEDED(result);

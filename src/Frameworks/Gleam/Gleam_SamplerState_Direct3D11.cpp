@@ -72,7 +72,7 @@ bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings
 	desc.MipLODBias = sampler_settings.lod_bias;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
-	HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
+	const HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }
 

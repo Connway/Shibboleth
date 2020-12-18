@@ -56,7 +56,7 @@ bool RasterStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 	raster_desc.ScissorEnable = settings.scissor_enabled;
 	raster_desc.SlopeScaledDepthBias = settings.slope_scale_depth_bias;
 
-	HRESULT result = device->CreateRasterizerState(&raster_desc, &_raster_state);
+	const HRESULT result = device->CreateRasterizerState(&raster_desc, &_raster_state);
 	return SUCCEEDED(result);
 }
 

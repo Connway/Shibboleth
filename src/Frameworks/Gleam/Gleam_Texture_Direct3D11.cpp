@@ -492,7 +492,7 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	depth_stencil_desc.CPUAccessFlags = 0;
 	depth_stencil_desc.MiscFlags = 0;
 
-	HRESULT result = device->CreateTexture2D(&depth_stencil_desc, NULL, &_texture_2d);
+	const HRESULT result = device->CreateTexture2D(&depth_stencil_desc, NULL, &_texture_2d);
 	return SUCCEEDED(result);
 }
 

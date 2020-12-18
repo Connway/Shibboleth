@@ -127,7 +127,7 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
-	HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
+	const HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
 	RETURNIFFAILED(result)
 
 	memcpy(reinterpret_cast<int8_t*>(mapped_resource.pData) + offset, data, size);
@@ -143,7 +143,7 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
-	HRESULT result = context->Map(_buffer, 0, g_map_map[static_cast<size_t>(map_type)], 0, &mapped_resource);
+	const HRESULT result = context->Map(_buffer, 0, g_map_map[static_cast<size_t>(map_type)], 0, &mapped_resource);
 	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 

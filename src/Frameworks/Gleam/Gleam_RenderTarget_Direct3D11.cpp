@@ -86,7 +86,7 @@ bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_text
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 
-	HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(static_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
+	const HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(static_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
 
 	// This is the first one, use this texture's width/height
@@ -123,7 +123,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 	desc.Texture2D.MipSlice = 0;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
-	HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	const HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 
 	return SUCCEEDED(result);
 }

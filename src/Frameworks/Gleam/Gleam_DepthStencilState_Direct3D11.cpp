@@ -65,7 +65,7 @@ bool DepthStencilStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 
 	_stencil_ref = settings.stencil_ref;
 
-	HRESULT result = device->CreateDepthStencilState(&depth_stencil_desc, &_depth_stencil_state);
+	const HRESULT result = device->CreateDepthStencilState(&depth_stencil_desc, &_depth_stencil_state);
 	return SUCCEEDED(result);
 }
 
