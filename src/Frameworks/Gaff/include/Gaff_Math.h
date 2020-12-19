@@ -33,6 +33,7 @@ constexpr float TurnsToDeg = 360.0f;
 constexpr float TurnsToRad = 2.0f * Pi;
 constexpr float DegToTurns = 1.0f / 360.0f;
 constexpr float RadToTurns = 1.0f / (2.0f * Pi);
+constexpr float Epsilon = 0.0001f;
 
 template <class T>
 constexpr const T& Min(const T& v1, const T& v2)

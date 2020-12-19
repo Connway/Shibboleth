@@ -62,9 +62,9 @@ public:
 		Line,
 		Sphere,
 		Box,
+		Cone,
 		Capsule,
 		Arrow,
-		Mesh,
 
 		Count
 	};
@@ -127,8 +127,10 @@ public:
 
 	ImGuiContext* getImGuiContext(void) const override;
 
+	DebugRenderHandle renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 	DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
+	DebugRenderHandle renderDebugCone(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color& color = Gleam::COLOR_WHITE, bool has_depth = false);
 

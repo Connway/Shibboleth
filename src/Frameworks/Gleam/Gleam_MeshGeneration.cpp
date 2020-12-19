@@ -33,22 +33,32 @@ void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vect
 	const int32_t offset = (close_off) ? 1 : 0;
 	const int32_t num_indices = (subdivisions * 6) * (offset + 1);
 
-	points.resize(static_cast<size_t>(subdivisions + offset) * 2);
-	indices.resize(num_indices);
+	points.set_capacity(static_cast<size_t>(subdivisions + offset) * 2);
+	indices.set_capacity(num_indices);
+
+	// Top cap.
+	if (close_off) {
+		points.emplace_back(0.0f, 0.5f, 0.0f);
+	}
 
 	for (int32_t i = 0; i < subdivisions; ++i) {
 		const float scale = static_cast<float>(i) / (subdivisions - 1);
-		const float x = cosf(2.0f * Gaff::Pi * scale);
-		const float z = sinf(2.0f * Gaff::Pi * scale);
+		const float x = cosf(2.0f * Gaff::Pi * scale) * 0.5f;
+		const float z = sinf(2.0f * Gaff::Pi * scale) * 0.5f;
 
-		points[2 * offset + subdivisions + i] = glm::vec3(x, -0.5f, z);
-		points[offset + i] = glm::vec3(x, 0.5f, z);
+		points.emplace_back(x, 0.5f, z);
 	}
 
-	// Generate points to close off the cylinder.
+	// Bottom cap.
 	if (close_off) {
-		points[subdivisions + 1] = glm::vec3(0.0f, -0.5f, 0.0f);
-		points[0] = glm::vec3(0.0f, 0.5f, 0.0f);
+		points.emplace_back(0.0f, -0.5f, 0.0f);
+	}
+
+	for (int32_t i = 0; i < subdivisions; ++i) {
+		glm::vec3 point = points[offset + i];
+		point.y = -point.y;
+
+		points.emplace_back(point);
 	}
 
 	// Front face clockwise. Current row is top, next row is bottom.
@@ -56,33 +66,44 @@ void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vect
 	// | \ |
 	// |  \|
 	// *---*
+
+	// Top cap.
+	if (close_off) {
+		for (int32_t i = 0; i < subdivisions; ++i) {
+			const int32_t top_right = (i + 1) % subdivisions + offset;
+			const int32_t top_left = i + offset;
+
+			indices.emplace_back(0);
+			indices.emplace_back(top_right);
+			indices.emplace_back(top_left);
+		}
+	}
+
 	for (int32_t i = 0; i < subdivisions; ++i) {
 		const int32_t top_right = (i + 1) % subdivisions + offset;
 		const int32_t top_left = i + offset;
 		const int32_t bottom_right = top_right + subdivisions + offset;
 		const int32_t bottom_left = top_left + subdivisions + offset;
 
-		int32_t index = i * 6 + offset * subdivisions * 3;
+		indices.emplace_back(bottom_left);
+		indices.emplace_back(top_left);
+		indices.emplace_back(bottom_right);
+		indices.emplace_back(bottom_right);
+		indices.emplace_back(top_left);
+		indices.emplace_back(top_right);
+	}
 
-		indices[index] = static_cast<int16_t>(bottom_left);
-		indices[index + 1] = static_cast<int16_t>(top_left);
-		indices[index + 2] = static_cast<int16_t>(bottom_right);
-		indices[index + 3] = static_cast<int16_t>(bottom_right);
-		indices[index + 4] = static_cast<int16_t>(top_left);
-		indices[index + 5] = static_cast<int16_t>(top_right);
+	// Bottom cap.
+	if (close_off) {
+		for (int32_t i = 0; i < subdivisions; ++i) {
+			const int32_t top_right = (i + 1) % subdivisions + offset;
+			const int32_t top_left = i + offset;
+			const int32_t bottom_right = top_right + subdivisions + offset;
+			const int32_t bottom_left = top_left + subdivisions + offset;
 
-		// Generate indices to close off the cylinder.
-		if (close_off) {
-			index = i * 3;
-
-			indices[index] = 0;
-			indices[index + 1] = static_cast<int16_t>(top_right);
-			indices[index + 2] = static_cast<int16_t>(top_left);
-
-			index += num_indices - subdivisions * 3;
-			indices[index] = static_cast<int16_t>(subdivisions) + 1;
-			indices[index + 1] = static_cast<int16_t>(bottom_left);
-			indices[index + 2] = static_cast<int16_t>(bottom_right);
+			indices.emplace_back(subdivisions + 1);
+			indices.emplace_back(bottom_left);
+			indices.emplace_back(bottom_right);
 		}
 	}
 }
@@ -115,9 +136,9 @@ void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Ve
 			const float x_scale = static_cast<float>(x) / (subdivisions - 1);
 
 			points.emplace_back(glm::vec3(
-				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale),
-				sinf(Gaff::Pi * 0.5f * y_scale),
-				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale)
+				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale) * 0.5f,
+				sinf(Gaff::Pi * 0.5f * y_scale) * 0.5f,
+				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale) * 0.5f
 			));
 
 			// Don't generate the same point multiple times. Only need one.
@@ -259,6 +280,36 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 				indices.emplace_back(top_right);
 			}
 		}
+	}
+}
+
+void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+{
+	indices.set_capacity(subdivisions * 6);
+	points.set_capacity(subdivisions + 2);
+
+	points.emplace_back(0.0f, 0.5f, 0.0f);
+	points.emplace_back(0.0f, -0.5f, 0.0f);
+
+	for (int32_t x = 0; x < subdivisions; ++x) {
+		const float x_scale = static_cast<float>(x) / (subdivisions - 1);
+
+		points.emplace_back(glm::vec3(
+			cosf(2.0f * Gaff::Pi * x_scale) * 0.5f,
+			-0.5f,
+			sinf(2.0f * Gaff::Pi * x_scale) * 0.5f
+		));
+
+		const int32_t bottom_right = (x + 1) % subdivisions + 2;
+		const int32_t bottom_left = x + 2;
+
+		indices.emplace_back(0);
+		indices.emplace_back(bottom_right);
+		indices.emplace_back(bottom_left);
+
+		indices.emplace_back(1);
+		indices.emplace_back(bottom_left);
+		indices.emplace_back(bottom_right);
 	}
 }
 
