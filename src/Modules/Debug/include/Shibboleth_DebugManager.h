@@ -41,6 +41,7 @@ THE SOFTWARE.
 #include <Gleam_IBuffer.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
+#include <Gaff_Flags.h>
 #include <EAThread/eathread_spinlock.h>
 
 NS_GLEAM
@@ -51,6 +52,7 @@ NS_END
 NS_SHIBBOLETH
 
 class RenderManagerBase;
+class InputManager;
 class ECSManager;
 struct Time;
 
@@ -196,6 +198,13 @@ private:
 		Gaff::Counter job_counter = 0;
 	};
 
+	enum class Flag
+	{
+		ShowDebugMenu,
+
+		Count
+	};
+
 
 	const Time* _time = nullptr;
 	int32_t _prev_cursor = -1;
@@ -212,7 +221,7 @@ private:
 
 	UniquePtr<Gleam::ICommandList> _cmd_list[2];
 
-	RenderManagerBase* _render_mgr = nullptr;
+	// ImGui
 	UniquePtr<Gleam::IBuffer> _vertex_buffer;
 	UniquePtr<Gleam::IBuffer> _index_buffer;
 	UniquePtr<Gleam::IMesh> _mesh;
@@ -233,9 +242,14 @@ private:
 	ECSQuery::Output _camera_position{ ProxyAllocator("Debug") };
 	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
 	ECSQuery::Output _camera{ ProxyAllocator("Debug") };
+
+	RenderManagerBase* _render_mgr = nullptr;
+	InputManager* _input_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 
 	DebugRenderData _debug_data;
+
+	Gaff::Flags<Flag> _flags;
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);

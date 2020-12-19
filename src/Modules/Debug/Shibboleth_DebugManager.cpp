@@ -742,6 +742,7 @@ bool DebugManager::initAllModulesLoaded(void)
 {
 	_time = &GetApp().getManagerTFast<GameTimeManager>().getRealTime();
 	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_input_mgr = &GetApp().getManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
 
 	GAFF_ASSERT(_main_output);
@@ -764,6 +765,18 @@ bool DebugManager::initAllModulesLoaded(void)
 
 void DebugManager::update(void)
 {
+	constexpr Gaff::Hash32 k_debug_menu_toggle = Gaff::FNV1aHash32Const("Debug_Menu_Toggle");
+	constexpr Gaff::Hash32 k_debug_input_mode = Gaff::FNV1aHash32Const("Debug");
+	const float toggle = _input_mgr->getAliasValue(k_debug_menu_toggle, _input_mgr->getKeyboardMousePlayerID());
+
+	if (toggle > 0.0f) {
+		if (_flags.toggle(Flag::ShowDebugMenu)) {
+			_input_mgr->setMode(k_debug_input_mode);
+		} else {
+			_input_mgr->setModeToPrevious();
+		}
+	}
+
 	const glm::ivec2& size = _main_output->getSize();
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -838,6 +851,20 @@ void DebugManager::update(void)
 	_character_buffer[char_buf_index].clear();
 
 	ImGui::NewFrame();
+
+	if (_flags.testAll(Flag::ShowDebugMenu)) {
+		if (ImGui::BeginMainMenuBar()) {
+			// Read debug menu bar list and call appropriate functions.
+			if (ImGui::BeginMenu("Test Menu")) {
+				ImGui::MenuItem("Test 1");
+				ImGui::MenuItem("Test 2");
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMainMenuBar();
+		}
+	}
 }
 
 void DebugManager::render(uintptr_t thread_id_int)

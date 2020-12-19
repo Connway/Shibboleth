@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static constexpr int32_t g_max_local_players = 4;
+static constexpr int32_t k_max_local_players = 4;
 
 class InputManager final : public IManager
 {
@@ -64,6 +64,13 @@ public:
 	void setKeyboardMousePlayerID(int32_t player_id);
 	int32_t getKeyboardMousePlayerID(void) const;
 
+	Gaff::Hash32 getPreviousMode(void) const;
+	Gaff::Hash32 getCurrentMode(void) const;
+	void setMode(Gaff::Hash32 mode);
+	void setMode(const char* mode);
+	void setModeToPrevious(void);
+	void setModeToDefault(void);
+
 	Gleam::IKeyboard* getKeyboard(void);
 	Gleam::IMouse* getMouse(void);
 
@@ -72,6 +79,7 @@ private:
 	{
 		Vector<Gleam::MouseCode> mouse_codes{ ProxyAllocator("Input") };
 		Vector<Gleam::KeyCode> key_codes{ ProxyAllocator("Input") };
+		Vector<Gaff::Hash32> modes{ ProxyAllocator("Input") };
 		int32_t alias_index;
 		float curr_tap_time = 0.0f;
 		float tap_interval = 0.1f;
@@ -87,14 +95,14 @@ private:
 		float value = 0.0f;
 	};
 
-	VectorMap<Gaff::Hash32, Alias> _alias_values[g_max_local_players] = {
+	VectorMap<Gaff::Hash32, Alias> _alias_values[k_max_local_players] = {
 		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
 		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
 		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
 		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") }
 	};
 
-	Vector<Binding> _bindings[g_max_local_players] = {
+	Vector<Binding> _bindings[k_max_local_players] = {
 		Vector<Binding>{ ProxyAllocator("Input") },
 		Vector<Binding>{ ProxyAllocator("Input") },
 		Vector<Binding>{ ProxyAllocator("Input") },
@@ -109,6 +117,8 @@ private:
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _start;
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _end;
 
+	Gaff::Hash32 _prev_mode = Gaff::FNV1aHash32Const("Default");
+	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
 
 	void handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value);

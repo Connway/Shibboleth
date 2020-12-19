@@ -29,7 +29,6 @@ function TestProcess:update(owner, var_inst)
 	local rot = Rotation.Get(self.ecs_mgr, entity_id)
 	rot.value.y = rot.value.y + rot_speed * self.game_time.delta
 	Rotation.Set(self.ecs_mgr, entity_id, rot)
-
 end
 
 return TestProcess

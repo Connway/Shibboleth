@@ -155,9 +155,10 @@ void Flags<Enum>::set(bool value, typename StorageType flags)
 }
 
 template <class Enum>
-void Flags<Enum>::toggle(Enum flag)
+bool Flags<Enum>::toggle(Enum flag)
 {
 	_flags.flip(static_cast<size_t>(flag));
+	return testAll(flag);
 }
 
 template <class Enum>

@@ -116,7 +116,7 @@ public:
 
 	void setRange(bool value, Enum start, Enum end);
 	void set(bool value, typename StorageType flags);
-	void toggle(Enum flag);
+	bool toggle(Enum flag);
 	void invert(void);
 	void clear(void);
 

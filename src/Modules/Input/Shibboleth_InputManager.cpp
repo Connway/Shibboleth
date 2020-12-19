@@ -150,12 +150,14 @@ bool InputManager::initAllModulesLoaded(void)
 
 		const Gaff::JSON tap_interval = value["Tap Interval"];
 		const Gaff::JSON binding = value["Binding"];
+		const Gaff::JSON modes = value["Modes"];
 		const Gaff::JSON scale = value["Scale"];
 		const Gaff::JSON alias = value["Alias"];
 		const Gaff::JSON taps = value["Taps"];
 
 		GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
 		GAFF_ASSERT(binding.isString() || binding.isArray());
+		GAFF_ASSERT(modes.isArray() || modes.isString() || modes.isNull());
 		GAFF_ASSERT(scale.isFloat() || scale.isNull());
 		GAFF_ASSERT(taps.isInt8() || taps.isNull());
 		GAFF_ASSERT(alias.isString());
@@ -187,9 +189,29 @@ bool InputManager::initAllModulesLoaded(void)
 
 		alias.freeString(alias_str);
 
+		if (modes.isArray()) {
+			const bool failed = modes.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+			{
+				GAFF_ASSERT(value.isString());
+				const char* const mode_string = value.getString();
+
+				final_binding.modes.emplace_back(Gaff::FNV1aHash32String(mode_string));
+
+				value.freeString(mode_string);
+				return false;
+			});
+
+		} else {
+			char mode_name[256] = { 0 };
+			const char* const mode_string = modes.getString(mode_name, 256, "Default");
+
+			final_binding.modes.emplace_back(Gaff::FNV1aHash32String(mode_string));
+		}
+
 		if (binding.isArray()) {
 			const bool failed = binding.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 			{
+				GAFF_ASSERT(value.isString());
 				const char* const binding_str = value.getString();
 
 				if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
@@ -232,9 +254,12 @@ bool InputManager::initAllModulesLoaded(void)
 
 		final_binding.mouse_codes.shrink_to_fit();
 		final_binding.key_codes.shrink_to_fit();
+		final_binding.modes.shrink_to_fit();
 
+		// Probably unnecessary.
 		eastl::sort(final_binding.mouse_codes.begin(), final_binding.mouse_codes.end());
 		eastl::sort(final_binding.key_codes.begin(), final_binding.key_codes.end());
+		eastl::sort(final_binding.modes.begin(), final_binding.modes.end());
 
 		bindings.emplace_back(final_binding);
 
@@ -262,8 +287,18 @@ void InputManager::update(void)
 	// Delta time is real-time.
 	const float dt = static_cast<float>(delta.count());
 
-	for (int32_t i = 0; i < g_max_local_players; ++i) {
+	for (int32_t i = 0; i < k_max_local_players; ++i) {
 		for (auto& binding : _bindings[i]) {
+			if (Gaff::Find(binding.modes, _curr_mode) == binding.modes.end()) {
+				_alias_values[i].at(binding.alias_index).second.value = 0.0f;
+
+				binding.curr_tap_time = 0.0f;
+				binding.curr_tap = 0;
+				binding.first_frame = false;
+
+				continue;
+			}
+
 			if (binding.taps > 0) {
 				binding.curr_tap_time += dt;
 
@@ -291,7 +326,7 @@ void InputManager::resetTimer(void)
 
 float InputManager::getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
 	const auto it = _alias_values[player_id].find(alias_name);
 	return (it == _alias_values[player_id].end()) ? 0.0f : it->second.value;
 }
@@ -303,7 +338,7 @@ float InputManager::getAliasValue(const char* alias_name, int32_t player_id) con
 
 float InputManager::getAliasValue(int32_t index, int32_t player_id) const
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
 	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values[player_id].size()));
 	return _alias_values[player_id].at(index).second.value;
 }
@@ -321,13 +356,44 @@ int32_t InputManager::getAliasIndex(const char* alias_name) const
 
 void InputManager::setKeyboardMousePlayerID(int32_t player_id)
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, g_max_local_players));
+	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
 	_km_player_id = player_id;
 }
 
 int32_t InputManager::getKeyboardMousePlayerID(void) const
 {
 	return _km_player_id;
+}
+
+Gaff::Hash32 InputManager::getPreviousMode(void) const
+{
+	return _prev_mode;
+}
+
+Gaff::Hash32 InputManager::getCurrentMode(void) const
+{
+	return _curr_mode;
+}
+
+void InputManager::setMode(Gaff::Hash32 mode)
+{
+	_prev_mode = _curr_mode;
+	_curr_mode = mode;
+}
+
+void InputManager::setMode(const char* mode)
+{
+	setMode(Gaff::FNV1aHash32String(mode));
+}
+
+void InputManager::setModeToPrevious(void)
+{
+	setMode(_prev_mode);
+}
+
+void InputManager::setModeToDefault(void)
+{
+	setMode(Gaff::FNV1aHash32Const("Default"));
 }
 
 Gleam::IKeyboard* InputManager::getKeyboard(void)
@@ -342,10 +408,14 @@ Gleam::IMouse* InputManager::getMouse(void)
 
 void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
-	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, g_max_local_players));
+	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, k_max_local_players));
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
 
 	for (Binding& binding : _bindings[_km_player_id]) {
+		if (Gaff::Find(binding.modes, _curr_mode) == binding.modes.end()) {
+			continue;
+		}
+
 		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.key_codes, code);
 
@@ -396,6 +466,10 @@ void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, fl
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 
 	for (Binding& binding : _bindings[_km_player_id]) {
+		if (Gaff::Find(binding.modes, _curr_mode) == binding.modes.end()) {
+			continue;
+		}
+
 		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 		const auto it = Gaff::Find(binding.mouse_codes, code);
 
