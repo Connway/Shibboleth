@@ -42,7 +42,7 @@ public:
 
 	glm::ivec2 getSize(void) const override;
 
-	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::NONE) override;
+	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::None) override;
 	void popTexture(void) override;
 
 	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) override;
@@ -50,7 +50,7 @@ public:
 	void bind(IRenderDevice& rd) override;
 	void unbind(IRenderDevice& rd) override;
 
-	void clear(IRenderDevice& rd, uint8_t clear_flags = CLEAR_ALL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color& clear_color = COLOR_BLACK) override;
+	void clear(IRenderDevice& rd, uint8_t clear_flags = ClearFlags::All, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color::RGBA& clear_color = Color::Black) override;
 
 	bool isComplete(void) const override;
 

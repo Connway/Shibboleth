@@ -426,8 +426,8 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 			}
 
 			const int32_t data_size = (job_data.type == DebugRenderType::Line) ?
-				static_cast<int32_t>(sizeof(glm::vec3) * 3) :
-				static_cast<int32_t>(sizeof(glm::mat4x4) + sizeof(glm::vec3));
+				static_cast<int32_t>(sizeof(Gleam::Color::RGB) + sizeof(glm::vec3) * 2) :
+				static_cast<int32_t>(sizeof(glm::mat4x4) + sizeof(Gleam::Color::RGB));
 
 			Gleam::IBuffer::Settings settings = {
 				nullptr,
@@ -553,22 +553,24 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 				const DebugRenderInstance& inst = *debug_data.render_list[i][curr_index];
 
 				switch (job_data.type) {
-					case DebugRenderType::Line:
-						memcpy(mapped_buffer, &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+					case DebugRenderType::Line: {
+						constexpr size_t k_instance_size = 2 * sizeof(glm::vec3) + sizeof(Gleam::Color::RGB);
+
+						memcpy(mapped_buffer, &inst.color, sizeof(Gleam::Color::RGB));
 						memcpy(mapped_buffer + sizeof(glm::vec3), &inst.transform.getTranslation(), sizeof(glm::vec3));
 						memcpy(mapped_buffer + 2 * sizeof(glm::vec3), &inst.transform.getScale(), sizeof(glm::vec3));
 
-						mapped_buffer += 3 * sizeof(glm::vec3);
-						break;
+						mapped_buffer += k_instance_size;
+					} break;
 
 					case DebugRenderType::Capsule: {
-						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(glm::vec3);
+						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(Gleam::Color::RGB);
 
 						// Copy data for cylinder.
 						glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
 
 						memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
 						// Copy data for top half-sphere of capsule.
 						const glm::vec3& scale = inst.transform.getScale(); // scale = (radius, height, radius)
@@ -583,7 +585,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 						transform = final_camera * sphere_base_transform * transform;
 
 						memcpy(secondary_mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
 						secondary_mapped_buffer += k_instance_size;
 
@@ -595,14 +597,14 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 						transform = final_camera * sphere_base_transform * transform;
 
 						memcpy(secondary_mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
 						secondary_mapped_buffer += k_instance_size;
 						mapped_buffer += k_instance_size;
 					} break;
 
 					case DebugRenderType::Arrow: {
-						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(glm::vec3);
+						constexpr size_t k_instance_size = sizeof(glm::mat4x4) + sizeof(Gleam::Color::RGB);
 
 						// Copy data for cylinder.
 						const glm::vec3& dir = inst.transform.getScale();
@@ -625,7 +627,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 							glm::scale(rotate_forward, glm::vec3(k_cylinder_scale, length, k_cylinder_scale));
 
 						memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
 						// Copy data for cone.
 						constexpr float k_cone_scale = 0.085f;
@@ -637,7 +639,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 							glm::scale(rotate_forward, glm::vec3(k_cone_scale));
 
 						memcpy(secondary_mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(secondary_mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
 						secondary_mapped_buffer += k_instance_size;
 						mapped_buffer += k_instance_size;
@@ -647,9 +649,9 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 						const glm::mat4x4 transform = final_camera * inst.transform.toMatrix();
 
 						memcpy(mapped_buffer, &transform, sizeof(glm::mat4x4));
-						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(glm::vec3)); // We don't care about alpha.
+						memcpy(mapped_buffer + sizeof(glm::mat4x4), &inst.color, sizeof(Gleam::Color::RGB));
 
-						mapped_buffer += sizeof(glm::mat4x4) + sizeof(glm::vec3);
+						mapped_buffer += sizeof(glm::mat4x4) + sizeof(Gleam::Color::RGB);
 					} break;
 				}
 
@@ -854,7 +856,7 @@ ImGuiContext* DebugManager::getImGuiContext(void) const
 	return ImGui::GetCurrentContext();
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Arrow)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -870,7 +872,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugArrow(const glm::vec3& 
 	return DebugRenderHandle(instance, DebugRenderType::Arrow, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Line)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -886,7 +888,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugLine(const glm::vec3& s
 	return DebugRenderHandle(instance, DebugRenderType::Line, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugSphere(const glm::vec3& pos, float radius, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugSphere(const glm::vec3& pos, float radius, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Sphere)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -902,7 +904,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugSphere(const glm::vec3&
 	return DebugRenderHandle(instance, DebugRenderType::Sphere, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugCone(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugCone(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Cone)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -918,7 +920,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCone(const glm::vec3& p
 	return DebugRenderHandle(instance, DebugRenderType::Cone, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugBox(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugBox(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Box)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -934,7 +936,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugBox(const glm::vec3& po
 	return DebugRenderHandle(instance, DebugRenderType::Box, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const glm::vec3& pos, float radius, float height, const Gleam::Color& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const glm::vec3& pos, float radius, float height, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Capsule)];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
@@ -1712,7 +1714,7 @@ bool DebugManager::initImGui(void)
 		0.0f,
 		0.0f,
 		1,
-		Gleam::COLOR_BLACK,
+		Gleam::Color::Black,
 		Gleam::ComparisonFunc::Always
 	};
 
@@ -1751,12 +1753,12 @@ bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
 
-	static auto capsule = _debug_mgr->renderDebugCapsule(glm::vec3(5.0f, 0.0f, 5.0f), 1.0f, 2.0f, Gleam::COLOR_RED, true);
-	static auto sphere = _debug_mgr->renderDebugSphere(glm::vec3(0.0f, 0.5f, 5.0f), 1.0f, Gleam::COLOR_RED, true);
-	static auto line = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::COLOR_RED, true);
-	static auto cone = _debug_mgr->renderDebugCone(glm::vec3(-5.0f, 5.0f, 5.0f), glm::vec3(1.0f), Gleam::COLOR_RED, true);
-	static auto box = _debug_mgr->renderDebugBox(glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(1.0f), Gleam::COLOR_RED, true);
-	static auto arrow = _debug_mgr->renderDebugArrow(glm::vec3(-5.0f, 1.0f, 20.0f), glm::vec3(5.0f, 1.0f, 20.0f), Gleam::COLOR_RED, true);
+	static auto capsule = _debug_mgr->renderDebugCapsule(glm::vec3(5.0f, 0.0f, 5.0f), 1.0f, 2.0f, Gleam::Color::Red, true);
+	static auto sphere = _debug_mgr->renderDebugSphere(glm::vec3(0.0f, 0.5f, 5.0f), 1.0f, Gleam::Color::Red, true);
+	static auto line = _debug_mgr->renderDebugLine(glm::vec3(-50.0f, 0.0f, 20.0f), glm::vec3(50.0f, 0.0f, 20.0f), Gleam::Color::Red, true);
+	static auto cone = _debug_mgr->renderDebugCone(glm::vec3(-5.0f, 5.0f, 5.0f), glm::vec3(1.0f), Gleam::Color::Red, true);
+	static auto box = _debug_mgr->renderDebugBox(glm::vec3(-5.0f, 0.0f, 5.0f), glm::vec3(1.0f), Gleam::Color::Red, true);
+	static auto arrow = _debug_mgr->renderDebugArrow(glm::vec3(-5.0f, 1.0f, 20.0f), glm::vec3(5.0f, 1.0f, 20.0f), Gleam::Color::Red, true);
 
 	capsule.getInstance().transform.setRotation(glm::angleAxis(Gaff::Pi * 0.25f, glm::vec3(1.0f, 0.0f, 0.0f)));
 

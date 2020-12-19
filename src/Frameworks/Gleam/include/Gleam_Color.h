@@ -23,16 +23,28 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include <vec4.hpp>
+#include "Gleam_IncludeColor.h"
 
 NS_GLEAM
 
-using Color = glm::vec4;
+namespace Color
+{
+	using RGBA = glm::vec4;
+	using HSVA = glm::vec4;
+	using RGB = glm::vec3;
+	using HSV = glm::vec3;
 
-const Color COLOR_RED(1.0f, 0.0f, 0.0f, 1.0f);
-const Color COLOR_GREEN(0.0f, 1.0f, 0.0f, 1.0f);
-const Color COLOR_BLUE(0.0f, 0.0f, 1.0f, 1.0f);
-const Color COLOR_BLACK(0.0f, 0.0f, 0.0f, 1.0f);
-const Color COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
+	static const RGBA Red(1.0f, 0.0f, 0.0f, 1.0f);
+	static const RGBA Green(0.0f, 1.0f, 0.0f, 1.0f);
+	static const RGBA Blue(0.0f, 0.0f, 1.0f, 1.0f);
+	static const RGBA Black(0.0f, 0.0f, 0.0f, 1.0f);
+	static const RGBA White(1.0f, 1.0f, 1.0f, 1.0f);
+
+	static const HSVA RedHSV = HSVA(glm::hsvColor(static_cast<RGB>(Red)), 1.0f);
+	static const HSVA GreenHSV = HSVA(glm::hsvColor(static_cast<RGB>(Green)), 1.0f);
+	static const HSVA BlueHSV = HSVA(glm::hsvColor(static_cast<RGB>(Blue)), 1.0f);
+	static const HSVA BlackHSV = HSVA(glm::hsvColor(static_cast<RGB>(Black)), 1.0f);
+	static const HSVA WhiteHSV = HSVA(glm::hsvColor(static_cast<RGB>(White)), 1.0f);
+}
 
 NS_END

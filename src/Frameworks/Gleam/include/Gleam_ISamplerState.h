@@ -56,14 +56,14 @@ public:
 		Count
 	};
 
-	struct Settings
+	struct Settings final
 	{
 		Filter filter;
 		Wrap wrap_u, wrap_v, wrap_w;
 		float min_lod, max_lod;
 		float lod_bias;
 		int32_t max_anisotropy;
-		Color border_color = COLOR_BLACK;
+		Color::RGBA border_color = Color::Black;
 		ComparisonFunc compare_func = ComparisonFunc::Never;
 	};
 

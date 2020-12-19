@@ -598,7 +598,7 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
 		0.0f, 0.0f,
 		0.0f,
 		1,
-		Gleam::COLOR_BLACK,
+		Gleam::Color::Black,
 		Gleam::ComparisonFunc::Never
 	};
 

@@ -87,7 +87,7 @@ void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
 
 					// $TODO: Make the clearing type an option.
 					render_target->bind(*deferred_device);
-					render_target->clear(*deferred_device, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, Gleam::COLOR_BLACK);
+					render_target->clear(*deferred_device, Gleam::IRenderTarget::ClearFlags::All, 1.0f, 0, Gleam::Color::Black);
 
 					if (!deferred_device->finishCommandList(*cmd_list)) {
 						// $TODO: Log error periodic.

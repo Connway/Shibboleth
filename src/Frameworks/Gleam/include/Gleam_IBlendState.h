@@ -70,7 +70,7 @@ public:
 		All = Red | Green| Blue | Alpha
 	};
 
-	struct Settings
+	struct Settings final
 	{
 		BlendFactor blend_src_color = BlendFactor::SourceColor;
 		BlendFactor blend_dst_color = BlendFactor::DestColor;

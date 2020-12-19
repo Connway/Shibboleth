@@ -36,22 +36,22 @@ class IRenderTarget
 public:
 	enum ClearFlags
 	{
-		CLEAR_DEPTH = 1,
-		CLEAR_STENCIL,
-		CLEAR_COLOR,
-		CLEAR_ALL = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR
+		Depth = 1,
+		Stencil,
+		Color,
+		All = Depth | Stencil | Color
 	};
 
 	enum class CubeFace
 	{
-		POS_X = 0,
-		NEG_X,
-		POS_Y,
-		NEG_Y,
-		POS_Z,
-		NEG_Z,
+		PosX = 0,
+		NegX,
+		PosY,
+		NegY,
+		PosZ,
+		NegZ,
 
-		NONE
+		None
 	};
 
 	IRenderTarget(void) {}
@@ -62,7 +62,7 @@ public:
 
 	virtual glm::ivec2 getSize(void) const = 0;
 
-	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = CubeFace::NONE) = 0;
+	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = CubeFace::None) = 0;
 	virtual void popTexture(void) = 0;
 
 	virtual bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;
@@ -70,7 +70,7 @@ public:
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual void clear(IRenderDevice& rd, uint8_t clear_flags = CLEAR_ALL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color & clear_color = COLOR_BLACK) = 0;
+	virtual void clear(IRenderDevice& rd, uint8_t clear_flags = ClearFlags::All, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color::RGBA& clear_color = Color::Black) = 0;
 
 	virtual bool isComplete(void) const = 0;
 

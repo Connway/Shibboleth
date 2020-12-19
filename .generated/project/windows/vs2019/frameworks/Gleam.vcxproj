@@ -244,6 +244,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IShaderResourceView.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ITexture.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IWindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeColor.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeD3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeMatrix.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeQuaternion.h" />
