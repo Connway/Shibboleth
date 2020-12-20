@@ -100,15 +100,21 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 
 	PhysicsManager& phys_mgr = GetApp().getManagerTFast<PhysicsManager>();
 
-	LoadResult result = loadPlane(reader, phys_mgr);
+	using LoadPtr = PhysicsShapeResource::LoadResult (PhysicsShapeResource::*)(const Gaff::ISerializeReader&, PhysicsManager& phys_mgr);
 
-	if (result == LoadResult::Skip) {
-		// Try the next shape type.
-		result = loadCapsule(reader, phys_mgr);
-	}
+	constexpr LoadPtr k_load_funcs[] = {
+		&PhysicsShapeResource::loadCapsule,
+		&PhysicsShapeResource::loadSphere,
+		&PhysicsShapeResource::loadPlane,
+		&PhysicsShapeResource::loadBox,
+	};
 
-	if (result == LoadResult::Skip) {
-		// Try the next shape type.
+	for (LoadPtr load_func : k_load_funcs) {
+		const LoadResult result = (this->*load_func)(reader, phys_mgr);
+
+		if (result != LoadResult::Skip) {
+			break;
+		}
 	}
 
 	if (_shape) {
@@ -123,12 +129,11 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 
 PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
-	const auto plane_guard = reader.enterElementGuard("capsule");
+	const auto capsule_guard = reader.enterElementGuard("capsule");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
-	}
-	else if (!reader.isObject()) {
+	} else if (!reader.isObject()) {
 		// $TODO: Log error.
 		return LoadResult::Error;
 	}
@@ -154,14 +159,44 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const Gaff::I
 	return LoadResult::Success;
 }
 
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+{
+	const auto plane_guard = reader.enterElementGuard("sphere");
+
+	if (reader.isNull()) {
+		return LoadResult::Skip;
+	} else if (!reader.isObject()) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+
+	if (_material->hasFailed()) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	const float radius = reader.readFloat("radius", 0.5f);
+
+	// Do we need to lock here?
+	_shape = phys_mgr.getPhysics()->createShape(physx::PxSphereGeometry(radius), *_material->getMaterial(), false);
+
+	if (!_shape) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	return LoadResult::Success;
+}
+
 PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
 	const auto plane_guard = reader.enterElementGuard("plane");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
-	}
-	else if (!reader.isObject()) {
+	} else if (!reader.isObject()) {
 		// $TODO: Log error.
 		return LoadResult::Error;
 	}
@@ -175,6 +210,49 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const Gaff::ISe
 
 	// Do we need to lock here?
 	_shape = phys_mgr.getPhysics()->createShape(physx::PxPlaneGeometry(), *_material->getMaterial(), false);
+
+	if (!_shape) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	return LoadResult::Success;
+}
+
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+{
+	const auto plane_guard = reader.enterElementGuard("box");
+
+	if (reader.isNull()) {
+		return LoadResult::Skip;
+	} else if (!reader.isObject()) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+
+	if (_material->hasFailed()) {
+		// $TODO: Log error.
+		return LoadResult::Error;
+	}
+
+	float hx = 0.5f;
+	float hy = 0.5f;
+	float hz = 0.5f;
+
+	{
+		const auto size_guard = reader.enterElementGuard("half_extents");
+
+		if (reader.isObject()) {
+			hx = reader.readFloat("x", 0.5f);
+			hy = reader.readFloat("y", 0.5f);
+			hz = reader.readFloat("z", 0.5f);
+		}
+	}
+
+	// Do we need to lock here?
+	_shape = phys_mgr.getPhysics()->createShape(physx::PxBoxGeometry(hx, hy, hz), *_material->getMaterial(), false);
 
 	if (!_shape) {
 		// $TODO: Log error.

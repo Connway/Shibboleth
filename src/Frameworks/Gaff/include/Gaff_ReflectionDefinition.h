@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
+#include "Gaff_Flags.h"
 #include "Gaff_Ops.h"
 
 MSVC_DISABLE_WARNING_PUSH(4505)
@@ -171,6 +172,9 @@ public:
 
 	template <class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
+
+	//template <class Enum, size_t name_size, class... Attrs>
+	//ReflectionDefinition& var(const char(&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);

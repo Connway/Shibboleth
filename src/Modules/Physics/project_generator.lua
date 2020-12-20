@@ -32,6 +32,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/Debug/include",
 			base_dir .. "../../Modules/ECS/include"
 		}
 
@@ -75,6 +76,7 @@ local GenerateProject = function()
 
 			"MainLoop",
 			"Resource",
+			"Debug",
 			"ECS"
 		}
 
@@ -104,6 +106,7 @@ local LinkDependencies = function()
 
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "Debug")
 	table.insert(deps, "ECS")
 
 	dependson(deps)

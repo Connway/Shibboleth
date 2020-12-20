@@ -9,6 +9,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugAttributes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugAttributes.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -17,6 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugModule.cpp" />
   </ItemGroup>

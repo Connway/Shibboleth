@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsManager.h"
 #include "Shibboleth_RigidBodyComponent.h"
 #include <Shibboleth_ECSComponentCommon.h>
+#include <Shibboleth_DebugAttributes.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
@@ -31,6 +32,12 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	.base<IManager>()
 	.ctor<>()
+
+	//.var(
+	//	"debug_flags",
+	//	&PhysicManager::_debug_flags,
+	//	DebugMenuItemAttribute("Physics")
+	//)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSComponentCommon.h>
+#include <Shibboleth_IDebugManager.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ECSQuery.h>
@@ -53,6 +54,13 @@ public:
 	physx::PxPhysics* getPhysics(void);
 
 private:
+	enum class DebugFlag
+	{
+		DrawRigidBodies,
+
+		Count
+	};
+
 	VectorMap<Gaff::Hash32, physx::PxScene*> _scenes{ ProxyAllocator("Physics") };
 
 	ECSQuery::SharedOutput<Scene> _scene_comps{ ProxyAllocator("Physics") };
@@ -74,6 +82,9 @@ private:
 #ifdef _DEBUG
 	physx::PxPvd* _pvd = nullptr;
 #endif
+
+	Vector<IDebugManager::DebugRenderHandle> _debug_render_handles{ ProxyAllocator("Physics") };
+	Gaff::Flags<DebugFlag> _debug_flags;
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsManager);
 };

@@ -299,6 +299,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
+    <ProjectReference Include="Debug.vcxproj">
+      <Project>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</Project>
+    </ProjectReference>
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>

@@ -22,51 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_PhysicsMaterialResource.h"
-
-namespace physx
-{
-	class PxShape;
-}
+#include <Shibboleth_Reflection.h>
+#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
-class PhysicsManager;
-
-class PhysicsShapeResource final : public IResource
+class DebugMenuItemAttribute final : public Gaff::IAttribute
 {
 public:
-	~PhysicsShapeResource(void);
+	IAttribute* clone(void) const override;
 
-	const physx::PxMaterial* getMaterial(void) const;
-	physx::PxMaterial* getMaterial(void);
-
-	const physx::PxShape* getShape(void) const;
-	physx::PxShape* getShape(void);
+	template <class T, class Enum>
+	void apply(Gaff::IReflectionVar& ref_var, Gaff::Flags<Enum> T::*flags);
 
 private:
-	enum class LoadResult
-	{
-		Skip,
-		Error,
-		Success
-	};
 
-	PhysicsMaterialResourcePtr _material;
-	physx::PxShape* _shape = nullptr;
-
-	void loadShape(IFile* file, uintptr_t thread_id_int);
-
-	LoadResult loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadSphere(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadBox(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsShapeResource);
+	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuItemAttribute);
 };
 
-using PhysicsShapeResourcePtr = Gaff::RefPtr<PhysicsShapeResource>;
+#include "Shibboleth_DebugAttributes.inl"
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsShapeResource)
+SHIB_REFLECTION_DECLARE(DebugMenuItemAttribute)

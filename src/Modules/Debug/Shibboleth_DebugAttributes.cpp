@@ -20,53 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_DebugAttributes.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include "Shibboleth_PhysicsMaterialResource.h"
-
-namespace physx
-{
-	class PxShape;
-}
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(DebugMenuItemAttribute, Gaff::IAttribute)
 
 NS_SHIBBOLETH
 
-class PhysicsManager;
+SHIB_REFLECTION_CLASS_DEFINE(DebugMenuItemAttribute)
 
-class PhysicsShapeResource final : public IResource
+Gaff::IAttribute* DebugMenuItemAttribute::clone(void) const
 {
-public:
-	~PhysicsShapeResource(void);
-
-	const physx::PxMaterial* getMaterial(void) const;
-	physx::PxMaterial* getMaterial(void);
-
-	const physx::PxShape* getShape(void) const;
-	physx::PxShape* getShape(void);
-
-private:
-	enum class LoadResult
-	{
-		Skip,
-		Error,
-		Success
-	};
-
-	PhysicsMaterialResourcePtr _material;
-	physx::PxShape* _shape = nullptr;
-
-	void loadShape(IFile* file, uintptr_t thread_id_int);
-
-	LoadResult loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadSphere(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadBox(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsShapeResource);
-};
-
-using PhysicsShapeResourcePtr = Gaff::RefPtr<PhysicsShapeResource>;
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(PhysicsShapeResource)

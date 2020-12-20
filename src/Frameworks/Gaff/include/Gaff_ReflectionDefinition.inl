@@ -1868,6 +1868,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	return *this;
 }
 
+//template <class T, class Allocator>
+//template <class Enum, size_t name_size, class... Attrs>
+//ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes)
+//{
+//}
+
 template <class T, class Allocator>
 template <class Ret, class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)

@@ -59,65 +59,6 @@ struct Time;
 class DebugManager final : public IManager, public IDebugManager
 {
 public:
-	enum class DebugRenderType
-	{
-		Line,
-		Sphere,
-		Box,
-		Cone,
-		Capsule,
-		Arrow,
-
-		Count
-	};
-
-	struct DebugRenderInstance final
-	{
-		Gleam::Transform transform;
-		Gleam::Color::RGB color;
-	};
-
-	class DebugRenderHandle final
-	{
-	public:
-		DebugRenderHandle(void) = default;
-
-		~DebugRenderHandle(void)
-		{
-			if (_instance) {
-				GetApp().getManagerTFast<DebugManager>().removeDebugRender(*this);
-			}
-		}
-
-		const DebugRenderHandle& operator=(const DebugRenderHandle& rhs)
-		{
-			_instance = rhs._instance;
-			_type = rhs._type;
-			_depth = rhs._depth;
-
-			const_cast<DebugRenderHandle&>(rhs)._instance = nullptr;
-		}
-
-		const DebugRenderInstance& getInstance(void) const { return *_instance; }
-		DebugRenderInstance& getInstance(void) { return *_instance; }
-
-		bool isValid(void) const { return _instance != nullptr; }
-
-	private:
-		DebugRenderHandle(DebugRenderInstance* instance, DebugRenderType type, bool depth):
-			_instance(instance),
-			_type(type),
-			_depth(depth)
-		{
-		}
-
-		DebugRenderInstance* _instance = nullptr;
-		DebugRenderType _type = DebugRenderType::Count;
-		bool _depth = false;
-
-		friend class DebugManager;
-	};
-
 	static void SetupModuleToUseImGui(void);
 
 	~DebugManager(void);
@@ -129,12 +70,12 @@ public:
 
 	ImGuiContext* getImGuiContext(void) const override;
 
-	DebugRenderHandle renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
-	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
-	DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
+	DebugRenderHandle renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
+	DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
+	DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCone(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
-	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
-	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false);
+	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
+	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
 private:
 	struct DebugRenderInstanceData final
@@ -257,13 +198,12 @@ private:
 	void renderPostCamera(uintptr_t thread_id_int);
 	void renderPreCamera(uintptr_t thread_id_int);
 
-	void removeDebugRender(const DebugRenderHandle& handle);
+	void removeDebugRender(const DebugRenderHandle& handle) override;
 
 	bool initDebugRender(void);
 	bool initImGui(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
-	friend class DebugRenderHandle;
 };
 
 class DebugRenderSystem final : public ISystem
