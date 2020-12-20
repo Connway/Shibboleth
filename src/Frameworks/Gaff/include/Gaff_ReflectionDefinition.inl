@@ -1478,7 +1478,7 @@ bool ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 
 	} else {
 		for (auto& entry : _vars) {
-			if (entry.second->canSerialize() && !entry.second->isReadOnly()) {
+			if (entry.second->canSerialize()) {
 				const char* const name = entry.first.getBuffer();
 
 				if (!reader.exists(name)) {
@@ -1514,7 +1514,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 		// Count how many vars we're actually writing to the object.
 		for (auto& entry : _vars) {
 			// If not read-only and does not have the NoSerialize attribute.
-			if (entry.second->canSerialize() && !entry.second->isReadOnly()) {
+			if (entry.second->canSerialize()) {
 				++writable_vars;
 			}
 		}
@@ -1525,7 +1525,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 		writer.writeUInt64("version", getReflectionInstance().getVersion());
 
 		for (auto& entry : _vars) {
-			if (entry.second->canSerialize() && !entry.second->isReadOnly()) {
+			if (entry.second->canSerialize()) {
 				writer.writeKey(entry.first.getBuffer());
 				entry.second->save(writer, object);
 			}

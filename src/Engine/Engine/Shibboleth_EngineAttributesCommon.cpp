@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(ReadOnlyAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(NoSerializeAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(UniqueAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(RangeAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(HashStringAttribute, Gaff::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(OptionalAttribute, Gaff::IAttribute)
@@ -35,6 +36,7 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(NoSerializeAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(UniqueAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(RangeAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(HashStringAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(OptionalAttribute)
@@ -54,6 +56,14 @@ Gaff::IAttribute* NoSerializeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(NoSerializeAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+
+Gaff::IAttribute* UniqueAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(UniqueAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 

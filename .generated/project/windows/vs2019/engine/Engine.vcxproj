@@ -266,7 +266,6 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ThreadAllocator.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_UniqueAttribute.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Utilities.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Vector.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_VectorMap.h" />
@@ -284,7 +283,6 @@ premake5 gen_static_header</Command>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_UniqueAttribute.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ZlibMemory.cpp" />
   </ItemGroup>

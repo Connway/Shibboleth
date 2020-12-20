@@ -111,9 +111,6 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ThreadAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_UniqueAttribute.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Utilities.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -137,7 +134,6 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_UniqueAttribute.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ZlibMemory.cpp" />
   </ItemGroup>

@@ -50,12 +50,23 @@ public:
 	IAttribute* clone(void) const override;
 
 	template <class T, class Var>
-	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true); }
+	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setNoSerialize(true); }
 
 	template <class T, class Var, class Ret>
 	void apply(Gaff::IReflectionVar& ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
+};
+
+
+
+// Not sure what I added this for. It's not used anywhere ...
+class UniqueAttribute final : public Gaff::IAttribute
+{
+public:
+	IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
 };
 
 
@@ -78,6 +89,7 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
 };
+
 
 
 // Gaff::Hash32 and Gaff::Hash64 are just typedefs for uint32_t and uint64_t respectively.
@@ -197,6 +209,7 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(NoSerializeAttribute)
+SHIB_REFLECTION_DECLARE(UniqueAttribute)
 SHIB_REFLECTION_DECLARE(RangeAttribute)
 SHIB_REFLECTION_DECLARE(HashStringAttribute)
 SHIB_REFLECTION_DECLARE(OptionalAttribute)

@@ -30,12 +30,17 @@ NS_SHIBBOLETH
 class DebugMenuItemAttribute final : public Gaff::IAttribute
 {
 public:
+	DebugMenuItemAttribute(const char* path);
+
+	const U8String& getPath(void) const;
+
 	IAttribute* clone(void) const override;
 
 	template <class T, class Enum>
 	void apply(Gaff::IReflectionVar& ref_var, Gaff::Flags<Enum> T::*flags);
 
 private:
+	U8String _path;
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuItemAttribute);
 };

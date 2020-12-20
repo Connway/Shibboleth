@@ -30,10 +30,20 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(DebugMenuItemAttribute)
 
+DebugMenuItemAttribute::DebugMenuItemAttribute(const char* path):
+	_path(path, ProxyAllocator("Reflection"))
+{
+}
+
+const U8String& DebugMenuItemAttribute::getPath(void) const
+{
+	return _path;
+}
+
 Gaff::IAttribute* DebugMenuItemAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator);
+	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator, _path.data());
 }
 
 NS_END
