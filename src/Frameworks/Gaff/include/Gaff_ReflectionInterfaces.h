@@ -68,17 +68,17 @@ public:
 	virtual Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual const Gaff::IEnumReflectionDefinition& getEnumReflectionDefinition(void) const
+	virtual const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const
 	{
 		GAFF_ASSERT_MSG(false, "Is a class reflected type!");
-		const Gaff::IEnumReflectionDefinition* const ptr = nullptr;
+		const IEnumReflectionDefinition* const ptr = nullptr;
 		return *ptr;
 	}
 
-	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const
+	virtual const IReflectionDefinition& getReflectionDefinition(void) const
 	{
 		GAFF_ASSERT_MSG(false, "Is an enum reflected type!");
-		const Gaff::IReflectionDefinition* const ptr = nullptr;
+		const IReflectionDefinition* const ptr = nullptr;
 		return *ptr;
 	}
 
@@ -168,6 +168,11 @@ public:
 	template <class DataType>
 	void setDataT(void* object, const DataType& data)
 	{
+		if (isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
 		using Type = typename std::remove_reference<DataType>::type;
 
 		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
@@ -187,6 +192,11 @@ public:
 	template <class DataType>
 	void setDataMoveT(void* object, DataType&& data)
 	{
+		if (isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
 		using Type = typename std::remove_reference<DataType>::type;
 
 		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
@@ -226,6 +236,11 @@ public:
 	template <class DataType>
 	void setElementT(void* object, int32_t index, const DataType& data)
 	{
+		if (isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
 		using Type = typename std::remove_reference<DataType>::type;
 
 		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
@@ -246,6 +261,11 @@ public:
 	template <class DataType>
 	void setElementMoveT(void* object, int32_t index, DataType&& data)
 	{
+		if (isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
 		using Type = typename std::remove_reference<DataType>::type;
 
 		const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
@@ -263,7 +283,7 @@ public:
 		setElementMove(object, index, &data);
 	}
 
-	virtual const Gaff::IReflection& getReflection(void) const = 0;
+	virtual const IReflection& getReflection(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;
 	virtual void* getData(void* object) = 0;
 	virtual void setData(void* object, const void* data) = 0;
@@ -273,10 +293,10 @@ public:
 	virtual bool isVector(void) const { return false; }
 	virtual bool isMap(void) const { return false; }
 
-	virtual const Gaff::IReflection& getReflectionKey(void) const
+	virtual const IReflection& getReflectionKey(void) const
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector map!");
-		return *static_cast<Gaff::IReflection*>(nullptr);
+		return *static_cast<IReflection*>(nullptr);
 	}
 
 	virtual int32_t size(const void*) const
@@ -317,11 +337,22 @@ public:
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
 	}
 
-	void setReadOnly(bool read_only) { _read_only = read_only; }
-	bool isReadOnly(void) const { return _read_only; }
+	void setReadOnly(bool read_only) { _flags.set(read_only, Flag::ReadOnly); }
+	bool isReadOnly(void) const { return _flags.testAll(Flag::ReadOnly); }
+
+	void setNoSerialize(bool no_serialize) { _flags.set(no_serialize, Flag::NoSerialize); }
+	bool canSerialize(void) const { return !_flags.testAll(Flag::NoSerialize); }
 
 private:
-	bool _read_only = false;
+	enum class Flag
+	{
+		NoSerialize,
+		ReadOnly,
+
+		Count
+	};
+
+	Flags<Flag> _flags;
 };
 
 class IAttribute : public IReflectionObject
@@ -332,10 +363,10 @@ public:
 	virtual Hash64 applyVersioning(Hash64 hash) const { return hash; }
 	virtual bool canInherit(void) const { return true; }
 
-	virtual void finish(const Gaff::IReflectionDefinition& /*ref_def*/) {}
-	virtual void finish(const Gaff::IEnumReflectionDefinition& /*ref_def*/) {}
+	virtual void finish(const IReflectionDefinition& /*ref_def*/) {}
+	virtual void finish(const IEnumReflectionDefinition& /*ref_def*/) {}
 
-	virtual void instantiated(const Gaff::IReflectionDefinition& /*ref_def*/, void* /*object*/) {}
+	virtual void instantiated(const IReflectionDefinition& /*ref_def*/, void* /*object*/) {}
 
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
 
@@ -475,7 +506,7 @@ struct FunctionStackEntry final
 
 	const IEnumReflectionDefinition* enum_ref_def = nullptr;
 	const IReflectionDefinition* ref_def = nullptr;
-	Gaff::Flags<Flag> flags;
+	Flags<Flag> flags;
 	Value value;
 };
 
@@ -930,21 +961,21 @@ public:
 	template <class... Args>
 	ConstructFunc<Args...> getConstructor(void) const
 	{
-		constexpr Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 		return reinterpret_cast<ConstructFunc<Args...>>(getConstructor(ctor_hash));
 	}
 
 	template <class... Args>
 	FactoryFunc<Args...> getFactory(void) const
 	{
-		constexpr Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
 	template <class Ret, class... Args>
 	IReflectionFunction<Ret, Args...>* getFunc(Hash32 name) const
 	{
-		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 		IReflectionFunctionBase* const functor = getFunc(name, arg_hash);
 
 		if (functor) {
@@ -957,7 +988,7 @@ public:
 	template <class Ret, class... Args>
 	IReflectionStaticFunction<Ret, Args...>* getStaticFunc(Hash32 name) const
 	{
-		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 		IReflectionStaticFunctionBase* const func = getStaticFunc(name, arg_hash);
 		
 		if (func) {

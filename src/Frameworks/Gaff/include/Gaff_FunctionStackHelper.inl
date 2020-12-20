@@ -183,7 +183,7 @@ bool CallFunc(
 			str = reinterpret_cast<char*>(entry.value.vp);
 
 		// It's a U8String.
-		} else if (Gaff::FindFirstOf(entry.ref_def->getReflectionInstance().getName(), "U8String") != SIZE_T_FAIL) {
+		} else if (FindFirstOf(entry.ref_def->getReflectionInstance().getName(), "U8String") != SIZE_T_FAIL) {
 			// I think this *SHOULD* be safe, since the string data is stored in the first part. So even if the allocator is a different size,
 			// the memory for the actual string should be in the same offset.
 			str = reinterpret_cast<U8String<>*>(entry.value.vp)->data();
@@ -273,7 +273,7 @@ bool CallFunc(
 				value = static_cast<FinalType>(entry.value.b);
 
 			} else {
-				if (!Gaff::CastNumberToType<FinalType>(entry, value)) {
+				if (!CastNumberToType<FinalType>(entry, value)) {
 					// $TOOD: Log error.
 					return false;
 				}
@@ -429,7 +429,7 @@ bool CallFunc(
 
 					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
 
-				} else if constexpr (std::is_base_of<Gaff::IReflectionObject, RetType>::value) {
+				} else if constexpr (std::is_base_of<IReflectionObject, RetType>::value) {
 					ret.ref_def = &reinterpret_cast<RetType*>(ret.value.vp)->getReflectionDefinition();
 					ret.value.vp = reinterpret_cast<RetType*>(ret.value.vp)->getBasePointer();
 				}

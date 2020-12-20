@@ -136,7 +136,7 @@ static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_si
 {
 	GAFF_ASSERT(file_path);
 
-	Gaff::File shader(file_path, Gaff::File::OM_READ_BINARY);
+	Gaff::File shader(file_path, Gaff::File::OpenMode::ReadBinary);
 
 	if (!shader.isOpen()) {
 		U8String msg("Failed to open shader file: ");

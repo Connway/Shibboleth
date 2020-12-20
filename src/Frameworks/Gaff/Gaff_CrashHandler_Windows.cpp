@@ -51,11 +51,11 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	// Generate dump file name
 	TCHAR process_name[MAX_PATH] = { 0 };
 	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
-	size_t name_begin = Gaff::FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
+	size_t name_begin = FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
 
 
 	TCHAR dump_format[128] = { 0 };
-	Gaff::GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));
+	GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));
 	dump_format[6] = TEXT('%');
 
 	TCHAR dump_file_name[1024] = { 0 };
@@ -63,7 +63,7 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	_snwprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
 
 	// Make sure our output folder exists.
-	Gaff::CreateDir("dumps", 0777);
+	CreateDir("dumps", 0777);
 
 	HANDLE hFile = CreateFile(
 		dump_file_name, GENERIC_READ | GENERIC_WRITE,

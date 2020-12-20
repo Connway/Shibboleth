@@ -85,7 +85,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 	U8String name = U8String("./") + file_name; // Pre-pend './' to name
 	Gaff::File loose_file;
 
-	if (!loose_file.open(name.data(), Gaff::File::OM_READ_BINARY)) {
+	if (!loose_file.open(name.data(), Gaff::File::OpenMode::ReadBinary)) {
 		return nullptr;
 	}
 

@@ -128,7 +128,7 @@ public:
 
 	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
 	const char* getKey(int32_t index) const;
-	Gaff::JSON getValue(int32_t index) const;
+	JSON getValue(int32_t index) const;
 
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
 	const char* getString(const char* default_value) const;

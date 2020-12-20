@@ -109,7 +109,7 @@ void JobPool<Allocator>::addPool(const HashStringTemp32<>& name, int32_t max_con
 }
 
 template <class Allocator>
-void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter** counter, Gaff::Hash32 pool)
+void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter** counter, Hash32 pool)
 {
 	if (!jobs || num_jobs == 0) {
 		return;
@@ -121,7 +121,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 		job_queue = &_main_queue;
 
 	} else {
-		const auto it = _job_pools.find_as(pool, eastl::less_2< Gaff::Hash32, const HashString32<Allocator> >());
+		const auto it = _job_pools.find_as(pool, eastl::less_2< Hash32, const HashString32<Allocator> >());
 		GAFF_ASSERT(it != _job_pools.end());
 		job_queue = &it->second;
 	}
@@ -149,7 +149,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 }
 
 template <class Allocator>
-void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Gaff::Hash32 pool)
+void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Hash32 pool)
 {
 	Counter* cnt = &counter;
 	addJobs(jobs, num_jobs, &cnt, pool);
@@ -388,12 +388,12 @@ void JobPool<Allocator>::DoJob(EA::Thread::ThreadId thread_id, JobPair& job)
 	job.first.job_func(id_int, job.first.job_data);
 
 	if (job.second) {
-		//Gaff::DebugPrintf("FUNC: %p\n", job.front);
+		//DebugPrintf("FUNC: %p\n", job.front);
 
 		//if (!job.second->count) {
-		//	Gaff::DebugPrintf("JOB FAIL(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);
+		//	DebugPrintf("JOB FAIL(%d) - %p:(%d)\n", Thread::GetCurrentThreadID(), job.second, job.second->count);
 		//} else {
-		//	Gaff::DebugPrintf("JOB(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);
+		//	DebugPrintf("JOB(%d) - %p:(%d)\n", Thread::GetCurrentThreadID(), job.second, job.second->count);
 		//}
 
 		GAFF_ASSERT(*job.second > 0);

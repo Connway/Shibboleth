@@ -50,7 +50,7 @@ int main(int argc, const char** argv)
 
 	Gaff::File csv_out;
 
-	if (!csv_out.open("reflection_hashes.csv", Gaff::File::OM_WRITE)) {
+	if (!csv_out.open("reflection_hashes.csv", Gaff::File::OpenMode::Write)) {
 		printf("Failed to open output file.");
 		return 0;
 	}

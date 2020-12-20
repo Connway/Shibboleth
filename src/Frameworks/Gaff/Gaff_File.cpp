@@ -151,9 +151,9 @@ bool File::open(const char* file_name, OpenMode mode)
 
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
-	_wfopen_s(&_file, temp, gOpenModesW[mode]);
+	_wfopen_s(&_file, temp, gOpenModesW[static_cast<int32_t>(mode)]);
 #else
-	_file = fopen(file_name, gOpenModes[mode]);
+	_file = fopen(file_name, gOpenModes[static_cast<int32_t>(mode)]);
 #endif
 
 	return _file != NULL;
@@ -165,9 +165,9 @@ bool File::redirect(FILE* file, const char* file_name, OpenMode mode)
 
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
-	_wfreopen_s(&_file, temp, gOpenModesW[mode], file);
+	_wfreopen_s(&_file, temp, gOpenModesW[static_cast<int32_t>(mode)], file);
 #else
-	_file = freopen(file_name, gOpenModes[mode], file);
+	_file = freopen(file_name, gOpenModes[static_cast<int32_t>(mode)], file);
 #endif
 
 	return _file && _file == file;
@@ -180,9 +180,9 @@ bool File::redirect(const char* file_name, OpenMode mode)
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	FILE* out = nullptr;
-	_wfreopen_s(&out, temp, gOpenModesW[mode], _file);
+	_wfreopen_s(&out, temp, gOpenModesW[static_cast<int32_t>(mode)], _file);
 #else
-	FILE* out = freopen(file_name, gOpenModes[mode], _file);
+	FILE* out = freopen(file_name, gOpenModes[static_cast<int32_t>(mode)], _file);
 #endif
 
 	return out && out == _file;
@@ -291,7 +291,7 @@ int32_t File::getFilePos(void) const
 bool File::seek(long offset, SeekOrigin origin)
 {
 	GAFF_ASSERT(_file);
-	return !fseek(_file, offset, origin);
+	return !fseek(_file, offset, static_cast<int>(origin));
 }
 
 void File::rewind(void)
@@ -312,7 +312,7 @@ int32_t File::getFileSize(void)
 	GAFF_ASSERT(_file);
 	long size;
 
-	if (fseek(_file, 0, Gaff::File::SO_END)) {
+	if (fseek(_file, 0, static_cast<int>(SeekOrigin::End))) {
 		return -1;
 	}
 

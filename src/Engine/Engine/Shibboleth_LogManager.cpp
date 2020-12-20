@@ -170,7 +170,7 @@ void LogManager::addChannel(HashStringTemp32<> channel, const char* file)
 
 		auto pair = eastl::make_pair<HashString32<>, Gaff::File>(HashString32<>(channel), Gaff::File());
 
-		if (pair.second.open(file_name, Gaff::File::OM_WRITE)) {
+		if (pair.second.open(file_name, Gaff::File::OpenMode::Write)) {
 			_channels.insert(std::move(pair));
 
 		} else {

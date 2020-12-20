@@ -27,13 +27,13 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
-static bool CastNumberToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
+static bool CastNumberToType(const IReflectionDefinition& ref_def, const void* in, T& out);
 
 template <class T>
-static bool CastFloatToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
+static bool CastFloatToType(const IReflectionDefinition& ref_def, const void* in, T& out);
 
 template <class T>
-static bool CastIntegerToType(const Gaff::IReflectionDefinition& ref_def, const void* in, T& out);
+static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out);
 
 template <class T>
 static bool CastNumberToType(const FunctionStackEntry& entry, T& out);

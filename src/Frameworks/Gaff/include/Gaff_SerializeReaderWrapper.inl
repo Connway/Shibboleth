@@ -79,7 +79,7 @@ bool SerializeReaderWrapper<Allocator>::parseMPack(const char* buffer, size_t si
 template <class Allocator>
 bool SerializeReaderWrapper<Allocator>::parseJSON(const char* buffer)
 {
-	Gaff::JSON json;
+	JSON json;
 
 	if (!json.parse(buffer)) {
 		_error_text = json.getErrorText();

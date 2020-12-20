@@ -179,6 +179,9 @@ public:
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
+	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
 	template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
 
@@ -286,7 +289,7 @@ private:
 	public:
 		VarPtr(Var T::*ptr);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -299,16 +302,40 @@ private:
 		Var T::* _ptr = nullptr;
 	};
 
+	template <class Enum>
+	class VarFlagPtr final : public IVar
+	{
+	public:
+		VarFlagPtr(Flags<Enum> T::* ptr, uint8_t flag_index);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Flags<Enum> T::* _ptr = nullptr;
+		uint8_t _flag_index = -1; // Unless flags have the craziest amount of flags, this should hold all possible flag values.
+		bool _cache = false;
+	};
+
 	template <class Ret, class Var>
 	class VarFuncPtrWithCache final : public IVar
 	{
 	public:
-		using Getter = Ret (T::*)(void) const;
-		using Setter = void (T::*)(Var);
+		using GetterMemberFunc = Ret (T::*)(void) const;
+		using SetterMemberFunc = void (T::*)(Var);
+		using GetterFunc = Ret (*)(const T&);
+		using SetterFunc = void (*)(T&, Var);
 
-		VarFuncPtrWithCache(Getter getter, Setter setter);
+		VarFuncPtrWithCache(GetterMemberFunc getter, SetterMemberFunc setter);
+		VarFuncPtrWithCache(GetterFunc getter, SetterFunc setter);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -321,8 +348,22 @@ private:
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
 		using VarType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Var>::type >::type >::type;
 
-		Getter _getter = nullptr;
-		Setter _setter = nullptr;
+		union
+		{
+			GetterMemberFunc _getter_member;
+			GetterFunc _getter;
+		};
+
+		union
+		{
+			SetterMemberFunc _setter_member;
+			SetterFunc _setter;
+		};
+
+		bool _member_func = true;
+
+		void callSetter(T& object, Var value) const;
+		Ret callGetter(const T& object) const;
 
 		RetType _cache;
 	};
@@ -331,12 +372,15 @@ private:
 	class VarFuncPtr final : public IVar
 	{
 	public:
-		using Getter = Ret (T::*)(void) const;
-		using Setter = void (T::*)(Var);
+		using GetterMemberFunc = Ret (T::*)(void) const;
+		using SetterMemberFunc = void (T::*)(Var);
+		using GetterFunc = Ret (*)(const T&);
+		using SetterFunc = void (*)(T&, Var);
 
-		VarFuncPtr(Getter getter, Setter setter);
+		VarFuncPtr(GetterMemberFunc getter, SetterMemberFunc setter);
+		VarFuncPtr(GetterFunc getter, SetterFunc setter);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -348,8 +392,22 @@ private:
 	private:
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
 
-		Getter _getter = nullptr;
-		Setter _setter = nullptr;
+		union
+		{
+			GetterMemberFunc _getter_member;
+			GetterFunc _getter;
+		};
+		
+		union
+		{
+			SetterMemberFunc _setter_member;
+			SetterFunc _setter;
+		};
+
+		bool _member_func = true;
+
+		void callSetter(T& object, Var value) const;
+		Ret callGetter(const T& object) const;
 	};
 
 	template <class Base>
@@ -358,7 +416,7 @@ private:
 	public:
 		BaseVarPtr(typename ReflectionDefinition<Base, Allocator>::IVar* base_var);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -388,7 +446,7 @@ private:
 	public:
 		ArrayPtr(Var (T::*ptr)[array_size]);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -417,7 +475,7 @@ private:
 	public:
 		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
 
-		const Gaff::IReflection& getReflection(void) const override;
+		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -446,8 +504,8 @@ private:
 	public:
 		VectorMapPtr(VectorMap<Key, Value, VecMap_Allocator> T::* ptr);
 
-		const Gaff::IReflection& getReflection(void) const override;
-		const Gaff::IReflection& getReflectionKey(void) const override;
+		const IReflection& getReflection(void) const override;
+		const IReflection& getReflectionKey(void) const override;
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -596,7 +654,7 @@ private:
 		}
 
 	private:
-		const Gaff::IReflectionDefinition& _base_ref_def;
+		const IReflectionDefinition& _base_ref_def;
 		const IReflectionFunctionBase* const _func;
 	};
 
@@ -726,9 +784,9 @@ private:
 
 	// Variables
 	template <class Var, class First, class... Rest>
-	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 	template <class Var, class Ret, class First, class... Rest>
-	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 
 	// Functions
 	template <class Ret, class... Args, class First, class... Rest>
@@ -747,7 +805,7 @@ private:
 	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
 	void instantiated(void* object) const override;
 
-	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
+	const IAttribute* getAttribute(const AttributeList& attributes, Hash64 attr_name) const;
 
 	template <class RefT, class AllocatorT>
 	friend class ReflectionDefinition;

@@ -39,8 +39,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 
 	.var(
 		"debug_flags",
-		&PhysicsManager::_debug_flags//,
-		//DebugMenuItemAttribute("Physics/Debug Render")
+		&PhysicsManager::_debug_flags,
+		//DebugMenuItemAttribute("Physics/Debug Render"),
+		NoSerializeAttribute()
 	)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 

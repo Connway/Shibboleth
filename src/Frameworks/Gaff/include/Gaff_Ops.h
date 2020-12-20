@@ -112,7 +112,7 @@ static constexpr const char* OpNames[static_cast<size_t>(Operator::Count)] = {
 };
 
 static constexpr const char* GetOpName(Operator op) { return OpNames[static_cast<size_t>(op)]; }
-static constexpr Gaff::Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op)); }
+static constexpr Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op)); }
 
 
 template <class LHS, class RHS>

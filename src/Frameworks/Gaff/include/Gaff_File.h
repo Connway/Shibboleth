@@ -37,30 +37,30 @@ public:
 	static bool Remove(const char* file_name);
 	static bool Rename(const char* old_file_name, const char* new_file_name);
 
-	enum OpenMode
+	enum class OpenMode
 	{
-		OM_READ = 0, // Open a file for read-only.
-		OM_WRITE, // Open a file for write-only. Deletes existing content.
-		OM_APPEND, // Open a file and append to already existing content.
-		OM_READ_EXT, // Open's a file for read/write. Errors if file doesn't exist.
-		OM_WRITE_EXT, // Opens a file for read/write. Delete's existing content.
-		OM_APPEND_EXT, // Opens a file for read/write. Appends to already existing content.
-		OM_READ_BINARY, // Same as READ, but in binary mode instead of text mode.
-		OM_WRITE_BINARY, // Same as WRITE, but in binary mode instead of text mode.
-		OM_APPEND_BINARY, // Same as APPEND, but in binary mode instead of text mode.
-		OM_READ_EXT_BINARY, // Same as READ_EXT, but in binary mode instead of text mode.
-		OM_WRITE_EXT_BINARY, // Same as WRITE_EXT, but in binary mode instead of text mode.
-		OM_APPEND_EXT_BINARY // Same as APPEND_EXT, but in binary mode instead of text mode.
+		Read = 0, // Open a file for read-only.
+		Write, // Open a file for write-only. Deletes existing content.
+		Append, // Open a file and append to already existing content.
+		ReadExt, // Open's a file for read/write. Errors if file doesn't exist.
+		WriteExt, // Opens a file for read/write. Delete's existing content.
+		AppendExt, // Opens a file for read/write. Appends to already existing content.
+		ReadBinary, // Same as Read, but in binary mode instead of text mode.
+		WriteBinary, // Same as Write, but in binary mode instead of text mode.
+		AppendBinary, // Same as Append, but in binary mode instead of text mode.
+		ReadExtBinary, // Same as ReadExt, but in binary mode instead of text mode.
+		WriteExtBinary, // Same as WriteExt, but in binary mode instead of text mode.
+		AppendExtBinary // Same as AppendExt, but in binary mode instead of text mode.
 	};
 
-	enum SeekOrigin
+	enum class SeekOrigin
 	{
-		SO_BEGINNING = SEEK_SET, // Starts seeking from the beginning of the file.
-		SO_CURRENT = SEEK_CUR, // Starts seeking from the current position in the file.
-		SO_END = SEEK_END // Starts seeking from the end of the file.
+		Beginning = SEEK_SET, // Starts seeking from the beginning of the file.
+		Current = SEEK_CUR, // Starts seeking from the current position in the file.
+		End = SEEK_END // Starts seeking from the end of the file.
 	};
 
-	File(const char* file_name, OpenMode mode = OM_READ);
+	File(const char* file_name, OpenMode mode = OpenMode::Read);
 	File(File&& rhs);
 	File(FILE* rhs);
 	File(void);
@@ -87,10 +87,10 @@ public:
 		return write(&data, sizeof(T), 1);
 	}
 
-	bool open(const char* file_name, OpenMode mode = OM_READ);
+	bool open(const char* file_name, OpenMode mode = OpenMode::Read);
 
-	bool redirect(FILE* file, const char* file_name, OpenMode mode = OM_WRITE);
-	bool redirect(const char* file_name, OpenMode mode = OM_WRITE);
+	bool redirect(FILE* file, const char* file_name, OpenMode mode = OpenMode::Write);
+	bool redirect(const char* file_name, OpenMode mode = OpenMode::Write);
 
 	bool close(void);
 	bool isOpen(void) const;
@@ -113,7 +113,7 @@ public:
 	bool readString(char* buffer, int32_t max_byte_count);
 
 	int32_t getFilePos(void) const;
-	bool seek(long offset, SeekOrigin origin = SO_BEGINNING);
+	bool seek(long offset, SeekOrigin origin = SeekOrigin::Beginning);
 	void rewind(void);
 
 	bool openTempFile(void);
@@ -124,7 +124,7 @@ public:
 
 private:
 	FILE* _file = nullptr;
-	OpenMode _mode = OM_READ;
+	OpenMode _mode = OpenMode::Read;
 
 	GAFF_NO_COPY(File);
 };

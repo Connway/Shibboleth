@@ -65,7 +65,7 @@ template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+	auto it = Find(_modules, FNV1aHash32String(name));
 
 	if (it != _modules.end()) {
 		return it->second;
@@ -78,7 +78,7 @@ template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+	auto it = Find(_modules, FNV1aHash32String(name));
 
 	if (it != _modules.end()) {
 		_modules.erase(it);

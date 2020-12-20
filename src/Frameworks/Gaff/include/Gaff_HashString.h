@@ -34,15 +34,15 @@ template <class HashType>
 struct DefaultHashFuncHelper;
 
 template <>
-struct DefaultHashFuncHelper<Gaff::Hash32> final
+struct DefaultHashFuncHelper<Hash32> final
 {
-	static constexpr HashFunc<Gaff::Hash32> value = FNV1aHash32;
+	static constexpr HashFunc<Hash32> value = FNV1aHash32;
 };
 
 template <>
-struct DefaultHashFuncHelper<Gaff::Hash64> final
+struct DefaultHashFuncHelper<Hash64> final
 {
-	static constexpr HashFunc<Gaff::Hash64> value = FNV1aHash64;
+	static constexpr HashFunc<Hash64> value = FNV1aHash64;
 };
 
 template <class HashType>

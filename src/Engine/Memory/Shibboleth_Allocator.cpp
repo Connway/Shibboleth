@@ -423,7 +423,7 @@ void Allocator::writeAllocationLog(void) const
 
 	Gaff::File log;
 
-	if (!log.open(log_file_name, Gaff::File::OM_WRITE)) {
+	if (!log.open(log_file_name, Gaff::File::OpenMode::Write)) {
 		return;
 	}
 
@@ -485,7 +485,7 @@ void Allocator::writeLeakLog(void) const
 
 	Gaff::File log;
 
-	if (!log.open(log_file_name, Gaff::File::OM_WRITE)) {
+	if (!log.open(log_file_name, Gaff::File::OpenMode::Write)) {
 		return;
 	}
 
