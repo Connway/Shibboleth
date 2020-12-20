@@ -31,15 +31,7 @@ static constexpr bool IsPtrHelper(void)
 }
 
 template <class Functor>
-struct IsPointerHelper /*final*/;
-//{
-//	template <size_t index>
-//	static constexpr bool IsPtr(void)
-//	{
-//		static_assert(index < sizeof...(Args), "Index is larger than number of arguments.");
-//		return IsPtrHelper<index, 0, Args...>();
-//	}
-//};
+struct IsPointerHelper;
 
 template <class T, class Ret, class... Args>
 struct IsPointerHelper<Ret (T::*)(Args...) const> final

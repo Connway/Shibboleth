@@ -45,6 +45,13 @@ struct Time;
 class PhysicsManager final : public IManager
 {
 public:
+	enum class DebugFlag
+	{
+		DrawRigidBodies,
+
+		Count
+	};
+
 	~PhysicsManager(void);
 
 	bool init(void) override;
@@ -54,13 +61,6 @@ public:
 	physx::PxPhysics* getPhysics(void);
 
 private:
-	enum class DebugFlag
-	{
-		DrawRigidBodies,
-
-		Count
-	};
-
 	VectorMap<Gaff::Hash32, physx::PxScene*> _scenes{ ProxyAllocator("Physics") };
 
 	ECSQuery::SharedOutput<Scene> _scene_comps{ ProxyAllocator("Physics") };
@@ -103,5 +103,6 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(PhysicsManager::DebugFlag)
 SHIB_REFLECTION_DECLARE(PhysicsManager)
 SHIB_REFLECTION_DECLARE(PhysicsSystem)

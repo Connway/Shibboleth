@@ -160,7 +160,11 @@ template <class T, class Allocator>
 template <class Var>
 const Gaff::IReflection& ReflectionDefinition<T, Allocator>::VarPtr<Var>::getReflection(void) const
 {
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetInstance();
+	if constexpr (IsFlags<Var>()) {
+		return GAFF_REFLECTION_NAMESPACE::Reflection<typename GetFlagsEnum<Var>::Enum>::GetInstance();
+	} else {
+		return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::GetInstance();
+	}
 }
 
 template <class T, class Allocator>
@@ -200,7 +204,35 @@ template <class Var>
 bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
 {
 	Var* const var = &(object.*_ptr);
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
+
+	if constexpr (IsFlags<Var>()) {
+		using Enum = typename GetFlagsEnum<Var>::Enum;
+
+		// Iterate over all the flags and read values.
+		const Gaff::IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
+		const int32_t num_entries = ref_def.getNumEntries();
+		bool success = true;
+
+		for (int32_t i = 0; i < num_entries; ++i) {
+			const char* const name = ref_def.getEntryNameFromIndex(i);
+			const int32_t flag_index = ref_def.getEntryValue(i);
+
+			const auto guard = reader.enterElementGuard(name);
+
+			if (!reader.isBool() && !reader.isNull()) {
+				success = false;
+				continue;
+			}
+
+			const bool value = reader.readBool(false);
+			var->set(value, static_cast<Enum>(flag_index));
+		}
+
+		return success;
+
+	} else {
+		return GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
+	}
 }
 
 template <class T, class Allocator>
@@ -208,8 +240,27 @@ template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& writer, const T& object)
 {
 	const Var* const var = &(object.*_ptr);
-	GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Save(writer, *var);
+
+	if constexpr (IsFlags<Var>()) {
+		using Enum = typename GetFlagsEnum<Var>::Enum;
+
+		// Iterate over all the flags and write values.
+		const Gaff::IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
+		const int32_t num_entries = ref_def.getNumEntries();
+
+		for (int32_t i = 0; i < num_entries; ++i) {
+			const char* const name = ref_def.getEntryNameFromIndex(i);
+			const int32_t flag_index = ref_def.getEntryValue(i);
+			const bool value = var->testAll(static_cast<Enum>(flag_index));
+
+			writer.writeBool(name, value);
+		}
+
+	} else {
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Save(writer, *var);
+	}
 }
+
 
 
 // VarFuncPtrWithCache
@@ -1868,11 +1919,33 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	return *this;
 }
 
-//template <class T, class Allocator>
-//template <class Enum, size_t name_size, class... Attrs>
-//ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes)
-//{
-//}
+template <class T, class Allocator>
+template <class Enum, size_t name_size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Flags<Enum> T::*ptr, const Attrs&... attributes)
+{
+	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Enum>::HasReflection, "Enum is not reflected!");
+
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, name_size - 1, _allocator),
+		IVarPtr(GAFF_ALLOCT(VarPtr< Flags<Enum> >, _allocator, ptr))
+	);
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(pair.second.get(), ptr, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+
+	// For each reflected entry in Enum, add a reflection var for that entry.
+
+	return *this;
+}
 
 template <class T, class Allocator>
 template <class Ret, class Var, size_t name_size, class... Attrs>

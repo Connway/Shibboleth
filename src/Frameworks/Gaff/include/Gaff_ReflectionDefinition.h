@@ -173,8 +173,8 @@ public:
 	template <class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
 
-	//template <class Enum, size_t name_size, class... Attrs>
-	//ReflectionDefinition& var(const char(&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes);
+	template <class Enum, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char(&name)[name_size], Flags<Enum> T::*ptr, const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
@@ -296,7 +296,7 @@ private:
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
-		Var T::*_ptr = nullptr;
+		Var T::* _ptr = nullptr;
 	};
 
 	template <class Ret, class Var>

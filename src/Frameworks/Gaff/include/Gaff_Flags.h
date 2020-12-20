@@ -138,6 +138,12 @@ private:
 	BitsetType _flags;
 };
 
+template <class T>
+constexpr bool IsFlags(void);
+
+template <class T>
+struct GetFlagsEnum;
+
 #include "Gaff_Flags.inl"
 
 NS_END

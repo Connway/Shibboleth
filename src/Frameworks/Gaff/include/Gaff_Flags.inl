@@ -22,6 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
+template <class T>
+struct IsFlagsHelper final
+{
+	static constexpr bool IsFlags(void) { return false; }
+};
+
+template <class T>
+struct IsFlagsHelper< Flags<T> > final
+{
+	static constexpr bool IsFlags(void) { return true; }
+};
+
+template <class T>
+constexpr bool IsFlags(void)
+{
+	return IsFlagsHelper<T>::IsFlags();
+}
+
+template <class T>
+struct GetFlagsEnum< Flags<T> > final
+{
+	using Enum = T;
+};
+
+
+
 template <class Enum>
 template <class... Enum2>
 constexpr typename Flags<Enum>::StorageType Flags<Enum>::GetBits(Enum flag, Enum2... rest)

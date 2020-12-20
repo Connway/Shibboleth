@@ -29,15 +29,19 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <PxPhysicsAPI.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager::DebugFlag)
+	.entry("Draw Rigid Bodies", PhysicsManager::DebugFlag::DrawRigidBodies)
+SHIB_REFLECTION_DEFINE_END(PhysicsManager::DebugFlag)
+
 SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	.base<IManager>()
 	.ctor<>()
 
-	//.var(
-	//	"debug_flags",
-	//	&PhysicManager::_debug_flags,
-	//	DebugMenuItemAttribute("Physics")
-	//)
+	.var(
+		"debug_flags",
+		&PhysicsManager::_debug_flags//,
+		//DebugMenuItemAttribute("Physics/Debug Render")
+	)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
