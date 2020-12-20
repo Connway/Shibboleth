@@ -64,6 +64,9 @@ public:
 	template <class Ret, class Var, size_t size, class... Attrs>
 	ReflectionVersion& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
+	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionVersion& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
 	template <size_t size, class Ret, class... Args, class... Attrs>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 

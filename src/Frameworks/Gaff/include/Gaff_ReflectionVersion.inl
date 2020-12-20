@@ -116,6 +116,21 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T
 }
 
 template <class T>
+template <class Ret, class Var, size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (* /*getter*/)(const T&), void (* /*setter*/)(T&, Var), const Attrs&... attributes)
+{
+	_hash = FNV1aHash64(name, size - 1, _hash);
+	_hash = CalcTemplateHash<Ret, Var>(_hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		_hash = CalcTemplateHash<Attrs...>(_hash);
+		_hash = getAttributeHashes(_hash, attributes...);
+	}
+
+	return *this;
+}
+
+template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
 ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::* /*ptr*/)(Args...) const, const Attrs&... attributes)
 {

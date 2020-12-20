@@ -299,7 +299,6 @@ template <class Enum>
 ReflectionDefinition<T, Allocator>::VarFlagPtr<Enum>::VarFlagPtr(Flags<Enum> T::*ptr, uint8_t flag_index):
 	_ptr(ptr), _flag_index(flag_index), _cache(false)
 {
-	GAFF_ASSERT(flag_index > -1);
 	GAFF_ASSERT(ptr);
 }
 
@@ -314,9 +313,7 @@ template <class T, class Allocator>
 template <class Enum>
 const void* ReflectionDefinition<T, Allocator>::VarFlagPtr<Enum>::getData(const void* object) const
 {
-	const T* const obj = reinterpret_cast<const T*>(object);
-	_cache = (obj->*_ptr).testAll(static_cast<Enum>(_flag_index));
-	return &_cache;
+	return const_cast<VarFlagPtr<Enum>*>(this)->getData(const_cast<void*>(object));
 }
 
 template <class T, class Allocator>
@@ -338,8 +335,7 @@ void ReflectionDefinition<T, Allocator>::VarFlagPtr<Enum>::setData(void* object,
 	}
 
 	T* const obj = reinterpret_cast<T*>(object);
-	_cache = *reinterpret_cast<const bool*>(data);
-	(obj->*_ptr).set(_cache, static_cast<Enum>(_flag_index));
+	(obj->*_ptr).set(*reinterpret_cast<const bool*>(data), static_cast<Enum>(_flag_index));
 }
 
 template <class T, class Allocator>
@@ -2041,6 +2037,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, it.second.get()))
 			);
 
+			pair.second->setNoSerialize(it.second->canSerialize());
+			pair.second->setReadOnly(it.second->isReadOnly());
+
 			_vars.insert(std::move(pair));
 
 			// Base class var attrs
@@ -2268,7 +2267,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 		eastl::pair<HashString32<Allocator>, IVarPtr> flag_pair(
 			HashString32<Allocator>(flag_path, _allocator),
-			IVarPtr(GAFF_ALLOCT(VarFlagPtr, _allocator, ptr, static_cast<uint8_t>(i)))
+			IVarPtr(GAFF_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(i)))
 		);
 
 		pair.second->setNoSerialize(true);

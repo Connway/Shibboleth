@@ -319,7 +319,7 @@ private:
 
 	private:
 		Flags<Enum> T::* _ptr = nullptr;
-		uint8_t _flag_index = -1; // Unless flags have the craziest amount of flags, this should hold all possible flag values.
+		uint8_t _flag_index = static_cast<uint8_t>(-1); // Unless flags have the craziest amount of flags, this should hold all possible flag values.
 		bool _cache = false;
 	};
 
