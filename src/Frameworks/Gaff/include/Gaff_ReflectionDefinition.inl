@@ -291,6 +291,13 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& wri
 	}
 }
 
+template <class T, class Allocator>
+template <class Var>
+bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::isFlags(void) const
+{
+	return IsFlags<Var>();
+}
+
 
 
 // VarFlagPtr

@@ -77,6 +77,9 @@ public:
 	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
+	void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def);
+	void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def);
+
 private:
 	struct DebugRenderInstanceData final
 	{
@@ -137,6 +140,14 @@ private:
 		DebugRenderInstanceData instance_data[static_cast<size_t>(DebugRenderType::Count)];
 
 		Gaff::Counter job_counter = 0;
+	};
+
+	struct DebugMenuEntry final
+	{
+		Vector<DebugMenuEntry> children{ ProxyAllocator{ "Debug" } };
+		U8String name{ ProxyAllocator{ "Debug" } };
+		Gaff::IReflectionVar* var = nullptr;
+		void* object = nullptr;
 	};
 
 	enum class Flag
@@ -202,6 +213,8 @@ private:
 
 	bool initDebugRender(void);
 	bool initImGui(void);
+
+	void registerDebugMenuItemsHelper(void* object, const Gaff::IReflectionDefinition& ref_def, DebugMenuEntry* parent);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

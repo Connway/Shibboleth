@@ -152,7 +152,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 	}
 }
 
-const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
+const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
 	const auto it_module = _module_owners.find(HashString64<>(module_name));
 
@@ -169,7 +169,7 @@ const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBuck
 	return &it_bucket->second;
 }
 
-const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name) const
+const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(Gaff::Hash64 name) const
 {
 	const auto it = _type_buckets.find(name);
 	return (it == _type_buckets.end()) ? nullptr : &it->second;
@@ -217,7 +217,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	}
 }
 
-const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getAttributeBucket(Gaff::Hash64 name) const
+const ReflectionManager::TypeBucket* ReflectionManager::getAttributeBucket(Gaff::Hash64 name) const
 {
 	const auto it = _attr_buckets.find(name);
 	return (it == _attr_buckets.end()) ? nullptr : &it->second;
@@ -247,10 +247,10 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	eastl::sort(bucket.begin(), bucket.end(), CompareRefDef);
 }
 
-Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
+ReflectionManager::TypeBucket ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
 	const auto* bucket = getTypeBucket(Gaff::FNV1aHash64Const("*"), module_name);
-	Vector<const Gaff::IReflectionDefinition*> out;
+	TypeBucket out;
 
 	if (!bucket) {
 		return out;
@@ -265,7 +265,7 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	return out;
 }
 
-Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name) const
+ReflectionManager::TypeBucket ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name) const
 {
 	const auto it = _attr_buckets.find(name);
 
@@ -274,7 +274,7 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	}
 
 	// Search manually.
-	Vector<const Gaff::IReflectionDefinition*> out;
+	TypeBucket out;
 
 	for (const auto& entry : _reflection_map) {
 		if (hasAttribute(*entry.second, name)) {

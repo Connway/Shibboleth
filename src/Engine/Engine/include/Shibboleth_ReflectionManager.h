@@ -34,12 +34,21 @@ NS_SHIBBOLETH
 class ReflectionManager final
 {
 public:
+	using TypeBucket = Vector<const Gaff::IReflectionDefinition*>;
+
 	static bool CompareRefHash(const Gaff::IReflectionDefinition* lhs, Gaff::Hash64 rhs);
 
 	template <class T>
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(void) const
+	TypeBucket getReflectionWithAttribute(void) const
 	{
 		return getReflectionWithAttribute(Reflection<T>::GetHash());
+	}
+
+	template <class T>
+	const TypeBucket* getAttributeBucket(void) const
+	{
+		static_assert(std::is_base_of<Gaff::IAttribute, T>::value, "T is not an attribute.");
+		return getAttributeBucket(Reflection<T>::GetHash());
 	}
 
 
@@ -58,20 +67,19 @@ public:
 	void registerReflection(Gaff::IReflectionDefinition* ref_def);
 	void registerOwningModule(Gaff::Hash64 name, const char* module_name);
 
-	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
-	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const;
+	const TypeBucket* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	const TypeBucket* getTypeBucket(Gaff::Hash64 name) const;
 	void registerTypeBucket(Gaff::Hash64 name);
 
-	const Vector<const Gaff::IReflectionDefinition*>* getAttributeBucket(Gaff::Hash64 name) const;
+	const TypeBucket* getAttributeBucket(Gaff::Hash64 name) const;
 	void registerAttributeBucket(Gaff::Hash64 attr_name);
 
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const;
+	TypeBucket getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	TypeBucket getReflectionWithAttribute(Gaff::Hash64 name) const;
 
 	Vector< HashString64<> > getModules(void) const;
 
 private:
-	using TypeBucket = Vector<const Gaff::IReflectionDefinition*>;
 	using TypeBucketMap = VectorMap<Gaff::Hash64, TypeBucket>;
 
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map{ ProxyAllocator("Reflection") };

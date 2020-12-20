@@ -298,6 +298,8 @@ private:
 		bool load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
+		bool isFlags(void) const override;
+
 	private:
 		Var T::* _ptr = nullptr;
 	};

@@ -291,6 +291,7 @@ public:
 
 	virtual bool isFixedArray(void) const { return false; }
 	virtual bool isVector(void) const { return false; }
+	virtual bool isFlags(void) const { return false; }
 	virtual bool isMap(void) const { return false; }
 
 	virtual const IReflection& getReflectionKey(void) const

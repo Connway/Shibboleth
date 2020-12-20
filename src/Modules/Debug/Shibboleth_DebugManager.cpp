@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_DebugManager.h"
+#include "Shibboleth_DebugAttributes.h"
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_CameraComponent.h>
@@ -979,6 +980,12 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const glm::vec3
 	return DebugRenderHandle(instance, DebugRenderType::Capsule, has_depth);
 }
 
+void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
+{
+	GAFF_REF(object, ref_def);
+	//registerDebugMenuItemsHelper(object, ref_def, nullptr);
+}
+
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 {
 	ImGui::Render();
@@ -1772,6 +1779,38 @@ bool DebugManager::initImGui(void)
 
 	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
 	return true;
+}
+
+void DebugManager::registerDebugMenuItemsHelper(void* object, const Gaff::IReflectionDefinition& ref_def, DebugMenuEntry* parent)
+{
+	GAFF_REF(object, ref_def, parent);
+	//Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute&> > results(ProxyAllocator("Debug"));
+	//ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
+
+	//for (const auto& entry : results) {
+	//	Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
+	//	const U8String& path = entry.second.getPath();
+	//	const size_t index = path.find_last_of('/');
+	//	DebugMenuEntry menu_entry;
+
+	//	if (var->getReflection().isEnum() || var->getReflection().getReflectionDefinition().isBuiltIn()) {
+	//		menu_entry.name = (index != U8String::npos) ? path.substr(index + 1) : path;
+	//		menu_entry.object = object;
+	//		menu_entry.var = var;
+
+	//		// Could possibly categorize by type so that we have less if-statements and function calls during render time.
+
+	//	// Iterate through whole object and add each variable under current path.
+	//	} else {
+	//		const Gaff::IReflectionDefinition& child_ref_def = var->getReflection().getReflectionDefinition();
+	//		void* const child = var->getData(object);
+
+	//		menu_entry.name = (index != U8String::npos) ? path.substr(index + 1) : path;
+	//		menu_entry.object = child;
+
+	//		registerDebugMenuItemsHelper(child, child_ref_def, &menu_entry);
+	//	}
+	//}
 }
 
 
