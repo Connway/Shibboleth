@@ -352,13 +352,13 @@ private:
 
 		union
 		{
-			GetterMemberFunc _getter_member;
+			GetterMemberFunc _getter_member = nullptr;
 			GetterFunc _getter;
 		};
 
 		union
 		{
-			SetterMemberFunc _setter_member;
+			SetterMemberFunc _setter_member = nullptr;
 			SetterFunc _setter;
 		};
 
@@ -396,13 +396,13 @@ private:
 
 		union
 		{
-			GetterMemberFunc _getter_member;
+			GetterMemberFunc _getter_member = nullptr;
 			GetterFunc _getter;
 		};
 		
 		union
 		{
-			SetterMemberFunc _setter_member;
+			SetterMemberFunc _setter_member = nullptr;
 			SetterFunc _setter;
 		};
 
@@ -426,6 +426,7 @@ private:
 
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
+		bool isFlags(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;

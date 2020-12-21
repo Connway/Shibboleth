@@ -709,6 +709,13 @@ bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isVector(void) const
 
 template <class T, class Allocator>
 template <class Base>
+bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isFlags(void) const
+{
+	return _base_var->isFlags();
+}
+
+template <class T, class Allocator>
+template <class Base>
 int32_t ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::size(const void* object) const
 {
 	GAFF_ASSERT(object);
@@ -2044,7 +2051,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, it.second.get()))
 			);
 
-			pair.second->setNoSerialize(it.second->canSerialize());
+			pair.second->setNoSerialize(!it.second->canSerialize());
 			pair.second->setReadOnly(it.second->isReadOnly());
 
 			_vars.insert(std::move(pair));
