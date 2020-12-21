@@ -145,9 +145,12 @@ private:
 	struct DebugMenuEntry final
 	{
 		Vector<DebugMenuEntry> children{ ProxyAllocator{ "Debug" } };
-		U8String name{ ProxyAllocator{ "Debug" } };
+		HashString32<> name{ ProxyAllocator{ "Debug" } };
 		Gaff::IReflectionVar* var = nullptr;
 		void* object = nullptr;
+
+		bool operator<(const DebugMenuEntry& rhs) const { return name < rhs.name; }
+		bool operator<(const HashString32<>& rhs) const { return name < rhs; }
 	};
 
 	enum class Flag
@@ -200,6 +203,7 @@ private:
 	ECSManager* _ecs_mgr = nullptr;
 
 	DebugRenderData _debug_data;
+	DebugMenuEntry _debug_menu_root;
 
 	Gaff::Flags<Flag> _flags;
 

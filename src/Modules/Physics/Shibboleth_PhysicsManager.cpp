@@ -38,7 +38,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	.ctor<>()
 
 	.var(
-		"debug_flags",
+		"Flags",
 		&PhysicsManager::_debug_flags,
 		DebugMenuItemAttribute("Physics/Debug Render"),
 		NoSerializeAttribute()

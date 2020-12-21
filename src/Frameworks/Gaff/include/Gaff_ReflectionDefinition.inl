@@ -2277,7 +2277,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 			IVarPtr(GAFF_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(i)))
 		);
 
-		pair.second->setNoSerialize(true);
+		flag_pair.second->setNoSerialize(true);
 		_vars.insert(std::move(flag_pair));
 	}
 
