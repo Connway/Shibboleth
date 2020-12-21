@@ -55,7 +55,7 @@ public:
 	template <class T, class Var, class Ret>
 	void apply(Gaff::IReflectionVar& ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(NoSerializeAttribute);
 };
 
 
