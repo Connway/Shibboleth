@@ -316,7 +316,7 @@ public:
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
 		return nullptr;
-		}
+	}
 
 	virtual void setElement(void*, int32_t, const void*)
 	{
@@ -337,6 +337,18 @@ public:
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
 	}
+
+	virtual void setFlagValue(void*, int32_t, bool)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
+	}
+
+	virtual bool getFlagValue(void*, int32_t) const
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
+		return false;
+	}
+
 
 	void setReadOnly(bool read_only) { _flags.set(read_only, Flag::ReadOnly); }
 	bool isReadOnly(void) const { return _flags.testAll(Flag::ReadOnly); }
@@ -364,10 +376,10 @@ public:
 	virtual Hash64 applyVersioning(Hash64 hash) const { return hash; }
 	virtual bool canInherit(void) const { return true; }
 
-	virtual void finish(const IReflectionDefinition& /*ref_def*/) {}
-	virtual void finish(const IEnumReflectionDefinition& /*ref_def*/) {}
+	virtual void finish(IEnumReflectionDefinition& /*ref_def*/) {}
+	virtual void finish(IReflectionDefinition& /*ref_def*/) {}
 
-	virtual void instantiated(const IReflectionDefinition& /*ref_def*/, void* /*object*/) {}
+	virtual void instantiated(void* /*object*/, const IReflectionDefinition& /*ref_def*/) {}
 
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
 
@@ -870,7 +882,7 @@ public:
 	}
 
 	template <class T, class Allocator>
-	void getVarAttrs(Vector<eastl::pair<Hash32, const T&>, Allocator>& out) const
+	void getVarAttrs(Vector<eastl::pair<Hash32, const T*>, Allocator>& out) const
 	{
 		const int32_t num_vars = getNumVars();
 
@@ -1041,6 +1053,7 @@ public:
 	virtual int32_t getNumClassAttrs(void) const = 0;
 	virtual const IAttribute* getClassAttr(Hash64 attr_name) const = 0;
 	virtual const IAttribute* getClassAttr(int32_t index) const = 0;
+	virtual void addClassAttr(IAttribute& attribute) = 0;
 
 	virtual int32_t getNumVarAttrs(Hash32 name) const = 0;
 	virtual const IAttribute* getVarAttr(Hash32 name, Hash64 attr_name) const = 0;

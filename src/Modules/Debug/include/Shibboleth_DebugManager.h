@@ -56,7 +56,7 @@ class InputManager;
 class ECSManager;
 struct Time;
 
-class DebugManager final : public IManager, public IDebugManager
+class DebugManager final : public IDebugManager
 {
 public:
 	static void SetupModuleToUseImGui(void);
@@ -77,8 +77,8 @@ public:
 	DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
-	void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def);
-	void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def);
+	void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
+	void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
 
 private:
 	struct DebugRenderInstanceData final
@@ -218,7 +218,7 @@ private:
 	bool initDebugRender(void);
 	bool initImGui(void);
 
-	void registerDebugMenuItemsHelper(void* object, const Gaff::IReflectionDefinition& ref_def, DebugMenuEntry* parent);
+	void renderDebugMenu(const DebugMenuEntry& entry);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

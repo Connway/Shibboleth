@@ -160,7 +160,7 @@ public:
 		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void instantiated(const Gaff::IReflectionDefinition& ref_def, void* object) override
+	void instantiated(void* object, const Gaff::IReflectionDefinition& ref_def) override
 	{
 		Broadcaster& broadcaster = GetApp().getBroadcaster();
 		T* const instance = ref_def.getInterface<T>(object);

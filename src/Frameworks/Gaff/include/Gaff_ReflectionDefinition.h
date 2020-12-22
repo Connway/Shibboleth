@@ -127,6 +127,7 @@ public:
 	int32_t getNumClassAttrs(void) const override;
 	const IAttribute* getClassAttr(Hash64 attr_name) const override;
 	const IAttribute* getClassAttr(int32_t index) const override;
+	void addClassAttr(IAttribute& attribute) override;
 
 	int32_t getNumVarAttrs(Hash32 name) const override;
 	const IAttribute* getVarAttr(Hash32 name, Hash64 attr_name) const override;
@@ -272,7 +273,7 @@ public:
 	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 	ReflectionDefinition& opToString(void);
 
-	// apply() is not called on these functions. Mainly for use with the attribute file.
+	// apply() is not called on these functions.
 	template <class... Attrs>
 	ReflectionDefinition& classAttrs(const Attrs&... attributes);
 
@@ -299,6 +300,9 @@ private:
 		void save(ISerializeWriter& writer, const T& object) override;
 
 		bool isFlags(void) const override;
+
+		void setFlagValue(void* object, int32_t flag_index, bool value) override;
+		bool getFlagValue(void* object, int32_t flag_index) const override;
 
 	private:
 		Var T::* _ptr = nullptr;
@@ -867,6 +871,7 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		int32_t getNumClassAttrs(void) const override { return 0; } \
 		const IAttribute* getClassAttr(Hash64) const override { return nullptr; } \
 		const IAttribute* getClassAttr(int32_t) const override { return nullptr; } \
+		void addClassAttr(IAttribute&) override {} \
 		int32_t getNumVarAttrs(Hash32) const override { return 0; } \
 		const IAttribute* getVarAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getVarAttr(Hash32, int32_t) const override { return nullptr; } \

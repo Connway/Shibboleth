@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_IManager.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Color.h>
@@ -32,7 +33,7 @@ struct ImGuiContext;
 NS_SHIBBOLETH
 
 // To force getting the context from the DLL.
-class IDebugManager
+class IDebugManager : public IManager
 {
 protected:
 	enum class DebugRenderType
@@ -109,6 +110,9 @@ public:
 	virtual DebugRenderHandle renderDebugCone(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+
+	virtual void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;
+	virtual void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;
 
 protected:
 	virtual void removeDebugRender(const DebugRenderHandle& handle) = 0;

@@ -298,6 +298,35 @@ bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::isFlags(void) const
 	return IsFlags<Var>();
 }
 
+template <class T, class Allocator>
+template <class Var>
+void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setFlagValue(void* object, int32_t flag_index, bool value)
+{
+	if constexpr (IsFlags<Var>()) {
+		using Enum = typename GetFlagsEnum<Var>::Enum;
+		(reinterpret_cast<T*>(object)->*_ptr).set(value, static_cast<Enum>(flag_index));
+
+	} else {
+		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
+		GAFF_REF(object, flag_index, value);
+	}
+}
+
+template <class T, class Allocator>
+template <class Var>
+bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::getFlagValue(void* object, int32_t flag_index) const
+{
+	if constexpr (IsFlags<Var>()) {
+		using Enum = typename GetFlagsEnum<Var>::Enum;
+		return (reinterpret_cast<T*>(object)->*_ptr).testAll(static_cast<Enum>(flag_index));
+
+	} else {
+		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
+		GAFF_REF(object, flag_index);
+		return false;
+	}
+}
+
 
 
 // VarFlagPtr
@@ -1794,6 +1823,12 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttr(int32_t index
 }
 
 template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::addClassAttr(IAttribute& attribute)
+{
+	_class_attrs.emplace_back(IAttributePtr(attribute.clone()));
+}
+
+template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumVarAttrs(Hash32 name) const
 {
 	const auto it = _var_attrs.find(name);
@@ -3108,24 +3143,24 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::instantiated(void* object) const
 {
 	for (const IAttributePtr& attr : _class_attrs) {
-		const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
+		const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
 	}
 
 	for (auto& it : _var_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
 		}
 	}
 
 	for (auto& it : _func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
 		}
 	}
 
 	for (auto& it : _static_func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(*this, object);
+			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
 		}
 	}
 }

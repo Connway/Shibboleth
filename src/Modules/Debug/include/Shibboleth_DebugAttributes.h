@@ -27,6 +27,15 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class DebugMenuClassAttribute final : public Gaff::IAttribute
+{
+	IAttribute* clone(void) const override;
+
+	void instantiated(void* object, const Gaff::IReflectionDefinition& ref_def) override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuClassAttribute);
+};
+
 class DebugMenuItemAttribute final : public Gaff::IAttribute
 {
 public:
@@ -36,8 +45,7 @@ public:
 
 	IAttribute* clone(void) const override;
 
-	template <class T, class Enum>
-	void apply(Gaff::IReflectionVar& ref_var, Gaff::Flags<Enum> T::*flags);
+	void finish(Gaff::IReflectionDefinition& ref_def) override;
 
 private:
 	U8String _path;
@@ -45,8 +53,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuItemAttribute);
 };
 
-#include "Shibboleth_DebugAttributes.inl"
-
 NS_END
 
+SHIB_REFLECTION_DECLARE(DebugMenuClassAttribute)
 SHIB_REFLECTION_DECLARE(DebugMenuItemAttribute)

@@ -855,19 +855,8 @@ void DebugManager::update(void)
 
 	if (_flags.testAll(Flag::ShowDebugMenu)) {
 		if (ImGui::BeginMainMenuBar()) {
-			// Read debug menu bar list and call appropriate functions.
-			if (ImGui::BeginMenu("Test Menu")) {
-				ImGui::MenuItem("Test 1");
-				ImGui::MenuItem("Test 2");
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Test Menu 2/Submenu")) {
-				ImGui::MenuItem("Test 1");
-				ImGui::MenuItem("Test 2");
-
-				ImGui::EndMenu();
+			for (const DebugMenuEntry& entry : _debug_menu_root.children) {
+				renderDebugMenu(entry);
 			}
 
 			ImGui::EndMainMenuBar();
@@ -989,58 +978,113 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const glm::vec3
 
 void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
 {
-	GAFF_REF(object, ref_def);
+	const ProxyAllocator allocator("Debug");
+	DebugMenuEntry* root = &_debug_menu_root;
+	DebugMenuEntry menu_entry;
 
-	//const ProxyAllocator allocator("Debug");
-	//DebugMenuEntry* root = &_debug_menu_root;
+	Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute*> > results(allocator);
+	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
 
-	//Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute&> > results(allocator);
-	//ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
+	for (const auto& entry : results) {
+		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
 
-	//DebugMenuEntry menu_entry;
+		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
+			// Menu items only support flags and bools.
+			// $TODO: Log error.
+			continue;
+		}
 
-	//for (const auto& entry : results) {
-	//	Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
+		const U8String& path = entry.second->getPath();
+		size_t prev_index = 0;
+		size_t index = path.find_first_of('/');
 
-	//	if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
-	//		// Menu items only support flags and bools.
-	//		// $TODO: Log error.
-	//		continue;
-	//	}
+		while (index != U8String::npos) {
+			menu_entry.name = path.substr(prev_index, index - prev_index);
 
-	//	const U8String& path = entry.second.getPath();
-	//	size_t prev_index = 0;
-	//	size_t index = path.find_first_of('/');
+			auto it = Gaff::LowerBound(root->children, menu_entry.name);
 
-	//	while (index != U8String::npos) {
-	//		menu_entry.name = path.substr(prev_index, index - prev_index);
+			if (it == root->children.end() || it->name != menu_entry.name) {
+				it = root->children.insert(it, menu_entry);
+			}
 
-	//		auto it = Gaff::LowerBound(root->children, menu_entry.name);
+			prev_index = index;
+			root = &(*it);
 
-	//		if (it == root->children.end() || it->name != menu_entry.name) {
-	//			it = root->children.insert(it, menu_entry);
-	//		}
+			index = path.find_first_of("/", index + 1);
+		}
 
-	//		prev_index = index;
-	//		root = &(*it);
+		menu_entry.name = path.substr(prev_index + 1);
 
-	//		index = path.find_first_of("/", index + 1);
-	//	}
+		auto it = Gaff::LowerBound(root->children, menu_entry.name);
+		U8String base_name = menu_entry.name.getString();
+		int32_t i = 2;
 
-	//	menu_entry.name = path.substr(prev_index + 1);
+		while (it != root->children.end() && it->name == menu_entry.name) {
+			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
+			it = Gaff::LowerBound(root->children, menu_entry.name);
+		}
 
-	//	auto it = Gaff::LowerBound(root->children, menu_entry.name);
-	//	U8String base_name = menu_entry.name.getString();
-	//	int32_t i = 2;
+		menu_entry.object = object;
+		menu_entry.var = var;
 
-	//	while (it != root->children.end() && it->name == menu_entry.name) {
-	//		menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
-	//		it = Gaff::LowerBound(root->children, menu_entry.name);
-	//	}
+		root->children.insert(it, menu_entry);
+	}
+}
 
-	//	menu_entry.object = object;
-	//	menu_entry.var = var;
-	//}
+void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
+{
+	const ProxyAllocator allocator("Debug");
+
+	Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute*> > results(allocator);
+	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
+
+	for (const auto& entry : results) {
+		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
+
+		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
+			// Menu items only support flags and bools.
+			// $TODO: Log error.
+			continue;
+		}
+
+		Vector<DebugMenuEntry*> entries(allocator);
+		entries.emplace_back(&_debug_menu_root);
+
+		const U8String& path = entry.second->getPath();
+		HashString32<> name(allocator);
+		size_t prev_index = 0;
+		size_t index = path.find_first_of('/');
+
+		// Get full path to leaf nodes.
+		while (index != U8String::npos) {
+			name = path.substr(prev_index, index - prev_index);
+
+			auto it = Gaff::LowerBound(entries.back()->children, name);
+
+			// Leaf nodes don't exist. Continue to next variable.
+			if (it == entries.back()->children.end() || it->name != name) {
+				continue;
+			}
+
+			prev_index = index;
+			index = path.find_first_of("/", index + 1);
+		}
+
+		// Remove all entries that contain this object.
+		for (auto it = entries.back()->children.begin(); it != entries.back()->children.end(); ++it) {
+			if (it->object == object) {
+				it = entries.back()->children.erase(it);
+			} else {
+				++it;
+			}
+		}
+
+		// Remove all empty submenus.
+		while (entries.size() > 1 && entries.back()->children.empty()) {
+			(*(entries.end() - 2))->children.erase(entries.back());
+			entries.pop_back();
+		}
+	}
 }
 
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
@@ -1836,6 +1880,41 @@ bool DebugManager::initImGui(void)
 
 	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
 	return true;
+}
+
+void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
+{
+	if (entry.var) {
+		if (entry.var->isFlags()) {
+			const Gaff::IEnumReflectionDefinition& ref_def = entry.var->getReflection().getEnumReflectionDefinition();
+			const int32_t num_entries = ref_def.getNumEntries();
+
+			if (ImGui::BeginMenu(entry.name.getBuffer())) {
+				for (int32_t i = 0; i < num_entries; ++i) {
+					bool value = entry.var->getFlagValue(entry.object, i);
+					
+					if (ImGui::MenuItem(ref_def.getEntryNameFromIndex(i), nullptr, value)) {
+						entry.var->setFlagValue(entry.object, i, !value);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+
+		} else {
+			bool* const var = reinterpret_cast<bool*>(entry.var->getData(entry.object));
+			ImGui::MenuItem(entry.name.getBuffer(), nullptr, var);
+		}
+
+	} else {
+		if (ImGui::BeginMenu(entry.name.getBuffer())) {
+			for (const DebugMenuEntry& child_entry : entry.children) {
+				renderDebugMenu(child_entry);
+			}
+
+			ImGui::EndMenu();
+		}
+	}
 }
 
 

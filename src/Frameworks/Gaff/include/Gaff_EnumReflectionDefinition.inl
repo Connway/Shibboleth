@@ -173,6 +173,9 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
+	for (IAttributePtr& attr : _enum_attrs) {
+		attr->finish(*this);
+	}
 }
 
 template <class Enum, class Allocator>
