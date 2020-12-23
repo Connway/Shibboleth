@@ -1021,11 +1021,14 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 		}
 
 		const U8String& path = entry.second->getPath();
-		size_t prev_index = 1; // To trick first iteration into (index - prev_index) == npos.
+		size_t prev_index = 0;
 		size_t index = 0;
 
 		while (index != U8String::npos) {
-			menu_entry.name = path.substr((index == 0) ? 0 : prev_index, index - prev_index);
+			menu_entry.name = (index == 0) ?
+				path.substr(0) :
+				path.substr(prev_index, index - prev_index);
+
 			auto it = Gaff::LowerBound(root->children, menu_entry.name);
 
 			if (it == root->children.end() || it->name != menu_entry.name) {
@@ -1080,12 +1083,14 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 		const U8String& path = entry.second->getPath();
 		HashString32<> name(allocator);
 		bool path_find_failed = false;
-		size_t prev_index = 1; // To trick first iteration into (index - prev_index) == npos.
+		size_t prev_index = 0;
 		size_t index = 0;
 
 		// Get full path to leaf nodes.
 		while (index != U8String::npos) {
-			name = path.substr((index == 0) ? 0 : prev_index, index - prev_index);
+			name = (index == 0) ?
+				path.substr(0) :
+				path.substr(prev_index, index - prev_index);
 
 			auto it = Gaff::LowerBound(entries.back()->children, name);
 
