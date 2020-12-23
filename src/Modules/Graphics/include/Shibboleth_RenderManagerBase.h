@@ -140,7 +140,7 @@ public:
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
 
-	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const glm::ivec2& size, bool create_render_texture = false);
+	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
 	const GBufferData* getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
 	bool removeGBuffer(EntityID id);
 	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;

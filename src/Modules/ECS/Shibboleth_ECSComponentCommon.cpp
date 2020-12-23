@@ -33,19 +33,22 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Layer, nullptr, "Scene", HashStringAttribut
 
 NS_SHIBBOLETH
 
-glm_vec4 Position::GetX(const void* component_begin)
+Gleam::Vec4SIMD Position::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
+	const float* const vec = reinterpret_cast<const float*>(component_begin);
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Position::GetY(const void* component_begin)
+Gleam::Vec4SIMD Position::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 4;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Position::GetZ(const void* component_begin)
+Gleam::Vec4SIMD Position::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 8;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
 void Position::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -70,7 +73,7 @@ Position Position::GetInternal(const void* component, int32_t page_index)
 {
 	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-	return Position(glm::vec3(
+	return Position(Gleam::Vec3(
 		comp[0],
 		comp[4],
 		comp[8]
@@ -79,19 +82,22 @@ Position Position::GetInternal(const void* component, int32_t page_index)
 
 
 
-glm_vec4 Rotation::GetPitch(const void* component_begin)
+Gleam::Vec4SIMD Rotation::GetPitch(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
+	const float* const vec = reinterpret_cast<const float*>(component_begin);
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Rotation::GetYaw(const void* component_begin)
+Gleam::Vec4SIMD Rotation::GetYaw(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 4;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Rotation::GetRoll(const void* component_begin)
+Gleam::Vec4SIMD Rotation::GetRoll(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 8;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
 void Rotation::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -116,7 +122,7 @@ Rotation Rotation::GetInternal(const void* component, int32_t page_index)
 {
 	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-	return Rotation(glm::vec3(
+	return Rotation(Gleam::Vec3(
 		comp[0],
 		comp[4],
 		comp[8]
@@ -125,19 +131,22 @@ Rotation Rotation::GetInternal(const void* component, int32_t page_index)
 
 
 
-glm_vec4 Scale::GetX(const void* component_begin)
+Gleam::Vec4SIMD Scale::GetX(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin));
+	const float* const vec = reinterpret_cast<const float*>(component_begin);
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Scale::GetY(const void* component_begin)
+Gleam::Vec4SIMD Scale::GetY(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 4);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 4;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Scale::GetZ(const void* component_begin)
+Gleam::Vec4SIMD Scale::GetZ(const void* component_begin)
 {
-	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 8);
+	const float* const vec = reinterpret_cast<const float*>(component_begin) + 8;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
 void Scale::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
@@ -162,7 +171,7 @@ Scale Scale::GetInternal(const void* component, int32_t page_index)
 {
 	const float* const comp = reinterpret_cast<const float*>(component) + page_index;
 
-	return Scale(glm::vec3(
+	return Scale(Gleam::Vec3(
 		comp[0],
 		comp[4],
 		comp[8]

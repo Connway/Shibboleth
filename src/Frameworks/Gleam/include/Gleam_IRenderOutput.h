@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include "Gleam_Vec2.h"
 #include <Gaff_Defines.h>
-#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -42,7 +42,7 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual glm::ivec2 getSize(void) const = 0;
+	virtual IVec2 getSize(void) const = 0;
 
 	virtual const IRenderTarget& getRenderTarget(void) const = 0;
 	virtual IRenderTarget& getRenderTarget(void) = 0;

@@ -27,35 +27,35 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-Plane::Plane(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3):
+Plane::Plane(const Vec3& point_1, const Vec3& point_2, const Vec3& point_3):
 	_normal(point_2 - point_1)
 {
 	_normal = glm::normalize(glm::cross(_normal, point_3 - point_1));
 	_distance = glm::dot(point_1, _normal);
 }
 
-Plane::Plane(const glm::vec3& point, const glm::vec3& normal):
+Plane::Plane(const Vec3& point, const Vec3& normal):
 	_normal(normal)
 {
 	_distance = glm::dot(point, normal);
 }
 
-Plane::Plane(const glm::vec3& normal, float distance):
+Plane::Plane(const Vec3& normal, float distance):
 	_normal(normal), _distance(distance)
 {
 }
 
-glm::vec3 Plane::getPoint(void) const
+Vec3 Plane::getPoint(void) const
 {
 	return _normal * _distance;
 }
 
-void Plane::setNormal(const glm::vec3& normal)
+void Plane::setNormal(const Vec3& normal)
 {
 	_normal = normal;
 }
 
-glm::vec3 Plane::getNormal(void) const
+Vec3 Plane::getNormal(void) const
 {
 	return _normal;
 }
@@ -86,7 +86,7 @@ Plane::ContainResult Plane::contains(const AABB& aabb) const
 
 Plane::ContainResult Plane::contains(const OBB& obb) const
 {
-	const glm::vec3* axes = obb.getAxes();
+	const Vec3* axes = obb.getAxes();
 
 	float dist_center = glm::dot(obb.getCenter(), _normal);
 	float dist_x = fabsf(glm::dot(axes[0], _normal));
@@ -110,19 +110,19 @@ void Plane::transform(const Transform& transform)
 	_normal = glm::normalize(transform.transformVector(_normal));
 }
 
-void Plane::set(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3)
+void Plane::set(const Vec3& point_1, const Vec3& point_2, const Vec3& point_3)
 {
 	_normal = glm::normalize(glm::cross(point_2 - point_1, point_3 - point_1));
 	_distance = glm::dot(point_1, _normal);
 }
 
-void Plane::set(const glm::vec3& point, const glm::vec3& normal)
+void Plane::set(const Vec3& point, const Vec3& normal)
 {
 	_normal = normal;
 	_distance = glm::dot(point, normal);
 }
 
-void Plane::set(const glm::vec3& normal, float distance)
+void Plane::set(const Vec3& normal, float distance)
 {
 	_normal = normal;
 	_distance = distance;

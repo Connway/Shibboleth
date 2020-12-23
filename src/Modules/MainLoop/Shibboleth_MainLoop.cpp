@@ -38,7 +38,6 @@ THE SOFTWARE.
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IRenderTarget.h>
-#include <Gleam_IncludeMatrix.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(MainLoop)
 	.BASE(IMainLoop)

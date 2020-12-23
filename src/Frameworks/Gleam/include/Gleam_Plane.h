@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include "Gaff_Defines.h"
-#include <vec3.hpp>
+#include "Gleam_Vec3.h"
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
@@ -42,17 +41,17 @@ public:
 		INTERSECTS
 	};
 
-	Plane(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3);
-	Plane(const glm::vec3& point, const glm::vec3& normal);
-	Plane(const glm::vec3& normal, float distance);
+	Plane(const Vec3& point_1, const Vec3& point_2, const Vec3& point_3);
+	Plane(const Vec3& point, const Vec3& normal);
+	Plane(const Vec3& normal, float distance);
 
 	GAFF_STRUCTORS_DEFAULT(Plane);
 	GAFF_COPY_DEFAULT(Plane);
 
-	glm::vec3 getPoint(void) const;
+	Vec3 getPoint(void) const;
 
-	void setNormal(const glm::vec3& normal);
-	glm::vec3 getNormal(void) const;
+	void setNormal(const Vec3& normal);
+	Vec3 getNormal(void) const;
 
 	void setDistance(float distance);
 	float getDistance(void) const;
@@ -62,12 +61,12 @@ public:
 
 	void transform(const Transform& transform);
 
-	void set(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3);
-	void set(const glm::vec3& point, const glm::vec3& normal);
-	void set(const glm::vec3& normal, float distance);
+	void set(const Vec3& point_1, const Vec3& point_2, const Vec3& point_3);
+	void set(const Vec3& point, const Vec3& normal);
+	void set(const Vec3& normal, float distance);
 
 private:
-	glm::vec3 _normal;
+	Vec3 _normal;
 	float _distance;
 };
 

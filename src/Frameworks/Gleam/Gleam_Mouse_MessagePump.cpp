@@ -134,17 +134,17 @@ void MouseMP::update(void)
 	}
 }
 
-glm::ivec2 MouseMP::getNormalizedAbsolutePosition(void) const
+IVec2 MouseMP::getNormalizedAbsolutePosition(void) const
 {
 	return _data.abs_pos / _window->getSize();
 }
 
-glm::ivec2 MouseMP::getNormalizedRelativePosition(void) const
+IVec2 MouseMP::getNormalizedRelativePosition(void) const
 {
 	return _data.rel_pos / _window->getSize();
 }
 
-glm::ivec2 MouseMP::getNormalizedDeltas(void) const
+IVec2 MouseMP::getNormalizedDeltas(void) const
 {
 	return _data.delta / _window->getSize();
 }

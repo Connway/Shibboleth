@@ -65,7 +65,7 @@ Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
 	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
 }
 
-bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene)
+bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
@@ -82,31 +82,43 @@ bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, con
 
 		if (mesh->mName.length) {
 			mesh_name += mesh->mName.C_Str();
-		}
-		else {
-			mesh_name += '0' + static_cast<char>(i);
+		} else {
+			mesh_name.append_sprintf("%i", i);
 		}
 
 		auto mesh_res = res_mgr.createResourceT<MeshResource>(mesh_name.data());
 
 		if (mesh_res->createMesh(devices, *mesh)) {
 			_meshes.emplace_back(std::move(mesh_res));
+
 		} else {
 			LogErrorResource("Failed to create model '%s'. Failed to load submesh '%s'.", getFilePath().getBuffer(), mesh_name.data());
 			succeeded = false;
 		}
 	}
 
+	Gleam::AABB aabb;
+
+	for (int32_t index : centering_meshes) {
+		if (index >= static_cast<int32_t>(_meshes.size())) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		aabb.addAABB(_meshes[index]->getAABB());
+	}
+
+	_centering_vector = -aabb.getCenter();
 	return succeeded;
 }
 
-bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene)
+bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
 	const Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
-	return createMesh(devices, scene);
+	return createMesh(devices, scene, centering_meshes);
 }
 
-bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes)
+bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes, const Vector<int32_t>& centering_meshes)
 {
 	for (const auto& mesh : meshes) {
 		if (mesh->getDevices() != meshes[0]->getDevices()) {
@@ -115,8 +127,38 @@ bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes)
 		}
 	}
 
+	Gleam::AABB aabb;
+
+	for (int32_t index : centering_meshes) {
+		if (index >= static_cast<int32_t>(meshes.size())) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		aabb.addAABB(meshes[index]->getAABB());
+	}
+
+	_centering_vector = -aabb.getCenter();
 	_meshes = meshes;
 	return true;
+}
+
+bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene)
+{
+	Vector<int32_t> centering_meshes;
+	return createMesh(devices, scene, centering_meshes);
+}
+
+bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene)
+{
+	Vector<int32_t> centering_meshes;
+	return createMesh(device, scene, centering_meshes);
+}
+
+bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes)
+{
+	Vector<int32_t> centering_meshes;
+	return createMesh(meshes, centering_meshes);
 }
 
 const MeshResourcePtr& ModelResource::getMesh(int32_t index) const
@@ -128,6 +170,11 @@ const MeshResourcePtr& ModelResource::getMesh(int32_t index) const
 int32_t ModelResource::getNumMeshes(void) const
 {
 	return static_cast<int32_t>(_meshes.size());
+}
+
+const Gleam::Vec3& ModelResource::getCenteringVector(void) const
+{
+	return _centering_vector;
 }
 
 void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
@@ -168,9 +215,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 		failed();
 		return;
 	}
-	
-	// Should we put out a read job instead of loading here?
-	// Or just assume nowadays most people have SSDs or decent speed hard drives?
+
 	{
 		const auto guard = reader.enterElementGuard("model_file");
 	
@@ -217,7 +262,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 	const aiScene* const scene = importer.ReadFileFromMemory(
 		model_file->getBuffer(),
 		model_file->size(),
-		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded,
+		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | static_cast<unsigned int>(aiProcess_GenBoundingBoxes),
 		model_file_path.data() + index
 	);
 	
@@ -227,7 +272,33 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 		return;
 	}
 
-	if (createMesh(*devices, *scene)) {
+	Vector<int32_t> centering_meshes(ProxyAllocator("Resource"));
+
+	{
+		const auto guard = reader.enterElementGuard("center");
+
+		if (reader.isTrue()) {
+			centering_meshes.set_capacity(scene->mNumMeshes);
+
+			for (int32_t i = 0; i < static_cast<int32_t>(scene->mNumMeshes); ++i) {
+				centering_meshes.emplace_back(i);
+			}
+
+		} else if (reader.isArray()) {
+			reader.forEachInArray([&](int32_t) -> bool
+			{
+				if (!reader.isInt32()) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				centering_meshes.emplace_back(reader.readInt32());
+				return false;
+			});
+		}
+	}
+
+	if (createMesh(*devices, *scene, centering_meshes)) {
 		succeeded();
 	} else {
 		failed();

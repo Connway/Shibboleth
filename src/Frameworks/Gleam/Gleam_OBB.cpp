@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-OBB::OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward):
+OBB::OBB(const Vec3& center, const Vec3& right, const Vec3& up, const Vec3& forward):
 	_center(center)
 {
 	_axes[0] = right;
@@ -35,13 +35,13 @@ OBB::OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, c
 	_axes[2] = forward;
 }
 
-OBB::OBB(const AABB& aabb, const glm::mat4x4& transform):
+OBB::OBB(const AABB& aabb, const Mat4x4& transform):
 	_center(aabb.getCenter())
 {
-	glm::vec3 half_extent = aabb.getMax() - _center;
-	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
-	glm::vec3 up(0.0f, half_extent.x, 0.0f);
-	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
+	Vec3 half_extent = aabb.getMax() - _center;
+	Vec3 right(half_extent.x, 0.0f, 0.0f);
+	Vec3 up(0.0f, half_extent.x, 0.0f);
+	Vec3 dir(0.0f, 0.0f, half_extent.z);
 
 	_axes[0] = right;
 	_axes[1] = up;
@@ -53,10 +53,10 @@ OBB::OBB(const AABB& aabb, const glm::mat4x4& transform):
 OBB::OBB(const AABB& aabb, const Transform& transform):
 	_center(aabb.getCenter())
 {
-	glm::vec3 half_extent = aabb.getMax() - _center;
-	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
-	glm::vec3 up(0.0f, half_extent.y, 0.0f);
-	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
+	Vec3 half_extent = aabb.getMax() - _center;
+	Vec3 right(half_extent.x, 0.0f, 0.0f);
+	Vec3 up(0.0f, half_extent.y, 0.0f);
+	Vec3 dir(0.0f, 0.0f, half_extent.z);
 
 	_axes[0] = right;
 	_axes[1] = up;
@@ -68,10 +68,10 @@ OBB::OBB(const AABB& aabb, const Transform& transform):
 OBB::OBB(const AABB& aabb):
 	_center(aabb.getCenter())
 {
-	glm::vec3 half_extent = aabb.getMax() - _center;
-	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
-	glm::vec3 up(0.0f, half_extent.y, 0.0f);
-	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
+	Vec3 half_extent = aabb.getMax() - _center;
+	Vec3 right(half_extent.x, 0.0f, 0.0f);
+	Vec3 up(0.0f, half_extent.y, 0.0f);
+	Vec3 dir(0.0f, 0.0f, half_extent.z);
 
 	_axes[0] = right;
 	_axes[1] = up;
@@ -96,34 +96,34 @@ OBB::~OBB(void)
 {
 }
 
-const glm::vec3& OBB::getCenter(void) const
+const Vec3& OBB::getCenter(void) const
 {
 	return _center;
 }
 
-glm::vec3 OBB::getExtent(void) const
+Vec3 OBB::getExtent(void) const
 {
 	return _axes[0] + _axes[1] + _axes[2];
 }
 
-const glm::vec3& OBB::getAxis(int32_t axis) const
+const Vec3& OBB::getAxis(int32_t axis) const
 {
 	GAFF_ASSERT(axis > -1 && axis < 3);
 	return _axes[axis];
 }
 
-void OBB::setAxis(int axis, const glm::vec3& vec)
+void OBB::setAxis(int axis, const Vec3& vec)
 {
 	GAFF_ASSERT(axis > -1 && axis < 3);
 	_axes[axis] = vec;
 }
 
-const glm::vec3* OBB::getAxes(void) const
+const Vec3* OBB::getAxes(void) const
 {
 	return _axes;
 }
 
-glm::vec3* OBB::generatePoints(glm::vec3* out) const
+Vec3* OBB::generatePoints(Vec3* out) const
 {
 	// top plane
 	out[0] = _center + _axes[0] + _axes[1] + _axes[2];
@@ -148,17 +148,17 @@ void OBB::transform(const Transform& transform)
 	_center = transform.transformPoint(_center);
 }
 
-void OBB::transform(const glm::mat4x4& transform)
+void OBB::transform(const Mat4x4& transform)
 {
-	_axes[0] = transform * glm::vec4(_axes[0], 1.0f);
-	_axes[1] = transform * glm::vec4(_axes[1], 1.0f);
-	_axes[2] = transform * glm::vec4(_axes[2], 1.0f);
-	_center = transform * glm::vec4(_center, 1.0f);
+	_axes[0] = transform * Vec4(_axes[0], 1.0f);
+	_axes[1] = transform * Vec4(_axes[1], 1.0f);
+	_axes[2] = transform * Vec4(_axes[2], 1.0f);
+	_center = transform * Vec4(_center, 1.0f);
 }
 
-bool OBB::contains(const glm::vec3& point) const
+bool OBB::contains(const Vec3& point) const
 {
-	glm::vec3 left, right, bottom, top, back, front;
+	Vec3 left, right, bottom, top, back, front;
 	left = _center - _axes[0];
 	right = _center + _axes[0];
 	bottom = _center - _axes[1];

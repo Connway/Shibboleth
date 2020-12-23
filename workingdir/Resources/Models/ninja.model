@@ -1,6 +1,8 @@
 {
 	"model_file": "Models/ninja.b3d",
 
+	"center": [0],
+
 	//"ignore_normals": false,
 	//"ignore_uvs": false,
 	//"ignore_tangents": false,

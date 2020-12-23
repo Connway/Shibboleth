@@ -54,9 +54,9 @@ void RenderTargetD3D11::destroy(void)
 	_render_target_views.clear();
 }
 
-glm::ivec2 RenderTargetD3D11::getSize(void) const
+IVec2 RenderTargetD3D11::getSize(void) const
 {
-	return glm::ivec2{
+	return IVec2{
 		static_cast<int32_t>(_viewport.Width),
 		static_cast<int32_t>(_viewport.Height)
 	};

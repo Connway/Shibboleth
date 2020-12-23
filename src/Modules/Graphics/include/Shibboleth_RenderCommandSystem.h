@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
-#include <Gleam_IncludeMatrix.h>
 
 NS_GLEAM
 	class IRenderTarget;
@@ -120,7 +119,7 @@ private:
 		Gleam::ICommandList* cmd_list;
 		Gleam::IRenderTarget* target;
 
-		glm::mat4x4 view_projection;
+		Gleam::Mat4x4 view_projection;
 	};
 
 	struct DeviceJobData final

@@ -22,16 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector.h"
-#include "Gleam_Vec3.h"
+#include "Gleam_Defines.h"
+
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4701 4127)
+#endif
+
+#include <gtc/quaternion.hpp>
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif
 
 NS_GLEAM
-
-void GenerateDebugCylinder(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices, bool close_off = true);
-void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices);
-
+	using QuatSIMD = glm::qua<float, glm::aligned>;
+	using Quat = glm::quat;
 NS_END

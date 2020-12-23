@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSEntity.h>
 #include <Esprit_IProcess.h>
-#include <vec3.hpp>
+#include <Gleam_Vec3.h>
 
 NS_SHIBBOLETH
 
@@ -44,7 +44,7 @@ private:
 	InputManager* _input_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 
-	glm::vec3 _angular_speed = glm::vec3{ 1.0f, 1.0f, 1.0f };
+	Gleam::Vec3 _angular_speed = Gleam::Vec3{ 1.0f, 1.0f, 1.0f };
 	float _linear_speed = 1.0f;
 
 	int32_t _entity_id_index = -1;

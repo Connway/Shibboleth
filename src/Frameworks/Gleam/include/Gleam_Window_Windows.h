@@ -64,10 +64,10 @@ public:
 	bool setWindowMode(WindowMode window_mode) override;
 	WindowMode getWindowMode(void) const override;
 
-	const glm::ivec2& getPos(void) const override;
-	const glm::ivec2& getSize(void) const override;
-	void setPos(const glm::ivec2& pos) override;
-	void setSize(const glm::ivec2& size) override;
+	const IVec2& getPos(void) const override;
+	const IVec2& getSize(void) const override;
+	void setPos(const IVec2& pos) override;
+	void setSize(const IVec2& size) override;
 
 	bool isFullScreen(void) const override;
 
@@ -79,8 +79,8 @@ public:
 	HWND getHWnd(void) const;
 
 private:
-	glm::ivec2 _pos{ 0, 0 };
-	glm::ivec2 _size{ 1, 1 };
+	IVec2 _pos{ 0, 0 };
+	IVec2 _size{ 1, 1 };
 
 	WindowMode _window_mode = WindowMode::Fullscreen;
 	bool _cursor_visible = true;

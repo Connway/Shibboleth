@@ -22,16 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector.h"
 #include "Gleam_Vec3.h"
+#include <mat3x3.hpp>
 
 NS_GLEAM
-
-void GenerateDebugCylinder(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices, bool close_off = true);
-void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices);
-
+	using Mat3x3SIMD = glm::mat<3, 3, float, glm::aligned>;
+	using Mat3x3 = glm::mat3x3;
 NS_END

@@ -43,13 +43,13 @@ public:
 
 	static void Destructor(EntityID id, void* component, int32_t entity_index);
 
-	static glm_vec4 GetVerticalFOVDegrees(const void* component, int32_t page_index);
-	static glm_vec4 GetVerticalFOV(const void* component, int32_t page_index);
-	static glm_vec4 GetFocalLength(const void* component, int32_t page_index);
-	static glm_vec4 GetZNear(const void* component, int32_t page_index);
-	static glm_vec4 GetZFar(const void* component, int32_t page_index);
-	//static glm_vec4 GetFocusDistance(const void* component, int32_t page_index);
-	//static glm_vec4 GetFocalLength(const void* component, int32_t page_index);
+	static Gleam::Vec4SIMD GetVerticalFOVDegrees(const void* component, int32_t page_index);
+	static Gleam::Vec4SIMD GetVerticalFOV(const void* component, int32_t page_index);
+	static Gleam::Vec4SIMD GetFocalLength(const void* component, int32_t page_index);
+	static Gleam::Vec4SIMD GetZNear(const void* component, int32_t page_index);
+	static Gleam::Vec4SIMD GetZFar(const void* component, int32_t page_index);
+	//static Gleam::Vec4SIMD GetFocusDistance(const void* component, int32_t page_index);
+	//static Gleam::Vec4SIMD GetFocalLength(const void* component, int32_t page_index);
 
 	// 35mm film (24mm x 36mm) [width x height]
 	static constexpr float DefaultSensorSize = 36.0f;
@@ -61,7 +61,7 @@ public:
 	float GetVerticalFOV(void) const;
 
 	Gaff::Hash32 device_tag = Gaff::FNV1aHash32Const("main");
-	glm::ivec2 size = glm::ivec2{ -1, -1 };
+	Gleam::IVec2 size = Gleam::IVec2{ -1, -1 };
 
 	float v_fov = 0.25f; // turns
 	float z_near = 0.001f; // m

@@ -40,7 +40,7 @@ public:
 	bool init(void) override;
 	void destroy(void) override;
 
-	glm::ivec2 getSize(void) const override;
+	IVec2 getSize(void) const override;
 
 	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::None) override;
 	void popTexture(void) override;

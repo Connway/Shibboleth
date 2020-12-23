@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gleam_Window_Defines.h>
+#include "Gleam_Window_Defines.h"
+#include "Gleam_Vec2.h"
 #include <EASTL/functional.h>
-#include <vec2.hpp>
 
 NS_GLEAM
 
@@ -63,10 +63,10 @@ public:
 	virtual bool setWindowMode(WindowMode window_mode) = 0;
 	virtual WindowMode getWindowMode(void) const = 0;
 
-	virtual const glm::ivec2& getPos(void) const = 0;
-	virtual const glm::ivec2& getSize(void) const = 0;
-	virtual void setPos(const glm::ivec2& pos) = 0;
-	virtual void setSize(const glm::ivec2& size) = 0;
+	virtual const IVec2& getPos(void) const = 0;
+	virtual const IVec2& getSize(void) const = 0;
+	virtual void setPos(const IVec2& pos) = 0;
+	virtual void setSize(const IVec2& size) = 0;
 
 	virtual bool isFullScreen(void) const = 0;
 

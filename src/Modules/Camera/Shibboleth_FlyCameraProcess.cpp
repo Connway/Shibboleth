@@ -28,8 +28,8 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Esprit_StateMachine.h>
-#include <Gleam_IncludeQuaternion.h>
-#include <Gleam_IncludeMatrix.h>
+#include <Gleam_Quaternion.h>
+#include <Gleam_Matrix3x3.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(FlyCameraProcess)
 	.BASE(Esprit::IProcess)
@@ -146,28 +146,28 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	Position position = Position::Get(*_ecs_mgr, entity_id);
 	Rotation rotation = Rotation::Get(*_ecs_mgr, entity_id);
 
-	glm::vec3 local_move_dir = glm::zero<glm::vec3>();
+	Gleam::Vec3 local_move_dir = glm::zero<Gleam::Vec3>();
 
 	local_move_dir.x = _input_mgr->getAliasValue(_horiz_alias_index, player_owner.value);
 	local_move_dir.y = _input_mgr->getAliasValue(_camera_vert_alias_index, player_owner.value);
 	local_move_dir.z = _input_mgr->getAliasValue(_vert_alias_index, player_owner.value);
 
-	if (local_move_dir != glm::zero<glm::vec3>()) {
+	if (local_move_dir != glm::zero<Gleam::Vec3>()) {
 		local_move_dir = glm::normalize(local_move_dir);
 	}
 
 	// Update rotation.
-	rotation.value += _angular_speed * glm::vec3{
+	rotation.value += _angular_speed * Gleam::Vec3{
 		_input_mgr->getAliasValue(_pitch_index, player_owner.value),
 		_input_mgr->getAliasValue(_yaw_index, player_owner.value),
 		0.0f
 	};
 
 	// Update position.
-	const glm::mat3x3 rot = glm::mat3_cast(glm::qua(rotation.value * Gaff::TurnsToRad));
-	glm::vec3 camera_dir = rot * local_move_dir;
+	const Gleam::Mat3x3 rot = glm::mat3_cast(Gleam::Quat(rotation.value * Gaff::TurnsToRad));
+	Gleam::Vec3 camera_dir = rot * local_move_dir;
 
-	if (camera_dir != glm::zero<glm::vec3>()) {
+	if (camera_dir != glm::zero<Gleam::Vec3>()) {
 		camera_dir = glm::normalize(camera_dir);
 	}
 

@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include "Gleam_IncludeQuaternion.h"
+#include "Gleam_Matrix4x4.h"
+#include "Gleam_Quaternion.h"
+#include "Gleam_Vec3.h"
 
 NS_GLEAM
 
@@ -32,7 +33,7 @@ class Transform;
 class TransformRT
 {
 public:
-	TransformRT(const glm::vec3& translation = glm::vec3(), const glm::quat& rotation = glm::quat());
+	TransformRT(const Vec3& translation = glm::zero<Vec3>(), const Quat& rotation = glm::identity<Quat>());
 	TransformRT(const TransformRT& tform);
 	TransformRT(const Transform& tform);
 
@@ -43,33 +44,33 @@ public:
 	TransformRT& operator+=(const TransformRT& rhs);
 	TransformRT operator+(const TransformRT& rhs) const;
 
-	const glm::quat& getRotation(void) const;
-	void setRotation(const glm::quat& rotation);
-	const glm::vec3& getTranslation(void) const;
-	void setTranslation(const glm::vec3& translation);
+	const Quat& getRotation(void) const;
+	void setRotation(const Quat& rotation);
+	const Vec3& getTranslation(void) const;
+	void setTranslation(const Vec3& translation);
 
 	TransformRT concat(const TransformRT& rhs) const;
 	TransformRT inverse(void) const;
 	TransformRT& concatThis(const TransformRT& rhs);
 	TransformRT& inverseThis(void);
 
-	glm::vec3 transformVector(const glm::vec3& rhs) const;
-	glm::vec3 transformPoint(const glm::vec3& rhs) const;
-	glm::mat4x4 toMatrix(void) const;
+	Vec3 transformVector(const Vec3& rhs) const;
+	Vec3 transformPoint(const Vec3& rhs) const;
+	Mat4x4 toMatrix(void) const;
 
 	TransformRT lerp(const TransformRT& end, float t);
 	TransformRT& lerpThis(const TransformRT& end, float t);
 
 private:
-	glm::vec3 _translation;
-	glm::quat _rotation;
+	Vec3 _translation;
+	Quat _rotation;
 };
 
 class Transform
 {
 public:
-	Transform(const glm::vec3& translation = glm::vec3(), const glm::quat& rotation = glm::quat(), const glm::vec3& scale = glm::vec3(1.0f));
-	Transform(const TransformRT& tform, const glm::vec3& scale = glm::vec3(1.0f));
+	Transform(const Vec3& translation = glm::zero<Vec3>(), const Quat& rotation = glm::identity<Quat>(), const Vec3& scale = Vec3(1.0f));
+	Transform(const TransformRT& tform, const Vec3& scale = Vec3(1.0f));
 	Transform(const Transform& tform);
 
 	Transform& operator=(const Transform& rhs);
@@ -79,30 +80,30 @@ public:
 	Transform& operator+=(const Transform& rhs);
 	Transform operator+(const Transform& rhs) const;
 
-	const glm::vec3& getScale(void) const;
-	void setScale(const glm::vec3& scale);
+	const Vec3& getScale(void) const;
+	void setScale(const Vec3& scale);
 	void setScale(float scale);
-	const glm::quat& getRotation(void) const;
-	void setRotation(const glm::quat& rotation);
-	const glm::vec3& getTranslation(void) const;
-	void setTranslation(const glm::vec3& translation);
+	const Quat& getRotation(void) const;
+	void setRotation(const Quat& rotation);
+	const Vec3& getTranslation(void) const;
+	void setTranslation(const Vec3& translation);
 
 	Transform concat(const Transform& rhs) const;
 	Transform inverse(void) const;
 	Transform& concatThis(const Transform& rhs);
 	Transform& inverseThis(void);
 
-	glm::vec3 transformVector(const glm::vec3& rhs) const;
-	glm::vec3 transformPoint(const glm::vec3& rhs) const;
-	glm::mat4x4 toMatrix(void) const;
+	Vec3 transformVector(const Vec3& rhs) const;
+	Vec3 transformPoint(const Vec3& rhs) const;
+	Mat4x4 toMatrix(void) const;
 
 	Transform lerp(const Transform& end, float t);
 	Transform& lerpThis(const Transform& end, float t);
 
 private:
-	glm::vec3 _translation;
-	glm::quat _rotation;
-	glm::vec3 _scale;
+	Vec3 _translation;
+	Quat _rotation;
+	Vec3 _scale;
 };
 
 NS_END

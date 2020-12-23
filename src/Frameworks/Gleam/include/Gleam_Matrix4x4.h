@@ -22,16 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector.h"
-#include "Gleam_Vec3.h"
+#include "Gleam_Vec4.h"
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4127)
+#endif
+
+#include <gtc/matrix_transform.hpp>
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif
 
 NS_GLEAM
-
-void GenerateDebugCylinder(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices, bool close_off = true);
-void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices);
-
+	using Mat4x4SIMD = glm::mat<4, 4, float, glm::aligned>;
+	using Mat4x4 = glm::mat4x4;
 NS_END

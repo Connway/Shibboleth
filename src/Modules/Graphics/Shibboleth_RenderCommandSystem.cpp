@@ -658,14 +658,16 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);
 	}
 
+	const Gleam::Vec3& centering_vector = job_data.rcs->_models[job_data.index]->value->getCenteringVector();
+
 	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>(
 		job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index],
 		[&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
 		{
-			const glm::vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
+			const Gleam::Vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
 
-			glm::mat4x4 transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-			transform[3] = glm::vec4(obj_pos.value, 1.0f);
+			Gleam::Mat4x4 transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+			transform[3] = Gleam::Vec4(obj_pos.value, 1.0f);
 			transform = glm::scale(transform, obj_scale.value);
 
 			const int32_t instance_index = object_index % instance_data.buffer_instance_count;
@@ -673,8 +675,11 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 			void* const buffer = buffer_cache[buffer_index];
 
 			// Write to instance buffer.
-			glm::mat4x4* const matrix = reinterpret_cast<glm::mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
-			*matrix = job_data.view_projection * transform;
+			Gleam::Mat4x4 center_object = glm::identity<Gleam::Mat4x4>();
+			center_object[3] = Gleam::Vec4(centering_vector, 1.0f);
+
+			Gleam::Mat4x4* const matrix = reinterpret_cast<Gleam::Mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
+			*matrix = job_data.view_projection * transform * center_object;
 
 			++object_index;
 		}
@@ -761,19 +766,19 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
 
 				if (num_objects > 0) {
-					const glm::ivec2& size = render_target->getSize();
-					const glm::mat4x4 projection = glm::perspectiveFovLH(
+					const Gleam::IVec2& size = render_target->getSize();
+					const Gleam::Mat4x4 projection = glm::perspectiveFovLH(
 						camera.GetVerticalFOV() * Gaff::TurnsToRad,
 						static_cast<float>(size.x),
 						static_cast<float>(size.y),
 						camera.z_near, camera.z_far
 					);
 
-					const glm::vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-					glm::mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-					camera_transform[3] = glm::vec4(cam_pos.value, 1.0f);
+					const Gleam::Vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
+					Gleam::Mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+					camera_transform[3] = Gleam::Vec4(cam_pos.value, 1.0f);
 
-					const glm::mat4x4 final_camera = projection * glm::inverse(camera_transform);
+					const Gleam::Mat4x4 final_camera = projection * glm::inverse(camera_transform);
 
 					for (int32_t i = 0; i < num_objects; ++i) {
 						const int32_t cache_index = job_data.rcs->_cache_index;

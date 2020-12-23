@@ -22,16 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector.h"
-#include "Gleam_Vec3.h"
+#include "Gleam_Defines.h"
+#include <detail/setup.hpp>
+#include <gtc/type_aligned.hpp>
+#include <vec3.hpp>
 
 NS_GLEAM
+	using IVec3SIMD = glm::aligned_ivec3;
+	using IVec3 = glm::ivec3;
 
-void GenerateDebugCylinder(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices, bool close_off = true);
-void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices);
-
+	using Vec3SIMD = glm::aligned_vec3;
+	using Vec3 = glm::vec3;
 NS_END

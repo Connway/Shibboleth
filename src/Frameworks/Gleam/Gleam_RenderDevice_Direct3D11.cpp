@@ -430,7 +430,7 @@ void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 	_context->Draw(static_cast<UINT>(vert_count), 0);
 }
 
-void RenderDeviceD3D11::setScissorRect(const glm::ivec2& pos, const glm::ivec2& size)
+void RenderDeviceD3D11::setScissorRect(const IVec2& pos, const IVec2& size)
 {
 	const D3D11_RECT rect = {
 		pos.x,
@@ -442,7 +442,7 @@ void RenderDeviceD3D11::setScissorRect(const glm::ivec2& pos, const glm::ivec2& 
 	_context->RSSetScissorRects(1, &rect);
 }
 
-void RenderDeviceD3D11::setScissorRect(const glm::ivec4& rect)
+void RenderDeviceD3D11::setScissorRect(const IVec4& rect)
 {
 	const D3D11_RECT d3d_rect = {
 		rect.x,

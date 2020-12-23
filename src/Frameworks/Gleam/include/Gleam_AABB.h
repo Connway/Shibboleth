@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include <mat4x4.hpp>
+#include "Gleam_Matrix4x4.h"
+#include "Gleam_Vec3.h"
+#include <gtc/constants.hpp>
 
 NS_GLEAM
 
@@ -32,39 +33,39 @@ class Transform;
 class AABB
 {
 public:
-	AABB(const glm::vec3& min = glm::vec3(), const glm::vec3& max = glm::vec3());
+	AABB(const Vec3& min = glm::zero<Vec3>(), const Vec3& max = glm::zero<Vec3>());
 	AABB(const AABB& aabb);
 
 	AABB& operator=(const AABB& rhs);
 
-	const glm::vec3& getMin(void) const;
-	const glm::vec3& getMax(void) const;
-	glm::vec3 getExtent(void) const;
-	glm::vec3 getCenter(void) const;
-	void setMin(const glm::vec3& min);
-	void setMax(const glm::vec3& max);
+	const Vec3& getMin(void) const;
+	const Vec3& getMax(void) const;
+	Vec3 getExtent(void) const;
+	Vec3 getCenter(void) const;
+	void setMin(const Vec3& min);
+	void setMax(const Vec3& max);
 
 	void addPoint(float x, float y, float z);
 	void addPoint(const float* point);
-	void addPoint(const glm::vec3& point);
+	void addPoint(const Vec3& point);
 
 	void addPoints(const float* points, int32_t num_points, int32_t stride = 3);
-	void addPoints(const glm::vec3* points, int32_t num_points);
+	void addPoints(const Vec3* points, int32_t num_points);
 
 	void addAABB(const AABB& aabb);
 
 	void reset(void);
 
-	glm::vec3* generatePoints(glm::vec3* out) const;
+	Vec3* generatePoints(Vec3* out) const;
 
-	void transform(const glm::mat4x4& transform);
+	void transform(const Mat4x4& transform);
 	void transform(const Transform& transform);
-	bool contains(const glm::vec3& point) const;
+	bool contains(const Vec3& point) const;
 
 private:
-	glm::vec3 _min;
-	glm::vec3 _max;
-	glm::vec3 _transform_cache[8];
+	Vec3 _min;
+	Vec3 _max;
+	Vec3 _transform_cache[8];
 };
 
 NS_END

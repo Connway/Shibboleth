@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_BufferResource.h"
 #include <Shibboleth_SmartPtrs.h>
 #include <Gleam_IMesh.h>
+#include <Gleam_AABB.h>
 
 struct aiMesh;
 
@@ -43,10 +44,13 @@ public:
 	const Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd) const;
 	Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd);
 
+	const Gleam::AABB& getAABB(void) const;
+
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
 	BufferResourcePtr _vertex_data;
 	BufferResourcePtr _indice_data;
+	Gleam::AABB _aabb;
 
 	void loadMesh(IFile* file);
 

@@ -28,28 +28,28 @@ namespace
 	template <class T>
 	int32_t VecToString(const T& value, char* buffer, int32_t size)
 	{
-		if constexpr (std::is_same<T, glm::quat>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "glm::quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
-		} else if constexpr (std::is_same<T, glm::vec4>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "glm::vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
-		} else if constexpr (std::is_same<T, glm::vec3>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "glm::vec3(%f, %f, %f)", value.x, value.y, value.z);
-		} else if constexpr (std::is_same<T, glm::vec2>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "glm::vec2(%f, %f)", value.x, value.y);
+		if constexpr (std::is_same<T, Gleam::Quat>::value) {
+			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+		} else if constexpr (std::is_same<T, Gleam::Vec4>::value) {
+			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+		} else if constexpr (std::is_same<T, Gleam::Vec3>::value) {
+			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec3(%f, %f, %f)", value.x, value.y, value.z);
+		} else if constexpr (std::is_same<T, Gleam::Vec2>::value) {
+			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec2(%f, %f)", value.x, value.y);
 		}
 	}
 }
 
-SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
-	//.ctor<const glm::mat4x4&>()
-	//.ctor<const glm::mat3x3&>()
-	.ctor<const glm::vec3&>()
-	.ctor<float, const glm::vec3&>()
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Quat)
+	//.ctor<const Gleam::Mat4x4&>()
+	//.ctor<const Gleam::Mat3x3&>()
+	.ctor<const Gleam::Vec3&>()
+	.ctor<float, const Gleam::Vec3&>()
 	.ctor<float, float, float, float>()
 	.ctor<>()
 
-	.opMul<glm::vec4>()
-	.opMul<glm::vec3>()
+	.opMul<Gleam::Vec4>()
+	.opMul<Gleam::Vec3>()
 
 	.opIndex<glm::length_t>()
 
@@ -62,18 +62,18 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::quat)
 	.opMinus()
 	.opPlus()
 
-	.opToString< VecToString<glm::quat> >()
+	.opToString< VecToString<Gleam::Quat> >()
 
-	.var("x", &glm::quat::x)
-	.var("y", &glm::quat::y)
-	.var("z", &glm::quat::z)
-	.var("w", &glm::quat::w)
-SHIB_REFLECTION_DEFINE_END(glm::quat)
+	.var("x", &Gleam::Quat::x)
+	.var("y", &Gleam::Quat::y)
+	.var("z", &Gleam::Quat::z)
+	.var("w", &Gleam::Quat::w)
+SHIB_REFLECTION_DEFINE_END(Gleam::Quat)
 
-SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
-	.ctor<const glm::vec4&>()
-	.ctor<const glm::vec2&, float, float>()
-	.ctor<const glm::vec3&, float>()
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec4)
+	.ctor<const Gleam::Vec4&>()
+	.ctor<const Gleam::Vec2&, float, float>()
+	.ctor<const Gleam::Vec3&, float>()
 	.ctor<float, float, float, float>()
 	.ctor<float>()
 	.ctor<>()
@@ -95,27 +95,27 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec4)
 	.opMinus()
 	.opPlus()
 
-	.opToString< VecToString<glm::vec4> >()
+	.opToString< VecToString<Gleam::Vec4> >()
 
-	.var("x", &glm::vec4::x, OptionalAttribute())
-	.var("y", &glm::vec4::y, OptionalAttribute())
-	.var("z", &glm::vec4::z, OptionalAttribute())
-	.var("w", &glm::vec4::w, OptionalAttribute())
+	.var("x", &Gleam::Vec4::x, OptionalAttribute())
+	.var("y", &Gleam::Vec4::y, OptionalAttribute())
+	.var("z", &Gleam::Vec4::z, OptionalAttribute())
+	.var("w", &Gleam::Vec4::w, OptionalAttribute())
 
-	.var("r", &glm::vec4::r, OptionalAttribute())
-	.var("g", &glm::vec4::g, OptionalAttribute())
-	.var("b", &glm::vec4::b, OptionalAttribute())
-	.var("a", &glm::vec4::a, OptionalAttribute())
+	.var("r", &Gleam::Vec4::r, OptionalAttribute())
+	.var("g", &Gleam::Vec4::g, OptionalAttribute())
+	.var("b", &Gleam::Vec4::b, OptionalAttribute())
+	.var("a", &Gleam::Vec4::a, OptionalAttribute())
 
-	.var("s", &glm::vec4::s, OptionalAttribute())
-	.var("t", &glm::vec4::t, OptionalAttribute())
-	.var("p", &glm::vec4::p, OptionalAttribute())
-	.var("q", &glm::vec4::q, OptionalAttribute())
-SHIB_REFLECTION_DEFINE_END(glm::vec4)
+	.var("s", &Gleam::Vec4::s, OptionalAttribute())
+	.var("t", &Gleam::Vec4::t, OptionalAttribute())
+	.var("p", &Gleam::Vec4::p, OptionalAttribute())
+	.var("q", &Gleam::Vec4::q, OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::Vec4)
 
-SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
-	.ctor<const glm::vec2&, float>()
-	.ctor<const glm::vec3&>()
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec3)
+	.ctor<const Gleam::Vec2&, float>()
+	.ctor<const Gleam::Vec3&>()
 	.ctor<float, float, float>()
 	.ctor<float>()
 	.ctor<>()
@@ -137,23 +137,23 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec3)
 	.opMinus()
 	.opPlus()
 
-	.opToString< VecToString<glm::vec3> >()
+	.opToString< VecToString<Gleam::Vec3> >()
 
-	.var("x", &glm::vec3::x, OptionalAttribute())
-	.var("y", &glm::vec3::y, OptionalAttribute())
-	.var("z", &glm::vec3::z, OptionalAttribute())
+	.var("x", &Gleam::Vec3::x, OptionalAttribute())
+	.var("y", &Gleam::Vec3::y, OptionalAttribute())
+	.var("z", &Gleam::Vec3::z, OptionalAttribute())
 
-	.var("r", &glm::vec3::r, OptionalAttribute())
-	.var("g", &glm::vec3::g, OptionalAttribute())
-	.var("b", &glm::vec3::b, OptionalAttribute())
+	.var("r", &Gleam::Vec3::r, OptionalAttribute())
+	.var("g", &Gleam::Vec3::g, OptionalAttribute())
+	.var("b", &Gleam::Vec3::b, OptionalAttribute())
 
-	.var("s", &glm::vec3::s, OptionalAttribute())
-	.var("t", &glm::vec3::t, OptionalAttribute())
-	.var("p", &glm::vec3::p, OptionalAttribute())
-SHIB_REFLECTION_DEFINE_END(glm::vec3)
+	.var("s", &Gleam::Vec3::s, OptionalAttribute())
+	.var("t", &Gleam::Vec3::t, OptionalAttribute())
+	.var("p", &Gleam::Vec3::p, OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::Vec3)
 
-SHIB_REFLECTION_DEFINE_BEGIN(glm::vec2)
-	.ctor<const glm::vec2&>()
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
+	.ctor<const Gleam::Vec2&>()
 	.ctor<float, float>()
 	.ctor<float>()
 	.ctor<>()
@@ -175,25 +175,25 @@ SHIB_REFLECTION_DEFINE_BEGIN(glm::vec2)
 	.opMinus()
 	.opPlus()
 
-	.opToString< VecToString<glm::vec2> >()
+	.opToString< VecToString<Gleam::Vec2> >()
 
-	.var("x", &glm::vec2::x, OptionalAttribute())
-	.var("y", &glm::vec2::y, OptionalAttribute())
+	.var("x", &Gleam::Vec2::x, OptionalAttribute())
+	.var("y", &Gleam::Vec2::y, OptionalAttribute())
 
-	.var("r", &glm::vec2::r, OptionalAttribute())
-	.var("g", &glm::vec2::g, OptionalAttribute())
+	.var("r", &Gleam::Vec2::r, OptionalAttribute())
+	.var("g", &Gleam::Vec2::g, OptionalAttribute())
 
-	.var("s", &glm::vec2::s, OptionalAttribute())
-	.var("t", &glm::vec2::t, OptionalAttribute())
-SHIB_REFLECTION_DEFINE_END(glm::vec2)
+	.var("s", &Gleam::Vec2::s, OptionalAttribute())
+	.var("t", &Gleam::Vec2::t, OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::Vec2)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)
 	.var("translation", &Gleam::Transform::getTranslation, &Gleam::Transform::setTranslation)
 	.var("rotation", &Gleam::Transform::getRotation, &Gleam::Transform::setRotation)
 	.var(
 		"scale",
-		static_cast<const glm::vec3& (Gleam::Transform::*)() const>(&Gleam::Transform::getScale),
-		static_cast<void (Gleam::Transform::*)(const glm::vec3&)>(&Gleam::Transform::setScale)
+		static_cast<const Gleam::Vec3& (Gleam::Transform::*)() const>(&Gleam::Transform::getScale),
+		static_cast<void (Gleam::Transform::*)(const Gleam::Vec3&)>(&Gleam::Transform::setScale)
 	)
 SHIB_REFLECTION_DEFINE_END(Gleam::Transform)
 

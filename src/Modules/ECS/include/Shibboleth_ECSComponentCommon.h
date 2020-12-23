@@ -27,30 +27,30 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Position, glm::vec3, ECSComponentBaseBoth, glm::zero<glm::vec3>())
-	static glm_vec4 GetX(const void* component_begin);
-	static glm_vec4 GetY(const void* component_begin);
-	static glm_vec4 GetZ(const void* component_begin);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Position, Gleam::Vec3, ECSComponentBaseBoth, glm::zero<Gleam::Vec3>())
+	static Gleam::Vec4SIMD GetX(const void* component_begin);
+	static Gleam::Vec4SIMD GetY(const void* component_begin);
+	static Gleam::Vec4SIMD GetZ(const void* component_begin);
 
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t page_index, const Position& value);
 	static Position GetInternal(const void* component, int32_t page_index);
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Position)
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Rotation, glm::vec3, ECSComponentBaseBoth, glm::zero<glm::vec3>())
-	static glm_vec4 GetPitch(const void* component_begin);
-	static glm_vec4 GetYaw(const void* component_begin);
-	static glm_vec4 GetRoll(const void* component_begin);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Rotation, Gleam::Vec3, ECSComponentBaseBoth, glm::zero<Gleam::Vec3>())
+	static Gleam::Vec4SIMD GetPitch(const void* component_begin);
+	static Gleam::Vec4SIMD GetYaw(const void* component_begin);
+	static Gleam::Vec4SIMD GetRoll(const void* component_begin);
 
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t page_index, const Rotation& value);
 	static Rotation GetInternal(const void* component, int32_t page_index);
 SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(Rotation)
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Scale, glm::vec3, ECSComponentBaseBoth, glm::one<glm::vec3>())
-	static glm_vec4 GetX(const void* component_begin);
-	static glm_vec4 GetY(const void* component_begin);
-	static glm_vec4 GetZ(const void* component_begin);
+SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(Scale, Gleam::Vec3, ECSComponentBaseBoth, glm::one<Gleam::Vec3>())
+	static Gleam::Vec4SIMD GetX(const void* component_begin);
+	static Gleam::Vec4SIMD GetY(const void* component_begin);
+	static Gleam::Vec4SIMD GetZ(const void* component_begin);
 
 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 	static void SetInternal(void* component, int32_t page_index, const Scale& value);

@@ -41,8 +41,13 @@ Gaff::IAttribute* DebugMenuClassAttribute::clone(void) const
 
 void DebugMenuClassAttribute::instantiated(void* object, const Gaff::IReflectionDefinition& ref_def)
 {
-	IDebugManager& debug_mgr = GetApp().GETMANAGERT(IDebugManager, DebugManager);
-	debug_mgr.registerDebugMenuItems(object, ref_def);
+	// If we are the DebugManager, then just call register on ourselves.
+	// Otherwise, get the DebugManager from the manager registry.
+	IDebugManager* const debug_mgr = (ref_def.getReflectionInstance().getHash() == CLASS_HASH(DebugManager)) ?
+		reinterpret_cast<IDebugManager*>(object) :
+		&GetApp().GETMANAGERT(IDebugManager, DebugManager);
+
+	debug_mgr->registerDebugMenuItems(object, ref_def);
 }
 
 

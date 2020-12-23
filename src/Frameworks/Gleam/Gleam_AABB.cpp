@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-AABB::AABB(const glm::vec3& min, const glm::vec3& max):
+AABB::AABB(const Vec3& min, const Vec3& max):
 	_min(min), _max(max)
 {
 }
@@ -42,47 +42,47 @@ AABB& AABB::operator=(const AABB& rhs)
 	return *this;
 }
 
-const glm::vec3& AABB::getMin(void) const
+const Vec3& AABB::getMin(void) const
 {
 	return _min;
 }
 
-const glm::vec3& AABB::getMax(void) const
+const Vec3& AABB::getMax(void) const
 {
 	return _max;
 }
 
-glm::vec3 AABB::getExtent(void) const
+Vec3 AABB::getExtent(void) const
 {
 	return (_max - _min) * 0.5f;
 }
 
-glm::vec3 AABB::getCenter(void) const
+Vec3 AABB::getCenter(void) const
 {
 	return _min + (_max - _min) * 0.5f;
 }
 
-void AABB::setMin(const glm::vec3& min)
+void AABB::setMin(const Vec3& min)
 {
 	_min = min;
 }
 
-void AABB::setMax(const glm::vec3& max)
+void AABB::setMax(const Vec3& max)
 {
 	_max = max;
 }
 
 void AABB::addPoint(float x, float y, float z)
 {
-	addPoint(glm::vec3(x, y, z));
+	addPoint(Vec3(x, y, z));
 }
 
 void AABB::addPoint(const float* point)
 {
-	addPoint(glm::vec3(point[0], point[1], point[2]));
+	addPoint(Vec3(point[0], point[1], point[2]));
 }
 
-void AABB::addPoint(const glm::vec3& point)
+void AABB::addPoint(const Vec3& point)
 {
 	_min = glm::min(_min, point);
 	_max = glm::max(_max, point);
@@ -96,7 +96,7 @@ void AABB::addPoints(const float* points, int32_t num_points, int32_t stride)
 	}
 }
 
-void AABB::addPoints(const glm::vec3* points, int32_t num_points)
+void AABB::addPoints(const Vec3* points, int32_t num_points)
 {
 	for (int32_t i = 0; i < num_points; ++i) {
 		addPoint(points[i]);
@@ -114,40 +114,40 @@ void AABB::reset(void)
 	constexpr float flt_min = std::numeric_limits<float>::min();
 	constexpr float flt_max = std::numeric_limits<float>::max();
 
-	_min = glm::vec3(flt_max, flt_max, flt_max);
-	_max = glm::vec3(flt_min, flt_min, flt_min);
+	_min = Vec3(flt_max, flt_max, flt_max);
+	_max = Vec3(flt_min, flt_min, flt_min);
 }
 
-glm::vec3* AABB::generatePoints(glm::vec3* out) const
+Vec3* AABB::generatePoints(Vec3* out) const
 {
 	// bottom plane
 	out[0] = _min;
-	out[1] = glm::vec3(_min[0], _min[1], _max[2]);
-	out[2] = glm::vec3(_max[0], _min[1], _min[2]);
-	out[3] = glm::vec3(_max[0], _min[1], _max[2]);
+	out[1] = Vec3(_min[0], _min[1], _max[2]);
+	out[2] = Vec3(_max[0], _min[1], _min[2]);
+	out[3] = Vec3(_max[0], _min[1], _max[2]);
 
 	// top plane
 	out[4] = _max;
-	out[5] = glm::vec3(_max[0], _max[1], _min[2]);
-	out[6] = glm::vec3(_min[0], _max[1], _max[2]);
-	out[7] = glm::vec3(_min[0], _max[1], _min[2]);
+	out[5] = Vec3(_max[0], _max[1], _min[2]);
+	out[6] = Vec3(_min[0], _max[1], _max[2]);
+	out[7] = Vec3(_min[0], _max[1], _min[2]);
 
 	return out;
 }
 
-void AABB::transform(const glm::mat4x4& transform)
+void AABB::transform(const Mat4x4& transform)
 {
 	generatePoints(_transform_cache);
 	reset();
 
-	_transform_cache[0] = transform * glm::vec4(_transform_cache[0], 1.0f);
-	_transform_cache[1] = transform * glm::vec4(_transform_cache[1], 1.0f);
-	_transform_cache[2] = transform * glm::vec4(_transform_cache[2], 1.0f);
-	_transform_cache[3] = transform * glm::vec4(_transform_cache[3], 1.0f);
-	_transform_cache[4] = transform * glm::vec4(_transform_cache[4], 1.0f);
-	_transform_cache[5] = transform * glm::vec4(_transform_cache[5], 1.0f);
-	_transform_cache[6] = transform * glm::vec4(_transform_cache[6], 1.0f);
-	_transform_cache[7] = transform * glm::vec4(_transform_cache[7], 1.0f);
+	_transform_cache[0] = transform * Vec4(_transform_cache[0], 1.0f);
+	_transform_cache[1] = transform * Vec4(_transform_cache[1], 1.0f);
+	_transform_cache[2] = transform * Vec4(_transform_cache[2], 1.0f);
+	_transform_cache[3] = transform * Vec4(_transform_cache[3], 1.0f);
+	_transform_cache[4] = transform * Vec4(_transform_cache[4], 1.0f);
+	_transform_cache[5] = transform * Vec4(_transform_cache[5], 1.0f);
+	_transform_cache[6] = transform * Vec4(_transform_cache[6], 1.0f);
+	_transform_cache[7] = transform * Vec4(_transform_cache[7], 1.0f);
 
 	addPoints(_transform_cache, 8);
 }
@@ -169,7 +169,7 @@ void AABB::transform(const Transform& transform)
 	addPoints(_transform_cache, 8);
 }
 
-bool AABB::contains(const glm::vec3& point) const
+bool AABB::contains(const Vec3& point) const
 {
 	return point[0] >= _min[0] && point[0] <= _max[0] &&
 			point[1] >= _min[1] && point[1] <= _max[1] &&

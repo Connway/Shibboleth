@@ -89,45 +89,48 @@ void Camera::Destructor(EntityID id, void*, int32_t)
 	render_mgr.removeGBuffer(id);
 }
 
-glm_vec4 Camera::GetVerticalFOVDegrees(const void* component, int32_t page_index)
+Gleam::Vec4SIMD Camera::GetVerticalFOVDegrees(const void* component, int32_t page_index)
 {
-	return glm_vec4_mul(GetVerticalFOV(component, page_index), _mm_set_ps1(Gaff::RadToDeg));
+	return GetVerticalFOV(component, page_index) * Gleam::Vec4SIMD(Gaff::RadToDeg);
 }
 
-glm_vec4 Camera::GetVerticalFOV(const void* component, int32_t page_index)
+Gleam::Vec4SIMD Camera::GetVerticalFOV(const void* component, int32_t page_index)
 {
 	// 2.0f * atan(0.5f * sensor_size / focal_length)
-	const glm_vec4 sensor_size = _mm_set_ps1(DefaultSensorSize * 0.5f);
-	const glm_vec4 focal_length = GetFocalLength(component, page_index);
+	const Gleam::Vec4SIMD sensor_size = Gleam::Vec4SIMD(DefaultSensorSize * 0.5f);
+	const Gleam::Vec4SIMD focal_length = GetFocalLength(component, page_index);
 
-	glm_vec4 fov = glm_vec4_div(sensor_size, focal_length);
-	fov = _mm_atan_ps(fov);
-	fov = glm_vec4_mul(fov, _mm_set_ps1(2.0f));
+	Gleam::Vec4SIMD fov = Gleam::Vec4SIMD(sensor_size / focal_length);
+	fov = glm::atan(fov);
+	fov = fov * Gleam::Vec4SIMD(2.0f);
 
 	return fov;
 }
 
-glm_vec4 Camera::GetFocalLength(const void* component, int32_t page_index)
+Gleam::Vec4SIMD Camera::GetFocalLength(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(GetFloatBegin(component, page_index));
+	const float* const vec = GetFloatBegin(component, page_index);
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Camera::GetZNear(const void* component, int32_t page_index)
+Gleam::Vec4SIMD Camera::GetZNear(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(GetFloatBegin(component, page_index) + 4);
+	const float* const vec = GetFloatBegin(component, page_index) + 4;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-glm_vec4 Camera::GetZFar(const void* component, int32_t page_index)
+Gleam::Vec4SIMD Camera::GetZFar(const void* component, int32_t page_index)
 {
-	return _mm_load_ps(GetFloatBegin(component, page_index) + 8);
+	const float* const vec = GetFloatBegin(component, page_index) + 8;
+	return Gleam::Vec4SIMD(vec[0], vec[1], vec[2], vec[3]);
 }
 
-//glm_vec4 Camera::GetFocusDistance(const void* component, int32_t page_index)
+//Gleam::Vec4SIMD Camera::GetFocusDistance(const void* component, int32_t page_index)
 //{
 //	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 12);
 //}
 
-//glm_vec4 GetFocalLength(const void* component, int32_t page_index)
+//Gleam::Vec4SIMD GetFocalLength(const void* component, int32_t page_index)
 //{
 //	return _mm_load_ps(reinterpret_cast<const float*>(component_begin) + 16);
 //}

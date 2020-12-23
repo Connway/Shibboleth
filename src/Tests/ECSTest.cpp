@@ -75,21 +75,21 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 	REQUIRE_EQ(id1, 0);
 	REQUIRE_EQ(id2, 1);
 
-	Shibboleth::Position::Set(ecs_mgr, id1, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
-	Shibboleth::Rotation::Set(ecs_mgr, id1, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
-	Shibboleth::Scale::Set(ecs_mgr, id1, Shibboleth::Scale(glm::vec3(3.0f)));
+	Shibboleth::Position::Set(ecs_mgr, id1, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));
+	Shibboleth::Rotation::Set(ecs_mgr, id1, Shibboleth::Rotation(Gleam::Vec3(0.0f, 0.0f, 0.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id1, Shibboleth::Scale(Gleam::Vec3(3.0f)));
 
-	Shibboleth::Position::Set(ecs_mgr, id2, Shibboleth::Position(glm::vec3(5.0f, 4.0f, 3.0f)));
-	Shibboleth::Rotation::Set(ecs_mgr, id2, Shibboleth::Rotation(glm::vec3(1.0f, 2.0f, 3.0f)));
-	Shibboleth::Scale::Set(ecs_mgr, id2, Shibboleth::Scale(glm::vec3(5.0f)));
+	Shibboleth::Position::Set(ecs_mgr, id2, Shibboleth::Position(Gleam::Vec3(5.0f, 4.0f, 3.0f)));
+	Shibboleth::Rotation::Set(ecs_mgr, id2, Shibboleth::Rotation(Gleam::Vec3(1.0f, 2.0f, 3.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id2, Shibboleth::Scale(Gleam::Vec3(5.0f)));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id1).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id1).value, glm::vec3(0.0f, 0.0f, 0.0f));
-	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id1).value, glm::vec3(3.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id1).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id1).value, Gleam::Vec3(0.0f, 0.0f, 0.0f));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id1).value, Gleam::Vec3(3.0f));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id2).value, glm::vec3(5.0f, 4.0f, 3.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2).value, glm::vec3(1.0f, 2.0f, 3.0f));
-	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id2).value, glm::vec3(5.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id2).value, Gleam::Vec3(5.0f, 4.0f, 3.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id2).value, Gleam::Vec3(1.0f, 2.0f, 3.0f));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id2).value, Gleam::Vec3(5.0f));
 
 	ecs_mgr.destroyEntity(id1);
 	ecs_mgr.destroyEntity(id2);
@@ -109,19 +109,19 @@ TEST_CASE("shibboleth_ecs_add_remove_component")
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE_EQ(id, 0);
 
-	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position((glm::vec3(0.0f, 1.0f, 2.0f))));
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
+	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position((Gleam::Vec3(0.0f, 1.0f, 2.0f))));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
 
 	ecs_mgr.addComponents<Shibboleth::Rotation, Shibboleth::Scale>(id);
-	Shibboleth::Rotation::Set(ecs_mgr, id, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
-	Shibboleth::Scale::Set(ecs_mgr, id, Shibboleth::Scale(glm::vec3(3.0f)));
+	Shibboleth::Rotation::Set(ecs_mgr, id, Shibboleth::Rotation(Gleam::Vec3(0.0f, 0.0f, 0.0f)));
+	Shibboleth::Scale::Set(ecs_mgr, id, Shibboleth::Scale(Gleam::Vec3(3.0f)));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::vec3(0.0f, 0.0f, 0.0f));
-	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id).value, glm::vec3(3.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 0.0f, 0.0f));
+	REQUIRE_EQ(Shibboleth::Scale::Get(ecs_mgr, id).value, Gleam::Vec3(3.0f));
 
 	ecs_mgr.removeComponents<Shibboleth::Position, Shibboleth::Scale>(id);
-	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, glm::vec3(0.0f, 0.0f, 0.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 0.0f, 0.0f));
 
 	ecs_mgr.destroyEntity(id);
 }
@@ -138,15 +138,15 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	ecs_mgr.addArchetype(std::move(archetype));
 
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
-	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, Shibboleth::Rotation(glm::vec3(0.0f, 0.0f, 0.0f)));
+	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, Shibboleth::Rotation(Gleam::Vec3(0.0f, 0.0f, 0.0f)));
 
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE_EQ(id, 0);
 
-	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
+	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash).value, glm::vec3(0.0f, 0.0f, 0.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(Shibboleth::Rotation::GetShared(ecs_mgr, archetype_hash).value, Gleam::Vec3(0.0f, 0.0f, 0.0f));
 
 	ecs_mgr.addSharedComponents<Shibboleth::Scale>(id);
 
@@ -156,11 +156,11 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	REQUIRE_NE(rotation, nullptr);
 	REQUIRE_NE(scale, nullptr);
 
-	scale->value = glm::vec3(3.0f);
+	scale->value = Gleam::Vec3(3.0f);
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(rotation->value, glm::vec3(0.0f, 0.0f, 0.0f));
-	REQUIRE_EQ(scale->value, glm::vec3(3.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, id).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(rotation->value, Gleam::Vec3(0.0f, 0.0f, 0.0f));
+	REQUIRE_EQ(scale->value, Gleam::Vec3(3.0f));
 
 	ecs_mgr.destroyEntity(id);
 }
@@ -180,8 +180,8 @@ TEST_CASE("shibboleth_ecs_query")
 	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE_EQ(id, 0);
 
-	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
-	Shibboleth::Scale::SetShared(ecs_mgr, archetype_hash, Shibboleth::Scale(glm::vec3(3.0f)));
+	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));
+	Shibboleth::Scale::SetShared(ecs_mgr, archetype_hash, Shibboleth::Scale(Gleam::Vec3(3.0f)));
 
 	Shibboleth::Vector<const Shibboleth::Scale*> scale_output;
 	Shibboleth::Vector<Shibboleth::ECSQueryResult> position_output;
@@ -197,8 +197,8 @@ TEST_CASE("shibboleth_ecs_query")
 
 	REQUIRE_EQ(ecs_mgr.getNumEntities(position_output[0]), 1);
 
-	Shibboleth::Position::Set(ecs_mgr, position_output[0], 0, Shibboleth::Position(glm::vec3(0.0f, 1.0f, 2.0f)));
+	Shibboleth::Position::Set(ecs_mgr, position_output[0], 0, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));
 
-	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, position_output[0], 0).value, glm::vec3(0.0f, 1.0f, 2.0f));
-	REQUIRE_EQ(scale_output[0]->value, glm::vec3(3.0f));
+	REQUIRE_EQ(Shibboleth::Position::Get(ecs_mgr, position_output[0], 0).value, Gleam::Vec3(0.0f, 1.0f, 2.0f));
+	REQUIRE_EQ(scale_output[0]->value, Gleam::Vec3(3.0f));
 }

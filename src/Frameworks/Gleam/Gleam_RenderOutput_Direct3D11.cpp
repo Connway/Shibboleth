@@ -60,7 +60,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		return false;
 	}
 
-	const glm::ivec2& size = wnd.getSize();
+	const IVec2& size = wnd.getSize();
 
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc;
 	swap_chain_desc.Width = static_cast<UINT>(size.x);
@@ -173,11 +173,11 @@ RendererType RenderOutputD3D11::getRendererType(void) const
 	return RendererType::DIRECT3D11;
 }
 
-glm::ivec2 RenderOutputD3D11::getSize(void) const
+IVec2 RenderOutputD3D11::getSize(void) const
 {
 	const D3D11_VIEWPORT viewport = getViewport();
 
-	return glm::ivec2{
+	return IVec2{
 		static_cast<int32_t>(viewport.Width),
 		static_cast<int32_t>(viewport.Height)
 	};

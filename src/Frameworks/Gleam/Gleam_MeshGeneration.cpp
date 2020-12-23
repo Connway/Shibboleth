@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices, bool close_off)
+void GenerateDebugCylinder(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices, bool close_off)
 {
 	const int32_t offset = (close_off) ? 1 : 0;
 	const int32_t num_indices = (subdivisions * 6) * (offset + 1);
@@ -55,7 +55,7 @@ void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vect
 	}
 
 	for (int32_t i = 0; i < subdivisions; ++i) {
-		glm::vec3 point = points[offset + i];
+		Vec3 point = points[offset + i];
 		point.y = -point.y;
 
 		points.emplace_back(point);
@@ -108,7 +108,7 @@ void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vect
 	}
 }
 
-void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices)
 {
 	// Ensure at least 2 rows of vertices.
 	subdivisions = Gaff::Max(subdivisions, 4);
@@ -135,7 +135,7 @@ void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Ve
 		for (int32_t x = 0; x < subdivisions; ++x) {
 			const float x_scale = static_cast<float>(x) / (subdivisions - 1);
 
-			points.emplace_back(glm::vec3(
+			points.emplace_back(Vec3(
 				cosf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale) * 0.5f,
 				sinf(Gaff::Pi * 0.5f * y_scale) * 0.5f,
 				sinf(2.0f * Gaff::Pi * x_scale) * cosf(Gaff::Pi * 0.5f * y_scale) * 0.5f
@@ -191,7 +191,7 @@ void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Ve
 	}
 }
 
-void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices)
 {
 	// Ensure at least 3 rows of vertices.
 	subdivisions = Gaff::Max(subdivisions, 4);
@@ -225,7 +225,7 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 
 		// Bottom hemisphere is just top hemisphere with the y-axis inverted.
 		for (int32_t x = 0; x < subdivisions; ++x) {
-			glm::vec3 point = points[starting_index + x];
+			Vec3 point = points[starting_index + x];
 			point.y = -point.y;
 
 			points.emplace_back(point);
@@ -283,7 +283,7 @@ void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector
 	}
 }
 
-void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices)
 {
 	indices.set_capacity(subdivisions * 6);
 	points.set_capacity(subdivisions + 2);
@@ -294,7 +294,7 @@ void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<i
 	for (int32_t x = 0; x < subdivisions; ++x) {
 		const float x_scale = static_cast<float>(x) / (subdivisions - 1);
 
-		points.emplace_back(glm::vec3(
+		points.emplace_back(Vec3(
 			cosf(2.0f * Gaff::Pi * x_scale) * 0.5f,
 			-0.5f,
 			sinf(2.0f * Gaff::Pi * x_scale) * 0.5f
@@ -313,7 +313,7 @@ void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<i
 	}
 }
 
-void GenerateDebugPlane(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices)
 {
 	subdivisions = Gaff::Max(1, subdivisions);
 
@@ -348,22 +348,22 @@ void GenerateDebugPlane(int32_t subdivisions, Vector<glm::vec3>& points, Vector<
 	}
 }
 
-void GenerateDebugBox(Vector<glm::vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices)
 {
 	indices.resize(36);
 	points.resize(8);
 
 	// Top
-	points[0] = glm::vec3(-0.5f, 0.5f, 0.5f);
-	points[1] = glm::vec3(0.5f, 0.5f, 0.5f);
-	points[2] = glm::vec3(-0.5f, 0.5f, -0.5f);
-	points[3] = glm::vec3(0.5f, 0.5f, -0.5f);
+	points[0] = Vec3(-0.5f, 0.5f, 0.5f);
+	points[1] = Vec3(0.5f, 0.5f, 0.5f);
+	points[2] = Vec3(-0.5f, 0.5f, -0.5f);
+	points[3] = Vec3(0.5f, 0.5f, -0.5f);
 
 	// Bottom
-	points[4] = glm::vec3(-0.5f, -0.5f, 0.5f);
-	points[5] = glm::vec3(0.5f, -0.5f, 0.5f);
-	points[6] = glm::vec3(-0.5f, -0.5f, -0.5f);
-	points[7] = glm::vec3(0.5f, -0.5f, -0.5f);
+	points[4] = Vec3(-0.5f, -0.5f, 0.5f);
+	points[5] = Vec3(0.5f, -0.5f, 0.5f);
+	points[6] = Vec3(-0.5f, -0.5f, -0.5f);
+	points[7] = Vec3(0.5f, -0.5f, -0.5f);
 
 	// Top
 	indices[0] = 0;

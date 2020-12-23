@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include <mat4x4.hpp>
-#include <vec3.hpp>
+#include "Gleam_Matrix4x4.h"
+#include "Gleam_Vec3.h"
 
 NS_GLEAM
 
@@ -34,30 +33,30 @@ class AABB;
 class OBB
 {
 public:
-	OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward);
-	OBB(const AABB& aabb, const glm::mat4x4& transform);
+	OBB(const Vec3& center, const Vec3& right, const Vec3& up, const Vec3& forward);
+	OBB(const AABB& aabb, const Mat4x4& transform);
 	OBB(const AABB& aabb, const Transform& transform);
 	OBB(const AABB& aabb);
 	OBB(const OBB& obb);
 	OBB(void);
 	~OBB(void);
 
- 	const glm::vec3& getCenter(void) const;
-	glm::vec3 getExtent(void) const;
+ 	const Vec3& getCenter(void) const;
+	Vec3 getExtent(void) const;
 
-	void setAxis(int axis, const glm::vec3& vec);
-	const glm::vec3& getAxis(int axis) const;
-	const glm::vec3* getAxes(void) const;
+	void setAxis(int axis, const Vec3& vec);
+	const Vec3& getAxis(int axis) const;
+	const Vec3* getAxes(void) const;
 
-	glm::vec3* generatePoints(glm::vec3* out) const;
+	Vec3* generatePoints(Vec3* out) const;
 
-	void transform(const glm::mat4x4& transform);
+	void transform(const Mat4x4& transform);
 	void transform(const Transform& transform);
-	bool contains(const glm::vec3& point) const;
+	bool contains(const Vec3& point) const;
 
 private:
-	glm::vec3 _center;
-	glm::vec3 _axes[3];
+	Vec3 _center;
+	Vec3 _axes[3];
 };
 
 NS_END

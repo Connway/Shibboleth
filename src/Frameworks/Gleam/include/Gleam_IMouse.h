@@ -24,17 +24,17 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IInputDevice.h"
-#include <vec2.hpp>
+#include "Gleam_Vec2.h"
 #include <EASTL/bitset.h>
 
 NS_GLEAM
 
 struct MouseData final
 {
-	glm::ivec2 abs_pos{ 0, 0 };
-	glm::ivec2 rel_pos{ 0, 0 };
-	glm::ivec2 delta{ 0, 0 };
-	glm::ivec2 wheel{ 0, 0 };
+	IVec2 abs_pos{ 0, 0 };
+	IVec2 rel_pos{ 0, 0 };
+	IVec2 delta{ 0, 0 };
+	IVec2 wheel{ 0, 0 };
 
 	eastl::bitset<static_cast<size_t>(MouseCode::MOUSE_BUTTON_COUNT), uint8_t> buttons;
 };
@@ -47,9 +47,9 @@ public:
 
 	const MouseData& getMouseData(void) const { return _data; }
 
-	virtual glm::ivec2 getNormalizedAbsolutePosition(void) const = 0;
-	virtual glm::ivec2 getNormalizedRelativePosition(void) const = 0;
-	virtual glm::ivec2 getNormalizedDeltas(void) const = 0;
+	virtual IVec2 getNormalizedAbsolutePosition(void) const = 0;
+	virtual IVec2 getNormalizedRelativePosition(void) const = 0;
+	virtual IVec2 getNormalizedDeltas(void) const = 0;
 
 	bool isKeyboard(void) const override { return false; }
 	bool isMouse(void) const override { return true; }

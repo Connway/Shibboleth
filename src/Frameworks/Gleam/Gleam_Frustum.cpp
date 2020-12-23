@@ -42,21 +42,21 @@ void Frustum::construct(float fov, float aspect_ratio, float z_near, float z_far
 	float near_width = near_height * aspect_ratio;
 	float far_width = far_height * aspect_ratio;
 
-	glm::vec3 nlt(-near_width, near_height, z_near);
-	glm::vec3 nlb(-near_width, -near_height, z_near);
-	glm::vec3 nrt(near_width, near_height, z_near);
-	glm::vec3 nrb(near_width, -near_height, z_near);
-	//glm::vec3 flt(-far_width, far_height, z_far);
-	glm::vec3 flb(-far_width, -far_height, z_far);
-	glm::vec3 frt(far_width, far_height, z_far);
-	glm::vec3 frb(far_width, -far_height, z_far);
+	Vec3 nlt(-near_width, near_height, z_near);
+	Vec3 nlb(-near_width, -near_height, z_near);
+	Vec3 nrt(near_width, near_height, z_near);
+	Vec3 nrb(near_width, -near_height, z_near);
+	//Vec3 flt(-far_width, far_height, z_far);
+	Vec3 flb(-far_width, -far_height, z_far);
+	Vec3 frt(far_width, far_height, z_far);
+	Vec3 frb(far_width, -far_height, z_far);
 
 	_planes[0] = Plane(nlb, flb, nlt);
 	_planes[1] = Plane(nrb, nrt, frb);
 	_planes[2] = Plane(nrb, frb, nlb);
 	_planes[3] = Plane(nrt, nlt, frt);
-	_planes[4] = Plane(glm::vec3(0.0f, 0.0f, -1.0f), -z_near);
-	_planes[5] = Plane(glm::vec3(0.0f, 0.0f, 1.0f), z_far);
+	_planes[4] = Plane(Vec3(0.0f, 0.0f, -1.0f), -z_near);
+	_planes[5] = Plane(Vec3(0.0f, 0.0f, 1.0f), z_far);
 }
 
 bool Frustum::contains(const AABB& aabb) const

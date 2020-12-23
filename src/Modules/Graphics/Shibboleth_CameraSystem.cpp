@@ -65,7 +65,7 @@ void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 			{
 				if (!_render_mgr->hasGBuffer(id)) {
 					bool create_render_texture = false;
-					glm::ivec2 size(0, 0);
+					Gleam::IVec2 size(0, 0);
 
 					if (camera.size.x > 0 && camera.size.y > 0) {
 						create_render_texture = true;

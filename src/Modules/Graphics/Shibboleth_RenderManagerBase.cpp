@@ -388,7 +388,7 @@ SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
 bool RenderManagerBase::createGBuffer(
 	EntityID id,
 	Gaff::Hash32 device_tag,
-	const glm::ivec2& size,
+	const Gleam::IVec2& size,
 	bool create_render_texture)
 {
 	auto it = _g_buffers.find(id);

@@ -238,22 +238,22 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 				if (handle_index >= static_cast<int32_t>(render_handles.size())) {
 					switch (render_type) {
 						case IDebugManager::DebugRenderType::Plane: {
-							const auto handle = _debug_mgr->renderDebugPlane(glm::zero<glm::vec3>(), glm::vec3(10000.0f), Gleam::Color::Yellow, true);
+							const auto handle = _debug_mgr->renderDebugPlane(glm::zero<Gleam::Vec3>(), Gleam::Vec3(10000.0f), Gleam::Color::Yellow, true);
 							render_handles.emplace_back(handle);
 						} break;
 
 						case IDebugManager::DebugRenderType::Sphere: {
-							const auto handle = _debug_mgr->renderDebugSphere(glm::zero<glm::vec3>(), 1.0f, Gleam::Color::Yellow, true);
+							const auto handle = _debug_mgr->renderDebugSphere(glm::zero<Gleam::Vec3>(), 1.0f, Gleam::Color::Yellow, true);
 							render_handles.emplace_back(handle);
 						} break;
 
 						case IDebugManager::DebugRenderType::Capsule: {
-							const auto handle = _debug_mgr->renderDebugCapsule(glm::zero<glm::vec3>(), 1.0f, 1.0f, Gleam::Color::Yellow, true);
+							const auto handle = _debug_mgr->renderDebugCapsule(glm::zero<Gleam::Vec3>(), 1.0f, 1.0f, Gleam::Color::Yellow, true);
 							render_handles.emplace_back(handle);
 						} break;
 
 						case IDebugManager::DebugRenderType::Box: {
-							const auto handle = _debug_mgr->renderDebugBox(glm::zero<glm::vec3>(), glm::one<glm::vec3>(), Gleam::Color::Yellow, true);
+							const auto handle = _debug_mgr->renderDebugBox(glm::zero<Gleam::Vec3>(), glm::one<Gleam::Vec3>(), Gleam::Color::Yellow, true);
 							render_handles.emplace_back(handle);
 						} break;
 
@@ -273,19 +273,19 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 
 				const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
 
-				glm::vec3 position(transform.p.x, transform.p.y, transform.p.z);
-				glm::quat rotation(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+				Gleam::Vec3 position(transform.p.x, transform.p.y, transform.p.z);
+				Gleam::Quat rotation(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
 
 				switch (render_type) {
 					case IDebugManager::DebugRenderType::Plane:
-						position -= debug_instance.transform.getScale() * glm::vec3(0.5f, 0.0f, 0.5f);
+						position -= debug_instance.transform.getScale() * Gleam::Vec3(0.5f, 0.0f, 0.5f);
 						break;
 
 					case IDebugManager::DebugRenderType::Capsule: {
 						physx::PxCapsuleGeometry capsule;
 
 						if (rb.shape->getShape()->getCapsuleGeometry(capsule)) {
-							debug_instance.transform.setScale(glm::vec3(capsule.radius, capsule.halfHeight, capsule.radius) * 2.0f);
+							debug_instance.transform.setScale(Gleam::Vec3(capsule.radius, capsule.halfHeight, capsule.radius) * 2.0f);
 						}
 					} break;
 
@@ -302,7 +302,7 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 
 						if (rb.shape->getShape()->getBoxGeometry(box)) {
 							const physx::PxVec3 box_scale = box.halfExtents * 2.0f;
-							debug_instance.transform.setScale(glm::vec3(box_scale.x, box_scale.y, box_scale.z));
+							debug_instance.transform.setScale(Gleam::Vec3(box_scale.x, box_scale.y, box_scale.z));
 						}
 					} break;
 
@@ -368,9 +368,9 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 				if (rb.body.body_dynamic) {
 					const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
 
-					position.value = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+					position.value = Gleam::Vec3(transform.p.x, transform.p.y, transform.p.z);
 
-					const glm::quat rot(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+					const Gleam::Quat rot(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
 					rotation.value = glm::eulerAngles(rot) * Gaff::RadToTurns;
 
 					// $TODO: Scale
@@ -384,7 +384,7 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 						return;
 					}
 
-					const glm::qua rot(rotation.value * Gaff::TurnsToRad);
+					const Gleam::Quat rot(rotation.value * Gaff::TurnsToRad);
 
 					const physx::PxTransform transform = physx::PxTransform(
 						physx::PxVec3(position.value.x, position.value.y, position.value.z),

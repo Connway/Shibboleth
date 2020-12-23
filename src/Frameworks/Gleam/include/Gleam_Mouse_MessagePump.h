@@ -38,9 +38,9 @@ public:
 	void destroy(void) override;
 	void update(void) override;
 
-	glm::ivec2 getNormalizedAbsolutePosition(void) const override;
-	glm::ivec2 getNormalizedRelativePosition(void) const override;
-	glm::ivec2 getNormalizedDeltas(void) const override;
+	IVec2 getNormalizedAbsolutePosition(void) const override;
+	IVec2 getNormalizedRelativePosition(void) const override;
+	IVec2 getNormalizedDeltas(void) const override;
 
 	void allowRepeats(bool allow) override;
 	bool areRepeatsAllowed(void) const override;

@@ -499,17 +499,17 @@ Window::WindowMode Window::getWindowMode(void) const
 	return _window_mode;
 }
 
-const glm::ivec2& Window::getPos(void) const
+const IVec2& Window::getPos(void) const
 {
 	return _pos;
 }
 
-const glm::ivec2& Window::getSize(void) const
+const IVec2& Window::getSize(void) const
 {
 	return _size;
 }
 
-void Window::setPos(const glm::ivec2& pos)
+void Window::setPos(const IVec2& pos)
 {
 	_pos = pos;
 
@@ -518,7 +518,7 @@ void Window::setPos(const glm::ivec2& pos)
 	}
 }
 
-void Window::setSize(const glm::ivec2& size)
+void Window::setSize(const IVec2& size)
 {
 	_size = size;
 

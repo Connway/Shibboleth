@@ -115,13 +115,13 @@ public:
 
 	virtual ImGuiContext* getImGuiContext(void) const = 0;
 
-	virtual DebugRenderHandle renderDebugArrow(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugCone(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugPlane(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugArrow(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugLine(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugSphere(const Gleam::Vec3& pos, float radius = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugCone(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugPlane(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugBox(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugCapsule(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 
 	virtual void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;
 	virtual void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;

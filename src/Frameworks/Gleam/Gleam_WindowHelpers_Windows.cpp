@@ -38,7 +38,7 @@ void WindowDestroyed(AnyMessage& message, Window*, WPARAM, LPARAM)
 
 void WindowMoved(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 {
-	window->_pos = glm::ivec2{
+	window->_pos = IVec2{
 		(int)(short)LOWORD(l),
 		(int)(short)HIWORD(l)
 	};
@@ -48,7 +48,7 @@ void WindowMoved(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 void WindowResized(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 {
-	window->_size = glm::ivec2{
+	window->_size = IVec2{
 		LOWORD(l),
 		HIWORD(l)
 	};
@@ -223,7 +223,7 @@ void WindowMouseWheel(AnyMessage& message, Window*, WPARAM w, LPARAM)
 void WindowSetFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 {
 	if (window->_window_mode == IWindow::WindowMode::Fullscreen) {
-		const glm::ivec2& size = window->getSize();
+		const IVec2& size = window->getSize();
 
 		// If full screen set the screen to maximum size of the users desktop and 32-bit.
 		DEVMODE dm_screen_settings;

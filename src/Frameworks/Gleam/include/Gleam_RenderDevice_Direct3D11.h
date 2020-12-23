@@ -51,8 +51,8 @@ public:
 	void renderLineNoVertexInput(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
 
-	void setScissorRect(const glm::ivec2& pos, const glm::ivec2& size) override;
-	void setScissorRect(const glm::ivec4& rect) override;
+	void setScissorRect(const IVec2& pos, const IVec2& size) override;
+	void setScissorRect(const IVec4& rect) override;
 
 	ID3D11DeviceContext3* getDeviceContext(void);
 	ID3D11Device5* getDevice(void);

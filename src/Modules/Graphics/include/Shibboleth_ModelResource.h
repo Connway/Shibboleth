@@ -35,16 +35,21 @@ public:
 
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
+	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes);
+	bool createMesh(Gleam::IRenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes);
+	bool createMesh(const Vector<MeshResourcePtr>& meshes, const Vector<int32_t>& centering_meshes);
 	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene);
 	bool createMesh(Gleam::IRenderDevice& device, const aiScene& scene);
-
 	bool createMesh(const Vector<MeshResourcePtr>& meshes);
 
 	const MeshResourcePtr& getMesh(int32_t index) const;
 	int32_t getNumMeshes(void) const;
 
+	const Gleam::Vec3& getCenteringVector(void) const;
+
 private:
 	Vector<MeshResourcePtr> _meshes{ ProxyAllocator("Graphics") };
+	Gleam::Vec3 _centering_vector = glm::zero<Gleam::Vec3>();
 
 	void loadModel(IFile* file, uintptr_t thread_id_int);
 

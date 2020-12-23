@@ -73,6 +73,9 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 	constexpr size_t k_uv_size = sizeof(float);
 	constexpr size_t k_color_size = sizeof(float) * 4;
 
+	_aabb.setMax(Gleam::Vec3(mesh.mAABB.mMax.x, mesh.mAABB.mMax.y, mesh.mAABB.mMax.z));
+	_aabb.setMin(Gleam::Vec3(mesh.mAABB.mMin.x, mesh.mAABB.mMin.y, mesh.mAABB.mMin.z));
+
 	// Calculate total buffer size.
 	if (mesh.HasPositions()) {
 		settings.size += k_pos_size * mesh.mNumVertices;
@@ -253,6 +256,11 @@ Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd)
 {
 	const auto it = _meshes.find(&rd);
 	return (it != _meshes.end()) ? it->second.get() : nullptr;
+}
+
+const Gleam::AABB& MeshResource::getAABB(void) const
+{
+	return _aabb;
 }
 
 NS_END

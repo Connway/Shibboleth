@@ -26,11 +26,12 @@ THE SOFTWARE.
 #include <Gleam_Transform.h>
 #include <Gleam_Plane.h>
 #include <Gleam_AABB.h>
+#include <Gleam_Vec2.h>
 
-SHIB_REFLECTION_DECLARE(glm::quat)
-SHIB_REFLECTION_DECLARE(glm::vec4)
-SHIB_REFLECTION_DECLARE(glm::vec3)
-SHIB_REFLECTION_DECLARE(glm::vec2)
+SHIB_REFLECTION_DECLARE(Gleam::Quat)
+SHIB_REFLECTION_DECLARE(Gleam::Vec4)
+SHIB_REFLECTION_DECLARE(Gleam::Vec3)
+SHIB_REFLECTION_DECLARE(Gleam::Vec2)
 
 SHIB_REFLECTION_DECLARE(Gleam::Transform)
 SHIB_REFLECTION_DECLARE(Gleam::Plane)
