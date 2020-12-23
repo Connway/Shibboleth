@@ -52,28 +52,29 @@ template <class T, class HashType, HashFunc<HashType> HashingFunc = DefaultHashF
 class HashString;
 
 template < class T, class HashType, HashFunc<HashType> HashingFunc = DefaultHashFunc<HashType> >
-class HashStringTemp
+class HashStringView
 {
 public:
 	template <class Allocator>
-	HashStringTemp(const HashString<T, HashType, HashingFunc, Allocator, true>& hash_string);
+	explicit HashStringView(const HashString<T, HashType, HashingFunc, Allocator, true>& hash_string);
 
 	template <class Allocator>
-	HashStringTemp(const String<T, Allocator>& string);
+	explicit HashStringView(const String<T, Allocator>& string);
 
 	template <size_t size>
-	HashStringTemp(const T (&string)[size]);
+	explicit HashStringView(const T (&string)[size]);
 
-	HashStringTemp(const T* string, size_t size);
-	HashStringTemp(const T* string);
+	HashStringView(const T* string, size_t size);
+	explicit HashStringView(const T* string);
 
-	HashStringTemp(const HashStringTemp<T, HashType, HashingFunc>& string) = default;
-	HashStringTemp(HashStringTemp<T, HashType, HashingFunc>&& string) = default;
+	HashStringView(const HashStringView<T, HashType, HashingFunc>& string) = default;
+	HashStringView(HashStringView<T, HashType, HashingFunc>&& string) = default;
 
-	~HashStringTemp(void) = default;
+	HashStringView(void) = default;
+	~HashStringView(void) = default;
 
-	HashStringTemp<T, HashType, HashingFunc>& operator=(const HashStringTemp<T, HashType, HashingFunc>& string) = default;
-	HashStringTemp<T, HashType, HashingFunc>& operator=(HashStringTemp<T, HashType, HashingFunc>&& string) = default;
+	HashStringView<T, HashType, HashingFunc>& operator=(const HashStringView<T, HashType, HashingFunc>& string) = default;
+	HashStringView<T, HashType, HashingFunc>& operator=(HashStringView<T, HashType, HashingFunc>&& string) = default;
 
 	template <class Allocator>
 	bool operator==(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
@@ -84,10 +85,10 @@ public:
 	template <class Allocator>
 	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
 
-	bool operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
+	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
@@ -110,7 +111,7 @@ class HashString<T, HashType, HashingFunc, Allocator, true> final
 public:
 	explicit HashString(const String<T, Allocator>& string);
 	HashString(const T* string, size_t size, const Allocator& allocator = Allocator());
-	explicit HashString(const HashStringTemp<T, HashType, HashingFunc>& string, const Allocator& allocator = Allocator());
+	explicit HashString(const HashStringView<T, HashType, HashingFunc>& string, const Allocator& allocator = Allocator());
 	explicit HashString(const T* string, const Allocator& allocator = Allocator());
 	HashString(const T* string, size_t size, HashType hash, const Allocator& allocator = Allocator());
 	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
@@ -125,34 +126,34 @@ public:
 
 	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) = default;
 	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(HashString<T, HashType, HashingFunc, Allocator, true>&& rhs) = default;
-	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(const HashStringTemp<T, HashType, HashingFunc>& rhs);
+	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(const HashStringView<T, HashType, HashingFunc>& rhs);
 	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(const String<T, Allocator>& rhs);
 	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(String<T, Allocator>&& rhs);
 	HashString<T, HashType, HashingFunc, Allocator, true>& operator=(const T* rhs);
 
-	template <bool has_string>
-	bool operator==(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator==(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	bool operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
+	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
 	bool operator<(HashType rhs) const;
 	bool operator>(HashType rhs) const;
 
-	operator HashStringTemp<T, HashType, HashingFunc>(void) const;
+	operator HashStringView<T, HashType, HashingFunc>(void) const;
 
 
 	// WARNING: This function takes ownership of the string instead of copying
@@ -175,7 +176,7 @@ class HashString<T, HashType, HashingFunc, Allocator, false> final
 public:
 	explicit HashString(const String<T, Allocator>& string);
 	HashString(const T* string, size_t size, const Allocator& allocator = Allocator());
-	explicit HashString(const HashStringTemp<T, HashType, HashingFunc>& string, const Allocator& allocator = Allocator());
+	explicit HashString(const HashStringView<T, HashType, HashingFunc>& string, const Allocator& allocator = Allocator());
 	explicit HashString(const T* string, const Allocator& allocator = Allocator());
 	HashString(const T* string, size_t size, HashType hash, const Allocator& allocator = Allocator());
 	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
@@ -183,35 +184,35 @@ public:
 	HashString(HashType hash, const Allocator& allocator = Allocator());
 	HashString(const Allocator& allocator = Allocator());
 
-	template <bool has_string>
-	HashString(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs);
+	template <bool HasString>
+	HashString(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs);
 
 	~HashString(void) = default;
 
-	template <bool has_string>
-	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs);
+	template <bool HasString>
+	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs);
 
 	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(HashString<T, HashType, HashingFunc, Allocator, false>&& rhs) = default;
-	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const HashStringTemp<T, HashType, HashingFunc>& rhs);
+	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const HashStringView<T, HashType, HashingFunc>& rhs);
 	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const String<T, Allocator>& rhs);
 	HashString<T, HashType, HashingFunc, Allocator, false>& operator=(const T* rhs);
 
-	template <bool has_string>
-	bool operator==(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator==(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	template <bool has_string>
-	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, has_string>& rhs) const;
+	template <bool HasString>
+	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
-	bool operator==(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator!=(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator<(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
-	bool operator>(const HashStringTemp<T, HashType, HashingFunc>& rhs) const;
+	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
@@ -233,10 +234,10 @@ template < class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = De
 using HashString64 = HashString<char, Hash64, HashingFunc, Allocator, true>;
 
 template < HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32> >
-using HashStringTemp32 = HashStringTemp< char, Hash32, HashingFunc>;
+using HashStringView32 = HashStringView< char, Hash32, HashingFunc>;
 
 template < HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64> >
-using HashStringTemp64 = HashStringTemp< char, Hash64, HashingFunc>;
+using HashStringView64 = HashStringView< char, Hash64, HashingFunc>;
 
 template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>
 using HashStringNoString32 = HashString<char, Hash32, HashingFunc, Allocator, false>;
@@ -273,15 +274,15 @@ bool operator>(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Alloca
 
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
-bool operator==(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs);
+bool operator==(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
-bool operator!=(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs);
+bool operator!=(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
-bool operator<(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs);
+bool operator<(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
-bool operator>(HashTypeA lhs, const HashStringTemp<T, HashTypeB, HashingFunc>& rhs);
+bool operator>(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 NS_END

@@ -42,7 +42,7 @@ public:
 	bool init(void) override;
 
 	template <class T>
-	Gaff::RefPtr<T> requestResourceT(HashStringTemp64<> name, bool delay_load = false)
+	Gaff::RefPtr<T> requestResourceT(HashStringView64<> name, bool delay_load = false)
 	{
 		IResourcePtr old_ptr = requestResource(name, delay_load);
 
@@ -56,16 +56,16 @@ public:
 	template <class T>
 	Gaff::RefPtr<T> requestResourceT(const char* name, bool delay_load = false)
 	{
-		return requestResourceT<T>(HashStringTemp64<>(name, eastl::CharStrlen(name)), delay_load);
+		return requestResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
 
 	IResourcePtr requestResource(const char* name, bool delay_load = false)
 	{
-		return requestResource(HashStringTemp64<>(name, eastl::CharStrlen(name)), delay_load);
+		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> createResourceT(HashStringTemp64<> name)
+	Gaff::RefPtr<T> createResourceT(HashStringView64<> name)
 	{
 		static_assert(T::Creatable, "Resource is not a creatable type.");
 		IResourcePtr old_ptr = createResource(name, Reflection<T>::GetReflectionDefinition());
@@ -81,16 +81,16 @@ public:
 	template <class T>
 	Gaff::RefPtr<T> createResourceT(const char* name)
 	{
-		return createResourceT<T>(HashStringTemp64<>(name, eastl::CharStrlen(name)));
+		return createResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
 	IResourcePtr createResource(const char* name, const Gaff::IReflectionDefinition& ref_def)
 	{
-		return createResource(HashStringTemp64<>(name, eastl::CharStrlen(name)), ref_def);
+		return createResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> getResourceT(HashStringTemp64<> name)
+	Gaff::RefPtr<T> getResourceT(HashStringView64<> name)
 	{
 		IResourcePtr old_ptr = getResource(name);
 
@@ -104,18 +104,18 @@ public:
 	template <class T>
 	Gaff::RefPtr<T> getResourceT(const char* name)
 	{
-		return getResourceT<T>(HashStringTemp64<>(name, eastl::CharStrlen(name)));
+		return getResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
 	IResourcePtr getResource(const char* name)
 	{
-		return getResource(HashStringTemp64<>(name, eastl::CharStrlen(name)));
+		return getResource(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
-	IResourcePtr createResource(HashStringTemp64<> name, const Gaff::IReflectionDefinition& ref_def);
-	IResourcePtr requestResource(HashStringTemp64<> name, bool delay_load);
-	IResourcePtr requestResource(HashStringTemp64<> name);
-	IResourcePtr getResource(HashStringTemp64<> name);
+	IResourcePtr createResource(HashStringView64<> name, const Gaff::IReflectionDefinition& ref_def);
+	IResourcePtr requestResource(HashStringView64<> name, bool delay_load);
+	IResourcePtr requestResource(HashStringView64<> name);
+	IResourcePtr getResource(HashStringView64<> name);
 	void waitForResource(const IResource& resource) const;
 
 	const IFile* loadFileAndWait(const char* file_path, uintptr_t thread_id_int);

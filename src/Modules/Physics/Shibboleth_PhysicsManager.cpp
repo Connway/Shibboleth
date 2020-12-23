@@ -38,9 +38,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	.ctor<>()
 
 	.var(
-		"Flags",
+		"Debug Flags",
 		&PhysicsManager::_debug_flags,
-		DebugMenuItemAttribute("Physics/Debug Render"),
+		DebugMenuItemAttribute("Physics"),
 		NoSerializeAttribute()
 	)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
@@ -321,6 +321,11 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 
 		for (int32_t i = 0; i < ARRAY_SIZE(handle_indices); ++i) {
 			_debug_render_handles[i].resize(handle_indices[i]);
+		}
+
+	} else {
+		for (auto& handles : _debug_render_handles) {
+			handles.resize(0);
 		}
 	}
 }

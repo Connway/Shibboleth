@@ -43,10 +43,10 @@ template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff
 using OptimizedHashString64 = Gaff::OptimizedHashString64<ProxyAllocator, HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
-using HashStringTemp32 = Gaff::HashStringTemp32<HashingFunc>;
+using HashStringView32 = Gaff::HashStringView32<HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash64> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash64> >
-using HashStringTemp64 = Gaff::HashStringTemp64<HashingFunc>;
+using HashStringView64 = Gaff::HashStringView64<HashingFunc>;
 
 template < Gaff::HashFunc<Gaff::Hash32> HashingFunc = Gaff::DefaultHashFunc<Gaff::Hash32> >
 using HashStringNoString32 = Gaff::HashStringNoString32<ProxyAllocator, HashingFunc>;

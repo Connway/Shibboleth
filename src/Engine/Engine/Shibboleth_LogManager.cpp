@@ -93,7 +93,7 @@ bool LogManager::init(const char* log_dir)
 {
 	_log_dir = log_dir;
 
-	addChannel("Default", "Log");
+	addChannel(HashStringView32<>("Default"), "Log");
 
 	EA::Thread::ThreadParameters thread_params;
 	thread_params.mbDisablePriorityBoost = false;
@@ -153,7 +153,7 @@ bool LogManager::removeLogCallback(int32_t id)
 	return false;
 }
 
-void LogManager::addChannel(HashStringTemp32<> channel, const char* file)
+void LogManager::addChannel(HashStringView32<> channel, const char* file)
 {
 	auto it = Gaff::Find(_channels, channel);
 

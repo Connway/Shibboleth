@@ -73,7 +73,7 @@ void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 				}
 
 				const Esprit::VariableSet& vars = sm->getVariables();
-				const int32_t var_index = vars.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
+				const int32_t var_index = vars.getVariableIndex(HashStringView32<>("entity_id"), Esprit::VariableSet::VariableType::Integer);
 
 				if (var_index > -1) {
 					state_machine.instance->variables.integers[var_index] = id;

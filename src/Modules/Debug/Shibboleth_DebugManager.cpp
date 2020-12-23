@@ -224,10 +224,20 @@ GAFF_STATIC_FILE_FUNC
 	ImGui::SetAllocatorFunctions(ImGuiAlloc, ImGuiFree);
 }
 
+SHIB_REFLECTION_DEFINE_BEGIN(DebugManager::DebugFlag)
+	.entry("Draw FPS", DebugManager::DebugFlag::DrawFPS)
+SHIB_REFLECTION_DEFINE_END(DebugManager::DebugFlag)
+
 SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 	.BASE(IDebugManager)
 	.base<IManager>()
 	.ctor<>()
+
+	.var(
+		"Debug Flags",
+		&DebugManager::_debug_flags,
+		DebugMenuItemAttribute("Debug")
+	)
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
@@ -998,11 +1008,11 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 	DebugMenuEntry* root = &_debug_menu_root;
 	DebugMenuEntry menu_entry;
 
-	Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute*> > results(allocator);
+	Vector< eastl::pair<HashStringView32<>, const DebugMenuItemAttribute*> > results(allocator);
 	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
 
 	for (const auto& entry : results) {
-		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
+		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
 
 		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
 			// Menu items only support flags and bools.
@@ -1011,12 +1021,11 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 		}
 
 		const U8String& path = entry.second->getPath();
-		size_t prev_index = 0;
-		size_t index = path.find_first_of('/');
+		size_t prev_index = 1; // To trick first iteration into (index - prev_index) == npos.
+		size_t index = 0;
 
 		while (index != U8String::npos) {
-			menu_entry.name = path.substr(prev_index, index - prev_index);
-
+			menu_entry.name = path.substr((index == 0) ? 0 : prev_index, index - prev_index);
 			auto it = Gaff::LowerBound(root->children, menu_entry.name);
 
 			if (it == root->children.end() || it->name != menu_entry.name) {
@@ -1029,12 +1038,14 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 			index = path.find_first_of("/", index + 1);
 		}
 
-		menu_entry.name = path.substr(prev_index + 1);
+		menu_entry.name = entry.first;
 
+		// Search for an entry that already has this name.
 		auto it = Gaff::LowerBound(root->children, menu_entry.name);
 		U8String base_name = menu_entry.name.getString();
 		int32_t i = 2;
 
+		// If an entry with this name already exists, then add numbers to the end until we don't find a match.
 		while (it != root->children.end() && it->name == menu_entry.name) {
 			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
 			it = Gaff::LowerBound(root->children, menu_entry.name);
@@ -1051,11 +1062,11 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 {
 	const ProxyAllocator allocator("Debug");
 
-	Vector< eastl::pair<Gaff::Hash32, const DebugMenuItemAttribute*> > results(allocator);
+	Vector< eastl::pair<HashStringView32<>, const DebugMenuItemAttribute*> > results(allocator);
 	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
 
 	for (const auto& entry : results) {
-		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first);
+		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
 
 		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
 			// Menu items only support flags and bools.
@@ -1068,22 +1079,30 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 
 		const U8String& path = entry.second->getPath();
 		HashString32<> name(allocator);
-		size_t prev_index = 0;
-		size_t index = path.find_first_of('/');
+		bool path_find_failed = false;
+		size_t prev_index = 1; // To trick first iteration into (index - prev_index) == npos.
+		size_t index = 0;
 
 		// Get full path to leaf nodes.
 		while (index != U8String::npos) {
-			name = path.substr(prev_index, index - prev_index);
+			name = path.substr((index == 0) ? 0 : prev_index, index - prev_index);
 
 			auto it = Gaff::LowerBound(entries.back()->children, name);
 
 			// Leaf nodes don't exist. Continue to next variable.
 			if (it == entries.back()->children.end() || it->name != name) {
-				continue;
+				path_find_failed = true;
+				break;
 			}
 
 			prev_index = index;
 			index = path.find_first_of("/", index + 1);
+
+			entries.emplace_back(it);
+		}
+
+		if (path_find_failed) {
+			continue;
 		}
 
 		// Remove all entries that contain this object.
@@ -1911,9 +1930,10 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 
 			if (ImGui::BeginMenu(entry.name.getBuffer())) {
 				for (int32_t i = 0; i < num_entries; ++i) {
+					const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 					bool value = entry.var->getFlagValue(entry.object, i);
 					
-					if (ImGui::MenuItem(ref_def.getEntryNameFromIndex(i), nullptr, value)) {
+					if (ImGui::MenuItem(flag_name.getBuffer(), nullptr, value)) {
 						entry.var->setFlagValue(entry.object, i, !value);
 					}
 				}
@@ -1942,16 +1962,6 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-
-	static auto capsule = _debug_mgr->renderDebugCapsule(Gleam::Vec3(5.0f, 0.0f, 5.0f), 1.0f, 2.0f, Gleam::Color::Red, true);
-	static auto sphere = _debug_mgr->renderDebugSphere(Gleam::Vec3(0.0f, 0.5f, 5.0f), 1.0f, Gleam::Color::Red, true);
-	static auto line = _debug_mgr->renderDebugLine(Gleam::Vec3(-50.0f, 0.0f, 20.0f), Gleam::Vec3(50.0f, 0.0f, 20.0f), Gleam::Color::Red, true);
-	static auto cone = _debug_mgr->renderDebugCone(Gleam::Vec3(-5.0f, 5.0f, 5.0f), Gleam::Vec3(1.0f), Gleam::Color::Red, true);
-	static auto box = _debug_mgr->renderDebugBox(Gleam::Vec3(-5.0f, 0.0f, 5.0f), Gleam::Vec3(1.0f), Gleam::Color::Red, true);
-	static auto arrow = _debug_mgr->renderDebugArrow(Gleam::Vec3(-5.0f, 1.0f, 20.0f), Gleam::Vec3(5.0f, 1.0f, 20.0f), Gleam::Color::Red, true);
-
-	capsule.getInstance().transform.setRotation(glm::angleAxis(Gaff::Pi * 0.25f, Gleam::Vec3(1.0f, 0.0f, 0.0f)));
-
 	return true;
 }
 

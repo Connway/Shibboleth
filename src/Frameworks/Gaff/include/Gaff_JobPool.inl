@@ -97,7 +97,7 @@ void JobPool<Allocator>::run(void)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::addPool(const HashStringTemp32<>& name, int32_t max_concurrent_threads)
+void JobPool<Allocator>::addPool(const HashStringView32<>& name, int32_t max_concurrent_threads)
 {
 	HashString32<Allocator> copy(name);
 	GAFF_ASSERT(_job_pools.find(copy) == _job_pools.end());

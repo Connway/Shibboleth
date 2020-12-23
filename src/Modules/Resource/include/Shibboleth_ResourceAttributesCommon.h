@@ -40,12 +40,12 @@ class ResExtAttribute final : public Gaff::IAttribute
 public:
 	ResExtAttribute(const char* extension);
 
-	const HashStringTemp32<>& getExtension(void) const;
+	const HashStringView32<>& getExtension(void) const;
 
 	Gaff::IAttribute* clone(void) const override;
 
 private:
-	HashStringTemp32<> _extension;
+	HashStringView32<> _extension;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
 };

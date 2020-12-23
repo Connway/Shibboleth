@@ -59,6 +59,13 @@ struct Time;
 class DebugManager final : public IDebugManager
 {
 public:
+	enum class DebugFlag
+	{
+		DrawFPS,
+
+		Count
+	};
+
 	static void SetupModuleToUseImGui(void);
 
 	~DebugManager(void);
@@ -206,6 +213,7 @@ private:
 	DebugRenderData _debug_data;
 	DebugMenuEntry _debug_menu_root;
 
+	Gaff::Flags<DebugFlag> _debug_flags;
 	Gaff::Flags<Flag> _flags;
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
@@ -250,6 +258,7 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(DebugManager::DebugFlag)
 SHIB_REFLECTION_DECLARE(DebugRenderSystem)
 SHIB_REFLECTION_DECLARE(DebugManager)
 SHIB_REFLECTION_DECLARE(DebugSystem)

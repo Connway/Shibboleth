@@ -75,7 +75,7 @@ bool ECSManager::initAllModulesLoaded(void)
 
 	} else if (starting_scene.isString()) {
 		const char* const scene = starting_scene.getString();
-		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringTemp64<>(scene, eastl::CharStrlen(scene)));
+		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
 	}
 
 	return true;

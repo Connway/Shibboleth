@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_FunctionStackHelpers.h"
-#include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
@@ -107,21 +106,18 @@ public:
 	bool isBuiltIn(void) const override;
 
 	int32_t getNumVars(void) const override;
-	const char* getVarName(int32_t index) const override;
-	Hash32 getVarHash(int32_t index) const override;
+	HashStringView32<> getVarName(int32_t index) const override;
 	IReflectionVar* getVar(int32_t index) const override;
 	IReflectionVar* getVar(Hash32 name) const override;
 
 	int32_t getNumFuncs(void) const override;
 	int32_t getNumFuncOverrides(int32_t index) const override;
-	const char* getFuncName(int32_t index) const override;
-	Hash32 getFuncHash(int32_t index) const override;
+	HashStringView32<> getFuncName(int32_t index) const override;
 	int32_t getFuncIndex(Hash32 name) const override;
 
 	int32_t getNumStaticFuncs(void) const override;
 	int32_t getNumStaticFuncOverrides(int32_t index) const override;
-	const char* getStaticFuncName(int32_t) const override;
-	Hash32 getStaticFuncHash(int32_t index) const override;
+	HashStringView32<> getStaticFuncName(int32_t) const override;
 	int32_t getStaticFuncIndex(Hash32 name) const override;
 
 	int32_t getNumClassAttrs(void) const override;
@@ -854,19 +850,16 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		bool hasInterface(Hash64) const override { return false; } \
 		IAllocator& getAllocator(void) override { return _allocator; } \
 		int32_t getNumVars(void) const override { return 0; } \
-		const char* getVarName(int32_t) const override { return nullptr; } \
-		Hash32 getVarHash(int32_t) const override { return 0; } \
+		HashStringView32<> getVarName(int32_t) const override { return HashStringView32<>(); } \
 		IReflectionVar* getVar(int32_t) const override { return nullptr; } \
 		IReflectionVar* getVar(Hash32) const override { return nullptr; } \
 		int32_t getNumFuncs(void) const override { return 0; } \
 		int32_t getNumFuncOverrides(int32_t) const override { return 0; } \
-		const char* getFuncName(int32_t) const override { return nullptr; } \
-		Hash32 getFuncHash(int32_t) const override { return 0; } \
+		HashStringView32<> getFuncName(int32_t) const override { return HashStringView32<>(); } \
 		int32_t getFuncIndex(Hash32) const override { return -1; } \
 		int32_t getNumStaticFuncs(void) const override { return 0; } \
-		const char* getStaticFuncName(int32_t) const override { return nullptr; } \
+		HashStringView32<> getStaticFuncName(int32_t) const override { return HashStringView32<>(); } \
 		int32_t getNumStaticFuncOverrides(int32_t) const override { return 0; } \
-		Hash32 getStaticFuncHash(int32_t) const override { return 0; } \
 		int32_t getStaticFuncIndex(Hash32) const override { return -1; } \
 		int32_t getNumClassAttrs(void) const override { return 0; } \
 		const IAttribute* getClassAttr(Hash64) const override { return nullptr; } \
@@ -977,19 +970,19 @@ struct IsU8String< U8String<Allocator> > final
 };
 
 template <class T>
-struct IsHashStringTemp final
+struct IsHashStringView final
 {
 	static constexpr bool value = false;
 };
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc>
-struct IsHashStringTemp< const HashStringTemp<T, HashType, HashingFunc>& > final
+struct IsHashStringView< const HashStringView<T, HashType, HashingFunc>& > final
 {
 	static constexpr bool value = true;
 };
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc>
-struct IsHashStringTemp< HashStringTemp<T, HashType, HashingFunc> > final
+struct IsHashStringView< HashStringView<T, HashType, HashingFunc> > final
 {
 	static constexpr bool value = true;
 };

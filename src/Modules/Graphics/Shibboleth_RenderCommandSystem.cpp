@@ -360,7 +360,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 
 					if (it != sb_refl.vars.end()) {
 						instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
-						instance_data.instance_data = &instance_data.pipeline_data[i].buffer_vars[HashString32<>(sb_refl.name)];
+						instance_data.instance_data = &instance_data.pipeline_data[i].buffer_vars[HashString32<>(sb_refl.name.data())];
 					}
 				}
 			}
@@ -431,7 +431,7 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 			continue;
 		}
 
-		auto& buffer_data = var_map[HashString32<>(sb_refl.name)];
+		auto& buffer_data = var_map[HashString32<>(sb_refl.name.data())];
 		var_map.set_allocator(ProxyAllocator("Graphics"));
 
 		const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
@@ -484,7 +484,7 @@ void RenderCommandSystem::addTextureSRVs(
 			continue;
 		}
 
-		var_map[HashString32<>(texture_name)].reset(srv);
+		var_map[HashString32<>(texture_name.data())].reset(srv);
 	}
 }
 

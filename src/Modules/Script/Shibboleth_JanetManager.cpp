@@ -48,7 +48,7 @@ JanetManager::~JanetManager(void)
 bool JanetManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	app.getLogManager().addChannel("Lua", "LuaLog");
+	app.getLogManager().addChannel(HashStringView32<>("Janet"), "JanetLog");
 
 	const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
 	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);

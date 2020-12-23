@@ -63,10 +63,10 @@ bool EnumReflectionDefinition<Enum, Allocator>::load(const ISerializeReader& rea
 template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::save(ISerializeWriter& writer, Enum value) const
 {
-	const char* const name = getEntryName(value);
-	GAFF_ASSERT(name);
+	const HashStringView32<> name = getEntryName(value);
+	GAFF_ASSERT(name.getBuffer());
 
-	writer.writeString(name);
+	writer.writeString(name.getBuffer());
 }
 
 template <class Enum, class Allocator>
@@ -76,16 +76,16 @@ int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEntries(void) const
 }
 
 template <class Enum, class Allocator>
-const char* EnumReflectionDefinition<Enum, Allocator>::getEntryNameFromValue(int32_t value) const
+HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryNameFromValue(int32_t value) const
 {
 	return getEntryName(static_cast<Enum>(value));
 }
 
 template <class Enum, class Allocator>
-const char* EnumReflectionDefinition<Enum, Allocator>::getEntryNameFromIndex(int32_t index) const
+HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryNameFromIndex(int32_t index) const
 {
 	GAFF_ASSERT(static_cast<size_t>(index) < _entries.size());
-	return (_entries.begin() + index)->first.getBuffer();
+	return HashStringView32<>((_entries.begin() + index)->first);
 }
 
 template <class Enum, class Allocator>
@@ -113,15 +113,15 @@ int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(Hash32 name) co
 }
 
 template <class Enum, class Allocator>
-const char* EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) const
+HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) const
 {
 	for (const auto& entry : _entries) {
 		if (entry.second == value) {
-			return entry.first.getBuffer();
+			return HashStringView32<>(entry.first);
 		}
 	}
 
-	return nullptr;
+	return HashStringView32<>();
 }
 
 template <class Enum, class Allocator>

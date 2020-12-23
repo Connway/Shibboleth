@@ -331,7 +331,7 @@ static Gaff::Hash64 HashStringInstanceHash(const Gaff::HashString<T, HashType, H
 }
 
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
-static Gaff::Hash64 HashStringTempInstanceHash(const Gaff::HashStringTemp<T, HashType, HashingFunc>& hash_string, Gaff::Hash64 init)
+static Gaff::Hash64 HashStringViewInstanceHash(const Gaff::HashStringView<T, HashType, HashingFunc>& hash_string, Gaff::Hash64 init)
 {
 	if (hash_string.getBuffer()) {
 		return Gaff::FNV1aHash64String(hash_string.getBuffer(), init);
@@ -377,14 +377,14 @@ static bool LoadHashString(const Gaff::ISerializeReader& reader, Gaff::HashStrin
 }
 
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
-static bool LoadHashStringTemp(const Gaff::ISerializeReader& reader, Gaff::HashStringTemp<T, HashType, HashingFunc>& out)
+static bool LoadHashStringView(const Gaff::ISerializeReader& reader, Gaff::HashStringView<T, HashType, HashingFunc>& out)
 {
 	if (!reader.isString()) {
 		return false;
 	}
 
 	const char* const str = reader.readString();
-	out = Gaff::HashStringTemp<T, HashType, HashingFunc>(str);
+	out = Gaff::HashStringView<T, HashType, HashingFunc>(str);
 	reader.freeString(str);
 
 	return true;
@@ -403,7 +403,7 @@ static void SaveHashString(Gaff::ISerializeWriter& writer, const Gaff::HashStrin
 }
 
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
-static void SaveHashStringTemp(Gaff::ISerializeWriter& writer, const Gaff::HashStringTemp<T, HashType, HashingFunc>& value)
+static void SaveHashStringView(Gaff::ISerializeWriter& writer, const Gaff::HashStringView<T, HashType, HashingFunc>& value)
 {
 	if (value.getBuffer()) {
 		writer.writeString(value.getBuffer());

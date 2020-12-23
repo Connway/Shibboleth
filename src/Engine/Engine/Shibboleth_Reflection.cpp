@@ -88,18 +88,18 @@ SHIB_REFLECTION_DEFINE_BEGIN(HashStringNoString64<>)
 	)
 SHIB_REFLECTION_DEFINE_END(HashStringNoString64<>)
 
-SHIB_REFLECTION_DEFINE_BEGIN(HashStringTemp32<>)
-	.setInstanceHash(Gaff::HashStringTempInstanceHash< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringView32<>)
+	.setInstanceHash(Gaff::HashStringViewInstanceHash< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
 	.serialize(
-		Gaff::LoadHashStringTemp< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
-		Gaff::SaveHashStringTemp< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
+		Gaff::LoadHashStringView< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
+		Gaff::SaveHashStringView< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
 	)
-SHIB_REFLECTION_DEFINE_END(HashStringTemp32<>)
+SHIB_REFLECTION_DEFINE_END(HashStringView32<>)
 
-SHIB_REFLECTION_DEFINE_BEGIN(HashStringTemp64<>)
-	.setInstanceHash(Gaff::HashStringTempInstanceHash< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
+SHIB_REFLECTION_DEFINE_BEGIN(HashStringView64<>)
+	.setInstanceHash(Gaff::HashStringViewInstanceHash< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
 	.serialize(
-		Gaff::LoadHashStringTemp< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
-		Gaff::SaveHashStringTemp< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
+		Gaff::LoadHashStringView< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
+		Gaff::SaveHashStringView< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
 	)
-SHIB_REFLECTION_DEFINE_END(HashStringTemp64<>)
+SHIB_REFLECTION_DEFINE_END(HashStringView64<>)

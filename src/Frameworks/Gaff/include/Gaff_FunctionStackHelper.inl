@@ -174,7 +174,7 @@ bool CallFunc(
 
 	// $TODO: Add vector support.
 
-	if constexpr (std::is_same<const char*, First>::value || IsU8StringRef<First>::value || IsU8String<First>::value || IsHashStringTemp<First>::value) {
+	if constexpr (std::is_same<const char*, First>::value || IsU8StringRef<First>::value || IsU8String<First>::value || IsHashStringView<First>::value) {
 		// Get current value from arg stack.
 		const FunctionStackEntry& entry = args[arg_index];
 		const char* str = nullptr;

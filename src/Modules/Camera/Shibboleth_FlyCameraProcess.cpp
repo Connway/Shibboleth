@@ -46,7 +46,7 @@ SHIB_REFLECTION_CLASS_DEFINE(FlyCameraProcess);
 bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 {
 	const Esprit::VariableSet& variables = owner.getVariables();
-	_entity_id_index = variables.getVariableIndex("entity_id", Esprit::VariableSet::VariableType::Integer);
+	_entity_id_index = variables.getVariableIndex(HashStringView32<>("entity_id"), Esprit::VariableSet::VariableType::Integer);
 
 	if (_entity_id_index < 0) {
 		// $TODO: Log error.

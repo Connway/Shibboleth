@@ -267,7 +267,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 			const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
 			reader.freeString(res_path);
 
-			const HashStringTemp64<> path_hash(final_path);
+			const HashStringView64<> path_hash(final_path);
 			ShaderResourcePtr compute = res_mgr.getResourceT<ShaderResource>(path_hash);
 
 			if (!compute) {
@@ -351,7 +351,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 		const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
 		reader.freeString(res_path);
 
-		const HashStringTemp64<> path_hash(final_path);
+		const HashStringView64<> path_hash(final_path);
 		shaders[index] = res_mgr.getResourceT<ShaderResource>(path_hash);
 
 		if (!shaders[index]) {

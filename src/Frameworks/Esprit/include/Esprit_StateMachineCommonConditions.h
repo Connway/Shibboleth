@@ -51,7 +51,7 @@ public:
 
 	// These two functions are only safe to call before init() is called.
 	const OptimizedHashString32<>& getVariableName(void) const;
-	void setVariableName(const HashStringTemp32<>& name);
+	void setVariableName(const HashStringView32<>& name);
 
 	VariableSet::VariableType getVariableType(void) const;
 	void setVariableType(VariableSet::VariableType type);

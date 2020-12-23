@@ -35,10 +35,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
 	.base<IManager>()
 	.ctor<>()
 
-	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, bool)>(&ResourceManager::requestResource))
-	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::requestResource))
-	//.func("createResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>, const Gaff::IReflectionDefinition&)>(&ResourceManager::createResource))
-	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringTemp64<>)>(&ResourceManager::getResource))
+	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>, bool)>(&ResourceManager::requestResource))
+	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>)>(&ResourceManager::requestResource))
+	//.func("createResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>, const Gaff::IReflectionDefinition&)>(&ResourceManager::createResource))
+	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>)>(&ResourceManager::getResource))
 SHIB_REFLECTION_DEFINE_END(ResourceManager)
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(ResourceSystem, ISystem)
@@ -81,7 +81,7 @@ bool ResourceManager::init(void)
 	ReflectionManager& refl_mgr = app.getReflectionManager();
 
 	refl_mgr.registerTypeBucket(Reflection<IResource>::GetHash());
-	app.getLogManager().addChannel("Resource", "ResourceLog");
+	app.getLogManager().addChannel(HashStringView32<>("Resource"), "ResourceLog");
 
 	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Reflection<IResource>::GetHash());
 
@@ -118,7 +118,7 @@ bool ResourceManager::init(void)
 	return true;
 }
 
-IResourcePtr ResourceManager::createResource(HashStringTemp64<> name, const Gaff::IReflectionDefinition& ref_def)
+IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Gaff::IReflectionDefinition& ref_def)
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
@@ -160,7 +160,7 @@ IResourcePtr ResourceManager::createResource(HashStringTemp64<> name, const Gaff
 	return IResourcePtr(resource);
 }
 
-IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name, bool delay_load)
+IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool delay_load)
 {
 	EA::Thread::AutoMutex lock(_res_lock);
 
@@ -208,12 +208,12 @@ IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name, bool dela
 	return IResourcePtr(res);
 }
 
-IResourcePtr ResourceManager::requestResource(HashStringTemp64<> name)
+IResourcePtr ResourceManager::requestResource(HashStringView64<> name)
 {
 	return requestResource(name, false);
 }
 
-IResourcePtr ResourceManager::getResource(HashStringTemp64<> name)
+IResourcePtr ResourceManager::getResource(HashStringView64<> name)
 {
 	EA::Thread::AutoMutex lock(_res_lock);
 

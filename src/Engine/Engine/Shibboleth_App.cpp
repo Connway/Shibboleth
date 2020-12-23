@@ -430,7 +430,7 @@ bool App::initInternal(void)
 	}
 
 	const Gaff::JSON read_file_threads = _configs["read_file_threads"];
-	_job_pool.addPool(HashStringTemp32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
+	_job_pool.addPool(HashStringView32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
 
 	_broadcaster.init();
 

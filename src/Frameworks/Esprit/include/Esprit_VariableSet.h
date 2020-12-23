@@ -52,9 +52,9 @@ public:
 		Count
 	};
 
-	int32_t getVariableIndex(const HashStringTemp32<>& name, VariableType type) const;
-	bool removeVariable(const HashStringTemp32<>& name, VariableType type);
-	bool addVariable(const HashStringTemp32<>& name, VariableType type);
+	int32_t getVariableIndex(const HashStringView32<>& name, VariableType type) const;
+	bool removeVariable(const HashStringView32<>& name, VariableType type);
+	bool addVariable(const HashStringView32<>& name, VariableType type);
 
 	const Instance& getDefaults(void) const;
 	Instance& getDefaults(void);

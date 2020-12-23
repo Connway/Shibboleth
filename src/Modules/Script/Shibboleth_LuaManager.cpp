@@ -52,7 +52,7 @@ LuaManager::~LuaManager(void)
 bool LuaManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	app.getLogManager().addChannel("Lua", "LuaLog");
+	app.getLogManager().addChannel(HashStringView32<>("Lua"), "LuaLog");
 
 	const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
 	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);

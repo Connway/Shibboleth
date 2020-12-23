@@ -128,12 +128,12 @@ VariableSet& StateMachine::getVariables(void)
 	return _variables;
 }
 
-int32_t StateMachine::getStateIndex(const HashStringTemp32<>& name) const
+int32_t StateMachine::getStateIndex(const HashStringView32<>& name) const
 {
 	return findStateIndex(name);
 }
 
-int32_t StateMachine::addState(const HashStringTemp32<>& name)
+int32_t StateMachine::addState(const HashStringView32<>& name)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -147,7 +147,7 @@ int32_t StateMachine::addState(const HashStringTemp32<>& name)
 	return static_cast<int32_t>(_states.size() - 1);
 }
 
-bool StateMachine::removeState(const HashStringTemp32<>& name)
+bool StateMachine::removeState(const HashStringView32<>& name)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -164,7 +164,7 @@ bool StateMachine::removeState(const HashStringTemp32<>& name)
 	return false;
 }
 
-int32_t StateMachine::addProcess(const HashStringTemp32<>& name, IProcess* process)
+int32_t StateMachine::addProcess(const HashStringView32<>& name, IProcess* process)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -191,7 +191,7 @@ int32_t StateMachine::addProcess(int32_t state_index, IProcess* process)
 	return static_cast<int32_t>(_states[state_index].processes.size() - 1);
 }
 
-bool StateMachine::removeProcess(const HashStringTemp32<>& name, IProcess* process)
+bool StateMachine::removeProcess(const HashStringView32<>& name, IProcess* process)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -228,7 +228,7 @@ bool StateMachine::removeProcess(int32_t state_index, IProcess* process)
 	return true;
 }
 
-bool StateMachine::removeProcess(const HashStringTemp32<>& name, int32_t process_index)
+bool StateMachine::removeProcess(const HashStringView32<>& name, int32_t process_index)
 {
 	const int32_t index = findStateIndex(name);
 
@@ -261,7 +261,7 @@ bool StateMachine::removeProcess(int32_t state_index, int32_t process_index)
 	return true;
 }
 
-int32_t StateMachine::addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name)
+int32_t StateMachine::addEdge(const HashStringView32<>& start_state_name, const HashStringView32<>& end_state_name)
 {
 	const auto start_index = findStateIndex(start_state_name);
 	const auto end_index = findStateIndex(end_state_name);
@@ -308,7 +308,7 @@ int32_t StateMachine::addEdge(int32_t start_state_index, int32_t end_state_index
 	return static_cast<int32_t>(_states[start_state_index].edges.size() - 1);
 }
 
-bool StateMachine::removeEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name)
+bool StateMachine::removeEdge(const HashStringView32<>& start_state_name, const HashStringView32<>& end_state_name)
 {
 	const auto start_index = findStateIndex(start_state_name);
 	const auto end_index = findStateIndex(end_state_name);
@@ -347,7 +347,7 @@ bool StateMachine::removeEdge(int32_t start_state_index, int32_t end_state_index
 	return false;
 }
 
-int32_t StateMachine::addCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition)
+int32_t StateMachine::addCondition(const HashStringView32<>& state_name, int32_t edge_index, ICondition* condition)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -372,7 +372,7 @@ int32_t StateMachine::addCondition(int32_t state_index, int32_t edge_index, ICon
 	return static_cast<int32_t>(_states[state_index].edges[edge_index].conditions.size() - 1);
 }
 
-bool StateMachine::removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition)
+bool StateMachine::removeCondition(const HashStringView32<>& state_name, int32_t edge_index, ICondition* condition)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -407,7 +407,7 @@ bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, ICon
 	return false;
 }
 
-bool StateMachine::removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, int32_t condition_index)
+bool StateMachine::removeCondition(const HashStringView32<>& state_name, int32_t edge_index, int32_t condition_index)
 {
 	const int32_t state_index = findStateIndex(state_name);
 
@@ -438,9 +438,9 @@ bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, int3
 	return true;
 }
 
-int32_t StateMachine::findStateIndex(const HashStringTemp32<>& state_name) const
+int32_t StateMachine::findStateIndex(const HashStringView32<>& state_name) const
 {
-	const auto it = Gaff::Find(_states, state_name, [](const State& lhs, const HashStringTemp32<>& rhs) -> bool
+	const auto it = Gaff::Find(_states, state_name, [](const State& lhs, const HashStringView32<>& rhs) -> bool
 	{
 		return lhs.name == rhs;
 	});

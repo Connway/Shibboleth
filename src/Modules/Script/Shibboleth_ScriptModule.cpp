@@ -39,7 +39,7 @@ THE SOFTWARE.
 				const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
 				const int32_t num_threads = script_threads.getInt32(Shibboleth::LuaManager::k_default_num_threads);
 
-				app.getJobPool().addPool(Shibboleth::HashStringTemp32<>(Shibboleth::LuaManager::k_thread_pool_name), num_threads);
+				app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::LuaManager::k_thread_pool_name), num_threads);
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.

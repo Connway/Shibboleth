@@ -60,13 +60,13 @@ public:
 	void save(ISerializeWriter& writer, Enum value) const;
 
 	int32_t getNumEntries(void) const override;
-	const char* getEntryNameFromValue(int32_t value) const override;
-	const char* getEntryNameFromIndex(int32_t index) const override;
+	HashStringView32<> getEntryNameFromValue(int32_t value) const override;
+	HashStringView32<> getEntryNameFromIndex(int32_t index) const override;
 	int32_t getEntryValue(int32_t index) const override;
 	int32_t getEntryValue(const char* name) const override;
 	int32_t getEntryValue(Hash32 name) const override;
 
-	const char* getEntryName(Enum value) const;
+	HashStringView32<> getEntryName(Enum value) const;
 
 	int32_t getNumEnumAttrs(void) const override;
 	const IAttribute* getEnumAttr(int32_t index) const override;

@@ -561,19 +561,19 @@ TEST_CASE("shibboleth_enum")
 	const Gaff::IEnumReflectionDefinition& ref_def = Shibboleth::Reflection<TestEnum>::GetReflectionDefinition();
 	REQUIRE(ref_def.getNumEntries() == 5);
 
-	printf("Enum Name Index 0: %s\n", ref_def.getEntryNameFromIndex(0));
+	printf("Enum Name Index 0: %s\n", ref_def.getEntryNameFromIndex(0).getBuffer());
 
-	REQUIRE(!strcmp("MinusOne", ref_def.getEntryNameFromValue(TE_MINUS_ONE)));
-	REQUIRE(!strcmp("Zero", ref_def.getEntryNameFromValue(TE_ZERO)));
-	REQUIRE(!strcmp("One", ref_def.getEntryNameFromValue(TE_ONE)));
-	REQUIRE(!strcmp("Two", ref_def.getEntryNameFromValue(TE_TWO)));
-	REQUIRE(!strcmp("Twenty", ref_def.getEntryNameFromValue(TE_TWENTY)));
+	REQUIRE(!strcmp("MinusOne", ref_def.getEntryNameFromValue(TE_MINUS_ONE).getBuffer()));
+	REQUIRE(!strcmp("Zero", ref_def.getEntryNameFromValue(TE_ZERO).getBuffer()));
+	REQUIRE(!strcmp("One", ref_def.getEntryNameFromValue(TE_ONE).getBuffer()));
+	REQUIRE(!strcmp("Two", ref_def.getEntryNameFromValue(TE_TWO).getBuffer()));
+	REQUIRE(!strcmp("Twenty", ref_def.getEntryNameFromValue(TE_TWENTY).getBuffer()));
 
-	printf("TE_MINUS_ONE: %s\n", ref_def.getEntryNameFromValue(TE_MINUS_ONE));
-	printf("TE_ZERO: %s\n", ref_def.getEntryNameFromValue(TE_ZERO));
-	printf("TE_ONE: %s\n", ref_def.getEntryNameFromValue(TE_ONE));
-	printf("TE_TWO: %s\n", ref_def.getEntryNameFromValue(TE_TWO));
-	printf("TE_TWENTY: %s\n\n", ref_def.getEntryNameFromValue(TE_TWENTY));
+	printf("TE_MINUS_ONE: %s\n", ref_def.getEntryNameFromValue(TE_MINUS_ONE).getBuffer());
+	printf("TE_ZERO: %s\n", ref_def.getEntryNameFromValue(TE_ZERO).getBuffer());
+	printf("TE_ONE: %s\n", ref_def.getEntryNameFromValue(TE_ONE).getBuffer());
+	printf("TE_TWO: %s\n", ref_def.getEntryNameFromValue(TE_TWO).getBuffer());
+	printf("TE_TWENTY: %s\n\n", ref_def.getEntryNameFromValue(TE_TWENTY).getBuffer());
 
 	REQUIRE(ref_def.getEntryValue("MinusOne") == -1);
 	REQUIRE(ref_def.getEntryValue("Zero") == 0);

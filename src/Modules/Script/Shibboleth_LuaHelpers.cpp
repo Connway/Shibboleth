@@ -227,7 +227,7 @@ namespace
 		Shibboleth::U8String ctor_sig(g_allocator);
 		ctor_sig.append_sprintf("const %s&", entry.ref_def->getReflectionInstance().getName());
 
-		const Shibboleth::HashStringTemp64<> hash(ctor_sig);
+		const Shibboleth::HashStringView64<> hash(ctor_sig);
 
 		auto ctor = entry.ref_def->getConstructor(hash.getHash());
 
@@ -437,7 +437,7 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 					U8String ctor_sig(g_allocator);
 					ctor_sig.append_sprintf("const %s&", ref_def->getReflectionInstance().getName());
 
-					const HashStringTemp64<> hash(ctor_sig);
+					const HashStringView64<> hash(ctor_sig);
 
 					// If we already have a non-reference value, just re-construct in place.
 					if (entry.value.vp) {
@@ -725,14 +725,14 @@ void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_
 	const int32_t num_entries = enum_ref_def.getNumEntries();
 
 	for (int32_t i = 0; i < num_entries; ++i) {
-		const char* const entry_name = enum_ref_def.getEntryNameFromIndex(i);
+		const HashStringView32<> entry_name = enum_ref_def.getEntryNameFromIndex(i);
 		const int32_t entry_value = enum_ref_def.getEntryValue(i);
 
 		lua_pushinteger(state, entry_value);
-		lua_setfield(state, -2, entry_name);
+		lua_setfield(state, -2, entry_name.getBuffer());
 
 		// For reverse lookup.
-		lua_pushstring(state, entry_name);
+		lua_pushstring(state, entry_name.getBuffer());
 		lua_seti(state, -2, entry_value);
 	}
 
@@ -771,15 +771,15 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 	Vector<luaL_Reg> mt(g_allocator);
 
 	for (int32_t i = 0; i < num_static_funcs; ++i) {
-		const char* const name = ref_def.getStaticFuncName(i);
+		const HashStringView32<> name = ref_def.getStaticFuncName(i);
 
 		// Is not an operator function.
-		if (Gaff::FindFirstOf(name, "__") != 0) {
+		if (Gaff::FindFirstOf(name.getBuffer(), "__") != 0) {
 			continue;
 		}
 
 		// Is the tostring function.
-		if (Gaff::FindFirstOf(name, OP_TO_STRING_NAME) == 0) {
+		if (Gaff::FindFirstOf(name.getBuffer(), OP_TO_STRING_NAME) == 0) {
 			mt.emplace_back(luaL_Reg{ "__tostring", UserTypeToString });
 			continue;
 		}
@@ -789,7 +789,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		lua_pushboolean(state, true); // Is static.
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-		lua_setfield(state, -2, name);
+		lua_setfield(state, -2, name.getBuffer());
 
 		++num_operators;
 	}
@@ -858,10 +858,10 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	// Add static funcs.
 	for (int32_t i = 0; i < num_static_funcs; ++i) {
-		const char* const func_name = ref_def.getStaticFuncName(i);
+		const HashStringView32<> func_name = ref_def.getStaticFuncName(i);
 
 		// Is an operator function.
-		if (!strncmp(func_name, "__", 2)) {
+		if (!strncmp(func_name.getBuffer(), "__", 2)) {
 			continue;
 		}
 
@@ -870,7 +870,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		lua_pushboolean(state, true); // Is static.
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-		lua_setfield(state, -2, func_name);
+		lua_setfield(state, -2, func_name.getBuffer());
 	}
 
 	// Push up values.

@@ -64,30 +64,30 @@ public:
 	VariableSet& getVariables(void);
 
 	// Add states first.
-	int32_t getStateIndex(const HashStringTemp32<>& name) const;
-	int32_t addState(const HashStringTemp32<>& name);
-	bool removeState(const HashStringTemp32<>& name);
+	int32_t getStateIndex(const HashStringView32<>& name) const;
+	int32_t addState(const HashStringView32<>& name);
+	bool removeState(const HashStringView32<>& name);
 
 	// Then processes, edges, and conditions.
-	int32_t addProcess(const HashStringTemp32<>& name, IProcess* process);
+	int32_t addProcess(const HashStringView32<>& name, IProcess* process);
 	int32_t addProcess(int32_t state_index, IProcess* process);
-	bool removeProcess(const HashStringTemp32<>& name, IProcess* process);
+	bool removeProcess(const HashStringView32<>& name, IProcess* process);
 	bool removeProcess(int32_t state_index, IProcess* process);
-	bool removeProcess(const HashStringTemp32<>& name, int32_t process_index);
+	bool removeProcess(const HashStringView32<>& name, int32_t process_index);
 	bool removeProcess(int32_t state_index, int32_t process_index);
 
-	int32_t addEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
+	int32_t addEdge(const HashStringView32<>& start_state_name, const HashStringView32<>& end_state_name);
 	int32_t addEdge(int32_t start_state_index, int32_t end_state_index);
 
-	bool removeEdge(const HashStringTemp32<>& start_state_name, const HashStringTemp32<>& end_state_name);
+	bool removeEdge(const HashStringView32<>& start_state_name, const HashStringView32<>& end_state_name);
 	bool removeEdge(int32_t start_state_index, int32_t end_state_index);
 
-	int32_t addCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
+	int32_t addCondition(const HashStringView32<>& state_name, int32_t edge_index, ICondition* condition);
 	int32_t addCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
 
-	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, ICondition* condition);
+	bool removeCondition(const HashStringView32<>& state_name, int32_t edge_index, ICondition* condition);
 	bool removeCondition(int32_t state_index, int32_t edge_index, ICondition* condition);
-	bool removeCondition(const HashStringTemp32<>& state_name, int32_t edge_index, int32_t condition_index);
+	bool removeCondition(const HashStringView32<>& state_name, int32_t edge_index, int32_t condition_index);
 	bool removeCondition(int32_t state_index, int32_t edge_index, int32_t condition_index);
 
 #ifdef _DEBUG
@@ -113,7 +113,7 @@ private:
 
 	StateMachine* _parent = nullptr;
 
-	int32_t findStateIndex(const HashStringTemp32<>& state_name) const;
+	int32_t findStateIndex(const HashStringView32<>& state_name) const;
 	bool doState(const State& state, Instance& instance) const;
 };
 

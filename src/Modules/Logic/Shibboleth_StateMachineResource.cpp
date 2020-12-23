@@ -106,7 +106,7 @@ void StateMachineResource::readValues(const Gaff::ISerializeReader& reader, Espr
 				}
 			}
 
-			const Esprit::HashStringTemp32<> name(var_name);
+			const Esprit::HashStringView32<> name(var_name);
 			const int32_t var_index = variables.getVariableIndex(name, var_type);
 
 			if (var_index < 0) {
@@ -317,7 +317,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 						if (reader.isString()) {
 							const char* const source = reader.readString();
-							source_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(source));
+							source_index = _state_machine->getStateIndex(Esprit::HashStringView32<>(source));
 							reader.freeString(source);
 						} else {
 							// $TODO: Log error.
@@ -329,7 +329,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 						if (reader.isString()) {
 							const char* const destination = reader.readString();
-							dest_index = _state_machine->getStateIndex(Esprit::HashStringTemp32<>(destination));
+							dest_index = _state_machine->getStateIndex(Esprit::HashStringView32<>(destination));
 							reader.freeString(destination);
 						} else {
 							// $TODO: Log error.

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_SerializeInterfaces.h"
+#include "Gaff_HashString.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Flags.h"
@@ -692,16 +693,16 @@ public:
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getVarAttr(void) const
+	eastl::pair<HashStringView32<>, const T*> getVarAttr(void) const
 	{
 		const int32_t num_vars = getNumVars();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getVarHash(j);
-			const int32_t size = getNumVarAttrs(name);
+			const HashStringView32<> name = getVarName(j);
+			const int32_t size = getNumVarAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getVarAttr(name, i);
+				const IAttribute* const attribute = getVarAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -714,16 +715,16 @@ public:
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getVarAttr(Hash64 attr_name) const
+	eastl::pair<HashStringView32<>, const T*> getVarAttr(Hash64 attr_name) const
 	{
 		const int32_t num_vars = getNumVars();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getVarHash(j);
-			const int32_t size = getNumVarAttrs(name);
+			const HashStringView32<> name = getVarName(j);
+			const int32_t size = getNumVarAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getVarAttr(name, i);
+				const IAttribute* const attribute = getVarAttr(name.getHash(), i);
 				const void* attr = attribute->getReflectionDefinition().getInterface(
 					attr_name, attribute->getBasePointer()
 				);
@@ -734,20 +735,20 @@ public:
 			}
 		}
 
-		return eastl::pair<Hash32, const T*>(0, nullptr);
+		return eastl::pair<HashStringView32<>, const T*>(HashStringView32<>(), nullptr);
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getFuncAttr(void) const
+	eastl::pair<HashStringView32<>, const T*> getFuncAttr(void) const
 	{
 		const int32_t num_vars = getNumFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttrs(name);
+			const HashStringView32<> name = getFuncName(j);
+			const int32_t size = getNumFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(name, i);
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -756,20 +757,20 @@ public:
 			}
 		}
 
-		return eastl::pair<Hash32, const T*>(0, nullptr);
+		return eastl::pair<HashStringView32<>, const T*>(HashStringView32<>(), nullptr);
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getFuncAttr(Hash64 attr_name) const
+	eastl::pair<HashStringView32<>, const T*> getFuncAttr(Hash64 attr_name) const
 	{
 		const int32_t num_vars = getNumFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttrs(name);
+			const HashStringView32<> name = getFuncName(j);
+			const int32_t size = getNumFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(name, i);
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), i);
 				const void* attr = attribute->getReflectionDefinition().getInterface(
 					attr_name, attribute->getBasePointer()
 				);
@@ -780,20 +781,20 @@ public:
 			}
 		}
 
-		return eastl::pair<Hash32, const T*>(0, nullptr);
+		return eastl::pair<HashStringView32<>, const T*>(HashStringView32<>(), nullptr);
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getStaticFuncAttr(void) const
+	eastl::pair<HashStringView32<>, const T*> getStaticFuncAttr(void) const
 	{
 		const int32_t num_vars = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getStaticFuncHash(j);
-			const int32_t size = getNumStaticFuncAttrs(name);
+			const HashStringView32<> name = getStaticFuncName(j);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(name, i);
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -802,20 +803,20 @@ public:
 			}
 		}
 
-		return eastl::pair<Hash32, const T*>(0, nullptr);
+		return eastl::pair<HashStringView32<>, const T*>(HashStringView32<>(), nullptr);
 	}
 
 	template <class T>
-	eastl::pair<Hash32, const T*> getStaticFuncAttr(Hash64 attr_name) const
+	eastl::pair<HashStringView32<>, const T*> getStaticFuncAttr(Hash64 attr_name) const
 	{
 		const int32_t num_vars = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getStaticFuncHash(j);
-			const int32_t size = getNumStaticFuncAttrs(name);
+			const HashStringView32<> name = getStaticFuncName(j);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(name, i);
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), i);
 				const void* attr = attribute->getReflectionDefinition().getInterface(
 					attr_name, attribute->getBasePointer()
 				);
@@ -826,7 +827,7 @@ public:
 			}
 		}
 
-		return eastl::pair<Hash32, const T*>(0, nullptr);
+		return eastl::pair<HashStringView32<>, const T*>(HashStringView32<>(), nullptr);
 	}
 
 	template <class T, class Allocator>
@@ -882,16 +883,16 @@ public:
 	}
 
 	template <class T, class Allocator>
-	void getVarAttrs(Vector<eastl::pair<Hash32, const T*>, Allocator>& out) const
+	void getVarAttrs(Vector<eastl::pair<HashStringView32<>, const T*>, Allocator>& out) const
 	{
 		const int32_t num_vars = getNumVars();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getVarHash(j);
-			const int32_t size = getNumVarAttrs(name);
+			const HashStringView32<> name = getVarName(j);
+			const int32_t size = getNumVarAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getVarAttr(name, i);
+				const IAttribute* const attribute = getVarAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -917,16 +918,16 @@ public:
 	}
 
 	template <class T, class Allocator>
-	void getFuncAttrs(Vector<eastl::pair<Hash32, const T&>, Allocator>& out) const
+	void getFuncAttrs(Vector<eastl::pair<HashStringView32<>, const T&>, Allocator>& out) const
 	{
 		const int32_t num_vars = getNumFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttrs(name);
+			const HashStringView32<> name = getFuncName(j);
+			const int32_t size = getNumFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(name, i);
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -952,16 +953,16 @@ public:
 	}
 
 	template <class T, class Allocator>
-	void getStaticFuncAttrs(Vector<eastl::pair<Hash32, const T&>, Allocator>& out) const
+	void getStaticFuncAttrs(Vector<eastl::pair<HashStringView32<>, const T&>, Allocator>& out) const
 	{
 		const int32_t num_vars = getNumFuncs();
 
 		for (int32_t j = 0; j < num_vars; ++j) {
-			const Hash32 name = getStaticFuncHash(j);
-			const int32_t size = getNumStaticFuncAttrs(name);
+			const HashStringView32<> name = getStaticFuncName(j);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash());
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(name, i);
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), i);
 				const T* attr = ReflectionCast<T>(*attribute);
 
 				if (attr) {
@@ -1033,21 +1034,18 @@ public:
 	virtual IAllocator& getAllocator(void) = 0;
 
 	virtual int32_t getNumVars(void) const = 0;
-	virtual const char* getVarName(int32_t index) const = 0;
-	virtual Hash32 getVarHash(int32_t index) const = 0;
+	virtual HashStringView32<> getVarName(int32_t index) const = 0;
 	virtual IReflectionVar* getVar(int32_t index) const = 0;
 	virtual IReflectionVar* getVar(Hash32 name) const = 0;
 
 	virtual int32_t getNumFuncs(void) const = 0;
 	virtual int32_t getNumFuncOverrides(int32_t index) const = 0;
-	virtual const char* getFuncName(int32_t index) const = 0;
-	virtual Hash32 getFuncHash(int32_t index) const = 0;
+	virtual HashStringView32<> getFuncName(int32_t index) const = 0;
 	virtual int32_t getFuncIndex(Hash32 name) const = 0;
 
 	virtual int32_t getNumStaticFuncs(void) const = 0;
 	virtual int32_t getNumStaticFuncOverrides(int32_t index) const = 0;
-	virtual const char* getStaticFuncName(int32_t) const = 0;
-	virtual Hash32 getStaticFuncHash(int32_t index) const = 0;
+	virtual HashStringView32<> getStaticFuncName(int32_t) const = 0;
 	virtual int32_t getStaticFuncIndex(Hash32 name) const = 0;
 
 	virtual int32_t getNumClassAttrs(void) const = 0;
@@ -1102,8 +1100,8 @@ public:
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
 	virtual int32_t getNumEntries(void) const = 0;
-	virtual const char* getEntryNameFromValue(int32_t value) const = 0;
-	virtual const char* getEntryNameFromIndex(int32_t index) const = 0;
+	virtual HashStringView32<> getEntryNameFromValue(int32_t value) const = 0;
+	virtual HashStringView32<> getEntryNameFromIndex(int32_t index) const = 0;
 	virtual int32_t getEntryValue(int32_t index) const = 0;
 	virtual int32_t getEntryValue(const char* name) const = 0;
 	virtual int32_t getEntryValue(Hash32 name) const = 0;

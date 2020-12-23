@@ -31,7 +31,7 @@ NS_GAFF
 	class HashString;
 
 	template <class T, class HashType>
-	class HashStringTemp;
+	class HashStringView;
 
 	template <class Allocator>
 	using HashString32 = HashString<char, Hash32, Allocator>;
@@ -39,8 +39,8 @@ NS_GAFF
 	template <class Allocator>
 	using HashString64 = HashString<char, Hash64, Allocator>;
 
-	using HashStringTemp32 = HashStringTemp<char, Hash32>;
-	using HashStringTemp64 = HashStringTemp<char, Hash64>;
+	using HashStringView32 = HashStringView<char, Hash32>;
+	using HashStringView64 = HashStringView<char, Hash64>;
 NS_END
 
 NS_SHIBBOLETH
@@ -51,7 +51,7 @@ using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
 using HashString32 = Gaff::HashString32<ProxyAllocator>;
 using HashString64 = Gaff::HashString64<ProxyAllocator>;
 
-using HashStringTemp32 = HashStringTemp32<>;
-using HashStringTemp64 = HashStringTemp64<>;
+using HashStringView32 = HashStringView32<>;
+using HashStringView64 = HashStringView64<>;
 
 NS_END

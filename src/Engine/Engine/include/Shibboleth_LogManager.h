@@ -57,7 +57,7 @@ public:
 	int32_t addLogCallback(LogCallback&& callback);
 	bool removeLogCallback(int32_t id);
 
-	void addChannel(HashStringTemp32<> channel, const char* file);
+	void addChannel(HashStringView32<> channel, const char* file);
 	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
 
 private:

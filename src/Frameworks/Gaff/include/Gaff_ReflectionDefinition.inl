@@ -244,10 +244,10 @@ bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReade
 		bool success = true;
 
 		for (int32_t i = 0; i < num_entries; ++i) {
-			const char* const flag_name = ref_def.getEntryNameFromIndex(i);
+			const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 			const int32_t flag_index = ref_def.getEntryValue(i);
 
-			const auto guard = reader.enterElementGuard(flag_name);
+			const auto guard = reader.enterElementGuard(flag_name.getBuffer());
 
 			if (!reader.isBool() && !reader.isNull()) {
 				success = false;
@@ -279,11 +279,11 @@ void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& wri
 		const int32_t num_entries = ref_def.getNumEntries();
 
 		for (int32_t i = 0; i < num_entries; ++i) {
-			const char* const flag_name = ref_def.getEntryNameFromIndex(i);
+			const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 			const int32_t flag_index = ref_def.getEntryValue(i);
 			const bool value = var->testAll(static_cast<Enum>(flag_index));
 
-			writer.writeBool(flag_name, value);
+			writer.writeBool(flag_name.getBuffer(), value);
 		}
 
 	} else {
@@ -1687,17 +1687,10 @@ int32_t ReflectionDefinition<T, Allocator>::getNumVars(void) const
 }
 
 template <class T, class Allocator>
-const char* ReflectionDefinition<T, Allocator>::getVarName(int32_t index) const
+HashStringView32<> ReflectionDefinition<T, Allocator>::getVarName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return (_vars.begin() + index)->first.getBuffer();
-}
-
-template <class T, class Allocator>
-Hash32 ReflectionDefinition<T, Allocator>::getVarHash(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return (_vars.begin() + index)->first.getHash();
+	return HashStringView32<>((_vars.begin() + index)->first);
 }
 
 template <class T, class Allocator>
@@ -1738,17 +1731,10 @@ int32_t ReflectionDefinition<T, Allocator>::getNumFuncOverrides(int32_t index) c
 }
 
 template <class T, class Allocator>
-const char* ReflectionDefinition<T, Allocator>::getFuncName(int32_t index) const
+HashStringView32<> ReflectionDefinition<T, Allocator>::getFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
-	return (_funcs.begin() + index)->first.getBuffer();
-}
-
-template <class T, class Allocator>
-Hash32 ReflectionDefinition<T, Allocator>::getFuncHash(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
-	return (_funcs.begin() + index)->first.getHash();
+	return HashStringView32<>((_funcs.begin() + index)->first);
 }
 
 template <class T, class Allocator>
@@ -1783,17 +1769,10 @@ int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncOverrides(int32_t in
 }
 
 template <class T, class Allocator>
-const char* ReflectionDefinition<T, Allocator>::getStaticFuncName(int32_t index) const
+HashStringView32<> ReflectionDefinition<T, Allocator>::getStaticFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
-	return (_static_funcs.begin() + index)->first.getBuffer();
-}
-
-template <class T, class Allocator>
-Hash32 ReflectionDefinition<T, Allocator>::getStaticFuncHash(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
-	return (_static_funcs.begin() + index)->first.getHash();
+	return HashStringView32<>((_static_funcs.begin() + index)->first);
 }
 
 template <class T, class Allocator>
@@ -2308,14 +2287,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	const int32_t num_entries = ref_def.getNumEntries();
 
 	for (int32_t i = 0; i < num_entries; ++i) {
-		const char* const flag_name = ref_def.getEntryNameFromIndex(i);
+		const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 		const int32_t flag_index = ref_def.getEntryValue(i);
 
 		U8String<Allocator> flag_path(_allocator);
-		flag_path.append_sprintf("%s/%s", pair.first.getBuffer(), flag_name);
+		flag_path.append_sprintf("%s/%s", pair.first.getBuffer(), flag_name.getBuffer());
 
 		eastl::pair<HashString32<Allocator>, IVarPtr> flag_pair(
-			HashString32<Allocator>(flag_path, _allocator),
+			HashString32<Allocator>(flag_path),
 			IVarPtr(GAFF_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(i)))
 		);
 

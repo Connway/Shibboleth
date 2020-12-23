@@ -25,19 +25,19 @@ THE SOFTWARE.
 
 NS_ESPRIT
 
-static int32_t GetVariableIndex(const HashStringTemp32<>& name, const Vector< OptimizedHashString32<> >& variables)
+static int32_t GetVariableIndex(const HashStringView32<>& name, const Vector< OptimizedHashString32<> >& variables)
 {
 	const auto it = Gaff::LowerBound(variables, name);
 	return (it == variables.end() || *it != name) ? -1 : static_cast<int32_t>(eastl::distance(variables.begin(), it));
 }
 
-int32_t VariableSet::getVariableIndex(const HashStringTemp32<>& name, VariableType type) const
+int32_t VariableSet::getVariableIndex(const HashStringView32<>& name, VariableType type) const
 {
 	auto& names = _names[static_cast<int32_t>(type)];
 	return GetVariableIndex(name, names);
 }
 
-bool VariableSet::removeVariable(const HashStringTemp32<>& name, VariableType type)
+bool VariableSet::removeVariable(const HashStringView32<>& name, VariableType type)
 {
 	auto& names = _names[static_cast<int32_t>(type)];
 	const int32_t index = GetVariableIndex(name, names);
@@ -51,7 +51,7 @@ bool VariableSet::removeVariable(const HashStringTemp32<>& name, VariableType ty
 	return true;
 }
 
-bool VariableSet::addVariable(const HashStringTemp32<>& name, VariableType type)
+bool VariableSet::addVariable(const HashStringView32<>& name, VariableType type)
 {
 	auto& names = _names[static_cast<int32_t>(type)];
 	const int32_t index = GetVariableIndex(name, names);
