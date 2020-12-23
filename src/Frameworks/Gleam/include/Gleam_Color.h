@@ -39,12 +39,14 @@ namespace Color
 	static const RGBA Blue(0.0f, 0.0f, 1.0f, 1.0f);
 	static const RGBA Black(0.0f, 0.0f, 0.0f, 1.0f);
 	static const RGBA White(1.0f, 1.0f, 1.0f, 1.0f);
+	static const RGBA Yellow(1.0f, 1.0f, 0.0f, 1.0f);
 
 	static const HSVA RedHSV = HSVA(glm::hsvColor(static_cast<RGB>(Red)), 1.0f);
 	static const HSVA GreenHSV = HSVA(glm::hsvColor(static_cast<RGB>(Green)), 1.0f);
 	static const HSVA BlueHSV = HSVA(glm::hsvColor(static_cast<RGB>(Blue)), 1.0f);
 	static const HSVA BlackHSV = HSVA(glm::hsvColor(static_cast<RGB>(Black)), 1.0f);
 	static const HSVA WhiteHSV = HSVA(glm::hsvColor(static_cast<RGB>(White)), 1.0f);
+	static const HSVA YellowHSV = HSVA(glm::hsvColor(static_cast<RGB>(Yellow)), 1.0f);
 }
 
 NS_END

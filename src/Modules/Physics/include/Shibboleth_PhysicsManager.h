@@ -55,6 +55,7 @@ public:
 	~PhysicsManager(void);
 
 	bool init(void) override;
+	void updateDebug(uintptr_t thread_id_int);
 	void update(uintptr_t thread_id_int);
 
 	physx::PxFoundation* getFoundation(void);
@@ -72,6 +73,7 @@ private:
 	physx::PxFoundation* _foundation = nullptr;
 	physx::PxPhysics* _physics = nullptr;
 
+	IDebugManager* _debug_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 
 	const Time* _game_time = nullptr;
@@ -83,10 +85,32 @@ private:
 	physx::PxPvd* _pvd = nullptr;
 #endif
 
-	Vector<IDebugManager::DebugRenderHandle> _debug_render_handles{ ProxyAllocator("Physics") };
+	Vector<IDebugManager::DebugRenderHandle> _debug_render_handles[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] =
+	{
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Line
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Plane
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Sphere
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Box
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Cone
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Capsule
+		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }  // Arrow
+	};
+
 	Gaff::Flags<DebugFlag> _debug_flags;
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsManager);
+};
+
+class PhysicsDebugSystem final : public ISystem
+{
+public:
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
+
+private:
+	PhysicsManager* _physics_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(PhysicsDebugSystem);
 };
 
 class PhysicsSystem final : public ISystem
@@ -105,4 +129,5 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(PhysicsManager::DebugFlag)
 SHIB_REFLECTION_DECLARE(PhysicsManager)
+SHIB_REFLECTION_DECLARE(PhysicsDebugSystem)
 SHIB_REFLECTION_DECLARE(PhysicsSystem)

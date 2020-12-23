@@ -944,6 +944,22 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCone(const glm::vec3& p
 	return DebugRenderHandle(instance, DebugRenderType::Cone, has_depth);
 }
 
+DebugManager::DebugRenderHandle DebugManager::renderDebugPlane(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color::RGB& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Plane)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(pos);
+	instance->transform.setScale(size);
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Plane, has_depth);
+}
+
 DebugManager::DebugRenderHandle DebugManager::renderDebugBox(const glm::vec3& pos, const glm::vec3& size, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Box)];
@@ -1479,6 +1495,10 @@ bool DebugManager::initDebugRender(void)
 					instance_data.constant_buffer.get()
 				);
 			} break;
+
+			case DebugRenderType::Plane:
+				Gleam::GenerateDebugPlane(k_subdivisions * 10, points[0], indices[0]);
+				break;
 
 			case DebugRenderType::Sphere:
 				Gleam::GenerateDebugSphere(k_subdivisions, points[0], indices[0]);

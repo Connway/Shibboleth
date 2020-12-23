@@ -35,10 +35,11 @@ NS_SHIBBOLETH
 // To force getting the context from the DLL.
 class IDebugManager : public IManager
 {
-protected:
+public:
 	enum class DebugRenderType
 	{
 		Line,
+		Plane,
 		Sphere,
 		Box,
 		Cone,
@@ -48,7 +49,6 @@ protected:
 		Count
 	};
 
-public:
 	struct DebugRenderInstance final
 	{
 		Gleam::Transform transform;
@@ -59,6 +59,15 @@ public:
 	{
 	public:
 		DebugRenderHandle(void) = default;
+
+		DebugRenderHandle(const DebugRenderHandle& rhs):
+			_instance(rhs._instance),
+			_type(rhs._type),
+			_depth(rhs._depth)
+		{
+			const_cast<DebugRenderHandle&>(rhs)._instance = nullptr;
+			const_cast<DebugRenderHandle&>(rhs)._type = DebugRenderType::Count;
+		}
 
 		~DebugRenderHandle(void)
 		{
@@ -81,6 +90,8 @@ public:
 
 		const DebugRenderInstance& getInstance(void) const { return *_instance; }
 		DebugRenderInstance& getInstance(void) { return *_instance; }
+
+		DebugRenderType getRenderType(void) const { return _type; }
 
 		bool isValid(void) const { return _instance != nullptr; }
 
@@ -108,6 +119,7 @@ public:
 	virtual DebugRenderHandle renderDebugLine(const glm::vec3& start, const glm::vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugSphere(const glm::vec3& pos, float radius = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugCone(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugPlane(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugBox(const glm::vec3& pos, const glm::vec3& size = glm::vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugCapsule(const glm::vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 

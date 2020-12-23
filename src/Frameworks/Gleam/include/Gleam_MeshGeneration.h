@@ -31,6 +31,7 @@ void GenerateDebugCylinder(int32_t subdivisions, Vector<glm::vec3>& points, Vect
 void GenerateDebugHalfSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugSphere(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
+void GenerateDebugPlane(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugBox(Vector<glm::vec3>& points, Vector<int16_t>& indices);
 
 NS_END

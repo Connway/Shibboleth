@@ -313,6 +313,41 @@ void GenerateDebugCone(int32_t subdivisions, Vector<glm::vec3>& points, Vector<i
 	}
 }
 
+void GenerateDebugPlane(int32_t subdivisions, Vector<glm::vec3>& points, Vector<int16_t>& indices)
+{
+	subdivisions = Gaff::Max(1, subdivisions);
+
+	const int32_t rowsAndColumns = subdivisions + 1;
+
+	indices.set_capacity(6 * subdivisions * subdivisions);
+	points.set_capacity(rowsAndColumns * rowsAndColumns);
+
+	for (int32_t row = 0; row < rowsAndColumns; ++row) {
+		for (int32_t column = 0; column < rowsAndColumns; ++column) {
+			points.emplace_back(
+				static_cast<float>(column) / (rowsAndColumns - 1),
+				0.0f,
+				static_cast<float>(row) / (rowsAndColumns - 1)
+			);
+
+			if (row < (rowsAndColumns - 1) && column < (rowsAndColumns - 1)) {
+				const int32_t top_left = row * rowsAndColumns + column;
+				const int32_t top_right = top_left + 1;
+				const int32_t bottom_left = (row + 1) * rowsAndColumns + column;
+				const int32_t bottom_right = bottom_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
+}
+
 void GenerateDebugBox(Vector<glm::vec3>& points, Vector<int16_t>& indices)
 {
 	indices.resize(36);

@@ -45,6 +45,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsDebugSystem, ISystem)
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
 
 
@@ -116,6 +117,7 @@ namespace
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsManager)
+SHIB_REFLECTION_CLASS_DEFINE(PhysicsDebugSystem)
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
 
 PhysicsManager::~PhysicsManager(void)
@@ -189,10 +191,138 @@ bool PhysicsManager::init(void)
 	rb_query.add<Rotation>(_rotations);
 	rb_query.add<Scale>(_scales);
 
+	_debug_mgr = &GetApp().GETMANAGERT(IDebugManager, DebugManager);
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(rb_query));
 
 	return true;
+}
+
+void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
+{
+	constexpr IDebugManager::DebugRenderType k_render_type_map[] =
+	{
+		IDebugManager::DebugRenderType::Sphere,
+		IDebugManager::DebugRenderType::Plane,
+		IDebugManager::DebugRenderType::Capsule,
+		IDebugManager::DebugRenderType::Box,
+		IDebugManager::DebugRenderType::Count, // Convex Mesh
+		IDebugManager::DebugRenderType::Count, // Triangle Mesh
+		IDebugManager::DebugRenderType::Count  // Height field
+	};
+
+	// Update all rigid body debug draws.
+	if (_debug_flags.testAll(DebugFlag::DrawRigidBodies)) {
+		int32_t handle_indices[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] = { 0 };
+		const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
+
+		for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
+			_ecs_mgr->iterate<RigidBody>(
+				_rigid_bodies[rb_index],
+				[&](EntityID, RigidBody& rb) -> void
+			{
+				if (!rb.body.body_dynamic) {
+					return;
+				}
+
+				const IDebugManager::DebugRenderType render_type = k_render_type_map[static_cast<int32_t>(rb.shape->getShape()->getGeometryType())];
+
+				if (render_type == IDebugManager::DebugRenderType::Count) {
+					return;
+				}
+
+				auto& render_handles = _debug_render_handles[static_cast<size_t>(render_type)];
+				int32_t& handle_index = handle_indices[static_cast<size_t>(render_type)];
+				IDebugManager::DebugRenderHandle* render_handle;
+
+				if (handle_index >= static_cast<int32_t>(render_handles.size())) {
+					switch (render_type) {
+						case IDebugManager::DebugRenderType::Plane: {
+							const auto handle = _debug_mgr->renderDebugPlane(glm::zero<glm::vec3>(), glm::vec3(10000.0f), Gleam::Color::Yellow, true);
+							render_handles.emplace_back(handle);
+						} break;
+
+						case IDebugManager::DebugRenderType::Sphere: {
+							const auto handle = _debug_mgr->renderDebugSphere(glm::zero<glm::vec3>(), 1.0f, Gleam::Color::Yellow, true);
+							render_handles.emplace_back(handle);
+						} break;
+
+						case IDebugManager::DebugRenderType::Capsule: {
+							const auto handle = _debug_mgr->renderDebugCapsule(glm::zero<glm::vec3>(), 1.0f, 1.0f, Gleam::Color::Yellow, true);
+							render_handles.emplace_back(handle);
+						} break;
+
+						case IDebugManager::DebugRenderType::Box: {
+							const auto handle = _debug_mgr->renderDebugBox(glm::zero<glm::vec3>(), glm::one<glm::vec3>(), Gleam::Color::Yellow, true);
+							render_handles.emplace_back(handle);
+						} break;
+
+						default:
+							// Should never happen.
+							GAFF_ASSERT(false);
+							break;
+					}
+
+					render_handle = &render_handles.back();
+
+				} else {
+					render_handle = &render_handles[handle_index];
+				}
+
+				auto& debug_instance = render_handle->getInstance();
+
+				const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
+
+				glm::vec3 position(transform.p.x, transform.p.y, transform.p.z);
+				glm::quat rotation(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+
+				switch (render_type) {
+					case IDebugManager::DebugRenderType::Plane:
+						position -= debug_instance.transform.getScale() * glm::vec3(0.5f, 0.0f, 0.5f);
+						break;
+
+					case IDebugManager::DebugRenderType::Capsule: {
+						physx::PxCapsuleGeometry capsule;
+
+						if (rb.shape->getShape()->getCapsuleGeometry(capsule)) {
+							debug_instance.transform.setScale(glm::vec3(capsule.radius, capsule.halfHeight, capsule.radius) * 2.0f);
+						}
+					} break;
+
+					case IDebugManager::DebugRenderType::Sphere: {
+						physx::PxSphereGeometry sphere;
+
+						if (rb.shape->getShape()->getSphereGeometry(sphere)) {
+							debug_instance.transform.setScale(sphere.radius * 2.0f);
+						}
+					} break;
+
+					case IDebugManager::DebugRenderType::Box: {
+						physx::PxBoxGeometry box;
+
+						if (rb.shape->getShape()->getBoxGeometry(box)) {
+							const physx::PxVec3 box_scale = box.halfExtents * 2.0f;
+							debug_instance.transform.setScale(glm::vec3(box_scale.x, box_scale.y, box_scale.z));
+						}
+					} break;
+
+					default:
+						// Should never happen.
+						GAFF_ASSERT(false);
+						break;
+				}
+
+				debug_instance.transform.setTranslation(position);
+				debug_instance.transform.setRotation(rotation);
+
+				++handle_index;
+			});
+		}
+
+		for (int32_t i = 0; i < ARRAY_SIZE(handle_indices); ++i) {
+			_debug_render_handles[i].resize(handle_indices[i]);
+		}
+	}
 }
 
 void PhysicsManager::update(uintptr_t thread_id_int)
@@ -297,6 +427,16 @@ physx::PxPhysics* PhysicsManager::getPhysics(void)
 
 
 
+bool PhysicsDebugSystem::init(void)
+{
+	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
+	return true;
+}
+
+void PhysicsDebugSystem::update(uintptr_t thread_id_int)
+{
+	_physics_mgr->updateDebug(thread_id_int);
+}
 
 bool PhysicsSystem::init(void)
 {
