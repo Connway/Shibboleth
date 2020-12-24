@@ -123,19 +123,23 @@ public:
 	int32_t getNumClassAttrs(void) const override;
 	const IAttribute* getClassAttr(Hash64 attr_name) const override;
 	const IAttribute* getClassAttr(int32_t index) const override;
+	bool hasClassAttr(Hash64 attr_name) const override;
 	void addClassAttr(IAttribute& attribute) override;
 
 	int32_t getNumVarAttrs(Hash32 name) const override;
 	const IAttribute* getVarAttr(Hash32 name, Hash64 attr_name) const override;
 	const IAttribute* getVarAttr(Hash32 name, int32_t index) const override;
+	bool hasVarAttr(Hash64 attr_name) const override;
 
-	int32_t getNumFuncAttrs(Hash32 name) const override;
-	const IAttribute* getFuncAttr(Hash32 name, Hash64 attr_name) const override;
-	const IAttribute* getFuncAttr(Hash32 name, int32_t index) const override;
+	int32_t getNumFuncAttrs(Hash64 name_arg_hash) const override;
+	const IAttribute* getFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const override;
+	const IAttribute* getFuncAttr(Hash64 name_arg_hash, int32_t index) const override;
+	bool hasFuncAttr(Hash64 attr_name) const override;
 
-	int32_t getNumStaticFuncAttrs(Hash32 name) const override;
-	const IAttribute* getStaticFuncAttr(Hash32 name, Hash64 attr_name) const override;
-	const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const override;
+	int32_t getNumStaticFuncAttrs(Hash64 name_arg_hash) const override;
+	const IAttribute* getStaticFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const override;
+	const IAttribute* getStaticFuncAttr(Hash64 name_arg_hash, int32_t index) const override;
+	bool hasStaticFuncAttr(Hash64 attr_name) const override;
 
 	int32_t getNumConstructors(void) const override;
 	IReflectionStaticFunctionBase* getConstructor(int32_t index) const override;
@@ -864,16 +868,20 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		int32_t getNumClassAttrs(void) const override { return 0; } \
 		const IAttribute* getClassAttr(Hash64) const override { return nullptr; } \
 		const IAttribute* getClassAttr(int32_t) const override { return nullptr; } \
+		bool hasClassAttr(Hash64) const override { return false; } \
 		void addClassAttr(IAttribute&) override {} \
 		int32_t getNumVarAttrs(Hash32) const override { return 0; } \
 		const IAttribute* getVarAttr(Hash32, Hash64) const { return nullptr; } \
 		const IAttribute* getVarAttr(Hash32, int32_t) const override { return nullptr; } \
-		int32_t getNumFuncAttrs(Hash32) const override { return 0; } \
-		const IAttribute* getFuncAttr(Hash32, Hash64) const { return nullptr; } \
-		const IAttribute* getFuncAttr(Hash32, int32_t) const override { return nullptr; } \
-		int32_t getNumStaticFuncAttrs(Hash32) const override { return 0; } \
-		const IAttribute* getStaticFuncAttr(Hash32, Hash64) const { return nullptr; } \
-		const IAttribute* getStaticFuncAttr(Hash32, int32_t) const override { return nullptr; } \
+		bool hasVarAttr(Hash64) const override { return false; } \
+		int32_t getNumFuncAttrs(Hash64) const override { return 0; } \
+		const IAttribute* getFuncAttr(Hash64, Hash64) const { return nullptr; } \
+		const IAttribute* getFuncAttr(Hash64, int32_t) const override { return nullptr; } \
+		bool hasFuncAttr(Hash64) const override { return false; } \
+		int32_t getNumStaticFuncAttrs(Hash64) const override { return 0; } \
+		const IAttribute* getStaticFuncAttr(Hash64, Hash64) const { return nullptr; } \
+		const IAttribute* getStaticFuncAttr(Hash64, int32_t) const override { return nullptr; } \
+		bool hasStaticFuncAttr(Hash64) const override { return false; } \
 		int32_t getNumConstructors(void) const override { return 0; } \
 		IReflectionStaticFunctionBase* getConstructor(int32_t) const { return nullptr; } \
 		VoidFunc getConstructor(Hash64 ctor_hash) const override \

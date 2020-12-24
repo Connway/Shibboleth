@@ -152,10 +152,26 @@ private:
 
 	struct DebugMenuEntry final
 	{
+		enum class Type : int8_t
+		{
+			Var,
+			Func,
+			StaticFunc
+		};
+
 		Vector<DebugMenuEntry> children{ ProxyAllocator{ "Debug" } };
 		HashString32<> name{ ProxyAllocator{ "Debug" } };
-		Gaff::IReflectionVar* var = nullptr;
 		void* object = nullptr;
+
+		union
+		{
+			Gaff::IReflectionStaticFunction<void>* static_func = nullptr;
+			Gaff::IReflectionFunction<void>* func;
+			Gaff::IReflectionVar* var;
+		};
+
+
+		Type type = Type::Var;
 
 		bool operator<(const DebugMenuEntry& rhs) const { return name < rhs.name; }
 		bool operator<(const HashString32<>& rhs) const { return name < rhs; }
@@ -228,6 +244,8 @@ private:
 	bool initImGui(void);
 
 	void renderDebugMenu(const DebugMenuEntry& entry);
+
+	void testFunc(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

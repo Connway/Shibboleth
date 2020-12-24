@@ -238,6 +238,12 @@ SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 		&DebugManager::_debug_flags,
 		DebugMenuItemAttribute("Debug")
 	)
+
+	.func(
+		"Test Func",
+		&DebugManager::testFunc,
+		DebugMenuItemAttribute("Debug")
+	)
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
@@ -1005,14 +1011,15 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const Gleam::Ve
 void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
 {
 	const ProxyAllocator allocator("Debug");
-	DebugMenuEntry* root = &_debug_menu_root;
 	DebugMenuEntry menu_entry;
 
+	// Register variables.
 	Vector< eastl::pair<HashStringView32<>, const DebugMenuItemAttribute*> > results(allocator);
-	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
+	ref_def.getVarAttrs(results);
 
 	for (const auto& entry : results) {
 		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
+		DebugMenuEntry* root = &_debug_menu_root;
 
 		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
 			// Menu items only support flags and bools.
@@ -1054,11 +1061,123 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 			it = Gaff::LowerBound(root->children, menu_entry.name);
 		}
 
+		menu_entry.type = DebugMenuEntry::Type::Var;
 		menu_entry.object = object;
 		menu_entry.var = var;
 
 		root->children.insert(it, menu_entry);
 	}
+
+	// Register functions.
+	results.clear();
+	ref_def.getFuncAttrs<void>(results);
+
+	for (const auto& entry : results) {
+		Gaff::IReflectionFunction<void>* const func = ref_def.getFunc<void>(entry.first.getHash());
+		DebugMenuEntry* root = &_debug_menu_root;
+
+		if (!func) {
+			// Only allow functions with signature void func(void).
+			// $TODO: Log error.
+			continue;
+		}
+
+		const U8String& path = entry.second->getPath();
+		size_t prev_index = 0;
+		size_t index = 0;
+
+		while (index != U8String::npos) {
+			menu_entry.name = (index == 0) ?
+				path.substr(0) :
+				path.substr(prev_index, index - prev_index);
+
+			auto it = Gaff::LowerBound(root->children, menu_entry.name);
+
+			if (it == root->children.end() || it->name != menu_entry.name) {
+				it = root->children.insert(it, menu_entry);
+			}
+
+			prev_index = index;
+			root = &(*it);
+
+			index = path.find_first_of("/", index + 1);
+		}
+
+		menu_entry.name = entry.first;
+
+		// Search for an entry that already has this name.
+		auto it = Gaff::LowerBound(root->children, menu_entry.name);
+		U8String base_name = menu_entry.name.getString();
+		int32_t i = 2;
+
+		// If an entry with this name already exists, then add numbers to the end until we don't find a match.
+		while (it != root->children.end() && it->name == menu_entry.name) {
+			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
+			it = Gaff::LowerBound(root->children, menu_entry.name);
+		}
+
+		menu_entry.type = DebugMenuEntry::Type::Func;
+		menu_entry.object = object;
+		menu_entry.func = func;
+
+		root->children.insert(it, menu_entry);
+	}
+
+	// Register static functions.
+	// $TODO: Need to rethink this for static funcs.
+	//results.clear();
+	//ref_def.getStaticFuncAttrs<void>(results);
+
+	//for (const auto& entry : results) {
+	//	Gaff::IReflectionStaticFunction<void>* const func = ref_def.getStaticFunc<void>(entry.first.getHash());
+	//	DebugMenuEntry* root = &_debug_menu_root;
+
+	//	if (!func) {
+	//		// Only allow functions with signature void func(void).
+	//		// $TODO: Log error.
+	//		continue;
+	//	}
+
+	//	const U8String& path = entry.second->getPath();
+	//	size_t prev_index = 0;
+	//	size_t index = 0;
+
+	//	while (index != U8String::npos) {
+	//		menu_entry.name = (index == 0) ?
+	//			path.substr(0) :
+	//			path.substr(prev_index, index - prev_index);
+
+	//		auto it = Gaff::LowerBound(root->children, menu_entry.name);
+
+	//		if (it == root->children.end() || it->name != menu_entry.name) {
+	//			it = root->children.insert(it, menu_entry);
+	//		}
+
+	//		prev_index = index;
+	//		root = &(*it);
+
+	//		index = path.find_first_of("/", index + 1);
+	//	}
+
+	//	menu_entry.name = entry.first;
+
+	//	// Search for an entry that already has this name.
+	//	auto it = Gaff::LowerBound(root->children, menu_entry.name);
+	//	U8String base_name = menu_entry.name.getString();
+	//	int32_t i = 2;
+
+	//	// If an entry with this name already exists, then add numbers to the end until we don't find a match.
+	//	while (it != root->children.end() && it->name == menu_entry.name) {
+	//		menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
+	//		it = Gaff::LowerBound(root->children, menu_entry.name);
+	//	}
+
+	//	menu_entry.type = DebugMenuEntry::Type::StaticFunc;
+	//	menu_entry.static_func = func;
+	//	menu_entry.object = object;
+
+	//	root->children.insert(it, menu_entry);
+	//}
 }
 
 void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
@@ -1066,7 +1185,8 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 	const ProxyAllocator allocator("Debug");
 
 	Vector< eastl::pair<HashStringView32<>, const DebugMenuItemAttribute*> > results(allocator);
-	ref_def.getVarAttrs<DebugMenuItemAttribute>(results);
+	ref_def.getVarAttrs(results);
+	ref_def.getFuncAttrs<void>(results);
 
 	for (const auto& entry : results) {
 		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
@@ -1929,26 +2049,42 @@ bool DebugManager::initImGui(void)
 void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 {
 	if (entry.var) {
-		if (entry.var->isFlags()) {
-			const Gaff::IEnumReflectionDefinition& ref_def = entry.var->getReflection().getEnumReflectionDefinition();
-			const int32_t num_entries = ref_def.getNumEntries();
+		switch (entry.type) {
+			case DebugMenuEntry::Type::Var:
+				if (entry.var->isFlags()) {
+					const Gaff::IEnumReflectionDefinition& ref_def = entry.var->getReflection().getEnumReflectionDefinition();
+					const int32_t num_entries = ref_def.getNumEntries();
 
-			if (ImGui::BeginMenu(entry.name.getBuffer())) {
-				for (int32_t i = 0; i < num_entries; ++i) {
-					const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
-					bool value = entry.var->getFlagValue(entry.object, i);
+					if (ImGui::BeginMenu(entry.name.getBuffer())) {
+						for (int32_t i = 0; i < num_entries; ++i) {
+							const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
+							bool value = entry.var->getFlagValue(entry.object, i);
 					
-					if (ImGui::MenuItem(flag_name.getBuffer(), nullptr, value)) {
-						entry.var->setFlagValue(entry.object, i, !value);
+							if (ImGui::MenuItem(flag_name.getBuffer(), nullptr, value)) {
+								entry.var->setFlagValue(entry.object, i, !value);
+							}
+						}
+
+						ImGui::EndMenu();
 					}
+
+				} else {
+					bool* const var = reinterpret_cast<bool*>(entry.var->getData(entry.object));
+					ImGui::MenuItem(entry.name.getBuffer(), nullptr, var);
 				}
+					break;
 
-				ImGui::EndMenu();
-			}
+			case DebugMenuEntry::Type::Func:
+				if (ImGui::MenuItem(entry.name.getBuffer())) {
+					entry.func->call(entry.object);
+				}
+				break;
 
-		} else {
-			bool* const var = reinterpret_cast<bool*>(entry.var->getData(entry.object));
-			ImGui::MenuItem(entry.name.getBuffer(), nullptr, var);
+			case DebugMenuEntry::Type::StaticFunc:
+				if (ImGui::MenuItem(entry.name.getBuffer())) {
+					entry.static_func->call();
+				}
+				break;
 		}
 
 	} else {
@@ -1984,6 +2120,12 @@ bool DebugSystem::init(void)
 void DebugSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_debug_mgr->update();
+}
+
+void DebugManager::testFunc(void)
+{
+	int i = 0;
+	i += 5;
 }
 
 NS_END

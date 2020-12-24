@@ -1802,6 +1802,12 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttr(int32_t index
 }
 
 template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::hasClassAttr(Hash64 attr_name) const
+{
+	return getClassAttr(attr_name) != nullptr;
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::addClassAttr(IAttribute& attribute)
 {
 	_class_attrs.emplace_back(IAttributePtr(attribute.clone()));
@@ -1833,13 +1839,25 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttr(Hash32 name, in
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttrs(Hash32 name) const
+bool ReflectionDefinition<T, Allocator>::hasVarAttr(Hash64 attr_name) const
 {
-	const auto it = _func_attrs.find(name);
+	for (const auto& attrs : _var_attrs) {
+		if (getAttribute(attrs.second, attr_name) != nullptr) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttrs(Hash64 name_arg_hash) const
+{
+	const auto it = _func_attrs.find(name_arg_hash);
 
 	if (it == _func_attrs.end()) {
 		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttrs(name);
+			const int32_t num = it_base->second->getNumFuncAttrs(name_arg_hash);
 
 			if (num > 0) {
 				return num;
@@ -1854,26 +1872,26 @@ int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttrs(Hash32 name) const
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash32 name, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
 {
-	const auto it = _func_attrs.find(name);
+	const auto it = _func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _func_attrs.end());
 
 	return getAttribute(it->second, attr_name);
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash32 name, int32_t index) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash64 name_arg_hash, int32_t index) const
 {
-	const auto it = _func_attrs.find(name);
+	const auto it = _func_attrs.find(name_arg_hash);
 
 	if (it == _func_attrs.end()) {
 		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttrs(name);
+			const int32_t num = it_base->second->getNumFuncAttrs(name_arg_hash);
 
 			if (num > 0) {
 				GAFF_ASSERT(index < num);
-				return it_base->second->getFuncAttr(name, index);
+				return it_base->second->getFuncAttr(name_arg_hash, index);
 			}
 		}
 
@@ -1886,28 +1904,52 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash32 name, i
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncAttrs(Hash32 name) const
+bool ReflectionDefinition<T, Allocator>::hasFuncAttr(Hash64 attr_name) const
 {
-	const auto it = _static_func_attrs.find(name);
+	for (const auto& attrs : _func_attrs) {
+		if (getFuncAttr(attrs.first, attr_name) != nullptr) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncAttrs(Hash64 name_arg_hash) const
+{
+	const auto it = _static_func_attrs.find(name_arg_hash);
 	return (it != _static_func_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash32 name, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
 {
-	const auto it = _static_func_attrs.find(name);
+	const auto it = _static_func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _static_func_attrs.end());
 
 	return getAttribute(it->second, attr_name);
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash32 name, int32_t index) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash64 name_arg_hash, int32_t index) const
 {
-	const auto it = _static_func_attrs.find(name);
+	const auto it = _static_func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _static_func_attrs.end());
 	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
 	return it->second[index].get();
+}
+
+template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::hasStaticFuncAttr(Hash64 attr_name) const
+{
+	for (const auto& attrs : _static_func_attrs) {
+		if (getStaticFuncAttr(attrs.first, attr_name) != nullptr) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 template <class T, class Allocator>
@@ -2291,7 +2333,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 		const int32_t flag_index = ref_def.getEntryValue(i);
 
 		U8String<Allocator> flag_path(_allocator);
-		flag_path.append_sprintf("%s/%s", pair.first.getBuffer(), flag_name.getBuffer());
+		flag_path.append_sprintf("%s/%s", name, flag_name.getBuffer());
 
 		eastl::pair<HashString32<Allocator>, IVarPtr> flag_pair(
 			HashString32<Allocator>(flag_path),

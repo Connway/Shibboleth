@@ -234,10 +234,10 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;
 
 		// Check if we have anything with this attribute.
-		if (ref_def->getClassAttr<Gaff::IAttribute>(attr_name) ||
-			ref_def->getFuncAttr<Gaff::IAttribute>(attr_name).second ||
-			ref_def->getStaticFuncAttr<Gaff::IAttribute>(attr_name).second ||
-			ref_def->getVarAttr<Gaff::IAttribute>(attr_name).second) {
+		if (ref_def->hasClassAttr(attr_name) ||
+			ref_def->hasVarAttr(attr_name) ||
+			ref_def->hasFuncAttr(attr_name)||
+			ref_def->hasStaticFuncAttr(attr_name)) {
 
 			bucket.emplace_back(ref_def.get());
 		}
@@ -314,10 +314,10 @@ void ReflectionManager::removeType(TypeBucket& bucket, const Gaff::IReflectionDe
 
 bool ReflectionManager::hasAttribute(const Gaff::IReflectionDefinition& ref_def, Gaff::Hash64 name) const
 {
-	return	ref_def.getClassAttr<Gaff::IAttribute>(name) ||
-			ref_def.getFuncAttr<Gaff::IAttribute>(name).second ||
-			ref_def.getStaticFuncAttr<Gaff::IAttribute>(name).second ||
-			ref_def.getVarAttr<Gaff::IAttribute>(name).second;
+	return	ref_def.hasClassAttr(name) ||
+			ref_def.hasVarAttr(name) ||
+			ref_def.hasFuncAttr(name) ||
+			ref_def.hasStaticFuncAttr(name);
 }
 
 void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def)
