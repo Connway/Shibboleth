@@ -126,6 +126,15 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout_Direct3D11.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix3x3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x4.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -163,6 +172,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProxyAllocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Quaternion.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RasterState.h">
@@ -228,6 +240,15 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Transform.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec2.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec4.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vector.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -250,27 +271,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Window_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec4.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec3.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Vec2.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Quaternion.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x4.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x3.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix3x3.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

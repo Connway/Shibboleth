@@ -246,15 +246,14 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IWindow.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeColor.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeD3D11.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix3x3.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x3.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x4.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Quaternion.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeVulkan.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Keyboard.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Keyboard_MessagePump.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Layout_Direct3D11.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix3x3.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x3.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Matrix4x4.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshGeneration.h" />
@@ -268,6 +267,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProxyAllocator.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Quaternion.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RasterState.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RasterState_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_RawInputRegisterFunction.h" />
