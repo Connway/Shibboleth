@@ -156,7 +156,7 @@ struct TemplateClassHashableHelper final
 	static constexpr Gaff::Hash64 GetHash(void)
 	{
 		static_assert(false, "Did not overload GetHash() for type.");
-		return Gaff::INIT_HASH64;
+		return Gaff::k_init_hash64;
 	}
 };
 

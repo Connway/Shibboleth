@@ -394,7 +394,7 @@ bool ECSManager::isValid(EntityID id) const
 
 const ECSArchetype& ECSManager::getEmptyArchetype(void) const
 {
-	return getArchetype(Gaff::INIT_HASH64);
+	return getArchetype(Gaff::k_init_hash64);
 }
 
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)

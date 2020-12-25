@@ -366,11 +366,14 @@ static bool LoadHashString(const Gaff::ISerializeReader& reader, Gaff::HashStrin
 		out = str;
 		reader.freeString(str);
 
-	} else if (reader.isUInt32()) {
-		out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(static_cast<T>(reader.readUInt32()));
-
-	} else if (reader.isUInt64()) {
-		out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(static_cast<T>(reader.readUInt64()));
+	} else {
+		if constexpr (std::is_same<HashType, Gaff::Hash32>::value) {
+			out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(HashType(static_cast<T>(reader.readUInt32())));
+		} else if constexpr (std::is_same<HashType, Gaff::Hash64>::value) {
+			out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(HashType(static_cast<T>(reader.readUInt64())));
+		} else {
+			static_assert(false, "Unknown hash type in LoadHashString.");
+		}
 	}
 
 	return true;
@@ -399,7 +402,7 @@ static void SaveHashString(Gaff::ISerializeWriter& writer, const Gaff::HashStrin
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
 static void SaveHashString(Gaff::ISerializeWriter& writer, const Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& value)
 {
-	writer.writeUInt64(value.getHash());
+	writer.writeUInt64(value.getHash().getHash());
 }
 
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
@@ -408,7 +411,7 @@ static void SaveHashStringView(Gaff::ISerializeWriter& writer, const Gaff::HashS
 	if (value.getBuffer()) {
 		writer.writeString(value.getBuffer());
 	} else {
-		writer.writeUInt64(value.getHash());
+		writer.writeUInt64(value.getHash().getHash());
 	}
 }
 

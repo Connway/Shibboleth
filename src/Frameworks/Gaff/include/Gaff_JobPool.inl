@@ -117,7 +117,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 
 	JobQueue* job_queue = nullptr;
 
-	if (pool == 0) {
+	if (pool.getHash() == 0) {
 		job_queue = &_main_queue;
 
 	} else {

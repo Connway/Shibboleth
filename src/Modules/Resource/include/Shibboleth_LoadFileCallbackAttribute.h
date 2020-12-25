@@ -59,7 +59,7 @@ template <class T>
 class LoadFileCallbackAttribute final : public ILoadFileCallbackAttribute
 {
 public:
-	LoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = 0):
+	LoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = Gaff::Hash32(0)):
 		ILoadFileCallbackAttribute(callback_closes_file, pool), _callback(callback)
 	{
 	}
@@ -85,7 +85,7 @@ private:
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(LoadFileCallbackAttribute, T)
 
 template <class T>
-LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = 0)
+LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(IFile*, uintptr_t), bool callback_closes_file = false, Gaff::Hash32 pool = Gaff::Hash32(0))
 {
 	return LoadFileCallbackAttribute<T>(callback, callback_closes_file, pool);
 }

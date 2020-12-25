@@ -88,8 +88,8 @@ public:
 	bool load(const ISerializeReader& reader, T& object, bool refl_load = false) const;
 	void save(ISerializeWriter& writer, const T& object, bool refl_save = false) const;
 
-	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override;
-	Hash64 getInstanceHash(const T& object, Hash64 init = INIT_HASH64) const;
+	Hash64 getInstanceHash(const void* object, Hash64 init = k_init_hash64) const override;
+	Hash64 getInstanceHash(const T& object, Hash64 init = k_init_hash64) const;
 	ReflectionDefinition& setInstanceHash(InstanceHashFunc hash_func);
 
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
@@ -716,7 +716,7 @@ private:
 		{
 			FuncData& rhs_cast = const_cast<FuncData&>(rhs);
 
-			for (int32_t i = 0; i < NUM_OVERLOADS; ++i) {
+			for (int32_t i = 0; i < k_num_overloads; ++i) {
 				func[i] = std::move(rhs_cast.func[i]);
 			}
 
@@ -724,9 +724,14 @@ private:
 			return *this;
 		}
 
-		constexpr static int32_t NUM_OVERLOADS = 8;
-		Hash64 hash[NUM_OVERLOADS] = { 0 };
-		IRefFuncPtr func[NUM_OVERLOADS];
+		constexpr static int32_t k_num_overloads = 8;
+		Hash64 hash[k_num_overloads] =
+		{
+			Hash64(0), Hash64(0), Hash64(0), Hash64(0),
+			Hash64(0), Hash64(0), Hash64(0), Hash64(0)
+		};
+
+		IRefFuncPtr func[k_num_overloads];
 	};
 
 	struct StaticFuncData
@@ -747,7 +752,7 @@ private:
 		{
 			StaticFuncData& rhs_cast = const_cast<StaticFuncData&>(rhs);
 
-			for (int32_t i = 0; i < NUM_OVERLOADS; ++i) {
+			for (int32_t i = 0; i < k_num_overloads; ++i) {
 				func[i] = std::move(rhs_cast.func[i]);
 			}
 
@@ -756,9 +761,14 @@ private:
 		}
 
 		Allocator _allocator;
-		constexpr static int32_t NUM_OVERLOADS = 8;
-		Hash64 hash[NUM_OVERLOADS] = { 0 };
-		IRefStaticFuncPtr func[NUM_OVERLOADS];
+		constexpr static int32_t k_num_overloads = 8;
+		Hash64 hash[k_num_overloads] =
+		{
+			Hash64(0), Hash64(0), Hash64(0), Hash64(0),
+			Hash64(0), Hash64(0), Hash64(0), Hash64(0)
+		};
+
+		IRefStaticFuncPtr func[k_num_overloads];
 	};
 
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
@@ -848,7 +858,7 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 			return true; \
 		} \
 		void save(ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
-		Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), init); } \
+		Hash64 getInstanceHash(const void* object, Hash64 init = k_init_hash64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), sizeof(class_type), init); } \
 		const void* getInterface(Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \
@@ -886,10 +896,10 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		IReflectionStaticFunctionBase* getConstructor(int32_t) const { return nullptr; } \
 		VoidFunc getConstructor(Hash64 ctor_hash) const override \
 		{ \
-			if (ctor_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
+			if (ctor_hash == CalcTemplateHash<class_type>(k_init_hash64)) { \
 				ConstructFuncT<class_type, class_type> construct_func = Gaff::ConstructFunc<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
-			} else if (ctor_hash == CalcTemplateHash<>(INIT_HASH64)) { \
+			} else if (ctor_hash == CalcTemplateHash<>(k_init_hash64)) { \
 				ConstructFuncT<class_type> construct_func = Gaff::ConstructFunc<class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
 			} \
@@ -897,10 +907,10 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args);
 		} \
 		VoidFunc getFactory(Hash64 factory_hash) const override \
 		{ \
-			if (factory_hash == CalcTemplateHash<class_type>(INIT_HASH64)) { \
+			if (factory_hash == CalcTemplateHash<class_type>(k_init_hash64)) { \
 				FactoryFuncT<class_type, class_type> factory_func = Gaff::FactoryFunc<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
-			} else if (factory_hash == CalcTemplateHash<>(INIT_HASH64)) { \
+			} else if (factory_hash == CalcTemplateHash<>(k_init_hash64)) { \
 				FactoryFuncT<class_type> factory_func = Gaff::FactoryFunc<class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
 			} \
@@ -1000,7 +1010,7 @@ NS_END
 #include "Gaff_ReflectionDefinition.inl"
 
 #define CLASS_HASH(Class) Gaff::FNV1aHash64Const(#Class)
-#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::INIT_HASH64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
+#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
 #define BASE(type) template base<type>(#type)
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(Class, data) getInterface<Class>(CLASS_HASH(Class), data)

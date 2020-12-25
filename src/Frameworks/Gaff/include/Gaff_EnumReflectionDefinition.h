@@ -46,8 +46,8 @@ public:
 	const IReflection& getReflectionInstance(void) const override;
 	int32_t size(void) const override;
 
-	Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object, sizeof(Enum)), init); }
-	Hash64 getInstanceHash(Enum value, Hash64 init = INIT_HASH64) const { return getInstanceHash(&value, init); }
+	Hash64 getInstanceHash(const void* object, Hash64 init = k_init_hash64) const override { return FNV1aHash64(reinterpret_cast<const char*>(object), sizeof(Enum), init); }
+	Hash64 getInstanceHash(Enum value, Hash64 init = k_init_hash64) const { return getInstanceHash(&value, init); }
 
 	bool load(const ISerializeReader& reader, void* value, bool) const { return load(reader, value); }
 	void save(ISerializeWriter& writer, const void* value, bool) const { save(writer, value); }

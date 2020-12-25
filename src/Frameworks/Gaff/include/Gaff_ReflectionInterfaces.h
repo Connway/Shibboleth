@@ -121,13 +121,13 @@ public:
 	Gaff::Hash64 getHash(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		return 0;
+		return Gaff::Hash64(0);
 	}
 
 	Gaff::Hash64 getVersion(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		return 0;
+		return Gaff::Hash64(0);
 	}
 };
 
@@ -607,7 +607,7 @@ public:
 	template <class T, class... Args>
 	T* createT(Hash64 interface_hash, IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(k_init_hash64);
 		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -615,7 +615,7 @@ public:
 	T* createT(IAllocator& allocator, Args&&... args) const
 	{
 		constexpr Hash64 interface_hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(k_init_hash64);
 		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -636,7 +636,7 @@ public:
 	template <class... Args>
 	void* create(IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(k_init_hash64);
 		return create(ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -765,7 +765,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<HashStringView32<>, const T*> getFuncAttr(void) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -789,7 +789,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<HashStringView32<>, const T*> getFuncAttr(Hash64 attr_name) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -815,7 +815,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<HashStringView32<>, const T*> getStaticFuncAttr(void) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -839,7 +839,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<HashStringView32<>, const T*> getStaticFuncAttr(Hash64 attr_name) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -937,7 +937,7 @@ public:
 	template <class Ret, class... Args, class T, class Allocator>
 	void getFuncAttrs(Hash32 name, Vector<const T*, Allocator>& out) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const Hash64 func_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name.getHash()));
 		const int32_t size = getNumFuncAttrs(name);
 
@@ -954,7 +954,7 @@ public:
 	template <class Ret, class... Args, class T, class Allocator>
 	void getFuncAttrs(Vector<eastl::pair<HashStringView32<>, const T*>, Allocator>& out) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -977,7 +977,7 @@ public:
 	template <class Ret, class... Args, class T, class Allocator>
 	void getStaticFuncAttrs(Hash32 name, Vector<const T*, Allocator>& out) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const Hash64 func_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name));
 		const int32_t size = getNumStaticFuncAttrs(name);
 
@@ -994,7 +994,7 @@ public:
 	template <class Ret, class... Args, class T, class Allocator>
 	void getStaticFuncAttrs(Vector<eastl::pair<HashStringView32<>, const T*>, Allocator>& out) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -1016,21 +1016,21 @@ public:
 	template <class... Args>
 	ConstructFunc<Args...> getConstructor(void) const
 	{
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(k_init_hash64);
 		return reinterpret_cast<ConstructFunc<Args...>>(getConstructor(ctor_hash));
 	}
 
 	template <class... Args>
 	FactoryFunc<Args...> getFactory(void) const
 	{
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(k_init_hash64);
 		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
 	template <class Ret, class... Args>
 	IReflectionFunction<Ret, Args...>* getFunc(Hash32 name) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		IReflectionFunctionBase* const functor = getFunc(name, arg_hash);
 
 		if (functor) {
@@ -1043,7 +1043,7 @@ public:
 	template <class Ret, class... Args>
 	IReflectionStaticFunction<Ret, Args...>* getStaticFunc(Hash32 name) const
 	{
-		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		IReflectionStaticFunctionBase* const func = getStaticFunc(name, arg_hash);
 		
 		if (func) {
@@ -1066,7 +1066,7 @@ public:
 	virtual bool load(const ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
 
-	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
+	virtual Hash64 getInstanceHash(const void* object, Hash64 init = k_init_hash64) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
@@ -1136,7 +1136,7 @@ public:
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual Hash64 getInstanceHash(const void* object, Hash64 init = INIT_HASH64) const = 0;
+	virtual Hash64 getInstanceHash(const void* object, Hash64 init = k_init_hash64) const = 0;
 
 	bool load(const ISerializeReader& reader, void* object, bool) const { return load(reader, object); }
 	void save(ISerializeWriter& writer, const void* object, bool) const { save(writer, object); }

@@ -165,7 +165,7 @@ public:
 	void finish(void);
 
 private:
-	Hash64 _hash = INIT_HASH64;
+	Hash64 _hash = k_init_hash64;
 
 	template <class First, class... Rest>
 	Hash64 getAttributeHashes(Hash64 hash, const First& first, const Rest&... rest) const;

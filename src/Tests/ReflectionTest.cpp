@@ -145,7 +145,7 @@ TEST_CASE("shibboleth_reflection_class")
 	REQUIRE(ref_result2 == &base2);
 
 	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetInstance().getVersion();
-	printf("Version Hash: %llu\n", hash);
+	printf("Version Hash: %llu\n", hash.getHash());
 
 	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
 	//int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);

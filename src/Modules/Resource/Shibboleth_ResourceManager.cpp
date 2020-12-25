@@ -270,7 +270,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 
 	if (already_loaded) {
 		callback(resources);
-		return ResourceCallbackID{ Gaff::INIT_HASH64, -1 };
+		return ResourceCallbackID{ Gaff::k_init_hash64, -1 };
 	}
 
 	const Gaff::Hash64 hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(resources.data()), sizeof(IResource*) * resources.size());

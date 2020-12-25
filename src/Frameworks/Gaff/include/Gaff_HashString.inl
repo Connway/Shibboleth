@@ -196,11 +196,11 @@ HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* strin
 {
 }
 
-//template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-//HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, HashType hash, const Allocator& allocator):
-//	_string(string, allocator), _hash_value(hash)
-//{
-//}
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+HashString<T, HashType, HashingFunc, Allocator, true>::HashString(const T* string, HashType hash, const Allocator& allocator):
+	_string(string, allocator), _hash_value(hash)
+{
+}
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
 HashString<T, HashType, HashingFunc, Allocator, true>::HashString(HashType hash, const Allocator& allocator):

@@ -60,8 +60,8 @@ public:
 
 	void addPool(const HashStringView32<>& name, int32_t max_concurrent_threads = 1);
 
-	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Hash32 pool = 0);
-	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Hash32 pool = 0);
+	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Hash32 pool = Hash32(0));
+	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Hash32 pool = Hash32(0));
 	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter** counter = nullptr);
 	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter& counter);
 

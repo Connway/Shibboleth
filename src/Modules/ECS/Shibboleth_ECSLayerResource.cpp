@@ -122,7 +122,7 @@ bool ECSLayerResource::loadOverrides(
 
 void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 {
-	_callback_id.res_id = Gaff::INIT_HASH64;
+	_callback_id.res_id = Gaff::k_init_hash64;
 	_callback_id.cb_id = -1;
 
 	Gaff::Hash32 layer_name;
@@ -165,7 +165,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 
 		const auto element_guard = reader.enterElementGuard(index);
 		const auto override_guard = reader.enterElementGuard("overrides");
-		Gaff::Hash64 archetype = 0;
+		Gaff::Hash64 archetype(0);
 
 		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, scene_name, archetype)) {
 			const auto comps_guard = reader.enterElementGuard("components");

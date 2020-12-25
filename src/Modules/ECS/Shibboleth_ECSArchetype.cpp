@@ -202,7 +202,7 @@ void ECSArchetype::copy(const ECSArchetype& base, bool copy_shared_instance_data
 
 	_vars_defaults = base._vars_defaults;
 
-	_hash = Gaff::INIT_HASH64;
+	_hash = Gaff::k_init_hash64;
 
 	if (copy_shared_instance_data) {
 		initShared();
@@ -286,7 +286,7 @@ Gaff::Hash64 ECSArchetype::getHash(void) const
 
 void ECSArchetype::calculateHash(void)
 {
-	_hash = Gaff::INIT_HASH64;
+	_hash = Gaff::k_init_hash64;
 
 	//if (_shared_instances) {
 	//	_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size), _hash);

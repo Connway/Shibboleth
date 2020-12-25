@@ -114,8 +114,7 @@ public:
 	explicit HashString(const HashStringView<T, HashType, HashingFunc>& string, const Allocator& allocator = Allocator());
 	explicit HashString(const T* string, const Allocator& allocator = Allocator());
 	HashString(const T* string, size_t size, HashType hash, const Allocator& allocator = Allocator());
-	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
-	//HashString(const T* string, HashType hash, const Allocator& allocator = Allocator());
+	HashString(const T* string, HashType hash, const Allocator& allocator = Allocator());
 	HashString(HashType hash, const Allocator& allocator = Allocator());
 	HashString(const Allocator& allocator = Allocator());
 

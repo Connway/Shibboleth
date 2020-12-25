@@ -52,7 +52,7 @@ using IResourcePtr = Gaff::RefPtr<IResource>;
 
 struct ResourceCallbackID final
 {
-	Gaff::Hash64 res_id = Gaff::INIT_HASH64;
+	Gaff::Hash64 res_id = Gaff::k_init_hash64;
 	int32_t cb_id = -1;
 };
 

@@ -217,7 +217,7 @@ private:
 	Vector<RefDefOffset> _vars;
 	Vector<RefDefOffset> _vars_defaults;
 
-	mutable Gaff::Hash64 _hash = Gaff::INIT_HASH64;
+	mutable Gaff::Hash64 _hash = Gaff::k_init_hash64;
 
 	int32_t _shared_alloc_size = 0;
 	int32_t _alloc_size = 0;

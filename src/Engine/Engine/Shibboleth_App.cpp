@@ -316,15 +316,13 @@ void App::destroy(void)
 
 const IManager* App::getManager(Gaff::Hash64 name) const
 {
-	auto it = _manager_map.find(name);
-	GAFF_ASSERT(name && it != _manager_map.end());
-	return it->second.get();
+	return const_cast<App*>(this)->getManager(name);
 }
 
 IManager* App::getManager(Gaff::Hash64 name)
 {
 	auto it = _manager_map.find(name);
-	GAFF_ASSERT(name && it != _manager_map.end());
+	GAFF_ASSERT(name.getHash() && it != _manager_map.end());
 	return it->second.get();
 }
 

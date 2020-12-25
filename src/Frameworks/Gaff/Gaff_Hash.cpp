@@ -26,58 +26,66 @@ NS_GAFF
 
 Hash64 FNV1aHash64(const char* key, size_t len, Hash64 init)
 {
+	Hash64Storage hash = init.getHash();
+
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<Hash64>(key[i])) * 1099511628211ULL;
+		hash = (hash ^ static_cast<Hash64Storage>(key[i])) * 1099511628211ULL;
 	}
 
-	return init;
+	return Hash64(hash);
 }
 
 Hash64 FNV1Hash64(const char* key, size_t len, Hash64 init)
 {
+	Hash64Storage hash = init.getHash();
+
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ 1099511628211ULL) * static_cast<Hash64>(key[i]);
+		hash = (hash ^ 1099511628211ULL) * static_cast<Hash64Storage>(key[i]);
 	}
 
-	return init;
+	return Hash64(hash);
 }
 
 Hash32 FNV1aHash32(const char* key, size_t len, Hash32 init)
 {
+	Hash32Storage hash = init.getHash();
+
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<Hash32>(key[i])) * 16777619U;
+		hash = (hash ^ static_cast<Hash32Storage>(key[i])) * 16777619U;
 	}
 
-	return init;
+	return Hash32(hash);
 }
 
 Hash32 FNV1Hash32(const char* key, size_t len, Hash32 init)
 {
+	Hash32Storage hash = init.getHash();
+
 	for (size_t i = 0; i < len; ++i) {
-		init = (init * 16777619U) ^ static_cast<Hash32>(key[i]);
+		hash = (hash * 16777619U) ^ static_cast<Hash32Storage>(key[i]);
 	}
 
-	return init;
+	return Hash32(hash);
 }
 
 Hash64 FNV1aHash64(const char* key, size_t len)
 {
-	return FNV1aHash64(key, len, INIT_HASH64);
+	return FNV1aHash64(key, len, k_init_hash64);
 }
 
 Hash64 FNV1Hash64(const char* key, size_t len)
 {
-	return FNV1Hash64(key, len, INIT_HASH64);
+	return FNV1Hash64(key, len, k_init_hash64);
 }
 
 Hash32 FNV1aHash32(const char* key, size_t len)
 {
-	return FNV1aHash32(key, len, INIT_HASH32);
+	return FNV1aHash32(key, len, k_init_hash32);
 }
 
 Hash32 FNV1Hash32(const char* key, size_t len)
 {
-	return FNV1Hash32(key, len, INIT_HASH32);
+	return FNV1Hash32(key, len, k_init_hash32);
 }
 
 NS_END

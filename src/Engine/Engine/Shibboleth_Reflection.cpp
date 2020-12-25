@@ -103,3 +103,11 @@ SHIB_REFLECTION_DEFINE_BEGIN(HashStringView64<>)
 		Gaff::SaveHashStringView< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
 	)
 SHIB_REFLECTION_DEFINE_END(HashStringView64<>)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
+	.var("hash", &Gaff::Hash32::getHash, &Gaff::Hash32::setHash)
+SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
+	.var("hash", &Gaff::Hash64::getHash, &Gaff::Hash64::setHash)
+SHIB_REFLECTION_DEFINE_END(Gaff::Hash64)

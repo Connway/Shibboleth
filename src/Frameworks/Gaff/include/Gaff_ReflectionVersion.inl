@@ -467,7 +467,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::classAttrs(const Attrs&... attribute
 template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 {
-	GAFF_ASSERT(_hash == INIT_HASH64);
+	GAFF_ASSERT(_hash == k_init_hash64);
 	_hash = FNV1aHash64T(version, _hash);
 	return *this;
 }

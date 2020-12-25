@@ -1565,7 +1565,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 		// Write out the object.
 		writer.startObject(writable_vars);
 
-		writer.writeUInt64("version", getReflectionInstance().getVersion());
+		writer.writeUInt64("version", getReflectionInstance().getVersion().getHash());
 
 		for (auto& entry : _vars) {
 			if (entry.second->canSerialize()) {
@@ -1983,7 +1983,7 @@ template <class T, class Allocator>
 IReflectionStaticFunctionBase* ReflectionDefinition<T, Allocator>::getStaticFunc(int32_t name_index, int32_t override_index) const
 {
 	GAFF_ASSERT(name_index < static_cast<int32_t>(_static_funcs.size()));
-	GAFF_ASSERT(override_index < StaticFuncData::NUM_OVERLOADS);
+	GAFF_ASSERT(override_index < StaticFuncData::k_num_overloads);
 
 	return (_static_funcs.begin() + name_index)->second.func[override_index].get();
 }
@@ -1994,7 +1994,7 @@ IReflectionStaticFunctionBase* ReflectionDefinition<T, Allocator>::getStaticFunc
 	const auto it = _static_funcs.find(name);
 
 	if (it != _static_funcs.end()) {
-		for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
+		for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
 			if (it->second.hash[i] == args) {
 				return it->second.func[i].get();
 			}
@@ -2008,7 +2008,7 @@ template <class T, class Allocator>
 IReflectionFunctionBase* ReflectionDefinition<T, Allocator>::getFunc(int32_t name_index, int32_t override_index) const
 {
 	GAFF_ASSERT(name_index < static_cast<int32_t>(_funcs.size()));
-	GAFF_ASSERT(override_index < FuncData::NUM_OVERLOADS);
+	GAFF_ASSERT(override_index < FuncData::k_num_overloads);
 
 	return (_funcs.begin() + name_index)->second.func[override_index].get();
 }
@@ -2019,7 +2019,7 @@ IReflectionFunctionBase* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name
 	const auto it = _funcs.find(name);
 
 	if (it != _funcs.end()) {
-		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			if (it->second.hash[i] == args) {
 				return it->second.func[i].get();
 			}
@@ -2132,14 +2132,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		for (auto& it : base_ref_def._funcs) {
 			FuncData& func_data = _funcs[it.first.getHash()];
 
-			for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+			for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 				if (!it.second.func[i]) {
 					break;
 				}
 
 				int32_t index = -1;
 
-				for (int32_t j = 0; j < FuncData::NUM_OVERLOADS; ++j) {
+				for (int32_t j = 0; j < FuncData::k_num_overloads; ++j) {
 					if (!func_data.func[j]) {
 						index = j;
 						break;
@@ -2153,7 +2153,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				}
 
 				if (index < 0) {
-					GAFF_ASSERT_MSG(index > -(FuncData::NUM_OVERLOADS + 1), "Function overloading only supports %i overloads per function name!", FuncData::NUM_OVERLOADS);
+					GAFF_ASSERT_MSG(index > -(FuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", FuncData::k_num_overloads);
 					continue;
 				}
 
@@ -2188,14 +2188,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		for (auto& it : base_ref_def._static_funcs) {
 			StaticFuncData& static_func_data = _static_funcs[it.first.getHash()];
 
-			for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
+			for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
 				if (!it.second.func[i]) {
 					break;
 				}
 
 				int32_t index = -1;
 
-				for (int32_t j = 0; j < StaticFuncData::NUM_OVERLOADS; ++j) {
+				for (int32_t j = 0; j < StaticFuncData::k_num_overloads; ++j) {
 					if (!static_func_data.func[j]) {
 						index = j;
 						break;
@@ -2207,7 +2207,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 				}
 
 				if (index < 0) {
-					GAFF_ASSERT_MSG(index > -(StaticFuncData::NUM_OVERLOADS + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::NUM_OVERLOADS);
+					GAFF_ASSERT_MSG(index > -(StaticFuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::k_num_overloads);
 					continue;
 				}
 
@@ -2270,7 +2270,7 @@ template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	constexpr Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
+	constexpr Hash64 hash = CalcTemplateHash<Args...>(k_init_hash64);
 	return ctor<Args...>(hash);
 }
 
@@ -2539,7 +2539,7 @@ template <class T, class Allocator>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
@@ -2562,7 +2562,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		FuncData& func_data = it->second;
 		bool found = false;
 
-		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
@@ -2599,7 +2599,7 @@ template <class T, class Allocator>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
@@ -2621,7 +2621,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		FuncData& func_data = it->second;
 		bool found = false;
 
-		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
@@ -2658,7 +2658,7 @@ template <class T, class Allocator>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 	auto it = _static_funcs.find(FNV1aHash32Const(name));
 
 	using StaticFuncType = StaticFunction<Ret, Args...>;
@@ -2676,7 +2676,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 		StaticFuncData& func_data = it->second;
 		bool found = false;
 
-		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			// Replace an open slot or replace an already existing overload.
 			if (func_data.func[i] && func_data.hash[i] != arg_hash) {
 				continue;
