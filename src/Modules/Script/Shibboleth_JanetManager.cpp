@@ -39,14 +39,21 @@ static ProxyAllocator g_allocator("Janet");
 
 JanetManager::~JanetManager(void)
 {
-	for (const TypeInfo& type_info : _types) {
-		SHIB_FREE(const_cast<char*>(type_info.type_info.name), g_allocator);
+	for (JanetStateData& state : _states) {
+		state.lock->Lock();
+	}
+
+	for (const auto& type_info : _types) {
+		SHIB_FREE(const_cast<char*>(type_info.second.name), g_allocator);
 	}
 
 	for (JanetStateData& state : _states) {
-		EA::Thread::AutoFutex lock(*state.lock);
 		state.state.restore();
 		janet_deinit();
+	}
+
+	for (JanetStateData& state : _states) {
+		state.lock->Unlock();
 	}
 }
 
@@ -87,20 +94,20 @@ bool JanetManager::initAllModulesLoaded(void)
 
 			_types.shrink_to_fit();
 
-			for (const TypeInfo& type_info : _types) {
-				RegisterTypeFinalize(env, *type_info.ref_def, type_info.type_info);
+			for (const auto& type_info : _types) {
+				RegisterTypeFinalize(env, *type_info.first, type_info.second);
 			}
 		}
 
 
-		//constexpr const char* k_test_string = R"(
-		//	(Print Gleam/ISamplerState/Wrap/def)
-		//	(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
-		//	(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
-		//	(def TestType (New Gleam/Vec3))
-		//)";
+		constexpr const char* k_test_string = R"(
+			(Print Gleam/ISamplerState/Wrap/def)
+			(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
+			(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
+			(def TestType (New Gleam/Vec3))
+		)";
 
-		//janet_dostring(env, k_test_string, nullptr, nullptr);
+		janet_dostring(env, k_test_string, nullptr, nullptr);
 
 		state.state.save();
 	}
@@ -202,7 +209,9 @@ void JanetManager::returnState(JanetState* state)
 
 void JanetManager::registerType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
 {
-	_types.emplace_back(TypeInfo{ &ref_def, type_info });
+	if (_types.find(&ref_def) == _types.end()) {
+		_types.emplace(&ref_def, type_info);
+	}
 }
 
 NS_END
