@@ -92,7 +92,7 @@ NS_SHIBBOLETH
 class JanetState final
 {
 public:
-	void restoreState(void) const
+	void restore(void) const
 	{
 		janet_vm_top_dyns = _janet_vm_top_dyns;
 		janet_vm_core_env = _janet_vm_core_env;
@@ -129,7 +129,7 @@ public:
 		}
 	}
 
-	void saveState(void)
+	void save(void)
 	{
 		_janet_vm_top_dyns = janet_vm_top_dyns;
 		_janet_vm_core_env = janet_vm_core_env;

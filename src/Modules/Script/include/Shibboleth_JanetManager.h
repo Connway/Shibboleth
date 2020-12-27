@@ -50,6 +50,8 @@ public:
 	JanetState* requestState(void);
 	void returnState(JanetState* state);
 
+	void registerType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
+
 private:
 	struct JanetStateData final
 	{
@@ -58,7 +60,14 @@ private:
 		JanetTable* env;
 	};
 
+	struct TypeInfo final
+	{
+		const Gaff::IReflectionDefinition* ref_def;
+		const JanetAbstractType type_info;
+	};
+
 	Vector<JanetStateData> _states{ ProxyAllocator("Janet") };
+	Vector<TypeInfo> _types{ ProxyAllocator("Janet") };
 
 	//static void* alloc(void*, void* ptr, size_t, size_t new_size);
 	//static int panic(lua_State* L);

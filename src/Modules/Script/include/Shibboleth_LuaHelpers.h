@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_CommonHelpers.h"
 #include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
@@ -32,45 +33,6 @@ struct lua_State;
 
 NS_SHIBBOLETH
 
-struct UserData final
-{
-	struct MetaData final
-	{
-		enum class HeaderFlag
-		{
-			IsReference,
-
-			Count
-		};
-
-		Gaff::Flags<HeaderFlag> flags;
-		//UserDataMetadata* root = nullptr;
-
-		//UserDataMetadata* getRoot(void)
-		//{
-		//	return (flags.testAll(HeaderFlag::IsReference)) ? root : nullptr;
-		//}
-	};
-
-	MetaData meta;
-	// Only valid if the IsReference flag in metadata is set.
-	void* reference;
-
-	const void* getData(void) const
-	{
-		return const_cast<UserData*>(this)->getData();
-	}
-
-	void* getData(void)
-	{
-		// If it's a reference, read the pointer stored in the user data.
-		// If it's not a reference, the memory after the metadata is our object, so take a pointer to it.
-		return (meta.flags.testAll(MetaData::HeaderFlag::IsReference)) ?
-			reference :
-			&reference;
-	}
-};
-
 struct TableState final
 {
 	~TableState(void);
@@ -78,8 +40,6 @@ struct TableState final
 	Vector< eastl::pair<int32_t, Gaff::FunctionStackEntry> > array_entries{ ProxyAllocator("Lua") };
 	VectorMap<U8String, Gaff::FunctionStackEntry> key_values{ ProxyAllocator("Lua") };
 };
-
-constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
 
 static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
 

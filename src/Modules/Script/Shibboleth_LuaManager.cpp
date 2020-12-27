@@ -59,7 +59,7 @@ bool LuaManager::initAllModulesLoaded(void)
 
 	_states.resize(static_cast<size_t>(num_threads));
 
-	const auto ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
+	const auto* const ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
 	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
 
 	for (int32_t i = 0; i < num_threads; ++i) {

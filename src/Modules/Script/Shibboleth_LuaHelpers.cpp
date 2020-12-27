@@ -90,7 +90,7 @@ namespace
 
 		void* alloc(size_t size_bytes, const char*, int)
 		{
-			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(lua_newuserdata(_state, sizeof(Shibboleth::UserData::MetaData) + size_bytes));
+			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(lua_newuserdata(_state, size_bytes + Shibboleth::k_alloc_size_no_reference));
 			new(value) Shibboleth::UserData::MetaData();
 
 			return &value->reference;
@@ -132,7 +132,7 @@ namespace
 					break;
 
 				case LUA_TSTRING:
-					final_string += luaL_checkstring(state, i + 1); 
+					final_string += luaL_checkstring(state, i + 1);
 					break;
 
 				case LUA_TTABLE:
@@ -222,7 +222,7 @@ namespace
 		}
 	}
 
-	void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest)
+	void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid)
 	{
 		Shibboleth::U8String ctor_sig(g_allocator);
 		ctor_sig.append_sprintf("const %s&", entry.ref_def->getReflectionInstance().getName());
@@ -237,7 +237,9 @@ namespace
 		}
 
 		// Deconstruct old value.
-		entry.ref_def->destroyInstance(dest);
+		if (old_value_is_valid) {
+			entry.ref_def->destroyInstance(dest);
+		}
 
 		// Construct new value.
 		const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
@@ -280,7 +282,7 @@ namespace
 		Shibboleth::UserData* const old_data = reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, -1));
 
 		// Just create and push the new value.
-		CopyUserType(entry, old_data->getData());
+		CopyUserType(entry, old_data->getData(), true);
 		return false;
 	}
 }
@@ -314,6 +316,7 @@ void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IRef
 	new(user_data) UserData();
 	user_data->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
 	user_data->reference = const_cast<void*>(value);
+	user_data->ref_def = &ref_def;
 
 	luaL_getmetatable(state, ref_def.getFriendlyName());
 	lua_setmetatable(state, -2);
@@ -538,7 +541,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 		lua_pushstring(state, reinterpret_cast<char*>(ret.value.vp));
 
 		if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-			SHIB_FREET(ret.value.vp, GetAllocator());
+			SHIB_FREE(ret.value.vp, GetAllocator());
 		}
 
 		return 1;
@@ -570,6 +573,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 					new(value) UserData();
 					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
 					value->reference = const_cast<int8_t*>(begin);
+					value->ref_def = ret.ref_def;
 
 					luaL_getmetatable(state, ret.ref_def->getFriendlyName());
 					lua_setmetatable(state, -2);
@@ -602,12 +606,15 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 				new(value) UserData();
 				value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
 				value->reference = ret.value.vp;
+				value->ref_def = ret.ref_def;
 
 			} else if (create_user_data) {
 				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, k_alloc_size_no_reference + ret.ref_def->size()));
 				new(value) UserData::MetaData();
 
-				CopyUserType(ret, value->getData());
+				value->ref_def = ret.ref_def;
+
+				CopyUserType(ret, value->getData(), false);
 			}
 			// Else allocator already pushed it onto the stack.
 
@@ -755,7 +762,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 	U8String friendly_name = ref_def.getFriendlyName();
 
 	if (Gaff::EndsWith(friendly_name.data(), "<>")) {
-		friendly_name = friendly_name.substr(0, friendly_name.size() - 2);
+		friendly_name.erase(friendly_name.size() - 2);
 	}
 
 	// Type Metatable
@@ -848,7 +855,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	// Add constructor.
 	if ((!flags || !flags->getFlags().testAll(ScriptFlagsAttribute::Flag::ReferenceOnly))) {
-		reg.emplace_back(luaL_Reg{ "new", UserTypeNew });
+		reg.emplace_back(luaL_Reg{ "New", UserTypeNew });
 	}
 
 	reg.emplace_back(luaL_Reg{ nullptr, nullptr });
@@ -884,7 +891,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 void RegisterBuiltIns(lua_State* state)
 {
 	lua_pushcclosure(state, Print, 0);
-	lua_setglobal(state, "print");
+	lua_setglobal(state, "Print");
 
 	lua_pushcclosure(state, GetManager, 0);
 	lua_setglobal(state, "GetManager");
@@ -1165,6 +1172,7 @@ int UserTypeIndex(lua_State* state)
 					new(value) UserData();
 					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
 					value->reference = const_cast<void*>(input);
+					value->ref_def = &var_ref_def;
 
 					//if (auto* const root = user_data->meta.getRoot()) {
 					//	value->meta.root = root;
@@ -1264,6 +1272,7 @@ int UserTypeNew(lua_State* state)
 
 	// Initialize metadata at the beginning.
 	new(value) UserData::MetaData();
+	value->ref_def = &ref_def;
 	//value->root = value;
 
 	Gaff::FunctionStackEntry obj;

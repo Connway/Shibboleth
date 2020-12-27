@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_JanetManager.h"
+#include "Shibboleth_JanetHelpers.h"
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Gaff_JSON.h>
@@ -38,9 +39,13 @@ static ProxyAllocator g_allocator("Janet");
 
 JanetManager::~JanetManager(void)
 {
+	for (const TypeInfo& type_info : _types) {
+		SHIB_FREE(const_cast<char*>(type_info.type_info.name), g_allocator);
+	}
+
 	for (JanetStateData& state : _states) {
 		EA::Thread::AutoFutex lock(*state.lock);
-		state.state.restoreState();
+		state.state.restore();
 		janet_deinit();
 	}
 }
@@ -55,6 +60,9 @@ bool JanetManager::initAllModulesLoaded(void)
 
 	_states.resize(static_cast<size_t>(num_threads));
 
+	const auto* const ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
+	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
+
 	for (JanetStateData& state : _states) {
 		state.lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
 
@@ -64,9 +72,37 @@ bool JanetManager::initAllModulesLoaded(void)
 		state.env = env;
 
 		// Add loaded chunks table to the global environment.
-		janet_table_put(env, janet_wrap_string(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
+		janet_table_put(env, janet_wrap_keyword(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
 
-		state.state.saveState();
+		RegisterBuiltIns(env);
+
+		for (const Gaff::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
+			RegisterEnum(env, *enum_ref_def);
+		}
+
+		if (ref_defs) {
+			for (const Gaff::IReflectionDefinition* ref_def : *ref_defs) {
+				RegisterType(env, *ref_def, *this);
+			}
+
+			_types.shrink_to_fit();
+
+			for (const TypeInfo& type_info : _types) {
+				RegisterTypeFinalize(env, *type_info.ref_def, type_info.type_info);
+			}
+		}
+
+
+		//constexpr const char* k_test_string = R"(
+		//	(Print Gleam/ISamplerState/Wrap/def)
+		//	(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
+		//	(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
+		//	(def TestType (New Gleam/Vec3))
+		//)";
+
+		//janet_dostring(env, k_test_string, nullptr, nullptr);
+
+		state.state.save();
 	}
 
 	return true;
@@ -81,7 +117,7 @@ bool JanetManager::loadBuffer(const char* buffer, size_t size, const char* name)
 
 	for (JanetStateData& state : _states) {
 		EA::Thread::AutoFutex lock(*state.lock);
-		state.state.restoreState();
+		state.state.restore();
 
 		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
 		const Janet key = janet_wrap_string(name);
@@ -107,7 +143,7 @@ bool JanetManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		}
 
 		janet_table_put(loaded_chunks_table, key, value);
-		state.state.saveState();
+		state.state.save();
 	}
 
 	return true;
@@ -122,13 +158,13 @@ void JanetManager::unloadBuffer(const char* name)
 
 	for (JanetStateData& state : _states) {
 		EA::Thread::AutoFutex lock(*state.lock);
-		state.state.restoreState();
+		state.state.restore();
 
 		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
 		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 	
 		janet_table_remove(janet_unwrap_table(loaded_chunks), janet_wrap_string(name));
-		state.state.saveState();
+		state.state.save();
 	}
 }
 
@@ -162,6 +198,11 @@ void JanetManager::returnState(JanetState* state)
 			break;
 		}
 	}
+}
+
+void JanetManager::registerType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
+{
+	_types.emplace_back(TypeInfo{ &ref_def, type_info });
 }
 
 NS_END
