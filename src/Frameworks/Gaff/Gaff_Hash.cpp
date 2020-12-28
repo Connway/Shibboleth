@@ -29,7 +29,7 @@ Hash64 FNV1aHash64(const char* key, size_t len, Hash64 init)
 	Hash64Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ static_cast<Hash64Storage>(key[i])) * 1099511628211ULL;
+		hash = (hash ^ static_cast<Hash64Storage>(key[i])) * k_magic_number_hash64_storage;
 	}
 
 	return Hash64(hash);
@@ -40,7 +40,7 @@ Hash64 FNV1Hash64(const char* key, size_t len, Hash64 init)
 	Hash64Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ 1099511628211ULL) * static_cast<Hash64Storage>(key[i]);
+		hash = (hash ^ k_magic_number_hash64_storage) * static_cast<Hash64Storage>(key[i]);
 	}
 
 	return Hash64(hash);
@@ -51,7 +51,7 @@ Hash32 FNV1aHash32(const char* key, size_t len, Hash32 init)
 	Hash32Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ static_cast<Hash32Storage>(key[i])) * 16777619U;
+		hash = (hash ^ static_cast<Hash32Storage>(key[i])) * k_magic_number_hash32_storage;
 	}
 
 	return Hash32(hash);
@@ -62,7 +62,7 @@ Hash32 FNV1Hash32(const char* key, size_t len, Hash32 init)
 	Hash32Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash * 16777619U) ^ static_cast<Hash32Storage>(key[i]);
+		hash = (hash * k_magic_number_hash32_storage) ^ static_cast<Hash32Storage>(key[i]);
 	}
 
 	return Hash32(hash);
