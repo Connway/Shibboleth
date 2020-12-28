@@ -100,14 +100,22 @@ bool JanetManager::initAllModulesLoaded(void)
 		}
 
 
-		constexpr const char* k_test_string = R"(
-			(Print Gleam/ISamplerState/Wrap/def)
-			(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
-			(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
-			(def TestType (New Gleam/Vec3))
-		)";
+		//constexpr const char* k_test_string = R"(
+		//	(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
+		//	(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
+		//	(Print (Gleam/ISamplerState/Wrap/def :Repeat))
 
-		janet_dostring(env, k_test_string, nullptr, nullptr);
+		//	(def TestType (Gleam/Vec3/New 3 2 1))
+		//	(Print TestType)
+		//	(Print (get TestType :x))
+		//	(Print (TestType :y))
+
+		//	#(def Janet-Manager (GetManager JanetManager))
+		//	#(:testFunc Janet-Manager)
+		//)";
+
+		//janet_dostring(env, k_test_string, nullptr, nullptr);
+		//janet_dostring(env, src.data(), nullptr, nullptr);
 
 		state.state.save();
 	}
@@ -212,6 +220,19 @@ void JanetManager::registerType(const Gaff::IReflectionDefinition& ref_def, cons
 	if (_types.find(&ref_def) == _types.end()) {
 		_types.emplace(&ref_def, type_info);
 	}
+}
+
+const JanetAbstractType* JanetManager::getType(const Gaff::IReflectionDefinition& ref_def) const
+{
+	using MapPair = VectorMap<const Gaff::IReflectionDefinition*, JanetAbstractType>::value_type;
+
+	const auto it = _types.find(&ref_def);
+
+	if (it != _types.end() && it->first == &ref_def) {
+		return &it->second;
+	}
+
+	return nullptr;
 }
 
 NS_END

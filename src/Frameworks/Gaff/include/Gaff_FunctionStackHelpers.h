@@ -33,6 +33,12 @@ template <class T>
 static bool CastFloatToType(const IReflectionDefinition& ref_def, const void* in, T& out);
 
 template <class T>
+static bool CastUnsignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out);
+
+template <class T>
+static bool CastSignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out);
+
+template <class T>
 static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out);
 
 template <class T>
@@ -42,8 +48,20 @@ template <class T>
 static bool CastFloatToType(const FunctionStackEntry& entry, T& out);
 
 template <class T>
+static bool CastUnsignedIntegerToType(const FunctionStackEntry& entry, T& out);
+
+template <class T>
+static bool CastSignedIntegerToType(const FunctionStackEntry& entry, T& out);
+
+template <class T>
 static bool CastIntegerToType(const FunctionStackEntry& entry, T& out);
 
+
+class IFunctionStackAllocator : public IAllocator
+{
+public:
+	virtual void* alloc(const Gaff::IReflectionDefinition& ref_def) = 0;
+};
 
 template <class Callable, class Allocator, class Ret, class First, class... Rest, class... CurrentArgs>
 bool CallFunc(
@@ -52,7 +70,7 @@ bool CallFunc(
 	const FunctionStackEntry* args, 
 	FunctionStackEntry& ret,
 	int32_t arg_index,
-	IAllocator& allocator,
+	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args
 );
 
@@ -61,7 +79,7 @@ bool CallFunc(
 	const Callable& callable,
 	void* object,
 	FunctionStackEntry& ret,
-	IAllocator& allocator,
+	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args
 );
 

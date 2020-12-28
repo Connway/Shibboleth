@@ -51,6 +51,7 @@ public:
 	void returnState(JanetState* state);
 
 	void registerType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
+	const JanetAbstractType* getType(const Gaff::IReflectionDefinition& ref_def) const;
 
 private:
 	struct JanetStateData final

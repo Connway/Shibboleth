@@ -242,6 +242,7 @@ premake5 gen_module_header --module=Script</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaResource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_CommonHelpers.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetHelpers.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetResource.cpp" />
@@ -253,4 +254,4 @@ premake5 gen_module_header --module=Script</Command>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project> 
+</Project>

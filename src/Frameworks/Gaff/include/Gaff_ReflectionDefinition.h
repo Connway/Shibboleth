@@ -564,7 +564,7 @@ private:
 			_func = func;
 		}
 
-		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const override
+		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
 
@@ -576,7 +576,7 @@ private:
 			return call(const_cast<void*>(object), args, num_args, ret, allocator);
 		}
 
-		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const override
+		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
 				// $TODO: Log error.
@@ -617,12 +617,12 @@ private:
 		{
 		}
 
-		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const override
+		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			return _func->call(object, args, num_args, ret, allocator);
 		}
 
-		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const override
+		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			return _func->call(object, args, num_args, ret, allocator);
 		}
@@ -684,7 +684,7 @@ private:
 			return SHIB_ALLOCT(Type, allocator, reinterpret_cast<Func>(_func));
 		}
 
-		bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IAllocator& allocator) const override
+		bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
 				// $TODO: Log error.

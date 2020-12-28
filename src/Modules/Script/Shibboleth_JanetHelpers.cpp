@@ -31,16 +31,82 @@ THE SOFTWARE.
 
 namespace
 {
-	//constexpr int32_t k_ref_def_index = lua_upvalueindex(1);
-	//constexpr int32_t k_metatable_index = lua_upvalueindex(2);
-	//constexpr int32_t k_func_index_index = lua_upvalueindex(2);
-	//constexpr int32_t k_func_is_static_index = lua_upvalueindex(3);
-
-	//constexpr const char* const k_is_type_table_field_name = "__is_type_table";
-	//constexpr const char* const k_ref_def_field_name = "__ref_def";
-
 	static Shibboleth::ProxyAllocator g_allocator("Janet");
 
+	class JanetTypeInstanceAllocator final : public Gaff::IFunctionStackAllocator
+	{
+	public:
+		// For EASTL support.
+		void* allocate(size_t, size_t, size_t, int flags = 0) override
+		{
+			GAFF_ASSERT(false);
+			GAFF_REF(flags);
+			return nullptr;
+		}
+
+		void* allocate(size_t, int flags = 0) override
+		{
+			GAFF_ASSERT(false);
+			GAFF_REF(flags);
+			return nullptr;
+		}
+
+		void deallocate(void*, size_t) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+		}
+
+		const char* get_name() const override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void set_name(const char*) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+		}
+
+		void* alloc(size_t, size_t, const char*, int) override
+		{
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void* alloc(size_t size_bytes, const char* file, int line) override
+		{
+			return g_allocator.alloc(size_bytes, file, line);
+		}
+
+		void* alloc(const Gaff::IReflectionDefinition& ref_def) override
+		{
+			Shibboleth::JanetManager& janet_mgr = Shibboleth::GetApp().getManagerTFast<Shibboleth::JanetManager>();
+			const JanetAbstractType* const type_info = janet_mgr.getType(ref_def);
+
+			GAFF_ASSERT(type_info);
+
+			//if (!type_info) {
+			//	// $TODO: Log error.
+			//	return nullptr;
+			//}
+
+			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(janet_abstract(type_info, ref_def.size() + Shibboleth::k_alloc_size_no_reference));
+			new(value) Shibboleth::UserData::MetaData();
+
+			value->ref_def = &ref_def;
+
+			return value->getData();
+		}
+
+		void free(void*) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+		}
+	};
 
 	struct ReflectionDataJanet final
 	{
@@ -50,11 +116,51 @@ namespace
 		const JanetAbstractType* type_info;
 	};
 
+	struct ReflectionFunctionJanet final
+	{
+		static constexpr char* k_type_info_name = "ReflectionFunction";
+
+		const Gaff::IReflectionDefinition* ref_def;
+		const JanetAbstractType* type_info;
+		int32_t func_index;
+		bool is_static;
+	};
+
 	static const JanetAbstractType g_ref_def_type_info =
 	{
 		ReflectionDataJanet::k_type_info_name,
 		JANET_ATEND_NAME
 	};
+
+	static const JanetAbstractType g_ref_func_type_info =
+	{
+		ReflectionFunctionJanet::k_type_info_name,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		Shibboleth::UserTypeFunctionCall
+	};
+
+	inline Janet WrapBoolean(bool value)
+	{
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4806)
+#endif
+
+		return janet_wrap_boolean(value);
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif
+	}
 
 	void PrintHelper(int32_t num_args, Janet* args, Shibboleth::U8String& out)
 	{
@@ -182,43 +288,28 @@ namespace
 					out.append_sprintf("func:%s", reinterpret_cast<const char*>(janet_unwrap_function(args[i])->def->name));
 					break;
 
-				//case LUA_TLIGHTUSERDATA:
-				//case LUA_TUSERDATA: {
-				//	lua_getmetatable(state, i + 1);
-				//	lua_getfield(state, -1, k_ref_def_field_name);
-
-				//	const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-				//	lua_pop(state, 2);
-
-				//	const Shibboleth::UserData& user_data = *reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, i + 1));
-				//	const void* const object = user_data.getData();
-
-				//	auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
-
-				//	if (func) {
-				//		char buffer[256];
-				//		func->getFunc()(object, buffer, sizeof(buffer));
-
-				//		out += buffer;
-
-				//	} else {
-				//		out.append_sprintf("%p", object);
-				//	}
-
-				//} break;
-
 				case JANET_FIBER:
 					// $TODO: Log error.
 					break;
 
 				case JANET_ABSTRACT: {
-					//const JanetAbstractType* const type = janet_get_abstract_type(args[i]);
-					//const JanetAbstract abstract = janet_unwrap_abstract(args[i]);
+					Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(janet_unwrap_abstract(args[i]));
+					auto* const to_string = value->ref_def->getStaticFunc<int32_t, const void*, char*, int32_t>(
+						Gaff::GetOpNameHash(Gaff::Operator::ToString)
+					);
 
-					//if (type->tostring) {
-					//} else {
-					//	out += type->name;
-					//}
+					if (to_string) {
+						char buffer[256] = { 0 };
+						char* ptr = buffer;
+
+						if (to_string->call(value->getData(), std::forward<char*>(ptr), 256)) {
+							out += buffer;
+							break;
+						}
+
+					}
+					
+					out += value->ref_def->getReflectionInstance().getName();
 				} break;
 
 				case JANET_POINTER:
@@ -258,71 +349,48 @@ namespace
 
 	Janet GetManager(int32_t num_args, Janet* args)
 	{
-		GAFF_REF(num_args, args);
+		janet_arity(num_args, 1, -1);
 
-		//if (!lua_istable(state, 1)) {
-		//	// $TODO: Log error.
-		//	return 0;
-		//}
+		Janet* const tuple = (num_args > 1) ? janet_tuple_begin(num_args) : nullptr;
 
-		//lua_getfield(state, 1, k_ref_def_field_name);
+		for (int32_t i = 0; i < num_args; ++i) {
+			const ReflectionDataJanet* const ref_data = reinterpret_cast<ReflectionDataJanet*>(janet_checkabstract(args[i], &g_ref_def_type_info));
 
-		//if (!lua_isuserdata(state, -1)) {
-		//	// $TODO: Log error.
-		//	return 0;
-		//}
+			// Not an ReflectionDefinition.
+			if (!ref_data) {
+				// $TODO: Log error.
 
-		//const auto* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-		//Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getHash());
+				if (tuple) {
+					tuple[i] = janet_wrap_nil();
+					continue;
+				} else {
+					return janet_wrap_nil();
+				}
+			}
 
-		//if (!manager) {
-		//	// $TODO: Log error.
-		//	return 0;
-		//}
+			if (!ref_data->ref_def->hasInterface(CLASS_HASH(IManager))) {
+				// $TODO: Log error.
 
-		//Shibboleth::PushUserTypeReference(state, manager->getBasePointer(), *ref_def);
-		//return 1;
+				if (tuple) {
+					tuple[i] = janet_wrap_nil();
+					continue;
+				} else {
+					return janet_wrap_nil();
+				}
+			}
+
+			Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_data->ref_def->getReflectionInstance().getHash());
+			const Janet value = Shibboleth::PushUserTypeReference(manager->getBasePointer(), *ref_data->ref_def, *ref_data->type_info);
+
+			if (tuple) {
+				tuple[i] = value;
+			} else {
+				return value;
+			}
+		}
 
 		return janet_wrap_nil();
 	}
-
-	//void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference)
-	//{
-	//	const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
-
-	//	if (entry.ref_def && ((entry.ref_def != &new_ref_def) || (is_reference != new_is_reference))) {
-	//		if (!is_reference && !entry.ref_def->isBuiltIn()) {
-	//			entry.ref_def->destroyInstance(entry.value.vp);
-	//			SHIB_FREE(entry.value.vp, g_allocator);
-	//		}
-
-	//		entry.value.vp = nullptr;
-	//		entry.ref_def = nullptr;
-	//		entry.flags.clear();
-	//	}
-	//}
-
-	//void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest)
-	//{
-	//	Shibboleth::U8String ctor_sig(g_allocator);
-	//	ctor_sig.append_sprintf("const %s&", entry.ref_def->getReflectionInstance().getName());
-
-	//	const Shibboleth::HashStringView64<> hash(ctor_sig);
-
-	//	auto ctor = entry.ref_def->getConstructor(hash.getHash());
-
-	//	if (!ctor) {
-	//		// $TODO: Log error.
-	//		return;
-	//	}
-
-	//	// Deconstruct old value.
-	//	entry.ref_def->destroyInstance(dest);
-
-	//	// Construct new value.
-	//	const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
-	//	cast_ctor(dest, entry.value.vp);
-	//}
 
 	//bool PushOrUpdateTableValue(lua_State* state, const Gaff::FunctionStackEntry& entry)
 	//{
@@ -360,7 +428,7 @@ namespace
 	//	Shibboleth::UserData* const old_data = reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, -1));
 
 	//	// Just create and push the new value.
-	//	CopyUserType(entry, old_data->getData());
+	//	CopyUserType(entry, old_data->getData(), true, g_allocator);
 	//	return false;
 	//}
 }
@@ -384,324 +452,450 @@ NS_SHIBBOLETH
 //		}
 //	}
 //}
-//
-//
-//
-//void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
-//{
-//	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-//
-//	new(user_data) UserData();
-//	user_data->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-//	user_data->reference = const_cast<void*>(value);
-//
-//	luaL_getmetatable(state, ref_def.getFriendlyName());
-//	lua_setmetatable(state, -2);
-//}
-//
-//void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start, int32_t end)
-//{
-//	start = Gaff::Max(start, 1);
-//	end = (end < 1) ? lua_gettop(state) : Gaff::Min(end, lua_gettop(state));
-//
-//	stack.resize(static_cast<size_t>(end - start + 1));
-//
-//	for (int32_t i = start - 1; i < end; ++i) {
-//		FillEntry(state, i + 1, stack[i - start + 1], false);
-//	}
-//}
-//
-//void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& entry, bool clone_non_lua)
-//{
-//	const int32_t type = lua_type(state, stack_index);
-//
-//	switch (type) {
-//		case LUA_TNONE:
-//		case LUA_TNIL:
-//			entry.value.vp = nullptr;
-//			break;
-//
-//		case LUA_TBOOLEAN:
-//			if (clone_non_lua) {
-//				FreeDifferentType(entry, Reflection<bool>::GetReflectionDefinition(), false);
-//			}
-//
-//			entry.ref_def = &Reflection<bool>::GetReflectionDefinition();
-//			entry.value.b = lua_toboolean(state, stack_index);
-//			break;
-//
-//		case LUA_TNUMBER:
-//			if (lua_isinteger(state, stack_index)) {
-//				if (clone_non_lua) {
-//					FreeDifferentType(entry, Reflection<int64_t>::GetReflectionDefinition(), false);
-//				}
-//
-//				entry.ref_def = &Reflection<int64_t>::GetReflectionDefinition();
-//				entry.value.i64 = luaL_checkinteger(state, stack_index);
-//
-//			} else {
-//				if (clone_non_lua) {
-//					FreeDifferentType(entry, Reflection<double>::GetReflectionDefinition(), false);
-//				}
-//
-//				entry.ref_def = &Reflection<double>::GetReflectionDefinition();
-//				entry.value.d = luaL_checknumber(state, stack_index);
-//			}
-//			break;
-//
-//		case LUA_TSTRING:
-//			if (clone_non_lua) {
-//				FreeDifferentType(entry, Reflection<U8String>::GetReflectionDefinition(), false);
-//
-//				if (!entry.value.vp) {
-//					entry.value.vp = SHIB_ALLOCT(U8String, g_allocator);
-//				}
-//
-//				*reinterpret_cast<U8String*>(entry.value.vp) = luaL_checkstring(state, stack_index);
-//				entry.ref_def = &Reflection<U8String>::GetReflectionDefinition();
-//
-//			} else {
-//				entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsString);
-//				entry.value.vp = const_cast<char*>(luaL_checkstring(state, stack_index));
-//			}
-//
-//			break;
-//
-//		case LUA_TTABLE: {
-//			lua_getfield(state, stack_index, k_is_type_table_field_name);
-//			const bool is_type_table = lua_isboolean(state, -1);
-//
-//			lua_pop(state, 1);
-//
-//			// This is a type table, only pass the ReflectionDefinition.
-//			if (is_type_table) {
-//				lua_getfield(state, stack_index, k_ref_def_field_name);
-//				entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-//
-//				lua_pop(state, 1);
-//				break;
-//			}
-//
-//			// Fill vector or vectormap.
-//			// $TODO: Log error.
-//		} break;
-//
-//		case LUA_TFUNCTION:
-//			// $TODO: Log error.
-//			break;
-//
-//		case LUA_TLIGHTUSERDATA:
-//		case LUA_TUSERDATA: {
-//			lua_getmetatable(state, stack_index);
-//			lua_getfield(state, -1, k_ref_def_field_name);
-//
-//			const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-//			lua_pop(state, 2);
-//
-//			UserData* const user_data = reinterpret_cast<UserData*>(lua_touserdata(state, stack_index));
-//
-//			if (clone_non_lua) {
-//				const bool other_is_reference = user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference);
-//				const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
-//
-//				FreeDifferentType(entry, *ref_def, other_is_reference);
-//
-//				// If it's just a reference, don't worry about creating a copy of the data.
-//				if (other_is_reference) {
-//					entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsReference);
-//					entry.value.vp = user_data->getData();
-//					entry.ref_def = ref_def;
-//
-//				// Is not a reference, we should clone the data.
-//				} else {
-//					U8String ctor_sig(g_allocator);
-//					ctor_sig.append_sprintf("const %s&", ref_def->getReflectionInstance().getName());
-//
-//					const HashStringView64<> hash(ctor_sig);
-//
-//					// If we already have a non-reference value, just re-construct in place.
-//					if (entry.value.vp) {
-//						auto ctor = entry.ref_def->getConstructor(hash.getHash());
-//
-//						if (!ctor) {
-//							// $TODO: Log error.
-//							break;
-//						}
-//
-//						// Deconstruct old value.
-//						entry.ref_def->destroyInstance(entry.value.vp);
-//
-//						// Construct new value.
-//						const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
-//						cast_ctor(entry.value.vp, user_data->getData());
-//
-//					// Need to make a copy.
-//					} else {
-//						auto factory = ref_def->getFactory(hash.getHash());
-//
-//						if (!factory) {
-//							// $TODO: Log error.
-//							break;
-//						}
-//
-//						const auto cast_factory = reinterpret_cast<void* (*)(Gaff::IAllocator&, const void*)>(factory);
-//						entry.value.vp = cast_factory(g_allocator, user_data->getData());
-//					}
-//
-//					entry.ref_def = ref_def;
-//				}
-//
-//			} else {
-//				// Unnecessary, but for posterity.
-//				entry.flags.set(
-//					user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference),
-//					Gaff::FunctionStackEntry::Flag::IsReference
-//				);
-//
-//				entry.value.vp = user_data->getData();
-//				entry.ref_def = ref_def;
-//			}
-//
-//		} break;
-//
-//		case LUA_TTHREAD:
-//			// $TODO: Log error.
-//			break;
-//	}
-//}
-//
-//int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, bool create_user_data)
-//{
-//	if (ret.enum_ref_def) {
-//		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-//			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
-//
-//			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
-//			const int32_t data_size = ret.enum_ref_def->size();
-//			lua_createtable(state, ret.value.arr.size, 0);
-//
-//			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
-//				int64_t value = 0;
-//
-//				if (data_size <= sizeof(int8_t)) {
-//					value = static_cast<int64_t>(*begin);
-//				} else if (data_size <= sizeof(int16_t)) {
-//					value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
-//				} else if (data_size <= sizeof(int32_t)) {
-//					value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
-//				} else if (data_size <= sizeof(int64_t)) {
-//					value = *reinterpret_cast<const int64_t*>(begin);
-//				} else {
-//					GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
-//				}
-//
-//				lua_pushinteger(state, value);
-//				lua_seti(state, -1, i);
-//				begin += data_size;
-//			}
-//
-//			//if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-//			//	SHIB_FREE(ret.value.vp, g_allocator);
-//			//}
-//
-//		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
-//			// $TODO: impl
-//
-//		} else {
-//			lua_pushinteger(state, ret.value.i64);
-//		}
-//
-//		return 1;
-//
-//	// Is a string.
-//	} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsString)) {
-//		lua_pushstring(state, reinterpret_cast<char*>(ret.value.vp));
-//
-//		if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-//			SHIB_FREET(ret.value.vp, GetAllocator());
-//		}
-//
-//		return 1;
-//
-//	} else if (ret.ref_def) {
-//		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-//			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
-//
-//			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
-//			const int32_t data_size = ret.ref_def->size();
-//			lua_createtable(state, ret.value.arr.size, 0);
-//
-//			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
-//				if (ret.ref_def->isBuiltIn()) {
-//					if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
-//						lua_pushnumber(state, num_value);
-//
-//					} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
-//						lua_pushinteger(state, int_value);
-//
-//					// Value is a boolean.
-//					} else {
-//						lua_pushboolean(state, ret.value.b);
-//					}
-//
-//				} else {
-//					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-//
-//					new(value) UserData();
-//					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-//					value->reference = const_cast<int8_t*>(begin);
-//
-//					luaL_getmetatable(state, ret.ref_def->getFriendlyName());
-//					lua_setmetatable(state, -2);
-//				}
-//
-//				lua_seti(state, -1, i);
-//				begin += data_size;
-//			}
-//
-//		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
-//			// $TODO: impl
-//
-//		} else if (ret.ref_def->isBuiltIn()) {
-//			if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
-//				lua_pushnumber(state, num_value);
-//
-//			} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
-//				lua_pushinteger(state, int_value);
-//
-//			// Value is a boolean.
-//			} else {
-//				lua_pushboolean(state, ret.value.b);
-//			}
-//
-//		// Is a user defined type.
-//		} else {
-//			if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-//				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-//
-//				new(value) UserData();
-//				value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-//				value->reference = ret.value.vp;
-//
-//			} else if (create_user_data) {
-//				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, k_alloc_size_no_reference + ret.ref_def->size()));
-//				new(value) UserData::MetaData();
-//
-//				CopyUserType(ret, value->getData());
-//			}
-//			// Else allocator already pushed it onto the stack.
-//
-//			luaL_getmetatable(state, ret.ref_def->getFriendlyName());
-//			lua_setmetatable(state, -2);
-//		}
-//
-//		return 1;
-//
-//	} else {
-//		return 0;
-//	}
-//}
-//
+
+
+
+Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
+{
+	UserData* const user_data = reinterpret_cast<UserData*>(janet_abstract(&type_info, sizeof(UserData)));
+	new(user_data) UserData();
+
+	user_data->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
+	user_data->reference = const_cast<void*>(value);
+	user_data->ref_def = &ref_def;
+
+	return janet_wrap_abstract(user_data);
+}
+
+void FillArgumentStack(int32_t num_args, Janet* args, Vector<Gaff::FunctionStackEntry>& stack, int32_t start, int32_t end)
+{
+	start = Gaff::Max(start, 0);
+	end = (end < 0) ? num_args : Gaff::Min(end, num_args);
+
+	stack.resize(static_cast<size_t>(end - start));
+
+	for (int32_t i = start; i < end; ++i) {
+		FillEntry(args[i], stack[i - start], false);
+	}
+}
+
+void FillEntry(const Janet& arg, Gaff::FunctionStackEntry& entry, bool clone_non_janet)
+{
+	switch (janet_type(arg)) {
+		case JANET_NIL:
+			entry.value.vp = nullptr;
+			break;
+
+		case JANET_BOOLEAN:
+			if (clone_non_janet) {
+				FreeDifferentType(entry, Reflection<bool>::GetReflectionDefinition(), false);
+			}
+					
+			entry.ref_def = &Reflection<bool>::GetReflectionDefinition();
+			entry.value.b = janet_unwrap_boolean(arg);
+			break;
+
+		case JANET_NUMBER:
+			if (const JanetIntType int_type = janet_is_int(arg); int_type != JANET_INT_NONE) {
+				if (clone_non_janet) {
+					FreeDifferentType(entry, Reflection<int64_t>::GetReflectionDefinition(), false);
+				}
+
+				switch (int_type) {
+					case JANET_INT_S64:
+						entry.ref_def = &Reflection<int64_t>::GetReflectionDefinition();
+						entry.value.i64 = janet_unwrap_s64(arg);
+						break;
+
+					case JANET_INT_U64:
+						entry.ref_def = &Reflection<uint64_t>::GetReflectionDefinition();
+						entry.value.u64 = janet_unwrap_u64(arg);
+						break;
+				}
+
+			} else {
+				if (clone_non_janet) {
+					FreeDifferentType(entry, Reflection<double>::GetReflectionDefinition(), false);
+				}
+
+				entry.ref_def = &Reflection<double>::GetReflectionDefinition();
+				entry.value.d = janet_unwrap_number(arg);
+			}
+			break;
+
+		case JANET_STRING:
+			if (clone_non_janet) {
+				FreeDifferentType(entry, Reflection<U8String>::GetReflectionDefinition(), false);
+					
+				if (!entry.value.vp) {
+					entry.value.vp = SHIB_ALLOCT(U8String, g_allocator);
+				}
+					
+				*reinterpret_cast<U8String*>(entry.value.vp) = reinterpret_cast<const char*>(janet_unwrap_string(arg));
+				entry.ref_def = &Reflection<U8String>::GetReflectionDefinition();
+					
+			} else {
+				entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsString);
+				entry.value.vp = const_cast<char*>(reinterpret_cast<const char*>(janet_unwrap_string(arg)));
+			}
+			break;
+
+		case JANET_TABLE: {
+			//lua_getfield(state, stack_index, k_is_type_table_field_name);
+			//const bool is_type_table = lua_isboolean(state, -1);
+			//
+			//lua_pop(state, 1);
+			//
+			//// This is a type table, only pass the ReflectionDefinition.
+			//if (is_type_table) {
+			//	lua_getfield(state, stack_index, k_ref_def_field_name);
+			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//
+			//	lua_pop(state, 1);
+			//	break;
+			//}
+					
+			// Fill vectormap.
+			// $TODO: Log error.
+		} break;
+
+		case JANET_STRUCT: {
+			//lua_getfield(state, stack_index, k_is_type_table_field_name);
+			//const bool is_type_table = lua_isboolean(state, -1);
+			//
+			//lua_pop(state, 1);
+			//
+			//// This is a type table, only pass the ReflectionDefinition.
+			//if (is_type_table) {
+			//	lua_getfield(state, stack_index, k_ref_def_field_name);
+			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//
+			//	lua_pop(state, 1);
+			//	break;
+			//}
+
+			// Fill vectormap.
+			// $TODO: Log error.
+		} break;
+
+		case JANET_ARRAY: {
+			//lua_getfield(state, stack_index, k_is_type_table_field_name);
+			//const bool is_type_table = lua_isboolean(state, -1);
+			//
+			//lua_pop(state, 1);
+			//
+			//// This is a type table, only pass the ReflectionDefinition.
+			//if (is_type_table) {
+			//	lua_getfield(state, stack_index, k_ref_def_field_name);
+			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//
+			//	lua_pop(state, 1);
+			//	break;
+			//}
+
+			// Fill vector.
+			// $TODO: Log error.
+
+			//const JanetArray* const array = janet_unwrap_array(arg);
+
+			//for (int32_t j = 0; j < array->count; ++j) {
+			//}
+		} break;
+
+		case JANET_TUPLE: {
+			//lua_getfield(state, stack_index, k_is_type_table_field_name);
+			//const bool is_type_table = lua_isboolean(state, -1);
+			//
+			//lua_pop(state, 1);
+			//
+			//// This is a type table, only pass the ReflectionDefinition.
+			//if (is_type_table) {
+			//	lua_getfield(state, stack_index, k_ref_def_field_name);
+			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//
+			//	lua_pop(state, 1);
+			//	break;
+			//}
+
+			// Fill vector.
+			// $TODO: Log error.
+
+			//const JanetTuple tuple = janet_unwrap_tuple(arg);
+			//const int32_t len = janet_tuple_length(tuple);
+
+			//for (int32_t j = 0; j < len; ++j) {
+			//}
+		} break;
+
+		case JANET_CFUNCTION:
+			// $TODO: Log error.
+			break;
+
+		case JANET_FUNCTION:
+			// $TODO: Log error.
+			break;
+
+		case JANET_FIBER:
+			// $TODO: Log error.
+			break;
+
+		case JANET_ABSTRACT: {
+			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(janet_unwrap_abstract(arg));
+
+			if (clone_non_janet) {
+				const bool other_is_reference = value->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference);
+				const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
+
+				FreeDifferentType(entry, *value->ref_def, other_is_reference);
+
+				// If it's just a reference, don't worry about creating a copy of the data.
+				if (other_is_reference) {
+					entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsReference);
+					entry.value.vp = value->getData();
+					entry.ref_def = value->ref_def;
+
+				// Is not a reference, we should clone the data.
+				} else {
+					U8String ctor_sig(g_allocator);
+					ctor_sig.append_sprintf("const %s&", value->ref_def->getReflectionInstance().getName());
+
+					const HashStringView64<> hash(ctor_sig);
+
+					// If we already have a non-reference value, just re-construct in place.
+					if (entry.value.vp) {
+						auto ctor = entry.ref_def->getConstructor(hash.getHash());
+
+						if (!ctor) {
+							// $TODO: Log error.
+							break;
+						}
+
+						// Deconstruct old value.
+						entry.ref_def->destroyInstance(entry.value.vp);
+
+						// Construct new value.
+						const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
+						cast_ctor(entry.value.vp, value->getData());
+
+					// Need to make a copy.
+					} else {
+						auto factory = value->ref_def->getFactory(hash.getHash());
+
+						if (!factory) {
+							// $TODO: Log error.
+							break;
+						}
+
+						const auto cast_factory = reinterpret_cast<void* (*)(Gaff::IAllocator&, const void*)>(factory);
+						entry.value.vp = cast_factory(g_allocator, value->getData());
+					}
+
+					entry.ref_def = value->ref_def;
+				}
+
+			} else {
+				// Unnecessary, but for posterity.
+				entry.flags.set(
+					value->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference),
+					Gaff::FunctionStackEntry::Flag::IsReference
+				);
+
+				entry.value.vp = value->getData();
+				entry.ref_def = value->ref_def;
+			}
+		} break;
+
+		case JANET_POINTER:
+			// $TODO: Log error.
+			break;
+
+		case JANET_BUFFER:
+			// $TODO: Log error.
+			break;
+
+		case JANET_KEYWORD:
+			if (clone_non_janet) {
+				FreeDifferentType(entry, Reflection<U8String>::GetReflectionDefinition(), false);
+					
+				if (!entry.value.vp) {
+					entry.value.vp = SHIB_ALLOCT(U8String, g_allocator);
+				}
+					
+				*reinterpret_cast<U8String*>(entry.value.vp) = reinterpret_cast<const char*>(janet_unwrap_keyword(arg));
+				entry.ref_def = &Reflection<U8String>::GetReflectionDefinition();
+					
+			} else {
+				entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsString);
+				entry.value.vp = const_cast<char*>(reinterpret_cast<const char*>(janet_unwrap_keyword(arg)));
+			}
+			break;
+
+		case JANET_SYMBOL:
+			if (clone_non_janet) {
+				FreeDifferentType(entry, Reflection<U8String>::GetReflectionDefinition(), false);
+					
+				if (!entry.value.vp) {
+					entry.value.vp = SHIB_ALLOCT(U8String, g_allocator);
+				}
+					
+				*reinterpret_cast<U8String*>(entry.value.vp) = reinterpret_cast<const char*>(janet_unwrap_symbol(arg));
+				entry.ref_def = &Reflection<U8String>::GetReflectionDefinition();
+					
+			} else {
+				entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsString);
+				entry.value.vp = const_cast<char*>(reinterpret_cast<const char*>(janet_unwrap_symbol(arg)));
+			}
+			break;
+	}
+}
+
+Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data)
+{
+	if (ret.enum_ref_def) {
+		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
+			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
+
+			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			//const int32_t data_size = ret.enum_ref_def->size();
+			//lua_createtable(state, ret.value.arr.size, 0);
+
+			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+			//	int64_t value = 0;
+
+			//	if (data_size <= sizeof(int8_t)) {
+			//		value = static_cast<int64_t>(*begin);
+			//	} else if (data_size <= sizeof(int16_t)) {
+			//		value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
+			//	} else if (data_size <= sizeof(int32_t)) {
+			//		value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
+			//	} else if (data_size <= sizeof(int64_t)) {
+			//		value = *reinterpret_cast<const int64_t*>(begin);
+			//	} else {
+			//		GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
+			//	}
+
+			//	lua_pushinteger(state, value);
+			//	lua_seti(state, -1, i);
+			//	begin += data_size;
+			//}
+
+			////if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			////	SHIB_FREE(ret.value.vp, g_allocator);
+			////}
+
+		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+			// $TODO: impl
+
+		} else {
+			return janet_wrap_number(static_cast<double>(ret.value.i64));
+		}
+
+	// Is a string.
+	} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsString)) {
+		const Janet value = janet_cstringv(reinterpret_cast<char*>(ret.value.vp));
+
+		if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			SHIB_FREET(ret.value.vp, GetAllocator());
+		}
+
+		return value;
+
+	} else if (ret.ref_def) {
+		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
+			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
+
+			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			//const int32_t data_size = ret.ref_def->size();
+			//lua_createtable(state, ret.value.arr.size, 0);
+
+			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+			//	if (ret.ref_def->isBuiltIn()) {
+			//		if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
+			//			lua_pushnumber(state, num_value);
+
+			//		} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
+			//			lua_pushinteger(state, int_value);
+
+			//		// Value is a boolean.
+			//		} else {
+			//			lua_pushboolean(state, ret.value.b);
+			//		}
+
+			//	} else {
+			//		UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
+
+			//		new(value) UserData();
+			//		value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
+			//		value->reference = const_cast<int8_t*>(begin);
+
+			//		luaL_getmetatable(state, ret.ref_def->getFriendlyName());
+			//		lua_setmetatable(state, -2);
+			//	}
+
+			//	lua_seti(state, -1, i);
+			//	begin += data_size;
+			//}
+
+		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+			// $TODO: impl
+
+		} else if (ret.ref_def->isBuiltIn()) {
+			if (double num_value; Gaff::CastNumberToType<double>(ret, num_value)) {
+				return janet_wrap_number(num_value);
+
+			// Value is a boolean.
+			} else {
+				return WrapBoolean(ret.value.b);
+			}
+
+		// Is a user defined type.
+		} else {
+			if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+				JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+				const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
+
+				if (!type_info) {
+					// $TODO: Log error.
+					return janet_wrap_nil();
+				}
+
+				UserData* const value = reinterpret_cast<UserData*>(janet_abstract(type_info, sizeof(UserData)));
+				new(value) UserData();
+
+				value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
+				value->reference = ret.value.vp;
+				value->ref_def = ret.ref_def;
+
+				return janet_wrap_abstract(value);
+
+			} else if (create_user_data) {
+				JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+				const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
+
+				if (!type_info) {
+					// $TODO: Log error.
+					return janet_wrap_nil();
+				}
+
+				UserData* const value = reinterpret_cast<UserData*>(janet_abstract(type_info, ret.ref_def->size() + k_alloc_size_no_reference));
+				new(value) UserData::MetaData();
+
+				value->ref_def = ret.ref_def;
+
+				CopyUserType(ret, value->getData(), false, g_allocator);
+
+				return janet_wrap_abstract(value);
+
+			// Return value was already created by allocator.
+			} else {
+				return janet_wrap_abstract(ret.value.vp);
+			}
+		}
+	}
+
+	return janet_wrap_nil();
+}
+
 //void RestoreTable(lua_State* state, const TableState& table)
 //{
 //	for (const auto& pair : table.array_entries) {
@@ -828,6 +1022,8 @@ void RegisterType(JanetTable* /*env*/, const Gaff::IReflectionDefinition& ref_de
 	memset(&type_info, 0, sizeof(JanetAbstractType));
 
 	type_info.name = reinterpret_cast<char*>(SHIB_ALLOC(friendly_name.size() * sizeof(char) + 1, g_allocator));
+	type_info.tostring = UserTypeToString;
+	type_info.get = UserTypeIndex;
 	type_info.gc = UserTypeDestroy;
 
 	strncpy(const_cast<char*>(type_info.name), friendly_name.data(), friendly_name.size() * sizeof(char) + 1);
@@ -964,6 +1160,14 @@ void RegisterTypeFinalize(JanetTable* env, const Gaff::IReflectionDefinition& re
 	value->ref_def = &ref_def;
 
 	janet_def(env, type_info.name, janet_wrap_abstract(value), nullptr);
+
+	const U8String type_new_func_source(U8String::CtorSprintf(), "(fn [& args] (New %s (splice args)))", type_info.name, type_info.name);
+	const U8String type_new_func_name(U8String::CtorSprintf(), "%s/New", type_info.name);
+
+	Janet func;
+	janet_dostring(env, type_new_func_source.data(), nullptr, &func);
+
+	janet_def(env, type_new_func_name.data(), func, nullptr);
 }
 
 void RegisterBuiltIns(JanetTable* env)
@@ -986,68 +1190,79 @@ void RegisterBuiltIns(JanetTable* env)
 	janet_register_abstract_type(&g_ref_def_type_info);
 }
 
-//int UserTypeFunctionCall(lua_State* state)
-//{
-//	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-//	const int32_t func_index = static_cast<int32_t>(luaL_checkinteger(state, k_func_index_index));
-//	const bool is_static = lua_toboolean(state, k_func_is_static_index);
-//
-//	const int32_t num_overrides = (is_static) ? ref_def.getNumStaticFuncOverrides(func_index) : ref_def.getNumFuncOverrides(func_index);
-//	const int32_t num_args = (is_static) ? lua_gettop(state) : lua_gettop(state) - 1;
-//
-//	Vector<Gaff::FunctionStackEntry> args(g_allocator);
-//	LuaTypeInstanceAllocator allocator(state);
-//	Gaff::FunctionStackEntry ret;
-//
-//	for (int32_t i = 0; i < num_overrides; ++i) {
-//		const Gaff::IReflectionStaticFunctionBase* const static_func = (is_static) ? ref_def.getStaticFunc(func_index, i) : nullptr;
-//		const Gaff::IReflectionFunctionBase* const func = (is_static) ? nullptr : ref_def.getFunc(func_index, i);
-//		const int32_t func_args = (is_static) ? static_func->numArgs() : func->numArgs();
-//
-//		if (func_args == num_args) {
-//			if (num_args > 0 && args.empty()) {
-//				FillArgumentStack(state, args, (is_static) ? 1 : 2, (is_static) ? num_args : (num_args + 1));
-//			}
-//
-//			if (is_static) {
-//				if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
-//					continue;
-//				}
-//			} else {
-//				// First element on the stack is our object instance.
-//				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
-//
-//				if (!func->call(object->getData(), args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
-//					continue;
-//				}
-//			}
-//
-//			return PushReturnValue(state, ret, false);
-//		}
-//	}
-//
-//	// $TODO: Log error. Can't find function with the correct number of arguments or argument type mismatch.
-//	return 0;
-//}
-//
-//int UserTypeToString(lua_State* state)
-//{
-//	const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-//	const UserData& user_data = *reinterpret_cast<UserData*>(lua_touserdata(state, -1));
-//
-//	auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
-//
-//	if (func) {
-//		char buffer[256];
-//		const int32_t size = func->getFunc()(user_data.getData(), buffer, sizeof(buffer));
-//
-//		lua_pushlstring(state, buffer, static_cast<size_t>(size));
-//		return 1;
-//	}
-//
-//	// $TODO: Log error. Can't find function with the correct number of arguments or argument type mismatch.
-//	return 0;
-//}
+Janet UserTypeFunctionCall(void* data, int32_t num_args, Janet* args)
+{
+	ReflectionFunctionJanet* const func_wrapper = reinterpret_cast<ReflectionFunctionJanet*>(data);
+	const int32_t num_overrides = (func_wrapper->is_static) ?
+		func_wrapper->ref_def->getNumStaticFuncOverrides(func_wrapper->func_index) :
+		func_wrapper->ref_def->getNumFuncOverrides(func_wrapper->func_index);
+
+	Vector<Gaff::FunctionStackEntry> func_args(g_allocator);
+	JanetTypeInstanceAllocator allocator;
+	Gaff::FunctionStackEntry ret;
+
+	const int32_t num_passed_args = (func_wrapper->is_static) ? num_args : (num_args - 1);
+	UserData* object = nullptr;
+
+	if (!func_wrapper->is_static) {
+		// First element on the stack is our object instance.
+		object = reinterpret_cast<UserData*>(janet_checkabstract(args[0], func_wrapper->type_info));
+
+		if (!object) {
+			// $TODO: Log error.
+			return janet_wrap_nil();
+		}
+	}
+
+
+	for (int32_t i = 0; i < num_overrides; ++i) {
+		const Gaff::IReflectionStaticFunctionBase* const static_func = (func_wrapper->is_static) ? func_wrapper->ref_def->getStaticFunc(func_wrapper->func_index, i) : nullptr;
+		const Gaff::IReflectionFunctionBase* const func = (func_wrapper->is_static) ? nullptr : func_wrapper->ref_def->getFunc(func_wrapper->func_index, i);
+		const int32_t num_func_args = (func_wrapper->is_static) ? static_func->numArgs() : func->numArgs();
+
+		if (num_func_args == num_passed_args) {
+			if (num_passed_args > 0 && func_args.empty()) {
+				FillArgumentStack(num_args, args, func_args, (func_wrapper->is_static) ? 0 : 1);
+			}
+
+			if (func_wrapper->is_static) {
+				if (!static_func->call(func_args.data(), static_cast<int32_t>(func_args.size()), ret, allocator)) {
+					continue;
+				}
+			} else {
+				if (!func->call(object->getData(), func_args.data(), static_cast<int32_t>(func_args.size()), ret, allocator)) {
+					continue;
+				}
+			}
+
+			return PushReturnValue(ret, false);
+		}
+	}
+
+	// $TODO: Log error. Can't find function with the correct number of arguments or argument type mismatch.
+	return janet_wrap_nil();
+}
+
+void UserTypeToString(void* data, JanetBuffer* buffer)
+{
+	UserData* const value = reinterpret_cast<UserData*>(data);
+
+	auto* const to_string = value->ref_def->getStaticFunc<int32_t, const void*, char*, int32_t>(
+		Gaff::GetOpNameHash(Gaff::Operator::ToString)
+	);
+
+	if (to_string) {
+		char temp_buffer[256] = { 0 };
+		char* ptr = temp_buffer;
+
+		if (to_string->call(value->getData(), std::forward<char*>(ptr), 256)) {
+			janet_buffer_push_cstring(buffer, temp_buffer);
+			return;
+		}
+	}
+
+	janet_buffer_push_cstring(buffer, value->ref_def->getReflectionInstance().getName());
+}
 
 int UserTypeDestroy(void* data, size_t)
 {
@@ -1205,145 +1420,154 @@ int UserTypeDestroy(void* data, size_t)
 //
 //	return 0;
 //}
-//
-//int UserTypeIndex(lua_State* state)
-//{
-//	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-//	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
-//	const void* input = user_data->getData();
-//
-//	if (lua_type(state, 2) == LUA_TSTRING) {
-//		size_t len = 0;
-//		const char* const name = luaL_checklstring(state, 2, &len);
-//		const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
-//
-//		// Find a variable with name.
-//		if (const auto* const var = ref_def.getVar(hash)) {
-//			if (var->isFixedArray() || var->isVector()) {
-//				// $TODO: Add support for arrays.
-//				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
-//			} else if (var->isMap()) {
-//				// $TODO: Add support for maps.
-//				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
-//
-//			} else {
-//				const Gaff::IReflection& var_refl = var->getReflection();
-//				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
-//
-//				input = var->getData(input);
-//
-//				// Push floating point number to stack.
-//				if (lua_Number value_num; Gaff::CastFloatToType<lua_Number>(var_ref_def, input, value_num)) {
-//					lua_pushnumber(state, value_num);
-//					return 1;
-//
-//				// Push integer to stack.
-//				} else if (lua_Integer value_int; Gaff::CastIntegerToType<lua_Integer>(var_ref_def, input, value_int)) {
-//					lua_pushinteger(state, value_int);
-//					return 1;
-//
-//				// Push bool to stack.
-//				} else if (&ref_def == &Reflection<bool>::GetReflectionDefinition()) {
-//					lua_pushboolean(state, *reinterpret_cast<const bool*>(input));
-//					return 1;
-//
-//				// Push string to stack.
-//				} else if (&ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
-//					const U8String& string = *reinterpret_cast<const U8String*>(input);
-//					lua_pushlstring(state, string.data(), string.size());
-//					return 1;
-//
-//				// Push user defined type reference.
-//				} else {
-//					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-//
-//					new(value) UserData();
-//					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-//					value->reference = const_cast<void*>(input);
-//
-//					//if (auto* const root = user_data->meta.getRoot()) {
-//					//	value->meta.root = root;
-//					//}
-//
-//					luaL_getmetatable(state, var_ref_def.getFriendlyName());
-//					lua_setmetatable(state, -2);
-//
-//					return 1;
-//				}
-//			}
-//
-//		// Find function with name.
-//		} else if (int32_t func_index = ref_def.getFuncIndex(hash); func_index > -1) {
-//			lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//			lua_pushinteger(state, func_index);
-//			lua_pushboolean(state, false); // Is not static.
-//			lua_pushcclosure(state, UserTypeFunctionCall, 3);
-//
-//			return 1;
-//
-//		// Last resort, use the type's registered index function.
-//		} else if (func_index = ref_def.getStaticFuncIndex(Gaff::GetOpNameHash(Gaff::Operator::Index)); func_index > -1) {
-//			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
-//			const int32_t num_args = lua_gettop(state);
-//
-//			Vector<Gaff::FunctionStackEntry> args(g_allocator);
-//			LuaTypeInstanceAllocator allocator(state);
-//			Gaff::FunctionStackEntry ret;
-//
-//			for (int32_t i = 0; i < num_overloads; ++i) {
-//				const Gaff::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
-//
-//				if (static_func->numArgs() == num_args) {
-//					if (num_args > 0 && args.empty()) {
-//						FillArgumentStack(state, args);
-//					}
-//
-//					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
-//						continue;
-//					}
-//
-//					return PushReturnValue(state, ret, false);
-//				}
-//			}
-//
-//			// $TODO: Log error. Can't find index function with the correct number of arguments or argument type mismatch.
-//		}
-//
-//		// $TODO: Log error. Can't find anything at index.
-//
-//	// Non-string type.
-//	} else {
-//		// Use the type's registered index function.
-//		if (const int32_t func_index = ref_def.getStaticFuncIndex(Gaff::GetOpNameHash(Gaff::Operator::Index)); func_index > -1) {
-//			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
-//			const int32_t num_args = lua_gettop(state);
-//
-//			Vector<Gaff::FunctionStackEntry> args(g_allocator);
-//			LuaTypeInstanceAllocator allocator(state);
-//			Gaff::FunctionStackEntry ret;
-//
-//			for (int32_t i = 0; i < num_overloads; ++i) {
-//				const Gaff::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
-//
-//				if (static_func->numArgs() == num_args) {
-//					if (num_args > 0 && args.empty()) {
-//						FillArgumentStack(state, args);
-//					}
-//
-//					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
-//						continue;
-//					}
-//
-//					return PushReturnValue(state, ret, false);
-//				}
-//			}
-//
-//			// $TODO: Log error. Can't find index function with the correct number of arguments or argument type mismatch.
-//		}
-//	}
-//
-//	return 0;
-//}
+
+int UserTypeIndex(void* data, Janet key, Janet* out)
+{
+	UserData* const value = reinterpret_cast<UserData*>(data);
+	const void* input = value->getData();
+
+	if (janet_checktype(key, JANET_KEYWORD)) {
+		const char* const name = reinterpret_cast<const char*>(janet_unwrap_keyword(key));
+		const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
+		
+		// Find a variable with name.
+		if (const auto* const var = value->ref_def->getVar(hash)) {
+			if (var->isFixedArray() || var->isVector()) {
+				// $TODO: Add support for arrays.
+				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
+			} else if (var->isMap()) {
+				// $TODO: Add support for maps.
+				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
+		
+			} else {
+				const Gaff::IReflection& var_refl = var->getReflection();
+				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
+		
+				input = var->getData(input);
+		
+				// Push number to stack.
+				// Opting to not differentiate between integers and floating point, as Janet handles 64-bit integers.
+				// The 64-bit integer support in Janet doesn't really seem that useful, just using normal numbers.
+				if (double value_num; Gaff::CastNumberToType<double>(var_ref_def, input, value_num)) {
+					*out = janet_wrap_number(value_num);
+					return 1;
+				
+				// Push bool to stack.
+				} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+					*out = WrapBoolean(*reinterpret_cast<const bool*>(input));
+					return 1;
+
+				// Push string to stack.
+				} else if (&var_ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
+					const U8String& string = *reinterpret_cast<const U8String*>(input);
+					*out = janet_cstringv(string.data());
+					return 1;
+		
+				// Push user defined type reference.
+				} else {
+					JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+					const JanetAbstractType* const type_info = janet_mgr.getType(var_ref_def);
+
+					if (!type_info) {
+						// $TODO: Log error.
+						return 0;
+					}
+
+					UserData* const var_value = reinterpret_cast<UserData*>(janet_abstract(type_info, sizeof(UserData)));
+		
+					new(var_value) UserData();
+					var_value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
+					var_value->reference = const_cast<void*>(input);
+					var_value->ref_def = &var_ref_def;
+		
+					//if (auto* const root = user_data->meta.getRoot()) {
+					//	value->meta.root = root;
+					//}
+
+					*out = janet_wrap_abstract(var_value);
+					return 1;
+				}
+			}
+		
+		// Find function with name.
+		} else if (int32_t func_index = value->ref_def->getFuncIndex(hash); func_index > -1) {
+			// $TODO: Push abstract type that handles function calls.
+			ReflectionFunctionJanet* const func = reinterpret_cast<ReflectionFunctionJanet*>(
+				janet_abstract(&g_ref_func_type_info, sizeof(ReflectionFunctionJanet))
+			);
+
+			func->type_info = janet_abstract_type(value);
+			func->ref_def = value->ref_def;
+			func->func_index = func_index;
+			func->is_static = false;
+
+			*out = janet_wrap_abstract(func);
+
+			return 1;
+		
+		// Last resort, use the type's registered index function.
+		} else if (func_index = value->ref_def->getStaticFuncIndex(Gaff::GetOpNameHash(Gaff::Operator::Index)); func_index > -1) {
+			const int32_t num_overloads = value->ref_def->getNumStaticFuncOverrides(func_index);
+		
+			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			JanetTypeInstanceAllocator allocator;
+			Gaff::FunctionStackEntry ret;
+		
+			for (int32_t i = 0; i < num_overloads; ++i) {
+				const Gaff::IReflectionStaticFunctionBase* const static_func = value->ref_def->getStaticFunc(func_index, i);
+		
+				if (static_func->numArgs() == 1) {
+					if (args.empty()) {
+						FillArgumentStack(1, &key, args);
+					}
+		
+					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+						continue;
+					}
+		
+					*out = PushReturnValue(ret, false);
+					return 1;
+				}
+			}
+		
+			// $TODO: Log error. Can't find index function with the correct number of arguments or argument type mismatch.
+		}
+
+		// $TODO: Log error. Can't find anything at index.
+
+	// Non-string type.
+	} else {
+		// Use the type's registered index function.
+		if (const int32_t func_index = value->ref_def->getStaticFuncIndex(Gaff::GetOpNameHash(Gaff::Operator::Index)); func_index > -1) {
+			const int32_t num_overloads = value->ref_def->getNumStaticFuncOverrides(func_index);
+	
+			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			JanetTypeInstanceAllocator allocator;
+			Gaff::FunctionStackEntry ret;
+	
+			for (int32_t i = 0; i < num_overloads; ++i) {
+				const Gaff::IReflectionStaticFunctionBase* const static_func = value->ref_def->getStaticFunc(func_index, i);
+	
+				if (static_func->numArgs() == 1) {
+					if (args.empty()) {
+						FillArgumentStack(1, &key, args);
+					}
+	
+					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+						continue;
+					}
+	
+					*out = PushReturnValue(ret, false);
+					return 1;
+				}
+			}
+	
+			// $TODO: Log error. Can't find index function with the correct number of arguments or argument type mismatch.
+		}
+	}
+
+	return 0;
+}
 
 Janet UserTypeNew(int32_t num_args, Janet* args)
 {
@@ -1377,9 +1601,10 @@ Janet UserTypeNew(int32_t num_args, Janet* args)
 	obj.ref_def = ref_data->ref_def;
 
 	Vector<Gaff::FunctionStackEntry> arg_stack(g_allocator);
+	JanetTypeInstanceAllocator allocator;
 	Gaff::FunctionStackEntry ret;
 
-	//FillArgumentStack(state, arg_stack);
+	FillArgumentStack(num_args, args, arg_stack, 1);
 
 	arg_stack.insert(arg_stack.begin(), obj);
 
@@ -1391,7 +1616,7 @@ Janet UserTypeNew(int32_t num_args, Janet* args)
 		auto* const ctor = ref_data->ref_def->getConstructor(i);
 
 		if (ctor->numArgs() == num_ctor_args) {
-			if (ctor->call(arg_stack.data(), num_ctor_args, ret, g_allocator)) {
+			if (ctor->call(arg_stack.data(), num_ctor_args, ret, allocator)) {
 				break;
 			}
 		}

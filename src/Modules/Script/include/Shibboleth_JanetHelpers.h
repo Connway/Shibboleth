@@ -40,17 +40,15 @@ class JanetManager;
 //	Vector< eastl::pair<int32_t, Gaff::FunctionStackEntry> > array_entries{ ProxyAllocator("Lua") };
 //	VectorMap<U8String, Gaff::FunctionStackEntry> key_values{ ProxyAllocator("Lua") };
 //};
-//
-//constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
 
 static constexpr Gaff::Hash32 k_janet_log_channel = Gaff::FNV1aHash32Const("Janet");
 
-//void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def);
-//
-//void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
-//void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& entry, bool clone_non_lua);
-//int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, bool create_user_data);
-//
+Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
+
+void FillArgumentStack(int32_t num_args, Janet* args, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
+void FillEntry(const Janet& arg, Gaff::FunctionStackEntry& entry, bool clone_non_janet);
+Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data);
+
 //void RestoreTable(lua_State* state, const TableState& table);
 //void SaveTable(lua_State* state, TableState& table);
 
@@ -59,29 +57,50 @@ void RegisterType(JanetTable* env, const Gaff::IReflectionDefinition& ref_def, J
 void RegisterTypeFinalize(JanetTable* env, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
 void RegisterBuiltIns(JanetTable* env);
 
-//int UserTypeFunctionCall(lua_State* state);
-//int UserTypeToString(lua_State* state);
+Janet UserTypeFunctionCall(void* data, int32_t num_args, Janet* args);
+void UserTypeToString(void* data, JanetBuffer* buffer);
 int UserTypeDestroy(void* data, size_t len);
 //int UserTypeNewIndex(lua_State* state);
-//int UserTypeIndex(lua_State* state);
+int UserTypeIndex(void* data, Janet key, Janet* out);
 Janet UserTypeNew(int32_t num_args, Janet* args);
-//
-//template <class T>
-//void PushUserTypeReference(lua_State* state, const T& value)
-//{
-//	PushUserTypeReference(state, &value, Reflection<T>::GetReflectionDefinition());
-//}
-//
-//template <class T>
-//void PushUserType(lua_State* state, const T& value)
-//{
-//	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, k_alloc_size_no_reference + sizeof(T)));
-//	new(user_data) UserData::MetaData();
-//	new(&user_data->reference) T(value);
-//
-//	const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-//	luaL_getmetatable(state, ref_def.getFriendlyName());
-//	lua_setmetatable(state, -2);
-//}
+
+template <class T>
+Janet PushUserTypeReference(const T& value, const JanetManager& janet_mgr)
+{
+	const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
+	GAFF_ASSERT(type_info);
+
+	return PushUserTypeReference(&value, Reflection<T>::GetReflectionDefinition(), type_info);
+}
+
+template <class T>
+Janet PushUserTypeReference(const T& value)
+{
+	const JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+	return PushUserTypeReference(value, janet_mgr);
+}
+
+template <class T>
+Janet PushUserType(const T& value, const JanetManager& janet_mgr)
+{
+	const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
+	GAFF_ASSERT(type_info);
+
+	UserData* const user_data = reinterpret_cast<UserData*>(janet_abstract(type_info, sizeof(T) + k_alloc_size_no_reference));
+	new(user_data) UserData::MetaData();
+	new(user_data->getData()) T(value);
+
+	const auto& ref_def = Reflection<T>::GetReflectionDefinition();
+	user_data->ref_def = &ref_def;
+
+	return janet_wrap_abstract(user_data);
+}
+
+template <class T>
+Janet PushUserType(const T& value)
+{
+	JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+	return PushUserType(value, janet_mgr);
+}
 
 NS_END

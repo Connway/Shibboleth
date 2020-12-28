@@ -58,39 +58,7 @@ static auto&& GetLastArg(First&& first, Rest&&... rest)
 template <class T>
 static bool CastNumberToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
-	if (&ref_def == &Shibboleth::Reflection<double>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const double*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<float>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const float*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint64_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const uint64_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint32_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const uint32_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint16_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const uint16_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint8_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const uint8_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int64_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const int64_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int32_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const int32_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int16_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const int16_t*>(in));
-		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int8_t>::GetReflectionDefinition()) {
-		out = static_cast<T>(*reinterpret_cast<const int8_t*>(in));
-		return true;
-	}
-
-	return false;
+	return CastFloatToType(ref_def, in, out) || CastIntegerToType(ref_def, in, out);
 }
 
 template <class T>
@@ -108,7 +76,7 @@ static bool CastFloatToType(const IReflectionDefinition& ref_def, const void* in
 }
 
 template <class T>
-static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
+static bool CastUnsignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
 	if (&ref_def == &Shibboleth::Reflection<uint64_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint64_t*>(in));
@@ -122,7 +90,15 @@ static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* 
 	} else if (&ref_def == &Shibboleth::Reflection<uint8_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint8_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int64_t>::GetReflectionDefinition()) {
+	}
+
+	return false;
+}
+
+template <class T>
+static bool CastSignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
+{
+	if (&ref_def == &Shibboleth::Reflection<int64_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const int64_t*>(in));
 		return true;
 	} else if (&ref_def == &Shibboleth::Reflection<int32_t>::GetReflectionDefinition()) {
@@ -140,21 +116,39 @@ static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* 
 }
 
 template <class T>
+static bool CastIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
+{
+	return CastUnsignedIntegerToType(ref_def, in, out) || CastSignedIntegerToType(ref_def, in, out);
+}
+
+template <class T>
 static bool CastNumberToType(const FunctionStackEntry& entry, T& out)
 {
-	return CastNumberToType<T>(*entry.ref_def, &entry.value, out);
+	return CastNumberToType(*entry.ref_def, &entry.value, out);
 }
 
 template <class T>
 static bool CastFloatToType(const FunctionStackEntry& entry, T& out)
 {
-	return CastFloatToType<T>(*entry.ref_def, &entry.value, out);
+	return CastFloatToType(*entry.ref_def, &entry.value, out);
+}
+
+template <class T>
+static bool CastUnsignedIntegerToType(const FunctionStackEntry& entry, T& out)
+{
+	return CastUnsignedIntegerToType(*entry.ref_def, &entry.value, out);
+}
+
+template <class T>
+static bool CastSignedIntegerToType(const FunctionStackEntry& entry, T& out)
+{
+	return CastSignedIntegerToType(*entry.ref_def, &entry.value, out);
 }
 
 template <class T>
 static bool CastIntegerToType(const FunctionStackEntry& entry, T& out)
 {
-	return CastIntegerToType<T>(*entry.ref_def, &entry.value, out);
+	return CastIntegerToType(*entry.ref_def, &entry.value, out);
 }
 
 
@@ -165,7 +159,7 @@ bool CallFunc(
 	const FunctionStackEntry* args, 
 	FunctionStackEntry& ret,
 	int32_t arg_index,
-	IAllocator& allocator,
+	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args)
 {
 	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
@@ -328,7 +322,7 @@ bool CallFunc(
 	const Callable& callable,
 	void* object,
 	FunctionStackEntry& ret,
-	IAllocator& allocator,
+	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args)
 {
 	if constexpr (std::is_void<Ret>::value) {
@@ -450,7 +444,8 @@ bool CallFunc(
 					//}
 
 				} else {
-					ret.value.vp = GAFF_ALLOCT(RetType, allocator, value);
+					ret.value.vp = allocator.alloc(*ret.ref_def);
+					new(ret.value.vp) RetType(value);
 				}
 			}
 		}

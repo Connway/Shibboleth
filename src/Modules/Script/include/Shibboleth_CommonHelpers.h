@@ -22,11 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_Flags.h>
 
 NS_GAFF
 	class IReflectionDefinition;
+	struct FunctionStackEntry;
 NS_END
 
 NS_SHIBBOLETH
@@ -72,5 +73,8 @@ struct UserData final
 };
 
 constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
+
+void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference);
+void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
 
 NS_END

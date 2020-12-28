@@ -40,63 +40,75 @@ namespace
 
 	static Shibboleth::ProxyAllocator g_allocator("Lua");
 
-	class LuaTypeInstanceAllocator final : public Gaff::IAllocator
+	class LuaTypeInstanceAllocator final : public Gaff::IFunctionStackAllocator
 	{
 	public:
-		LuaTypeInstanceAllocator(lua_State* state): _state(state) {}
-
-		void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line);
-		void* realloc(void* old_ptr, size_t new_size, const char* file, int line);
+		LuaTypeInstanceAllocator(lua_State* state):
+			_state(state)
+		{
+		}
 
 		// For EASTL support.
-		void* allocate(size_t, size_t, size_t, int flags = 0)
+		void* allocate(size_t, size_t, size_t, int flags = 0) override
 		{
+			// Should never happen.
 			GAFF_ASSERT(false);
 			GAFF_REF(flags);
+
 			return nullptr;
 		}
 
-		void* allocate(size_t, int flags = 0)
+		void* allocate(size_t, int flags = 0) override
 		{
+			// Should never happen.
 			GAFF_ASSERT(false);
 			GAFF_REF(flags);
+
 			return nullptr;
 		}
 
-		void deallocate(void*, size_t)
+		void deallocate(void*, size_t) override
 		{
 			// Should never happen.
 			GAFF_ASSERT(false);
 		}
 
-		const char* get_name() const
+		const char* get_name() const override
 		{
 			// Should never happen.
 			GAFF_ASSERT(false);
 			return nullptr;
 		}
 
-		void set_name(const char*)
+		void set_name(const char*) override
 		{
 			// Should never happen.
 			GAFF_ASSERT(false);
 		}
 
-		void* alloc(size_t, size_t, const char*, int)
+		void* alloc(size_t, size_t, const char*, int) override
 		{
+			// Should never happen.
 			GAFF_ASSERT(false);
 			return nullptr;
 		}
 
-		void* alloc(size_t size_bytes, const char*, int)
+		void* alloc(size_t size_bytes, const char* file, int line) override
 		{
-			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(lua_newuserdata(_state, size_bytes + Shibboleth::k_alloc_size_no_reference));
+			return g_allocator.alloc(size_bytes, file, line);
+		}
+
+		void* alloc(const Gaff::IReflectionDefinition& ref_def) override
+		{
+			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(lua_newuserdata(_state, ref_def.size() + Shibboleth::k_alloc_size_no_reference));
 			new(value) Shibboleth::UserData::MetaData();
 
-			return &value->reference;
+			value->ref_def = &ref_def;
+
+			return value->getData();
 		}
 
-		void free(void*)
+		void free(void*) override
 		{
 			// Should never happen.
 			GAFF_ASSERT(false);
@@ -182,68 +194,34 @@ namespace
 
 	int GetManager(lua_State* state)
 	{
-		if (!lua_istable(state, 1)) {
-			// $TODO: Log error.
-			return 0;
-		}
+		const int32_t num_args = lua_gettop(state);
 
-		lua_getfield(state, 1, k_ref_def_field_name);
-
-		if (!lua_isuserdata(state, -1)) {
-			// $TODO: Log error.
-			return 0;
-		}
-
-		const auto* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-		Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getHash());
-
-		if (!manager) {
-			// $TODO: Log error.
-			return 0;
-		}
-
-		Shibboleth::PushUserTypeReference(state, manager->getBasePointer(), *ref_def);
-		return 1;
-	}
-
-	void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference)
-	{
-		const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
-
-		if (entry.ref_def && ((entry.ref_def != &new_ref_def) || (is_reference != new_is_reference))) {
-			if (!is_reference && !entry.ref_def->isBuiltIn()) {
-				entry.ref_def->destroyInstance(entry.value.vp);
-				SHIB_FREE(entry.value.vp, g_allocator);
+		for (int32_t i = 0; i < num_args; ++i) {
+			if (!lua_istable(state, i + 1)) {
+				// $TODO: Log error.
+				return 0;
 			}
 
-			entry.value.vp = nullptr;
-			entry.ref_def = nullptr;
-			entry.flags.clear();
-		}
-	}
+			lua_getfield(state, i + 1, k_ref_def_field_name);
 
-	void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid)
-	{
-		Shibboleth::U8String ctor_sig(g_allocator);
-		ctor_sig.append_sprintf("const %s&", entry.ref_def->getReflectionInstance().getName());
+			if (!lua_isuserdata(state, -1)) {
+				// $TODO: Log error.
+				return 0;
+			}
 
-		const Shibboleth::HashStringView64<> hash(ctor_sig);
+			const auto* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getHash());
 
-		auto ctor = entry.ref_def->getConstructor(hash.getHash());
+			if (!manager) {
+				// $TODO: Log error.
+				lua_pushnil(state);
+				continue;
+			}
 
-		if (!ctor) {
-			// $TODO: Log error.
-			return;
-		}
-
-		// Deconstruct old value.
-		if (old_value_is_valid) {
-			entry.ref_def->destroyInstance(dest);
+			Shibboleth::PushUserTypeReference(state, manager->getBasePointer(), *ref_def);
 		}
 
-		// Construct new value.
-		const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
-		cast_ctor(dest, entry.value.vp);
+		return num_args;
 	}
 
 	bool PushOrUpdateTableValue(lua_State* state, const Gaff::FunctionStackEntry& entry)
@@ -282,7 +260,7 @@ namespace
 		Shibboleth::UserData* const old_data = reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, -1));
 
 		// Just create and push the new value.
-		CopyUserType(entry, old_data->getData(), true);
+		CopyUserType(entry, old_data->getData(), true, g_allocator);
 		return false;
 	}
 }
@@ -523,10 +501,6 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 				begin += data_size;
 			}
 
-			//if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-			//	SHIB_FREE(ret.value.vp, g_allocator);
-			//}
-
 		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
 
@@ -614,7 +588,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 
 				value->ref_def = ret.ref_def;
 
-				CopyUserType(ret, value->getData(), false);
+				CopyUserType(ret, value->getData(), false, g_allocator);
 			}
 			// Else allocator already pushed it onto the stack.
 
@@ -904,7 +878,7 @@ int UserTypeFunctionCall(lua_State* state)
 	const bool is_static = lua_toboolean(state, k_func_is_static_index);
 
 	const int32_t num_overrides = (is_static) ? ref_def.getNumStaticFuncOverrides(func_index) : ref_def.getNumFuncOverrides(func_index);
-	const int32_t num_args = (is_static) ? lua_gettop(state) : lua_gettop(state) - 1;
+	const int32_t num_args = (is_static) ? lua_gettop(state) : (lua_gettop(state) - 1);
 
 	Vector<Gaff::FunctionStackEntry> args(g_allocator);
 	LuaTypeInstanceAllocator allocator(state);
@@ -924,6 +898,7 @@ int UserTypeFunctionCall(lua_State* state)
 				if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 					continue;
 				}
+
 			} else {
 				// First element on the stack is our object instance.
 				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
@@ -1139,8 +1114,7 @@ int UserTypeIndex(lua_State* state)
 				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
 
 			} else {
-				const Gaff::IReflection& var_refl = var->getReflection();
-				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
+				const Gaff::IReflectionDefinition& var_ref_def = var->getReflection().getReflectionDefinition();
 
 				input = var->getData(input);
 
@@ -1155,12 +1129,12 @@ int UserTypeIndex(lua_State* state)
 					return 1;
 
 				// Push bool to stack.
-				} else if (&ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+				} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
 					lua_pushboolean(state, *reinterpret_cast<const bool*>(input));
 					return 1;
 
 				// Push string to stack.
-				} else if (&ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
+				} else if (&var_ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
 					const U8String& string = *reinterpret_cast<const U8String*>(input);
 					lua_pushlstring(state, string.data(), string.size());
 					return 1;
@@ -1263,6 +1237,7 @@ int UserTypeNew(lua_State* state)
 	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
 
 	Vector<Gaff::FunctionStackEntry> arg_stack(g_allocator);
+	LuaTypeInstanceAllocator allocator(state);
 	Gaff::FunctionStackEntry ret;
 
 	FillArgumentStack(state, arg_stack);
@@ -1289,7 +1264,8 @@ int UserTypeNew(lua_State* state)
 		auto* const ctor = ref_def.getConstructor(i);
 
 		if (ctor->numArgs() == num_args) {
-			if (ctor->call(arg_stack.data(), num_args, ret, g_allocator)) {
+			// Should be safe to use type instance allocator, as constructors do not return anything.
+			if (ctor->call(arg_stack.data(), num_args, ret, allocator)) {
 				break;
 			}
 		}

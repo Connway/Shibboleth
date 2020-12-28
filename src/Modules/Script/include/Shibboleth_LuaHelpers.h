@@ -72,11 +72,13 @@ void PushUserTypeReference(lua_State* state, const T& value)
 template <class T>
 void PushUserType(lua_State* state, const T& value)
 {
-	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, k_alloc_size_no_reference + sizeof(T)));
+	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(T) + k_alloc_size_no_reference));
 	new(user_data) UserData::MetaData();
-	new(&user_data->reference) T(value);
+	new(user_data->getData()) T(value);
 
 	const auto& ref_def = Reflection<T>::GetReflectionDefinition();
+	user_data->ref_def = &ref_def;
+
 	luaL_getmetatable(state, ref_def.getFriendlyName());
 	lua_setmetatable(state, -2);
 }

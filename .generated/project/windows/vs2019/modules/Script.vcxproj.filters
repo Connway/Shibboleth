@@ -42,5 +42,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_ScriptModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_CommonHelpers.cpp" />
   </ItemGroup>
 </Project>
