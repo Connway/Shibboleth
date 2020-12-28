@@ -75,6 +75,7 @@ struct UserData final
 constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
 
 void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference);
+void CopyUserType(const Gaff::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
 void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
 
 NS_END

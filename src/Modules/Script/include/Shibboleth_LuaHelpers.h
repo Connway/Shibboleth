@@ -43,7 +43,8 @@ struct TableState final
 
 static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
 
-void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def);
+UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def);
+UserData* PushUserType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
 
 void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
 void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& entry, bool clone_non_lua);
@@ -64,23 +65,18 @@ int UserTypeIndex(lua_State* state);
 int UserTypeNew(lua_State* state);
 
 template <class T>
-void PushUserTypeReference(lua_State* state, const T& value)
+UserData* PushUserTypeReference(lua_State* state, const T& value)
 {
-	PushUserTypeReference(state, &value, Reflection<T>::GetReflectionDefinition());
+	return PushUserTypeReference(state, &value, Reflection<T>::GetReflectionDefinition());
 }
 
 template <class T>
-void PushUserType(lua_State* state, const T& value)
+UserData* PushUserType(lua_State* state, const T& value)
 {
-	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(T) + k_alloc_size_no_reference));
-	new(user_data) UserData::MetaData();
+	UserData* const user_data = PushUserType(state, Reflection<T>::GetReflectionDefinition());
 	new(user_data->getData()) T(value);
 
-	const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-	user_data->ref_def = &ref_def;
-
-	luaL_getmetatable(state, ref_def.getFriendlyName());
-	lua_setmetatable(state, -2);
+	return user_data;
 }
 
 NS_END

@@ -100,11 +100,7 @@ namespace
 
 		void* alloc(const Gaff::IReflectionDefinition& ref_def) override
 		{
-			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(lua_newuserdata(_state, ref_def.size() + Shibboleth::k_alloc_size_no_reference));
-			new(value) Shibboleth::UserData::MetaData();
-
-			value->ref_def = &ref_def;
-
+			Shibboleth::UserData* const value = Shibboleth::PushUserType(_state, ref_def);
 			return value->getData();
 		}
 
@@ -287,7 +283,7 @@ TableState::~TableState(void)
 
 
 
-void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
+UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
 {
 	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
 
@@ -298,6 +294,32 @@ void PushUserTypeReference(lua_State* state, const void* value, const Gaff::IRef
 
 	luaL_getmetatable(state, ref_def.getFriendlyName());
 	lua_setmetatable(state, -2);
+
+	return user_data;
+}
+
+UserData* PushUserType(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
+{
+	UserData* const user_data = PushUserType(state, ref_def);
+	CopyUserType(ref_def, value, user_data->getData(), false, g_allocator);
+
+	return user_data;
+}
+
+UserData* PushUserType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
+{
+	const size_t var_size = static_cast<size_t>(ref_def.size());
+	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, var_size + k_alloc_size_no_reference));
+
+	// Initialize metadata at the beginning.
+	new(user_data) UserData::MetaData();
+	user_data->ref_def = &ref_def;
+	//value->root = value;
+
+	luaL_getmetatable(state, ref_def.getFriendlyName());
+	lua_setmetatable(state, -2);
+
+	return user_data;
 }
 
 void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start, int32_t end)
@@ -369,19 +391,19 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 			break;
 
 		case LUA_TTABLE: {
-			lua_getfield(state, stack_index, k_is_type_table_field_name);
-			const bool is_type_table = lua_isboolean(state, -1);
+			//lua_getfield(state, stack_index, k_is_type_table_field_name);
+			//const bool is_type_table = lua_isboolean(state, -1);
 
-			lua_pop(state, 1);
+			//lua_pop(state, 1);
 
-			// This is a type table, only pass the ReflectionDefinition.
-			if (is_type_table) {
-				lua_getfield(state, stack_index, k_ref_def_field_name);
-				entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//// This is a type table, only pass the ReflectionDefinition.
+			//if (is_type_table) {
+			//	lua_getfield(state, stack_index, k_ref_def_field_name);
+			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
 
-				lua_pop(state, 1);
-				break;
-			}
+			//	lua_pop(state, 1);
+			//	break;
+			//}
 
 			// Fill vector or vectormap.
 			// $TODO: Log error.
@@ -542,15 +564,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 					}
 
 				} else {
-					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-
-					new(value) UserData();
-					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-					value->reference = const_cast<int8_t*>(begin);
-					value->ref_def = ret.ref_def;
-
-					luaL_getmetatable(state, ret.ref_def->getFriendlyName());
-					lua_setmetatable(state, -2);
+					PushUserTypeReference(state, reinterpret_cast<const void*>(begin), *ret.ref_def);
 				}
 
 				lua_seti(state, -1, i);
@@ -575,25 +589,13 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 		// Is a user defined type.
 		} else {
 			if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-
-				new(value) UserData();
-				value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-				value->reference = ret.value.vp;
-				value->ref_def = ret.ref_def;
+				PushUserTypeReference(state, ret.value.vp, *ret.ref_def);
 
 			} else if (create_user_data) {
-				UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, k_alloc_size_no_reference + ret.ref_def->size()));
-				new(value) UserData::MetaData();
-
-				value->ref_def = ret.ref_def;
-
-				CopyUserType(ret, value->getData(), false, g_allocator);
+				PushUserType(state, ret.value.vp, *ret.ref_def);
 			}
-			// Else allocator already pushed it onto the stack.
 
-			luaL_getmetatable(state, ret.ref_def->getFriendlyName());
-			lua_setmetatable(state, -2);
+			// Allocator already pushed it onto the stack.
 		}
 
 		return 1;
@@ -1141,19 +1143,11 @@ int UserTypeIndex(lua_State* state)
 
 				// Push user defined type reference.
 				} else {
-					UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
-
-					new(value) UserData();
-					value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-					value->reference = const_cast<void*>(input);
-					value->ref_def = &var_ref_def;
+					PushUserTypeReference(state, input, var_ref_def);
 
 					//if (auto* const root = user_data->meta.getRoot()) {
 					//	value->meta.root = root;
 					//}
-
-					luaL_getmetatable(state, var_ref_def.getFriendlyName());
-					lua_setmetatable(state, -2);
 
 					return 1;
 				}

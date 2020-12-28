@@ -44,6 +44,9 @@ class JanetManager;
 static constexpr Gaff::Hash32 k_janet_log_channel = Gaff::FNV1aHash32Const("Janet");
 
 Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
+Janet PushUserType(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info, UserData** out);
+Janet PushUserType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info, UserData** out);
+UserData* PushUserType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
 
 void FillArgumentStack(int32_t num_args, Janet* args, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
 void FillEntry(const Janet& arg, Gaff::FunctionStackEntry& entry, bool clone_non_janet);

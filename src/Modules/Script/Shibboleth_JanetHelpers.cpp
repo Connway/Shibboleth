@@ -88,16 +88,7 @@ namespace
 
 			GAFF_ASSERT(type_info);
 
-			//if (!type_info) {
-			//	// $TODO: Log error.
-			//	return nullptr;
-			//}
-
-			Shibboleth::UserData* const value = reinterpret_cast<Shibboleth::UserData*>(janet_abstract(type_info, ref_def.size() + Shibboleth::k_alloc_size_no_reference));
-			new(value) Shibboleth::UserData::MetaData();
-
-			value->ref_def = &ref_def;
-
+			Shibboleth::UserData* const value = Shibboleth::PushUserType(ref_def, *type_info);
 			return value->getData();
 		}
 
@@ -467,6 +458,44 @@ Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition
 	return janet_wrap_abstract(user_data);
 }
 
+Janet PushUserType(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info, UserData** out)
+{
+	UserData* user_data = nullptr;
+	const Janet ret_value = PushUserType(ref_def, type_info, &user_data);
+
+	CopyUserType(ref_def, value, user_data->getData(), false, g_allocator);
+
+	if (out) {
+		*out = user_data;
+	}
+
+	return ret_value;
+}
+
+Janet PushUserType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info, UserData** out)
+{
+	UserData* const user_data = PushUserType(ref_def, type_info);
+
+	if (out) {
+		*out = user_data;
+	}
+
+	return janet_wrap_abstract(user_data);
+}
+
+UserData* PushUserType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
+{
+	const size_t var_size = static_cast<size_t>(ref_def.size());
+	UserData* const user_data = reinterpret_cast<UserData*>(janet_abstract(&type_info, var_size + k_alloc_size_no_reference));
+
+	// Initialize metadata at the beginning.
+	new(user_data) UserData::MetaData();
+	user_data->ref_def = &ref_def;
+	//user_data->root = value;
+
+	return user_data;
+}
+
 void FillArgumentStack(int32_t num_args, Janet* args, Vector<Gaff::FunctionStackEntry>& stack, int32_t start, int32_t end)
 {
 	start = Gaff::Max(start, 0);
@@ -755,33 +784,31 @@ Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data
 		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
 			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
-			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
-			//const int32_t data_size = ret.enum_ref_def->size();
-			//lua_createtable(state, ret.value.arr.size, 0);
+			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			const int32_t data_size = ret.enum_ref_def->size();
 
-			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
-			//	int64_t value = 0;
+			Janet* const tuple = janet_tuple_begin(ret.value.arr.size);
 
-			//	if (data_size <= sizeof(int8_t)) {
-			//		value = static_cast<int64_t>(*begin);
-			//	} else if (data_size <= sizeof(int16_t)) {
-			//		value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
-			//	} else if (data_size <= sizeof(int32_t)) {
-			//		value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
-			//	} else if (data_size <= sizeof(int64_t)) {
-			//		value = *reinterpret_cast<const int64_t*>(begin);
-			//	} else {
-			//		GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
-			//	}
+			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+				int64_t value = 0;
 
-			//	lua_pushinteger(state, value);
-			//	lua_seti(state, -1, i);
-			//	begin += data_size;
-			//}
+				if (data_size <= sizeof(int8_t)) {
+					value = static_cast<int64_t>(*begin);
+				} else if (data_size <= sizeof(int16_t)) {
+					value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
+				} else if (data_size <= sizeof(int32_t)) {
+					value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
+				} else if (data_size <= sizeof(int64_t)) {
+					value = *reinterpret_cast<const int64_t*>(begin);
+				} else {
+					GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
+				}
 
-			////if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-			////	SHIB_FREE(ret.value.vp, g_allocator);
-			////}
+				tuple[i] = janet_wrap_number(static_cast<double>(value));
+				begin += data_size;
+			}
+
+			return janet_wrap_tuple(janet_tuple_end(tuple));
 
 		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
@@ -804,37 +831,37 @@ Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data
 		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
 			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
-			//const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
-			//const int32_t data_size = ret.ref_def->size();
-			//lua_createtable(state, ret.value.arr.size, 0);
+			const JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
+			const int32_t data_size = ret.ref_def->size();
 
-			//for (int32_t i = 0; i < ret.value.arr.size; ++i) {
-			//	if (ret.ref_def->isBuiltIn()) {
-			//		if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
-			//			lua_pushnumber(state, num_value);
+			Janet* const tuple = janet_tuple_begin(ret.value.arr.size);
 
-			//		} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
-			//			lua_pushinteger(state, int_value);
+			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
+				if (ret.ref_def->isBuiltIn()) {
+					if (double num_value; Gaff::CastNumberToType<double>(ret, num_value)) {
+						tuple[i] = janet_wrap_number(num_value);
 
-			//		// Value is a boolean.
-			//		} else {
-			//			lua_pushboolean(state, ret.value.b);
-			//		}
+					// Value is a boolean.
+					} else {
+						tuple[i] = WrapBoolean(ret.value.b);
+					}
 
-			//	} else {
-			//		UserData* const value = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
+				} else {
+					const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
 
-			//		new(value) UserData();
-			//		value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-			//		value->reference = const_cast<int8_t*>(begin);
+					if (type_info) {
+						tuple[i] = PushUserTypeReference(reinterpret_cast<const void*>(begin), *ret.ref_def, *type_info);
+					} else {
+						// $TODO: Log error.
+						tuple[i] = janet_wrap_nil();
+					}
+				}
 
-			//		luaL_getmetatable(state, ret.ref_def->getFriendlyName());
-			//		lua_setmetatable(state, -2);
-			//	}
+				begin += data_size;
+			}
 
-			//	lua_seti(state, -1, i);
-			//	begin += data_size;
-			//}
+			return janet_wrap_tuple(janet_tuple_end(tuple));
 
 		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
@@ -859,14 +886,7 @@ Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data
 					return janet_wrap_nil();
 				}
 
-				UserData* const value = reinterpret_cast<UserData*>(janet_abstract(type_info, sizeof(UserData)));
-				new(value) UserData();
-
-				value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-				value->reference = ret.value.vp;
-				value->ref_def = ret.ref_def;
-
-				return janet_wrap_abstract(value);
+				return PushUserTypeReference(ret.value.vp, *ret.ref_def, *type_info);
 
 			} else if (create_user_data) {
 				JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
@@ -877,14 +897,7 @@ Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data
 					return janet_wrap_nil();
 				}
 
-				UserData* const value = reinterpret_cast<UserData*>(janet_abstract(type_info, ret.ref_def->size() + k_alloc_size_no_reference));
-				new(value) UserData::MetaData();
-
-				value->ref_def = ret.ref_def;
-
-				CopyUserType(ret, value->getData(), false, g_allocator);
-
-				return janet_wrap_abstract(value);
+				return PushUserType(ret.value.vp, *ret.ref_def, *type_info, nullptr);
 
 			// Return value was already created by allocator.
 			} else {
@@ -1473,18 +1486,7 @@ int UserTypeIndex(void* data, Janet key, Janet* out)
 						return 0;
 					}
 
-					UserData* const var_value = reinterpret_cast<UserData*>(janet_abstract(type_info, sizeof(UserData)));
-		
-					new(var_value) UserData();
-					var_value->meta.flags.set(true, UserData::MetaData::HeaderFlag::IsReference);
-					var_value->reference = const_cast<void*>(input);
-					var_value->ref_def = &var_ref_def;
-		
-					//if (auto* const root = user_data->meta.getRoot()) {
-					//	value->meta.root = root;
-					//}
-
-					*out = janet_wrap_abstract(var_value);
+					*out = PushUserTypeReference(input, var_ref_def, *type_info);
 					return 1;
 				}
 			}
@@ -1588,13 +1590,8 @@ Janet UserTypeNew(int32_t num_args, Janet* args)
 		return janet_wrap_nil();
 	}
 
-	const size_t var_size = static_cast<size_t>(ref_data->ref_def->size());
-	UserData* const value = reinterpret_cast<UserData*>(janet_abstract(ref_data->type_info, var_size + k_alloc_size_no_reference));
-
-	// Initialize metadata at the beginning.
-	new(value) UserData::MetaData();
-	value->ref_def = ref_data->ref_def;
-	//value->root = value;
+	UserData* value = nullptr;
+	const Janet ret_value = PushUserType(*ref_data->ref_def, *ref_data->type_info, &value);
 
 	Gaff::FunctionStackEntry obj;
 	obj.value.vp = value->getData();
@@ -1622,7 +1619,7 @@ Janet UserTypeNew(int32_t num_args, Janet* args)
 		}
 	}
 
-	return janet_wrap_abstract(value);
+	return ret_value;
 }
 
 NS_END

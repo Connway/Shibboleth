@@ -48,14 +48,14 @@ void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionD
 	}
 }
 
-void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
+void CopyUserType(const Gaff::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
 {
 	U8String ctor_sig(allocator);
-	ctor_sig.append_sprintf("const %s&", entry.ref_def->getReflectionInstance().getName());
+	ctor_sig.append_sprintf("const %s&", ref_def.getReflectionInstance().getName());
 
 	const HashStringView64<> hash(ctor_sig);
 
-	auto ctor = entry.ref_def->getConstructor(hash.getHash());
+	auto ctor = ref_def.getConstructor(hash.getHash());
 
 	if (!ctor) {
 		// $TODO: Log error.
@@ -64,12 +64,17 @@ void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_va
 
 	// Deconstruct old value.
 	if (old_value_is_valid) {
-		entry.ref_def->destroyInstance(dest);
+		ref_def.destroyInstance(dest);
 	}
 
 	// Construct new value.
 	const auto cast_ctor = reinterpret_cast<void (*)(void*, const void*)>(ctor);
-	cast_ctor(dest, entry.value.vp);
+	cast_ctor(dest, value);
+}
+
+void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
+{
+	CopyUserType(*entry.ref_def, entry.value.vp, dest, old_value_is_valid, allocator);
 }
 
 NS_END

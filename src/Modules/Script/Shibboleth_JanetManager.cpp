@@ -115,7 +115,6 @@ bool JanetManager::initAllModulesLoaded(void)
 		//)";
 
 		//janet_dostring(env, k_test_string, nullptr, nullptr);
-		//janet_dostring(env, src.data(), nullptr, nullptr);
 
 		state.state.save();
 	}
