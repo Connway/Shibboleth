@@ -63,4 +63,4 @@
 #	Rotation.Set(self.ecs_mgr, entity_id, rot)
 #end
 
-return TestProcess
+#return TestProcess

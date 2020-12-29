@@ -69,6 +69,7 @@ bool JanetManager::initAllModulesLoaded(void)
 
 	const auto* const ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
 	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
+	bool first = true;
 
 	for (JanetStateData& state : _states) {
 		state.lock.reset(SHIB_ALLOCT(EA::Thread::Futex, g_allocator));
@@ -79,7 +80,7 @@ bool JanetManager::initAllModulesLoaded(void)
 		state.state.setEnv(env);
 
 		// Add loaded chunks table to the global environment.
-		janet_table_put(env, janet_wrap_keyword(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
+		janet_table_put(env, janet_ckeywordv(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
 
 		RegisterBuiltIns(env);
 
@@ -92,7 +93,11 @@ bool JanetManager::initAllModulesLoaded(void)
 				RegisterType(env, *ref_def, *this);
 			}
 
-			_types.shrink_to_fit();
+			// This function will cause a re-allocation, which will mess with stuff. Only run it once.
+			if (first) {
+				_types.shrink_to_fit();
+				first = false;
+			}
 
 			for (const auto& type_info : _types) {
 				RegisterTypeFinalize(env, *type_info.first, type_info.second);
@@ -138,8 +143,8 @@ bool JanetManager::loadBuffer(const char* buffer, size_t /*size*/, const char* n
 		JanetTable* const env = state.state.getEnv();
 		state.state.restore();
 
-		const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(k_loaded_chunks_name));
-		const Janet key = janet_wrap_string(name);
+		const Janet loaded_chunks = janet_table_get(env, janet_ckeywordv(k_loaded_chunks_name));
+		const Janet key = janet_ckeywordv(name);
 		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 
 		JanetTable* const loaded_chunks_table = janet_unwrap_table(loaded_chunks);
@@ -190,10 +195,10 @@ void JanetManager::unloadBuffer(const char* name)
 		JanetTable* const env = state.state.getEnv();
 		state.state.restore();
 
-		const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(k_loaded_chunks_name));
+		const Janet loaded_chunks = janet_table_get(env, janet_ckeywordv(k_loaded_chunks_name));
 		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 	
-		janet_table_remove(janet_unwrap_table(loaded_chunks), janet_wrap_string(name));
+		janet_table_remove(janet_unwrap_table(loaded_chunks), janet_ckeywordv(name));
 		state.state.save();
 	}
 }
@@ -217,6 +222,9 @@ JanetState* JanetManager::requestState(void)
 		}
 	}
 
+	// Calling this so that when things are called through the ScriptModule interface, it will match.
+	// Concerned this potentially might not work when multiple threads are calling through to the module.
+	state->restore();
 	return state;
 }
 

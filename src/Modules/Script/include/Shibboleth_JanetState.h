@@ -133,6 +133,7 @@ public:
 		janet_vm_traversal_base = _janet_vm_traversal_base;
 		*janet_default_rng() = _janet_vm_rng;
 		janet_threads_set_state(_janet_vm_mailbox, _janet_vm_thread_current, _janet_vm_thread_decode);
+		janet_gc_set_state(_depth, _oring_rootcount);
 
 		for (int32_t i = 0; i < 8; ++i) {
 			gensym_counter[i] = _gensym_counter[i];
@@ -170,6 +171,7 @@ public:
 		_janet_vm_traversal_base = janet_vm_traversal_base;
 		_janet_vm_rng = *janet_default_rng();
 		janet_threads_get_state(&_janet_vm_mailbox, &_janet_vm_thread_current, &_janet_vm_thread_decode);
+		janet_gc_get_state(&_depth, &_oring_rootcount);
 
 		for (int32_t i = 0; i < 8; ++i) {
 			_gensym_counter[i] = gensym_counter[i];
@@ -240,6 +242,9 @@ private:
 	JanetTable* _janet_vm_thread_decode;
 
 	JanetRNG _janet_vm_rng;
+
+	uint32_t _depth;
+	size_t _oring_rootcount;
 };
 
 NS_END

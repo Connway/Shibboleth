@@ -47,11 +47,13 @@ bool JanetProcess::init(const Esprit::StateMachine& owner)
 		return false;
 	}
 
-	JanetState* const state = _janet_mgr->requestState();
+	IJanetManager* const janet_mgr_interface = _janet_mgr;
+
+	JanetState* const state = janet_mgr_interface->requestState();
 	JanetTable* const env = state->getEnv();
 	state->restore();
 
-	const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(JanetManager::k_loaded_chunks_name));
+	const Janet loaded_chunks = janet_table_get(env, janet_ckeywordv(JanetManager::k_loaded_chunks_name));
 
 	if (!janet_checktype(loaded_chunks, JANET_TABLE)) {
 		if (_log_error) {
@@ -59,11 +61,12 @@ bool JanetProcess::init(const Esprit::StateMachine& owner)
 			_log_error = false;
 		}
 
+		state->save();
 		_janet_mgr->returnState(state);
 		return false;
 	}
 
-	const Janet type_table = janet_table_get(janet_unwrap_table(loaded_chunks), janet_wrap_string(_script->getFilePath().getBuffer()));
+	const Janet type_table = janet_table_get(janet_unwrap_table(loaded_chunks), janet_ckeywordv(_script->getFilePath().getBuffer()));
 
 	if (!janet_checktype(type_table, JANET_TABLE)) {
 		if (_log_error) {
@@ -71,47 +74,59 @@ bool JanetProcess::init(const Esprit::StateMachine& owner)
 			_log_error = false;
 		}
 
+		state->save();
 		_janet_mgr->returnState(state);
 		return false;
 	}
 
 	JanetTable* const type_table_unwrap = janet_unwrap_table(type_table);
-	const Janet init_func = janet_table_get(type_table_unwrap, janet_wrap_string("init"));
+	const Janet init_func = janet_table_get(type_table_unwrap, janet_ckeywordv("init"));
 
 	if (janet_checktype(type_table, JANET_NIL)) {
 		SaveTable(*type_table_unwrap, _table_state);
 
+		state->save();
 		_janet_mgr->returnState(state);
 		return true;
 	}
 
-	if (!janet_checktype(type_table, JANET_FUNCTION)) {
+	if (!janet_checktype(init_func, JANET_FUNCTION)) {
 		if (_log_error) {
 			// $TODO: Log error once.
 			_log_error = false;
 		}
 
+		state->save();
 		_janet_mgr->returnState(state);
 		return false;
 	}
 
-	Janet owner_arg = PushUserTypeReference(owner, *_janet_mgr);
 	bool success = false;
 	Janet result;
 
-	if (janet_pcall(janet_unwrap_function(init_func), 1, &owner_arg, &result, nullptr) != JANET_SIGNAL_OK) {
-		if (_log_error) {
-			// $TODO: Log error once.
-			_log_error = false;
-		}
+	const Janet args[] = {
+		type_table,
+		PushUserTypeReference(owner, *_janet_mgr)
+	};
 
-		// Error string is in result.
+	if (janet_pcall(janet_unwrap_function(init_func), 2, args, &result, nullptr) != JANET_SIGNAL_OK) {
+		if (_log_error) {
+			_log_error = false;
+
+			const char* const error = reinterpret_cast<const char*>(janet_unwrap_string(result));
+			int i = 0;
+			i += 5;
+
+			// $TODO: Log error.
+			GAFF_REF(error);
+		}
 
 	} else {
 		success = !janet_checktype(result, JANET_BOOLEAN) || janet_unwrap_boolean(result);
 	}
 
 	SaveTable(*type_table_unwrap, _table_state);
+	state->save();
 	_janet_mgr->returnState(state);
 
 	return success;
@@ -123,11 +138,12 @@ void JanetProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet
 		return;
 	}
 
-	JanetState* const state = _janet_mgr->requestState();
+	IJanetManager* const janet_mgr_interface = _janet_mgr;
+	JanetState* const state = janet_mgr_interface->requestState();
 	JanetTable* const env = state->getEnv();
 	state->restore();
 
-	const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(JanetManager::k_loaded_chunks_name));
+	const Janet loaded_chunks = janet_table_get(env, janet_ckeywordv(JanetManager::k_loaded_chunks_name));
 
 	if (!janet_checktype(loaded_chunks, JANET_TABLE)) {
 		if (_log_error) {
@@ -139,7 +155,7 @@ void JanetProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet
 		return;
 	}
 
-	const Janet type_table = janet_table_get(janet_unwrap_table(loaded_chunks), janet_wrap_string(_script->getFilePath().getBuffer()));
+	const Janet type_table = janet_table_get(janet_unwrap_table(loaded_chunks), janet_ckeywordv(_script->getFilePath().getBuffer()));
 
 	if (!janet_checktype(type_table, JANET_TABLE)) {
 		if (_log_error) {
@@ -152,9 +168,9 @@ void JanetProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet
 	}
 
 	JanetTable* const type_table_unwrap = janet_unwrap_table(type_table);
-	const Janet init_func = janet_table_get(type_table_unwrap, janet_wrap_string("update"));
+	const Janet update_func = janet_table_get(type_table_unwrap, janet_ckeywordv("update"));
 
-	if (!janet_checktype(type_table, JANET_FUNCTION)) {
+	if (!janet_checktype(update_func, JANET_FUNCTION)) {
 		if (_log_error) {
 			// $TODO: Log error once.
 			_log_error = false;
@@ -167,13 +183,15 @@ void JanetProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet
 	RestoreTable(*type_table_unwrap, _table_state);
 
 	// Call the function.
-	PushUserTypeReference(owner, *_janet_mgr);
-	PushUserTypeReference(variables, *_janet_mgr);
+	const Janet args[] = {
+		type_table,
+		PushUserTypeReference(owner, *_janet_mgr),
+		PushUserTypeReference(variables, *_janet_mgr)
+	};
 
-	Janet owner_arg = PushUserTypeReference(owner, *_janet_mgr);
 	Janet result;
 
-	if (janet_pcall(janet_unwrap_function(init_func), 1, &owner_arg, &result, nullptr) != JANET_SIGNAL_OK) {
+	if (janet_pcall(janet_unwrap_function(update_func), 2, args, &result, nullptr) != JANET_SIGNAL_OK) {
 		if (_log_error) {
 			// $TODO: Log error once.
 			_log_error = false;

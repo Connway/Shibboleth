@@ -999,123 +999,6 @@ void RegisterType(JanetTable* /*env*/, const Gaff::IReflectionDefinition& ref_de
 	strncpy(const_cast<char*>(type_info.name), friendly_name.data(), friendly_name.size() * sizeof(char) + 1);
 
 	janet_mgr.registerType(ref_def, type_info);
-
-
-//	// Register operators.
-//	const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
-//	int32_t num_operators = 0;
-//
-//	Vector<luaL_Reg> mt(g_allocator);
-//
-//	for (int32_t i = 0; i < num_static_funcs; ++i) {
-//		const HashStringView32<> name = ref_def.getStaticFuncName(i);
-//
-//		// Is not an operator function.
-//		if (Gaff::FindFirstOf(name.getBuffer(), "__") != 0) {
-//			continue;
-//		}
-//
-//		// Is the tostring function.
-//		if (Gaff::FindFirstOf(name.getBuffer(), OP_TO_STRING_NAME) == 0) {
-//			mt.emplace_back(luaL_Reg{ "__tostring", UserTypeToString });
-//			continue;
-//		}
-//
-//		lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//		lua_pushinteger(state, i);
-//		lua_pushboolean(state, true); // Is static.
-//
-//		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-//		lua_setfield(state, -2, name.getBuffer());
-//
-//		++num_operators;
-//	}
-//
-//	mt.emplace_back(luaL_Reg{ "__newindex", UserTypeNewIndex });
-//	mt.emplace_back(luaL_Reg{ "__index", UserTypeIndex });
-//	mt.emplace_back(luaL_Reg{ "__gc", UserTypeDestroy });
-//	mt.emplace_back(luaL_Reg{ nullptr, nullptr });
-//
-//	// Register funcs with up values.
-//	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//	luaL_setfuncs(state, mt.data(), 1);
-//
-//	lua_pop(state, 1);
-//
-//
-//	// Library Table.
-//	size_t prev_index = 0;
-//	size_t curr_index = friendly_name.find_first_of(':');
-//
-//	int32_t table_count = 0;
-//
-//	// Create all sub-tables.
-//	do {
-//		const U8String substr = friendly_name.substr(prev_index, curr_index - prev_index);
-//
-//		// Create first, global table.
-//		if (table_count == 0) {
-//			if (lua_getglobal(state, substr.data()) <= 0) {
-//				lua_pop(state, 1);
-//
-//				lua_createtable(state, 0, 0);
-//				lua_pushvalue(state, -1);
-//				lua_setglobal(state, substr.data());
-//			}
-//
-//		// Create sub-table.
-//		} else {
-//			if (lua_getfield(state, -1, substr.data()) <= 0) {
-//				lua_pop(state, 1);
-//
-//				lua_createtable(state, 0, 0);
-//				lua_pushvalue(state, -1);
-//				lua_setfield(state, -3, substr.data());
-//			}
-//		}
-//
-//		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
-//		curr_index = friendly_name.find_first_of(':', prev_index);
-//
-//		++table_count;
-//	} while (prev_index != SIZE_T_FAIL);
-//
-//
-//	Vector<luaL_Reg> reg(g_allocator);
-//
-//	// Add constructor.
-//	if ((!flags || !flags->getFlags().testAll(ScriptFlagsAttribute::Flag::ReferenceOnly))) {
-//		reg.emplace_back(luaL_Reg{ "new", UserTypeNew });
-//	}
-//
-//	reg.emplace_back(luaL_Reg{ nullptr, nullptr });
-//
-//	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//	lua_setfield(state, -2, k_ref_def_field_name);
-//
-//	// Add static funcs.
-//	for (int32_t i = 0; i < num_static_funcs; ++i) {
-//		const HashStringView32<> func_name = ref_def.getStaticFuncName(i);
-//
-//		// Is an operator function.
-//		if (!strncmp(func_name.getBuffer(), "__", 2)) {
-//			continue;
-//		}
-//
-//		lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//		lua_pushinteger(state, i);
-//		lua_pushboolean(state, true); // Is static.
-//
-//		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-//		lua_setfield(state, -2, func_name.getBuffer());
-//	}
-//
-//	// Push up values.
-//	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-//	luaL_getmetatable(state, friendly_name.data());
-//
-//	luaL_setfuncs(state, reg.data(), 2);
-//	lua_pop(state, table_count);
 }
 
 void RegisterTypeFinalize(JanetTable* env, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
@@ -1138,6 +1021,43 @@ void RegisterTypeFinalize(JanetTable* env, const Gaff::IReflectionDefinition& re
 	janet_dostring(env, type_new_func_source.data(), nullptr, &func);
 
 	janet_def(env, type_new_func_name.data(), func, nullptr);
+
+	const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
+	U8String friendly_name = ref_def.getFriendlyName();
+
+	if (Gaff::EndsWith(friendly_name.data(), "<>")) {
+		friendly_name.erase(friendly_name.size() - 2);
+	}
+
+	size_t index = friendly_name.find_first_of(':');
+
+	while (index != U8String::npos) {
+		friendly_name.replace(index, 2, 1, '/');
+		index = friendly_name.find_first_of(':');
+	}
+
+	// Add static funcs.
+	for (int32_t i = 0; i < num_static_funcs; ++i) {
+		const HashStringView32<> func_name = ref_def.getStaticFuncName(i);
+		int32_t start_offset = 0;
+
+		// Is an operator function.
+		if (!strncmp(func_name.getBuffer(), "__", 2)) {
+			start_offset = 2;
+		}
+
+		ReflectionFunctionJanet* const refl_func = reinterpret_cast<ReflectionFunctionJanet*>(
+			janet_abstract(&g_ref_func_type_info, sizeof(ReflectionFunctionJanet))
+		);
+
+		refl_func->type_info = &type_info;
+		refl_func->ref_def = &ref_def;
+		refl_func->func_index = i;
+		refl_func->is_static = true;
+
+		const U8String func_symbol_name(U8String::CtorSprintf(), "%s/%s", friendly_name.data(), func_name.getBuffer() + start_offset);
+		janet_def(env, func_symbol_name.data(), janet_wrap_abstract(refl_func), nullptr);
+	}
 }
 
 void RegisterBuiltIns(JanetTable* env)
@@ -1446,7 +1366,6 @@ int UserTypeIndex(void* data, Janet key, Janet* out)
 		
 		// Find function with name.
 		} else if (int32_t func_index = value->ref_def->getFuncIndex(hash); func_index > -1) {
-			// $TODO: Push abstract type that handles function calls.
 			ReflectionFunctionJanet* const func = reinterpret_cast<ReflectionFunctionJanet*>(
 				janet_abstract(&g_ref_func_type_info, sizeof(ReflectionFunctionJanet))
 			);

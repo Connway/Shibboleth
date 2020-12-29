@@ -2130,7 +2130,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class funcs
 		for (auto& it : base_ref_def._funcs) {
-			FuncData& func_data = _funcs[it.first.getHash()];
+			FuncData& func_data = _funcs[it.first];
 
 			for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 				if (!it.second.func[i]) {
@@ -2186,7 +2186,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class static funcs
 		for (auto& it : base_ref_def._static_funcs) {
-			StaticFuncData& static_func_data = _static_funcs[it.first.getHash()];
+			StaticFuncData& static_func_data = _static_funcs[it.first];
 
 			for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
 				if (!it.second.func[i]) {

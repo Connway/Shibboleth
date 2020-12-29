@@ -32,7 +32,16 @@ struct JanetScratch;
 
 NS_SHIBBOLETH
 
-class JanetManager final : public IManager
+class IJanetManager : public IManager
+{
+public:
+	virtual ~IJanetManager(void) {}
+
+	virtual JanetState* requestState(void) = 0;
+	virtual void returnState(JanetState* state) = 0;
+};
+
+class JanetManager final : public IJanetManager
 {
 public:
 	static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
@@ -47,8 +56,8 @@ public:
 	bool loadBuffer(const char* buffer, size_t size, const char* name);
 	void unloadBuffer(const char* name);
 
-	JanetState* requestState(void);
-	void returnState(JanetState* state);
+	JanetState* requestState(void) override;
+	void returnState(JanetState* state) override;
 
 	void registerType(const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
 	const JanetAbstractType* getType(const Gaff::IReflectionDefinition& ref_def) const;

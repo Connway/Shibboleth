@@ -36,7 +36,7 @@ THE SOFTWARE.
 #define OP_BIT_SHIFT_LEFT_NAME "__shl"
 #define OP_BIT_SHIFT_RIGHT_NAME "__shr"
 #define OP_LOGIC_AND_NAME "__and"
-#define OP_LOGIC_OR_NAME "or"
+#define OP_LOGIC_OR_NAME "__or"
 #define OP_EQUAL_NAME "__eq"
 #define OP_LESS_THAN_NAME "__lt"
 #define OP_GREATER_THAN_NAME "__gt"

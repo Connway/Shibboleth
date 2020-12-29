@@ -730,8 +730,6 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	// Register operators.
 	const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
-	int32_t num_operators = 0;
-
 	Vector<luaL_Reg> mt(g_allocator);
 
 	for (int32_t i = 0; i < num_static_funcs; ++i) {
@@ -754,8 +752,6 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
 		lua_setfield(state, -2, name.getBuffer());
-
-		++num_operators;
 	}
 
 	mt.emplace_back(luaL_Reg{ "__newindex", UserTypeNewIndex });

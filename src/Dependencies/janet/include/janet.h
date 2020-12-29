@@ -1397,6 +1397,8 @@ JANET_API JanetTable *janet_env_lookup(JanetTable *env);
 JANET_API void janet_env_lookup_into(JanetTable *renv, JanetTable *env, const char *prefix, int recurse);
 
 /* GC */
+JANET_API void janet_gc_set_state(uint32_t in_depth, size_t in_orig_rootcount);
+JANET_API void janet_gc_get_state(uint32_t* out_depth, size_t* out_orig_rootcount);
 JANET_API void janet_mark(Janet x);
 JANET_API void janet_sweep(void);
 JANET_API void janet_collect(void);
