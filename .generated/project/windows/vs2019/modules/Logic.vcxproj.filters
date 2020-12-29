@@ -9,9 +9,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_JanetProcess.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_LuaProcess.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -35,6 +32,5 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_JanetProcess.cpp" />
   </ItemGroup>
 </Project>

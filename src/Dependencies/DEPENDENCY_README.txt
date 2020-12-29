@@ -21,8 +21,6 @@ Libraries Affected:
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.
 		Changed GetModuleHandle() -> GetModuleHandleA().
-	Janet
-		Fixed compilation errors due to potentially uninitialized pointers.
-		Added some configuration options for registering certain libraries with the VM.
+
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.

@@ -23,8 +23,6 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/janet/include",
-			base_dir .. "../../Dependencies/janet/conf",
 			base_dir .. "../../Dependencies/lua",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
@@ -59,7 +57,6 @@ local GenerateProject = function()
 			"MainLoop",
 			"Resource",
 			"ECS",
-			"Janet",
 			"Lua",
 
 			"Gleam",

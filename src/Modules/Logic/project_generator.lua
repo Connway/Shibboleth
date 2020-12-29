@@ -23,8 +23,6 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/janet/include",
-			base_dir .. "../../Dependencies/janet/conf",
 			base_dir .. "../../Dependencies/lua",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -63,7 +61,6 @@ local GenerateProject = function()
 			"Script",
 			"ECS",
 
-			"Janet",
 			"Lua"
 		}
 
@@ -78,7 +75,6 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "Script")
 	table.insert(deps, "ECS")
-	table.insert(deps, "Janet")
 	table.insert(deps, "Lua")
 
 	dependson(deps)
