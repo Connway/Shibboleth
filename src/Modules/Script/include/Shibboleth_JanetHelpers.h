@@ -63,7 +63,7 @@ void RegisterBuiltIns(JanetTable* env);
 Janet UserTypeFunctionCall(void* data, int32_t num_args, Janet* args);
 void UserTypeToString(void* data, JanetBuffer* buffer);
 int UserTypeDestroy(void* data, size_t len);
-//int UserTypeNewIndex(lua_State* state);
+void UserTypeNewIndex(void* data, Janet key, Janet value);
 int UserTypeIndex(void* data, Janet key, Janet* out);
 Janet UserTypeNew(int32_t num_args, Janet* args);
 

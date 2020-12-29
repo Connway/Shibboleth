@@ -101,17 +101,18 @@ bool JanetManager::initAllModulesLoaded(void)
 
 
 		//constexpr const char* k_test_string = R"(
-		//	(Print "Gleam::ISamplerState::Wrap::Repeat - " Gleam/ISamplerState/Wrap/Repeat)
-		//	(Print "Reverse - " (get Gleam/ISamplerState/Wrap/def 1))
-		//	(Print (Gleam/ISamplerState/Wrap/def :Repeat))
-
-		//	(def TestType (Gleam/Vec3/New 3 2 1))
+		//	(var TestType (Gleam/Vec3/New 3 2 1))
 		//	(Print TestType)
 		//	(Print (get TestType :x))
 		//	(Print (TestType :y))
+		//	(put TestType :z 50)
+		//	(Print (TestType :z))
+		//	(Print TestType)
 
 		//	#(def Janet-Manager (GetManager JanetManager))
 		//	#(:testFunc Janet-Manager)
+
+		//	(set TestType nil)
 		//)";
 
 		//janet_dostring(env, k_test_string, nullptr, nullptr);

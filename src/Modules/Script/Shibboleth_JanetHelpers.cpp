@@ -1036,6 +1036,7 @@ void RegisterType(JanetTable* /*env*/, const Gaff::IReflectionDefinition& ref_de
 
 	type_info.name = reinterpret_cast<char*>(SHIB_ALLOC(friendly_name.size() * sizeof(char) + 1, g_allocator));
 	type_info.tostring = UserTypeToString;
+	type_info.put = UserTypeNewIndex;
 	type_info.get = UserTypeIndex;
 	type_info.gc = UserTypeDestroy;
 
@@ -1288,151 +1289,147 @@ int UserTypeDestroy(void* data, size_t)
 	return 0;
 }
 
-//int UserTypeNewIndex(lua_State* state)
-//{
-//	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-//	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
-//	void* input = user_data->getData();
-//
-//	if (lua_type(state, 2) == LUA_TSTRING) {
-//		size_t len = 0;
-//		const char* const name = luaL_checklstring(state, 2, &len);
-//		const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
-//
-//		// Find a variable with name.
-//		if (auto* const var = ref_def.getVar(hash)) {
-//			if (var->isFixedArray() || var->isVector()) {
-//				// $TODO: Add support for arrays.
-//				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
-//
-//			} else if (var->isMap()) {
-//				// $TODO: Add support for maps.
-//				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
-//
-//			} else {
-//				const Gaff::IReflection& var_refl = var->getReflection();
-//				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
-//
-//				if (var_ref_def.isBuiltIn()) {
-//					if (&var_ref_def == &Reflection<double>::GetReflectionDefinition()) {
-//						if (lua_isnumber(state, 3)) {
-//							const double value = lua_tonumber(state, 3);
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<float>::GetReflectionDefinition()) {
-//						if (lua_isnumber(state, 3)) {
-//							const float value = static_cast<float>(lua_tonumber(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<int64_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const int64_t value = lua_tointeger(state, 3);
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<int32_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const int32_t value = static_cast<int32_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<int16_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const int16_t value = static_cast<int16_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<int8_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const int8_t value = static_cast<int8_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<uint64_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const uint64_t value = static_cast<uint64_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<uint32_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const uint32_t value = static_cast<uint32_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<uint16_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const uint16_t value = static_cast<uint16_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<uint8_t>::GetReflectionDefinition()) {
-//						if (lua_isinteger(state, 3)) {
-//							const uint8_t value = static_cast<uint8_t>(lua_tointeger(state, 3));
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//
-//					} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
-//						if (lua_isboolean(state, 3)) {
-//							const bool value = lua_toboolean(state, 3);
-//							var->setDataT(input, value);
-//
-//						} else {
-//							// $TODO: Log error.
-//						}
-//					}
-//
-//				// Is a user defined type.
-//				} else {
-//					if (&ref_def == &var_ref_def) {
-//						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, ref_def.getFriendlyName()));
-//						var->setData(input, value->getData());
-//
-//					} else {
-//						// $TODO: Log error.
-//					}
-//				}
-//			}
-//		}
-//
-//	// Index function?
-//	} else {
-//	}
-//
-//	return 0;
-//}
+void UserTypeNewIndex(void* data, Janet key, Janet value)
+{
+	UserData* const user_data = reinterpret_cast<UserData*>(data);
+	void* input = user_data->getData();
+
+	if (janet_checktype(key, JANET_KEYWORD)) {
+		const char* const name = reinterpret_cast<const char*>(janet_unwrap_keyword(key));
+		const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
+
+		// Find a variable with name.
+		if (auto* const var = user_data->ref_def->getVar(hash)) {
+			if (var->isFixedArray() || var->isVector()) {
+				// $TODO: Add support for arrays.
+				GAFF_ASSERT_MSG(false, "Currently do not support array variables.");
+
+			} else if (var->isMap()) {
+				// $TODO: Add support for maps.
+				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
+
+			} else {
+				const Gaff::IReflection& var_refl = var->getReflection();
+				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
+
+				if (var_ref_def.isBuiltIn()) {
+					if (&var_ref_def == &Reflection<double>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const double value_num = janet_unwrap_number(value);
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<float>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const float value_num = static_cast<float>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int64_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const int64_t value_num = static_cast<int64_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int32_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const int32_t value_num = static_cast<int32_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int16_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const int16_t value_num = static_cast<int16_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<int8_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const int8_t value_num = static_cast<int8_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint64_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const uint64_t value_num = static_cast<uint64_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint32_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const uint32_t value_num = static_cast<uint32_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint16_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const uint16_t value_num = static_cast<uint16_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<uint8_t>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_NUMBER)) {
+							const uint8_t value_num = static_cast<uint8_t>(janet_unwrap_number(value));
+							var->setDataT(input, value_num);
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+						if (janet_checktype(value, JANET_BOOLEAN)) {
+							const bool value_bool = janet_unwrap_boolean(value);
+							var->setDataT(input, value_bool);
+
+						} else {
+							// $TODO: Log error.
+						}
+					}
+
+				// Is a user defined type.
+				} else {
+					if (user_data->ref_def == &var_ref_def) {
+						const UserData* const user_data_value = reinterpret_cast<UserData*>(janet_unwrap_abstract(value));
+						var->setData(input, user_data_value->getData());
+
+					} else {
+						// $TODO: Log error.
+					}
+				}
+			}
+		}
+
+	// Index function?
+	} else {
+	}
+}
 
 int UserTypeIndex(void* data, Janet key, Janet* out)
 {
