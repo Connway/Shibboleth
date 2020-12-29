@@ -383,68 +383,34 @@ namespace
 		return janet_wrap_nil();
 	}
 
-	//bool PushOrUpdateTableValue(lua_State* state, const Gaff::FunctionStackEntry& entry)
-	//{
-	//	const int32_t type = lua_type(state, -1);
+	Janet PushOrUpdateTableValue(JanetTable& table, Janet key, const Gaff::FunctionStackEntry& entry, const Shibboleth::JanetManager& janet_mgr)
+	{
+		// Nil type.
+		if (!entry.enum_ref_def && !entry.ref_def) {
+			return janet_wrap_nil();
+		}
 
-	//	// Built-in types, just push onto the stack.
-	//	if (entry.enum_ref_def || (entry.ref_def && entry.ref_def->isBuiltIn())) {
-	//		Shibboleth::PushReturnValue(state, entry, true);
-	//		return true;
-	//	}
+		// Built-in types, just push onto the stack.
+		if (entry.enum_ref_def || (entry.ref_def && entry.ref_def->isBuiltIn())) {
+			return Shibboleth::PushReturnValue(entry, true);
+		}
 
-	//	// Nil type.
-	//	if (!entry.enum_ref_def && !entry.ref_def) {
-	//		lua_pushnil(state);
-	//		return true;
-	//	}
+		const JanetAbstractType* const type_info = janet_mgr.getType(*entry.ref_def);
+		const Janet value = janet_table_get(&table, key);
+		Shibboleth::UserData* const old_data = reinterpret_cast<Shibboleth::UserData*>(janet_checkabstract(value, type_info));
 
-	//	// Get the reflection definition of the Lua type.
-	//	const Gaff::IReflectionDefinition* ref_def = nullptr;
+		// Types are not the same.
+		if (!old_data) {
+			return Shibboleth::PushReturnValue(entry, true);
+		}
 
-	//	if (type == LUA_TUSERDATA) {
-	//		lua_getmetatable(state, -1);
-	//		lua_getfield(state, -1, k_ref_def_field_name);
-
-	//		ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
-	//		lua_pop(state, 2);
-	//	}
-
-	//	// Not the same type, just push the value onto the stack.
-	//	if (entry.ref_def != ref_def) {
-	//		Shibboleth::PushReturnValue(state, entry, true);
-	//		return true;
-	//	}
-
-	//	Shibboleth::UserData* const old_data = reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, -1));
-
-	//	// Just create and push the new value.
-	//	CopyUserType(entry, old_data->getData(), true, g_allocator);
-	//	return false;
-	//}
+		Shibboleth::CopyUserType(entry, old_data->getData(), true, g_allocator);
+		return value;
+	}
 }
 
 
 NS_SHIBBOLETH
-
-//TableState::~TableState(void)
-//{
-//	for (auto& pair : array_entries) {
-//		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-//			pair.second.ref_def->destroyInstance(pair.second.value.vp);
-//			SHIB_FREE(pair.second.value.vp, GetAllocator());
-//		}
-//	}
-//
-//	for (auto& pair : key_values) {
-//		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-//			pair.second.ref_def->destroyInstance(pair.second.value.vp);
-//			SHIB_FREE(pair.second.value.vp, GetAllocator());
-//		}
-//	}
-//}
-
-
 
 Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info)
 {
@@ -909,64 +875,54 @@ Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data
 	return janet_wrap_nil();
 }
 
-//void RestoreTable(lua_State* state, const TableState& table)
-//{
-//	for (const auto& pair : table.array_entries) {
-//		lua_geti(state, -1, pair.first);
-//		
-//		if (PushOrUpdateTableValue(state, pair.second)) {
-//			lua_remove(state, -2);
-//			lua_seti(state, -2, pair.first);
-//		} else {
-//			lua_pop(state, 1);
-//		}
-//	}
-//
-//	for (const auto& pair : table.key_values) {
-//		lua_getfield(state, -1, pair.first.data());
-//
-//		if (PushOrUpdateTableValue(state, pair.second)) {
-//			lua_remove(state, -2);
-//			lua_setfield(state, -2, pair.first.data());
-//		} else {
-//			lua_pop(state, 1);
-//		}
-//	}
-//}
-//
-//void SaveTable(lua_State* state, TableState& table)
-//{
-//	lua_pushnil(state);
-//
-//	while (lua_next(state, -2) != 0) {
-//		const int32_t type = lua_type(state, -1);
-//
-//		// We don't save threads or functions.
-//		if (type == LUA_TTHREAD || type == LUA_TFUNCTION) {
-//			lua_pop(state, 1);
-//			continue;
-//		}
-//
-//		// Key is a string.
-//		if (lua_type(state, -2) == LUA_TSTRING) {
-//			size_t len = 0;
-//			const char* const string = lua_tolstring(state, -2, &len);
-//			U8String key = U8String(string, len, g_allocator);
-//
-//			FillEntry(state, -1, table.key_values[std::move(key)], true);
-//
-//		// Key is an integer index.
-//		} else {
-//			const lua_Integer index = lua_tointeger(state, -2);
-//			auto& pair = table.array_entries.emplace_back();
-//			pair.first = static_cast<int32_t>(index);
-//
-//			FillEntry(state, -1, pair.second, true);
-//		}
-//
-//		lua_pop(state, 1);
-//	}
-//}
+void RestoreTable(JanetTable& table, const TableState& state)
+{
+	const JanetManager& janet_mgr = GetApp().getManagerTFast<JanetManager>();
+
+	for (const auto& pair : state.array_entries) {
+		const Janet key = janet_wrap_number(static_cast<double>(pair.first));
+		Janet value = janet_table_get(&table, key);
+
+		//if (state.key_values.empty()) {
+		//} else {
+			value = PushOrUpdateTableValue(table, value, pair.second, janet_mgr);
+			janet_table_put(&table, key, value);
+		//}
+	}
+
+	for (const auto& pair : state.key_values) {
+		const Janet key = janet_cstringv(pair.first.data());
+		Janet value = janet_table_get(&table, key);
+
+		//if (state.key_values.empty()) {
+		//} else {
+			value = PushOrUpdateTableValue(table, value, pair.second, janet_mgr);
+			janet_table_put(&table, key, value);
+		//}
+	}
+}
+
+void SaveTable(const JanetTable& table, TableState& state)
+{
+	for (int32_t i = 0; i < table.capacity; ++i) {
+		JanetKV& kv = table.data[i];
+
+		if (janet_checktype(kv.key, JANET_NIL)) {
+
+			continue;
+		}
+
+		if (janet_checktype(kv.key, JANET_STRING)) {
+			U8String key(reinterpret_cast<const char*>(janet_unwrap_string(kv.key)), g_allocator);
+			FillEntry(kv.value, state.key_values[std::move(key)], true);
+
+		} else if (janet_checktype(kv.key, JANET_NUMBER)) {
+			auto& pair = state.array_entries.emplace_back();
+			pair.first = static_cast<int32_t>(janet_unwrap_number(kv.key));
+			FillEntry(kv.value, pair.second, true);
+		}
+	}
+}
 
 void RegisterEnum(JanetTable* env, const Gaff::IEnumReflectionDefinition& enum_ref_def)
 {

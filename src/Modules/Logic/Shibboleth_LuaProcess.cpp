@@ -37,7 +37,7 @@ SHIB_REFLECTION_DEFINE_END(LuaProcess)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaProcess);
+SHIB_REFLECTION_CLASS_DEFINE(LuaProcess)
 
 bool LuaProcess::init(const Esprit::StateMachine& owner)
 {
@@ -51,6 +51,19 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 	lua_State* const state = _lua_mgr->requestState();
 
 	lua_getglobal(state, LuaManager::k_loaded_chunks_name);
+
+	// Should never happen, but check anyways.
+	if (!lua_istable(state, -1)) {
+		if (_log_error) {
+			// $TODO: Log error once.
+			_log_error = false;
+		}
+
+		lua_pop(state, 2);
+		_lua_mgr->returnState(state);
+		return false;
+	}
+
 	lua_getfield(state, -1, _script->getFilePath().getBuffer());
 
 	// Should never happen, but check anyways.
@@ -76,7 +89,10 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 	}
 
 	if (!lua_isfunction(state, -1)) {
-		// $TODO: Log error.
+		if (_log_error) {
+			// $TODO: Log error once.
+			_log_error = false;
+		}
 
 		lua_pop(state, 3);
 		_lua_mgr->returnState(state);
@@ -156,11 +172,17 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 	const int32_t err = lua_pcall(state, 3, 0, 0);
 
 	if (err != LUA_OK) {
-		size_t len = 0;
-		const char* const error = lua_tolstring(state, -1, &len);
+		if (_log_error) {
+			// $TODO: Log error once.
+			_log_error = false;
 
-		// $TODO: Log error.
-		GAFF_REF(error);
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			// $TODO: Log error.
+			GAFF_REF(error);
+		}
+
 		lua_pop(state, 1);
 	}
 

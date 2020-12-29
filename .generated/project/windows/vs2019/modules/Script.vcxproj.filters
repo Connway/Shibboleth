@@ -35,6 +35,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_CommonHelpers.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetHelpers.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_JanetResource.cpp" />
@@ -42,6 +43,5 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_LuaResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_ScriptModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\Shibboleth_CommonHelpers.cpp" />
   </ItemGroup>
 </Project>

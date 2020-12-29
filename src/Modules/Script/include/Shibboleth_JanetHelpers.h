@@ -33,14 +33,6 @@ NS_SHIBBOLETH
 
 class JanetManager;
 
-//struct TableState final
-//{
-//	~TableState(void);
-//
-//	Vector< eastl::pair<int32_t, Gaff::FunctionStackEntry> > array_entries{ ProxyAllocator("Lua") };
-//	VectorMap<U8String, Gaff::FunctionStackEntry> key_values{ ProxyAllocator("Lua") };
-//};
-
 static constexpr Gaff::Hash32 k_janet_log_channel = Gaff::FNV1aHash32Const("Janet");
 
 Janet PushUserTypeReference(const void* value, const Gaff::IReflectionDefinition& ref_def, const JanetAbstractType& type_info);
@@ -52,8 +44,8 @@ void FillArgumentStack(int32_t num_args, Janet* args, Vector<Gaff::FunctionStack
 void FillEntry(const Janet& arg, Gaff::FunctionStackEntry& entry, bool clone_non_janet);
 Janet PushReturnValue(const Gaff::FunctionStackEntry& ret, bool create_user_data);
 
-//void RestoreTable(lua_State* state, const TableState& table);
-//void SaveTable(lua_State* state, TableState& table);
+void RestoreTable(JanetTable& table, const TableState& state);
+void SaveTable(const JanetTable& table, TableState& state);
 
 void RegisterEnum(JanetTable* env, const Gaff::IEnumReflectionDefinition& enum_ref_def);
 void RegisterType(JanetTable* env, const Gaff::IReflectionDefinition& ref_def, JanetManager& janet_mgr);
@@ -70,10 +62,11 @@ Janet UserTypeNew(int32_t num_args, Janet* args);
 template <class T>
 Janet PushUserTypeReference(const T& value, const JanetManager& janet_mgr)
 {
-	const JanetAbstractType* const type_info = janet_mgr.getType(*ret.ref_def);
+	const auto& ref_def = Reflection<T>::GetReflectionDefinition();
+	const JanetAbstractType* const type_info = janet_mgr.getType(ref_def);
 	GAFF_ASSERT(type_info);
 
-	return PushUserTypeReference(&value, Reflection<T>::GetReflectionDefinition(), type_info);
+	return PushUserTypeReference(&value, ref_def, *type_info);
 }
 
 template <class T>

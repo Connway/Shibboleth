@@ -76,7 +76,7 @@ bool JanetManager::initAllModulesLoaded(void)
 		janet_init();
 
 		JanetTable* const env = janet_core_env(nullptr);
-		state.env = env;
+		state.state.setEnv(env);
 
 		// Add loaded chunks table to the global environment.
 		janet_table_put(env, janet_wrap_keyword(k_loaded_chunks_name), janet_wrap_table(janet_table(0)));
@@ -98,7 +98,6 @@ bool JanetManager::initAllModulesLoaded(void)
 				RegisterTypeFinalize(env, *type_info.first, type_info.second);
 			}
 		}
-
 
 		//constexpr const char* k_test_string = R"(
 		//	(var TestType (Gleam/Vec3/New 3 2 1))
@@ -123,18 +122,23 @@ bool JanetManager::initAllModulesLoaded(void)
 	return true;
 }
 
-bool JanetManager::loadBuffer(const char* buffer, size_t size, const char* name)
+bool JanetManager::loadBuffer(const char* buffer, size_t /*size*/, const char* name)
 {
 	if (!name) {
 		// $TODO: Log error.
 		return false;
 	}
 
+	// Wrap body in do form so that the creation of the table does not affect global state.
+	const U8String source(U8String::CtorSprintf(), "(do %s)", buffer);
+	bool success = true;
+
 	for (JanetStateData& state : _states) {
 		EA::Thread::AutoFutex lock(*state.lock);
+		JanetTable* const env = state.state.getEnv();
 		state.state.restore();
 
-		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
+		const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(k_loaded_chunks_name));
 		const Janet key = janet_wrap_string(name);
 		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 
@@ -143,18 +147,28 @@ bool JanetManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		// Something is already in this slot.
 		if (!janet_checktype(janet_table_get(loaded_chunks_table, key), JANET_NIL)) {
 			// $TODO: Log error.
-			return false;
+			state.state.save();
+			success = false;
+			continue;
 		}
 
 		Janet value;
-		const int result = janet_dobytes(state.env, reinterpret_cast<const uint8_t*>(buffer), static_cast<int32_t>(size), nullptr, &value);
+		const int result = janet_dobytes(env, reinterpret_cast<const uint8_t*>(source.data()), static_cast<int32_t>(source.size()), nullptr, &value);
 
 		if (result) {
 			if (janet_checktype(value, JANET_STRING)) {
 				// $TODO: Log error.
 			}
 
-			return false;
+			state.state.save();
+			success = false;
+			continue;
+		}
+
+		if (!janet_checktype(value, JANET_TABLE)) {
+			state.state.save();
+			success = false;
+			continue;
 		}
 
 		janet_table_put(loaded_chunks_table, key, value);
@@ -173,9 +187,10 @@ void JanetManager::unloadBuffer(const char* name)
 
 	for (JanetStateData& state : _states) {
 		EA::Thread::AutoFutex lock(*state.lock);
+		JanetTable* const env = state.state.getEnv();
 		state.state.restore();
 
-		const Janet loaded_chunks = janet_table_get(state.env, janet_wrap_string(k_loaded_chunks_name));
+		const Janet loaded_chunks = janet_table_get(env, janet_wrap_string(k_loaded_chunks_name));
 		GAFF_ASSERT(janet_checktype(loaded_chunks, JANET_TABLE));
 	
 		janet_table_remove(janet_unwrap_table(loaded_chunks), janet_wrap_string(name));

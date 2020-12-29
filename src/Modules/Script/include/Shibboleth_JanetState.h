@@ -92,6 +92,16 @@ NS_SHIBBOLETH
 class JanetState final
 {
 public:
+	JanetTable* getEnv(void) const
+	{
+		return _env;
+	}
+
+	void setEnv(JanetTable* env)
+	{
+		_env = env;
+	}
+
 	void restore(void) const
 	{
 		janet_vm_top_dyns = _janet_vm_top_dyns;
@@ -167,6 +177,8 @@ public:
 	}
 
 private:
+	JanetTable* _env;
+
 	/* Top level dynamic bindings */
 	JanetTable* _janet_vm_top_dyns;
 

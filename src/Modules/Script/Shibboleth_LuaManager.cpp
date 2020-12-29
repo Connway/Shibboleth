@@ -193,7 +193,8 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 			// $TODO: Log error.
 
 			lua_pop(data.state, lua_gettop(data.state));
-			return false;
+			success = false;
+			continue;
 		}
 
 		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func

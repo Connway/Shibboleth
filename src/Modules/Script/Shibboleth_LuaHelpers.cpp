@@ -264,25 +264,6 @@ namespace
 
 NS_SHIBBOLETH
 
-TableState::~TableState(void)
-{
-	for (auto& pair : array_entries) {
-		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-			pair.second.ref_def->destroyInstance(pair.second.value.vp);
-			SHIB_FREE(pair.second.value.vp, GetAllocator());
-		}
-	}
-
-	for (auto& pair : key_values) {
-		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
-			pair.second.ref_def->destroyInstance(pair.second.value.vp);
-			SHIB_FREE(pair.second.value.vp, GetAllocator());
-		}
-	}
-}
-
-
-
 UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
 {
 	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));

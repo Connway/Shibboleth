@@ -58,7 +58,6 @@ private:
 	{
 		UniquePtr<EA::Thread::Futex> lock;
 		JanetState state;
-		JanetTable* env;
 	};
 
 	VectorMap<const Gaff::IReflectionDefinition*, JanetAbstractType> _types{ ProxyAllocator("Janet") };

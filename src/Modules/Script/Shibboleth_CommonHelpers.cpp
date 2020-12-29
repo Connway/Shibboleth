@@ -25,12 +25,26 @@ THE SOFTWARE.
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_String.h>
 
-namespace
+NS_SHIBBOLETH
+
+TableState::~TableState(void)
 {
-	static Shibboleth::ProxyAllocator g_allocator("Janet");
+	for (auto& pair : array_entries) {
+		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			pair.second.ref_def->destroyInstance(pair.second.value.vp);
+			SHIB_FREE(pair.second.value.vp, GetAllocator());
+		}
+	}
+
+	for (auto& pair : key_values) {
+		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			pair.second.ref_def->destroyInstance(pair.second.value.vp);
+			SHIB_FREE(pair.second.value.vp, GetAllocator());
+		}
+	}
 }
 
-NS_SHIBBOLETH
+
 
 void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference)
 {
@@ -39,7 +53,7 @@ void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionD
 	if (entry.ref_def && ((entry.ref_def != &new_ref_def) || (is_reference != new_is_reference))) {
 		if (!is_reference && !entry.ref_def->isBuiltIn()) {
 			entry.ref_def->destroyInstance(entry.value.vp);
-			SHIB_FREE(entry.value.vp, g_allocator);
+			SHIB_FREE(entry.value.vp, GetAllocator());
 		}
 
 		entry.value.vp = nullptr;

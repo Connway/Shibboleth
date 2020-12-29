@@ -22,7 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_ProxyAllocator.h>
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_Vector.h>
+#include <Shibboleth_String.h>
 #include <Gaff_Flags.h>
 
 NS_GAFF
@@ -71,6 +75,15 @@ struct UserData final
 			&reference;
 	}
 };
+
+struct TableState final
+{
+	~TableState(void);
+
+	Vector< eastl::pair<int32_t, Gaff::FunctionStackEntry> > array_entries{ ProxyAllocator("Script") };
+	VectorMap<U8String, Gaff::FunctionStackEntry> key_values{ ProxyAllocator("Script") };
+};
+
 
 constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
 
