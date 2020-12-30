@@ -28,12 +28,12 @@ NS_GLEAM
 
 void WindowClosed(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::WND_CLOSED;
+	message.base.type = EventType::WindowClosed;
 }
 
 void WindowDestroyed(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::WND_DESTROYED;
+	message.base.type = EventType::WindowDestroyed;
 }
 
 void WindowMoved(AnyMessage& message, Window* window, WPARAM, LPARAM l)
@@ -43,7 +43,7 @@ void WindowMoved(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 		(int)(short)HIWORD(l)
 	};
 
-	message.base.type = EventType::WND_MOVED;
+	message.base.type = EventType::WindowMoved;
 }
 
 void WindowResized(AnyMessage& message, Window* window, WPARAM, LPARAM l)
@@ -53,12 +53,12 @@ void WindowResized(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 		HIWORD(l)
 	};
 
-	message.base.type = EventType::WND_RESIZED;
+	message.base.type = EventType::WindowResized;
 }
 
 void WindowCharacter(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = EventType::IN_CHARACTER;
+	message.base.type = EventType::InputCharacter;
 	message.key_char.character = static_cast<uint32_t>(w);
 
 	//if (m_keyRepeatEnabled || ((lParam & (1 << 30)) == 0))
@@ -107,7 +107,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 	if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
 
-		message.base.type = EventType::IN_MOUSEMOVE;
+		message.base.type = EventType::InputMouseMove;
 
 		POINT pos;
 		if (GetCursorPos(&pos)) {
@@ -133,7 +133,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 	} else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
 
-		message.base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? EventType::IN_KEYUP : EventType::IN_KEYDOWN;
+		message.base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? EventType::InputKeyUp : EventType::InputKeyDown;
 
 		switch (raw->data.keyboard.VKey) {
 			case VK_CONTROL:
@@ -141,7 +141,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 				// For some reason, right shift isn't getting the RI_KEY_E0 flag set.
 				// Special case it so that we send the correct key.
 				if (raw->data.keyboard.MakeCode == 54) {
-					message.key_char.key = KeyCode::KEY_RIGHTSHIFT;
+					message.key_char.key = KeyCode::RightShift;
 					break;
 				}
 
@@ -162,61 +162,61 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 
 void WindowLeftButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEDOWN;
-	message.mouse_state.button = MouseCode::MOUSE_LEFT;
+	message.base.type = EventType::InputMouseDown;
+	message.mouse_state.button = MouseCode::Left;
 }
 
 void WindowRightButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEDOWN;
-	message.mouse_state.button = MouseCode::MOUSE_RIGHT;
+	message.base.type = EventType::InputMouseDown;
+	message.mouse_state.button = MouseCode::Right;
 }
 
 void WindowMiddleButtonDown(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEDOWN;
-	message.mouse_state.button = MouseCode::MOUSE_MIDDLE;
+	message.base.type = EventType::InputMouseDown;
+	message.mouse_state.button = MouseCode::Middle;
 }
 
 void WindowXButtonDown(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEDOWN;
-	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::MOUSE_BACK : MouseCode::MOUSE_FORWARD;
+	message.base.type = EventType::InputMouseDown;
+	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::Back : MouseCode::Forward;
 }
 
 void WindowLeftButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEUP;
-	message.mouse_state.button = MouseCode::MOUSE_LEFT;
+	message.base.type = EventType::InputMouseUp;
+	message.mouse_state.button = MouseCode::Left;
 }
 
 void WindowRightButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEUP;
-	message.mouse_state.button = MouseCode::MOUSE_RIGHT;
+	message.base.type = EventType::InputMouseUp;
+	message.mouse_state.button = MouseCode::Right;
 }
 
 void WindowMiddleButtonUp(AnyMessage& message, Window*, WPARAM, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEUP;
-	message.mouse_state.button = MouseCode::MOUSE_MIDDLE;
+	message.base.type = EventType::InputMouseUp;
+	message.mouse_state.button = MouseCode::Middle;
 }
 
 void WindowXButtonUp(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEUP;
-	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::MOUSE_BACK : MouseCode::MOUSE_FORWARD;
+	message.base.type = EventType::InputMouseUp;
+	message.mouse_state.button = (HIWORD(w) == XBUTTON1) ? MouseCode::Back : MouseCode::Forward;
 }
 
 void WindowMouseWheelHorizontal(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEHWHEEL;
+	message.base.type = EventType::InputMouseWheelHorizontal;
 	message.mouse_state.wheel = static_cast<short>(HIWORD(w) / WHEEL_DELTA);
 }
 
 void WindowMouseWheel(AnyMessage& message, Window*, WPARAM w, LPARAM)
 {
-	message.base.type = EventType::IN_MOUSEWHEEL;
+	message.base.type = EventType::InputMouseWheelVertical;
 	message.mouse_state.wheel = static_cast<short>(HIWORD(w) / WHEEL_DELTA);
 }
 
@@ -237,7 +237,7 @@ void WindowSetFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 		ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
 	}
 
-	message.base.type = EventType::WND_GAINEDFOCUS;
+	message.base.type = EventType::WindowGainedFocus;
 }
 
 void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
@@ -256,7 +256,7 @@ void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 	//	ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
 	//}
 
-	//message.base.type = EventType::WND_LOSTFOCUS;
+	//message.base.type = EventType::WindowLostFocus;
 }
 
 NS_END

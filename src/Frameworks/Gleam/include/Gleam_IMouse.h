@@ -36,7 +36,7 @@ struct MouseData final
 	IVec2 delta{ 0, 0 };
 	IVec2 wheel{ 0, 0 };
 
-	eastl::bitset<static_cast<size_t>(MouseCode::MOUSE_BUTTON_COUNT), uint8_t> buttons;
+	eastl::bitset<static_cast<size_t>(MouseCode::ButtonCount), uint8_t> buttons;
 };
 
 class IMouse : public IInputDevice

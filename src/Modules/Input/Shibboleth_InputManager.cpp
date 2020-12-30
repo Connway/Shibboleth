@@ -462,7 +462,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 
 void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value)
 {
-	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT);
+	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::ButtonCount);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 
 	for (Binding& binding : _bindings[_km_player_id]) {

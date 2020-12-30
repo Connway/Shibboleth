@@ -267,22 +267,22 @@ static void HandleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float va
 	ImGuiIO& io = ImGui::GetIO();
 	io.KeysDown[key_code] = value > 0.0f;
 
-	if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTSHIFT)) ||
-		(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTSHIFT))) {
+	if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftShift)) ||
+		(key_code == static_cast<int32_t>(Gleam::KeyCode::RightShift))) {
 
 		io.KeyShift = value > 0.0f;
 
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTCONTROL)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTCONTROL))) {
+	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftControl)) ||
+				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightControl))) {
 
 		io.KeyCtrl = value > 0.0f;
 
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTALT)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTALT))) {
+	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftAlt)) ||
+				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightAlt))) {
 		io.KeyAlt = value > 0.0f;
 
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_LEFTWINDOWS)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHTWINDOWS))) {
+	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftSuper)) ||
+				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightSuper))) {
 
 		io.KeySuper = value > 0.0f;
 	}
@@ -292,21 +292,21 @@ static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float va
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (mouse_event < static_cast<int32_t>(Gleam::MouseCode::MOUSE_BUTTON_COUNT)) {
+	if (mouse_event < static_cast<int32_t>(Gleam::MouseCode::ButtonCount)) {
 		if (mouse_event < 5) {
 			io.MouseDown[mouse_event] = (value > 0.0f);
 		}
 
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_WHEEL_HORIZ)) {
+	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::WheelHorizontal)) {
 		io.MouseWheelH = value;
 
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_WHEEL_VERT)) {
+	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::WheelVertical)) {
 		io.MouseWheel = value;
 
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_POS_X)) {
+	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::PosX)) {
 		io.MousePos.x = value;
 
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::MOUSE_POS_Y)) {
+	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::PosY)) {
 		io.MousePos.y = value;
 	}
 }
@@ -1753,28 +1753,28 @@ bool DebugManager::initImGui(void)
 	io.BackendPlatformName = "Gleam";
 	io.IniFilename = nullptr;
 
-	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::KEY_TAB);
-	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_LEFT);
-	io.KeyMap[ImGuiKey_RightArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_RIGHT);
-	io.KeyMap[ImGuiKey_UpArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_UP);
-	io.KeyMap[ImGuiKey_DownArrow] = static_cast<int32_t>(Gleam::KeyCode::KEY_DOWN);
-	io.KeyMap[ImGuiKey_PageUp] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEUP);
-	io.KeyMap[ImGuiKey_PageDown] = static_cast<int32_t>(Gleam::KeyCode::KEY_PAGEDOWN);
-	io.KeyMap[ImGuiKey_Home] = static_cast<int32_t>(Gleam::KeyCode::KEY_HOME);
-	io.KeyMap[ImGuiKey_End] = static_cast<int32_t>(Gleam::KeyCode::KEY_END);
-	io.KeyMap[ImGuiKey_Insert] = static_cast<int32_t>(Gleam::KeyCode::KEY_INSERT);
-	io.KeyMap[ImGuiKey_Delete] = static_cast<int32_t>(Gleam::KeyCode::KEY_DELETE);
-	io.KeyMap[ImGuiKey_Backspace] = static_cast<int32_t>(Gleam::KeyCode::KEY_BACKSPACE);
-	io.KeyMap[ImGuiKey_Space] = static_cast<int32_t>(Gleam::KeyCode::KEY_SPACE);
-	io.KeyMap[ImGuiKey_Enter] = static_cast<int32_t>(Gleam::KeyCode::KEY_ENTER);
-	io.KeyMap[ImGuiKey_Escape] = static_cast<int32_t>(Gleam::KeyCode::KEY_ESCAPE);
-	io.KeyMap[ImGuiKey_KeyPadEnter] = static_cast<int32_t>(Gleam::KeyCode::KEY_NUMPADENTER);
-	io.KeyMap[ImGuiKey_A] = static_cast<int32_t>(Gleam::KeyCode::KEY_A);
-	io.KeyMap[ImGuiKey_C] = static_cast<int32_t>(Gleam::KeyCode::KEY_C);
-	io.KeyMap[ImGuiKey_V] = static_cast<int32_t>(Gleam::KeyCode::KEY_V);
-	io.KeyMap[ImGuiKey_X] = static_cast<int32_t>(Gleam::KeyCode::KEY_X);
-	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::KEY_Y);
-	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::KEY_Z);
+	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::Tab);
+	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::Left);
+	io.KeyMap[ImGuiKey_RightArrow] = static_cast<int32_t>(Gleam::KeyCode::Right);
+	io.KeyMap[ImGuiKey_UpArrow] = static_cast<int32_t>(Gleam::KeyCode::Up);
+	io.KeyMap[ImGuiKey_DownArrow] = static_cast<int32_t>(Gleam::KeyCode::Down);
+	io.KeyMap[ImGuiKey_PageUp] = static_cast<int32_t>(Gleam::KeyCode::PageUp);
+	io.KeyMap[ImGuiKey_PageDown] = static_cast<int32_t>(Gleam::KeyCode::PageDown);
+	io.KeyMap[ImGuiKey_Home] = static_cast<int32_t>(Gleam::KeyCode::Home);
+	io.KeyMap[ImGuiKey_End] = static_cast<int32_t>(Gleam::KeyCode::End);
+	io.KeyMap[ImGuiKey_Insert] = static_cast<int32_t>(Gleam::KeyCode::Insert);
+	io.KeyMap[ImGuiKey_Delete] = static_cast<int32_t>(Gleam::KeyCode::Delete);
+	io.KeyMap[ImGuiKey_Backspace] = static_cast<int32_t>(Gleam::KeyCode::Backspace);
+	io.KeyMap[ImGuiKey_Space] = static_cast<int32_t>(Gleam::KeyCode::Space);
+	io.KeyMap[ImGuiKey_Enter] = static_cast<int32_t>(Gleam::KeyCode::Enter);
+	io.KeyMap[ImGuiKey_Escape] = static_cast<int32_t>(Gleam::KeyCode::Escape);
+	io.KeyMap[ImGuiKey_KeyPadEnter] = static_cast<int32_t>(Gleam::KeyCode::NumpadEnter);
+	io.KeyMap[ImGuiKey_A] = static_cast<int32_t>(Gleam::KeyCode::A);
+	io.KeyMap[ImGuiKey_C] = static_cast<int32_t>(Gleam::KeyCode::C);
+	io.KeyMap[ImGuiKey_V] = static_cast<int32_t>(Gleam::KeyCode::V);
+	io.KeyMap[ImGuiKey_X] = static_cast<int32_t>(Gleam::KeyCode::X);
+	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::Y);
+	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::Z);
 
 	InputManager& input = GetApp().getManagerTFast<InputManager>();
 	input.getKeyboard()->addCharacterHandler(Gaff::Func(HandleKeyboardCharacter));

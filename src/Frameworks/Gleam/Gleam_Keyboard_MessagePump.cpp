@@ -139,15 +139,15 @@ const IWindow* KeyboardMP::getAssociatedWindow(void) const
 bool KeyboardMP::handleMessage(const AnyMessage& message)
 {
 	switch (message.base.type) {
-		case EventType::IN_KEYDOWN:
+		case EventType::InputKeyDown:
 			_data[static_cast<int32_t>(message.key_char.key)] = true;
 			return true;
 
-		case EventType::IN_KEYUP:
+		case EventType::InputKeyUp:
 			_data[static_cast<int32_t>(message.key_char.key)] = false;
 			return true;
 
-		case EventType::IN_CHARACTER: {
+		case EventType::InputCharacter: {
 			const int32_t size = static_cast<int32_t>(_character_handlers.size());
 
 			for (int32_t i = 0; i < size; ++i) {

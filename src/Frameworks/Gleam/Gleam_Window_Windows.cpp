@@ -93,13 +93,13 @@ static bool DoFirstInit(
 	VectorMap<uint16_t, KeyCode>& right_keys)
 {
 	if (g_first_init) {
-		left_keys[VK_CONTROL] = KeyCode::KEY_LEFTCONTROL;
-		left_keys[VK_MENU] = KeyCode::KEY_LEFTALT;
-		left_keys[VK_SHIFT] = KeyCode::KEY_LEFTSHIFT;
+		left_keys[VK_CONTROL] = KeyCode::LeftControl;
+		left_keys[VK_MENU] = KeyCode::LeftAlt;
+		left_keys[VK_SHIFT] = KeyCode::LeftShift;
 
-		right_keys[VK_CONTROL] = KeyCode::KEY_RIGHTCONTROL;
-		right_keys[VK_MENU] = KeyCode::KEY_RIGHTALT;
-		right_keys[VK_SHIFT] = KeyCode::KEY_RIGHTSHIFT;
+		right_keys[VK_CONTROL] = KeyCode::RightControl;
+		right_keys[VK_MENU] = KeyCode::RightAlt;
+		right_keys[VK_SHIFT] = KeyCode::RightShift;
 
 		WNDCLASSEX wc;
 		wc.style = CS_HREDRAW | CS_VREDRAW;
