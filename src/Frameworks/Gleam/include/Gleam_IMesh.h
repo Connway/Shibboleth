@@ -32,7 +32,8 @@ class IBuffer;
 class IMesh
 {
 public:
-	enum class TopologyType {
+	enum class TopologyType
+	{
 		PointList = 0,
 		LineList,
 		LineStrip,

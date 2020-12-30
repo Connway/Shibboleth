@@ -225,7 +225,7 @@ enum class Cursor
 
 #elif defined(PLATFORM_LINUX)
 
-enum KeyCode
+enum class KeyCode
 {
 	// Cancel = 0xff69,
 	Backspace = 22,

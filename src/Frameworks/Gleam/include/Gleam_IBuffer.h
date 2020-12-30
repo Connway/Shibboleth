@@ -32,7 +32,8 @@ class IRenderDevice;
 class IBuffer
 {
 public:
-	enum class Type {
+	enum class Type
+	{
 		VertexData = 0,
 		IndexData,
 		ShaderConstantData,
@@ -41,7 +42,8 @@ public:
 		Count
 	};
 
-	enum class MapType {
+	enum class MapType
+	{
 		None = 0,
 		Read,
 		Write,
