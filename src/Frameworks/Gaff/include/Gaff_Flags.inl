@@ -62,7 +62,7 @@ constexpr typename Flags<Enum>::StorageType Flags<Enum>::GetBits(Enum flag, Enum
 template <class Enum>
 constexpr typename Flags<Enum>::StorageType Flags<Enum>::GetBit(Enum flag)
 {
-	return 1 << static_cast<StorageType>(flag);
+	return static_cast<StorageType>(1) << static_cast<StorageType>(flag);
 }
 
 template <class Enum>
@@ -99,28 +99,28 @@ void Flags<Enum>::set(bool value, Enum flag, Enum2... rest)
 
 template <class Enum>
 template <class... Enum2>
-constexpr Flags<Enum>::Flags(Enum flag, Enum2... rest)
+Flags<Enum>::Flags(Enum flag, Enum2... rest)
 {
 	_flags.from_uint64(GetBits(flag, rest...));
 }
 
 template <class Enum>
-constexpr Flags<Enum>::Flags(typename BitsetType flags):
+Flags<Enum>::Flags(typename BitsetType flags):
 	_flags(flags)
 {
 }
 
 template <class Enum>
-constexpr Flags<Enum>::Flags(typename StorageType flags)
+Flags<Enum>::Flags(typename StorageType flags)
 {
 	_flags.from_uint64(flags);
 }
 
-//template <class Enum>
-//constexpr Flags<Enum>::Flags(Flags<Enum> rhs):
-//	_flags(rhs._flags)
-//{
-//}
+template <class Enum>
+Flags<Enum>::Flags(const Flags<Enum>& rhs):
+	_flags(rhs._flags)
+{
+}
 
 template <class Enum>
 bool Flags<Enum>::testAll(typename StorageType flags) const
@@ -210,6 +210,13 @@ int32_t Flags<Enum>::countSet(void) const
 {
 	return static_cast<int32_t>(_flags.count());
 }
+
+template <class Enum>
+typename Flags<Enum>::StorageType Flags<Enum>::getStorage(void) const
+{
+	return *_flags.data();
+}
+
 
 template <class Enum>
 bool Flags<Enum>::operator==(Flags rhs) const

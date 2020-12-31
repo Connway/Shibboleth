@@ -103,11 +103,11 @@ public:
 	void set(bool value, Enum flag, Enum2... rest);
 
 	template <class... Enum2>
-	constexpr Flags(Enum flag, Enum2... rest);
+	Flags(Enum flag, Enum2... rest);
 
-	constexpr Flags(typename BitsetType flags);
-	constexpr Flags(typename StorageType flags = 0);
-	//constexpr Flags(Flags rhs);
+	Flags(typename BitsetType flags);
+	Flags(typename StorageType flags = 0);
+	Flags(const Flags& rhs);
 
 	bool testAll(typename StorageType flags) const;
 	bool testAny(typename StorageType flags) const;
@@ -122,6 +122,8 @@ public:
 
 	int32_t countUnset(void) const;
 	int32_t countSet(void) const;
+
+	typename StorageType getStorage(void) const;
 
 	bool operator==(Flags rhs) const;
 	bool operator!=(Flags rhs) const;

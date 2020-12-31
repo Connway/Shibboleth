@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_Broadcaster.h"
+#include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_JobPool.h"
@@ -64,6 +65,7 @@ public:
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
 
+	FileWatcherManager& getFileWatcherManager(void) override;
 	DynamicLoader& getDynamicLoader(void) override;
 
 	bool isQuitting(void) const override;
@@ -95,6 +97,7 @@ private:
 
 	ReflectionManager _reflection_mgr;
 
+	FileWatcherManager _file_watcher_mgr;
 	DynamicLoader _dynamic_loader;
 	Broadcaster _broadcaster;
 	LogManager _log_mgr;
@@ -120,6 +123,7 @@ private:
 	bool createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers);
 	bool hasManager(Gaff::Hash64 name) const;
 
+	static void ModuleChanged(const char* path);
 	static void ThreadInit(uintptr_t thread_id);
 
 	GAFF_NO_COPY(App);

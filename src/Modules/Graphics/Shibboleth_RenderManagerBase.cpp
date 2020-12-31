@@ -73,7 +73,8 @@ R"({
 					"window_mode": { "type": "string" /*, "enum": ["windowed", "fullscreen", "borderless_windowed"]*/ },
 					"adapter_id": { "type": "number" },
 					"display_id": { "type": "number" },
-					"vsync": { "type": "boolean" }
+					"vsync": { "type": "boolean" },
+					"icon": { "type": "string" }
 				},
 
 				"requires": ["width", "height", "refresh_rate", "window_mode", "adapter_id", "display_id", "vsync"],
@@ -239,6 +240,12 @@ bool RenderManagerBase::init(void)
 			LogErrorDefault("Failed to create window '%s'.", key);
 			SHIB_FREET(window, GetAllocator());
 			return false;
+		}
+
+		if (const Gaff::JSON icon = value["icon"]; icon.isString()) {
+			if (!window->setIcon(icon.getString())) {
+				// $TODO: Log warning.
+			}
 		}
 
 		// Add the device to the window tag.

@@ -155,7 +155,7 @@ bool App::init(void)
 void App::run(void)
 {
 	while (_running) {
-		//uv_run(uv_default_loop(), UV_RUN_NOWAIT);
+		_file_watcher_mgr.update(); // $TODO: Potentially consider threading this.
 		_main_loop->update();
 	}
 }
@@ -375,6 +375,11 @@ LogManager& App::getLogManager(void)
 JobPool& App::getJobPool(void)
 {
 	return _job_pool;
+}
+
+FileWatcherManager& App::getFileWatcherManager(void)
+{
+	return _file_watcher_mgr;
 }
 
 DynamicLoader& App::getDynamicLoader(void)
@@ -827,6 +832,27 @@ bool App::loadModule(const char* module_path, InitMode mode)
 		return false;
 	}
 
+	if (_configs["hot_reload_modules"].isTrue()) {
+		const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name.data());
+		const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
+
+		for (const auto& dir_entry : std::filesystem::directory_iterator("../.generated/build/" PLATFORM_NAME)) {
+			if (!dir_entry.is_regular_file()) {
+				continue;
+			}
+
+			const auto abs_file_path = std::filesystem::absolute(dir_entry.path());
+			const wchar_t* file_name = abs_file_path.c_str();
+			CONVERT_STRING(char, temp_path, file_name);
+
+			if (Gaff::FindFirstOf(temp_path, module_file_name.data()) != U8String::npos) {
+				if (!_file_watcher_mgr.addWatch(temp_path, false, flags, ModuleChanged)) {
+					// $TODO: Log warning.
+				}
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -893,6 +919,11 @@ bool App::hasManager(Gaff::Hash64 name) const
 {
 	auto it = _manager_map.find(name);
 	return it != _manager_map.end();
+}
+
+void App::ModuleChanged(const char* path)
+{
+	GAFF_REF(path);
 }
 
 void App::ThreadInit(uintptr_t /*thread_id*/)

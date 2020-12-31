@@ -26,12 +26,15 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 	#define PLATFORM_WINDOWS
+	#define PLATFORM_NAME "windows"
 #elif defined(__linux__)
 	#define PLATFORM_LINUX
+	#define PLATFORM_NAME "linux"
 //#elif defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
 //	#define PLATFORM_IOS
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 	#define PLATFORM_MAC
+	#define PLATFORM_NAME "macosx"
 //#elif defined(__ANDROID__)
 //	#define PLATFORM_ANDROID
 #else
