@@ -35,4 +35,6 @@ IApp& GetApp(void);
 bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, const IFile* file, bool copy_buffer = false);
 bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path);
 
+void SetMemoryFunctions(void);
+
 NS_END

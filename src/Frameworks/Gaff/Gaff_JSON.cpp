@@ -199,6 +199,12 @@ JSON JSON::CreateDouble(double val)
 	return JSON(std::move(value));
 }
 
+JSON JSON::CreateStringRef(const char* val)
+{
+	JSONValue value = JSONValue(JSONValue::StringRefType(val));
+	return JSON(std::move(value));
+}
+
 JSON JSON::CreateString(const char* val)
 {
 	JSONValue value = JSONValue(val, g_allocator);
@@ -229,27 +235,53 @@ JSON JSON::CreateNull(void)
 	return JSON(std::move(value));
 }
 
+const JSON::JSONValue& JSON::getValue(void) const
+{
+	return const_cast<JSON*>(this)->getValue();
+}
+
+JSON::JSONValue& JSON::getValue(void)
+{
+	return (_is_reference) ? *_value_ref : _value;
+}
+
 JSON::JSON(const JSONValue& json):
 	_value(json, g_allocator)
 {
 }
 
-JSON::JSON(const JSON& json):
-	_value(json._value, g_allocator)
+JSON::JSON(JSONValue* json):
+	_value_ref(json), _is_reference(true)
 {
 }
 
-JSON::JSON(JSON&& json):
-	_value(std::move(json._value))
+JSON::JSON(JSONValue&& json):
+	_value(std::move(json))
 {
+}
+
+JSON::JSON(const JSON& json):
+	JSON()
+{
+	*this = json;
+}
+
+JSON::JSON(JSON&& json):
+	JSON()
+{
+	*this = std::move(json);
 }
 
 JSON::JSON(void)
 {
+	new(&_value) JSONValue();
 }
 
 JSON::~JSON(void)
 {
+	if (!_is_reference) {
+		_value.~JSONValue();
+	}
 }
 
 bool JSON::validateFile(const char* schema_file) const
@@ -272,7 +304,7 @@ bool JSON::validate(const JSON& schema) const
 	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
-	if (!_value.Accept(validator)) {
+	if (!getValue().Accept(validator)) {
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
 		const char* keyword_error = validator.GetInvalidSchemaKeyword();
@@ -305,6 +337,8 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
 	GAFF_ASSERT(filename && strlen(filename));
+	*this = CreateNull();
+
 	FILE* file = nullptr;
 	fopen_s(&file, filename, "r");
 
@@ -314,7 +348,7 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 
 	char buffer[2048];
 
-	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
+	JSONSchemaDocument sd(schema.getValue(), nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
 	rapidjson::FileReadStream stream(file, buffer, 2048);
@@ -342,13 +376,13 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 
 	JSONValue& value = document;
 	_value = std::move(value);
+	_is_reference = false;
 
 	return true;
 }
 
 bool JSON::parseFile(const char* filename, const char* schema_input)
 {
-	GAFF_ASSERT(filename && strlen(filename));
 	JSON schema;
 
 	if (!schema.parse(schema_input)) {
@@ -362,6 +396,8 @@ bool JSON::parseFile(const char* filename, const char* schema_input)
 bool JSON::parseFile(const char* filename)
 {
 	GAFF_ASSERT(filename && strlen(filename));
+	*this = CreateNull();
+
 	FILE* file = nullptr;
 	fopen_s(&file, filename, "r");
 
@@ -384,15 +420,19 @@ bool JSON::parseFile(const char* filename)
 
 	JSONValue& value = document;
 	_value = std::move(value);
+	_is_reference = false;
 	return true;
 }
 
 bool JSON::parse(const char* input, const JSON& schema)
 {
+	GAFF_ASSERT(input && strlen(input));
+	*this = CreateNull();
+
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
-	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
+	JSONSchemaDocument sd(schema.getValue(), nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
 	rapidjson::StringStream stream(input);
@@ -421,6 +461,7 @@ bool JSON::parse(const char* input, const JSON& schema)
 
 	JSONValue& value = document;
 	_value = std::move(value);
+	_is_reference = false;
 
 	return true;
 }
@@ -440,6 +481,7 @@ bool JSON::parse(const char* input, const char* schema_input)
 bool JSON::parse(const char* input)
 {
 	GAFF_ASSERT(input && strlen(input));
+	*this = CreateNull();
 
 	JSONDocument document;
 	document.Parse(input);
@@ -451,12 +493,13 @@ bool JSON::parse(const char* input)
 
 	JSONValue& value = document;
 	_value = std::move(value);
+	_is_reference = false;
 	return true;
 }
 
 bool JSON::dumpToFile(const char* filename) const
 {
-	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
+	GAFF_ASSERT(isArray() || isObject());
 	FILE* file = nullptr;
 	fopen_s(&file, filename, "w");
 
@@ -480,7 +523,7 @@ bool JSON::dumpToFile(const char* filename) const
 
 const char* JSON::dump(void)
 {
-	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
+	GAFF_ASSERT(isArray() || isObject());
 	JSONStringBuffer buffer;
 
 	rapidjson::PrettyWriter<
@@ -503,347 +546,367 @@ const char* JSON::dump(void)
 
 bool JSON::isObject(void) const
 {
-	return _value.IsObject();
+	return getValue().IsObject();
 }
 
 bool JSON::isArray(void) const
 {
-	return _value.IsArray();
+	return getValue().IsArray();
 }
 
 bool JSON::isString(void) const
 {
-	return _value.IsString();
+	return getValue().IsString();
 }
 
 bool JSON::isNumber(void) const
 {
-	return _value.IsNumber();
+	return getValue().IsNumber();
 }
 
 bool JSON::isInt8(void) const
 {
-	return _value.IsInt();
+	return getValue().IsInt();
 }
 
 bool JSON::isUInt8(void) const
 {
-	return _value.IsUint();
+	return getValue().IsUint();
 }
 
 bool JSON::isInt16(void) const
 {
-	return _value.IsInt();
+	return getValue().IsInt();
 }
 
 bool JSON::isUInt16(void) const
 {
-	return _value.IsUint();
+	return getValue().IsUint();
 }
 
 bool JSON::isInt32(void) const
 {
-	return _value.IsInt();
+	return getValue().IsInt();
 }
 
 bool JSON::isUInt32(void) const
 {
-	return _value.IsUint();
+	return getValue().IsUint();
 }
 
 bool JSON::isInt64(void) const
 {
-	return _value.IsInt64();
+	return getValue().IsInt64();
 }
 
 bool JSON::isUInt64(void) const
 {
-	return _value.IsUint64();
+	return getValue().IsUint64();
 }
 
 bool JSON::isFloat(void) const
 {
-	return _value.IsFloat();
+	return getValue().IsFloat();
 }
 
 bool JSON::isDouble(void) const
 {
-	return _value.IsDouble();
+	return getValue().IsDouble();
 }
 
 bool JSON::isBool(void) const
 {
-	return _value.IsBool();
+	return getValue().IsBool();
 }
 
 bool JSON::isTrue(void) const
 {
-	return _value.IsTrue();
+	return getValue().IsTrue();
 }
 
 bool JSON::isFalse(void) const
 {
-	return _value.IsFalse();
+	return getValue().IsFalse();
 }
 
 bool JSON::isNull(void) const
 {
-	return _value.IsNull();
+	return getValue().IsNull();
 }
 
 JSON JSON::getObject(const char* key) const
 {
-	auto it = _value.FindMember(key);
+	auto it = getValue().FindMember(key);
 
-	if (it == _value.MemberEnd()) {
+	if (it == getValue().MemberEnd()) {
 		return CreateNull();
 	}
 
-	return JSON(it->value);
+	return JSON(const_cast<JSONValue*>(&it->value));
 }
 
 JSON JSON::getObject(int32_t index) const
 {
-	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
+	return JSON(const_cast<JSONValue*>(&getValue()[static_cast<rapidjson::SizeType>(index)]));
 }
 
 const char* JSON::getKey(char* buffer, size_t buf_size, int32_t index) const
 {
-	GAFF_ASSERT(_value.IsObject() && index < size());
-	const char* const key = (_value.MemberBegin() + index)->name.GetString();
+	GAFF_ASSERT(isObject() && index < size());
+	const char* const key = (getValue().MemberBegin() + index)->name.GetString();
 	strncpy(buffer, key, buf_size - 1);
 	return buffer;
 }
 
 const char* JSON::getKey(int32_t index) const
 {
-	GAFF_ASSERT(_value.IsObject() && index < size());
-	return (_value.MemberBegin() + index)->name.GetString();
+	GAFF_ASSERT(isObject() && index < size());
+	return (getValue().MemberBegin() + index)->name.GetString();
 }
 
 JSON JSON::getValue(int32_t index) const
 {
-	GAFF_ASSERT(_value.IsObject() && index < size());
-	return JSON((_value.MemberBegin() + index)->value);
+	GAFF_ASSERT(isObject() && index < size());
+	return JSON(const_cast<JSONValue*>(&(getValue().MemberBegin() + index)->value));
 }
 
 const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
 {
-	return (_value.IsNull()) ? strncpy(buffer, default_value, buf_size - 1) : strncpy(buffer, _value.GetString(), buf_size - 1);
+	return (isNull()) ? strncpy(buffer, default_value, buf_size - 1) : strncpy(buffer, getValue().GetString(), buf_size - 1);
 }
 
 const char* JSON::getString(const char* default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetString();
+	return (isNull()) ? default_value : getValue().GetString();
 }
 
 int8_t JSON::getInt8(int8_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : static_cast<int8_t>(_value.GetInt());
+	return (isNull()) ? default_value : getInt8();
 }
 
 uint8_t JSON::getUInt8(uint8_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : static_cast<uint8_t>(_value.GetUint());
+	return (isNull()) ? default_value : getUInt8();
 }
 
 int16_t JSON::getInt16(int16_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : static_cast<int16_t>(_value.GetInt());
+	return (isNull()) ? default_value : getInt16();
 }
 
 uint16_t JSON::getUInt16(uint16_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : static_cast<uint16_t>(_value.GetUint());
+	return (isNull()) ? default_value : getUInt16();
 }
 
 int32_t JSON::getInt32(int32_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetInt();
+	return (isNull()) ? default_value : getInt32();
 }
 
 uint32_t JSON::getUInt32(uint32_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetUint();
+	return (isNull()) ? default_value : getUInt32();
 }
 
 int64_t JSON::getInt64(int64_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetInt64();
+	return (isNull()) ? default_value : getInt64();
 }
 
 uint64_t JSON::getUInt64(uint64_t default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetUint64();
+	return (isNull()) ? default_value : getUInt64();
 }
 
 float JSON::getFloat(float default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetFloat();
+	return (isNull()) ? default_value : getFloat();
 }
 
 double JSON::getDouble(double default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetDouble();
+	return (isNull()) ? default_value : getDouble();
 }
 
 double JSON::getNumber(double default_value) const
 {
-	return (_value.IsNull()) ? default_value : getNumber();
+	return (isNull()) ? default_value : getNumber();
 }
 
 bool JSON::getBool(bool default_value) const
 {
-	return (_value.IsNull()) ? default_value : _value.GetBool();
+	return (isNull()) ? default_value : getBool();
 }
 
 const char* JSON::getString(char* buffer, size_t buf_size) const
 {
-	return strncpy(buffer, _value.GetString(), buf_size - 1);
+	return strncpy(buffer, getString(), buf_size - 1);
 }
 
 const char* JSON::getString(void) const
 {
-	return _value.GetString();
+	return getValue().GetString();
 }
 
 int8_t JSON::getInt8(void) const
 {
-	return static_cast<int8_t>(_value.GetInt());
+	return static_cast<int8_t>(getValue().GetInt());
 }
 
 uint8_t JSON::getUInt8(void) const
 {
-	return static_cast<uint8_t>(_value.GetUint());
+	return static_cast<uint8_t>(getValue().GetUint());
 }
 
 int16_t JSON::getInt16(void) const
 {
-	return static_cast<int16_t>(_value.GetInt());
+	return static_cast<int16_t>(getValue().GetInt());
 }
 
 uint16_t JSON::getUInt16(void) const
 {
-	return static_cast<uint16_t>(_value.GetUint());
+	return static_cast<uint16_t>(getValue().GetUint());
 }
 
 int32_t JSON::getInt32(void) const
 {
-	return _value.GetInt();
+	return getValue().GetInt();
 }
 
 uint32_t JSON::getUInt32(void) const
 {
-	return _value.GetUint();
+	return getValue().GetUint();
 }
 
 int64_t JSON::getInt64(void) const
 {
-	return _value.GetInt64();
+	return getValue().GetInt64();
 }
 
 uint64_t JSON::getUInt64(void) const
 {
-	return _value.GetUint64();
+	return getValue().GetUint64();
 }
 
 float JSON::getFloat(void) const
 {
-	return _value.GetFloat();
+	return getValue().GetFloat();
 }
 
 double JSON::getDouble(void) const
 {
-	return _value.GetDouble();
+	return getValue().GetDouble();
 }
 
 double JSON::getNumber(void) const
 {
-	double value = 0.0f;
+	const JSONValue& value = getValue();
+	double ret = 0.0f;
 
-	if (_value.IsInt()) {
-		value = static_cast<double>(_value.GetInt());
-	} else if (_value.IsUint()) {
-		value = static_cast<double>(_value.GetUint());
-	} else if (_value.IsInt64()) {
-		value = static_cast<double>(_value.GetInt64());
-	} else if (_value.IsUint64()) {
-		value = static_cast<double>(_value.GetUint64());
+	if (value.IsInt()) {
+		ret = static_cast<double>(value.GetInt());
+	} else if (value.IsUint()) {
+		ret = static_cast<double>(value.GetUint());
+	} else if (value.IsInt64()) {
+		ret = static_cast<double>(value.GetInt64());
+	} else if (value.IsUint64()) {
+		ret = static_cast<double>(value.GetUint64());
+	} else if (value.IsFloat()) {
+		ret = static_cast<double>(value.GetFloat());
+	} else if (value.IsDouble()) {
+		ret = value.GetDouble();
 	}
 
-	return value;
+	return ret;
 }
 
 bool JSON::getBool(void) const
 {
-	return _value.GetBool();
+	return getValue().GetBool();
 }
 
 void JSON::setObject(const char* key, const JSON& json)
 {
-	GAFF_ASSERT(_value.IsObject());
-	JSONValue value(json._value, g_allocator);
+	GAFF_ASSERT(isObject());
+	JSONValue value(json.getValue(), g_allocator);
+	JSONValue& value_ref = getValue();
 
-	auto it = _value.FindMember(key);
+	auto it = value_ref.FindMember(key);
 
-	if (it != _value.MemberEnd()) {
+	if (it != value_ref.MemberEnd()) {
 		it->value = std::move(value);
 	} else {
-		_value.AddMember(JSONValue(key, g_allocator), std::move(value), g_allocator);
+		value_ref.AddMember(JSONValue(key, g_allocator), std::move(value), g_allocator);
 	}
 }
 
 void JSON::setObject(const char* key, JSON&& json)
 {
-	GAFF_ASSERT(_value.IsObject());
-	auto it = _value.FindMember(key);
+	if (json._is_reference) {
+		setObject(key, json);
+	}
 
-	if (it != _value.MemberEnd()) {
-		it->value = std::move(json._value);
+	GAFF_ASSERT(isObject());
+
+	JSONValue& value_ref = getValue();
+	auto it = value_ref.FindMember(key);
+
+	if (it != value_ref.MemberEnd()) {
+		it->value = std::move(value_ref);
 	} else {
-		_value.AddMember(JSONValue(key, g_allocator), std::move(json._value), g_allocator);
+		value_ref.AddMember(JSONValue(key, g_allocator), std::move(json._value), g_allocator);
 	}
 }
 
 void JSON::setObject(int32_t index, const JSON& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
-	JSONValue value(json._value, g_allocator);
+	GAFF_ASSERT(isArray() && index < size());
 
-	_value[static_cast<rapidjson::SizeType>(index)] = std::move(value);
+	JSONValue value(json.getValue(), g_allocator);
+	getValue()[static_cast<rapidjson::SizeType>(index)] = std::move(value);
 }
 
 void JSON::setObject(int32_t index, JSON&& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
-	_value[static_cast<rapidjson::SizeType>(index)] = std::move(json._value);
+	if (json._is_reference) {
+		setObject(index, json);
+	}
+
+	GAFF_ASSERT(isArray() && index < size());
+	getValue()[static_cast<rapidjson::SizeType>(index)] = std::move(json._value);
 }
 
 void JSON::push(const JSON& json)
 {
-	GAFF_ASSERT(_value.IsArray());
-	JSONValue value(json._value, g_allocator);
+	GAFF_ASSERT(isArray());
 
-	_value.PushBack(std::move(value), g_allocator);
+	JSONValue value(json.getValue(), g_allocator);
+	getValue().PushBack(std::move(value), g_allocator);
 }
 
 void JSON::push(JSON&& json)
 {
-	GAFF_ASSERT(_value.IsArray());
-	_value.PushBack(std::move(json._value), g_allocator);
+	if (json._is_reference) {
+		push(json);
+	}
+
+	GAFF_ASSERT(isArray());
+	getValue().PushBack(std::move(json._value), g_allocator);
 }
 
 int32_t JSON::size(void) const
 {
 	GAFF_ASSERT(isString() || isArray() || isObject());
 
-	if (isString()) {
-		return static_cast<int32_t>(_value.GetStringLength());
+	if (isObject()) {
+		return static_cast<int32_t>(getValue().MemberCount());
 	} else if (isArray()) {
-		return static_cast<int32_t>(_value.Size());
+		return static_cast<int32_t>(getValue().Size());
 	}
 
-	return static_cast<int32_t>(_value.MemberCount());
+	return static_cast<int32_t>(getValue().GetStringLength());
 }
 
 const char* JSON::getErrorText(void) const
@@ -863,60 +926,83 @@ const char* JSON::getSchemaKeywordText(void) const
 
 JSON& JSON::operator=(const JSON& rhs)
 {
-	_value = JSONValue(rhs._value, g_allocator);
+	if (!_is_reference) {
+		_value.~JSONValue();
+	}
+
+	_is_reference = rhs._is_reference;
+
+	if (_is_reference) {
+		_value_ref = rhs._value_ref;
+	} else {
+		_value = JSONValue(rhs._value, g_allocator);
+	}
+
 	return *this;
 }
 
 JSON& JSON::operator=(JSON&& rhs)
 {
-	_value = std::move(rhs._value);
+	if (!_is_reference) {
+		_value.~JSONValue();
+	}
+
+	_is_reference = rhs._is_reference;
+
+	if (_is_reference) {
+		_value_ref = rhs._value_ref;
+		rhs = JSON();
+	} else {
+		_value = std::move(rhs._value);
+	}
+
 	return *this;
 }
 
 JSON& JSON::operator=(const char* value)
 {
-	_value.SetString(value, g_allocator);
+	getValue().SetString(value, g_allocator);
 	return *this;
 }
 
 JSON& JSON::operator=(int32_t value)
 {
-	_value.SetInt(value);
+	getValue().SetInt(value);
 	return *this;
 }
 
 JSON& JSON::operator=(uint32_t value)
 {
-	_value.SetUint(value);
+	getValue().SetUint(value);
 	return *this;
 }
 
 JSON& JSON::operator=(int64_t value)
 {
-	_value.SetInt64(value);
+	getValue().SetInt64(value);
 	return *this;
 }
 
 JSON& JSON::operator=(uint64_t value)
 {
-	_value.SetUint64(value);
+	getValue().SetUint64(value);
 	return *this;
 }
 
 JSON& JSON::operator=(double value)
 {
-	_value.SetDouble(value);
+	getValue().SetDouble(value);
 	return *this;
 }
 
 bool JSON::operator==(const JSON& rhs) const
 {
-	return _value == rhs._value;
+	return getValue() == rhs.getValue();
 }
 
 bool JSON::operator!=(const JSON& rhs) const
 {
-	return _value != rhs._value;
+	return getValue() != rhs.getValue();
 }
 
 JSON JSON::operator[](const char* key) const

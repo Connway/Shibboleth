@@ -24,3 +24,7 @@ Libraries Affected:
 
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
+
+	Catch2
+		Wrapped main function definitions into a DO_NOT_GENERATE_MAIN block to optionally compile them out.
+		Added my own main function that lives next to Catch2 code.

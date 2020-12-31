@@ -79,10 +79,15 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path)
 	return false;
 }
 
+void SetMemoryFunctions(void)
+{
+	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+}
+
 NS_END
 
 GAFF_STATIC_FILE_FUNC
 {
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Shibboleth::SetMemoryFunctions();
 }

@@ -394,7 +394,27 @@ void App::quit(void)
 
 bool App::initInternal(void)
 {
-	const char* const log_dir = _configs["log_dir"].getString("./logs");
+	const char* log_dir = _configs["log_dir"].getString("./logs");
+
+	size_t prev_index = 0;
+	size_t index = Gaff::FindFirstOf(log_dir, '/');
+
+	if (log_dir[0] == '.' && index == 1) {
+		index = Gaff::FindFirstOf(log_dir + 2, '/') + 2;
+	}
+
+	while (index != U8String::npos) {
+		index += prev_index;
+
+		const U8String dir(log_dir, log_dir + prev_index + index - prev_index);
+
+		if (!Gaff::CreateDir(dir.data(), 0777)) {
+			return false;
+		}
+
+		prev_index = index + 1;
+		index = Gaff::FindFirstOf(log_dir + prev_index, '/');
+	}
 
 	if (!Gaff::CreateDir(log_dir, 0777)) {
 		return false;
@@ -585,6 +605,10 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
+	if (_configs["no_load_modules"].isTrue()) {
+		return true;
+	}
+
 	const Gaff::JSON& module_load_order = _configs["module_load_order"];
 	const Gaff::JSON& module_dirs = _configs["module_directories"];
 
@@ -738,20 +762,20 @@ bool App::initApp(void)
 		const char8_t* working_dir_ptr = wd.getString();
 		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
 
-		if ((temp[wd.size() - 1] == TEXT('/') || temp[wd.size() - 1] == TEXT('\\'))) {
-			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t) * 4);
+		if ((temp[wd.size() - 1] == L'/' || temp[wd.size() - 1] == L'\\')) {
+			memcpy(temp + wd.size(), L"bin", sizeof(wchar_t) * 4);
 		} else {
-			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t) * 4);
+			memcpy(temp + wd.size(), L"/bin", sizeof(wchar_t) * 4);
 		}
 
 		if (!SetDllDirectory(temp)) {
-			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set DLL directory to '%ls'.", temp);
 			return false;
 		}
 
 	} else {
-		if (!SetDllDirectory(TEXT("bin"))) {
-			LogErrorDefault("Failed to set DLL directory to '%s'.", wd.getString());
+		if (!SetDllDirectory(L"bin")) {
+			LogErrorDefault("Failed to set DLL directory to '%s/bin'.", wd.getString());
 			return false;
 		}
 #endif
@@ -808,7 +832,8 @@ bool App::loadModule(const char* module_path, InitMode mode)
 
 void App::removeExtraLogs(void)
 {
-	const char* const log_dir = _configs["log_dir"].getString("./logs");
+	const Gaff::JSON log_dir_holder = _configs["log_dir"]; // Need to hold this otherwise the string gets deallocated.
+	const char* const log_dir = log_dir_holder.getString("./logs");
 	int32_t dir_count = 0;
 
 	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {

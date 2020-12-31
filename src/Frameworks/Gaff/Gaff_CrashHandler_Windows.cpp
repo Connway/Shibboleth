@@ -51,12 +51,12 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	// Generate dump file name
 	TCHAR process_name[MAX_PATH] = { 0 };
 	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
-	size_t name_begin = FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
+	size_t name_begin = FindLastOf(process_name, MAX_PATH - 1, L'\\') + 1;
 
 
 	TCHAR dump_format[128] = { 0 };
-	GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));
-	dump_format[6] = TEXT('%');
+	GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, L"dumps/0s_%Y-%m-%d %H-%M-%S.dmp");
+	dump_format[6] = L'%';
 
 	TCHAR dump_file_name[1024] = { 0 };
 

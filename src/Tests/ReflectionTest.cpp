@@ -20,18 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
 #include <Gaff_MessagePackSerializeWriter.h>
 #include <Gaff_JSONSerializeWriter.h>
 #include <Gaff_SerializeReader.h>
 #include <Gaff_DynamicModule.h>
-
-Shibboleth::App g_app;
+#include <catch_amalgamated.hpp>
+#include <filesystem>
+#include <fstream>
 
 class Base : public Gaff::IReflectionObject
 {
@@ -116,15 +113,6 @@ TEST_CASE("shibboleth_reflection_basic")
 
 TEST_CASE("shibboleth_reflection_class")
 {
-	Shibboleth::AllocatorThreadInit();
-
-	//g_app.init(0, nullptr);
-	Shibboleth::SetApp(g_app);
-
-	Gaff::InitAttributeReflection();
-	Gaff::InitClassReflection();
-	Gaff::InitEnumReflection();
-
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Derived>::GetName());
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Base>::GetName());
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Foo::NamespaceClass>::GetName());
@@ -390,7 +378,6 @@ TEST_CASE("shibboleth_factory")
 
 //TEST_CASE("shibboleth_reflection_module")
 //{
-//	Shibboleth::App app;
 //	Gaff::DynamicModule module;
 //	bool ret = module.load("ResourceModule" BIT_EXTENSION);
 //
@@ -399,10 +386,8 @@ TEST_CASE("shibboleth_factory")
 //	if (ret) {
 //		using InitFunc = bool (*)(Shibboleth::IApp*);
 //		InitFunc init = module.getFunc<InitFunc>("InitModule");
-//		init(&app);
+//		init(&Shibboleth::GetApp());
 //	}
-//
-//	app.destroy();
 //}
 
 
@@ -583,175 +568,184 @@ TEST_CASE("shibboleth_enum")
 }
 
 
-//class SerializeTestClass
-//{
-//};
-//
-//using STCPtr = Shibboleth::UniquePtr<SerializeTestClass>;
-//
-//SHIB_REFLECTION_DECLARE_SERIALIZE(STCPtr)
-//
-//SHIB_REFLECTION_DEFINE_SERIALIZE_INIT(STCPtr)
-//{
-//}
-//
-//SHIB_REFLECTION_DEFINE_SERIALIZE_LOAD(STCPtr)
-//{
-//	GAFF_REF(object);
-//	printf("Load STCPtr\n");
-//
-//	reader.enterElement("test_string");
-//	char buffer[128] = { 0 };
-//	printf("Value at 'test_string' is '%s'\n", reader.readString(buffer, sizeof(buffer)));
-//	reader.exitElement();
-//}
-//
-//SHIB_REFLECTION_DEFINE_SERIALIZE_SAVE(STCPtr)
-//{
-//	GAFF_REF(object);
-//	printf("Save STCPtr\n");
-//
-//	writer.startObject(1);
-//	writer.writeString("test_string", "This is a test string");
-//	writer.endObject();
-//}
-//
-//template <class T, class TT>
-//class SerializeTestTemplate
-//{
-//};
+class SerializeTestClass
+{
+};
 
-//SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(SerializeTestTemplate, T, TT)
-//
-//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(SerializeTestTemplate, T, TT)
-//{
-//}
-//
-//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(SerializeTestTemplate, T, TT)
-//{
-//	GAFF_REF(object);
-//	printf("Load %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
-//
-//	reader.enterElement("test_double");
-//	printf("Value at 'test_double' is '%f'\n", reader.readDouble());
-//	reader.exitElement();
-//}
-//
-//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(SerializeTestTemplate, T, TT)
-//{
-//	GAFF_REF(object);
-//	printf("Save %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
-//
-//	writer.startObject(1);
-//	writer.writeDouble("test_double", 123.0);
-//	writer.endObject();
-//}
-//
-//
-//
-//TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
-//{
-//	// Test STCPtr with JSON.
-//	{
-//		Gaff::JSONSerializeWriter<> json_writer;
-//		STCPtr stc;
-//
-//		Shibboleth::Reflection<STCPtr>::Save(json_writer, stc);
-//
-//		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
-//		Shibboleth::Reflection<STCPtr>::Load(json_reader, stc);
-//	}
-//
-//	// Test STT with JSON.
-//	{
-//		Gaff::JSONSerializeWriter<> json_writer;
-//		SerializeTestTemplate<int32_t, double> stt;
-//
-//		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(json_writer, stt);
-//
-//		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
-//		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(json_reader, stt);
-//	}
-//
-//	// Test STCPtr with MessagePack.
-//	{
-//		Gaff::MessagePackSerializeWriter mpack_writer;
-//		STCPtr stc;
-//
-//		char buffer[1024] = { 0 };
-//
-//		if (mpack_writer.init(buffer, sizeof(buffer))) {
-//			Shibboleth::Reflection<STCPtr>::Save(mpack_writer, stc);
-//			mpack_writer.finish();
-//
-//			// Write buffer to a file.
-//			std::fstream file("test.mpack", std::ios_base::out | std::ios_base::trunc);
-//
-//			if (file.is_open()) {
-//				file.write(buffer, mpack_writer.size());
-//				file.close();
-//			}
-//
-//			// Test buffer we wrote to with mpack_writer.
-//			{
-//				Gaff::MessagePackReader reader;
-//
-//				if (reader.parse(buffer, sizeof(buffer))) {
-//					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-//					Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc);
-//				}
-//			}
-//
-//			// Test binary file written to disk.
-//			{
-//				Gaff::MessagePackReader reader;
-//
-//				if (reader.openFile("test.mpack")) {
-//					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-//					Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc);
-//				}
-//			}
-//		}
-//	}
-//
-//	// Test STT with MessagePack.
-//	{
-//		Gaff::MessagePackSerializeWriter mpack_writer;
-//		SerializeTestTemplate<int32_t, double> stt;
-//
-//		char buffer[1024] = {0};
-//
-//		if (mpack_writer.init(buffer, sizeof(buffer))) {
-//			Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(mpack_writer, stt);
-//			mpack_writer.finish();
-//
-//			// Write buffer to a file.
-//			std::fstream file("test2.mpack", std::ios_base::out | std::ios_base::trunc);
-//
-//			if (file.is_open()) {
-//				file.write(buffer, mpack_writer.size());
-//				file.close();
-//			}
-//
-//			// Test buffer we wrote to with mpack_writer.
-//			{
-//				Gaff::MessagePackReader reader;
-//
-//				if (reader.parse(buffer, sizeof(buffer))) {
-//					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-//					Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt);
-//				}
-//			}
-//
-//			// Test binary file written to disk.
-//			{
-//				Gaff::MessagePackReader reader;
-//
-//				if (reader.openFile("test2.mpack")) {
-//					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-//					Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt);
-//				}
-//			}
-//		}
-//	}
-//}
+using STCPtr = Shibboleth::UniquePtr<SerializeTestClass>;
+
+static bool LoadSTCPtr(const Gaff::ISerializeReader& reader, STCPtr& out)
+{
+	GAFF_REF(out);
+	printf("Load STCPtr\n");
+
+	reader.enterElement("test_string");
+	char buffer[128] = { 0 };
+	printf("Value at 'test_string' is '%s'\n", reader.readString(buffer, sizeof(buffer)));
+	reader.exitElement();
+
+	return true;
+}
+
+static void SaveSTCPtr(Gaff::ISerializeWriter& writer, const STCPtr& value)
+{
+	GAFF_REF(value);
+	printf("Save STCPtr\n");
+
+	writer.startObject(1);
+	writer.writeString("test_string", "This is a test string");
+	writer.endObject();
+}
+
+
+SHIB_REFLECTION_DECLARE(STCPtr)
+
+SHIB_REFLECTION_DEFINE_BEGIN(STCPtr)
+	.serialize(LoadSTCPtr, SaveSTCPtr)
+SHIB_REFLECTION_DEFINE_END(STCPtr)
+
+
+template <class T, class TT>
+class SerializeTestTemplate
+{
+};
+
+template <class T, class TT>
+static bool LoadTest(const Gaff::ISerializeReader& reader, SerializeTestTemplate<T, TT>& out)
+{
+	GAFF_REF(out);
+	printf("Load %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+
+	reader.enterElement("test_double");
+	printf("Value at 'test_double' is '%f'\n", reader.readDouble());
+	reader.exitElement();
+
+	return true;
+}
+
+template <class T, class TT>
+static void SaveTest(Gaff::ISerializeWriter& writer, const SerializeTestTemplate<T, TT>& value)
+{
+	GAFF_REF(value);
+	printf("Save %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+
+	writer.startObject(1);
+	writer.writeDouble("test_double", 123.0);
+	writer.endObject();
+}
+
+SHIB_TEMPLATE_REFLECTION_DECLARE(SerializeTestTemplate, T, TT);
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(SerializeTestTemplate, T, TT)
+	.serialize(LoadTest, SaveTest)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(SerializeTestTemplate, T, TT)
+
+
+
+TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
+{
+	// Test STCPtr with JSON.
+	{
+		Gaff::JSONSerializeWriter<> json_writer;
+		STCPtr stc;
+
+		Shibboleth::Reflection<STCPtr>::Save(json_writer, stc);
+
+		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
+		REQUIRE(Shibboleth::Reflection<STCPtr>::Load(json_reader, stc));
+	}
+
+	// Test STT with JSON.
+	{
+		Gaff::JSONSerializeWriter<> json_writer;
+		SerializeTestTemplate<int32_t, double> stt;
+
+		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(json_writer, stt);
+
+		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
+		REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(json_reader, stt));
+	}
+
+	// Test STCPtr with MessagePack.
+	{
+		Gaff::MessagePackSerializeWriter mpack_writer;
+		STCPtr stc;
+
+		char buffer[1024] = { 0 };
+
+		REQUIRE(mpack_writer.init(buffer, sizeof(buffer)));
+		Shibboleth::Reflection<STCPtr>::Save(mpack_writer, stc);
+		mpack_writer.finish();
+
+		// Write buffer to a file.
+		const std::filesystem::path path("tests/test.mpack");
+		std::fstream file(path, std::ios_base::out | std::ios_base::trunc);
+
+		REQUIRE(file.is_open());
+		file.write(buffer, mpack_writer.size());
+		file.close();
+
+		REQUIRE(std::filesystem::is_regular_file(path)); // Check that file was written.
+
+		// Test buffer we wrote to with mpack_writer.
+		{
+			Gaff::MessagePackReader reader;
+
+			REQUIRE(reader.parse(buffer, sizeof(buffer)));
+			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc));
+		}
+
+		// Test binary file written to disk.
+		{
+			Gaff::MessagePackReader reader;
+
+			REQUIRE(reader.openFile("tests/test.mpack"));
+			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc));
+		}
+
+		std::filesystem::remove(path); // Don't leave it on disk.
+	}
+
+	// Test STT with MessagePack.
+	{
+		Gaff::MessagePackSerializeWriter mpack_writer;
+		SerializeTestTemplate<int32_t, double> stt;
+
+		char buffer[1024] = {0};
+
+		REQUIRE(mpack_writer.init(buffer, sizeof(buffer)));
+		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(mpack_writer, stt);
+		mpack_writer.finish();
+
+		// Write buffer to a file.
+		const std::filesystem::path path("tests/test2.mpack");
+		std::fstream file(path, std::ios_base::out | std::ios_base::trunc);
+
+		REQUIRE(file.is_open());
+		file.write(buffer, mpack_writer.size());
+		file.close();
+
+		REQUIRE(std::filesystem::is_regular_file(path)); // Check that file was written.
+
+		// Test buffer we wrote to with mpack_writer.
+		{
+			Gaff::MessagePackReader reader;
+
+			REQUIRE(reader.parse(buffer, sizeof(buffer)));
+			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt));
+		}
+
+		// Test binary file written to disk.
+		{
+			Gaff::MessagePackReader reader;
+
+			REQUIRE(reader.openFile("tests/test2.mpack"));
+			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt));
+		}
+
+		std::filesystem::remove(path); // Don't leave it on disk.
+	}
+}

@@ -5,7 +5,6 @@ local tests = {
 		includedirs =
 		{
 			"../Dependencies/EASTL/include",
-			"../Dependencies/doctest",
 
 			"../Frameworks/Gaff/include",
 			"../Engine/Engine/include",
@@ -14,9 +13,24 @@ local tests = {
 
 		links =
 		{
-			"Gaff", "Memory",
-			"EASTL", "Engine"
-		}
+			"Gaff",
+			"Gleam",
+			"Memory",
+			"EASTL",
+			"Engine",
+			"mpack"
+		},
+
+		extra = function ()
+			filter { "system:windows" }
+				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
+				links { "DbgHelp" }
+
+			-- filter { "action:vs*" }
+			-- 	buildoptions { "/bigobj" }
+
+			filter {}
+		end
 	},
 	{
 		name = "ReflectionTest",
@@ -24,7 +38,6 @@ local tests = {
 		includedirs =
 		{
 			"../Dependencies/EASTL/include",
-			"../Dependencies/doctest",
 			"../Dependencies/mpack",
 			"../Dependencies/rapidjson",
 
@@ -61,7 +74,6 @@ local tests = {
 		{
 			"../Dependencies/EASTL/include",
 			"../Dependencies/rapidjson",
-			"../Dependencies/doctest",
 			"../Dependencies/glm",
 			"../Dependencies/mpack",
 
@@ -102,7 +114,8 @@ function GenTest(settings)
 			location(GetTestsLocation())
 		end
 
-		kind "ConsoleApp"
+		kind(settings.kind or "ConsoleApp")
+		debugdir "../../workingdir/tests"
 		language "C++"
 
 		flags { "FatalWarnings" }
@@ -119,6 +132,10 @@ function GenTest(settings)
 			dependson(settings.links)
 		end
 
+		if settings.defines then
+			defines(settings.defines)
+		end
+
 		if settings.extra then
 			settings.extra()
 		end
@@ -126,7 +143,19 @@ function GenTest(settings)
 		includedirs(settings.includedirs)
 		links(settings.links)
 
+		includedirs
+		{
+			"../Dependencies/Catch2"
+		}
+
+		links
+		{
+			"Catch2"
+		}
+
 		SetupConfigMap()
+
+		ModuleCopy("tests")
 end
 
 table.foreachi(tests, GenTest)

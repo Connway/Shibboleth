@@ -1563,7 +1563,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T&
 		}
 
 		// Write out the object.
-		writer.startObject(writable_vars);
+		writer.startObject(writable_vars + 1);
 
 		writer.writeUInt64("version", getReflectionInstance().getVersion().getHash());
 

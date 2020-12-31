@@ -39,9 +39,10 @@ public:
 	template <class Callback>
 	bool forEachInObject(Callback&& callback) const
 	{
-		GAFF_ASSERT(_value.IsObject());
-		auto beg = _value.MemberBegin();
-		auto end = _value.MemberEnd();
+		GAFF_ASSERT(isObject());
+		const JSONValue& value = getValue();
+		auto beg = value.MemberBegin();
+		auto end = value.MemberEnd();
 
 		for ( ; beg != end; ++beg) {
 			const JSON json(beg->value);
@@ -57,9 +58,10 @@ public:
 	template <class Callback>
 	bool forEachInArray(Callback&& callback) const
 	{
-		GAFF_ASSERT(_value.IsArray());
-		auto beg = _value.Begin();
-		auto end = _value.End();
+		GAFF_ASSERT(isArray());
+		const JSONValue& value = getValue();
+		auto beg = value.Begin();
+		auto end = value.End();
 
 		for (int32_t index = 0; beg != end; ++beg, ++index) {
 			const JSON json(*beg);
@@ -80,6 +82,7 @@ public:
 	static JSON CreateInt64(int64_t val);
 	static JSON CreateUInt64(uint64_t val);
 	static JSON CreateDouble(double val);
+	static JSON CreateStringRef(const char* val);
 	static JSON CreateString(const char* val);
 	static JSON CreateBool(bool val);
 	static JSON CreateTrue(void);
@@ -199,16 +202,27 @@ private:
 	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<>, JSONInternalAllocator>;
 	using JSONStringBuffer = rapidjson::GenericStringBuffer<rapidjson::UTF8<>, JSONAllocator>;
 
-	JSONValue _value;
+	union
+	{
+		JSONValue* _value_ref;
+		JSONValue _value;
+	};
+
 	mutable rapidjson::ParseResult _error;
 	mutable JSONStringBuffer _schema_error;
 	mutable JSONStringBuffer _keyword_error;
+	bool _is_reference = false;
 
 	static JSONInternalAllocator g_allocator;
 	static JSONAlloc g_alloc;
 	static JSONFree g_free;
 
+	const JSONValue& getValue(void) const;
+	JSONValue& getValue(void);
+
 	explicit JSON(const JSONValue& json);
+	explicit JSON(JSONValue* json);
+	explicit JSON(JSONValue&& json);
 };
 
 NS_END

@@ -20,19 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_DefaultAllocator.h>
-#include <Shibboleth_ProxyAllocator.h>
-#include <Shibboleth_Memory.h>
-
+#include <catch_amalgamated.hpp>
 #include <EASTL/vector.h>
 
 template <class Allocator>
 void AllocatorTestHelper(const Allocator& allocator = Allocator())
 {
+	// $TODO: Rework this function. Instead of checking the vector,
+	// check the allocator to see if we've allocated the appropriate amount of memory.
+
 	eastl::vector<int32_t, Allocator> int_vector(allocator);
 
 	int_vector.reserve(20);
@@ -66,7 +65,7 @@ TEST_CASE("shibboleth_allocator_vector")
 	AllocatorTestHelper(allocatorA);
 	AllocatorTestHelper(allocatorB);
 
-	// Leak test. Uncomment and check project/vs2015/tests/logs/LeakLog*.txt.
+	// Leak test. Uncomment and check tests/logs/AllocatorTest64d/LeakLog*.txt.
 	//allocatorB.alloc(4, __FILE__, __LINE__);
 }
 

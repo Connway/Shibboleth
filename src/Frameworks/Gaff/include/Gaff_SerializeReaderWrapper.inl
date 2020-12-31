@@ -86,7 +86,7 @@ bool SerializeReaderWrapper<Allocator>::parseJSON(const char* buffer)
 		return false;
 	}
 
-	Construct(&_json, json, _allocator);
+	Construct(&_json, std::move(json), _allocator);
 	_reader = &_json;
 
 	return true;

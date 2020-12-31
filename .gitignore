@@ -17,3 +17,4 @@ workingdir/bin/*
 workingdir/Modules/*
 workingdir/EditorModules/*
 workingdir/DevModules/*
+workingdir/tests/*
