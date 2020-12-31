@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
+#include <Shibboleth_ModelResource.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IDepthStencilState.h>
 #include <Gleam_IRenderDevice.h>
@@ -84,6 +85,7 @@ public:
 	DebugRenderHandle renderDebugPlane(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugBox(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCapsule(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
+	DebugRenderHandle renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
 	void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
 	void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
@@ -146,6 +148,7 @@ private:
 		DebugRenderJobData render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		Gaff::JobData job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		DebugRenderInstanceData instance_data[static_cast<size_t>(DebugRenderType::Count)];
+		VectorMap<ModelResourcePtr, DebugRenderInstanceData> model_instance_data{ ProxyAllocator("Debug") };
 
 		Gaff::Counter job_counter = 0;
 	};
@@ -233,6 +236,7 @@ private:
 	Gaff::Flags<Flag> _flags;
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
+	static void RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& instance_data);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 
 	void renderPostCamera(uintptr_t thread_id_int);
@@ -244,8 +248,6 @@ private:
 	bool initImGui(void);
 
 	void renderDebugMenu(const DebugMenuEntry& entry);
-
-	void testFunc(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

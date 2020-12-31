@@ -47,6 +47,20 @@ namespace
 		SHIB_FREE(ptr, g_allocator);
 	}
 
+	class ModelMapComparison final
+	{
+	public:
+		bool operator()(const Shibboleth::ModelResourcePtr& lhs, const Shibboleth::ModelResource* rhs) const
+		{
+			return lhs.get() < rhs;
+		}
+
+		bool operator()(const Shibboleth::ModelResource* lhs, const Shibboleth::ModelResourcePtr& rhs) const
+		{
+			return lhs < rhs.get();
+		}
+	};
+
 	static constexpr const char* const g_imgui_vertex_shader[static_cast<size_t>(Gleam::RendererType::Count)] =
 	{
 		R"(
@@ -238,12 +252,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 		&DebugManager::_debug_flags,
 		DebugMenuItemAttribute("Debug")
 	)
-
-	.func(
-		"Test Func",
-		&DebugManager::testFunc,
-		DebugMenuItemAttribute("Debug")
-	)
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
@@ -317,10 +325,9 @@ void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character
 	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
 }
 
-void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
+void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& debug_data)
 {
-	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
-	auto& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
+	GAFF_ASSERT(job_data.type != DebugRenderType::Model || model);
 
 	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
 	Gleam::Mat4x4 final_camera = glm::identity<Gleam::Mat4x4>();
@@ -370,7 +377,6 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	Gleam::IRenderDevice* const rd = job_data.debug_mgr->_render_mgr->getDeferredDevice(*devices->front(), thread_id);
-	GAFF_REF(rd);
 
 	const RenderManagerBase::GBufferData* const g_buffer = job_data.debug_mgr->_render_mgr->getGBuffer(camera_id, *devices->front());
 
@@ -521,8 +527,14 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 				}
 			}
 
-			debug_data.instance_data_view[i].emplace_back(view);
-			debug_data.instance_data[i].emplace_back(buffer);
+			if (job_data.type == DebugRenderType::Model) {
+				debug_data.instance_data_view[i].emplace_back(view);
+				debug_data.instance_data[i].emplace_back(buffer);
+
+			} else {
+				debug_data.instance_data_view[i].emplace_back(view);
+				debug_data.instance_data[i].emplace_back(buffer);
+			}
 
 			if (buffer2 && view2) {
 				debug_data.instance_data_view[i].emplace_back(view2);
@@ -718,6 +730,21 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 					debug_data.mesh[1]->renderInstanced(*rd, count);
 					break;
 
+				case DebugRenderType::Model: {
+					auto& program_buffers = job_data.debug_mgr->_debug_data.instance_data[static_cast<size_t>(DebugRenderType::Model)].program_buffers;
+
+					program_buffers->clearResourceViews();
+					program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
+					program_buffers->bind(*rd);
+
+					const int32_t num_meshes = model->getNumMeshes();
+
+					for (int32_t k = 0; k < num_meshes; ++k) {
+						Gleam::IMesh* const mesh = model->getMesh(k)->getMesh(*devices->front());
+						mesh->renderInstanced(*rd, count);
+					}
+				} break;
+
 				default:
 					debug_data.program_buffers->clearResourceViews();
 					debug_data.program_buffers->addResourceView(Gleam::IShader::Type::Vertex, debug_data.instance_data_view[i][j].get());
@@ -740,6 +767,23 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 		cmd.cmd_list.reset(job_data.cmd_list[job_data.debug_mgr->_render_cache_index][i].get());
 		cmd.owns_command = false;
 		cmds[i]->lock.Unlock();
+	}
+}
+
+void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
+{
+	DebugRenderJobData& job_data = *reinterpret_cast<DebugRenderJobData*>(data);
+
+	if (job_data.type == DebugRenderType::Model) {
+		for (auto& inst : job_data.debug_mgr->_debug_data.model_instance_data) {
+			RenderDebugShape(thread_id_int, job_data, inst.first, inst.second);
+		}
+
+	} else {
+		DebugRenderInstanceData& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
+		ModelResourcePtr model_ptr;
+
+		RenderDebugShape(thread_id_int, job_data, model_ptr, debug_data);
 	}
 }
 
@@ -1006,6 +1050,21 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const Gleam::Ve
 	instance->color = color;
 
 	return DebugRenderHandle(instance, DebugRenderType::Capsule, has_depth);
+}
+
+DebugManager::DebugRenderHandle DebugManager::renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.model_instance_data[model];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform = transform;
+	instance->color = color;
+
+	return DebugRenderHandle(instance, model.get(), has_depth);
 }
 
 void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
@@ -1451,11 +1510,30 @@ void DebugManager::renderPreCamera(uintptr_t /*thread_id_int*/)
 
 void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
 {
-	auto& render_list = _debug_data.instance_data[static_cast<int32_t>(handle._type)].render_list[handle._depth];
-	const auto it = eastl::lower_bound(render_list.begin(), render_list.end(), handle._instance, [](const auto& lhs, auto rhs) -> bool { return lhs.get() < rhs; });
+	if (handle._type == DebugRenderType::Model) {
+		const auto inst_it = _debug_data.model_instance_data.find_as(handle._model, ModelMapComparison());
 
-	if (it != render_list.end() && it->get() == handle._instance) {
-		render_list.erase(it);
+		if (inst_it != _debug_data.model_instance_data.end()) {
+			auto& render_list = inst_it->second.render_list[handle._depth];
+
+			const auto it = eastl::lower_bound(render_list.begin(), render_list.end(), handle._instance, [](const auto& lhs, auto rhs) -> bool { return lhs.get() < rhs; });
+
+			if (it != render_list.end() && it->get() == handle._instance) {
+				render_list.erase(it);
+			}
+
+			if (inst_it->second.render_list[0].empty() && inst_it->second.render_list[1].empty()) {
+				_debug_data.model_instance_data.erase(inst_it);
+			}
+		}
+
+	} else {
+		auto& render_list = _debug_data.instance_data[static_cast<int32_t>(handle._type)].render_list[handle._depth];
+		const auto it = eastl::lower_bound(render_list.begin(), render_list.end(), handle._instance, [](const auto& lhs, auto rhs) -> bool { return lhs.get() < rhs; });
+
+		if (it != render_list.end() && it->get() == handle._instance) {
+			render_list.erase(it);
+		}
 	}
 }
 
@@ -1664,6 +1742,9 @@ bool DebugManager::initDebugRender(void)
 			case DebugRenderType::Arrow:
 				Gleam::GenerateDebugCylinder(k_subdivisions, points[0], indices[0]);
 				Gleam::GenerateDebugCone(k_subdivisions, points[1], indices[1]);
+				break;
+
+			case DebugRenderType::Model:
 				break;
 
 			default:
@@ -2120,12 +2201,6 @@ bool DebugSystem::init(void)
 void DebugSystem::update(uintptr_t /*thread_id_int*/)
 {
 	_debug_mgr->update();
-}
-
-void DebugManager::testFunc(void)
-{
-	int i = 0;
-	i += 5;
 }
 
 NS_END

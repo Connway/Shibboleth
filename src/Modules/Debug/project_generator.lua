@@ -56,7 +56,11 @@ local GenerateProject = function()
 
 		local deps =
 		{
+			"Assimp",
 			"imgui",
+			"minizip",
+			"zlib-ng",
+
 			"Gleam",
 			"GraphicsBase",
 			"MainLoop",
@@ -71,7 +75,11 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Debug")
+	table.insert(deps, "Assimp")
 	table.insert(deps, "imgui")
+	table.insert(deps, "minizip")
+	table.insert(deps, "zlib-ng")
+
 	table.insert(deps, "Gleam")
 	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "MainLoop")
