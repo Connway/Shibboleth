@@ -66,8 +66,6 @@ const char* FileWatcher::processEvents(void)
 		}
 	}
 
-	const DWORD err = GetLastError(); GAFF_REF(err);
-
 	return nullptr;
 }
 

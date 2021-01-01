@@ -834,7 +834,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 
 	if (_configs["hot_reload_modules"].isTrue()) {
 		const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name.data());
-		const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite, Gaff::FileWatcher::NotifyChangeFlag::Creation);
+		const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
 
 
 		for (const auto& dir_entry : std::filesystem::recursive_directory_iterator("../.generated/build/" PLATFORM_NAME)) {
@@ -853,6 +853,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 				
 				while (index != U8String::npos) {
 					temp_path[index] = '/';
+					index = Gaff::FindFirstOf(temp_path, '\\');
 				}
 
 				if (_file_watcher_mgr.addWatch(temp_path, flags, ModuleChanged)) {
