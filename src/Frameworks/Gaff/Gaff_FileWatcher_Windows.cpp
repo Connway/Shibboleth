@@ -21,34 +21,86 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_FileWatcher_Windows.h"
+#include "Gaff_String.h"
 
 NS_GAFF
 
-FileWatcher::FileWatcher(const char* path, bool watch_sub_tree, Flags<NotifyChangeFlag> flags):
-	_change_handle(FindFirstChangeNotificationA(path, watch_sub_tree, static_cast<DWORD>(flags.getStorage())))
+FileWatcher::FileWatcher(const char* path, Flags<NotifyChangeFlag> flags):
+	_flags(flags)
 {
+	memset(&_overlapped, 0, sizeof(OVERLAPPED));
+
+	_dir_handle = CreateFileA(
+		path,
+		FILE_LIST_DIRECTORY,
+		FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL,
+		OPEN_EXISTING,
+		FILE_FLAG_OVERLAPPED | FILE_FLAG_BACKUP_SEMANTICS,
+		NULL
+	);
 }
 
 FileWatcher::~FileWatcher(void)
 {
-	if (isValid()) {
-		FindCloseChangeNotification(_change_handle);
-	}
 }
 
-bool FileWatcher::wait(int32_t wait_time_ms) const
+const char* FileWatcher::processEvents(void)
 {
-	wait_time_ms = (wait_time_ms < 0) ? 0 : wait_time_ms;
-	const bool changed = WaitForSingleObject(_change_handle, wait_time_ms) == WAIT_OBJECT_0;
+	if (!isValid()) {
+		return false;
+	}
 
-	FindNextChangeNotification(_change_handle);
+	DWORD bytes_written = 0;
 
-	return changed;
+	// File has changed. Notify
+	if (GetOverlappedResult(_dir_handle, &_overlapped, &bytes_written, false)) {
+		const FILE_NOTIFY_INFORMATION* const entry = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(_buffer);
+
+		if (entry->FileNameLength > 0) {
+			const wchar_t* filename = entry->FileName;
+			CONVERT_STRING(char, buffer, filename);
+			strncpy(_buffer, buffer, eastl::CharStrlen(buffer) + 1);
+
+			return _buffer;
+		}
+	}
+
+	const DWORD err = GetLastError(); GAFF_REF(err);
+
+	return nullptr;
+}
+
+bool FileWatcher::listen(bool watch_subtree)
+{
+	if (!isValid()) {
+		return false;
+	}
+
+	if (_overlapped.hEvent && !ResetEvent(_overlapped.hEvent)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	DWORD bytes_written = 0;
+
+	const BOOL result = ReadDirectoryChangesW(
+		_dir_handle,
+		_buffer,
+		sizeof(_buffer),
+		watch_subtree,
+		_flags.getStorage(),
+		&bytes_written,
+		&_overlapped,
+		nullptr
+	);
+
+	return (result) ? true : false;
 }
 
 bool FileWatcher::isValid(void) const
 {
-	return _change_handle != INVALID_HANDLE_VALUE;
+	return _dir_handle != INVALID_HANDLE_VALUE;
 }
 
 NS_END

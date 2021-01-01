@@ -51,6 +51,15 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher.inl">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher_Windows.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Flags.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -207,12 +216,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_VectorMap.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Assert.cpp" />
@@ -220,6 +223,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_File.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_FileWatcher_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Hash.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Math.cpp" />
@@ -230,12 +234,8 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Common.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Windows.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_FileWatcher_Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Gaff\project_generator.lua" />
-    <None Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

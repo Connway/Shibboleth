@@ -27,9 +27,20 @@ FileWatcherManager<Allocator>::FileWatcherManager(Allocator allocator):
 }
 
 template <class Allocator>
-bool FileWatcherManager<Allocator>::addWatch(const char* path, bool watch_sub_tree, Flags<FileWatcher::NotifyChangeFlag> flags, Callback callback)
+bool FileWatcherManager<Allocator>::addWatch(const char* path, Flags<FileWatcher::NotifyChangeFlag> flags, Callback callback)
 {
-	FileWatcher watcher(path, watch_sub_tree, flags);
+	for (Entry& entry : _watches) {
+		if (entry.path == path) {
+			if (Gaff::Find(entry.callbacks, callback) != entry.callbacks.end()) {
+				return false;
+			}
+
+			entry.callbacks.emplace_back(callback);
+			return true;
+		}
+	}
+
+	FileWatcher watcher(path, flags);
 
 	if (!watcher.isValid()) {
 		return false;
@@ -37,11 +48,12 @@ bool FileWatcherManager<Allocator>::addWatch(const char* path, bool watch_sub_tr
 
 	_watches.emplace_back(Entry
 	{
+		Vector<Callback, Allocator>(_allocator),
 		U8String<Allocator>(path, _allocator),
-		watcher,
-		callback
+		watcher
 	});
 
+	_watches.back().callbacks.emplace_back(callback);
 	return true;
 }
 
@@ -99,9 +111,19 @@ bool FileWatcherManager<Allocator>::removeWatch(const char* path)
 template <class Allocator>
 void FileWatcherManager<Allocator>::update(void)
 {
-	for (const auto& entry : _watches) {
-		if (entry.watcher.wait()) {
-			entry.callback(entry.path.data());
+	for (auto& entry : _watches) {
+		if (!entry.watcher.listen()) {
+			// $TODO: Log error once.
+			continue;
+		}
+
+		if (const char* changed_file = entry.watcher.processEvents(); changed_file) {
+			U8String<Allocator> file_path(entry.path, _allocator);
+			file_path.append_sprintf("/%s", changed_file);
+
+			for (Callback callback : entry.callbacks) {
+				callback(file_path.data());
+			}
 		}
 	}
 }

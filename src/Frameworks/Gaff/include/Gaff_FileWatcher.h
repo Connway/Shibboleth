@@ -45,7 +45,7 @@ public:
 
 	FileWatcherManager(Allocator allocator = Allocator());
 
-	bool addWatch(const char* path, bool watch_sub_tree, Flags<FileWatcher::NotifyChangeFlag> flags, Callback callback);
+	bool addWatch(const char* path, Flags<FileWatcher::NotifyChangeFlag> flags, Callback callback);
 	bool removeWatch(const char* path, Callback callback);
 	bool removeWatch(Callback callback);
 	bool removeWatch(const char* path);
@@ -55,9 +55,9 @@ public:
 private:
 	struct Entry final
 	{
+		Vector<Callback, Allocator> callbacks;
 		U8String<Allocator> path;
 		FileWatcher watcher;
-		Callback callback;
 	};
 
 	Vector<Entry, Allocator> _watches;

@@ -32,31 +32,35 @@ class FileWatcher final
 public:
 	enum class NotifyChangeFlag
 	{
-		FileName = FILE_NOTIFY_CHANGE_FILE_NAME,
-		DirName = FILE_NOTIFY_CHANGE_DIR_NAME,
-		Attributes = FILE_NOTIFY_CHANGE_ATTRIBUTES,
-		Size = FILE_NOTIFY_CHANGE_SIZE,
-		LastWrite = FILE_NOTIFY_CHANGE_LAST_WRITE,
-		LastAccess = FILE_NOTIFY_CHANGE_LAST_ACCESS,
-		Creation = FILE_NOTIFY_CHANGE_CREATION,
-		//Security = FILE_NOTIFY_CHANGE_SECURITY,
+		FileName = 0,
+		DirName,
+		Attributes,
+		Size,
+		LastWrite,
+		LastAccess,
+		Creation,
+		Security = 9,
 
 		Count
 	};
 
-	FileWatcher(const char* path, bool watch_sub_tree, Flags<NotifyChangeFlag> flags);
+	FileWatcher(const char* path, Flags<NotifyChangeFlag> flags);
 	FileWatcher(const FileWatcher& watcher) = default;
 	FileWatcher(void) = default;
 	~FileWatcher(void);
 
 	FileWatcher& operator=(const FileWatcher& rhs) = default;
 
-	bool wait(int32_t wait_time_ms = 0) const;
+	const char* processEvents(void);
+	bool listen(bool watch_subtree = true);
 
 	bool isValid(void) const;
 
 private:
-	HANDLE _change_handle = INVALID_HANDLE_VALUE;
+	char _buffer[256] = { 0 };
+	HANDLE _dir_handle = INVALID_HANDLE_VALUE;
+	Flags<NotifyChangeFlag> _flags;
+	OVERLAPPED _overlapped;
 };
 
 NS_END
