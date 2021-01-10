@@ -348,70 +348,184 @@ void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16
 	}
 }
 
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices)
+void GenerateDebugBox(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices)
 {
-	indices.resize(36);
-	points.resize(8);
+	subdivisions = Gaff::Max(1, subdivisions);
 
+	const int32_t num_points_per_axis = subdivisions + 1;
+	const int32_t num_points_per_face = num_points_per_axis * num_points_per_axis;
+	const int32_t num_indices_per_face = subdivisions * subdivisions * 6;
+
+	indices.set_capacity(num_indices_per_face * 6);
+	points.set_capacity(num_points_per_face * 6);
+	
 	// Top
-	points[0] = Vec3(-0.5f, 0.5f, 0.5f);
-	points[1] = Vec3(0.5f, 0.5f, 0.5f);
-	points[2] = Vec3(-0.5f, 0.5f, -0.5f);
-	points[3] = Vec3(0.5f, 0.5f, -0.5f);
+	// Forward to back.
+	for (int32_t z_slice = 0; z_slice < num_points_per_axis; ++z_slice) {
+		const float z = 0.5f - (static_cast<float>(z_slice) / (num_points_per_axis - 1));
+
+		// Left to right.
+		for (int32_t x_slice = 0; x_slice < num_points_per_axis; ++x_slice) {
+			const float x = -0.5f + (static_cast<float>(x_slice) / (num_points_per_axis - 1));
+			points.emplace_back(x, 0.5f, z);
+
+			// Don't push indices if we already did the row before last.
+			if (x_slice < (num_points_per_axis - 1) && z_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = x_slice + z_slice * num_points_per_axis;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 
 	// Bottom
-	points[4] = Vec3(-0.5f, -0.5f, 0.5f);
-	points[5] = Vec3(0.5f, -0.5f, 0.5f);
-	points[6] = Vec3(-0.5f, -0.5f, -0.5f);
-	points[7] = Vec3(0.5f, -0.5f, -0.5f);
+	// Forward to back.
+	for (int32_t z_slice = 0; z_slice < num_points_per_axis; ++z_slice) {
+		const float z = 0.5f - (static_cast<float>(z_slice) / (num_points_per_axis - 1));
 
-	// Top
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 2;
-	indices[3] = 2;
-	indices[4] = 1;
-	indices[5] = 3;
+		// Right to left.
+		for (int32_t x_slice = 0; x_slice < num_points_per_axis; ++x_slice) {
+			const float x = 0.5f - (static_cast<float>(x_slice) / (num_points_per_axis - 1));
+			points.emplace_back(x, -0.5f, z);
 
-	// Bottom
-	indices[6] = 6;
-	indices[7] = 5;
-	indices[8] = 4;
-	indices[9] = 5;
-	indices[10] = 6;
-	indices[11] = 7;
+			// Don't push indices if we already did the row before last.
+			if (x_slice < (num_points_per_axis - 1) && z_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = x_slice + z_slice * num_points_per_axis + num_points_per_face;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 
 	// Left
-	indices[12] = 0;
-	indices[13] = 2;
-	indices[14] = 4;
-	indices[15] = 4;
-	indices[16] = 2;
-	indices[17] = 6;
+	// Top to bottom.
+	for (int32_t y_slice = 0; y_slice < num_points_per_axis; ++y_slice) {
+		const float y = 0.5f - (static_cast<float>(y_slice) / (num_points_per_axis - 1));
+
+		// Forward to back.
+		for (int32_t z_slice = 0; z_slice < num_points_per_axis; ++z_slice) {
+			const float z = 0.5f - (static_cast<float>(z_slice) / (num_points_per_axis - 1));
+			points.emplace_back(-0.5f, y, z);
+
+			// Don't push indices if we already did the row before last.
+			if (y_slice < (num_points_per_axis - 1) && z_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = z_slice + y_slice * num_points_per_axis + num_points_per_face * 2;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 
 	// Right
-	indices[18] = 3;
-	indices[19] = 1;
-	indices[20] = 7;
-	indices[21] = 7;
-	indices[22] = 1;
-	indices[23] = 5;
+	// Top to bottom.
+	for (int32_t y_slice = 0; y_slice < num_points_per_axis; ++y_slice) {
+		const float y = 0.5f - (static_cast<float>(y_slice) / (num_points_per_axis - 1));
+
+		// Back to forward.
+		for (int32_t z_slice = 0; z_slice < num_points_per_axis; ++z_slice) {
+			const float z = -0.5f + (static_cast<float>(z_slice) / (num_points_per_axis - 1));
+			points.emplace_back(0.5f, y, z);
+
+			// Don't push indices if we already did the row before last.
+			if (y_slice < (num_points_per_axis - 1) && z_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = z_slice + y_slice * num_points_per_axis + num_points_per_face * 3;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 
 	// Forward
-	indices[24] = 2;
-	indices[25] = 3;
-	indices[26] = 6;
-	indices[27] = 6;
-	indices[28] = 3;
-	indices[29] = 7;
+	// Top to bottom.
+	for (int32_t y_slice = 0; y_slice < num_points_per_axis; ++y_slice) {
+		const float y = 0.5f - (static_cast<float>(y_slice) / (num_points_per_axis - 1));
+
+		// Right to left.
+		for (int32_t x_slice = 0; x_slice < num_points_per_axis; ++x_slice) {
+			const float x = 0.5f - (static_cast<float>(x_slice) / (num_points_per_axis - 1));
+			points.emplace_back(x, y, 0.5f);
+
+			// Don't push indices if we already did the row before last.
+			if (x_slice < (num_points_per_axis - 1) && y_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = x_slice + y_slice * num_points_per_axis + num_points_per_face * 4;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 
 	// Back
-	indices[30] = 1;
-	indices[31] = 0;
-	indices[32] = 5;
-	indices[33] = 5;
-	indices[34] = 0;
-	indices[35] = 4;
+	// Top to bottom.
+	for (int32_t y_slice = 0; y_slice < num_points_per_axis; ++y_slice) {
+		const float y = 0.5f - (static_cast<float>(y_slice) / (num_points_per_axis - 1));
+
+		// Left to right.
+		for (int32_t x_slice = 0; x_slice < num_points_per_axis; ++x_slice) {
+			const float x = -0.5f + (static_cast<float>(x_slice) / (num_points_per_axis - 1));
+			points.emplace_back(x, y, -0.5f);
+
+			// Don't push indices if we already did the row before last.
+			if (x_slice < (num_points_per_axis - 1) && y_slice < (num_points_per_axis - 1)) {
+				const int32_t top_left = x_slice + y_slice * num_points_per_axis + num_points_per_face * 5;
+				const int32_t bottom_left = top_left + num_points_per_axis;
+				const int32_t bottom_right = bottom_left + 1;
+				const int32_t top_right = top_left + 1;
+
+				indices.emplace_back(top_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_left);
+
+				indices.emplace_back(bottom_left);
+				indices.emplace_back(top_right);
+				indices.emplace_back(bottom_right);
+			}
+		}
+	}
 }
 
 NS_END

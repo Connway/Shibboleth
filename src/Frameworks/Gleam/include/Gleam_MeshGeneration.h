@@ -32,6 +32,6 @@ void GenerateDebugHalfSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<
 void GenerateDebugSphere(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugCone(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
 void GenerateDebugPlane(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
-void GenerateDebugBox(Vector<Vec3>& points, Vector<int16_t>& indices);
+void GenerateDebugBox(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t>& indices);
 
 NS_END

@@ -1727,7 +1727,7 @@ bool DebugManager::initDebugRender(void)
 				break;
 
 			case DebugRenderType::Box:
-				Gleam::GenerateDebugBox(points[0], indices[0]);
+				Gleam::GenerateDebugBox(1, points[0], indices[0]);
 				break;
 
 			case DebugRenderType::Cone:
