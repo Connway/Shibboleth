@@ -102,4 +102,9 @@ THE SOFTWARE.
 		Graphics::Shutdown();
 	}
 
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return false;
+	}
+
 #endif

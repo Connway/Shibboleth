@@ -59,4 +59,9 @@ THE SOFTWARE.
 		Input::InitializeNonOwned();
 	}
 
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return true;
+	}
+
 #endif

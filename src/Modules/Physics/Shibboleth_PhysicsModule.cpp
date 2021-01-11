@@ -59,4 +59,9 @@ THE SOFTWARE.
 		Physics::InitializeNonOwned();
 	}
 
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return false;
+	}
+
 #endif

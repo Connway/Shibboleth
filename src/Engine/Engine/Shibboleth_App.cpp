@@ -521,8 +521,7 @@ bool App::loadFileSystem(void)
 	U8String fs = "";
 
 	if (lfs.isString()) {
-		fs = U8String(lfs.getString()) + BIT_EXTENSION;
-		fs += DYNAMIC_EXTENSION;
+		fs.append_sprintf("%s%s", lfs.getString(), BIT_EXTENSION DYNAMIC_EXTENSION);
 
 		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "FileSystem");
 
@@ -935,7 +934,24 @@ bool App::hasManager(Gaff::Hash64 name) const
 
 void App::ModuleChanged(const char* path)
 {
-	GAFF_REF(path);
+	if (!Gaff::EndsWith(path, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+		return;
+	}
+
+	static_cast<App&>(GetApp())._dynamic_loader.forEachModule([&](const HashString32<>& name, const DynamicLoader::ModulePtr& module_ptr) -> bool
+	{
+		if (Gaff::FindFirstOf(path, name.getBuffer()) == U8String::npos) {
+			return false;
+		}
+
+		// Copy module to workingdir.
+		// Load new module and replace old data structures with new ones.
+		// Unload old module and delete file.
+
+		GAFF_REF(module_ptr);
+
+		return false;
+	});
 }
 
 void App::ThreadInit(uintptr_t /*thread_id*/)

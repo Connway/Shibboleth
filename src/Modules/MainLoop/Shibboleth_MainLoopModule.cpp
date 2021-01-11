@@ -63,4 +63,9 @@ THE SOFTWARE.
 		MainLoop::InitializeNonOwned();
 	}
 
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return false;
+	}
+
 #endif
