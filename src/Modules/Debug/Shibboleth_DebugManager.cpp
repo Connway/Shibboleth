@@ -1052,6 +1052,22 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCapsule(const Gleam::Ve
 	return DebugRenderHandle(instance, DebugRenderType::Capsule, has_depth);
 }
 
+DebugManager::DebugRenderHandle DebugManager::renderDebugCylinder(const Gleam::Vec3& pos, float radius, float height, const Gleam::Color::RGB& color, bool has_depth)
+{
+	auto& debug_data = _debug_data.instance_data[static_cast<int32_t>(DebugRenderType::Cylinder)];
+	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);
+
+	debug_data.lock[has_depth].Lock();
+	debug_data.render_list[has_depth].emplace_back(instance);
+	debug_data.lock[has_depth].Unlock();
+
+	instance->transform.setTranslation(pos);
+	instance->transform.setScale(Gleam::Vec3(radius * 2.0f, height, radius * 2.0f)); // Cylinder is unit (radius = 0.5). Double radius to get correct scale.
+	instance->color = color;
+
+	return DebugRenderHandle(instance, DebugRenderType::Cylinder, has_depth);
+}
+
 DebugManager::DebugRenderHandle DebugManager::renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.model_instance_data[model];
@@ -1742,6 +1758,10 @@ bool DebugManager::initDebugRender(void)
 			case DebugRenderType::Arrow:
 				Gleam::GenerateDebugCylinder(k_subdivisions, points[0], indices[0]);
 				Gleam::GenerateDebugCone(k_subdivisions, points[1], indices[1]);
+				break;
+
+			case DebugRenderType::Cylinder:
+				Gleam::GenerateDebugCylinder(k_subdivisions, points[0], indices[0]);
 				break;
 
 			case DebugRenderType::Model:
