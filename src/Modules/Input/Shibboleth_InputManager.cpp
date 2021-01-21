@@ -43,15 +43,6 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 SHIB_REFLECTION_CLASS_DEFINE(InputSystem)
 
-constexpr char* const g_alias_cfg_schema =
-R"({
-	"type": "array",
-	"items":
-	{
-		"type": "string"
-	}
-})";
-
 constexpr char* const g_binding_cfg_schema =
 R"({
 	"type": "array",
@@ -65,6 +56,7 @@ R"({
 			"Scale": { "type": "number", "default": 1.0 },
 			"Taps": { "type": "integer", "minimum": 1 },
 			"Tap Interval": { "type": "number" },
+			"Modes": { "type": ["array", "string"], "items": { "type": "string" } },
 
 			"required": ["Alias", "Binding"]
 		}
@@ -90,39 +82,8 @@ bool InputManager::initAllModulesLoaded(void)
 		return false;
 	}
 
-	// Load aliases.
-	IFile* const alias_file = GetApp().getFileSystem().openFile("cfg/input_aliases.cfg");
-
-	if (!alias_file) {
-		LogErrorDefault("InputManager: Failed to open file 'cfg/input_aliases.cfg'");
-		return false;
-	}
-
-	Gaff::JSON aliases;
-
-	if (!aliases.parse(reinterpret_cast<char*>(alias_file->getBuffer()), g_alias_cfg_schema)) {
-		LogErrorDefault("InputManager: Failed to parse 'cfg/input_aliases.cfg' with error '%s'", aliases.getErrorText());
-		return false;
-	}
-
-	VectorMap<Gaff::Hash32, Alias> alias_values(ProxyAllocator("Input"));
-
-	aliases.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
-	{
-		GAFF_ASSERT(value.isString() || value.isObject());
-
-		const char* const name_value = value.getString();
-		alias_values[Gaff::FNV1aHash32String(name_value)] = Alias{};
-		value.freeString(name_value);
-
-		return false;
-	});
-
-	alias_values.shrink_to_fit();
-
-	for (auto& av : _alias_values) {
-		av = alias_values;
-	}
+	_keyboard->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
+	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
 	// Load bindings.
 	IFile* const input_file = GetApp().getFileSystem().openFile("cfg/input_bindings.cfg");
@@ -139,11 +100,32 @@ bool InputManager::initAllModulesLoaded(void)
 		return false;
 	}
 
-	_keyboard->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
-	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
+	VectorMap<Gaff::Hash32, Alias> alias_values(ProxyAllocator("Input"));
 	Vector<Binding> bindings(ProxyAllocator("Input"));
 
+	// Aliases
+	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	{
+		GAFF_ASSERT(value.isObject());
+
+		const Gaff::JSON alias = value["Alias"];
+		GAFF_ASSERT(alias.isString());
+
+		const char* const alias_string = alias.getString();
+		alias_values[Gaff::FNV1aHash32String(alias_string)] = Alias{};
+		alias.freeString(alias_string);
+
+		return false;
+	});
+
+	alias_values.shrink_to_fit();
+
+	for (auto& av : _alias_values) {
+		av = alias_values;
+	}
+
+	// Bindings
 	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
 		GAFF_ASSERT(value.isObject());
@@ -171,12 +153,7 @@ bool InputManager::initAllModulesLoaded(void)
 		const Gaff::Hash32 alias_hash = Gaff::FNV1aHash32String(alias_str);
 		const auto alias_it = alias_values.find(alias_hash);
 
-		if (alias_values.find(alias_hash) == alias_values.end()) {
-			LogErrorDefault("InputManager: Invalid input alias '%s'.", alias_str);
-			alias.freeString(alias_str);
-
-			return false;
-		}
+		GAFF_ASSERT(alias_values.find(alias_hash) != alias_values.end());
 
 		const float tap_interval_value = tap_interval.getFloat(0.1f);
 		const int8_t taps_value = taps.getInt8(0);
@@ -222,7 +199,6 @@ bool InputManager::initAllModulesLoaded(void)
 
 				} else {
 					LogErrorDefault("InputManager: Invalid input binding '%s'.", binding_str);
-					return true;
 				}
 
 				value.freeString(binding_str);
