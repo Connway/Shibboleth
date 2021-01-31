@@ -80,9 +80,6 @@ constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const eastl::array<c
 template <size_t SizeA, size_t SizeB>
 constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const char(&lhs)[SizeA], const char(&rhs)[SizeB]);
 
-template <class T>
-constexpr bool InRange(T value, T min, T max);
-
 #include "Gaff_Utils_Common.inl"
 
 NS_END

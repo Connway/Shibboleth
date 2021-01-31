@@ -35,11 +35,43 @@ float BernsteinPolynomial(float t, float n, float k)
 	return BinomialCoefficient(n, k) * powf(t, k) * powf(1.0f - t, n - k);
 }
 
-float NormalizeAngle(float angle)
+float NormalizeAngleRadiansSigned(float angle)
 {
 	angle += Pi;
-	angle -= floorf(angle / (2.0f * Pi)) * (2.0f * Pi);
+	angle -= floor(angle / (2.0f * Pi)) * (2.0f * Pi);
 	angle -= Pi;
+
+	return angle;
+}
+
+float NormalizeAngleTurnsSigned(float angle)
+{
+	angle += 0.5f;
+	angle -= floor(angle);
+	angle -= 0.5f;
+
+	return angle;
+}
+
+float NormalizeAngleRadians(float angle)
+{
+	angle = fmod(angle, 2.0f * Pi);
+
+	if (angle < 0.0f) {
+		angle = 2.0f * Pi + angle;
+	}
+
+	return angle;
+}
+
+float NormalizeAngleTurns(float angle)
+{
+	angle = fmod(angle, 1.0f);
+	
+	if (angle < 0.0f) {
+		angle = 1.0f + angle;
+	}
+
 	return angle;
 }
 

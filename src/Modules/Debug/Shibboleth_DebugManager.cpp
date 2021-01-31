@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Gleam_MeshGeneration.h>
+#include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 #include <gtx/transform.hpp>
 #include <imgui.h>

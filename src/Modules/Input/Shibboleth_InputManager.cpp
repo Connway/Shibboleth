@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_GameTime.h>
 #include <Gleam_Window.h>
 #include <Gaff_JSON.h>
+#include <Gaff_Math.h>
 #include <EASTL/sort.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(InputManager)

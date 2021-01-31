@@ -75,9 +75,3 @@ constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const char (&lhs)[Si
 	result[outIndex] = 0;
 	return result;
 }
-
-template <class T>
-constexpr bool InRange(T value, T min, T max)
-{
-	return value >= min && value <= max;
-}

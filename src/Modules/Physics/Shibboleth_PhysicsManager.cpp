@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
+#include <Gaff_Math.h>
 #include <PxPhysicsAPI.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager::DebugFlag)

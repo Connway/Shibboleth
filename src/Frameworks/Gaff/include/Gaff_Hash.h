@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Math.h"
+#include "Gaff_Defines.h"
 #include <EASTL/string_view.h>
 #include <EASTL/string.h>
 

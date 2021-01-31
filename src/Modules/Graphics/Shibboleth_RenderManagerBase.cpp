@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
+#include <Gaff_Math.h>
 #include <gtx/quaternion.hpp>
 
 NS_SHIBBOLETH

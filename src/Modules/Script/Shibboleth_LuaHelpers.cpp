@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Flags.h>
+#include <Gaff_Math.h>
 
 namespace
 {

@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
 #include "Shibboleth_IApp.h"
+#include <Gaff_Math.h>
 #include <tiffio.h>
 #include <png.h>
 

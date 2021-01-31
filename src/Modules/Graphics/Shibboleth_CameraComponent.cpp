@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
+#include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Camera)
 	.classAttrs(

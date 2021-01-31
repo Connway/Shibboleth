@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
-#include <Gaff_Utils.h>
+#include <Gaff_Math.h>
 
 NS_GLEAM
 

@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
 	.base<IManager>()

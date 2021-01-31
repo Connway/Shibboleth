@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Esprit_StateMachine.h>
 #include <Gleam_Quaternion.h>
 #include <Gleam_Matrix3x3.h>
+#include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(FlyCameraProcess)
 	.BASE(Esprit::IProcess)

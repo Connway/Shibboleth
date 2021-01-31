@@ -97,11 +97,20 @@ constexpr bool Between(const T& val, const T& min_val, const T& max_val)
 	return val >= min_val && val <= max_val;
 }
 
+template <class T>
+constexpr T Sign(T value)
+{
+	static_assert(std::is_signed<T>::value, "SignMask was not given a signed number.");
+	return value < static_cast<T>(1) ? static_cast<T>(-1) : static_cast<T>(1);
+}
+
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 
-// Normalize angle to [-Pi, Pi]
-float NormalizeAngle(float angle);
+float NormalizeAngleRadiansSigned(float angle); // Normalize angle to [-Pi, Pi]
+float NormalizeAngleTurnsSigned(float angle); // Normalize angle to [-0.5, 0.5]
+float NormalizeAngleRadians(float angle); // Normalize angle to [0, 2*Pi]
+float NormalizeAngleTurns(float angle); // Normalize angle to [0, 1]
 
 float CalculateFOVRadians(float sensor_size, float focal_length);
 float CalculateFOVDegrees(float sensor_size, float focal_length);

@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
+#include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(RenderCommandSubmissionSystem)

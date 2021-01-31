@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Gaff_Function.h>
+#include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(ECSManager)
 	.base<IManager>()
