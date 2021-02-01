@@ -12,13 +12,13 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Assert.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_CrashHandler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Curve.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Curve.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAlignedAllocator.h">
@@ -90,9 +90,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ICurve.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -115,12 +112,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JobPool.inl">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_LinearCurve.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_LinearCurve.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Math.h">
