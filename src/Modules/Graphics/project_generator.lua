@@ -66,6 +66,8 @@ function DoGraphicsModule(renderer)
 
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
+		elseif renderer == "Direct3D12" then
+			defines { "USE_D3D12" }
 		elseif renderer == "Vulkan" then
 			defines { "USE_VULKAN" }
 		end
@@ -144,6 +146,7 @@ end
 local GenerateProject = function()
 	DoMainGraphicsModule()
 	DoGraphicsModule("Direct3D11")
+	-- DoGraphicsModule("Direct3D12")
 	-- DoGraphicsModule("Vulkan")
 end
 
@@ -170,10 +173,17 @@ local FilterDependencies = function()
 	filter { "configurations:Static_*_D3D11" }
 		dependson("GraphicsDirect3D11")
 		links { "GraphicsDirect3D11", "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+		defines { "USE_D3D11" }
 
-	-- filter { "configurations:Static_*_Vulkan" }
-	-- 	dependson("GraphicsVulkan")
-	-- 	links("GraphicsVulkan")
+	filter { "configurations:Static_*_D3D12" }
+		dependson("GraphicsDirect3D12")
+		links { "GraphicsDirect3D12", "d3d12", "D3dcompiler", "dxgi", "dxguid" }
+		defines { "USE_D3D12" }
+
+	filter { "configurations:Static_*_Vulkan" }
+		dependson("GraphicsVulkan")
+		links("GraphicsVulkan")
+		defines { "USE_VULKAN" }
 
 	filter {}
 end

@@ -142,6 +142,11 @@ THE SOFTWARE.
 		%s::InitiailizeNonOwned();
 	}
 
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return false;
+	}
+
 #endif
 ]]
 
@@ -211,10 +216,6 @@ local gen_static = [[
 #ifdef SHIB_STATIC
 	#undef SHIB_STATIC
 
-	#ifdef SHIB_EDITOR
-%s
-	#endif
-
 %s
 	#define SHIB_STATIC
 #endif
@@ -232,11 +233,6 @@ namespace Engine::Gen
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
 
-		// Editor Modules
-#ifdef SHIB_EDITOR
-%s
-#endif
-
 		// Regular Modules
 %s
 		return true;
@@ -244,10 +240,6 @@ namespace Engine::Gen
 
 	bool ShutdownModulesStatic(void)
 	{
-#ifdef SHIB_EDITOR
-%s
-#endif
-
 		// Regular Modules
 %s
 	}
@@ -472,29 +464,46 @@ newaction
 			end
 		end)
 
-		local editor_shutdowns = ""
-		local editor_includes = ""
-		local editor_inits = ""
 		local shutdowns = ""
 		local includes = ""
 		local inits = ""
 
 		-- Will want to read module unload order and order Shutdown() calls.
 
-		table.foreachi(editor_modules, function(dir)
-			local module_name = dir:sub(16)
-			editor_includes = editor_includes .. "\t\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
-			editor_inits = editor_inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app, mode), false)\n"
+		local app_config = io.readfile("../workingdir/cfg/app.cfg")
+		local init_order = {}
 
-			local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
+		if app_config ~= nil and app_config ~= "" then
+			init_order = json.decode(app_config).module_load_order or {}
+		end
 
-			if match then
-				editor_shutdowns = editor_shutdowns .. "\t\t" .. module_name .. "::Shutdown();\n"
-			end
-		end)
+		for _,v in ipairs(init_order) do
+			table.foreachi(modules, function(dir)
+				local module_name = dir:sub(16)
+
+				if module_name == v then
+					includes = includes .. "\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
+					inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app, mode), false)\n"
+
+					local match = io.readfile(dir .. "/Shibboleth_" .. module_name .. "Module.cpp"):match("ShutdownModule")
+
+					if match then
+						shutdowns = shutdowns .. "\t\t" .. module_name .. "::Shutdown();\n"
+					end
+				end
+			end)
+		end
+
 
 		table.foreachi(modules, function(dir)
 			local module_name = dir:sub(16)
+
+			for _,v in ipairs(init_order) do
+				if module_name == v then
+					return
+				end
+			end
+
 			includes = includes .. "\t#include <../../Modules/" .. module_name .. "/include/Gen_ReflectionInit.h>\n"
 			inits = inits .. "\t\tGAFF_FAIL_RETURN(" .. module_name .. "::Initialize(app, mode), false)\n"
 
@@ -504,18 +513,6 @@ newaction
 				shutdowns = shutdowns .. "\t\t" .. module_name .. "::Shutdown();\n"
 			end
 		end)
-
-		if editor_shutdowns:len() > 0 then
-			editor_shutdowns = editor_shutdowns:sub(1, -2)
-		end
-
-		if editor_includes:len() > 0 then
-			editor_includes = editor_includes:sub(1, -2)
-		end
-
-		if editor_inits:len() > 0 then
-			editor_inits = editor_inits:sub(1, -2)
-		end
 
 		if shutdowns:len() > 0 then
 			shutdowns = shutdowns:sub(1, -2)
@@ -582,12 +579,9 @@ newaction
 		end
 
 		local header_string = gen_static:format(
-			editor_includes,
 			includes,
 			include_files,
-			editor_inits,
 			inits,
-			editor_shutdowns,
 			shutdowns,
 			init_funcs
 		)
