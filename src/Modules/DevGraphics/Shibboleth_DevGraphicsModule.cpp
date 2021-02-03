@@ -24,10 +24,12 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
+	#include "Shibboleth_NVENCHelpers.h"
 	#include <Shibboleth_Utilities.h>
 
-	namespace Input
+	namespace DevGraphics
 	{
+
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
@@ -41,10 +43,15 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Input::Gen::InitReflection(mode);
+			DevGraphics::Gen::InitReflection(mode);
+
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				return Shibboleth::InitNVENC();
+			}
 
 			return true;
 		}
+
 	}
 
 #else
@@ -53,17 +60,17 @@ THE SOFTWARE.
 
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Input::Initialize(app, mode);
+		return DevGraphics::Initialize(app, mode);
 	}
 
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
-		Input::InitializeNonOwned();
+		DevGraphics::InitializeNonOwned();
 	}
 
 	DYNAMICEXPORT_C bool SupportsHotReloading(void)
 	{
-		return true;
+		return false;
 	}
 
 #endif

@@ -20,50 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#pragma once
 
-#ifdef SHIB_STATIC
+#include <Shibboleth_Defines.h>
+#include <nvEncodeAPI.h>
 
-	#include <Shibboleth_Utilities.h>
+NS_SHIBBOLETH
 
-	namespace Input
-	{
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
+const NV_ENCODE_API_FUNCTION_LIST& GetNVENCFuncs(void);
+bool InitNVENC(void);
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Gaff::InitEnumReflection();
-
-				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
-			}
-
-			Input::Gen::InitReflection(mode);
-
-			return true;
-		}
-	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return Input::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Input::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return true;
-	}
-
-#endif
+NS_END

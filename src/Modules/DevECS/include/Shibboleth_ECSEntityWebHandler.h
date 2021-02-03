@@ -23,13 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <CivetServer.h>
+#include <Shibboleth_IDevWebHandler.h>
 
 NS_SHIBBOLETH
 
 class ECSManager;
 
-class ECSEntityWebHandler final : public CivetHandler, public Gaff::IReflectionObject
+class ECSEntityWebHandler final : public IDevWebHandler, public Gaff::IReflectionObject
 {
 public:
 	ECSEntityWebHandler(void);

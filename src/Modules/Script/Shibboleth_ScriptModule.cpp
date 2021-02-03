@@ -36,6 +36,8 @@ THE SOFTWARE.
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
 				const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
 				const int32_t num_threads = script_threads.getInt32(Shibboleth::LuaManager::k_default_num_threads);
 
@@ -49,7 +51,6 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Shibboleth::SetApp(app);
 			Script::Gen::InitReflection(mode);
 
 			return true;

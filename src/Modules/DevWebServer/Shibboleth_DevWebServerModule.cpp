@@ -24,29 +24,30 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+	#include <Shibboleth_Utilities.h>
 
-namespace DevWebServer
-{
-
-	bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	namespace DevWebServer
 	{
-		if (mode == Shibboleth::InitMode::Regular) {
-			// Initialize Enums.
-			Gaff::InitEnumReflection();
 
-			// Initialize Attributes.
-			Gaff::InitAttributeReflection();
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		{
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
+			DevWebServer::Gen::InitReflection(mode);
+
+			return true;
 		}
 
-		Shibboleth::SetApp(app);
-		DevWebServer::Gen::InitReflection(mode);
-
-		return true;
 	}
-
-}
 
 #else
 

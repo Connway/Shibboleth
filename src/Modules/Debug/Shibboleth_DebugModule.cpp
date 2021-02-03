@@ -32,7 +32,10 @@ THE SOFTWARE.
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();
 
@@ -40,7 +43,6 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Shibboleth::SetApp(app);
 			Debug::Gen::InitReflection(mode);
 
 			return true;

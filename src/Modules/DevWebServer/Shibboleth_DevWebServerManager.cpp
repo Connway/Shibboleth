@@ -72,15 +72,22 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 	_server->addHandler("", _default_handler);
 
 	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		if (!ref_def->hasInterface(CLASS_HASH(CivetHandler))) {
+		if (!ref_def->hasInterface(CLASS_HASH(IDevWebHandler))) {
 			// $TODO: Log error.
 			continue;
 		}
 
-		CivetHandler* const handler = ref_def->createT<CivetHandler>(CLASS_HASH(CivetHandler), allocator);
+		IDevWebHandler* const handler = ref_def->createT<IDevWebHandler>(CLASS_HASH(IDevWebHandler), allocator);
 
 		if (!handler) {
 			// $TODO: Log error.
+			continue;
+		}
+
+		if (!handler->init()) {
+			// $TODO: Log error.
+
+			SHIB_FREET(handler, allocator);
 			continue;
 		}
 

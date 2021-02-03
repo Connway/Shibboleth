@@ -31,7 +31,10 @@ THE SOFTWARE.
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
 
 				// Initialize Enums.
@@ -41,7 +44,6 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Shibboleth::SetApp(app);
 			ECS::Gen::InitReflection(mode);
 
 			return true;

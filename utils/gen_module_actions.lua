@@ -59,6 +59,7 @@ namespace %s::Gen
 
 	void InitReflection(Shibboleth::InitMode mode)
 	{
+		GAFF_REF(mode);
 %s
 	}
 }
@@ -90,7 +91,7 @@ namespace %s
 
 local gen_entry = [[
 /************************************************************************************
-Copyright (C) 2019 by Nicholas LaCroix
+Copyright (C) 2021 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -119,10 +120,20 @@ THE SOFTWARE.
 
 	namespace %s
 	{
-		bool Initialize(Shibboleth::IApp& app)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			Shibboleth::SetApp(app);
-			%s::Gen::InitReflection();
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
+
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
+
+			%s::Gen::InitReflection(mode);
 
 			return true;
 		}

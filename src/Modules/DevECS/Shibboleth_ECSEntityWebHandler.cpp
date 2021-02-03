@@ -27,7 +27,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
 	.classAttrs(DevWebCommandAttribute("/entity"))
 
-	.BASE(CivetHandler)
+	.BASE(IDevWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
 

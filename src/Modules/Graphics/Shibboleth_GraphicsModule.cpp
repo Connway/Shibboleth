@@ -59,7 +59,12 @@ THE SOFTWARE.
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+				Gleam::SetAllocator(&g_graphics_allocator);
+				Gleam::SetLogFunc(GraphicsLog);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();
 
@@ -67,11 +72,7 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Gleam::SetAllocator(&g_graphics_allocator);
-			Gleam::SetLogFunc(GraphicsLog);
-
-			Shibboleth::SetApp(app);
-			Gen::InitReflection(mode);
+			Graphics::Gen::InitReflection(mode);
 
 			return true;
 		}

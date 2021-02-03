@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebServerManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IDevWebHandler.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IncludeCivetWeb.h">
       <Filter>include</Filter>
     </ClInclude>

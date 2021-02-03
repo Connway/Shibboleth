@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_DefaultHandler.h"
+#include "Shibboleth_IDevWebHandler.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 
@@ -41,7 +42,7 @@ private:
 	UniquePtr<CivetServer> _server;
 	DefaultHandler _default_handler;
 
-	Vector< UniquePtr<CivetHandler> > _handlers{ ProxyAllocator("DevWeb") };
+	Vector< UniquePtr<IDevWebHandler> > _handlers{ ProxyAllocator("DevWeb") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
 };

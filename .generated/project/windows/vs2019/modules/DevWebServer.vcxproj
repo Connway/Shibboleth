@@ -235,6 +235,7 @@ premake5 gen_module_header --module=DevWebServer</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DefaultHandler.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebServerManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IDevWebHandler.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IncludeCivetWeb.h" />
   </ItemGroup>
   <ItemGroup>

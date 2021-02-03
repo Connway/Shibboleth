@@ -360,6 +360,9 @@
     <ProjectReference Include="..\modules\DevECS.vcxproj">
       <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\DevGraphics.vcxproj">
+      <Project>{B54EAC59-2104-254F-AAF8-1E2616AD1B53}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
       <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
     </ProjectReference>

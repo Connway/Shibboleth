@@ -24,14 +24,17 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_ECSAttributes.h>
+	#include <Shibboleth_Utilities.h>
 
 	namespace DevECS
 	{
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();
 
@@ -39,7 +42,6 @@ THE SOFTWARE.
 				Gaff::InitAttributeReflection();
 			}
 
-			Shibboleth::SetApp(app);
 			DevECS::Gen::InitReflection(mode);
 
 			return true;
@@ -53,12 +55,12 @@ THE SOFTWARE.
 
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return ECS::Initialize(app, mode);
+		return DevECS::Initialize(app, mode);
 	}
 
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
-		ECS::InitializeNonOwned();
+		DevECS::InitializeNonOwned();
 	}
 
 	DYNAMICEXPORT_C bool SupportsHotReloading(void)

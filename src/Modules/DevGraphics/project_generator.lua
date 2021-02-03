@@ -1,7 +1,7 @@
 local GenerateProject = function()
-	local base_dir = GetModulesDirectory("DevECS")
+	local base_dir = GetModulesDirectory("DevGraphics")
 
-	project "DevECS"
+	project "DevGraphics"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -13,7 +13,7 @@ local GenerateProject = function()
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
-		ModuleGen("DevECS")
+		ModuleGen("DevGraphics")
 
 		flags { "FatalWarnings" }
 
@@ -27,14 +27,15 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/CivetWeb/include",
+			base_dir .. "../../Dependencies/nvenc",
 			base_dir .. "../../Modules/DevWebServer/include",
-			base_dir .. "../../Modules/ECS/include",
+			base_dir .. "../../Modules/Graphics/include",
 			base_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
-	project "DevECSModule"
+	project "DevGraphicsModule"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -42,13 +43,13 @@ local GenerateProject = function()
 		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_DevECSModule.cpp" }
+		files { base_dir .. "Shibboleth_DevGraphicsModule.cpp" }
 
 		ModuleCopy("DevModules")
 
 		flags { "FatalWarnings" }
 
-		ModuleIncludesAndLinks("DevECS")
+		ModuleIncludesAndLinks("DevGraphics")
 		NewDeleteLinkFix()
 		SetupConfigMap()
 
@@ -57,9 +58,9 @@ local GenerateProject = function()
 			"Gleam",
 
 			"DevWebServer",
-			"MainLoop",
+			--"MainLoop",
 			"Resource",
-			"ECS",
+			"GraphicsBase",
 
 			"CivetWeb"
 		}
@@ -69,12 +70,12 @@ local GenerateProject = function()
 end
 
 local LinkDependencies = function()
-	local deps = ModuleDependencies("DevECS")
+	local deps = ModuleDependencies("DevGraphics")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "DevWebServer")
-	table.insert(deps, "MainLoop")
+	--table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
-	table.insert(deps, "ECS")
+	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "CivetWeb")
 
 	dependson(deps)

@@ -33,7 +33,11 @@ THE SOFTWARE.
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
-			if (mode == Shibboleth::InitMode::Regular) {
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
+				Esprit::SetAllocator(&g_logic_allocator);
+
+			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();
 
@@ -43,9 +47,6 @@ THE SOFTWARE.
 				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
 				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
 			}
-
-			Shibboleth::SetApp(app);
-			Esprit::SetAllocator(&g_logic_allocator);
 
 			Logic::Gen::InitReflection(mode);
 
