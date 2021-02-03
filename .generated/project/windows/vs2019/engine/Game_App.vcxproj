@@ -357,14 +357,14 @@
     <ProjectReference Include="..\dependencies\imgui.vcxproj">
       <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\DevWebServer.vcxproj">
-      <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
+    <ProjectReference Include="..\modules\DevECS.vcxproj">
+      <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
       <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\EditorMainLoop.vcxproj">
-      <Project>{8BB8255F-7786-1965-601A-8A8B4C87F5C9}</Project>
+    <ProjectReference Include="..\modules\DevWebServer.vcxproj">
+      <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\assimp.vcxproj">
       <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>

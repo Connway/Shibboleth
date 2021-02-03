@@ -24,10 +24,9 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-	#include <Shibboleth_IApp.h>
+	#include <Shibboleth_ECSAttributes.h>
 
-	namespace Debug
+	namespace DevECS
 	{
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
@@ -41,7 +40,7 @@ THE SOFTWARE.
 			}
 
 			Shibboleth::SetApp(app);
-			Debug::Gen::InitReflection(mode);
+			DevECS::Gen::InitReflection(mode);
 
 			return true;
 		}
@@ -54,12 +53,12 @@ THE SOFTWARE.
 
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Debug::Initialize(app, mode);
+		return ECS::Initialize(app, mode);
 	}
 
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
-		Debug::InitializeNonOwned();
+		ECS::InitializeNonOwned();
 	}
 
 	DYNAMICEXPORT_C bool SupportsHotReloading(void)

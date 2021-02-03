@@ -20,51 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#include "Shibboleth_ECSEntityWebHandler.h"
+#include "Shibboleth_ECSManager.h"
+#include <Shibboleth_DevWebAttributes.h>
 
-#ifdef SHIB_STATIC
+SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
+	.classAttrs(DevWebCommandAttribute("/entity"))
 
-	#include <Shibboleth_Utilities.h>
-	#include <Shibboleth_IApp.h>
+	.BASE(CivetHandler)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
 
-	namespace Debug
-	{
+NS_SHIBBOLETH
 
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-		{
-			if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Gaff::InitEnumReflection();
+SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
 
-				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
-			}
+ECSEntityWebHandler::ECSEntityWebHandler(void):
+	_ecs(GetApp().getManagerTFast<ECSManager>())
+{
+}
 
-			Shibboleth::SetApp(app);
-			Debug::Gen::InitReflection(mode);
+bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
+{
+	const mg_request_info* const req = mg_get_request_info(conn);
+	int32_t id = -1;
 
-			return true;
-		}
-
+	if (req->query_string) {
+		sscanf(req->query_string, "id=%i", &id);
 	}
 
-#else
+	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
+	mg_printf(conn, "Content-Type: text/html; charset=utf-8\r\n");
+	mg_printf(conn, "Connection: close\r\n\r\n");
 
-	#include <Gaff_Defines.h>
+	mg_printf(conn, "<html><body>\r\n");
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return Debug::Initialize(app, mode);
+	if (_ecs.isValid(id)) {
+		mg_printf(conn, "<h1>Valid Entity ID: %i\r\n", id);
+	} else {
+		mg_printf(conn, "<h1>Invalid Entity ID: %i\r\n", id);
 	}
 
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Debug::InitializeNonOwned();
-	}
+	mg_printf(conn, "</body></html>\r\n");
 
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
-	}
+	return true;
+}
 
-#endif
+NS_END

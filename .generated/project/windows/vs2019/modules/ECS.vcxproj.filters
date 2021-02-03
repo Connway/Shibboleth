@@ -30,9 +30,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSEntity.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSEntityWebHandler.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSLayer.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -63,7 +60,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetypeResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSEntityWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSLayer.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSLayerResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />

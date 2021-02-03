@@ -20,51 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#pragma once
 
-#ifdef SHIB_STATIC
+#include <Shibboleth_Reflection.h>
+#include <CivetServer.h>
 
-	#include <Shibboleth_Utilities.h>
-	#include <Shibboleth_IApp.h>
+NS_SHIBBOLETH
 
-	namespace Debug
-	{
+class ECSManager;
 
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-		{
-			if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Gaff::InitEnumReflection();
+class ECSEntityWebHandler final : public CivetHandler, public Gaff::IReflectionObject
+{
+public:
+	ECSEntityWebHandler(void);
 
-				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
-			}
+	bool handleGet(CivetServer* server, mg_connection* conn) override;
 
-			Shibboleth::SetApp(app);
-			Debug::Gen::InitReflection(mode);
+	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
 
-			return true;
-		}
+private:
+	ECSManager& _ecs;
+};
 
-	}
+NS_END
 
-#else
-
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return Debug::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Debug::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
-	}
-
-#endif
+SHIB_REFLECTION_DECLARE(ECSEntityWebHandler)

@@ -1,7 +1,7 @@
 local GenerateProject = function()
-	local base_dir = GetModulesDirectory("ECS")
+	local base_dir = GetModulesDirectory("DevECS")
 
-	project "ECS"
+	project "DevECS"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -13,7 +13,7 @@ local GenerateProject = function()
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
-		ModuleGen("ECS")
+		ModuleGen("DevECS")
 
 		flags { "FatalWarnings" }
 
@@ -26,14 +26,15 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
-			base_dir .. "../../Modules/MainLoop/include",
+			base_dir .. "../../Dependencies/CivetWeb/include",
 			base_dir .. "../../Modules/DevWebServer/include",
+			base_dir .. "../../Modules/ECS/include",
+			base_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Frameworks/Gaff/include",
-			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../Resource/include"
+			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
-	project "ECSModule"
+	project "DevECSModule"
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -41,7 +42,7 @@ local GenerateProject = function()
 		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_ECSModule.cpp" }
+		files { base_dir .. "Shibboleth_DevECSModule.cpp" }
 
 		ModuleCopy()
 
@@ -55,8 +56,12 @@ local GenerateProject = function()
 		{
 			"Gleam",
 
+			"DevWebServer",
 			"MainLoop",
-			"Resource"
+			"Resource",
+			"ECS",
+
+			"CivetWeb"
 		}
 
 		dependson(deps)
@@ -64,11 +69,13 @@ local GenerateProject = function()
 end
 
 local LinkDependencies = function()
-	local deps = ModuleDependencies("ECS")
+	local deps = ModuleDependencies("DevECS")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "DevWebServer")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "ECS")
+	table.insert(deps, "CivetWeb")
 
 	dependson(deps)
 	links(deps)

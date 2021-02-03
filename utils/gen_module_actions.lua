@@ -448,7 +448,7 @@ newaction
 	trigger = "gen_static_header",
 	description = "Generates the 'Gen_ReflectionInit.h' file for a static build.",
 	execute = function()
-		local editor_modules = {}
+		local dev_modules = {}
 		local modules = {}
 
 		local module_generators = os.matchdirs("../src/Modules/*")
@@ -457,8 +457,8 @@ newaction
 				return
 			end
 
-			if dir:find("Editor") then
-				table.insert(editor_modules, dir)
+			if dir:find("Dev") then
+				table.insert(dev_modules, dir)
 			else
 				table.insert(modules, dir)
 			end
