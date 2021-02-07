@@ -729,15 +729,7 @@ bool App::loadModules(void)
 			}
 
 			const char* const module_name = module_row.getString();
-
-			eastl::string_view name_view(module_name);
-			const size_t delimeter = name_view.find_last_of('/');
-
-			if (delimeter != eastl::string_view::npos) {
-				name_view = name_view.substr(delimeter + 1);
-			}
-
-			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64(name_view.data(), name_view.size()));
+			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 			if (manager_bucket) {
 				for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
