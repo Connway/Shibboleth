@@ -30,7 +30,17 @@ NS_SHIBBOLETH
 class IDevWebHandler : public CivetHandler
 {
 public:
-	virtual bool init(void) { return true; }
+	virtual bool init(void);
+
+	virtual void handleConnectionClosed(const mg_connection* conn);
+
+	bool handleGet(CivetServer* server, struct mg_connection* conn) override;
+	bool handlePost(CivetServer* server, struct mg_connection* conn) override;
+	bool handleHead(CivetServer* server, struct mg_connection* conn) override;
+	bool handlePut(CivetServer* server, struct mg_connection* conn) override;
+	bool handleDelete(CivetServer* server, struct mg_connection* conn) override;
+	bool handleOptions(CivetServer* server, struct mg_connection* conn) override;
+	bool handlePatch(CivetServer* server, struct mg_connection* conn) override;
 };
 
 NS_END

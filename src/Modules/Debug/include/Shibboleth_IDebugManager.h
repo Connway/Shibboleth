@@ -101,6 +101,18 @@ public:
 
 		bool isValid(void) const { return _instance != nullptr; }
 
+		Gaff::Hash64 getHash(void) const
+		{
+			Gaff::Hash64 hash = Gaff::k_init_hash64;
+
+			hash = Gaff::FNV1aHash64T(_instance, hash);
+			hash = Gaff::FNV1aHash64T(_model, hash);
+			hash = Gaff::FNV1aHash64T(_type, hash);
+			hash = Gaff::FNV1aHash64T(_depth, hash);
+
+			return hash;
+		}
+
 	private:
 		DebugRenderHandle(DebugRenderInstance* instance, DebugRenderType type, bool depth):
 			_instance(instance),

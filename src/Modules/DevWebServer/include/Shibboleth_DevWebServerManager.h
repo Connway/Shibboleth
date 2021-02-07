@@ -44,7 +44,11 @@ private:
 
 	Vector< UniquePtr<IDevWebHandler> > _handlers{ ProxyAllocator("DevWeb") };
 
+	static void ConnectionClosed(const struct mg_connection* conn);
+
 	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
+
+	friend class IDevWebHandler;
 };
 
 NS_END

@@ -39,6 +39,8 @@ static void* InitThread(const mg_context*, int)
 	return nullptr;
 }
 
+
+
 DevWebServerManager::DevWebServerManager(void)
 {
 }
@@ -98,6 +100,15 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 	}
 
 	return true;
+}
+
+void DevWebServerManager::ConnectionClosed(const mg_connection* conn)
+{
+	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+
+	for (const auto& handlers : web_mgr._handlers) {
+		handlers->handleConnectionClosed(conn);
+	}
 }
 
 NS_END

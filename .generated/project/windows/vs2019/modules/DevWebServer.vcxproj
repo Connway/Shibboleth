@@ -243,6 +243,7 @@ premake5 gen_module_header --module=DevWebServer</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\DevWebServer\project_generator.lua" />

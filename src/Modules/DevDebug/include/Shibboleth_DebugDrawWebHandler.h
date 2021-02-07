@@ -20,50 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ECSEntityWebHandler.h"
-#include "Shibboleth_ECSManager.h"
-#include <Shibboleth_DevWebAttributes.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
-	.classAttrs(DevWebCommandAttribute("/entity"))
-
-	.BASE(IDevWebHandler)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
+#include <Shibboleth_IDevWebHandler.h>
+#include <Shibboleth_IDebugManager.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_Vector.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
-
-ECSEntityWebHandler::ECSEntityWebHandler(void):
-	_ecs_mgr(GetApp().getManagerTFast<ECSManager>())
+class DebugDrawWebHandler final : public IDevWebHandler, public Gaff::IReflectionObject
 {
-}
+public:
+	DebugDrawWebHandler(void);
 
-bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
-{
-	const mg_request_info* const req = mg_get_request_info(conn);
-	EntityID id = -1;
+	//bool handleGet(CivetServer* server, mg_connection* conn) override;
+	bool handlePut(CivetServer* server, mg_connection* conn) override;
 
-	if (req->query_string) {
-		sscanf(req->query_string, "id=%i", &id);
-	}
+	void handleConnectionClosed(const mg_connection* conn) override;
 
-	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
-	mg_printf(conn, "Content-Type: text/html; charset=utf-8\r\n");
-	mg_printf(conn, "Connection: close\r\n\r\n");
+	SHIB_REFLECTION_CLASS_DECLARE(DebugDrawWebHandler);
 
-	mg_printf(conn, "<html><body>\r\n");
+private:
+	IDebugManager& _debug_mgr;
 
-	if (_ecs_mgr.isValid(id)) {
-		mg_printf(conn, "<h1>Valid Entity ID: %i\r\n", id);
-	} else {
-		mg_printf(conn, "<h1>Invalid Entity ID: %i\r\n", id);
-	}
-
-	mg_printf(conn, "</body></html>\r\n");
-
-	return true;
-}
+	using HandleVector = Vector<IDebugManager::DebugRenderHandle>;
+	VectorMap<const mg_connection*, HandleVector> _debug_handles{ ProxyAllocator("Dev") };
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(DebugDrawWebHandler)

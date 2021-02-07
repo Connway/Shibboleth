@@ -40,6 +40,25 @@ static void SendDefaultPage(mg_connection* conn)
 	mg_printf(conn, "</body></html>\r\n");
 }
 
+static bool SendFile(mg_connection* conn, IFileSystem& fs, const char* file_path)
+{
+	IFile* const file = fs.openFile(file_path);
+
+	if (file) {
+		const char* const mime_type = mg_get_builtin_mime_type(file_path);
+
+		mg_printf(conn, "HTTP/1.1 200 OK\r\n");
+		mg_printf(conn, "Content-Type: %s; charset=utf-8\r\n", mime_type);
+		mg_printf(conn, "Connection: close\r\n\r\n");
+		mg_write(conn, file->getBuffer(), file->size());
+
+		fs.closeFile(file);
+		return true;
+	}
+
+	return false;
+}
+
 bool DefaultHandler::handleGet(CivetServer*, mg_connection* conn)
 {
 	const struct mg_request_info* const req_info = mg_get_request_info(conn);
@@ -49,22 +68,21 @@ bool DefaultHandler::handleGet(CivetServer*, mg_connection* conn)
 		SendDefaultPage(conn);
 
 	} else if (req_info->local_uri) {
-		const U8String file_path = U8String("WebRoot") + req_info->local_uri;
-		IFile* const file = GetApp().getFileSystem().openFile(file_path.data());
+		U8String file_path = U8String("WebRoot") + req_info->local_uri;
+		IFileSystem& fs = GetApp().getFileSystem();
 
-		if (file) {
-			const char* const mime_type = mg_get_builtin_mime_type(req_info->local_uri);
+		if (!SendFile(conn, fs, file_path.data())) {
+			if (file_path.back() == '/') {
+				file_path += "index.html";
+			} else {
+				file_path += "/index.html";
+			}
 
-			mg_printf(conn, "HTTP/1.1 200 OK\r\n");
-			mg_printf(conn, "Content-Type: %s; charset=utf-8\r\n", mime_type);
-			mg_printf(conn, "Connection: close\r\n\r\n");
-			mg_write(conn, file->getBuffer(), file->size());
-
-			GetApp().getFileSystem().closeFile(file);
-
-		} else {
-			mg_send_http_error(conn, 404, "Error: File not found");
+			if (!SendFile(conn, fs, file_path.data())) {
+				mg_send_http_error(conn, 404, "Error: File not found");
+			}
 		}
+
 
 	} else {
 		mg_send_http_error(conn, 404, "Error: File not found");

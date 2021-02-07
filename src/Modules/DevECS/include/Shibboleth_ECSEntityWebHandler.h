@@ -39,7 +39,7 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
 
 private:
-	ECSManager& _ecs;
+	ECSManager& _ecs_mgr;
 };
 
 NS_END

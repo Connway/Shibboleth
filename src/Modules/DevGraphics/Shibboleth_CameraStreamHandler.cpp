@@ -20,30 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ECSEntityWebHandler.h"
-#include "Shibboleth_ECSManager.h"
+#include "Shibboleth_CameraStreamHandler.h"
 #include <Shibboleth_DevWebAttributes.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
-	.classAttrs(DevWebCommandAttribute("/entity"))
+SHIB_REFLECTION_DEFINE_BEGIN(CameraStreamHandler)
+	.classAttrs(DevWebCommandAttribute("/camera"))
 
 	.BASE(IDevWebHandler)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
+SHIB_REFLECTION_DEFINE_END(CameraStreamHandler)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
+SHIB_REFLECTION_CLASS_DEFINE(CameraStreamHandler)
 
-ECSEntityWebHandler::ECSEntityWebHandler(void):
-	_ecs_mgr(GetApp().getManagerTFast<ECSManager>())
+CameraStreamHandler::CameraStreamHandler(void)
 {
 }
 
-bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
+bool CameraStreamHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
-	EntityID id = -1;
+	int32_t id = -1;
 
 	if (req->query_string) {
 		sscanf(req->query_string, "id=%i", &id);
@@ -52,16 +50,6 @@ bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn
 	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
 	mg_printf(conn, "Content-Type: text/html; charset=utf-8\r\n");
 	mg_printf(conn, "Connection: close\r\n\r\n");
-
-	mg_printf(conn, "<html><body>\r\n");
-
-	if (_ecs_mgr.isValid(id)) {
-		mg_printf(conn, "<h1>Valid Entity ID: %i\r\n", id);
-	} else {
-		mg_printf(conn, "<h1>Invalid Entity ID: %i\r\n", id);
-	}
-
-	mg_printf(conn, "</body></html>\r\n");
 
 	return true;
 }

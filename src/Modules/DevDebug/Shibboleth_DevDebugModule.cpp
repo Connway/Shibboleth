@@ -20,50 +20,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ECSEntityWebHandler.h"
-#include "Shibboleth_ECSManager.h"
-#include <Shibboleth_DevWebAttributes.h>
+#include "Gen_ReflectionInit.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
-	.classAttrs(DevWebCommandAttribute("/entity"))
+#ifdef SHIB_STATIC
 
-	.BASE(IDevWebHandler)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
+	#include <Shibboleth_Utilities.h>
 
-NS_SHIBBOLETH
+	namespace DevDebug
+	{
 
-SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
+		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		{
+			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+				Shibboleth::SetApp(app);
 
-ECSEntityWebHandler::ECSEntityWebHandler(void):
-	_ecs_mgr(GetApp().getManagerTFast<ECSManager>())
-{
-}
+			} else if (mode == Shibboleth::InitMode::Regular) {
+				// Initialize Enums.
+				Gaff::InitEnumReflection();
 
-bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
-{
-	const mg_request_info* const req = mg_get_request_info(conn);
-	EntityID id = -1;
+				// Initialize Attributes.
+				Gaff::InitAttributeReflection();
+			}
 
-	if (req->query_string) {
-		sscanf(req->query_string, "id=%i", &id);
+			DevDebug::Gen::InitReflection(mode);
+
+			return true;
+		}
+
 	}
 
-	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
-	mg_printf(conn, "Content-Type: text/html; charset=utf-8\r\n");
-	mg_printf(conn, "Connection: close\r\n\r\n");
+#else
 
-	mg_printf(conn, "<html><body>\r\n");
+	#include <Gaff_Defines.h>
 
-	if (_ecs_mgr.isValid(id)) {
-		mg_printf(conn, "<h1>Valid Entity ID: %i\r\n", id);
-	} else {
-		mg_printf(conn, "<h1>Invalid Entity ID: %i\r\n", id);
+	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	{
+		return DevDebug::Initialize(app, mode);
 	}
 
-	mg_printf(conn, "</body></html>\r\n");
+	DYNAMICEXPORT_C void InitModuleNonOwned(void)
+	{
+		DevDebug::InitializeNonOwned();
+	}
 
-	return true;
-}
+	DYNAMICEXPORT_C bool SupportsHotReloading(void)
+	{
+		return false;
+	}
 
-NS_END
+#endif

@@ -521,6 +521,26 @@ bool JSON::dumpToFile(const char* filename) const
 	return success;
 }
 
+const char* JSON::dump(char* buffer, int32_t size)
+{
+	GAFF_ASSERT(isArray() || isObject());
+	JSONStringBuffer string_buffer;
+
+	rapidjson::PrettyWriter<
+		JSONStringBuffer, rapidjson::UTF8<>,
+		rapidjson::UTF8<>, JSONInternalAllocator
+	> writer(string_buffer);
+
+	if (WriteJSON(*this, writer)) {
+		memcpy_s(buffer, size, string_buffer.GetString(), size);
+		buffer[size] = 0;
+
+		return buffer;
+	}
+
+	return nullptr;
+}
+
 const char* JSON::dump(void)
 {
 	GAFF_ASSERT(isArray() || isObject());
@@ -542,6 +562,11 @@ const char* JSON::dump(void)
 	}
 
 	return nullptr;
+}
+
+void JSON::freeDumpString(const char* string)
+{
+	g_free(const_cast<char*>(string));
 }
 
 bool JSON::isObject(void) const

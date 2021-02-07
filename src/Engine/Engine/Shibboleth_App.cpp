@@ -675,17 +675,48 @@ bool App::loadModules(void)
 
 	// Create manager instances.
 	if (!no_managers) {
+		// Create managers from module load order first.
+		if (module_load_order.isArray()) {
+			const int32_t size = module_load_order.size();
+
+			for (int32_t i = 0; i < size; ++i) {
+				const Gaff::JSON& module_row = module_load_order[i];
+
+				if (!module_row.isString()) {
+					LogErrorDefault("module_load_order[%i] is not a string.", i);
+					continue;
+				}
+
+				const char* const module_name = module_row.getString();
+				const Vector<const Gaff::IReflectionDefinition*>* const manager_bucket =
+					_reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+
+				if (manager_bucket) {
+					if (!createManagersInternal(*manager_bucket)) {
+						// $TODO: Log error.
+						return false;
+					}
+				}
+
+				module_row.freeString(module_name);
+			}
+		}
+
+		// Create the reast of the managers.
 		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
+				// $TODO: Log error.
 				return false;
 			}
 		}
 	}
 
+	// Call initAllModulesLoaded() on all managers.
 	Vector<const Gaff::IReflectionDefinition*> already_initialized_managers;
 
+	// Call on module load order first.
 	if (module_load_order.isArray()) {
 		const int32_t size = module_load_order.size();
 
