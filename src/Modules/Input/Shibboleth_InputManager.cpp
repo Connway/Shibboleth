@@ -269,12 +269,11 @@ void InputManager::update(void)
 
 	// Delta time is real-time.
 	const float dt = static_cast<float>(delta.count());
-	//const int32_t num_inputs = static_cast<int32_t>(_binding_instances.size());
-	const int32_t num_inputs = k_max_local_players;
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
 
-	for (int32_t input_index = 0; input_index < num_inputs; ++input_index) {
-		auto& input_instance = _binding_instances[input_index];
+	for (auto it = _binding_instances.begin(); it != _binding_instances.end(); ++it) {
+		const int32_t input_index = it.getIndex();
+		auto& input_instance = *it;
 
 		for (int32_t binding_index = 0; binding_index < num_bindings; ++binding_index) {
 			auto& binding_instance = input_instance[binding_index];
@@ -317,7 +316,7 @@ void InputManager::resetTimer(void)
 
 float InputManager::getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
+	GAFF_ASSERT(_alias_values.validIndex(player_id));
 	const auto it = _alias_values[player_id].find(alias_name);
 	return (it == _alias_values[player_id].end()) ? 0.0f : it->second.value;
 }
@@ -329,7 +328,7 @@ float InputManager::getAliasValue(const char* alias_name, int32_t player_id) con
 
 float InputManager::getAliasValue(int32_t index, int32_t player_id) const
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
+	GAFF_ASSERT(_alias_values.validIndex(player_id));
 	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values[player_id].size()));
 	return _alias_values[player_id].at(index).second.value;
 }
@@ -347,7 +346,7 @@ int32_t InputManager::getAliasIndex(const char* alias_name) const
 
 void InputManager::setKeyboardMousePlayerID(int32_t player_id)
 {
-	GAFF_ASSERT(Gaff::Between(player_id, 0, k_max_local_players));
+	GAFF_ASSERT(_alias_values.validIndex(player_id));
 	_km_player_id = player_id;
 }
 
@@ -399,7 +398,7 @@ Gleam::IMouse* InputManager::getMouse(void)
 
 void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
-	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, k_max_local_players /*static_cast<int32_t>(_binding_instances.size())*/));
+	GAFF_ASSERT(_alias_values.validIndex(_km_player_id));
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
 
@@ -460,7 +459,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 
 void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value)
 {
-	GAFF_ASSERT(Gaff::Between(_km_player_id, 0, k_max_local_players /*static_cast<int32_t>(_binding_instances.size())*/));
+	GAFF_ASSERT(_alias_values.validIndex(_km_player_id));
 
 	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::ButtonCount);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);

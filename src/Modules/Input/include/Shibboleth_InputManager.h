@@ -34,8 +34,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-//static constexpr int32_t k_max_local_players = 4;
-
 class InputManager final : public IManager
 {
 public:
@@ -100,20 +98,6 @@ private:
 	{
 		float value = 0.0f;
 	};
-
-	//VectorMap<Gaff::Hash32, Alias> _alias_values[k_max_local_players] = {
-	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") }
-	//};
-
-	//Vector<BindingInstance> _binding_instances[k_max_local_players] = {
-	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
-	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
-	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
-	//	Vector<BindingInstance>{ ProxyAllocator("Input") }
-	//};
 
 	SparseStack< VectorMap<Gaff::Hash32, Alias> > _alias_values{ ProxyAllocator("Input") };
 	SparseStack< Vector<BindingInstance> > _binding_instances{ ProxyAllocator("Input") };
