@@ -73,6 +73,12 @@ public:
 	Gleam::IKeyboard* getKeyboard(void);
 	Gleam::IMouse* getMouse(void);
 
+	int32_t addPlayer(void);
+	bool removePlayer(int32_t player_id);
+
+	void addInputDevice(Gleam::IInputDevice* device, int32_t player_id);
+	bool removeInputDevice(Gleam::IInputDevice& device);
+
 private:
 	struct Binding final
 	{
@@ -99,10 +105,20 @@ private:
 		float value = 0.0f;
 	};
 
+	struct DeviceMapEntry final
+	{
+		int32_t handler_id;
+		int32_t player_id;
+	};
+
+	VectorMap<Gaff::Hash32, Alias> _default_alias_values{ ProxyAllocator("Input") };
+
 	SparseStack< VectorMap<Gaff::Hash32, Alias> > _alias_values{ ProxyAllocator("Input") };
 	SparseStack< Vector<BindingInstance> > _binding_instances{ ProxyAllocator("Input") };
 
 	Vector<Binding> _bindings{ ProxyAllocator("Input") };
+
+	VectorMap<Gleam::IInputDevice*, DeviceMapEntry> _device_player_map{ ProxyAllocator("Input") };
 
 	UniquePtr<Gleam::IKeyboard> _keyboard;
 	UniquePtr<Gleam::IMouse> _mouse;
@@ -116,8 +132,8 @@ private:
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
 
-	void handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value);
-	void handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value);
+	void handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value);
+	void handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };

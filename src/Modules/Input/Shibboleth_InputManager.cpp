@@ -102,8 +102,6 @@ bool InputManager::initAllModulesLoaded(void)
 	}
 
 
-	VectorMap<Gaff::Hash32, Alias> alias_values(ProxyAllocator("Input"));
-
 	// Aliases
 	input_bindings.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
@@ -113,13 +111,13 @@ bool InputManager::initAllModulesLoaded(void)
 		GAFF_ASSERT(alias.isString());
 
 		const char* const alias_string = alias.getString();
-		alias_values[Gaff::FNV1aHash32String(alias_string)] = Alias{};
+		_default_alias_values[Gaff::FNV1aHash32String(alias_string)] = Alias{};
 		alias.freeString(alias_string);
 
 		return false;
 	});
 
-	alias_values.shrink_to_fit();
+	_default_alias_values.shrink_to_fit();
 
 
 	// Bindings
@@ -148,15 +146,15 @@ bool InputManager::initAllModulesLoaded(void)
 		const float scale_value = scale.getFloat(1.0f);
 
 		const Gaff::Hash32 alias_hash = Gaff::FNV1aHash32String(alias_str);
-		const auto alias_it = alias_values.find(alias_hash);
+		const auto alias_it = _default_alias_values.find(alias_hash);
 
-		GAFF_ASSERT(alias_values.find(alias_hash) != alias_values.end());
+		GAFF_ASSERT(_default_alias_values.find(alias_hash) != _default_alias_values.end());
 
 		const float tap_interval_value = tap_interval.getFloat(0.1f);
 		const int8_t taps_value = taps.getInt8(0);
 
 		Binding final_binding;
-		final_binding.alias_index = static_cast<int32_t>(eastl::distance(alias_values.begin(), alias_it));
+		final_binding.alias_index = static_cast<int32_t>(eastl::distance(_default_alias_values.begin(), alias_it));
 		final_binding.scale = scale_value;
 		final_binding.tap_interval = tap_interval_value;
 		final_binding.taps = taps_value;
@@ -241,25 +239,21 @@ bool InputManager::initAllModulesLoaded(void)
 
 	_bindings.shrink_to_fit();
 
+	// $TODO: Move this to a higher layer.
 	// Always have a player 0.
-	_binding_instances.emplace();
-	_alias_values.emplace();
+	_km_player_id = addPlayer();
 
-	for (auto& binding_instance : _binding_instances) {
-		binding_instance.resize(_bindings.size());
-	}
-
-	for (auto& av : _alias_values) {
-		av = alias_values;
-	}
+	addInputDevice(_keyboard.get(), _km_player_id);
+	addInputDevice(_mouse.get(), _km_player_id);
 
 	return true;
 }
 
 void InputManager::update(void)
 {
-	_keyboard->update();
-	_mouse->update();
+	for (auto& pair : _device_player_map) {
+		pair.first->update();
+	}
 
 	using DoubleSeconds = eastl::chrono::duration<double>;
 	_end = eastl::chrono::high_resolution_clock::now();
@@ -396,14 +390,82 @@ Gleam::IMouse* InputManager::getMouse(void)
 	return _mouse.get();
 }
 
-void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
+int32_t InputManager::addPlayer(void)
 {
-	GAFF_ASSERT(_alias_values.validIndex(_km_player_id));
+	const int32_t player_id = _binding_instances.emplace();
+	const int32_t player_id_validate = _alias_values.emplace();
+
+	GAFF_ASSERT(player_id == player_id_validate);
+
+	_binding_instances[player_id].resize(_bindings.size());
+	_alias_values[player_id] = _default_alias_values;
+
+	return player_id;
+}
+
+bool InputManager::removePlayer(int32_t player_id)
+{
+	if (!_binding_instances.validIndex(player_id)) {
+		return false;
+	}
+
+	_binding_instances.remove(player_id);
+	_alias_values.remove(player_id);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(_device_player_map.size()); ++i) {
+		const auto it = _device_player_map.begin() + i;
+
+		if (it->second.player_id == player_id) {
+			_device_player_map.erase(it);
+		}
+	}
+
+	return true;
+}
+
+void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id)
+{
+	DeviceMapEntry entry;
+	entry.player_id = player_id;
+
+	if (device->isKeyboard()) {
+		entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
+	} else if (device->isMouse()) {
+		entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
+	//} else if (device->isGamepad()) {
+	//	entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleGamepadInput));
+	}
+
+	_device_player_map[device] = entry;
+}
+
+bool InputManager::removeInputDevice(Gleam::IInputDevice& device)
+{
+	if (_device_player_map.find(&device) == _device_player_map.end()) {
+		return false;
+	}
+
+	const DeviceMapEntry entry = _device_player_map[&device];
+	_device_player_map.erase(&device);
+
+	device.removeInputHandler(entry.handler_id);
+
+	return true;
+}
+
+void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value)
+{
+	const auto dpm_it = _device_player_map.find(device);
+
+	GAFF_ASSERT(dpm_it != _device_player_map.end());
+	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second.player_id));
+
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
+	const int32_t player_id = dpm_it->second.player_id;
 
-	auto& input_instance = _binding_instances[_km_player_id];
-	auto& alias_values = _alias_values[_km_player_id];
+	auto& input_instance = _binding_instances[player_id];
+	auto& alias_values = _alias_values[player_id];
 
 	for (int32_t binding_index = 0; binding_index < num_bindings; ++binding_index) {
 		auto& binding_instance = input_instance[binding_index];
@@ -445,7 +507,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 							binding_instance.first_frame = true;
 						}
 
-						// We have no tap requirements.
+					// We have no tap requirements.
 					} else {
 						alias.value -= binding.scale;
 					}
@@ -457,16 +519,20 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, f
 	}
 }
 
-void InputManager::handleMouseInput(Gleam::IInputDevice*, int32_t mouse_code, float value)
+void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value)
 {
-	GAFF_ASSERT(_alias_values.validIndex(_km_player_id));
+	const auto dpm_it = _device_player_map.find(device);
+
+	GAFF_ASSERT(dpm_it != _device_player_map.end());
+	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second.player_id));
 
 	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::ButtonCount);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
+	const int32_t player_id = dpm_it->second.player_id;
 
-	auto& input_instance = _binding_instances[_km_player_id];
-	auto& alias_values = _alias_values[_km_player_id];
+	auto& input_instance = _binding_instances[player_id];
+	auto& alias_values = _alias_values[player_id];
 
 	for (int32_t binding_index = 0; binding_index < num_bindings; ++binding_index) {
 		auto& binding_instance = input_instance[binding_index];

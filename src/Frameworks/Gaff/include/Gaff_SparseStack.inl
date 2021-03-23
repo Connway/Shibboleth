@@ -106,6 +106,18 @@ bool SparseStack<T, Allocator>::Iterator::operator>(const Iterator& rhs) const
 }
 
 template <class T, class Allocator>
+const T* SparseStack<T, Allocator>::Iterator::operator->(void) const
+{
+	return &(**this);
+}
+
+template <class T, class Allocator>
+T* SparseStack<T, Allocator>::Iterator::operator->(void)
+{
+	return &(**this);
+}
+
+template <class T, class Allocator>
 T& SparseStack<T, Allocator>::Iterator::operator*(void) const
 {
 	return **const_cast<Iterator*>(this);
@@ -163,7 +175,7 @@ void SparseStack<T, Allocator>::remove(const T& value)
 
 	if (index > -1) {
 		_free_indices.emplace_back(index);
-		_data[i] = T();
+		_data[index] = T();
 	}
 }
 
@@ -173,7 +185,7 @@ void SparseStack<T, Allocator>::remove(int32_t index)
 	GAFF_ASSERT(validIndex(index));
 
 	_free_indices.emplace_back(index);
-	_data[i] = T();
+	_data[index] = T();
 }
 
 template <class T, class Allocator>

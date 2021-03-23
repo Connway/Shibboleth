@@ -56,6 +56,9 @@ public:
 		bool operator>=(const Iterator& rhs) const;
 		bool operator>(const Iterator& rhs) const;
 
+		const T* operator->(void) const;
+		T* operator->(void);
+
 		T& operator*(void) const;
 		T& operator*(void);
 
@@ -94,6 +97,7 @@ public:
 		ConstIterator operator--(int) { return ConstIterator(_iterator--); }
 		ConstIterator& operator--() { --_iterator; return *this; }
 
+		const T* operator->(void) const { return &(*_iterator); }
 		const T& operator*(void) const { return *_iterator; }
 
 	private:
