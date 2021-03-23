@@ -234,11 +234,13 @@ premake5 gen_module_header --module=Input</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputSystem.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

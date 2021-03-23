@@ -22,25 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+#include "Shibboleth_IDevWebHandler.h"
+#include "Shibboleth_Keyboard_Web.h"
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+class InputManager;
+
+class WebInputHandler final : public IDevWebHandler, public Gaff::IReflectionObject
 {
 public:
-	virtual bool init(void);
+	WebInputHandler(void);
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
-
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
 	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
 	bool handlePut(CivetServer* server, mg_connection* conn) override;
 	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(WebInputHandler);
+
+private:
+	VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
+	//VectorMap<int32_t, UniquePtr<MouseWeb> > _mice;
+	InputManager* _input_mgr = nullptr;
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(WebInputHandler)

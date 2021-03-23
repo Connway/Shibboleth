@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_DevWebKeyboard.h"
+#include "Shibboleth_Keyboard_Web.h"
 #include <Gaff_Assert.h>
 
 NS_SHIBBOLETH
@@ -53,12 +53,14 @@ bool KeyboardWeb::init(bool /*no_windows_key*/)
 
 bool KeyboardWeb::init(void)
 {
-	GAFF_ASSERT(false);
-	return false;
+	return true;
 }
 
 void KeyboardWeb::destroy(void)
 {
+	Gleam::IKeyboard::destroy();
+
+	memset(_prev_state, 0, sizeof(_prev_state));
 	_flags.clear();
 }
 
@@ -120,7 +122,30 @@ const Gleam::IWindow* KeyboardWeb::getAssociatedWindow(void) const
 
 bool KeyboardWeb::handleMessage(const Gleam::AnyMessage& message)
 {
-	GAFF_REF(message);
+	switch (message.base.type) {
+		case Gleam::EventType::InputKeyDown:
+			_data[static_cast<int32_t>(message.key_char.key)] = true;
+			return true;
+
+		case Gleam::EventType::InputKeyUp:
+			_data[static_cast<int32_t>(message.key_char.key)] = false;
+			return true;
+
+		case Gleam::EventType::InputCharacter: {
+			const int32_t size = static_cast<int32_t>(_character_handlers.size());
+
+			for (int32_t i = 0; i < size; ++i) {
+				_character_handlers[i](this, message.key_char.character);
+			}
+
+			return true;
+		}
+
+		// To get rid of pesky "case not handled" warnings.
+		default:
+			break;
+	}
+
 	return false;
 }
 

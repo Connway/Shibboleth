@@ -186,6 +186,12 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -205,9 +211,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_VectorMap.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -231,8 +234,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Frameworks\Gaff\project_generator.lua" />
-    <None Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

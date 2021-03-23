@@ -45,6 +45,12 @@ public:
 	IMouse(void) {}
 	virtual ~IMouse(void) {}
 
+	void destroy(void) override
+	{
+		IInputDevice::destroy();
+		_data = MouseData();
+	}
+
 	const MouseData& getMouseData(void) const { return _data; }
 
 	virtual IVec2 getNormalizedAbsolutePosition(void) const = 0;

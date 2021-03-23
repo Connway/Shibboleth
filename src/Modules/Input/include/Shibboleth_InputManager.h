@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_ISystem.h>
 #include <Gleam_IKeyboard.h>
 #include <Gleam_IMouse.h>
 #include <EASTL/chrono.h>
@@ -134,23 +133,11 @@ private:
 
 	void handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value);
 	void handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value);
+	//void handleGamepadInput(Gleam::IInputDevice* device, int32_t gamepad_code, float value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
-};
-
-class InputSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	InputManager* _input_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
 };
 
 NS_END
 
 SHIB_REFLECTION_DECLARE(InputManager)
-SHIB_REFLECTION_DECLARE(InputSystem)

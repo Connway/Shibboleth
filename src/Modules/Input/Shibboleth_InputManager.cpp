@@ -37,12 +37,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(InputManager)
 SHIB_REFLECTION_DEFINE_END(InputManager)
 
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(InputSystem, ISystem)
-
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(InputManager)
-SHIB_REFLECTION_CLASS_DEFINE(InputSystem)
 
 constexpr char* const g_binding_cfg_schema =
 R"({
@@ -591,17 +588,8 @@ void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_c
 	}
 }
 
-
-bool InputSystem::init(void)
-{
-	_input_mgr = &GetApp().getManagerTFast<InputManager>();
-	_input_mgr->resetTimer();
-	return true;
-}
-
-void InputSystem::update(uintptr_t /*thread_id_int*/)
-{
-	_input_mgr->update();
-}
+//void InputManager::handleGamepadInput(Gleam::IInputDevice* device, int32_t gamepad_code, float value)
+//{
+//}
 
 NS_END

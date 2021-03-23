@@ -39,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE(DebugDrawWebHandler)
 static void ReturnError(mg_connection* conn)
 {
 	mg_printf(conn, "HTTP/1.1 400 Bad Request\r\n");
-	mg_printf(conn, "Content-Type: text/json; charset=utf-8\r\n");
+	mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
 	mg_printf(conn, "Connection: close\r\n\r\n");
 }
 
@@ -124,9 +124,9 @@ bool DebugDrawWebHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 	response.dump(buffer, sizeof(buffer));
 
 	mg_printf(conn, "HTTP/1.1 201 Created\r\n");
-	mg_printf(conn, "Content-Type: text/json; charset=utf-8\r\n");
+	mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
 	mg_printf(conn, "Connection: close\r\n\r\n");
-	mg_printf(conn, buffer);
+	mg_printf(conn, "%s", buffer);
 
 	return true;
 }

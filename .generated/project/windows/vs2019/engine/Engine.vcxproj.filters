@@ -108,6 +108,9 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SparseStack.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -121,9 +124,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_VectorMap.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SparseStack.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

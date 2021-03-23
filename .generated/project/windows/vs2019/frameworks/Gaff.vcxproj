@@ -271,6 +271,8 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReaderWrapper.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReaderWrapper.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SmartPtrs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_String.h" />
@@ -278,7 +280,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Utils_Common.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Vector.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_VectorMap.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Assert.cpp" />
@@ -299,7 +300,6 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.inl" />
     <None Include="..\..\..\..\..\src\Frameworks\Gaff\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

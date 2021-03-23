@@ -36,43 +36,43 @@ void IDevWebHandler::handleConnectionClosed(const mg_connection* /*conn*/)
 {
 }
 
-bool IDevWebHandler::handleGet(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handleGet(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleGet(server, conn);
 }
 
-bool IDevWebHandler::handlePost(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handlePost(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePost(server, conn);
 }
 
-bool IDevWebHandler::handleHead(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handleHead(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleHead(server, conn);
 }
 
-bool IDevWebHandler::handlePut(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handlePut(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePut(server, conn);
 }
 
-bool IDevWebHandler::handleDelete(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handleDelete(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleDelete(server, conn);
 }
 
-bool IDevWebHandler::handleOptions(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handleOptions(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleOptions(server, conn);
 }
 
-bool IDevWebHandler::handlePatch(CivetServer* server, struct mg_connection* conn)
+bool IDevWebHandler::handlePatch(CivetServer* server, mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePatch(server, conn);

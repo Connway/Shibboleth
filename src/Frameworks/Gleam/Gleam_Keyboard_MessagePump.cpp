@@ -67,7 +67,7 @@ bool KeyboardMP::init(void)
 
 void KeyboardMP::destroy(void)
 {
-	auto cb = Gaff::MemberFunc(this, &KeyboardMP::handleMessage);
+	IKeyboard::destroy();
 
 	if (_window) {
 		_window->removeWindowMessageHandler(_id);

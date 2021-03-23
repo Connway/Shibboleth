@@ -22,25 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ISystem.h>
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+class InputManager;
+
+class InputSystem final : public ISystem
 {
 public:
-	virtual bool init(void);
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
+private:
+	InputManager* _input_mgr = nullptr;
 
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
+	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(InputSystem)

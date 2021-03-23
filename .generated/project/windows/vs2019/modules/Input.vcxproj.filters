@@ -15,10 +15,14 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputReflection.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputSystem.cpp" />
   </ItemGroup>
 </Project>

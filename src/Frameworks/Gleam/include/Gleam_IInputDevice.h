@@ -40,7 +40,12 @@ public:
 
 	virtual bool init(IWindow& window) = 0; // Specific window init
 	virtual bool init(void) = 0; // Global handler init
-	virtual void destroy(void) = 0;
+
+	virtual void destroy(void)
+	{
+		_input_handlers.clear();
+		_next_id = 0;
+	}
 
 	virtual void update(void) = 0;
 

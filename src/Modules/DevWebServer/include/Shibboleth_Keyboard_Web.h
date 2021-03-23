@@ -23,24 +23,47 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+#include <Gleam_IKeyboard.h>
+#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+class KeyboardWeb : public Gleam::IKeyboard
 {
 public:
-	virtual bool init(void);
+	KeyboardWeb(void);
+	~KeyboardWeb(void);
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
+	bool init(Gleam::IWindow& /*window*/, bool /*no_windows_key*/) override;
+	bool init(Gleam::IWindow& /*window*/) override;
+	bool init(bool /*no_windows_key*/) override;
+	bool init(void) override;
 
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
+	void destroy(void) override;
+	void update(void) override;
+
+	void allowRepeats(bool allow) override;
+	bool areRepeatsAllowed(void) const override;
+
+	const char* getDeviceName(void) const override;
+	const char* getPlatformImplementationString(void) const override;
+
+	const Gleam::IWindow* getAssociatedWindow(void) const override;
+
+	bool handleMessage(const Gleam::AnyMessage& message);
+
+private:
+	enum class Flag
+	{
+		AllowRepeats,
+		GlobalHandler,
+		NoWindowsKey,
+
+		Count
+	};
+
+	bool _prev_state[256] = { false };
+	Gaff::Flags<Flag> _flags;
 };
 
 NS_END

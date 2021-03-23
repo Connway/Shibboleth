@@ -40,6 +40,15 @@ public:
 	virtual bool init(IWindow& window) = 0;
 	virtual bool init(void) = 0;
 
+	void destroy(void) override
+	{
+		IInputDevice::destroy();
+
+		memset(_data, 0, sizeof(_data));
+		_character_handlers.clear();
+		_next_id = 0;
+	}
+
 	bool isKeyDown(KeyCode key) const { return _data[static_cast<int32_t>(key)]; }
 	bool isKeyUp(KeyCode key) const { return !_data[static_cast<int32_t>(key)]; }
 

@@ -55,7 +55,7 @@ bool MouseMP::init(void)
 
 void MouseMP::destroy(void)
 {
-	auto cb = Gaff::MemberFunc(this, &MouseMP::handleMessage);
+	IMouse::destroy();
 
 	if (_window) {
 		_window->removeWindowMessageHandler(_id);
@@ -65,7 +65,10 @@ void MouseMP::destroy(void)
 		Window::RemoveGlobalMessageHandler(_id);
 	}
 
+	_prev_data = MouseData();
+	_window = nullptr;
 	_flags.clear();
+	_id = -1;
 }
 
 void MouseMP::update(void)

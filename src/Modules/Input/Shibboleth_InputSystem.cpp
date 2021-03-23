@@ -20,53 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_InputSystem.h"
+#include "Shibboleth_InputManager.h"
 
-#include <Shibboleth_Defines.h>
-#include <Gleam_IKeyboard.h>
-#include <Gaff_Flags.h>
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(InputSystem, ISystem)
 
 NS_SHIBBOLETH
 
-class KeyboardWeb : public Gleam::IKeyboard
+SHIB_REFLECTION_CLASS_DEFINE(InputSystem)
+
+bool InputSystem::init(void)
 {
-public:
-	KeyboardWeb(void);
-	~KeyboardWeb(void);
+	_input_mgr = &GetApp().getManagerTFast<InputManager>();
+	_input_mgr->resetTimer();
+	return true;
+}
 
-	bool init(Gleam::IWindow& /*window*/, bool /*no_windows_key*/) override;
-	bool init(Gleam::IWindow& /*window*/) override;
-	bool init(bool /*no_windows_key*/) override;
-	bool init(void) override;
-
-	void destroy(void) override;
-	void update(void) override;
-
-	void allowRepeats(bool allow) override;
-	bool areRepeatsAllowed(void) const override;
-
-	const char* getDeviceName(void) const override;
-	const char* getPlatformImplementationString(void) const override;
-
-	const Gleam::IWindow* getAssociatedWindow(void) const override;
-
-	bool handleMessage(const Gleam::AnyMessage& message);
-
-private:
-	enum class Flag
-	{
-		AllowRepeats,
-		GlobalHandler,
-		NoWindowsKey,
-
-		Count
-	};
-
-	bool _prev_state[256] = { false };
-	Gaff::Flags<Flag> _flags;
-
-	//Gleam::IWindow* _window = nullptr;
-	int32_t _id = -1;
-};
+void InputSystem::update(uintptr_t /*thread_id_int*/)
+{
+	_input_mgr->update();
+}
 
 NS_END
