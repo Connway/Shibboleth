@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_SparseStack.h>
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
@@ -33,7 +34,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static constexpr int32_t k_max_local_players = 4;
+//static constexpr int32_t k_max_local_players = 4;
 
 class InputManager final : public IManager
 {
@@ -81,12 +82,17 @@ private:
 		Vector<Gleam::KeyCode> key_codes{ ProxyAllocator("Input") };
 		Vector<Gaff::Hash32> modes{ ProxyAllocator("Input") };
 		int32_t alias_index;
-		float curr_tap_time = 0.0f;
 		float tap_interval = 0.1f;
 		float scale = 1.0f;
+		int8_t taps = 0;
+	};
+
+	struct BindingInstance final
+	{
+		float curr_tap_time = 0.0f;
+		float tap_interval = 0.1f;
 		int8_t count = 0;
 		int8_t curr_tap = 0;
-		int8_t taps = 0;
 		bool first_frame = false;
 	};
 
@@ -95,19 +101,24 @@ private:
 		float value = 0.0f;
 	};
 
-	VectorMap<Gaff::Hash32, Alias> _alias_values[k_max_local_players] = {
-		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
-		VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") }
-	};
+	//VectorMap<Gaff::Hash32, Alias> _alias_values[k_max_local_players] = {
+	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") },
+	//	VectorMap<Gaff::Hash32, Alias>{ ProxyAllocator("Input") }
+	//};
 
-	Vector<Binding> _bindings[k_max_local_players] = {
-		Vector<Binding>{ ProxyAllocator("Input") },
-		Vector<Binding>{ ProxyAllocator("Input") },
-		Vector<Binding>{ ProxyAllocator("Input") },
-		Vector<Binding>{ ProxyAllocator("Input") }
-	};
+	//Vector<BindingInstance> _binding_instances[k_max_local_players] = {
+	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
+	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
+	//	Vector<BindingInstance>{ ProxyAllocator("Input") },
+	//	Vector<BindingInstance>{ ProxyAllocator("Input") }
+	//};
+
+	SparseStack< VectorMap<Gaff::Hash32, Alias> > _alias_values{ ProxyAllocator("Input") };
+	SparseStack< Vector<BindingInstance> > _binding_instances{ ProxyAllocator("Input") };
+
+	Vector<Binding> _bindings{ ProxyAllocator("Input") };
 
 	UniquePtr<Gleam::IKeyboard> _keyboard;
 	UniquePtr<Gleam::IMouse> _mouse;

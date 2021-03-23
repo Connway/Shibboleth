@@ -29,7 +29,7 @@ local GenerateProject = function()
 			-- base_dir .. "../../Dependencies/mpack",
 			-- base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Frameworks/Gaff/include",
-			-- base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Frameworks/Gleam/include",
 			-- base_dir .. "../Resource/include"
 		}
 
@@ -53,7 +53,8 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"CivetWeb"
+			"CivetWeb",
+			"Gleam"
 		}
 
 		dependson(deps)
@@ -63,6 +64,7 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("DevWebServer")
 	table.insert(deps, "CivetWeb")
+	table.insert(deps, "Gleam")
 
 	dependson(deps)
 	links(deps)

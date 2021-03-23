@@ -43,10 +43,10 @@ public:
 	void allowRepeats(bool allow) override;
 	bool areRepeatsAllowed(void) const override;
 
-	const char* getDeviceName(void) const;
-	const char* getPlatformImplementationString(void) const;
+	const char* getDeviceName(void) const override;
+	const char* getPlatformImplementationString(void) const override;
 
-	const IWindow* getAssociatedWindow(void) const;
+	const IWindow* getAssociatedWindow(void) const override;
 
 	bool handleMessage(const AnyMessage& message);
 

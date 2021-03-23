@@ -45,8 +45,8 @@ public:
 
 	const bool* getKeyboardData(void) const { return _data; }
 
-	bool isKeyboard(void) const { return true; }
-	bool isMouse(void) const { return false; }
+	bool isKeyboard(void) const override { return true; }
+	bool isMouse(void) const override { return false; }
 
 	int32_t addCharacterHandler(const CharacterHandler& handler)
 	{
