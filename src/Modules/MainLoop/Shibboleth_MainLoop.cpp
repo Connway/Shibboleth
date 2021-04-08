@@ -122,14 +122,27 @@ bool MainLoop::init(void)
 				}
 
 				const char* system_name = reader.readString();
-				const Gaff::Hash64 hash = Gaff::FNV1aHash64String(system_name);
+				const bool optional = system_name[0] == '!';
+
+				if (optional) {
+					++system_name;
+				}
+
+				const Gaff::Hash64 hash =  Gaff::FNV1aHash64String(system_name);
 
 				const auto it = eastl::lower_bound(bucket->begin(), bucket->end(), hash, ReflectionManager::CompareRefHash);
 
 				if (it == bucket->end() || hash != (*it)->getReflectionInstance().getHash()) {
-					LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
-					reader.freeString(system_name);
-					return false;
+					if (optional) {
+						LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
+						reader.freeString(system_name - 1);
+						continue;
+
+					} else {
+						LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
+						reader.freeString(system_name);
+						return false;
+					}
 				}
 
 				ISystem* const system = (*it)->createT<ISystem>(CLASS_HASH(ISystem), allocator);
@@ -153,6 +166,32 @@ bool MainLoop::init(void)
 				row.job_data[k].job_func = UpdateSystemJob;
 				row.job_data[k].job_data = system;
 			}
+		}
+	}
+
+	for (int32_t i = 0; i < static_cast<int32_t>(_blocks.size()); ++i) {
+		UpdateBlock& block = _blocks[i];
+
+		for (int32_t j = 0; j < static_cast<int32_t>(block.rows.size()); ++j) {
+			UpdateRow& row = block.rows[j];
+
+			for (int32_t k = 0; k < static_cast<int32_t>(row.systems.size()); ++k) {
+				if (!row.systems[k]) {
+					row.job_data.erase(row.job_data.begin() + k);
+					row.systems.erase(row.systems.begin() + k);
+					--k;
+				}
+			}
+
+			if (row.systems.empty()) {
+				block.rows.erase(block.rows.begin() + j);
+				--j;
+			}
+		}
+
+		if (block.rows.empty()) {
+			block.rows.erase(block.rows.begin() + i);
+			--i;
 		}
 	}
 
