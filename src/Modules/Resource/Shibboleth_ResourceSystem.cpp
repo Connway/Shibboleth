@@ -20,28 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ResourceSystem.h"
+#include "Shibboleth_ResourceManager.h"
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(ResourceSystem, ISystem)
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+SHIB_REFLECTION_CLASS_DEFINE(ResourceSystem)
+
+bool ResourceSystem::init(void)
 {
-public:
-	virtual bool init(void);
-	virtual void update(void) {}
+	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
+	return true;
+}
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
-
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
-};
+void ResourceSystem::update(uintptr_t /*thread_id_int*/)
+{
+	_res_mgr->checkCallbacks();
+	_res_mgr->checkAndRemoveResources();
+}
 
 NS_END

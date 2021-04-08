@@ -35,11 +35,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
 	.var("game_time", &GameTimeManager::_game_time)
 SHIB_REFLECTION_DEFINE_END(GameTimeManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN(GameTimeSystem)
-	.BASE(ISystem)
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(GameTimeSystem)
-
 SHIB_REFLECTION_DEFINE_BEGIN(Time)
 	.classAttrs(
 		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::ReferenceOnly)
@@ -52,7 +47,6 @@ SHIB_REFLECTION_DEFINE_END(Time)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(GameTimeManager)
-SHIB_REFLECTION_CLASS_DEFINE(GameTimeSystem)
 
 constexpr double k_max_delta_game_time = 0.75;
 
@@ -94,20 +88,6 @@ const Time& GameTimeManager::getRealTime(void) const
 const Time& GameTimeManager::getGameTime(void) const
 {
 	return _game_time;
-}
-
-
-
-bool GameTimeSystem::init(void)
-{
-	_manager = &GetApp().getManagerTFast<GameTimeManager>();
-	_manager->reset();
-	return true;
-}
-
-void GameTimeSystem::update(uintptr_t /*thread_id_int*/)
-{
-	_manager->update();
 }
 
 NS_END

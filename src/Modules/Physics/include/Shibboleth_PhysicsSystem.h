@@ -22,26 +22,38 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ISystem.h>
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+class PhysicsManager;
+
+class PhysicsDebugSystem final : public ISystem
 {
 public:
-	virtual bool init(void);
-	virtual void update(void) {}
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
+private:
+	PhysicsManager* _physics_mgr = nullptr;
 
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
+	SHIB_REFLECTION_CLASS_DECLARE(PhysicsDebugSystem);
+};
+
+class PhysicsSystem final : public ISystem
+{
+public:
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
+
+private:
+	PhysicsManager* _physics_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(PhysicsSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(PhysicsDebugSystem)
+SHIB_REFLECTION_DECLARE(PhysicsSystem)

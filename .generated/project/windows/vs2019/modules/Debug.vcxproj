@@ -234,12 +234,14 @@ premake5 gen_module_header --module=Debug</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_IDebugManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Debug\project_generator.lua" />

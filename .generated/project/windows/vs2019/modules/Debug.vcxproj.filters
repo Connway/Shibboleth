@@ -15,6 +15,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_DebugSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Debug\include\Shibboleth_IDebugManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -23,6 +26,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Debug\project_generator.lua" />

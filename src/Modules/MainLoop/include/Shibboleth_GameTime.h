@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ISystem.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <EASTL/chrono.h>
@@ -62,20 +61,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(GameTimeManager);
 };
 
-class GameTimeSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	GameTimeManager* _manager = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(GameTimeSystem);
-};
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(GameTimeManager)
-SHIB_REFLECTION_DECLARE(GameTimeSystem)
 SHIB_REFLECTION_DECLARE(Time)

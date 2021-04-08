@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTime.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTimeSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_ISystem.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -21,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTimeSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />

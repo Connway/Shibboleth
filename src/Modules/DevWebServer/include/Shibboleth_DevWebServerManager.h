@@ -38,6 +38,8 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
+	void update(void);
+
 private:
 	UniquePtr<CivetServer> _server;
 	DefaultHandler _default_handler;

@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_ISystem.h>
 #include <EAThread/eathread_mutex.h>
 #include <EASTL/functional.h>
 
@@ -159,18 +158,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
-class ResourceSystem : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	ResourceManager* _res_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ResourceSystem);
-};
-
 
 template <class T>
 static bool LoadRefPtr(const Gaff::ISerializeReader& reader, Gaff::RefPtr<T>& out)
@@ -198,7 +185,6 @@ static void SaveRefPtr(Gaff::ISerializeWriter& writer, const Gaff::RefPtr<T>& va
 NS_END
 
 SHIB_REFLECTION_DECLARE(ResourceManager)
-SHIB_REFLECTION_DECLARE(ResourceSystem)
 
 // Gaff::RefPtr
 SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T)

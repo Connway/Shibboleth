@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ECSQuery.h>
-#include <Shibboleth_ISystem.h>
 
 namespace physx
 {
@@ -101,33 +100,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsManager);
 };
 
-class PhysicsDebugSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	PhysicsManager* _physics_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsDebugSystem);
-};
-
-class PhysicsSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	PhysicsManager* _physics_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsSystem);
-};
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(PhysicsManager::DebugFlag)
 SHIB_REFLECTION_DECLARE(PhysicsManager)
-SHIB_REFLECTION_DECLARE(PhysicsDebugSystem)
-SHIB_REFLECTION_DECLARE(PhysicsSystem)

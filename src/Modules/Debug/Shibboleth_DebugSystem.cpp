@@ -20,28 +20,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_DebugSystem.h"
+#include "Shibboleth_DebugManager.h"
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
+	.base<ISystem>()
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(DebugRenderSystem)
+
+SHIB_REFLECTION_DEFINE_BEGIN(DebugSystem)
+	.base<ISystem>()
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(DebugSystem)
+
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
+SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
+
+
+bool DebugRenderSystem::init(void)
 {
-public:
-	virtual bool init(void);
-	virtual void update(void) {}
+	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+	return true;
+}
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
+void DebugRenderSystem::update(uintptr_t thread_id_int)
+{
+	_debug_mgr->render(thread_id_int);
+}
 
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
-};
+
+bool DebugSystem::init(void)
+{
+	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+	return true;
+}
+
+void DebugSystem::update(uintptr_t /*thread_id_int*/)
+{
+	_debug_mgr->update();
+}
 
 NS_END

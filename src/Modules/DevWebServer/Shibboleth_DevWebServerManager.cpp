@@ -102,6 +102,11 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 	return true;
 }
 
+void DevWebServerManager::update(void)
+{
+
+}
+
 void DevWebServerManager::ConnectionClosed(const mg_connection* conn)
 {
 	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();

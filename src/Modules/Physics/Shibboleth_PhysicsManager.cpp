@@ -46,9 +46,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
 	)
 SHIB_REFLECTION_DEFINE_END(PhysicsManager)
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsDebugSystem, ISystem)
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
-
 
 namespace
 {
@@ -101,7 +98,7 @@ namespace
 	private:
 		Shibboleth::JobPool* _job_pool = nullptr;
 
-		static void RunTask(uintptr_t /*id_int*/, void* data)
+		static void RunTask(uintptr_t /*thread_id_int*/, void* data)
 		{
 			physx::PxBaseTask& task = *reinterpret_cast<physx::PxBaseTask*>(data);
 			task.run();
@@ -118,8 +115,6 @@ namespace
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsManager)
-SHIB_REFLECTION_CLASS_DEFINE(PhysicsDebugSystem)
-SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
 
 PhysicsManager::~PhysicsManager(void)
 {
@@ -429,30 +424,6 @@ physx::PxFoundation* PhysicsManager::getFoundation(void)
 physx::PxPhysics* PhysicsManager::getPhysics(void)
 {
 	return _physics;
-}
-
-
-
-bool PhysicsDebugSystem::init(void)
-{
-	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
-	return true;
-}
-
-void PhysicsDebugSystem::update(uintptr_t thread_id_int)
-{
-	_physics_mgr->updateDebug(thread_id_int);
-}
-
-bool PhysicsSystem::init(void)
-{
-	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
-	return true;
-}
-
-void PhysicsSystem::update(uintptr_t thread_id_int)
-{
-	_physics_mgr->update(thread_id_int);
 }
 
 NS_END

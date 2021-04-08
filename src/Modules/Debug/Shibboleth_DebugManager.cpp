@@ -255,21 +255,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
 	)
 SHIB_REFLECTION_DEFINE_END(DebugManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
-	.base<ISystem>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugRenderSystem)
-
-SHIB_REFLECTION_DEFINE_BEGIN(DebugSystem)
-	.base<ISystem>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugSystem)
-
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
 SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
-SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
 
 static void HandleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
 {
@@ -2198,30 +2186,6 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 			ImGui::EndMenu();
 		}
 	}
-}
-
-
-
-bool DebugRenderSystem::init(void)
-{
-	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	return true;
-}
-
-void DebugRenderSystem::update(uintptr_t thread_id_int)
-{
-	_debug_mgr->render(thread_id_int);
-}
-
-bool DebugSystem::init(void)
-{
-	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
-	return true;
-}
-
-void DebugSystem::update(uintptr_t /*thread_id_int*/)
-{
-	_debug_mgr->update();
 }
 
 NS_END

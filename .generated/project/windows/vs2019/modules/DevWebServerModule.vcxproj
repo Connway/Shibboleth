@@ -262,6 +262,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
+    </ProjectReference>
     <ProjectReference Include="Input.vcxproj">
       <Project>{953A660D-014F-8EBE-CAD0-311E36A48AEF}</Project>
     </ProjectReference>

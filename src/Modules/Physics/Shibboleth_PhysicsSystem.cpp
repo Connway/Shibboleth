@@ -20,28 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_PhysicsSystem.h"
+#include "Shibboleth_PhysicsManager.h"
 
-#include <Shibboleth_Defines.h>
-#include "Shibboleth_IncludeCivetWeb.h"
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsDebugSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
 
 NS_SHIBBOLETH
 
-class IDevWebHandler : public CivetHandler
+SHIB_REFLECTION_CLASS_DEFINE(PhysicsDebugSystem)
+SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
+
+bool PhysicsDebugSystem::init(void)
 {
-public:
-	virtual bool init(void);
-	virtual void update(void) {}
+	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
+	return true;
+}
 
-	virtual void handleConnectionClosed(const mg_connection* conn);
+void PhysicsDebugSystem::update(uintptr_t thread_id_int)
+{
+	_physics_mgr->updateDebug(thread_id_int);
+}
 
-	bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handleHead(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
-	bool handleOptions(CivetServer* server, mg_connection* conn) override;
-	bool handlePatch(CivetServer* server, mg_connection* conn) override;
-};
+bool PhysicsSystem::init(void)
+{
+	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
+	return true;
+}
+
+void PhysicsSystem::update(uintptr_t thread_id_int)
+{
+	_physics_mgr->update(thread_id_int);
+}
 
 NS_END

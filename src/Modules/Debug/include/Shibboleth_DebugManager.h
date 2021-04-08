@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_ModelResource.h>
 #include <Gleam_IShaderResourceView.h>
@@ -253,33 +252,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };
 
-class DebugRenderSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	DebugManager* _debug_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderSystem);
-};
-
-class DebugSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	DebugManager* _debug_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(DebugSystem);
-};
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(DebugManager::DebugFlag)
-SHIB_REFLECTION_DECLARE(DebugRenderSystem)
 SHIB_REFLECTION_DECLARE(DebugManager)
-SHIB_REFLECTION_DECLARE(DebugSystem)

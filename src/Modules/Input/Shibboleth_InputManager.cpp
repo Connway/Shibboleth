@@ -248,12 +248,6 @@ bool InputManager::initAllModulesLoaded(void)
 
 void InputManager::update(void)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	for (auto& pair : _device_player_map) {
 		pair.first->update();
 	}
@@ -304,10 +298,6 @@ void InputManager::update(void)
 			}
 		}
 	}
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
 }
 
 void InputManager::resetTimer(void)
@@ -317,22 +307,9 @@ void InputManager::resetTimer(void)
 
 float InputManager::getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	GAFF_ASSERT(_alias_values.validIndex(player_id));
 	const auto it = _alias_values[player_id].find(alias_name);
-	
-	const float value = (it == _alias_values[player_id].end()) ? 0.0f : it->second.value;
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
-	return value;
+	return (it == _alias_values[player_id].end()) ? 0.0f : it->second.value;
 }
 
 float InputManager::getAliasValue(const char* alias_name, int32_t player_id) const
@@ -342,40 +319,15 @@ float InputManager::getAliasValue(const char* alias_name, int32_t player_id) con
 
 float InputManager::getAliasValue(int32_t index, int32_t player_id) const
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	GAFF_ASSERT(_alias_values.validIndex(player_id));
 	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values[player_id].size()));
-	
-	const float value = _alias_values[player_id].at(index).second.value;
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
-	return value;
+	return _alias_values[player_id].at(index).second.value;
 }
 
 int32_t InputManager::getAliasIndex(Gaff::Hash32 alias_name) const
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	const auto it = _alias_values[0].find(alias_name);
-	const int32_t index = (it != _alias_values[0].end()) ? static_cast<int32_t>(eastl::distance(_alias_values[0].begin(), it)) : -1;
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
-	return index;
+	return (it != _alias_values[0].end()) ? static_cast<int32_t>(eastl::distance(_alias_values[0].begin(), it)) : -1;
 }
 
 int32_t InputManager::getAliasIndex(const char* alias_name) const
@@ -452,37 +404,18 @@ const Gleam::IInputDevice* InputManager::getInputDevice(int32_t player_id) const
 
 Gleam::IInputDevice* InputManager::getInputDevice(int32_t player_id)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
-	Gleam::IInputDevice* device = nullptr;
-
 	for (const auto& entry : _device_player_map) {
 		if (entry.second.player_id == player_id) {
 
-			device = entry.first;
-			break;
+			return entry.first;
 		}
 	}
 
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
-	return device;
+	return nullptr;
 }
 
 int32_t InputManager::addPlayer(void)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	const int32_t player_id = _binding_instances.emplace();
 	const int32_t player_id_validate = _alias_values.emplace();
 
@@ -491,21 +424,11 @@ int32_t InputManager::addPlayer(void)
 	_binding_instances[player_id].resize(_bindings.size());
 	_alias_values[player_id] = _default_alias_values;
 
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
 	return player_id;
 }
 
 bool InputManager::removePlayer(int32_t player_id)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	if (!_binding_instances.validIndex(player_id)) {
 		return false;
 	}
@@ -521,21 +444,11 @@ bool InputManager::removePlayer(int32_t player_id)
 		}
 	}
 
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
 	return true;
 }
 
 void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	DeviceMapEntry entry;
 	entry.player_id = player_id;
 
@@ -548,20 +461,10 @@ void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id
 	}
 
 	_device_player_map[device] = entry;
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
 }
 
 bool InputManager::removeInputDevice(Gleam::IInputDevice& device)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	if (_device_player_map.find(&device) == _device_player_map.end()) {
 		return false;
 	}
@@ -570,22 +473,11 @@ bool InputManager::removeInputDevice(Gleam::IInputDevice& device)
 	_device_player_map.erase(&device);
 
 	device.removeInputHandler(entry.handler_id);
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
-
 	return true;
 }
 
 void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	const auto dpm_it = _device_player_map.find(device);
 
 	GAFF_ASSERT(dpm_it != _device_player_map.end());
@@ -648,20 +540,10 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_
 			}
 		}
 	}
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
 }
 
 void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value)
 {
-	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-
-	if (dev_mode) {
-		_lock.Lock();
-	}
-
 	const auto dpm_it = _device_player_map.find(device);
 
 	GAFF_ASSERT(dpm_it != _device_player_map.end());
@@ -730,23 +612,10 @@ void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_c
 			}
 		}
 	}
-
-	if (dev_mode) {
-		_lock.Unlock();
-	}
 }
 
 //void InputManager::handleGamepadInput(Gleam::IInputDevice* device, int32_t gamepad_code, float value)
 //{
-//	const bool dev_mode = GetApp().getConfigs()["dev_mode"].getBool(false);
-//
-//	if (dev_mode) {
-//		_lock.Lock();
-//	}
-//
-//	if (dev_mode) {
-//		_lock.Unlock();
-//	}
 //}
 
 NS_END
