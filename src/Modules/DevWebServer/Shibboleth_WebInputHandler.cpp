@@ -43,6 +43,26 @@ WebInputHandler::WebInputHandler(void):
 {
 }
 
+void WebInputHandler::update(void)
+{
+	// Add new input devices.
+	for (const NewDeviceEntry& entry : _new_device_queue) {
+		int32_t player_id = entry.player_id;
+
+		if (entry.player_id == -1) {
+			player_id = _input_mgr->addPlayer();
+		}
+
+		for (Gleam::IInputDevice* const device : entry.devices) {
+			_input_mgr->addInputDevice(device, player_id);
+		}
+	}
+
+	// Process web input queue and do input message pumps.
+
+	_new_device_queue.clear();
+}
+
 bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
@@ -84,20 +104,20 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 
 	const bool create_keyboard = req_data["create_keyboard"].getBool(false);
 	const bool create_mouse = req_data["create_mouse"].getBool(false);
-	int32_t player_id = req_data["player_id"].getInt32(-1);
 
-	if (player_id == -1) {
-		player_id = _input_mgr->addPlayer();
-	}
+	NewDeviceEntry entry;
+	entry.player_id = req_data["player_id"].getInt32(-1);
 
 	Gaff::JSON response = Gaff::JSON::CreateObject();
 
-	if (create_keyboard && _keyboards.find(player_id) == _keyboards.end()) {
+	if (create_keyboard && _keyboards.find(entry.player_id) == _keyboards.end()) {
 		KeyboardWeb* const keyboard = SHIB_ALLOCT(KeyboardWeb, g_allocator);
 
 		if (keyboard->init()) {
-			_keyboards[player_id].reset(keyboard);
-			_input_mgr->addInputDevice(keyboard, player_id);
+			entry.devices.emplace_back(keyboard);
+
+			//_keyboards[player_id].reset(keyboard);
+			//_input_mgr->addInputDevice(keyboard, player_id);
 
 			response.setObject("keyboard", Gaff::JSON::CreateBool(true));
 
@@ -110,14 +130,20 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		//MouseWeb* const mouse = SHIB_ALLOCT(MouseWeb, g_allocator);
 
 		//if (mouse->init()) {
-		//	_mice[player_id].reset(mouse);
-		//	_input_mgr->addInputDevice(mouse, player_id);
+		//	entry.devices.emplace_back(mouse);
+
+		//	//_mice[player_id].reset(mouse);
+		//	//_input_mgr->addInputDevice(mouse, player_id);
 
 		//	response.setObject("mouse", Gaff::JSON::CreateBool(true));
 
 		//} else {
 		//	SHIB_FREET(mouse, g_allocator);
 		//}
+	}
+
+	if (!entry.devices.empty()) {
+		_new_device_queue.emplace_back(std::move(entry));
 	}
 
 	char response_buffer[1024] = { 0 };

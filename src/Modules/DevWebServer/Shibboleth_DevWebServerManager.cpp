@@ -104,7 +104,9 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 
 void DevWebServerManager::update(void)
 {
-
+	for (auto& handler : _handlers) {
+		handler->update();
+	}
 }
 
 void DevWebServerManager::ConnectionClosed(const mg_connection* conn)

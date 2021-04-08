@@ -35,6 +35,8 @@ class WebInputHandler final : public IDevWebHandler, public Gaff::IReflectionObj
 public:
 	WebInputHandler(void);
 
+	void update(void) override;
+
 	bool handlePost(CivetServer* server, mg_connection* conn) override;
 	bool handlePut(CivetServer* server, mg_connection* conn) override;
 	bool handleDelete(CivetServer* server, mg_connection* conn) override;
@@ -42,8 +44,17 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(WebInputHandler);
 
 private:
+	struct NewDeviceEntry final
+	{
+		Vector<Gleam::IInputDevice*> devices{ ProxyAllocator("DevWeb") };
+		int32_t player_id = -1;
+	};
+
+	Vector<NewDeviceEntry> _new_device_queue{ ProxyAllocator("DevWeb") };
+
 	VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
-	//VectorMap<int32_t, UniquePtr<MouseWeb> > _mice;
+	//VectorMap<int32_t, UniquePtr<MouseWeb> > _mice{ ProxyAllocator("DevWeb") };
+
 	InputManager* _input_mgr = nullptr;
 };
 
