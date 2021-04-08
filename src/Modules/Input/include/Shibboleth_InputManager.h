@@ -70,8 +70,13 @@ public:
 	void setModeToPrevious(void);
 	void setModeToDefault(void);
 
+	const Gleam::IKeyboard* getKeyboard(void) const;
+	const Gleam::IMouse* getMouse(void) const;
 	Gleam::IKeyboard* getKeyboard(void);
 	Gleam::IMouse* getMouse(void);
+
+	const Gleam::IInputDevice* getInputDevice(int32_t player_id) const;
+	Gleam::IInputDevice* getInputDevice(int32_t player_id);
 
 	int32_t addPlayer(void);
 	bool removePlayer(int32_t player_id);
@@ -132,7 +137,7 @@ private:
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
 
-	EA::Thread::Mutex _lock;
+	mutable EA::Thread::Mutex _lock;
 
 	void handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value);
 	void handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value);
