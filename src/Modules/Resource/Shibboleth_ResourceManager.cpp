@@ -125,7 +125,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Gaff
 		return IResourcePtr();
 	}
 
-	EA::Thread::AutoMutex lock(_res_lock);
+	const EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -162,7 +162,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Gaff
 
 IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool delay_load)
 {
-	EA::Thread::AutoMutex lock(_res_lock);
+	const EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -215,7 +215,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name)
 
 IResourcePtr ResourceManager::getResource(HashStringView64<> name)
 {
-	EA::Thread::AutoMutex lock(_res_lock);
+	const EA::Thread::AutoMutex lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -274,7 +274,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 	}
 
 	const Gaff::Hash64 hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(resources.data()), sizeof(IResource*) * resources.size());
-	EA::Thread::AutoMutex lock(_callback_lock);
+	const EA::Thread::AutoMutex lock(_callback_lock);
 	CallbackData& data = _callbacks[hash];
 
 	if (data.resources.empty()) {
@@ -290,7 +290,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 
 void ResourceManager::removeCallback(ResourceCallbackID id)
 {
-	EA::Thread::AutoMutex lock(_callback_lock);
+	const EA::Thread::AutoMutex lock(_callback_lock);
 	const auto it = _callbacks.find(id.res_id);
 
 	if (it == _callbacks.end()) {
@@ -306,7 +306,7 @@ void ResourceManager::removeCallback(ResourceCallbackID id)
 
 void ResourceManager::checkAndRemoveResources(void)
 {
-	EA::Thread::AutoMutex lock(_removal_lock);
+	const EA::Thread::AutoMutex lock(_removal_lock);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
 		// Don't remove if a thread is still loading it.
@@ -354,11 +354,11 @@ void ResourceManager::removeResource(const IResource& resource)
 {
 	// Resource load job has already been submitted. Wait until it is finished.
 	if (resource.getState() == ResourceState::Pending) {
-		EA::Thread::AutoMutex lock(_removal_lock);
+		const EA::Thread::AutoMutex lock(_removal_lock);
 		_pending_removals.emplace_back(&resource);
 
 	} else {
-		EA::Thread::AutoMutex lock(_res_lock);
+		const EA::Thread::AutoMutex lock(_res_lock);
 
 		auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
 

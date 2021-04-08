@@ -94,7 +94,7 @@ void ECSManager::addArchetype(ECSArchetype&& archetype)
 
 void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	const auto it = _entity_pages.find(archetype);
 
 	if (it == _entity_pages.end()) {
@@ -121,7 +121,7 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 
 const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 archetype) const
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	return it->second->archetype;
@@ -135,7 +135,7 @@ const ECSArchetype& ECSManager::getArchetype(EntityID id) const
 
 ArchetypeReferencePtr ECSManager::getArchetypeReference(Gaff::Hash64 archetype)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	return ArchetypeReferencePtr(it->second->arch_ref);
@@ -154,7 +154,7 @@ EntityID ECSManager::createEntity(const ECSArchetype& archetype)
 
 EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	EntityData& data = *(it->second);
@@ -246,7 +246,7 @@ void* ECSManager::getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflec
 
 void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	GAFF_ASSERT(_entity_pages.find(archetype) != _entity_pages.end());
 	auto& archetype_instance = _entity_pages[archetype]->archetype;
 
@@ -400,7 +400,7 @@ const ECSArchetype& ECSManager::getEmptyArchetype(void) const
 
 void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	Entity& entity = _entities[id];
 
@@ -455,7 +455,7 @@ void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 
 void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 {
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	GAFF_ASSERT(_entity_pages.find(new_archetype) != _entity_pages.end());
 	EntityData& data = *_entity_pages[new_archetype];
 	Entity& entity = _entities[id];
@@ -576,7 +576,7 @@ ArchetypeReference* ECSManager::modifyInternal(EntityID& id, ArchetypeModifier m
 ArchetypeReference* ECSManager::addArchetypeInternal(ECSArchetype&& archetype)
 {
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
-	EA::Thread::AutoMutex lock(_entity_page_lock);
+	const EA::Thread::AutoMutex lock(_entity_page_lock);
 
 	if (const auto it = _entity_pages.find(archetype_hash); it != _entity_pages.end()) {
 		return it->second->arch_ref;

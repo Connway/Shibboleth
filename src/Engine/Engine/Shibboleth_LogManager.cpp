@@ -35,7 +35,7 @@ intptr_t LogManager::LogThread(void* args)
 
 	AllocatorThreadInit();
 
-	EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
+	const EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {
 		lm._log_event.Wait(&lm._log_condition_lock);
@@ -61,7 +61,7 @@ intptr_t LogManager::LogThread(void* args)
 		}
 	}
 
-	EA::Thread::AutoMutex queue_lock(lm._log_queue_lock);
+	const EA::Thread::AutoMutex queue_lock(lm._log_queue_lock);
 
 	while (!lm._logs.empty()) {
 		LogTask task = std::move(lm._logs.front());
@@ -124,7 +124,7 @@ void LogManager::destroy(void)
 
 int32_t LogManager::addLogCallback(const LogCallback& callback)
 {
-	EA::Thread::AutoMutex lock(_log_callback_lock);
+	const EA::Thread::AutoMutex lock(_log_callback_lock);
 	const int32_t id = _next_id++;
 	_log_callbacks.emplace(id, callback);
 
@@ -133,7 +133,7 @@ int32_t LogManager::addLogCallback(const LogCallback& callback)
 
 int32_t LogManager::addLogCallback(LogCallback&& callback)
 {
-	EA::Thread::AutoMutex lock(_log_callback_lock);
+	const EA::Thread::AutoMutex lock(_log_callback_lock);
 	const int32_t id = _next_id++;
 	_log_callbacks.emplace(id, std::move(callback));
 
@@ -142,7 +142,7 @@ int32_t LogManager::addLogCallback(LogCallback&& callback)
 
 bool LogManager::removeLogCallback(int32_t id)
 {
-	EA::Thread::AutoMutex lock(_log_callback_lock);
+	const EA::Thread::AutoMutex lock(_log_callback_lock);
 	const auto it = _log_callbacks.find(id);
 
 	if (it != _log_callbacks.end()) {
@@ -223,7 +223,7 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 	}
 
 	{
-		EA::Thread::AutoMutex lock(_log_queue_lock);
+		const EA::Thread::AutoMutex lock(_log_queue_lock);
 		_logs.emplace(it->second, U8String(time_string) + message, type);
 	}
 
@@ -233,7 +233,7 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 
 void LogManager::notifyLogCallbacks(const char* message, LogType type)
 {
-	EA::Thread::AutoMutex lock(_log_callback_lock);
+	const EA::Thread::AutoMutex lock(_log_callback_lock);
 
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		it->second(message, type);

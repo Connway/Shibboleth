@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Gleam_IKeyboard.h>
 #include <Gleam_IMouse.h>
+#include <EAThread/eathread_mutex.h>
 #include <EASTL/chrono.h>
 
 NS_SHIBBOLETH
@@ -130,6 +131,8 @@ private:
 	Gaff::Hash32 _prev_mode = Gaff::FNV1aHash32Const("Default");
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
+
+	EA::Thread::Mutex _lock;
 
 	void handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value);
 	void handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value);

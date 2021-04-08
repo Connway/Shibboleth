@@ -23,7 +23,7 @@ THE SOFTWARE.
 template <class Message>
 BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
 {
-	EA::Thread::AutoMutex lock(_listener_lock);
+	const EA::Thread::AutoMutex lock(_listener_lock);
 
 	auto& listener_data = _listeners[Reflection<Message>::GetHash()];
 	BroadcastID id(Reflection<Message>::GetHash(), 0);
@@ -64,8 +64,9 @@ void Broadcaster::broadcastSync(const Message& message)
 template <class Message>
 void Broadcaster::broadcast(const Message& message)
 {
-	const auto func = [this, message](void*) -> void {
-		EA::Thread::AutoMutex lock(_listener_lock);
+	const auto func = [this, message](void*) -> void
+	{
+		const EA::Thread::AutoMutex lock(_listener_lock);
 
 		const auto it = _listeners.find(Reflection<Message>::GetHash());
 

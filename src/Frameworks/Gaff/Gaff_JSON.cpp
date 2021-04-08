@@ -697,72 +697,74 @@ JSON JSON::getValue(int32_t index) const
 
 const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
 {
-	return (isNull()) ? strncpy(buffer, default_value, buf_size - 1) : strncpy(buffer, getValue().GetString(), buf_size - 1);
+	return (isString()) ?
+		strncpy(buffer, getValue().GetString(), buf_size - 1) :
+		strncpy(buffer, default_value, buf_size - 1);
 }
 
 const char* JSON::getString(const char* default_value) const
 {
-	return (isNull()) ? default_value : getValue().GetString();
+	return (isString()) ? getValue().GetString() : default_value;
 }
 
 int8_t JSON::getInt8(int8_t default_value) const
 {
-	return (isNull()) ? default_value : getInt8();
+	return (isInt8()) ? getInt8() : default_value ;
 }
 
 uint8_t JSON::getUInt8(uint8_t default_value) const
 {
-	return (isNull()) ? default_value : getUInt8();
+	return (isUInt8()) ? getUInt8() : default_value;
 }
 
 int16_t JSON::getInt16(int16_t default_value) const
 {
-	return (isNull()) ? default_value : getInt16();
+	return (isInt16()) ? getInt16() : default_value;
 }
 
 uint16_t JSON::getUInt16(uint16_t default_value) const
 {
-	return (isNull()) ? default_value : getUInt16();
+	return (isUInt16()) ? getUInt16() : default_value;
 }
 
 int32_t JSON::getInt32(int32_t default_value) const
 {
-	return (isNull()) ? default_value : getInt32();
+	return (isInt32()) ? getInt32() : default_value;
 }
 
 uint32_t JSON::getUInt32(uint32_t default_value) const
 {
-	return (isNull()) ? default_value : getUInt32();
+	return (isUInt32()) ? getUInt32() : default_value;
 }
 
 int64_t JSON::getInt64(int64_t default_value) const
 {
-	return (isNull()) ? default_value : getInt64();
+	return (isInt64()) ? getInt64() : default_value;
 }
 
 uint64_t JSON::getUInt64(uint64_t default_value) const
 {
-	return (isNull()) ? default_value : getUInt64();
+	return (isUInt64()) ? getUInt64() : default_value;
 }
 
 float JSON::getFloat(float default_value) const
 {
-	return (isNull()) ? default_value : getFloat();
+	return (isFloat()) ? getFloat() : default_value;
 }
 
 double JSON::getDouble(double default_value) const
 {
-	return (isNull()) ? default_value : getDouble();
+	return (isDouble()) ? getDouble() : default_value;
 }
 
 double JSON::getNumber(double default_value) const
 {
-	return (isNull()) ? default_value : getNumber();
+	return (isNumber()) ? getNumber() : default_value;
 }
 
 bool JSON::getBool(bool default_value) const
 {
-	return (isNull()) ? default_value : getBool();
+	return (isBool()) ? getBool() : default_value;
 }
 
 const char* JSON::getString(char* buffer, size_t buf_size) const

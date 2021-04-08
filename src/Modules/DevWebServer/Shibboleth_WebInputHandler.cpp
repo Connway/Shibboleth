@@ -63,17 +63,28 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
 
-	if (!req->query_string) {
+	if (req->content_length <= 0) {
 		return true;
 	}
 
-	int32_t create_keyboard = 0;
-	int32_t create_mouse = 0;
-	int32_t player_id = -1;
+	Vector<int8_t> data_buffer(static_cast<size_t>(req->content_length) + 1, g_allocator);
+	int32_t curr_bytes_read = 0;
 
-	sscanf(req->query_string, "keyboard=%i", &create_keyboard);
-	sscanf(req->query_string, "mouse=%i", &create_mouse);
-	sscanf(req->query_string, "id=%i", &player_id);
+	while (curr_bytes_read < req->content_length) {
+		curr_bytes_read += mg_read(conn, data_buffer.data(), data_buffer.size());
+	}
+
+	data_buffer.back() = 0;
+
+	Gaff::JSON req_data;
+
+	if (!req_data.parse(reinterpret_cast<char*>(data_buffer.data()))) {
+		return true;
+	}
+
+	const bool create_keyboard = req_data["create_keyboard"].getBool(false);
+	const bool create_mouse = req_data["create_mouse"].getBool(false);
+	int32_t player_id = req_data["player_id"].getInt32(-1);
 
 	if (player_id == -1) {
 		player_id = _input_mgr->addPlayer();
