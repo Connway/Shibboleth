@@ -62,11 +62,18 @@ public:
 	int32_t getNumEntries(void) const override;
 	HashStringView32<> getEntryNameFromValue(int32_t value) const override;
 	HashStringView32<> getEntryNameFromIndex(int32_t index) const override;
-	int32_t getEntryValue(int32_t index) const override;
 	int32_t getEntryValue(const char* name) const override;
+	int32_t getEntryValue(int32_t index) const override;
 	int32_t getEntryValue(Hash32 name) const override;
 
+	Enum getEntry(const char* name) const;
+	Enum getEntry(int32_t index) const;
+	Enum getEntry(Hash32 name) const;
+
 	HashStringView32<> getEntryName(Enum value) const;
+
+	bool entryExists(const char* name) const;
+	bool entryExists(Hash32 name) const;
 
 	int32_t getNumEnumAttrs(void) const override;
 	const IAttribute* getEnumAttr(int32_t index) const override;

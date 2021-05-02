@@ -25,6 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_IDevWebHandler.h"
 #include "Shibboleth_Keyboard_Web.h"
 #include <Shibboleth_Reflection.h>
+#include <Gaff_Flags.h>
+#include <EAThread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
@@ -50,10 +52,36 @@ private:
 		int32_t player_id = -1;
 	};
 
+	struct InputEntry final
+	{
+		enum class Flag
+		{
+			Keyboard,
+			Mouse,
+
+			Count
+		};
+
+		union
+		{
+			Gleam::MouseCode mouse_code;
+			Gleam::KeyCode key_code;
+		} code;
+
+		int32_t player_id;
+		float value;
+		Gaff::Flags<Flag> flags;
+	};
+
 	Vector<NewDeviceEntry> _new_device_queue{ ProxyAllocator("DevWeb") };
+	Vector<InputEntry> _input_queue{ ProxyAllocator("DevWeb") };
 
 	VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
 	//VectorMap<int32_t, UniquePtr<MouseWeb> > _mice{ ProxyAllocator("DevWeb") };
+
+	EA::Thread::Mutex _new_device_queue_lock;
+	EA::Thread::Mutex _input_queue_lock;
+	EA::Thread::Mutex _device_lock;
 
 	InputManager* _input_mgr = nullptr;
 };

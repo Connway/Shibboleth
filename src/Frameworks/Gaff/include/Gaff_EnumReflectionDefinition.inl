@@ -89,16 +89,16 @@ HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryNameFromIn
 }
 
 template <class Enum, class Allocator>
+int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(const char* name) const
+{
+	return getEntryValue(FNV1aHash32String(name));
+}
+
+template <class Enum, class Allocator>
 int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(int32_t index) const
 {
 	GAFF_ASSERT(static_cast<size_t>(index) < _entries.size());
 	return static_cast<int32_t>((_entries.begin() + index)->second);
-}
-
-template <class Enum, class Allocator>
-int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(const char* name) const
-{
-	return getEntryValue(FNV1aHash32String(name));
 }
 
 template <class Enum, class Allocator>
@@ -113,6 +113,30 @@ int32_t EnumReflectionDefinition<Enum, Allocator>::getEntryValue(Hash32 name) co
 }
 
 template <class Enum, class Allocator>
+Enum EnumReflectionDefinition<Enum, Allocator>::getEntry(const char* name) const
+{
+	return getEntry(FNV1aHash32String(name));
+}
+
+template <class Enum, class Allocator>
+Enum EnumReflectionDefinition<Enum, Allocator>::getEntry(int32_t index) const
+{
+	GAFF_ASSERT(static_cast<size_t>(index) < _entries.size());
+	return static_cast<int32_t>((_entries.begin() + index)->second);
+}
+
+template <class Enum, class Allocator>
+Enum EnumReflectionDefinition<Enum, Allocator>::getEntry(Hash32 name) const
+{
+	auto it = Find(_entries, name, [](const HashString32<Allocator>& lhs, Hash32 rhs) -> bool
+	{
+		return lhs.getHash() < rhs;
+	});
+
+	return (it == _entries.end()) ? static_cast<Enum>(std::numeric_limits<int32_t>::min()) : it->second;
+}
+
+template <class Enum, class Allocator>
 HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) const
 {
 	for (const auto& entry : _entries) {
@@ -122,6 +146,23 @@ HashStringView32<> EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum 
 	}
 
 	return HashStringView32<>();
+}
+
+template <class Enum, class Allocator>
+bool EnumReflectionDefinition<Enum, Allocator>::entryExists(const char* name) const
+{
+	return entryExists(FNV1aHash32String(name));
+}
+
+template <class Enum, class Allocator>
+bool EnumReflectionDefinition<Enum, Allocator>::entryExists(Hash32 name) const
+{
+	auto it = Find(_entries, name, [](const HashString32<Allocator>& lhs, Hash32 rhs) -> bool
+	{
+		return lhs.getHash() < rhs;
+	});
+
+	return it != _entries.end();
 }
 
 template <class Enum, class Allocator>

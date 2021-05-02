@@ -447,6 +447,11 @@ bool InputManager::removePlayer(int32_t player_id)
 	return true;
 }
 
+bool InputManager::isValidPlayerID(int32_t player_id) const
+{
+	return _binding_instances.validIndex(player_id);
+}
+
 void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id)
 {
 	DeviceMapEntry entry;

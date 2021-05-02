@@ -79,6 +79,7 @@ public:
 
 	int32_t addPlayer(void);
 	bool removePlayer(int32_t player_id);
+	bool isValidPlayerID(int32_t player_id) const;
 
 	void addInputDevice(Gleam::IInputDevice* device, int32_t player_id);
 	bool removeInputDevice(Gleam::IInputDevice& device);

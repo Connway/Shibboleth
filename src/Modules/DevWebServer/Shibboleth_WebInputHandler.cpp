@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_WebInputHandler.h"
 #include "Shibboleth_DevWebAttributes.h"
+#include "Shibboleth_DevWebUtils.h"
+#include <Shibboleth_InputReflection.h>
 #include <Shibboleth_InputManager.h>
 #include <Gaff_JSON.h>
 
@@ -46,35 +48,94 @@ WebInputHandler::WebInputHandler(void):
 void WebInputHandler::update(void)
 {
 	// Add new input devices.
-	for (const NewDeviceEntry& entry : _new_device_queue) {
-		int32_t player_id = entry.player_id;
+	{
+		const EA::Thread::AutoMutex lock(_new_device_queue_lock);
 
-		if (entry.player_id == -1) {
-			player_id = _input_mgr->addPlayer();
-		}
+		for (const NewDeviceEntry& entry : _new_device_queue) {
+			int32_t player_id = entry.player_id;
 
-		for (Gleam::IInputDevice* const device : entry.devices) {
-			_input_mgr->addInputDevice(device, player_id);
+			if (entry.player_id == -1) {
+				player_id = _input_mgr->addPlayer();
+			}
+
+			for (Gleam::IInputDevice* const device : entry.devices) {
+				_input_mgr->addInputDevice(device, player_id);
+			}
 		}
 	}
 
-	// Process web input queue and do input message pumps.
+	// Process input queue and do input message pumps.
+	{
+		const EA::Thread::AutoMutex lock(_input_queue_lock);
+
+		for (const InputEntry& entry : _input_queue) {
+			GAFF_REF(entry);
+		}
+	}
 
 	_new_device_queue.clear();
+	_input_queue.clear();
 }
 
 bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
 
-	if (!req->query_string) {
-		return false;
+	if (req->content_length <= 0) {
+		return true;
 	}
 
-	// Read inputs as JSON blob.
-	// Parse and forward as appropriate.
+	const Gaff::JSON req_data = ReadJSON(*conn, *req);
+	const Gaff::JSON inputs = req_data["inputs"];
 
-	//sscanf(req->query_string, "id=%i", &id);
+	if (!inputs.isArray()) {
+		// $TODO: Log error.
+		return true;
+	}
+
+	const EA::Thread::AutoMutex lock(_input_queue_lock);
+
+	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	{
+		const Gaff::JSON mouse_code = value["mouse_code"];
+		const Gaff::JSON key_code = value["key_code"];
+		InputEntry entry;
+
+		// Parse each input and put into input queue.
+		entry.player_id = value["player_id"].getInt32(-1);
+		entry.value = value["value"].getFloat(0.0f);
+
+		char buffer[64] = { 0 };
+
+		if (mouse_code.isString()) {
+			const char* const code_name = mouse_code.getString(buffer, sizeof(buffer));
+			const auto& ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
+
+			if (!ref_def.entryExists(code_name)) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			entry.code.mouse_code = ref_def.getEntry(code_name);
+			entry.flags.set(true, InputEntry::Flag::Mouse);
+
+		} else if (key_code.isString()) {
+			const char* const code_name = key_code.getString(buffer, sizeof(buffer));
+			const auto& ref_def = Reflection<Gleam::KeyCode>::GetReflectionDefinition();
+
+			if (!ref_def.entryExists(code_name)) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			entry.code.key_code = ref_def.getEntry(code_name);
+			entry.flags.set(true, InputEntry::Flag::Keyboard);
+		}
+
+		_input_queue.emplace_back(entry);
+
+		return false;
+	});
 
 	return true;
 }
@@ -87,21 +148,7 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	Vector<int8_t> data_buffer(static_cast<size_t>(req->content_length) + 1, g_allocator);
-	int32_t curr_bytes_read = 0;
-
-	while (curr_bytes_read < req->content_length) {
-		curr_bytes_read += mg_read(conn, data_buffer.data(), data_buffer.size());
-	}
-
-	data_buffer.back() = 0;
-
-	Gaff::JSON req_data;
-
-	if (!req_data.parse(reinterpret_cast<char*>(data_buffer.data()))) {
-		return true;
-	}
-
+	const Gaff::JSON req_data = ReadJSON(*conn, *req);
 	const bool create_keyboard = req_data["create_keyboard"].getBool(false);
 	const bool create_mouse = req_data["create_mouse"].getBool(false);
 
@@ -116,10 +163,10 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		if (keyboard->init()) {
 			entry.devices.emplace_back(keyboard);
 
-			//_keyboards[player_id].reset(keyboard);
-			//_input_mgr->addInputDevice(keyboard, player_id);
-
 			response.setObject("keyboard", Gaff::JSON::CreateBool(true));
+
+			const EA::Thread::AutoMutex lock(_device_lock);
+			_keyboards[entry.player_id].reset(keyboard);
 
 		} else {
 			SHIB_FREET(keyboard, g_allocator);
@@ -132,10 +179,10 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		//if (mouse->init()) {
 		//	entry.devices.emplace_back(mouse);
 
-		//	//_mice[player_id].reset(mouse);
-		//	//_input_mgr->addInputDevice(mouse, player_id);
-
 		//	response.setObject("mouse", Gaff::JSON::CreateBool(true));
+
+		//	const EA::Thread::AutoMutex lock(_device_lock);
+		//	_mice[player_id].reset(mouse);
 
 		//} else {
 		//	SHIB_FREET(mouse, g_allocator);
@@ -143,16 +190,14 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 	}
 
 	if (!entry.devices.empty()) {
+		const EA::Thread::AutoMutex lock(_new_device_queue_lock);
 		_new_device_queue.emplace_back(std::move(entry));
 	}
 
 	char response_buffer[1024] = { 0 };
 	response.dump(response_buffer, sizeof(response_buffer));
 
-	mg_printf(conn, "HTTP/1.1 200 OK\r\n");
-	mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
-	mg_printf(conn, "Connection: close\r\n\r\n");
-	mg_printf(conn, "%s", response_buffer);
+	WriteResponse(*conn, response_buffer);
 
 	return true;
 }
