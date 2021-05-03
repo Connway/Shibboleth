@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_HashString.h"
-#include "Gaff_VectorMap.h"
 #include <EASTL/array.h>
 
 #include <cstring>

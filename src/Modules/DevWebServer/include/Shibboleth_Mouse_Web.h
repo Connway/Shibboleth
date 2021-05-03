@@ -22,56 +22,49 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IDevWebHandler.h"
-#include "Shibboleth_Keyboard_Web.h"
-#include "Shibboleth_Mouse_Web.h"
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_Defines.h>
+#include <Gleam_IMouse.h>
 #include <Gaff_Flags.h>
-#include <EAThread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
-class InputManager;
-
-class WebInputHandler final : public IDevWebHandler, public Gaff::IReflectionObject
+class MouseWeb : public Gleam::IMouse
 {
 public:
-	WebInputHandler(void);
+	MouseWeb(void);
+	~MouseWeb(void);
 
+	bool init(Gleam::IWindow& /*window*/) override;
+	bool init(void) override;
+
+	void destroy(void) override;
 	void update(void) override;
 
-	bool handlePost(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
-	bool handleDelete(CivetServer* server, mg_connection* conn) override;
+	Gleam::IVec2 getNormalizedAbsolutePosition(void) const override;
+	Gleam::IVec2 getNormalizedRelativePosition(void) const override;
+	Gleam::IVec2 getNormalizedDeltas(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(WebInputHandler);
+	void allowRepeats(bool allow) override;
+	bool areRepeatsAllowed(void) const override;
+
+	const char* getDeviceName(void) const override;
+	const char* getPlatformImplementationString(void) const override;
+
+	const Gleam::IWindow* getAssociatedWindow(void) const override;
+
+	bool handleMessage(const Gleam::AnyMessage& message);
 
 private:
-	struct NewDeviceEntry final
+	enum class Flag
 	{
-		Vector<Gleam::IInputDevice*> devices{ ProxyAllocator("DevWeb") };
-		int32_t player_id = -1;
+		AllowRepeats,
+		GlobalHandler,
+
+		Count
 	};
 
-	struct InputEntry final
-	{
-		Gleam::AnyMessage message;
-		int32_t player_id;
-	};
-
-	Vector<NewDeviceEntry> _new_device_queue{ ProxyAllocator("DevWeb") };
-	Vector<InputEntry> _input_queue{ ProxyAllocator("DevWeb") };
-
-	VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
-	VectorMap<int32_t, UniquePtr<MouseWeb> > _mice{ ProxyAllocator("DevWeb") };
-
-	EA::Thread::Mutex _new_device_queue_lock;
-	EA::Thread::Mutex _input_queue_lock;
-	EA::Thread::Mutex _device_lock;
-
-	InputManager* _input_mgr = nullptr;
+	Gleam::MouseData _prev_data;
+	Gaff::Flags<Flag> _flags;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(WebInputHandler)

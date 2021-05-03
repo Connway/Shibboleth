@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_Keyboard_Web.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_Mouse_Web.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_WebInputHandler.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -46,6 +49,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebUtils.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_Keyboard_Web.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_Mouse_Web.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp" />
   </ItemGroup>
   <ItemGroup>

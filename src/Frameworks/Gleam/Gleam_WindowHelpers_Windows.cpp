@@ -110,6 +110,7 @@ void WindowInput(AnyMessage& message, Window* window, WPARAM, LPARAM l)
 		message.base.type = EventType::InputMouseMove;
 
 		POINT pos;
+
 		if (GetCursorPos(&pos)) {
 			message.mouse_move.abs_x = pos.x;
 			message.mouse_move.abs_y = pos.y;

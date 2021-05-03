@@ -240,6 +240,7 @@ premake5 gen_module_header --module=DevWebServer</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IDevWebHandler.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IncludeCivetWeb.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_Keyboard_Web.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_Mouse_Web.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_WebInputHandler.h" />
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +252,7 @@ premake5 gen_module_header --module=DevWebServer</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebUtils.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_Keyboard_Web.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_Mouse_Web.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp" />
   </ItemGroup>
   <ItemGroup>

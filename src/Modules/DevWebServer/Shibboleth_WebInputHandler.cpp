@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_DevWebUtils.h"
 #include <Shibboleth_InputReflection.h>
 #include <Shibboleth_InputManager.h>
+#include <Gaff_Math.h>
 #include <Gaff_JSON.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(WebInputHandler)
@@ -62,6 +63,8 @@ void WebInputHandler::update(void)
 				_input_mgr->addInputDevice(device, player_id);
 			}
 		}
+
+		_new_device_queue.clear();
 	}
 
 	// Process input queue and do input message pumps.
@@ -69,12 +72,29 @@ void WebInputHandler::update(void)
 		const EA::Thread::AutoMutex lock(_input_queue_lock);
 
 		for (const InputEntry& entry : _input_queue) {
-			GAFF_REF(entry);
-		}
-	}
+			const auto keyboard_it = _keyboards.find(entry.player_id);
+			const auto mouse_it = _mice.find(entry.player_id);
 
-	_new_device_queue.clear();
-	_input_queue.clear();
+			if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputKeyDown, Gleam::EventType::InputCharacter)) {
+				if (keyboard_it != _keyboards.end()) {
+					keyboard_it->second->handleMessage(entry.message);
+
+				} else {
+					// $TODO: Log error.
+				}
+
+			} else if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputMouseMove, Gleam::EventType::InputMouseWheelVertical)) {
+				if (mouse_it != _mice.end()) {
+					mouse_it->second->handleMessage(entry.message);
+
+				} else {
+					// $TODO: Log error.
+				}
+			}
+		}
+
+		_input_queue.clear();
+	}
 }
 
 bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
@@ -93,21 +113,32 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const EA::Thread::AutoMutex lock(_input_queue_lock);
-
 	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
+		const Gaff::JSON mouse_pos_state = value["mouse_pos_state"];
 		const Gaff::JSON mouse_code = value["mouse_code"];
+		const Gaff::JSON char_code = value["char_code"];
 		const Gaff::JSON key_code = value["key_code"];
+
 		InputEntry entry;
+		entry.message.base.window = nullptr;
 
 		// Parse each input and put into input queue.
 		entry.player_id = value["player_id"].getInt32(-1);
-		entry.value = value["value"].getFloat(0.0f);
+		const float input_value = value["value"].getFloat(0.0f);
 
 		char buffer[64] = { 0 };
 
-		if (mouse_code.isString()) {
+		if (mouse_pos_state.isObject()) {
+			entry.message.base.type = Gleam::EventType::InputMouseMove;
+			entry.message.mouse_move.abs_x = mouse_pos_state["abs_x"].getInt32(0);
+			entry.message.mouse_move.abs_y = mouse_pos_state["abs_y"].getInt32(0);
+			entry.message.mouse_move.rel_x = mouse_pos_state["rel_x"].getInt32(0);
+			entry.message.mouse_move.rel_y = mouse_pos_state["rel_y"].getInt32(0);
+			entry.message.mouse_move.dx = mouse_pos_state["dx"].getInt32(0);
+			entry.message.mouse_move.dy = mouse_pos_state["dy"].getInt32(0);
+
+		} else if (mouse_code.isString()) {
 			const char* const code_name = mouse_code.getString(buffer, sizeof(buffer));
 			const auto& ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
 
@@ -116,8 +147,28 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 				return false;
 			}
 
-			entry.code.mouse_code = ref_def.getEntry(code_name);
-			entry.flags.set(true, InputEntry::Flag::Mouse);
+			const Gleam::MouseCode gleam_mouse_code = ref_def.getEntry(code_name);
+
+			if (gleam_mouse_code < Gleam::MouseCode::ButtonCount) {
+				entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputMouseDown : Gleam::EventType::InputMouseUp;
+				entry.message.mouse_state.button = gleam_mouse_code;
+
+			} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelVertical, Gleam::MouseCode::WheelDown)) {
+				entry.message.base.type = Gleam::EventType::InputMouseWheelVertical;
+				entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
+
+			} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelHorizontal, Gleam::MouseCode::WheelRight)) {
+				entry.message.base.type = Gleam::EventType::InputMouseWheelHorizontal;
+				entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
+
+			} else {
+				// $TODO: Log error.
+			}
+
+		} else if (char_code.isString()) {
+			entry.message.base.type = Gleam::EventType::InputCharacter;
+			// Decode first character into UTF-32
+			//entry.message.key_char.character = ;
 
 		} else if (key_code.isString()) {
 			const char* const code_name = key_code.getString(buffer, sizeof(buffer));
@@ -128,10 +179,11 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 				return false;
 			}
 
-			entry.code.key_code = ref_def.getEntry(code_name);
-			entry.flags.set(true, InputEntry::Flag::Keyboard);
+			entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputKeyDown : Gleam::EventType::InputKeyUp;
+			entry.message.key_char.key = ref_def.getEntry(code_name);
 		}
 
+		const EA::Thread::AutoMutex lock(_input_queue_lock);
 		_input_queue.emplace_back(entry);
 
 		return false;
@@ -173,20 +225,20 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		}
 	}
 
-	if (create_mouse /*&& _mice.find(player_id) == _mice.end()*/) {
-		//MouseWeb* const mouse = SHIB_ALLOCT(MouseWeb, g_allocator);
+	if (create_mouse && _mice.find(entry.player_id) == _mice.end()) {
+		MouseWeb* const mouse = SHIB_ALLOCT(MouseWeb, g_allocator);
 
-		//if (mouse->init()) {
-		//	entry.devices.emplace_back(mouse);
+		if (mouse->init()) {
+			entry.devices.emplace_back(mouse);
 
-		//	response.setObject("mouse", Gaff::JSON::CreateBool(true));
+			response.setObject("mouse", Gaff::JSON::CreateBool(true));
 
-		//	const EA::Thread::AutoMutex lock(_device_lock);
-		//	_mice[player_id].reset(mouse);
+			const EA::Thread::AutoMutex lock(_device_lock);
+			_mice[entry.player_id].reset(mouse);
 
-		//} else {
-		//	SHIB_FREET(mouse, g_allocator);
-		//}
+		} else {
+			SHIB_FREET(mouse, g_allocator);
+		}
 	}
 
 	if (!entry.devices.empty()) {
