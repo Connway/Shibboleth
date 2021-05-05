@@ -171,7 +171,6 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 
 			// All this nonsense because eastl::DecodePart() takes pointer references ... for some reason.
 			const char* character = char_code.getString(buffer, sizeof(buffer));
-			const char* character_end = EA::StdC::Strend(character);
 
 			char32_t out_character;
 			char32_t* out_character_begin = &out_character;
