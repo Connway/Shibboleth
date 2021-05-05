@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_InputManager.h>
 #include <Gaff_Math.h>
 #include <Gaff_JSON.h>
+#include <EAStdC/EAString.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(WebInputHandler)
 	.classAttrs(DevWebCommandAttribute("/input"))
@@ -167,8 +168,23 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 
 		} else if (char_code.isString()) {
 			entry.message.base.type = Gleam::EventType::InputCharacter;
+
+			// All this nonsense because eastl::DecodePart() takes pointer references ... for some reason.
+			const char* character = char_code.getString(buffer, sizeof(buffer));
+			const char* character_end = EA::StdC::Strend(character);
+
+			char32_t out_character;
+			char32_t* out_character_begin = &out_character;
+
+			eastl::DecodePart(
+				character,
+				EA::StdC::Strend(character),
+				out_character_begin,
+				out_character_begin + 1
+			);
+
 			// Decode first character into UTF-32
-			//entry.message.key_char.character = ;
+			entry.message.key_char.character = static_cast<uint32_t>(out_character);
 
 		} else if (key_code.isString()) {
 			const char* const code_name = key_code.getString(buffer, sizeof(buffer));
