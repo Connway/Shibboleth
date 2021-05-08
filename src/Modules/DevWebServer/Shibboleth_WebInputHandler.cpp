@@ -51,7 +51,8 @@ void WebInputHandler::update(void)
 {
 	// Add new input devices.
 	{
-		const EA::Thread::AutoMutex lock(_new_device_queue_lock);
+		const EA::Thread::AutoMutex queue_lock(_new_device_queue_lock);
+		const EA::Thread::AutoMutex mgr_lock(_input_mgr_lock);
 
 		for (const NewDeviceEntry& entry : _new_device_queue) {
 			int32_t player_id = entry.player_id;
@@ -273,15 +274,79 @@ bool WebInputHandler::handleDelete(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
 
-	if (!req->query_string) {
+	if (req->content_length <= 0) {
 		return true;
 	}
 
-	int32_t player_id = -1;
-	sscanf(req->query_string, "id=%i", &player_id);
+	const Gaff::JSON req_data = ReadJSON(*conn, *req);
 
+	int32_t player_id = req_data["player_id"].getInt32(-1);
+
+	const EA::Thread::AutoMutex lock(_input_mgr_lock);
 	_input_mgr->removePlayer(player_id);
 
+	return true;
+}
+
+bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn)
+{
+	const mg_request_info* const req = mg_get_request_info(conn);
+
+	if (req->content_length <= 0) {
+		return true;
+	}
+
+	const Gaff::JSON req_data = ReadJSON(*conn, *req);
+	const Gaff::JSON req_type = req_data["request_type"];
+
+	char req_type_buffer[32] = { 0 };
+	req_type.getString(req_type_buffer, sizeof(req_type_buffer));
+
+	// $TODO: Refactor this if more GET request type are introduced.
+	if (strncmp(req_type_buffer, "player_devices", sizeof(req_type_buffer))) {
+		return true;
+	}
+
+	Vector<const Gleam::IInputDevice*> devices(ProxyAllocator("DevWeb"));
+	Vector<int32_t> player_ids(ProxyAllocator("DevWeb"));
+	Gaff::JSON response = Gaff::JSON::CreateArray();
+
+	{
+		const EA::Thread::AutoMutex lock(_input_mgr_lock);
+		_input_mgr->getPlayerIDs(player_ids);
+	}
+
+	devices.reserve(3);
+
+	for (int32_t player_id : player_ids) {
+		devices.clear();
+
+		{
+			const EA::Thread::AutoMutex lock(_input_mgr_lock);
+			_input_mgr->getInputDevices(player_id, devices);
+		}
+
+		Gaff::JSON devices_json = Gaff::JSON::CreateArray();
+
+		for (const Gleam::IInputDevice* device : devices) {
+			Gaff::JSON device_name = Gaff::JSON::CreateString(device->getDeviceName());
+			devices_json.push(std::move(device_name));
+		}
+
+		const int32_t new_size = player_id + 1;
+
+		// Empty slots are null.
+		while (response.size() < new_size) {
+			response.push(Gaff::JSON::CreateNull());
+		}
+
+		response.setObject(player_id, std::move(devices_json));
+	}
+
+	char response_buffer[1024] = { 0 };
+	response.dump(response_buffer, sizeof(response_buffer));
+
+	WriteResponse(*conn, response_buffer);
 	return true;
 }
 

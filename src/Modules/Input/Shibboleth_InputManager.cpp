@@ -397,21 +397,22 @@ Gleam::IMouse* InputManager::getMouse(void)
 	return _mouse.get();
 }
 
-const Gleam::IInputDevice* InputManager::getInputDevice(int32_t player_id) const
-{
-	return const_cast<InputManager*>(this)->getInputDevice(player_id);
-}
-
-Gleam::IInputDevice* InputManager::getInputDevice(int32_t player_id)
+void InputManager::getInputDevices(int32_t player_id, Vector<const Gleam::IInputDevice*>& out_devices) const
 {
 	for (const auto& entry : _device_player_map) {
 		if (entry.second.player_id == player_id) {
-
-			return entry.first;
+			out_devices.emplace_back(entry.first);
 		}
 	}
+}
 
-	return nullptr;
+void InputManager::getInputDevices(int32_t player_id, Vector<Gleam::IInputDevice*>& out_devices)
+{
+	for (const auto& entry : _device_player_map) {
+		if (entry.second.player_id == player_id) {
+			out_devices.emplace_back(entry.first);
+		}
+	}
 }
 
 int32_t InputManager::addPlayer(void)
@@ -466,6 +467,17 @@ void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id
 	}
 
 	_device_player_map[device] = entry;
+}
+
+void InputManager::getPlayerIDs(Vector<int32_t>& out_player_ids) const
+{
+	for (const auto& entry : _device_player_map) {
+		if (Gaff::Find(out_player_ids, entry.second.player_id) == out_player_ids.end()) {
+			out_player_ids.emplace_back(entry.second.player_id);
+		}
+	}
+
+	Gaff::Sort(out_player_ids);
 }
 
 bool InputManager::removeInputDevice(Gleam::IInputDevice& device)

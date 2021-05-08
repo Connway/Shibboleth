@@ -39,9 +39,9 @@ NS_GAFF
 		}*/
 
 	#ifdef _MSC_VER
-		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr)
+		#define GAFF_ASSERT_MSG(expr, msg, ...) { (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr); }
 	#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__) || defined(__MINGW32__) || defined(__MINGW64__)
-		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0)); assert(expr)
+		#define GAFF_ASSERT_MSG(expr, msg, ...) { (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0)); assert(expr); }
 	#endif
 
 #else

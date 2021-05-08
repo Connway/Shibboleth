@@ -78,4 +78,10 @@ typename Vector<T, Allocator>::iterator Find(Vector<T, Allocator>& vec, const V&
 	return eastl::find(vec.begin(), vec.end(), value);
 }
 
+template <class T, class Allocator>
+void Sort(Vector<T, Allocator>& vec)
+{
+	return eastl::sort(vec.begin(), vec.end());
+}
+
 NS_END

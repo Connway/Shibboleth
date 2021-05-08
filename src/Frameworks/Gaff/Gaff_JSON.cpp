@@ -532,8 +532,11 @@ const char* JSON::dump(char* buffer, int32_t size)
 	> writer(string_buffer);
 
 	if (WriteJSON(*this, writer)) {
-		memcpy_s(buffer, size, string_buffer.GetString(), size);
-		buffer[size] = 0;
+		const size_t str_size = string_buffer.GetSize();
+		const size_t min_size = (size < str_size) ? static_cast<size_t>(size - 1) : str_size;
+
+		memcpy_s(buffer, size, string_buffer.GetString(), str_size);
+		buffer[str_size] = 0;
 
 		return buffer;
 	}

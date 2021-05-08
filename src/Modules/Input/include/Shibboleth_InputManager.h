@@ -74,12 +74,13 @@ public:
 	Gleam::IKeyboard* getKeyboard(void);
 	Gleam::IMouse* getMouse(void);
 
-	const Gleam::IInputDevice* getInputDevice(int32_t player_id) const;
-	Gleam::IInputDevice* getInputDevice(int32_t player_id);
+	void getInputDevices(int32_t player_id, Vector<const Gleam::IInputDevice*>& out_devices) const;
+	void getInputDevices(int32_t player_id, Vector<Gleam::IInputDevice*>& out_devices);
 
 	int32_t addPlayer(void);
 	bool removePlayer(int32_t player_id);
 	bool isValidPlayerID(int32_t player_id) const;
+	void getPlayerIDs(Vector<int32_t>& out_player_ids) const;
 
 	void addInputDevice(Gleam::IInputDevice* device, int32_t player_id);
 	bool removeInputDevice(Gleam::IInputDevice& device);

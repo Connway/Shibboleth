@@ -43,6 +43,7 @@ public:
 	bool handlePost(CivetServer* server, mg_connection* conn) override;
 	bool handlePut(CivetServer* server, mg_connection* conn) override;
 	bool handleDelete(CivetServer* server, mg_connection* conn) override;
+	bool handleOptions(CivetServer* server, mg_connection* conn) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(WebInputHandler);
 
@@ -68,6 +69,7 @@ private:
 	EA::Thread::Mutex _new_device_queue_lock;
 	EA::Thread::Mutex _input_queue_lock;
 	EA::Thread::Mutex _device_lock;
+	EA::Thread::Mutex _input_mgr_lock;
 
 	InputManager* _input_mgr = nullptr;
 };
