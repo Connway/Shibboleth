@@ -23,17 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4701 4127)
-#endif
-
 #include <gtc/quaternion.hpp>
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
 
 NS_GLEAM
 	using QuatSIMD = glm::qua<float, glm::aligned>;

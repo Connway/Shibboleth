@@ -206,6 +206,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
