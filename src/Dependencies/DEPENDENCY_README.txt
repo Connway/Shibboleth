@@ -9,14 +9,14 @@ While not that much different than the original source, these packages ARE NOT
 the original source.
 
 Libraries Affected:
+	assimp
+		Fixing RAPIDJSON_HAS_STDSTRING not being defined before inclusion of rapidjson.
+
 	LibTIFF
 		Can't remember, probably compilation errors.
 
 	minizip
-		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
-
-	zlib-ng
-		Adding OF macro and STDC defines for compatability with minizip.
+		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level.
 
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.

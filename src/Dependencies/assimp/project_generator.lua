@@ -26,7 +26,7 @@ project "assimp"
 	{
 		".",
 		"contrib/openddlparser/include",
-		"contrib/irrXML",
+		"contrib/pugixml/src",
 		"include",
 		"code",
 		"../rapidjson",
