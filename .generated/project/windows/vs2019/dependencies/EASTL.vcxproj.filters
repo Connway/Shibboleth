@@ -22,6 +22,30 @@
     <Filter Include="include\EASTL\internal">
       <UniqueIdentifier>{DDA4291A-C99E-526C-B20B-E97C9EA4B8D8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\EASTL\internal\atomic">
+      <UniqueIdentifier>{C94CE51F-3565-CC49-FE11-5CE36AE960E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\arch">
+      <UniqueIdentifier>{F6547BF7-E290-7E61-4BA3-965837FE267C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\arch\arm">
+      <UniqueIdentifier>{8551843E-71A3-5B2E-5AC2-983E46B37417}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\arch\x86">
+      <UniqueIdentifier>{ABAB843E-97FD-5B2E-801C-993E6C0D7517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\atomic_macros">
+      <UniqueIdentifier>{D963C75C-45C9-5AE3-CEA1-FCBB3A065052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\compiler">
+      <UniqueIdentifier>{739A1D48-5FEC-F437-480B-324834FC0D21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\compiler\gcc">
+      <UniqueIdentifier>{0F2597F9-FB8C-5DC7-64F8-71DD507F74B3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal\atomic\compiler\msvc">
+      <UniqueIdentifier>{1B587F2C-87BD-12B3-1096-B48B7CFA0722}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\EAStdC">
       <UniqueIdentifier>{0C8DE3FC-F85A-D702-E1EE-4729CD5BB367}</UniqueIdentifier>
     </Filter>
@@ -132,6 +156,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\array.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\atomic.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bitset.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
@@ -169,9 +196,6 @@
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sort_extra.h">
-      <Filter>include\EASTL\bonus</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sparse_matrix.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\tuple_vector.h">
@@ -240,11 +264,419 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\initializer_list.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\allocator_traits.h">
-      <Filter>include\EASTL\internal</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\allocator_traits_fwd_decls.h">
-      <Filter>include\EASTL\internal</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_compiler_barrier.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_cpu_pause.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_exchange.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_load.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_memory_barrier.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_signal_fence.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_store.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arch_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arm\arch_arm.h">
+      <Filter>include\EASTL\internal\atomic\arch\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arm\arch_arm_load.h">
+      <Filter>include\EASTL\internal\atomic\arch\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arm\arch_arm_memory_barrier.h">
+      <Filter>include\EASTL\internal\atomic\arch\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arm\arch_arm_store.h">
+      <Filter>include\EASTL\internal\atomic\arch\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\arm\arch_arm_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\arch\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_exchange.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_load.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_memory_barrier.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_store.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\arch\x86\arch_x86_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_asserts.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_base_width.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_casts.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_flag.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_flag_standalone.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_integral.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_base.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_compiler_barrier.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_cpu_pause.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_exchange.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_load.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_memory_barrier.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_signal_fence.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_store.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_macros\atomic_macros_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\atomic_macros</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_memory_order.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_pointer.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_pop_compiler_options.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_push_compiler_options.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_size_aligned.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_standalone.h">
+      <Filter>include\EASTL\internal\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_barrier.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_cpu_pause.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_exchange.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_load.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_memory_barrier.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_signal_fence.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_store.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\compiler_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_barrier.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_cpu_pause.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_exchange.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_load.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_signal_fence.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_store.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_thread_fence.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\gcc\compiler_gcc_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\gcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_add_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_and_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_barrier.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_cmpxchg_strong.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_cmpxchg_weak.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_cpu_pause.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_exchange.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_fetch_add.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_fetch_and.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_fetch_or.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_fetch_sub.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_fetch_xor.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_or_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_signal_fence.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_sub_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\compiler\msvc\compiler_msvc_xor_fetch.h">
+      <Filter>include\EASTL\internal\atomic\compiler\msvc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\char_traits.h">
       <Filter>include\EASTL\internal</Filter>
@@ -295,9 +727,6 @@
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\memory_base.h">
-      <Filter>include\EASTL\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\meta.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\move_help.h">
@@ -828,6 +1257,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\assert.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\atomic.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\fixed_pool.cpp">

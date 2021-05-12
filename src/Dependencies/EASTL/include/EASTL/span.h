@@ -30,7 +30,9 @@
 
 namespace eastl
 {
-	namespace Internal 
+	static EA_CONSTEXPR size_t dynamic_extent = size_t(-1);
+
+	namespace Internal
 	{
 		// HasSizeAndData
 		// 
@@ -41,9 +43,18 @@ namespace eastl
 
 		template <typename T>
 		struct HasSizeAndData<T, void_t<decltype(eastl::size(eastl::declval<T>())), decltype(eastl::data(eastl::declval<T>()))>> : eastl::true_type {};
-	}
 
-	static EA_CONSTEXPR size_t dynamic_extent = size_t(-1);
+		// SubspanExtent
+		//
+		// Integral constant that calculates the resulting extent of a templated subspan operation.
+		//
+		//   If Count is not dynamic_extent then SubspanExtent::value is Count,
+		//   otherwise, if Extent is not dynamic_extent, SubspanExtent::value is (Extent - Offset),
+		//   otherwise, SubspanExtent::value is dynamic_extent.
+		//
+		template<size_t Extent, size_t Offset, size_t Count>
+		struct SubspanExtent : eastl::integral_constant<size_t, (Count != dynamic_extent ? Count : (Extent != dynamic_extent ? (Extent - Offset) : dynamic_extent))> {};
+	}
 
 	template <typename T, size_t Extent = eastl::dynamic_extent>
 	class span
@@ -54,7 +65,9 @@ namespace eastl
 		typedef eastl_size_t                            index_type;
 		typedef ptrdiff_t                               difference_type;
 		typedef T*                                      pointer;
+		typedef const T*                                const_pointer;
 		typedef T&                                      reference;
+		typedef const T&                                const_reference;
 		typedef T*                                      iterator;
 		typedef const T*                                const_iterator;
 		typedef eastl::reverse_iterator<iterator>       reverse_iterator;
@@ -84,13 +97,13 @@ namespace eastl
 		    enable_if_t<!is_same_v<Container, span> && !is_same_v<Container, array<value_type>> &&
 		                !is_array_v<Container> &&
 		                Internal::HasSizeAndData<Container>::value &&
-		                is_convertible_v<remove_pointer_t<decltype(eastl::data(eastl::declval<Container>()))> (*)[], element_type (*)[]>>;
+		                is_convertible_v<remove_pointer_t<decltype(eastl::data(eastl::declval<Container&>()))> (*)[], element_type (*)[]>>;
 
 		// generic container conversion constructors
 		template <typename Container, typename = SfinaeForGenericContainers<Container>>
 		EA_CONSTEXPR span(Container& cont);
 
-		template <typename Container, typename = SfinaeForGenericContainers<Container>>
+		template <typename Container, typename = SfinaeForGenericContainers<const Container>>
 		EA_CONSTEXPR span(const Container& cont);
 
 		template <typename U, size_t N, typename = enable_if_t<(Extent == eastl::dynamic_extent || N == Extent) && (is_convertible_v<U(*)[], element_type(*)[]>)>>
@@ -105,9 +118,9 @@ namespace eastl
 		EA_CPP14_CONSTEXPR span<element_type, Count> last() const;
 		EA_CPP14_CONSTEXPR span<element_type, dynamic_extent> last(size_t Count) const;
 
-		// template <size_t Offset, size_t Count = dynamic_extent>
-		// EA_CONSTEXPR span<element_type, E [> see below <]> subspan() const;
-		// EA_CONSTEXPR span<element_type, dynamic_extent> subspan(size_t Offset, size_t Count = dynamic_extent) const;
+		template <size_t Offset, size_t Count = dynamic_extent>
+		EA_CONSTEXPR span<element_type, Internal::SubspanExtent<Extent, Offset, Count>::value> subspan() const;
+		EA_CONSTEXPR span<element_type, dynamic_extent> subspan(size_t Offset, size_t Count = dynamic_extent) const;
 
 		// observers
 		EA_CONSTEXPR pointer    data() const EA_NOEXCEPT;
@@ -116,6 +129,8 @@ namespace eastl
 		EA_CONSTEXPR bool       empty() const EA_NOEXCEPT;
 
 		// subscript operators, element access
+		EA_CONSTEXPR reference front() const;
+		EA_CONSTEXPR reference back() const;
 		EA_CONSTEXPR reference operator[](index_type idx) const;
 		EA_CONSTEXPR reference operator()(index_type idx) const;
 
@@ -141,12 +156,13 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////////
 	// template deduction guides 
 	///////////////////////////////////////////////////////////////////////////
-
-	// template<class T, size_t N> span(T (&)[N]) ->           span <T, N>;
-	// template<class T, size_t N> span(array<T, N>&) ->       span <T, N>;
-	// template<class T, size_t N> span(const array<T, N>&) -> span <const T, N>;
-	// template<class Container>   span(Container&) ->         span <typename Container::value_type>;
-	// template<class Container>   span(const Container&) ->   span <const typename Container::value_type>;
+	#ifdef __cpp_deduction_guides
+		template<class T, size_t N> span(T (&)[N]) ->           span <T, N>;
+		template<class T, size_t N> span(array<T, N>&) ->       span <T, N>;
+		template<class T, size_t N> span(const array<T, N>&) -> span <const T, N>;
+		template<class Container>   span(Container&) ->         span <typename Container::value_type>;
+		template<class Container>   span(const Container&) ->   span <const typename Container::value_type>;
+	#endif
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -263,7 +279,23 @@ namespace eastl
 	template <typename T, size_t Extent>
 	EA_CONSTEXPR bool span<T, Extent>::empty() const EA_NOEXCEPT
 	{
-		return size() == 0; 
+		return size() == 0;
+	}
+
+	template <typename T, size_t Extent>
+	EA_CONSTEXPR typename span<T, Extent>::reference span<T, Extent>::front() const
+	{
+		EASTL_ASSERT_MSG(!empty(), "undefined behavior accessing an empty span");
+
+		return mpData[0];
+	}
+
+	template <typename T, size_t Extent>
+	EA_CONSTEXPR typename span<T, Extent>::reference span<T, Extent>::back() const
+	{
+		EASTL_ASSERT_MSG(!empty(), "undefined behavior accessing an empty span");
+
+		return mpData[mnSize - 1];
 	}
 
 	template <typename T, size_t Extent>
@@ -311,13 +343,13 @@ namespace eastl
 	template <typename T, size_t Extent>
 	EA_CONSTEXPR typename span<T, Extent>::reverse_iterator span<T, Extent>::rbegin() const EA_NOEXCEPT
 	{
-		return mpData + mnSize;
+		return reverse_iterator(mpData + mnSize);
 	}
 
 	template <typename T, size_t Extent>
 	EA_CONSTEXPR typename span<T, Extent>::reverse_iterator span<T, Extent>::rend() const EA_NOEXCEPT
 	{
-		return mpData;
+		return reverse_iterator(mpData);
 	}
 
 	template <typename T, size_t Extent>
@@ -362,6 +394,27 @@ namespace eastl
 	{
 		EASTL_ASSERT_MSG(bounds_check(sz), "undefined behavior accessing out of bounds");
 		return {data() + size() - sz, static_cast<index_type>(sz)};
+	}
+
+	template <typename T, size_t Extent>
+	template <size_t Offset, size_t Count>
+	EA_CONSTEXPR span<typename span<T, Extent>::element_type, Internal::SubspanExtent<Extent, Offset, Count>::value>
+	span<T, Extent>::subspan() const
+	{
+		EASTL_ASSERT_MSG(bounds_check(Offset),                                  "undefined behaviour accessing out of bounds");
+		EASTL_ASSERT_MSG(Count == dynamic_extent || Count <= (size() - Offset), "undefined behaviour exceeding size of span");
+
+		return {data() + Offset, eastl_size_t(Count == dynamic_extent ? size() - Offset : Count)};
+	}
+
+	template <typename T, size_t Extent>
+	EA_CONSTEXPR span<typename span<T, Extent>::element_type, dynamic_extent>
+	span<T, Extent>::subspan(size_t offset, size_t count) const
+	{
+		EASTL_ASSERT_MSG(bounds_check(offset),                                  "undefined behaviour accessing out of bounds");
+		EASTL_ASSERT_MSG(count == dynamic_extent || count <= (size() - offset), "undefined behaviour exceeding size of span");
+
+		return {data() + offset, eastl_size_t(count == dynamic_extent ? size() - offset : count)};
 	}
 
 	template <typename T, size_t Extent>
