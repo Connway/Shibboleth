@@ -40,6 +40,15 @@ project "assimp"
 		"ASSIMP_BUILD_NO_OWN_ZLIB",
 		"ASSIMP_BUILD_NO_C4D_IMPORTER",
 		"ASSIMP_BUILD_NO_IFC_IMPORTER",
+		"ASSIMP_BUILD_NO_OGRE_IMPORTER",
+		"ASSIMP_BUILD_NO_IRR_IMPORTER",
+		"ASSIMP_BUILD_NO_IRR_IMPORTER",
+		"ASSIMP_BUILD_NO_IRRMESH_IMPORTER",
+		"ASSIMP_BUILD_NO_X_IMPORTER",
+		"ASSIMP_BUILD_NO_X_EXPORTER",
+		"ASSIMP_BUILD_NO_X3D_IMPORTER",
+		"ASSIMP_BUILD_NO_X3D_EXPORTER",
+		"ASSIMP_BUILD_NO_XGL_IMPORTER",
 		"OPENDDL_STATIC_LIBARY"
 	}
 
@@ -51,8 +60,8 @@ project "assimp"
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS", "_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING" }
 
-	filter { "action:vs*" }
-		buildoptions { "/bigobj" }
+	-- filter { "action:vs*" }
+	-- 	buildoptions { "/bigobj" }
 
 	filter {}
 

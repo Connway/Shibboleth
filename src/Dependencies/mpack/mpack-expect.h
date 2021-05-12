@@ -694,7 +694,7 @@ void mpack_expect_map_match(mpack_reader_t* reader, uint32_t count);
  * with a safe maximum size instead.
  *
  * @returns @c true if a map was read successfully; @c false if nil was read
- *     or an error occured.
+ *     or an error occurred.
  * @throws mpack_error_type if the value is not a nil or map.
  */
 bool mpack_expect_map_or_nil(mpack_reader_t* reader, uint32_t* count);
@@ -714,7 +714,7 @@ bool mpack_expect_map_or_nil(mpack_reader_t* reader, uint32_t* count);
  * to switch on the key; see @ref docs/expect.md for examples.
  *
  * @returns @c true if a map was read successfully; @c false if nil was read
- *     or an error occured.
+ *     or an error occurred.
  * @throws mpack_error_type if the value is not a nil or map.
  */
 bool mpack_expect_map_max_or_nil(mpack_reader_t* reader, uint32_t max_count, uint32_t* count);
@@ -795,7 +795,7 @@ void mpack_expect_array_match(mpack_reader_t* reader, uint32_t count);
  * with a safe maximum size instead.
  *
  * @returns @c true if an array was read successfully; @c false if nil was read
- *     or an error occured.
+ *     or an error occurred.
  * @throws mpack_error_type if the value is not a nil or array.
  */
 bool mpack_expect_array_or_nil(mpack_reader_t* reader, uint32_t* count);
@@ -810,7 +810,7 @@ bool mpack_expect_array_or_nil(mpack_reader_t* reader, uint32_t* count);
  * have been read (only if an array was read.)
  *
  * @returns @c true if an array was read successfully; @c false if nil was read
- *     or an error occured.
+ *     or an error occurred.
  * @throws mpack_error_type if the value is not a nil or array.
  */
 bool mpack_expect_array_max_or_nil(mpack_reader_t* reader, uint32_t max_count, uint32_t* count);
@@ -1093,8 +1093,8 @@ MPACK_INLINE uint32_t mpack_expect_bin_max(mpack_reader_t* reader, uint32_t maxs
  * or mpack_read_bytes_inplace(). @ref mpack_done_bin() must be called
  * once all bytes have been read.
  *
- * mpack_error_type is raised if the value is not a binary blob or if its
- * length does not match.
+ * @throws mpack_error_type if the value is not a binary blob or if its size
+ * does not match.
  */
 MPACK_INLINE void mpack_expect_bin_size(mpack_reader_t* reader, uint32_t count) {
     if (mpack_expect_bin(reader) != count)
@@ -1109,6 +1109,18 @@ MPACK_INLINE void mpack_expect_bin_size(mpack_reader_t* reader, uint32_t count) 
  * under the "raw" type which became string in 1.1.)
  */
 size_t mpack_expect_bin_buf(mpack_reader_t* reader, char* buf, size_t size);
+
+/**
+ * Reads a binary blob with the exact given size into the given buffer.
+ *
+ * For compatibility, this will accept if the underlying type is string or
+ * binary (since in MessagePack 1.0, strings and binary data were combined
+ * under the "raw" type which became string in 1.1.)
+ *
+ * @throws mpack_error_type if the value is not a binary blob or if its size
+ * does not match.
+ */
+void mpack_expect_bin_size_buf(mpack_reader_t* reader, char* buf, uint32_t size);
 
 /**
  * Reads a binary blob with the given total maximum size, allocating storage for it.

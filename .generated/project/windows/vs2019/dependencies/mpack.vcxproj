@@ -209,9 +209,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mpack\mpack-reader.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mpack\mpack-writer.c" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Dependencies\mpack\mpack-config.h.sample" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -2,6 +2,8 @@
 
 #include <stdint.h> // For size_t
 
+//#define MPACK_EXTENSIONS 1
+
 /**
  * @def MPACK_STDLIB
  *
