@@ -27,13 +27,13 @@ extern "C"
 	#include <zbuild.h>
 	#include <gzguts.h>
 
-	void ZLIB_INTERNAL* zng_calloc(void* opaque, unsigned items, unsigned size)
+	void Z_INTERNAL* zng_calloc(void* opaque, unsigned items, unsigned size)
 	{
 		GAFF_REF(opaque);
 		return SHIB_CALLOC_ALIGNED(items, size, 16, Shibboleth::GetAllocator());
 	}
 
-	void ZLIB_INTERNAL zng_cfree(void* opaque, void* ptr)
+	void Z_INTERNAL zng_cfree(void* opaque, void* ptr)
 	{
 		GAFF_REF(opaque);
 		return SHIB_FREE(ptr, Shibboleth::GetAllocator());

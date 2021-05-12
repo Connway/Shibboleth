@@ -52,7 +52,7 @@
     do { \
         strm->next_out = put; \
         strm->avail_out = left; \
-        strm->next_in = next; \
+        strm->next_in = (z_const unsigned char *)next; \
         strm->avail_in = have; \
         state->hold = hold; \
         state->bits = bits; \
@@ -75,7 +75,7 @@
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    (hold & ((1U << (n)) - 1))
+    (hold & ((1U << (unsigned)(n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
@@ -92,3 +92,10 @@
     } while (0)
 
 #endif
+
+/* Set mode=BAD and prepare error message */
+#define SET_BAD(errmsg) \
+    do { \
+        state->mode = BAD; \
+        strm->msg = (char *)errmsg; \
+    } while (0)

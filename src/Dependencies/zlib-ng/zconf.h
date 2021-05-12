@@ -3,40 +3,33 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id$ */
-
 #ifndef ZCONF_H
 #define ZCONF_H
 
-#if defined(_WINDOWS) && !defined(WINDOWS)
-#  define WINDOWS
-#endif
-#if defined(_WIN32) || defined(__WIN32__)
-#  ifndef WIN32
-#    define WIN32
-#  endif
+#if !defined(_WIN32) && defined(__WIN32__)
+#  define _WIN32
 #endif
 
 #ifdef __STDC_VERSION__
-#  ifndef STDC
-#    define STDC
-#  endif
 #  if __STDC_VERSION__ >= 199901L
 #    ifndef STDC99
 #      define STDC99
 #    endif
 #  endif
 #endif
-#if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
-#  define STDC
-#endif
-#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
-#  define STDC
-#endif
-#if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
-#  define STDC
+
+/* Clang macro for detecting declspec support
+ * https://clang.llvm.org/docs/LanguageExtensions.html#has-declspec-attribute
+ */
+#ifndef __has_declspec_attribute
+#  define __has_declspec_attribute(x) 0
 #endif
 
+#if defined(ZLIB_CONST) && !defined(z_const)
+#  define z_const const
+#else
+#  define z_const
+#endif
 
 /* Maximum value for memLevel in deflateInit2 */
 #ifndef MAX_MEM_LEVEL
@@ -65,43 +58,60 @@
  for small objects.
 */
 
-                        /* Type declarations */
+/* Type declarations */
 
 
-#if defined(WINDOWS) || defined(WIN32)
-   /* If building or using zlib as a DLL, define ZLIB_DLL.
-    * This is not mandatory, but it offers a little performance increase.
-    */
-#  ifdef ZLIB_DLL
-#    if defined(WIN32) && (!defined(__BORLANDC__) || (__BORLANDC__ >= 0x500))
-#      ifdef ZLIB_INTERNAL
-#        define ZEXTERN extern __declspec(dllexport)
-#      else
-#        define ZEXTERN extern __declspec(dllimport)
-#      endif
-#    endif
-#  endif  /* ZLIB_DLL */
-   /* If building or using zlib with the WINAPI/WINAPIV calling convention,
-    * define ZLIB_WINAPI.
-    * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
-    */
-#  ifdef ZLIB_WINAPI
-#    include <windows.h>
-     /* No need for _export, use ZLIB.DEF instead. */
-     /* For complete Windows compatibility, use WINAPI, not __stdcall. */
-#    define ZEXPORT WINAPI
-#    define ZEXPORTVA WINAPIV
+#ifndef OF /* function prototypes */
+#  define OF(args)  args
+#endif
+
+#ifdef ZLIB_INTERNAL
+#  define Z_INTERNAL ZLIB_INTERNAL
+#endif
+
+/* If building or using zlib as a DLL, define ZLIB_DLL.
+ * This is not mandatory, but it offers a little performance increase.
+ */
+#if defined(ZLIB_DLL) && (defined(_WIN32) || (__has_declspec_attribute(dllexport) && __has_declspec_attribute(dllimport)))
+#  ifdef Z_INTERNAL
+#    define Z_EXTERN extern __declspec(dllexport)
+#  else
+#    define Z_EXTERN extern __declspec(dllimport)
 #  endif
 #endif
 
+/* If building or using zlib with the WINAPI/WINAPIV calling convention,
+ * define ZLIB_WINAPI.
+ * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
+ */
+#if defined(ZLIB_WINAPI) && defined(_WIN32)
+#  include <windows.h>
+   /* No need for _export, use ZLIB.DEF instead. */
+   /* For complete Windows compatibility, use WINAPI, not __stdcall. */
+#  define Z_EXPORT WINAPI
+#  define Z_EXPORTVA WINAPIV
+#endif
+
+#ifndef Z_EXTERN
+#  define Z_EXTERN extern
+#endif
+#ifndef Z_EXPORT
+#  define Z_EXPORT
+#endif
+#ifndef Z_EXPORTVA
+#  define Z_EXPORTVA
+#endif
+
+/* For backwards compatibility */
+
 #ifndef ZEXTERN
-#  define ZEXTERN extern
+#  define ZEXTERN Z_EXTERN
 #endif
 #ifndef ZEXPORT
-#  define ZEXPORT
+#  define ZEXPORT Z_EXPORT
 #endif
 #ifndef ZEXPORTVA
-#  define ZEXPORTVA
+#  define ZEXPORTVA Z_EXPORTVA
 #endif
 
 /* Fallback for something that includes us. */
@@ -120,11 +130,11 @@ typedef void const *voidpc;
 typedef void       *voidpf;
 typedef void       *voidp;
 
-#ifdef HAVE_UNISTD_H    /* may be set to #if 1 by ./configure */
+#ifdef HAVE_UNISTD_H    /* may be set to #if 1 by configure/cmake/etc */
 #  define Z_HAVE_UNISTD_H
 #endif
 
-#ifdef NEED_PTRDIFF_T    /* may be set to #if 1 by ./configure */
+#ifdef NEED_PTRDIFF_T    /* may be set to #if 1 by configure/cmake/etc */
 typedef PTRDIFF_TYPE ptrdiff_t;
 #endif
 
@@ -172,23 +182,15 @@ typedef PTRDIFF_TYPE ptrdiff_t;
 #  define z_off_t long
 #endif
 
-#if !defined(WIN32) && defined(Z_LARGE64)
+#if !defined(_WIN32) && defined(Z_LARGE64)
 #  define z_off64_t off64_t
 #else
 #  if defined(__MSYS__)
 #    define z_off64_t _off64_t
-#  elif defined(WIN32) && !defined(__GNUC__)
+#  elif defined(_WIN32) && !defined(__GNUC__)
 #    define z_off64_t __int64
 #  else
 #    define z_off64_t z_off_t
-#  endif
-#endif
-
-#ifndef OF /* function prototypes */
-#  ifdef STDC
-#    define OF(args)  args
-#  else
-#    define OF(args)  ()
 #  endif
 #endif
 

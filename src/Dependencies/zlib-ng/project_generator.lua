@@ -8,7 +8,7 @@ project "zlib-ng"
 	warnings "Default"
 
 	files { "**.h", "**.c" }
-	excludes { "arch/aarch64/*.*", "arch/arm/*.*", "arch/s390/*.*" }
+	excludes { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*" }
 
 	includedirs { "." }
 
