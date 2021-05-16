@@ -58,6 +58,8 @@ private:
 
 	double _game_time_scale = 1.0;
 
+	bool _first_frame = true;
+
 	SHIB_REFLECTION_CLASS_DECLARE(GameTimeManager);
 };
 

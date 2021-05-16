@@ -155,7 +155,7 @@ bool App::init(void)
 void App::run(void)
 {
 	while (_running) {
-		_file_watcher_mgr.update(); // $TODO: Potentially consider threading this.
+		//_file_watcher_mgr.update(); // $TODO: Potentially consider threading this.
 		_main_loop->update();
 	}
 }
@@ -362,11 +362,6 @@ ReflectionManager& App::getReflectionManager(void)
 	return _reflection_mgr;
 }
 
-Broadcaster& App::getBroadcaster(void)
-{
-	return _broadcaster;
-}
-
 LogManager& App::getLogManager(void)
 {
 	return _log_mgr;
@@ -377,10 +372,10 @@ JobPool& App::getJobPool(void)
 	return _job_pool;
 }
 
-FileWatcherManager& App::getFileWatcherManager(void)
-{
-	return _file_watcher_mgr;
-}
+//FileWatcherManager& App::getFileWatcherManager(void)
+//{
+//	return _file_watcher_mgr;
+//}
 
 DynamicLoader& App::getDynamicLoader(void)
 {
@@ -454,8 +449,6 @@ bool App::initInternal(void)
 
 	const Gaff::JSON read_file_threads = _configs["read_file_threads"];
 	_job_pool.addPool(HashStringView32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
-
-	_broadcaster.init();
 
 	if (!loadFileSystem()) {
 		return false;
@@ -854,38 +847,38 @@ bool App::loadModule(const char* module_path, InitMode mode)
 		return false;
 	}
 
-	if (_configs["hot_reload_modules"].isTrue()) {
-		const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name.data());
-		const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
+	//if (_configs["hot_reload_modules"].isTrue()) {
+	//	const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name.data());
+	//	const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
 
 
-		for (const auto& dir_entry : std::filesystem::recursive_directory_iterator("../.generated/build/" PLATFORM_NAME)) {
-			if (!dir_entry.is_regular_file()) {
-				continue;
-			}
+	//	for (const auto& dir_entry : std::filesystem::recursive_directory_iterator("../.generated/build/" PLATFORM_NAME)) {
+	//		if (!dir_entry.is_regular_file()) {
+	//			continue;
+	//		}
 
-			const auto abs_file_path = std::filesystem::absolute(dir_entry.path());
-			const wchar_t* file_name = abs_file_path.c_str();
-			CONVERT_STRING(char, temp_path, file_name);
+	//		const auto abs_file_path = std::filesystem::absolute(dir_entry.path());
+	//		const wchar_t* file_name = abs_file_path.c_str();
+	//		CONVERT_STRING(char, temp_path, file_name);
 
-			if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION DYNAMIC_EXTENSION)) {
-				temp_path[Gaff::FindLastOf(temp_path, '\\')] = 0;
+	//		if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION DYNAMIC_EXTENSION)) {
+	//			temp_path[Gaff::FindLastOf(temp_path, '\\')] = 0;
 
-				size_t index = Gaff::FindFirstOf(temp_path, '\\');
-				
-				while (index != U8String::npos) {
-					temp_path[index] = '/';
-					index = Gaff::FindFirstOf(temp_path, '\\');
-				}
+	//			size_t index = Gaff::FindFirstOf(temp_path, '\\');
+	//			
+	//			while (index != U8String::npos) {
+	//				temp_path[index] = '/';
+	//				index = Gaff::FindFirstOf(temp_path, '\\');
+	//			}
 
-				if (_file_watcher_mgr.addWatch(temp_path, flags, ModuleChanged)) {
-					break;
-				} else {
-					// $TODO: Log warning.
-				}
-			}
-		}
-	}
+	//			if (_file_watcher_mgr.addWatch(temp_path, flags, ModuleChanged)) {
+	//				break;
+	//			} else {
+	//				// $TODO: Log warning.
+	//			}
+	//		}
+	//	}
+	//}
 
 	return true;
 }

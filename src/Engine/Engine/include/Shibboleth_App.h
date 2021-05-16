@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
@@ -61,11 +60,10 @@ public:
 
 	const ReflectionManager& getReflectionManager(void) const override;
 	ReflectionManager& getReflectionManager(void) override;
-	Broadcaster& getBroadcaster(void) override;
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
 
-	FileWatcherManager& getFileWatcherManager(void) override;
+	//FileWatcherManager& getFileWatcherManager(void) override;
 	DynamicLoader& getDynamicLoader(void) override;
 
 	bool isQuitting(void) const override;
@@ -97,9 +95,8 @@ private:
 
 	ReflectionManager _reflection_mgr;
 
-	FileWatcherManager _file_watcher_mgr;
+	//FileWatcherManager _file_watcher_mgr;
 	DynamicLoader _dynamic_loader;
-	Broadcaster _broadcaster;
 	LogManager _log_mgr;
 	JobPool _job_pool{ ProxyAllocator("Job Pool") };
 

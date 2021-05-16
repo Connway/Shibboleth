@@ -55,8 +55,14 @@ void GameTimeManager::update(void)
 	using DoubleSeconds = eastl::chrono::duration<double>;
 
 	_end = eastl::chrono::high_resolution_clock::now();
-	DoubleSeconds delta = _end - _start;
+	const DoubleSeconds delta = _end - _start;
 	_start = _end;
+
+	// Don't apply the first frame so we can get a true delta from here on out.
+	if (_first_frame) {
+		_first_frame = false;
+		return;
+	}
 
 	_real_time.delta = delta.count();
 	_real_time.total += _real_time.delta;

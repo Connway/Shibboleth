@@ -41,7 +41,6 @@ using FileWatcherManager = Gaff::FileWatcherManager<ProxyAllocator>;
 
 class ReflectionManager;
 class IFileSystem;
-class Broadcaster;
 class LogManager;
 class IManager;
 
@@ -114,11 +113,10 @@ public:
 
 	virtual const ReflectionManager& getReflectionManager(void) const = 0;
 	virtual ReflectionManager& getReflectionManager(void) = 0;
-	virtual Broadcaster& getBroadcaster(void) = 0;
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
 
-	virtual FileWatcherManager& getFileWatcherManager(void) = 0;
+	//virtual FileWatcherManager& getFileWatcherManager(void) = 0;
 	virtual DynamicLoader& getDynamicLoader(void) = 0;
 
 	virtual bool isQuitting(void) const = 0;
