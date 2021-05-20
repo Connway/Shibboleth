@@ -43,6 +43,10 @@ THE SOFTWARE.
 
 				app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::LuaManager::k_thread_pool_name), num_threads);
 
+			#ifdef SHIB_RUNTIME_VAR_ENABLED
+				Shibboleth::RegisterRuntimeVars();
+			#endif
+
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();

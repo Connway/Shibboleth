@@ -70,7 +70,7 @@ filter { "toolset:clang"--[[, "rtti:off"--]] }
 filter { "configurations:*Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 
-filter { "configurations:Release* or Profile*" }
+filter { "configurations:*Release* or *Profile*" }
 	flags { "LinkTimeOptimization" }
 	optimize "Speed"
 	runtime "Release"
@@ -79,17 +79,19 @@ filter { "configurations:Release* or Profile*" }
 	{
 		"_HAS_ITERATOR_DEBUGGING=0",
 		"_ITERATOR_DEBUG_LEVEL=0",
-		"NDEBUG"
+		"NDEBUG",
 	}
 
+filter { "configurations:*Profile*" }
+	defines { "PROFILE" }
+
+filter { "configurations:*Release*" }
+	defines { "RELEASE" }
 
 filter { "configurations:Optimized_Debug*" }
 	flags { "LinkTimeOptimization" }
 	optimize "Speed"
 	runtime "Release"
-
-filter { "configurations:Profile*" }
-	defines { "SHIB_PROFILE" }
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }

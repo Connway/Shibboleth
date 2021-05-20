@@ -20,56 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#pragma once
 
-#ifdef SHIB_STATIC
+#include "Shibboleth_Defines.h"
 
-	#include <Shibboleth_Utilities.h>
+#if !defined(PROFILE) && !defined(RELEASE)
+	#define SHIB_RUNTIME_VAR_ENABLED
+#endif
 
-	namespace Debug
-	{
+#ifdef SHIB_RUNTIME_VAR_ENABLED
 
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
+NS_SHIBBOLETH
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+class RuntimeVarManager;
+class IRuntimeVar;
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Gaff::InitEnumReflection();
+template <class T>
+class RuntimeVar;
 
-				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
-			}
+void RegisterRuntimeVars(void);
 
-			Debug::Gen::InitReflection(mode);
-
-			return true;
-		}
-
-	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return Debug::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Debug::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
-	}
+NS_END
 
 #endif

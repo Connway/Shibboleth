@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_RuntimeVarManagerFwd.h"
 #include "Shibboleth_DynamicLoaderFwd.h"
 #include "Shibboleth_JobPoolFwd.h"
 #include "Shibboleth_Reflection.h"
@@ -121,6 +122,10 @@ public:
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
+
+#ifdef SHIB_RUNTIME_VAR_ENABLED
+	virtual RuntimeVarManager& getRuntimeVarManager(void) = 0;
+#endif
 };
 
 NS_END

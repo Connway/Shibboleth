@@ -128,7 +128,7 @@ premake5 gen_static_header</Command>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -164,7 +164,7 @@ premake5 gen_static_header</Command>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -260,7 +260,8 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapper.h" />
@@ -286,6 +287,7 @@ premake5 gen_static_header</Command>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_RuntimeVarManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ZlibMemory.cpp" />
   </ItemGroup>

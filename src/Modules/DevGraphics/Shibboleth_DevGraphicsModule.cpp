@@ -35,6 +35,10 @@ THE SOFTWARE.
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				Shibboleth::SetApp(app);
 
+			#ifdef SHIB_RUNTIME_VAR_ENABLED
+				Shibboleth::RegisterRuntimeVars();
+			#endif
+
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionManager.h"
+#include "Shibboleth_RuntimeVarManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_FileWatcher.h"
@@ -69,6 +70,11 @@ public:
 	bool isQuitting(void) const override;
 	void quit(void) override;
 
+
+#ifdef SHIB_RUNTIME_VAR_ENABLED
+	RuntimeVarManager& getRuntimeVarManager(void) override;
+#endif
+
 private:
 	using InitFileSystemModuleFunc = bool (*)(IApp&);
 	using InitModuleFunc = bool (*)(IApp&, InitMode);
@@ -99,6 +105,10 @@ private:
 	DynamicLoader _dynamic_loader;
 	LogManager _log_mgr;
 	JobPool _job_pool{ ProxyAllocator("Job Pool") };
+
+#ifdef SHIB_RUNTIME_VAR_ENABLED
+	RuntimeVarManager _runtime_var_mgr;
+#endif
 
 	FileSystemData _fs;
 

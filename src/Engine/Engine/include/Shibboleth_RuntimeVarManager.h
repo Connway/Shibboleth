@@ -22,27 +22,103 @@ THE SOFTWARE.
 
 #pragma once
 
+#if defined(PROFILE) || defined(RELEASE)
+	#define RuntimeVariable(VarType) static const VarType
+#else
+	#define RuntimeVariable(VarType) static Shibboleth::RuntimeVar<VarType>
+	#define SHIB_RUNTIME_VAR_ENABLED
+#endif
+
+#ifdef SHIB_RUNTIME_VAR_ENABLED
+
 #include "Shibboleth_Reflection.h"
 #include "Shibboleth_VectorMap.h"
-#include "Shibboleth_SmartPtrs.h"
 
 NS_SHIBBOLETH
+
+void RegisterRuntimeVars(void);
+
 
 class IRuntimeVar
 {
 public:
+	IRuntimeVar(Gaff::Hash64 name): _name(name) {}
 	virtual ~IRuntimeVar(void) = default;
 
 	virtual const Gaff::IReflection& getReflection(void) const = 0;
+	virtual void* getValue(void) = 0;
+
+	const void* getValue(void) const
+	{
+		return const_cast<IRuntimeVar*>(this)->getValue();
+	}
+
+	Gaff::Hash64 getName(void) const
+	{
+		return _name;
+	}
+
+protected:
+	static IRuntimeVar* _root;
+
+	IRuntimeVar* _next = nullptr;
+	Gaff::Hash64 _name;
+
+	friend void RegisterRuntimeVars(void);
 };
 
 template <class T>
 class RuntimeVar final : public IRuntimeVar
 {
 public:
+	RuntimeVar(Gaff::Hash64 name, const T& initial_value):
+		RuntimeVar(name), _value(initial_value)
+	{
+	}
+
+	RuntimeVar(Gaff::Hash64 name, T&& initial_value):
+		RuntimeVar(name), _value(std::move(initial_value))
+	{
+	}
+
+	RuntimeVar(Gaff::Hash64 name):
+		IRuntimeVar(name)
+	{
+		if (!_root) {
+			_root = this;
+
+		} else {
+			_next = _root;
+			_root = this;
+		}
+	}
+
+	template <size_t name_size>
+	RuntimeVar(const char(&name)[name_size], const T& initial_value):
+		RuntimeVar(Gaff::FNV1aHash64Const(name), initial_value)
+	{
+	}
+
+	template <size_t name_size>
+	RuntimeVar(const char(&name)[name_size], T&& initial_value):
+		RuntimeVar(Gaff::FNV1aHash64Const(name), std::move(initial_value))
+	{
+	}
+
+	template <size_t name_size>
+	RuntimeVar(const char(&name)[name_size]):
+		RuntimeVar(Gaff::FNV1aHash64Const(name))
+	{
+	}
+
 	const Gaff::IReflection& getReflection(void) const override
 	{
 		return Reflection<T>::GetInstance();
+	}
+
+	void* getValue(void) override
+	{
+		return &_value;
 	}
 
 	operator const T& (void) const
@@ -56,26 +132,37 @@ public:
 	}
 
 private:
-	T _value;
-
 	static_assert(Reflection<T>::HasReflection, "Cannot make a RuntimeVar from a class without Reflection.");
+
+	T _value;
 };
 
 
 class RuntimeVarManager final
 {
 public:
-	template <class T>
-	void addRuntimeVar(Gaff::Hash64 name, const T& initial_value = T())
+	template <class Callback>
+	bool forEach(Callback&& callback) const
 	{
-		RuntimeVar<T>* const runtime_var = SHIB_ALLOCT(RuntimeVar<T>, _allocator, initial_value);
-		addRuntimeVar(name, runtime_var);
+		for (IRuntimeVar* entry : _runtime_vars) {
+			if (callback(*entry)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
-	template <class T>
-	void addRuntimeVar(const char* name, const T& initial_value = T())
+	template <class Callback>
+	bool forEach(Callback&& callback)
 	{
-		addRuntimeVar(Gaff::FNV1aHash64String(name), initial_value);
+		for (const IRuntimeVar* entry : _runtime_vars) {
+			if (callback(*entry)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	template <class T>
@@ -93,15 +180,15 @@ public:
 		return getRuntimeVar<T>(Gaff::FNV1aHash64String(name));
 	}
 
-	void addRuntimeVar(Gaff::Hash64 name, IRuntimeVar& runtime_var);
-	void addRuntimeVar(const char* name, IRuntimeVar& runtime_var);
+	void addRuntimeVar(IRuntimeVar& runtime_var);
 
 	IRuntimeVar* getRuntimeVar(Gaff::Hash64 name) const;
 	IRuntimeVar* getRuntimeVar(const char* name) const;
 
 private:
-	VectorMap< Gaff::Hash64, UniquePtr<IRuntimeVar> > _runtime_vars;
-	ProxyAllocator _allocator{ "RuntimeVars" };
+	Vector<IRuntimeVar*> _runtime_vars{ ProxyAllocator("RuntimeVars") };
 };
 
 NS_END
+
+#endif

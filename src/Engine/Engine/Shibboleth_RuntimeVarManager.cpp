@@ -20,56 +20,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
+#include "Shibboleth_RuntimeVarManager.h"
 
-#ifdef SHIB_STATIC
+#ifdef SHIB_RUNTIME_VAR_ENABLED
 
-	#include <Shibboleth_Utilities.h>
+NS_SHIBBOLETH
 
-	namespace Debug
-	{
+IRuntimeVar* IRuntimeVar::_root = nullptr;
 
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+void RegisterRuntimeVars(void)
+{
+	RuntimeVarManager& run_var_mgr = GetApp().getRuntimeVarManager();
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Gaff::InitEnumReflection();
-
-				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
-			}
-
-			Debug::Gen::InitReflection(mode);
-
-			return true;
-		}
-
+	for (IRuntimeVar* var = IRuntimeVar::_root; var; var = var->_next) {
+		run_var_mgr.addRuntimeVar(*var);
 	}
+}
 
-#else
+void RuntimeVarManager::addRuntimeVar(IRuntimeVar& runtime_var)
+{
+	const auto it = Gaff::LowerBound(
+		_runtime_vars,
+		runtime_var.getName(),
+		[](IRuntimeVar* const lhs, Gaff::Hash64 rhs) -> bool { return lhs->getName() < rhs; }
+	);
 
-	#include <Gaff_Defines.h>
+	GAFF_ASSERT(it == _runtime_vars.end() || (*it)->getName() != runtime_var.getName());
+	_runtime_vars.insert(it, &runtime_var);
+}
 
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
-	{
-		return Debug::Initialize(app, mode);
-	}
+IRuntimeVar* RuntimeVarManager::getRuntimeVar(Gaff::Hash64 name) const
+{
+	const auto it = Gaff::LowerBound(
+		_runtime_vars,
+		name,
+		[](IRuntimeVar* const lhs, Gaff::Hash64 rhs) -> bool { return lhs->getName() < rhs; }
+	);
 
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Debug::InitializeNonOwned();
-	}
+	return it != _runtime_vars.end() && (*it)->getName() == name ? *it : nullptr;
+}
 
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
-	}
+IRuntimeVar* RuntimeVarManager::getRuntimeVar(const char* name) const
+{
+	return getRuntimeVar(Gaff::FNV1aHash64String(name));
+}
+
+NS_END
 
 #endif

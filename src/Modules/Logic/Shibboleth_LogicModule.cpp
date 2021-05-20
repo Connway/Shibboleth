@@ -37,6 +37,10 @@ THE SOFTWARE.
 				Shibboleth::SetApp(app);
 				Esprit::SetAllocator(&g_logic_allocator);
 
+			#ifdef SHIB_RUNTIME_VAR_ENABLED
+				Shibboleth::RegisterRuntimeVars();
+			#endif
+
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
 				Gaff::InitEnumReflection();

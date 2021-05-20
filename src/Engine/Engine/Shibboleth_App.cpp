@@ -392,6 +392,13 @@ void App::quit(void)
 	_running = false;
 }
 
+#ifdef SHIB_RUNTIME_VAR_ENABLED
+RuntimeVarManager& App::getRuntimeVarManager(void)
+{
+	return _runtime_var_mgr;
+}
+#endif
+
 bool App::initInternal(void)
 {
 	const char* log_dir = _configs["log_dir"].getString("./logs");

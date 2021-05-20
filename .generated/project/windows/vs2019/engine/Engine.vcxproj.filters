@@ -93,7 +93,7 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVar.h">
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h">
@@ -129,6 +129,9 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_VectorMap.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />
@@ -143,6 +146,7 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_RuntimeVarManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ZlibMemory.cpp" />
   </ItemGroup>
