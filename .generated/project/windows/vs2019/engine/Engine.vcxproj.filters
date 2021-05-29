@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -127,9 +130,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_VectorMap.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

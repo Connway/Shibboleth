@@ -18,6 +18,7 @@ characterset "Unicode"
 nativewchar "Default"
 floatingpoint "Fast"
 cppdialect "C++17"
+cdialect "C11"
 warnings "Extra"
 symbols "On"
 rtti "Off"
@@ -64,8 +65,8 @@ filter { "configurations:*Debug*", "toolset:gcc", "options:debug_optimization" }
 filter { "configurations:*Debug*", "toolset:not gcc" }
 	optimize "Debug"
 
-filter { "toolset:clang"--[[, "rtti:off"--]] }
-	defines { "_HAS_STATIC_RTTI=0" }
+-- filter { "toolset:clang"--[[, "rtti:off"--]] }
+	-- defines { "_HAS_STATIC_RTTI=0" }
 
 filter { "configurations:*Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
@@ -93,24 +94,17 @@ filter { "configurations:Optimized_Debug*" }
 	optimize "Speed"
 	runtime "Release"
 
-filter { "action:vs*" }
-	buildoptions { "/sdl" }
-
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
 	systemversion "latest"
-	disablewarnings "4307" -- For hash functions.
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
 
-filter { "configurations:*Clang", "action:vs*" }
-	toolset "msc-llvm-vs2014"
-
 filter { "configurations:not *Clang", "action:not vs*" }
 	toolset "gcc"
 
-filter { "configurations:*Clang", "action:not vs*" }
+filter { "configurations:*Clang" }
 	toolset "clang"
 
 filter {}

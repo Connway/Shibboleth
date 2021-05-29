@@ -12,8 +12,12 @@ if _ACTION == "vs2017" or _ACTION == "vs2019" then
 			"Debug", "Release",
 			"Debug_Clang", "Release_Clang",
 			"Profile", "Profile_Clang",
-			"Optimized_Debug", "Optimized_Debug_Clang"
+			"Optimized_Debug", "Optimized_Debug_Clang",
 			-- add static versions here
+			"Static_Debug_D3D11", "Static_Debug_D3D11_Clang",
+			-- "Static_Debug_Vulkan", "Static_Debug_Vulkan_Clang"
+			"Static_Release_D3D11", "Static_Release_D3D11_Clang",
+			-- "Static_Release_Vulkan", "Static_Release_Vulkan_Clang"
 		}
 	else
 		configs =

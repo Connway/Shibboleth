@@ -121,6 +121,8 @@ public:
 		return &_value;
 	}
 
+	// Potential thread safety issues. If problematic, can add some support for atomics and locks,
+	// but don't want to overcomplicate it for now.
 	operator const T& (void) const
 	{
 		return _value;
