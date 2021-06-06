@@ -235,7 +235,7 @@ void ResourceManager::waitForResource(const IResource& resource) const
 {
 	while (resource._state == ResourceState::Pending) {
 		// $TODO: Help out?
-		EA::Thread::ThreadSleep();
+		EA_THREAD_DO_SPIN();
 	}
 }
 

@@ -240,7 +240,7 @@ lua_State* LuaManager::requestState(void)
 		}
 
 		if (!state) {
-			EA::Thread::ThreadSleep();
+			EA_THREAD_DO_SPIN();
 		}
 	}
 

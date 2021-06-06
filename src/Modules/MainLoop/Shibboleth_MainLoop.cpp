@@ -270,7 +270,7 @@ void MainLoop::update(void)
 	_job_pool->doAJob(_job_pool->getMainThreadID());
 
 	// Give some time to other threads.
-	EA::Thread::ThreadSleep();
+	EA_THREAD_DO_SPIN();
 }
 
 NS_END

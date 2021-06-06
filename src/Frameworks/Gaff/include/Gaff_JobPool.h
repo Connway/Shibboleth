@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
+#include <EAThread/eathread_condition.h>
 #include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>
 #include <EAThread/eathread_futex.h>
@@ -89,27 +90,38 @@ private:
 		Queue<JobPair, Allocator> jobs;
 		UniquePtr<EA::Thread::Futex, Allocator> read_write_lock;
 		UniquePtr<EA::Thread::Semaphore, Allocator> thread_lock;
-		//EA::Thread::Futex read_write_lock;
-		//EA::Thread::Semaphore thread_lock;
 	};
 
 	struct ThreadData final
 	{
 		JobPool<Allocator>* job_pool = nullptr;
 		ThreadInitFunc init_func = nullptr;
-		bool terminate : 1;
+		bool running : 1;
 		bool pause : 1;
 	};
+
+	struct ThreadEvent final
+	{
+		UniquePtr<EA::Thread::Mutex, Allocator> event_lock;
+		UniquePtr<EA::Thread::Condition, Allocator> event;
+	};
+
+	static constexpr eastl::chrono::milliseconds k_sleep_time = eastl::chrono::milliseconds(200);
 
 	VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
 	JobQueue _main_queue;
 
 	VectorMap<EA::Thread::ThreadId, JobQueue, Allocator> _per_thread_jobs;
+	VectorMap<EA::Thread::ThreadId, ThreadEvent, Allocator> _thread_events;
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
 	EA::Thread::ThreadId _main_thread_id;
 
+	//std::atomic_int32_t _num_jobs = 0;
+
 	Allocator _allocator;
+
+	void notifyThreads(void);
 
 	static bool ProcessJobQueue(JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms);
 	static void DoJob(EA::Thread::ThreadId thread_id, JobPair& job);

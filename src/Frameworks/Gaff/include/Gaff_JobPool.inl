@@ -30,7 +30,8 @@ JobPool<Allocator>::JobPool(const Allocator& allocator):
 	_main_queue.jobs = Queue<JobPair, Allocator>(allocator);
 	_main_queue.read_write_lock = UniquePtr<EA::Thread::Futex, Allocator>(GAFF_ALLOCT(EA::Thread::Futex, _allocator));
 
-	_thread_data.terminate = false;
+	_thread_data.job_pool = this;
+	_thread_data.running = true;
 	_thread_data.pause = true;
 }
 
@@ -43,10 +44,10 @@ JobPool<Allocator>::~JobPool(void)
 template <class Allocator>
 bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitFunc init)
 {
-	_thread_data.job_pool = this;
 	_thread_data.init_func = init;
-	_thread_data.terminate = false;
 	_threads.resize(num_threads);
+
+	_thread_events.reserve(num_threads);
 
 	for (int32_t i = 0; i < num_threads; ++i) {
 		U8String<Allocator> thread_name(_allocator);
@@ -61,16 +62,20 @@ bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitFunc init)
 		thread_params.mpName = thread_name.data();
 		thread_params.mpStack = nullptr;
 
-		const bool success = _threads[i].Begin(JobThread, &_thread_data, &thread_params) != EA::Thread::kThreadIdInvalid;
+		const EA::Thread::ThreadId thread_id = _threads[i].Begin(JobThread, &_thread_data, &thread_params);
 
-		if (!success) {
+		if (thread_id == EA::Thread::kThreadIdInvalid) {
 			destroy();
 			return false;
 		}
 
-		JobQueue& thread_queue = _per_thread_jobs[_threads[i].GetId()];
+		JobQueue& thread_queue = _per_thread_jobs[thread_id];
 		thread_queue.read_write_lock = UniquePtr<EA::Thread::Futex, Allocator>(GAFF_ALLOCT(EA::Thread::Futex, _allocator));
 		thread_queue.jobs = Queue<JobPair, Allocator>(_allocator);
+
+		ThreadEvent& event = _thread_events[thread_id];
+		event.event_lock = UniquePtr<EA::Thread::Mutex, Allocator>(GAFF_ALLOCT(EA::Thread::Mutex, _allocator));
+		event.event = UniquePtr<EA::Thread::Condition, Allocator>(GAFF_ALLOCT(EA::Thread::Condition, _allocator));
 	}
 
 	_main_thread_id = EA::Thread::GetThreadId();
@@ -80,7 +85,7 @@ bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitFunc init)
 template <class Allocator>
 void JobPool<Allocator>::destroy(void)
 {
-	_thread_data.terminate = true;
+	_thread_data.running = false;
 
 	for (EA::Thread::Thread& thread : _threads) {
 		thread.WaitForEnd();
@@ -146,6 +151,10 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 	}
 
 	job_queue->read_write_lock->Unlock();
+
+	//_num_jobs += num_jobs;
+
+	notifyThreads();
 }
 
 template <class Allocator>
@@ -182,13 +191,10 @@ void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_j
 		job_queue.second.read_write_lock->Unlock();
 	}
 
-	_main_queue.read_write_lock->Lock();
+	// +1 to include main queue.
+	//_num_jobs += num_jobs * static_cast<int32_t>(_per_thread_jobs.size());
 
-	for (int32_t i = 0; i < num_jobs; ++i) {
-		_main_queue.jobs.emplace(JobPair(jobs[i], cnt));
-	}
-
-	_main_queue.read_write_lock->Unlock();
+	notifyThreads();
 }
 
 template <class Allocator>
@@ -209,7 +215,7 @@ template <class Allocator>
 void JobPool<Allocator>::waitForCounter(const Counter& counter)
 {
 	while (counter > 0 && !_thread_data.terminate) {
-		EA::Thread::ThreadSleep();
+		EA_THREAD_DO_SPIN();
 	}
 }
 
@@ -351,6 +357,14 @@ EA::Thread::ThreadId JobPool<Allocator>::getMainThreadID(void) const
 }
 
 template <class Allocator>
+void JobPool<Allocator>::notifyThreads(void)
+{
+	for (auto& thread_event : _thread_events) {
+		thread_event.second.event->Signal(true);
+	}
+}
+
+template <class Allocator>
 bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
 	auto start = eastl::chrono::high_resolution_clock::now();
@@ -373,8 +387,14 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 			DoJob(thread_id, job);
 		}
 
-		if (ms > eastl::chrono::milliseconds::zero() && (eastl::chrono::high_resolution_clock::now() - start) >= ms) {
-			return true;
+		if (ms > eastl::chrono::milliseconds::zero()) {
+			if ((eastl::chrono::high_resolution_clock::now() - start) >= ms) {
+				return true;
+			}
+		} else {
+			if ((eastl::chrono::high_resolution_clock::now() - start) >= k_sleep_time) {
+				EA_THREAD_DO_SPIN();
+			}
 		}
 	}
 
@@ -414,12 +434,20 @@ intptr_t JobPool<Allocator>::JobThread(void* data)
 		thread_data.init_func(id_int);
 	}
 
-	while (!thread_data.terminate) {
+	// Wait for the job pool to start.
+	while (thread_data.pause) {
+		EA_THREAD_DO_SPIN();
+	}
+
+	ThreadEvent& thread_event = job_pool->_thread_events[thread_id];
+	const EA::Thread::AutoMutex condition_lock(*thread_event.event_lock);
+
+	while (thread_data.running) {
+		thread_event.event->Wait(thread_event.event_lock.get());
+
 		if (!thread_data.pause) {
 			job_pool->help(thread_id);
 		}
-
-		EA::Thread::ThreadSleep(); // Probably a good idea to give some time back to the CPU for other stuff.
 	}
 
 	return 0;

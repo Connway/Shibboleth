@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_StateMachineComponent.h"
 #include <Shibboleth_ResourceManager.h>
+#include <EAThread/eathread_sync.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
 	.classAttrs(
@@ -93,7 +94,7 @@ bool StateMachine::Load(const Gaff::ISerializeReader& reader, StateMachine& out)
 
 	while (out.resource->getState() == ResourceState::Pending) {
 		// $TODO: Help out?
-		EA::Thread::ThreadSleep();
+		EA_THREAD_DO_SPIN();
 	}
 
 	if (out.resource->hasFailed()) {
