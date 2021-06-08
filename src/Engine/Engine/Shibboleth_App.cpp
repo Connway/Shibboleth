@@ -43,6 +43,10 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+#ifndef RELEASE
+	static ProxyAllocator g_profiler_allocator("Profiler");
+#endif
+
 App::App(void)
 {
 	Gaff::InitializeCrashHandler();
@@ -64,6 +68,13 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, const char** argv)
 {
+	// Setting memory allocators
+	OPTICK_SET_MEMORY_ALLOCATOR(
+		[](size_t size) -> void* { return SHIB_ALLOC(size, g_profiler_allocator); },
+		[](void* p) { SHIB_FREE(p, g_profiler_allocator); },
+		[]() { /* Do some TLS initialization here if needed */ }
+	);
+
 	const bool application_set_configs = _configs.size() > 0 && _configs["working_dir"].isString();
 
 	// Check if application set working directory.
@@ -168,6 +179,7 @@ void App::destroy(void)
 		_main_loop = nullptr;
 	}
 
+	// Let all the managers destroy their thread local data.
 	const Gaff::JobData thread_deinit_job =
 	{
 		[](uintptr_t thread_id, void* data) -> void
@@ -183,8 +195,13 @@ void App::destroy(void)
 
 	Gaff::Counter counter = 0;
 	_job_pool.addJobsForAllThreads(&thread_deinit_job, 1, counter);
-	_job_pool.helpWhileWaiting(counter);
 
+	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+	for (const auto& entry : _manager_map) {
+		entry.second->destroyThread((uintptr_t)&thread_id);
+	}
+
+	_job_pool.helpWhileWaiting(counter);
 	_job_pool.destroy();
 
 	const Gaff::JSON module_unload_order = _configs["module_unload_order"];
@@ -312,6 +329,8 @@ void App::destroy(void)
 #endif
 
 	_log_mgr.destroy();
+
+	OPTICK_SHUTDOWN();
 }
 
 const IManager* App::getManager(Gaff::Hash64 name) const

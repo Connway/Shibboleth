@@ -33,6 +33,7 @@ function DoMainGraphicsModule()
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/Resource/include",
@@ -83,6 +84,7 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/Resource/include",
@@ -134,7 +136,8 @@ function DoGraphicsModule(renderer)
 			"minizip",
 			"zlib-ng",
 			"libpng",
-			"libtiff"
+			"libtiff",
+			"optick"
 		}
 
 		dependson(deps)
@@ -147,6 +150,8 @@ local GenerateProject = function()
 	DoMainGraphicsModule()
 	DoGraphicsModule("Direct3D11")
 	-- DoGraphicsModule("Direct3D12")
+
+	
 	-- DoGraphicsModule("Vulkan")
 end
 
@@ -164,6 +169,7 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
+	table.insert(deps, "optick")
 
 	dependson(deps)
 	links(deps)

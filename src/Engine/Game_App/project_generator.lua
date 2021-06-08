@@ -20,7 +20,8 @@ project "Game_App"
 		"../Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
-		"../../Dependencies/EASTL/include"
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/optick"
 	}
 
 	local deps =
@@ -30,7 +31,8 @@ project "Game_App"
 		"Gleam",
 		"Memory",
 		"EASTL",
-		"mpack"
+		"mpack",
+		"optick"
 	}
 
 	dependson(deps)

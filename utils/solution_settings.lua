@@ -15,6 +15,7 @@ defaultplatform "x64"
 
 exceptionhandling "SEH"
 characterset "Unicode"
+systemversion "latest"
 nativewchar "Default"
 floatingpoint "Fast"
 cppdialect "C++17"
@@ -40,35 +41,34 @@ filter { "platforms:x64" }
 
 filter {}
 
-SetIntermediateAndTargetDirs("Debug")
-SetIntermediateAndTargetDirs("Release")
-SetIntermediateAndTargetDirs("Profile")
-SetIntermediateAndTargetDirs("Optimized_Debug")
-SetIntermediateAndTargetDirs("Static_Debug_D3D11")
-SetIntermediateAndTargetDirs("Static_Release_D3D11")
--- SetIntermediateAndTargetDirs("Static_Debug_Vulkan")
--- SetIntermediateAndTargetDirs("Static_Release_Vulkan")
+for _,v in ipairs(configs) do
+	 SetIntermediateAndTargetDirs(v)
+end
 
-SetIntermediateAndTargetDirs("Debug_Clang")
-SetIntermediateAndTargetDirs("Release_Clang")
-SetIntermediateAndTargetDirs("Profile_Clang")
-SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
+-- SetIntermediateAndTargetDirs("Debug")
+-- SetIntermediateAndTargetDirs("Release")
+-- SetIntermediateAndTargetDirs("Profile")
+-- SetIntermediateAndTargetDirs("Optimized_Debug")
+-- SetIntermediateAndTargetDirs("Static_Debug_D3D11")
+-- SetIntermediateAndTargetDirs("Static_Release_D3D11")
+-- -- SetIntermediateAndTargetDirs("Static_Debug_Vulkan")
+-- -- SetIntermediateAndTargetDirs("Static_Release_Vulkan")
+
+-- SetIntermediateAndTargetDirs("Debug_Clang")
+-- SetIntermediateAndTargetDirs("Release_Clang")
+-- SetIntermediateAndTargetDirs("Profile_Clang")
+-- SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
 
 dofile("module_suffix.lua")
 
-filter { "configurations:*Debug*", "toolset:gcc", "options:not debug_optimization" }
-	optimize "Off"
-
-filter { "configurations:*Debug*", "toolset:gcc", "options:debug_optimization" }
+filter { "configurations:*Debug*" }
 	optimize "Debug"
-
-filter { "configurations:*Debug*", "toolset:not gcc" }
-	optimize "Debug"
+	runtime "Debug"
 
 -- filter { "toolset:clang"--[[, "rtti:off"--]] }
 	-- defines { "_HAS_STATIC_RTTI=0" }
 
-filter { "configurations:*Debug* or Optimized_Debug*" }
+filter { "configurations:*Debug* or *Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 
 filter { "configurations:*Release* or *Profile*" }
@@ -89,14 +89,13 @@ filter { "configurations:*Profile*" }
 filter { "configurations:*Release*" }
 	defines { "RELEASE" }
 
-filter { "configurations:Optimized_Debug*" }
+filter { "configurations:*Optimized_Debug*" }
 	flags { "LinkTimeOptimization" }
 	optimize "Speed"
 	runtime "Release"
 
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
-	systemversion "latest"
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }

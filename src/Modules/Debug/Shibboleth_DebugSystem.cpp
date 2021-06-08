@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_DebugSystem.h"
 #include "Shibboleth_DebugManager.h"
+#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
 	.base<ISystem>()
@@ -60,6 +61,7 @@ bool DebugSystem::init(void)
 
 void DebugSystem::update(uintptr_t /*thread_id_int*/)
 {
+	OPTICK_EVENT();
 	_debug_mgr->update();
 }
 

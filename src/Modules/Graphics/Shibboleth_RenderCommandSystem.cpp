@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_ECSManager.h>
+#include <Gaff_IncludeOptick.h>
 #include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 
@@ -128,6 +129,8 @@ bool RenderCommandSubmissionSystem::init(void)
 
 void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 {
+	OPTICK_EVENT();
+
 	const int32_t starting_index = static_cast<int32_t>(_job_data_cache.size());
 	const int32_t num_devices = _render_mgr->getNumDevices();
 
@@ -158,6 +161,8 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 
 void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, void* data)
 {
+	OPTICK_EVENT();
+
 	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(RenderManagerBase::RenderOrder::Count); ++i) {
@@ -226,6 +231,8 @@ bool RenderCommandSystem::init(void)
 
 void RenderCommandSystem::update(uintptr_t thread_id_int)
 {
+	OPTICK_EVENT();
+
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
 	_device_job_data_cache.clear();
@@ -283,6 +290,8 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 
 void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 {
+	OPTICK_EVENT();
+
 	auto* const material = _materials.back();
 	auto* const model = _models.back()->value.get();
 
@@ -319,6 +328,7 @@ void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)
 
 void RenderCommandSystem::removedObjectArchetype(int32_t index)
 {
+	OPTICK_EVENT();
 	_instance_data.erase(_instance_data.begin() + index);
 }
 
@@ -327,6 +337,8 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 	const Material& material,
 	const ECSArchetype& archetype)
 {
+	OPTICK_EVENT();
+
 	const auto devices = material.material->getDevices();
 
 	if (devices.empty()) {
@@ -403,6 +415,8 @@ void RenderCommandSystem::addStructuredBuffersSRVs(
 	const Vector<Gleam::IRenderDevice*>& devices,
 	Gleam::IShader::Type shader_type)
 {
+	OPTICK_EVENT();
+
 	const Gleam::IProgram* const program = material.material->getProgram(*devices[0]);
 	const Gleam::IShader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
 
@@ -465,6 +479,8 @@ void RenderCommandSystem::addTextureSRVs(
 	Gleam::IRenderDevice& rd,
 	Gleam::IShader::Type shader_type)
 {
+	OPTICK_EVENT();
+
 	const Material::TextureMap* const texture_map = GetTextureMap(material, shader_type);
 	GAFF_ASSERT(texture_map);
 
@@ -497,6 +513,8 @@ void RenderCommandSystem::addConstantBuffers(
 	const Vector<Gleam::IRenderDevice*>& devices,
 	Gleam::IShader::Type shader_type)
 {
+	OPTICK_EVENT();
+
 	for (const Gleam::ConstBufferReflection& const_buf_refl : refl.const_buff_reflection) {
 		const Gleam::IBuffer::Settings settings = {
 			nullptr,
@@ -527,6 +545,8 @@ void RenderCommandSystem::addSamplers(
 	Gleam::IRenderDevice& rd,
 	Gleam::IShader::Type shader_type)
 {
+	OPTICK_EVENT();
+
 	SamplerStateResourcePtr& default_sampler_res = _render_mgr->getDefaultSamplerState();
 	Gleam::ISamplerState* const default_sampler = default_sampler_res->getSamplerState(rd);
 	const Material::SamplerMap* const sampler_map = GetSamplereMap(material, shader_type);
@@ -555,6 +575,8 @@ void RenderCommandSystem::addSamplers(
 
 void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* data)
 {
+	OPTICK_EVENT();
+
 	RenderJobData& job_data = *reinterpret_cast<RenderJobData*>(data);
 
 	if (!job_data.device) {
@@ -730,6 +752,8 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 
 void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 {
+	OPTICK_EVENT();
+
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
 	const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());

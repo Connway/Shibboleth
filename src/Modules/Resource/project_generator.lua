@@ -24,6 +24,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 
@@ -48,7 +49,8 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"MainLoop"
+			"MainLoop",
+			"optick"
 		}
 
 		dependson(deps)
@@ -58,6 +60,7 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Resource")
 	table.insert(deps, "MainLoop")
+	table.insert(deps, "optick")
 
 	dependson(deps)
 	links(deps)

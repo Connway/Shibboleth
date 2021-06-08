@@ -383,6 +383,21 @@ Gleam::IWindow* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
+void RenderManagerBase::removeWindow(const Gleam::IWindow& window)
+{
+	for (auto it = _window_outputs.begin(); it != _window_outputs.end(); ++it) {
+		if (it->second.first.get() == &window) {
+			_window_outputs.erase(it);
+			break;
+		}
+	}
+}
+
+int32_t RenderManagerBase::getNumWindows(void) const
+{
+	return static_cast<int32_t>(_window_outputs.size());
+}
+
 const SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void) const
 {
 	return _default_sampler;

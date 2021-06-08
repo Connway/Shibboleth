@@ -1,3 +1,22 @@
+local unsupported_actions =
+{
+	"vs2005",
+	"vs2008",
+	"vs2010",
+	"vs2012",
+	"vs2013",
+	"vs2015",
+	"vs2017",
+	"codelite",
+}
+
+for _,v in pairs(unsupported_actions) do
+	if _ACTION == v then
+		print("We do not support generating/building on project platform " .. _ACTION)
+		return
+	end
+end
+
 dofile("solution_configs.lua")
 dofile("helper_functions.lua")
 dofile("options.lua")

@@ -106,6 +106,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Debug\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -256,6 +257,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     </ProjectReference>
     <ProjectReference Include="..\dependencies\minizip.vcxproj">
       <Project>{C5553BC7-3135-BA62-3A4D-4539A6AB20C4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\optick.vcxproj">
+      <Project>{CFC2F712-BB64-22E9-A41F-363D9060A939}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>

@@ -86,6 +86,7 @@ template <class Allocator>
 void JobPool<Allocator>::destroy(void)
 {
 	_thread_data.running = false;
+	notifyThreads();
 
 	for (EA::Thread::Thread& thread : _threads) {
 		thread.WaitForEnd();
@@ -177,8 +178,7 @@ void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_j
 			*counter = cnt = GAFF_ALLOCT(Counter, _allocator, 0);
 		}
 
-		// +1 for main thread.
-		*cnt += num_jobs * static_cast<int32_t>(_threads.size()) + 1;
+		*cnt += num_jobs * static_cast<int32_t>(_threads.size());
 	}
 
 	for (auto& job_queue : _per_thread_jobs) {
@@ -191,7 +191,6 @@ void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_j
 		job_queue.second.read_write_lock->Unlock();
 	}
 
-	// +1 to include main queue.
 	//_num_jobs += num_jobs * static_cast<int32_t>(_per_thread_jobs.size());
 
 	notifyThreads();
@@ -229,16 +228,22 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 template <class Allocator>
 void JobPool<Allocator>::helpWhileWaiting(EA::Thread::ThreadId thread_id, const Counter& counter)
 {
+	OPTICK_EVENT();
+
 	while (counter > 0) {
 		doAJob(thread_id);
+		EA_THREAD_DO_SPIN();
 	}
 }
 
 template <class Allocator>
 void JobPool<Allocator>::helpWhileWaiting(const Counter& counter)
 {
+	OPTICK_EVENT();
+
 	while (counter > 0) {
 		doAJob();
+		EA_THREAD_DO_SPIN();
 	}
 }
 
@@ -259,6 +264,8 @@ void JobPool<Allocator>::helpAndFreeCounter(Counter* counter)
 template <class Allocator>
 bool JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
+	OPTICK_EVENT();
+
 	// Do jobs until we can't do any more.
 
 	// Do per-thread jobs first.
@@ -367,6 +374,8 @@ void JobPool<Allocator>::notifyThreads(void)
 template <class Allocator>
 bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
+	OPTICK_EVENT();
+
 	auto start = eastl::chrono::high_resolution_clock::now();
 	JobPair job;
 
@@ -394,6 +403,7 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 		} else {
 			if ((eastl::chrono::high_resolution_clock::now() - start) >= k_sleep_time) {
 				EA_THREAD_DO_SPIN();
+				start = eastl::chrono::high_resolution_clock::now();
 			}
 		}
 	}
@@ -424,6 +434,8 @@ void JobPool<Allocator>::DoJob(EA::Thread::ThreadId thread_id, JobPair& job)
 template <class Allocator>
 intptr_t JobPool<Allocator>::JobThread(void* data)
 {
+	OPTICK_THREAD(EA::Thread::GetThreadName());
+
 	ThreadData& thread_data = *reinterpret_cast<ThreadData*>(data);
 	JobPool<Allocator>* job_pool = thread_data.job_pool;
 

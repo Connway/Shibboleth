@@ -5,40 +5,36 @@ function AddConfigOption(config)
 	table.insert(config_options, { config, config })
 end
 
-if _ACTION == "vs2017" or _ACTION == "vs2019" then
-	if _OPTIONS["gen-clang"] then
-		configs =
-		{
-			"Debug", "Release",
-			"Debug_Clang", "Release_Clang",
-			"Profile", "Profile_Clang",
-			"Optimized_Debug", "Optimized_Debug_Clang",
-			-- add static versions here
-			"Static_Debug_D3D11", "Static_Debug_D3D11_Clang",
-			-- "Static_Debug_Vulkan", "Static_Debug_Vulkan_Clang"
-			"Static_Release_D3D11", "Static_Release_D3D11_Clang",
-			-- "Static_Release_Vulkan", "Static_Release_Vulkan_Clang"
-		}
-	else
-		configs =
-		{
-			"Debug", "Release",
-			"Profile", "Optimized_Debug",
-			"Static_Debug_D3D11",
-			-- "Static_Debug_Vulkan",
-			"Static_Release_D3D11",
-			-- "Static_Release_Vulkan"
-		}
-	end
-else
-	configs =
-	{
-		"Debug", "Release",
-		"Debug_Clang", "Release_Clang",
-		"Profile", "Profile_Clang",
-		"Optimized_Debug", "Optimized_Debug_Clang"
-		-- add static versions here
-	}
+configs =
+{
+	"Debug",
+	"Release",
+	"Profile",
+	"Optimized_Debug",
+
+	-- Add static versions here.
+	"Static_Debug_D3D11",
+	-- "Static_Debug_D3D12",
+	-- "Static_Debug_Vulkan",
+	"Static_Release_D3D11",
+	-- "Static_Release_D3D12",
+	-- "Static_Release_Vulkan"
+}
+
+if (_ACTION == "vs2019" and _OPTIONS["gen-clang"]) or
+	_ACTION == "gmake2" then
+
+	table.insert(configs, "Debug_Clang")
+	table.insert(configs, "Release_Clang")
+	table.insert(configs, "Profile_Clang")
+	table.insert(configs, "Optimized_Debug_Clang")
+
+	table.insert(configs, "Static_Debug_D3D11_Clang")
+	table.insert(configs, "Static_Release_D3D11_Clang")
+	-- table.insert(configs, "Static_Debug_D3D12_Clang")
+	-- table.insert(configs, "Static_Release_D3D12_Clang")
+	-- table.insert(configs, "Static_Debug_Vulkan_Clang")
+	-- table.insert(configs, "Static_Release_Vulkan_Clang")
 end
 
 table.foreachi(configs, AddConfigOption)

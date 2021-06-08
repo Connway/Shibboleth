@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include <Gleam_Layout.h>
 #include <Gleam_Window.h>
 #include <Gleam_Mesh.h>
+#include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(RenderManager)
 	.BASE(RenderManagerBase)
@@ -61,6 +62,12 @@ static constexpr Gleam::RendererType GetRendererType(void)
 #elif defined(USE_VULKAN)
 	return Gleam::RendererType::VULKAN;
 #endif
+}
+
+RenderManager::RenderManager(void)
+{
+	Gleam::MessageHandler func = Gaff::MemberFunc(this, &RenderManager::handleWindowClosed);
+	Gleam::Window::AddGlobalMessageHandler(std::move(func));
 }
 
 Gleam::RendererType RenderManager::getRendererType(void) const
@@ -161,6 +168,21 @@ Gleam::IWindow* RenderManager::createWindow(void) const
 void RenderManager::updateWindows(void)
 {
 	Gleam::Window::HandleWindowMessages();
+}
+
+bool RenderManager::handleWindowClosed(const Gleam::AnyMessage& message)
+{
+	if (message.base.type == Gleam::EventType::WindowClosed) {
+		removeWindow(*message.base.window);
+
+		if (!getNumWindows()) {
+			GetApp().quit();
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 NS_END

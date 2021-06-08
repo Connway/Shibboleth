@@ -26,6 +26,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Frameworks/Esprit/include",
@@ -59,7 +60,9 @@ local GenerateProject = function()
 			"MainLoop",
 			"Resource",
 			"Input",
-			"ECS"
+			"ECS",
+
+			"optick"
 		}
 
 		dependson(deps)
@@ -74,6 +77,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
 	table.insert(deps, "ECS")
+	table.insert(deps, "optick")
 
 	dependson(deps)
 	links(deps)

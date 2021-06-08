@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(StateMachineSystem)
 	.BASE(ISystem)
@@ -49,6 +50,8 @@ bool StateMachineSystem::init(void)
 
 void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 {
+	OPTICK_EVENT();
+
 	// $TODO: Jobify this loop.
 	for (const auto& sm_arch : _state_machines) {
 		_ecs_mgr->iterate<StateMachine>(

@@ -101,6 +101,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>

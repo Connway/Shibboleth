@@ -15,7 +15,8 @@ project "refl_hash_dump"
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
-		"../../Dependencies/EASTL/include"
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/optick"
 	}
 
 	local deps =
@@ -24,8 +25,10 @@ project "refl_hash_dump"
 		"Gaff",
 		"Gleam",
 		"Memory",
+
 		"EASTL",
-		"mpack"
+		"mpack",
+		"optick"
 	}
 
 	dependson(deps)

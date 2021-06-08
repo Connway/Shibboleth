@@ -32,6 +32,8 @@ class Camera;
 class RenderManager final : public RenderManagerBase
 {
 public:
+	RenderManager(void);
+
 	Gleam::RendererType getRendererType(void) const override;
 
 	Gleam::IShaderResourceView* createShaderResourceView(void) const override;
@@ -55,6 +57,9 @@ public:
 	Gleam::IWindow* createWindow(void) const override;
 
 	void updateWindows(void) override;
+
+private:
+	bool handleWindowClosed(const Gleam::AnyMessage& message);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 };

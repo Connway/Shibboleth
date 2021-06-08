@@ -5,6 +5,7 @@ local tests = {
 		includedirs =
 		{
 			"../Dependencies/EASTL/include",
+			"../Dependencies/optick",
 
 			"../Frameworks/Gaff/include",
 			"../Engine/Engine/include",
@@ -18,7 +19,8 @@ local tests = {
 			"Memory",
 			"EASTL",
 			"Engine",
-			"mpack"
+			"mpack",
+			"optick"
 		},
 
 		extra = function ()
@@ -39,6 +41,7 @@ local tests = {
 		{
 			"../Dependencies/EASTL/include",
 			"../Dependencies/mpack",
+			"../Dependencies/optick",
 			"../Dependencies/rapidjson",
 
 			"../Frameworks/Gaff/include",
@@ -53,7 +56,8 @@ local tests = {
 			"Memory",
 			"EASTL",
 			"Engine",
-			"mpack"
+			"mpack",
+			"optick"
 		},
 
 		extra = function ()
@@ -76,6 +80,7 @@ local tests = {
 			"../Dependencies/rapidjson",
 			"../Dependencies/glm",
 			"../Dependencies/mpack",
+			"../Dependencies/optick",
 
 			"../Frameworks/Gaff/include",
 			"../Frameworks/Gleam/include",
@@ -88,11 +93,18 @@ local tests = {
 
 		links =
 		{
-			"Gaff", "Gleam",
-			"Memory", "EASTL",
-			"Engine", "ECS",
-			"mpack", "Resource",
-			"MainLoop"
+			"Gaff",
+			"Gleam",
+			"Memory",
+			"Engine",
+
+			"ECS",
+			"Resource",
+			"MainLoop",
+
+			"EASTL",
+			"mpack",
+			"optick",
 		},
 
 		extra = function ()

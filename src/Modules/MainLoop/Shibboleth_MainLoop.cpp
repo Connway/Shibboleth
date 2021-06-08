@@ -21,23 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MainLoop.h"
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_IncludeOptick.h>
 #include <EAThread/eathread.h>
-
-#include <Shibboleth_RenderManagerBase.h>
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_SamplerStateResource.h>
-#include <Shibboleth_RasterStateResource.h>
-#include <Shibboleth_MaterialResource.h>
-#include <Shibboleth_ECSSceneResource.h>
-#include <Shibboleth_TextureResource.h>
-#include <Shibboleth_ModelResource.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IRenderDevice.h>
-#include <Gleam_IRenderTarget.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(MainLoop)
 	.BASE(IMainLoop)
@@ -50,6 +41,8 @@ SHIB_REFLECTION_CLASS_DEFINE(MainLoop)
 
 static void UpdateSystemJob(uintptr_t thread_id_int, void* data)
 {
+	OPTICK_EVENT();
+
 	ISystem* const system = reinterpret_cast<ISystem*>(data);
 	system->update(thread_id_int);
 }
@@ -205,6 +198,11 @@ void MainLoop::destroy(void)
 
 void MainLoop::update(void)
 {
+#ifndef RELEASE
+	static Optick::ThreadScope main_thread_scope("Main Thread");
+	OPTICK_UNUSED(main_thread_scope);
+#endif
+
 	// This has to happen in the main thread.
 	_render_mgr->updateWindows();
 
@@ -227,6 +225,14 @@ void MainLoop::update(void)
 			if (block.curr_row >= static_cast<int32_t>(block.rows.size())) {
 				block.frame = (block.frame + 1) % 3;
 				block.curr_row = -1;
+
+#ifndef RELEASE
+				// We just finished the frame on the last block.
+				if (i == (static_cast<int32_t>(_blocks.size()) - 1)) {
+					Optick::EndFrame();
+					Optick::Update();
+				}
+#endif
 			}
 		}
 
@@ -235,7 +241,7 @@ void MainLoop::update(void)
 			// Check previous block.
 			if (i > 0) {
 				// If we're on the same frame, then it hasn't given us anything to act on. Wait for it to finish.
-				if (block.frame == _blocks[i - 1].frame) {
+				if (block.frame == _blocks[static_cast<size_t>(i - 1)].frame) {
 					block.counter = -1;
 					continue;
 				}
@@ -243,8 +249,8 @@ void MainLoop::update(void)
 
 			// Check next block.
 			if (i < (num_blocks - 1)) {
-				const int32_t next_block_curr_frame = _blocks[i + 1].frame;
-				const int32_t next_block_next_frame = (_blocks[i + 1].frame + 1) % 3;
+				const int32_t next_block_curr_frame = _blocks[static_cast<size_t>(i + 1)].frame;
+				const int32_t next_block_next_frame = (_blocks[static_cast<size_t>(i + 1)].frame + 1) % 3;
 
 				// We're getting too far ahead of the next section. Wait for it to finish.
 				if (block.frame != next_block_curr_frame && block.frame != next_block_next_frame) {
@@ -258,6 +264,15 @@ void MainLoop::update(void)
 
 		// Process the next row.
 		block.counter = 0;
+
+#ifndef RELEASE
+		// We just started the next frame on the first block.
+		if (i == 0 && block.curr_row == 0) {
+			const uint32_t frame_number = Optick::BeginFrame();
+			const Optick::Event OPTICK_CONCAT(autogen_event_, __LINE__)(*Optick::GetFrameDescription());
+			OPTICK_TAG("Frame", frame_number);
+		}
+#endif
 
 		_job_pool->addJobs(
 			block.rows[block.curr_row].job_data.data(),

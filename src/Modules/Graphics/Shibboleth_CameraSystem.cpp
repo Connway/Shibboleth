@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ResourceManager.h>
+#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(CameraPreRenderSystem)
 	.BASE(ISystem)
@@ -55,6 +56,8 @@ bool CameraPreRenderSystem::init(void)
 
 void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 {
+	OPTICK_EVENT();
+
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 	// Keep list of camera IDs
 
@@ -127,6 +130,8 @@ bool CameraPostRenderSystem::init(void)
 
 void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 {
+	OPTICK_EVENT();
+
 	const int32_t starting_index = static_cast<int32_t>(_job_data_cache.size());
 	const int32_t num_devices = _render_mgr->getNumDevices();
 
@@ -206,6 +211,8 @@ void CameraPostRenderSystem::update(uintptr_t thread_id_int)
 
 void CameraPostRenderSystem::RenderCameras(uintptr_t thread_id_int, void* data)
 {
+	OPTICK_EVENT();
+
 	CameraRenderData& job_data = *reinterpret_cast<CameraRenderData*>(data);
 	const int32_t num_cameras = static_cast<int32_t>(job_data.system->_camera.size());
 

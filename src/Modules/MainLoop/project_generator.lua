@@ -31,7 +31,8 @@ local GenerateProject = function()
 			base_dir .. "../../Modules/Graphics/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Dependencies/mpack",
-			base_dir .. "../../Dependencies/rapidjson"
+			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/optick"
 		}
 
 	project "MainLoopModule"
@@ -61,7 +62,8 @@ local GenerateProject = function()
 			"zlib-ng",
 			"minizip",
 			"libpng",
-			"libtiff"
+			"libtiff",
+			"optick"
 		}
 
 		dependson(deps)
@@ -81,6 +83,7 @@ local LinkDependencies = function()
 	table.insert(deps, "minizip")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
+	table.insert(deps, "optick")
 
 	dependson(deps)
 	links(deps)

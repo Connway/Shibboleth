@@ -28,3 +28,6 @@ Libraries Affected:
 	Catch2
 		Wrapped main function definitions into a DO_NOT_GENERATE_MAIN block to optionally compile them out.
 		Added my own main function that lives next to Catch2 code.
+
+	Optick
+		Made Optick::BeginFrame() and Optick::EndFrame() functions a little more friendly when frames overlap.

@@ -106,6 +106,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -250,6 +251,9 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     </ProjectReference>
     <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
       <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\optick.vcxproj">
+      <Project>{CFC2F712-BB64-22E9-A41F-363D9060A939}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>

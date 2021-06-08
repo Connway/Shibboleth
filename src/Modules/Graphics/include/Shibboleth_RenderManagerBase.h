@@ -136,6 +136,8 @@ public:
 
 	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
 	Gleam::IWindow* getWindow(Gaff::Hash32 tag) const;
+	void removeWindow(const Gleam::IWindow& window);
+	int32_t getNumWindows(void) const;
 
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);

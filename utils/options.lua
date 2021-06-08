@@ -1,11 +1,5 @@
 newoption
 {
-	trigger = "debug_optimization",
-	description = "If you are generating makefiles, specifies that your gcc version supports the -Og flag."
-}
-
-newoption
-{
 	trigger = "console_app",
 	description = "Generates the 'App' project to be a ConsoleApp instead of a WindowApp"
 }
