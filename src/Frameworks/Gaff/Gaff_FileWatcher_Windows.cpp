@@ -48,7 +48,7 @@ FileWatcher::~FileWatcher(void)
 const char* FileWatcher::processEvents(void)
 {
 	if (!isValid()) {
-		return false;
+		return nullptr;
 	}
 
 	DWORD bytes_written = 0;

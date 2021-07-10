@@ -533,10 +533,10 @@ const char* JSON::dump(char* buffer, int32_t size)
 
 	if (WriteJSON(*this, writer)) {
 		const size_t str_size = string_buffer.GetSize();
-		const size_t min_size = (size < str_size) ? static_cast<size_t>(size - 1) : str_size;
+		const size_t min_size = (size < static_cast<int32_t>(str_size)) ? static_cast<size_t>(size - 1) : str_size;
 
 		memcpy_s(buffer, size, string_buffer.GetString(), str_size);
-		buffer[str_size] = 0;
+		buffer[min_size] = 0;
 
 		return buffer;
 	}

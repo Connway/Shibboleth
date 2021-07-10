@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B55C880B-2166-887C-AAE1-9E7C16EA937C}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>MakeFileProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Debug\acl\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Release\acl\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Profile\acl\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2019\intermediate\x64\Optimized_Debug\acl\</IntDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakeOutput>$(OutDir)acl</NMakeOutput>
+    <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeOutput>$(OutDir)acl</NMakeOutput>
+    <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <NMakeOutput>$(OutDir)acl</NMakeOutput>
+    <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <NMakeOutput>$(OutDir)acl</NMakeOutput>
+    <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\compress.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\compression_level.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\compression_settings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\convert.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\animated_track_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\clip_context.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compact_constant_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.database.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.scalar.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.transform.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\compression_settings.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\constant_track_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\convert.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\convert_rotation_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\normalize_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\normalize_track_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\quantize_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\quantize_track_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\sample_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\segment_context.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\segment_streams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_array.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_bit_rate_database.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_error.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_list_context.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_range.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_range_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_stream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\transform_bit_rate_permutations.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_compression_stats_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_range_data.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_segment_data.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_stats.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_stream_data.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_sub_track_types.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_track_data_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_track_metadata.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\output_stats.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\track.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\track_array.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\track_error.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\transform_error_metrics.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\compression\transform_pose_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\additive_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\algorithm_types.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\ansi_allocator.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\bit_manip_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\bitset.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\buffer_tag.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\compressed_database.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\compressed_tracks.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\compressed_tracks_version.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\enum_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\error.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\error_result.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\floating_point_exceptions.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\hash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\iallocator.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\compiler_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_database.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_headers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_tracks.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\debug_track_writer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\track_desc.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\impl\track_formats.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\interpolation_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\iterator.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\memory_utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\ptr_offset.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\quality_tiers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\range_reduction_types.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\scope_profiler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\string.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\track_desc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\track_formats.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\track_traits.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\track_types.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\track_writer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\unique_ptr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\utils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\core\variable_bit_rates.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\database.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\database_settings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\database_streamer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database_context.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database_streamer.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\debug_database_streamer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\database\null_database_streamer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\decompress.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\decompression_settings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompress.impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompression_context_selector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompression_version_selector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\scalar_track_decompression.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\track_cache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_animated_track_cache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_constant_track_cache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_decompression_context.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_track_decompression.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\decompression\impl\universal_track_decompression.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\io\clip_reader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\io\clip_reader_error.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\io\clip_writer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\math\quat_packing.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\math\quatf.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\math\scalar_packing.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\math\vector4_packing.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\acl\acl\math\vector4f.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

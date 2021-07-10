@@ -519,7 +519,7 @@ constexpr Hash64 FNV1Hash64StringConst(const T* string, Hash64 init = k_init_has
 {
 	Hash64Storage hash = init.getHash();
 
-	for (size_t i = 0; i < len; ++i) {
+	while (*string) {
 		hash = FNV1Hash64StringConstHelper(hash, *string);
 		++string;
 	}

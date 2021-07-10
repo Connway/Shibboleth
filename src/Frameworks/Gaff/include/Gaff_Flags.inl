@@ -105,13 +105,13 @@ Flags<Enum>::Flags(Enum flag, Enum2... rest)
 }
 
 template <class Enum>
-Flags<Enum>::Flags(typename BitsetType flags):
+Flags<Enum>::Flags(BitsetType flags):
 	_flags(flags)
 {
 }
 
 template <class Enum>
-Flags<Enum>::Flags(typename StorageType flags)
+Flags<Enum>::Flags(StorageType flags)
 {
 	_flags.from_uint64(flags);
 }
@@ -123,7 +123,7 @@ Flags<Enum>::Flags(const Flags<Enum>& rhs):
 }
 
 template <class Enum>
-bool Flags<Enum>::testAll(typename StorageType flags) const
+bool Flags<Enum>::testAll(StorageType flags) const
 {
 	BitsetType temp;
 	temp.from_uint64(flags);
@@ -132,7 +132,7 @@ bool Flags<Enum>::testAll(typename StorageType flags) const
 }
 	
 template <class Enum>
-bool Flags<Enum>::testAny(typename StorageType flags) const
+bool Flags<Enum>::testAny(StorageType flags) const
 {
 	BitsetType temp;
 	temp.from_uint64(flags);
@@ -168,7 +168,7 @@ void Flags<Enum>::setRange(bool value, Enum start, Enum end)
 }
 
 template <class Enum>
-void Flags<Enum>::set(bool value, typename StorageType flags)
+void Flags<Enum>::set(bool value, StorageType flags)
 {
 	BitsetType temp;
 	temp.from_uint64(flags);

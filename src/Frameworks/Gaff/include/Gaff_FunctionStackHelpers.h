@@ -60,6 +60,8 @@ static bool CastIntegerToType(const FunctionStackEntry& entry, T& out);
 class IFunctionStackAllocator : public IAllocator
 {
 public:
+	using IAllocator::alloc;
+
 	virtual void* alloc(const Gaff::IReflectionDefinition& ref_def) = 0;
 };
 

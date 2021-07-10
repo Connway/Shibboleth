@@ -22,6 +22,19 @@ class InputPage extends React.Component
 
 	render()
 	{
+		const active_inputs_container = this.createActiveInputIDGUI();
+		const pid_container = this.createPIDGUI();
+		const input_container = this.createInputsGUI();
+
+		//const form = React.createElement("form", { onSubmit: () => this.submit() }, label, text_input);
+		//const container = React.createElement("div", null, pid_container);
+		const container = React.createElement("div", null, active_inputs_container, pid_container, input_container);
+
+		return container;
+	}
+
+	createActiveInputIDGUI()
+	{
 		const active_inputs_text = React.createElement("p", null, "Active Input IDs: " + this.state.active_inputs);
 		const active_inputs_newline = React.createElement("p", null, React.createElement("br"));
 		const active_inputs_button = React.createElement(
@@ -32,9 +45,11 @@ class InputPage extends React.Component
 			"Poll Active Inputs"
 		);
 
-		const active_inputs_container = React.createElement("div", { id: "active_inputs" }, active_inputs_text, active_inputs_button, active_inputs_newline);
+		return React.createElement("div", { id: "active_inputs" }, active_inputs_text, active_inputs_button, active_inputs_newline);
+	}
 
-		const pid_label = React.createElement("label", { for: "player_id_input" }, "Player ID: ");
+	createPIDGUI() {
+		const pid_label = React.createElement("label", { htmlFor: "player_id_input" }, "Player ID: ");
 		const pid_input = React.createElement(
 			"input",
 			{
@@ -46,12 +61,15 @@ class InputPage extends React.Component
 			}
 		);
 
-		const pid_container = React.createElement("div", { id: "pid" }, pid_label, pid_input);
+		return React.createElement("div", { id: "pid" }, pid_label, pid_input);
+	}
 
+	createInputsGUI()
+	{
 		const input_newline = React.createElement("p");
-		const input_type_label = React.createElement("label", { for: "input_type" }, "Create Inputs: ");
-		const input_keyboard_label = React.createElement("label", { for: "create_keyboard" }, "Keyboard: ");
-		const input_mouse_label = React.createElement("label", { for: "create_mouse" }, "Mouse: ");
+		const input_type_label = React.createElement("label", { htmlFor: "input_type" }, "Create Inputs: ");
+		const input_keyboard_label = React.createElement("label", { htmlFor: "create_keyboard" }, "Keyboard: ");
+		const input_mouse_label = React.createElement("label", { htmlFor: "create_mouse" }, "Mouse: ");
 
 		const input_type_keyboard = React.createElement(
 			"input",
@@ -80,14 +98,7 @@ class InputPage extends React.Component
 		);
 
 		const input_type_container = React.createElement("div", { id: "input_type" }, input_keyboard_label, input_type_keyboard, input_mouse_label, input_type_mouse);
-		const input_container = React.createElement("div", null, input_newline, input_type_label, input_type_container, input_button);
-
-
-		//const form = React.createElement("form", { onSubmit: () => this.submit() }, label, text_input);
-		//const container = React.createElement("div", null, pid_container);
-		const container = React.createElement("div", null, active_inputs_container, pid_container, input_container);
-
-		return container;
+		return React.createElement("div", null, input_newline, input_type_label, input_type_container, input_button);
 	}
 
 	retrieveInputs()

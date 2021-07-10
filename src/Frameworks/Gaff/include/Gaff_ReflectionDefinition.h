@@ -542,7 +542,7 @@ private:
 	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
 	{
 	public:
-		template <bool is_const>
+		template <bool is_func_const>
 		struct MemFuncTypeHelper;
 
 		template <>
@@ -559,7 +559,7 @@ private:
 
 		using MemFuncType = typename MemFuncTypeHelper<is_const>::Type;
 
-		ReflectionFunction(typename MemFuncType func)
+		ReflectionFunction(MemFuncType func)
 		{
 			_func = func;
 		}
@@ -606,7 +606,7 @@ private:
 		const IReflectionDefinition& getBaseRefDef(void) const override { return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition(); }
 
 	private:
-		typename MemFuncType _func;
+		MemFuncType _func;
 	};
 
 	class ReflectionBaseFunction final : public IReflectionFunctionBase

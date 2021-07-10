@@ -1165,7 +1165,7 @@ namespace Catch {
         makeTestCaseInfo(std::string const& _className,
                          NameAndTags const& nameAndTags,
                          SourceLineInfo const& _lineInfo ) {
-        return Detail::unique_ptr<TestCaseInfo>(new TestCaseInfo(_className, nameAndTags, _lineInfo));
+        return Detail::make_unique<TestCaseInfo>(_className, nameAndTags, _lineInfo);
     }
 
     TestCaseInfo::TestCaseInfo(std::string const& _className,
@@ -3916,7 +3916,6 @@ namespace Catch {
     CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION
 }
 
-#ifndef DO_NOT_GENERATE_MAIN
 #if defined(CATCH_CONFIG_WCHAR) && defined(CATCH_PLATFORM_WINDOWS) && defined(_UNICODE) && !defined(DO_NOT_USE_WMAIN)
 // Standard C/C++ Win32 Unicode wmain entry point
 extern "C" int wmain (int argc, wchar_t * argv[], wchar_t * []) {
@@ -3931,7 +3930,6 @@ int main (int argc, char * argv[]) {
 
     return Catch::Session().run( argc, argv );
 }
-#endif
 
 
 

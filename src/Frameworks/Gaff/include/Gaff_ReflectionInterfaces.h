@@ -299,7 +299,9 @@ public:
 	virtual const IReflection& getReflectionKey(void) const
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector map!");
-		return *static_cast<IReflection*>(nullptr);
+		// To calm down Clang.
+		IReflection* const ptr = nullptr;
+		return *ptr;
 	}
 
 	virtual int32_t size(const void*) const

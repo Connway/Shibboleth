@@ -87,8 +87,8 @@ class Flags final
 
 public:
 	template <class... Enum2>
-	constexpr static typename StorageType GetBits(Enum flag, Enum2... rest);
-	constexpr static typename StorageType GetBit(Enum flag);
+	constexpr static StorageType GetBits(Enum flag, Enum2... rest);
+	constexpr static StorageType GetBit(Enum flag);
 
 	template <class... Enum2>
 	bool testAll(Enum flag, Enum2... rest) const;
@@ -105,17 +105,17 @@ public:
 	template <class... Enum2>
 	Flags(Enum flag, Enum2... rest);
 
-	Flags(typename BitsetType flags);
-	Flags(typename StorageType flags = 0);
+	Flags(BitsetType flags);
+	Flags(StorageType flags = 0);
 	Flags(const Flags& rhs);
 
-	bool testAll(typename StorageType flags) const;
-	bool testAny(typename StorageType flags) const;
+	bool testAll(StorageType flags) const;
+	bool testAny(StorageType flags) const;
 	bool testRange(Enum start, Enum end) const;
 	bool empty(void) const;
 
 	void setRange(bool value, Enum start, Enum end);
-	void set(bool value, typename StorageType flags);
+	void set(bool value, StorageType flags);
 	bool toggle(Enum flag);
 	void invert(void);
 	void clear(void);
@@ -123,7 +123,7 @@ public:
 	int32_t countUnset(void) const;
 	int32_t countSet(void) const;
 
-	typename StorageType getStorage(void) const;
+	StorageType getStorage(void) const;
 
 	bool operator==(Flags rhs) const;
 	bool operator!=(Flags rhs) const;
