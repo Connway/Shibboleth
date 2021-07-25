@@ -12,6 +12,8 @@ class InputPage extends React.Component
 			create_mouse: false,
 			player_id: -1,
 			active_inputs: "None",
+			keyboard_input: "",
+			mouse_input: [],
 		};
 	}
 
@@ -25,10 +27,11 @@ class InputPage extends React.Component
 		const active_inputs_container = this.createActiveInputIDGUI();
 		const pid_container = this.createPIDGUI();
 		const input_container = this.createInputsGUI();
+		const input_push_container = this.createPushInputGUI();
 
 		//const form = React.createElement("form", { onSubmit: () => this.submit() }, label, text_input);
 		//const container = React.createElement("div", null, pid_container);
-		const container = React.createElement("div", null, active_inputs_container, pid_container, input_container);
+		const container = React.createElement("div", null, active_inputs_container, pid_container, input_container, input_push_container);
 
 		return container;
 	}
@@ -66,7 +69,7 @@ class InputPage extends React.Component
 
 	createInputsGUI()
 	{
-		const input_newline = React.createElement("p");
+		const input_newline = React.createElement("p", null, React.createElement("br"));
 		const input_type_label = React.createElement("label", { htmlFor: "input_type" }, "Create Inputs: ");
 		const input_keyboard_label = React.createElement("label", { htmlFor: "create_keyboard" }, "Keyboard: ");
 		const input_mouse_label = React.createElement("label", { htmlFor: "create_mouse" }, "Mouse: ");
@@ -99,6 +102,44 @@ class InputPage extends React.Component
 
 		const input_type_container = React.createElement("div", { id: "input_type" }, input_keyboard_label, input_type_keyboard, input_mouse_label, input_type_mouse);
 		return React.createElement("div", null, input_newline, input_type_label, input_type_container, input_button);
+	}
+
+	createPushInputGUI()
+	{
+		const input_newline = React.createElement("p", null, React.createElement("br"));
+		const keyboard_input_label = React.createElement("label", { htmlFor: "keyboard_input" }, "Keyboard Input: ");
+		const mouse_input_label = React.createElement("label", { htmlFor: "mouse_input" }, "Mouse Input: ");
+
+		const keyboard_input = React.createElement(
+			"input",
+			{
+				type: "text",
+				onChange: (event) => this.state.keyboard_input = event.target.value,
+				id: "keyboard_input"
+			}
+		);
+
+		const push_inputs_button = React.createElement(
+			"button",
+			{
+				onClick: (event) => this.pushInputs()
+			},
+			"Push Inputs"
+		);
+
+
+		//const left_click_button = React.createElement(
+		//	"button",
+		//	{
+		//		onClick: (event) => this.createInputs()
+		//	},
+		//	"Left Click"
+		//);
+
+		//const mouse_input_container = React.createElement("div", { id: "mouse_input" });
+
+		const keyboard_container = React.createElement("div", { id: "keyboard_input" }, keyboard_input);
+		return React.createElement("div", null, input_newline, keyboard_input_label, keyboard_container/*, mouse_input_container*/, React.createElement("br"), push_inputs_button);
 	}
 
 	retrieveInputs()
@@ -166,6 +207,59 @@ class InputPage extends React.Component
 		  "create_keyboard": ${this.state.create_keyboard},
 		  "create_mouse": ${this.state.create_mouse}
 		}`;
+
+		xhr.send(data);
+	}
+
+	pushInputs()
+	{
+		const xhr = new XMLHttpRequest();
+		xhr.open("POST", window.location.href);
+
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === XMLHttpRequest.DONE) {
+				if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 400)) {
+					// The request has been completed successfully
+					console.log(xhr.responseText);
+				} else {
+					// Oh no! There has been an error with the request!
+				}
+			}
+		};
+
+		var data = `{
+			"player_id": ${this.state.player_id},
+			"inputs": [`;
+
+		// Could probably replace this with a call to this.state.keyboard_input.match() instead.
+		var prev = 0;
+
+		for (var i = 0; i < this.state.keyboard_input.length; ++i) {
+			if (this.state.keyboard_input.charAt(i) == ",") {
+				var key_code = this.state.keyboard_input.substring(prev, i);
+				prev = i + 1;
+
+				data += `{ "key_code": "${key_code}", "value": 1.0 },`;
+			}
+		}
+
+		if (prev < this.state.keyboard_input.length) {
+			var key_code = this.state.keyboard_input.substring(prev, this.state.keyboard_input.length);
+			data += `{ "key_code": "${key_code}", "value": 1.0 }`;
+		}
+
+		if (data.endsWith(",")) {
+			data = data.substr(0, data.length - 1);
+		}
+
+		for (var mouse_input in this.state.mouse_input) {
+		}
+
+		data += "]\n}";
+
+		console.log(data);
 
 		xhr.send(data);
 	}

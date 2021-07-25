@@ -108,12 +108,20 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 	}
 
 	const Gaff::JSON req_data = ReadJSON(*conn, *req);
+
+	if (req_data.isNull()) {
+		// $TODO: Log error.
+		return true;
+	}
+
 	const Gaff::JSON inputs = req_data["inputs"];
 
 	if (!inputs.isArray()) {
 		// $TODO: Log error.
 		return true;
 	}
+
+	const int32_t player_id = req_data["player_id"].getInt32(-1);
 
 	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
@@ -124,9 +132,9 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 
 		InputEntry entry;
 		entry.message.base.window = nullptr;
+		entry.player_id = player_id;
 
 		// Parse each input and put into input queue.
-		entry.player_id = value["player_id"].getInt32(-1);
 		const float input_value = value["value"].getFloat(0.0f);
 
 		char buffer[64] = { 0 };
@@ -217,6 +225,12 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 	}
 
 	const Gaff::JSON req_data = ReadJSON(*conn, *req);
+
+	if (req_data.isNull()) {
+		// $TODO: Log error.
+		return true;
+	}
+
 	const bool create_keyboard = req_data["create_keyboard"].getBool(false);
 	const bool create_mouse = req_data["create_mouse"].getBool(false);
 
@@ -280,6 +294,11 @@ bool WebInputHandler::handleDelete(CivetServer* /*server*/, mg_connection* conn)
 
 	const Gaff::JSON req_data = ReadJSON(*conn, *req);
 
+	if (req_data.isNull()) {
+		// $TODO: Log error.
+		return true;
+	}
+
 	int32_t player_id = req_data["player_id"].getInt32(-1);
 
 	const EA::Thread::AutoMutex lock(_input_mgr_lock);
@@ -297,6 +316,12 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 	}
 
 	const Gaff::JSON req_data = ReadJSON(*conn, *req);
+
+	if (req_data.isNull()) {
+		// $TODO: Log error.
+		return true;
+	}
+
 	const Gaff::JSON req_type = req_data["request_type"];
 
 	char req_type_buffer[32] = { 0 };
