@@ -10,11 +10,16 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-steps:
-- script: |
-    cd utils
-    premake5 build --config=Debug --project=vs2019
-  displayName: 'Build'
+jobs:
+- job: Build Debug
+  displayName: 'Build Debug'
+  steps:
+  - script: utils/premake5 vs2019
+  - task: VSBuild@1
+    inputs:
+      solution: '.generated\project\windows\vs2019\Shibboleth.sln'
+      platform: 'x64'
+      configuration: 'Debug'
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.
