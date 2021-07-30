@@ -14,7 +14,9 @@ jobs:
 - job: build_debug
   displayName: 'Build Debug'
   steps:
-  - script: "utils/premake5" vs2019
+  - script: |
+      cd utils
+      premake5 vs2019
   - task: VSBuild@1
     inputs:
       solution: '.generated\project\windows\vs2019\Shibboleth.sln'
