@@ -11,7 +11,7 @@ pool:
   vmImage: 'windows-latest'
 
 jobs:
-- job: Build Debug
+- job: build_debug
   displayName: 'Build Debug'
   steps:
   - script: utils/premake5 vs2019
