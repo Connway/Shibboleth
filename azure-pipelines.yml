@@ -22,6 +22,7 @@ jobs:
       solution: '.generated\project\windows\vs2019\Shibboleth.sln'
       platform: 'x64'
       configuration: 'Debug'
+      clean: true
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.

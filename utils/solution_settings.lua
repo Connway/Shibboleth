@@ -45,20 +45,6 @@ for _,v in ipairs(configs) do
 	 SetIntermediateAndTargetDirs(v)
 end
 
--- SetIntermediateAndTargetDirs("Debug")
--- SetIntermediateAndTargetDirs("Release")
--- SetIntermediateAndTargetDirs("Profile")
--- SetIntermediateAndTargetDirs("Optimized_Debug")
--- SetIntermediateAndTargetDirs("Static_Debug_D3D11")
--- SetIntermediateAndTargetDirs("Static_Release_D3D11")
--- -- SetIntermediateAndTargetDirs("Static_Debug_Vulkan")
--- -- SetIntermediateAndTargetDirs("Static_Release_Vulkan")
-
--- SetIntermediateAndTargetDirs("Debug_Clang")
--- SetIntermediateAndTargetDirs("Release_Clang")
--- SetIntermediateAndTargetDirs("Profile_Clang")
--- SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
-
 dofile("module_suffix.lua")
 
 filter { "configurations:*Debug*" }

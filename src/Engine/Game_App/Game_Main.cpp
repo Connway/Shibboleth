@@ -33,8 +33,6 @@ THE SOFTWARE.
 
 	int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 	{
-		int32_t f = nullptr;
-
 		Shibboleth::App app;
 
 		//while (true) {
