@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IDevWebHandler.h>
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
@@ -34,11 +34,16 @@ class CameraStreamHandler final : public IDevWebHandler, public Gaff::IReflectio
 public:
 	CameraStreamHandler(void);
 
+	bool init(void) override;
+
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
+	bool handlePut(CivetServer* server, mg_connection* conn) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(CameraStreamHandler);
 
 private:
+	void* _encoder = nullptr;
+	bool _active = false;
 };
 
 NS_END

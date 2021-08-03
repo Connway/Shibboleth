@@ -54,7 +54,7 @@ LayoutD3D11::~LayoutD3D11(void)
 
 bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && shader.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && shader.getRendererType() == RendererType::Direct3D11);
 
 	Vector<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
@@ -78,7 +78,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t
 
 bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && shader.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && shader.getRendererType() == RendererType::Direct3D11);
 
 	const ShaderReflection reflection = shader.getReflectionData();
 
@@ -111,7 +111,7 @@ void LayoutD3D11::destroy(void)
 
 void LayoutD3D11::bind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(_layout);
@@ -119,7 +119,7 @@ void LayoutD3D11::bind(IRenderDevice& rd)
 
 void LayoutD3D11::unbind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(NULL);
@@ -127,7 +127,7 @@ void LayoutD3D11::unbind(IRenderDevice& rd)
 
 RendererType LayoutD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 NS_END

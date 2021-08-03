@@ -249,7 +249,7 @@ void TextureD3D11::destroy(void)
 bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0 && num_elements > 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -296,7 +296,7 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && mip_levels >= 0 && num_elements > 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -341,7 +341,7 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels >= 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -396,7 +396,7 @@ bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32
 bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -444,7 +444,7 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
 {
 	GAFF_ASSERT(width > 0 && height > 0);
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -498,7 +498,7 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 
 RendererType TextureD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 void* TextureD3D11::getTexture(void) const

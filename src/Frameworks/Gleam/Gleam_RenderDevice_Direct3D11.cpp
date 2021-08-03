@@ -34,7 +34,7 @@ NS_GLEAM
 Vector<RenderDeviceD3D11::AdapterInfo> RenderDeviceD3D11::g_display_info;
 
 template <>
-IRenderDevice::AdapterList GetDisplayModes<RendererType::DIRECT3D11>(void)
+IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 {
 	if (RenderDeviceD3D11::g_display_info.empty()) {
 		IDXGIFactory6* factory = nullptr;
@@ -352,7 +352,7 @@ bool RenderDeviceD3D11::isDeferred(void) const
 
 RendererType RenderDeviceD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
@@ -374,7 +374,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 
 void RenderDeviceD3D11::executeCommandList(ICommandList& command_list)
 {
-	GAFF_ASSERT(command_list.getRendererType() == RendererType::DIRECT3D11 && _context);
+	GAFF_ASSERT(command_list.getRendererType() == RendererType::Direct3D11 && _context);
 	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
 	GAFF_ASSERT(cmd_list.getCommandList());
 	_context->ExecuteCommandList(cmd_list.getCommandList(), FALSE);
@@ -382,7 +382,7 @@ void RenderDeviceD3D11::executeCommandList(ICommandList& command_list)
 
 bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 {
-	GAFF_ASSERT(isDeferred() && command_list.getRendererType() == RendererType::DIRECT3D11 && _context);
+	GAFF_ASSERT(isDeferred() && command_list.getRendererType() == RendererType::Direct3D11 && _context);
 
 	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
 	ID3D11CommandList* cl = nullptr;
@@ -452,6 +452,11 @@ void RenderDeviceD3D11::setScissorRect(const IVec4& rect)
 	};
 
 	_context->RSSetScissorRects(1, &d3d_rect);
+}
+
+void* RenderDeviceD3D11::getUnderlyingDevice(void)
+{
+	return getDevice();
 }
 
 ID3D11DeviceContext3* RenderDeviceD3D11::getDeviceContext(void)

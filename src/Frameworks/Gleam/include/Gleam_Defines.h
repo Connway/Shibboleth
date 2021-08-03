@@ -74,7 +74,7 @@ enum class ComparisonFunc
 
 enum class RendererType
 {
-	DIRECT3D11 = 0,
+	Direct3D11 = 0,
 	Vulkan,
 
 	Count

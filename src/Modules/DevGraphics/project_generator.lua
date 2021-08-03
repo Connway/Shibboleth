@@ -29,6 +29,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/CivetWeb/include",
 			base_dir .. "../../Dependencies/nvenc",
 			base_dir .. "../../Modules/DevWebServer/include",
+			base_dir .. "../../Modules/ECS/include",
 			base_dir .. "../../Modules/Graphics/include",
 			base_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Frameworks/Gaff/include",
@@ -62,7 +63,8 @@ local GenerateProject = function()
 			"Resource",
 			"GraphicsBase",
 
-			"CivetWeb"
+			"CivetWeb",
+			"optick"
 		}
 
 		dependson(deps)

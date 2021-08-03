@@ -56,7 +56,7 @@ static ProxyAllocator g_allocator("Graphics");
 static constexpr Gleam::RendererType GetRendererType(void)
 {
 #ifdef USE_D3D11
-	return Gleam::RendererType::DIRECT3D11;
+	return Gleam::RendererType::Direct3D11;
 #elif defined(USE_D3D12)
 	return Gleam::RendererType::DIRECT3D12;
 #elif defined(USE_VULKAN)

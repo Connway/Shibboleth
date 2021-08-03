@@ -40,7 +40,7 @@ BlendStateD3D11::~BlendStateD3D11(void)
 
 bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -69,7 +69,7 @@ void BlendStateD3D11::destroy(void)
 
 void BlendStateD3D11::bind(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -78,7 +78,7 @@ void BlendStateD3D11::bind(IRenderDevice& rd) const
 
 void BlendStateD3D11::unbind(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -87,7 +87,7 @@ void BlendStateD3D11::unbind(IRenderDevice& rd) const
 
 RendererType BlendStateD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 NS_END

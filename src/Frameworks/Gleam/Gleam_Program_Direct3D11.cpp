@@ -189,7 +189,7 @@ void ProgramBuffersD3D11::clear(void)
 
 void ProgramBuffersD3D11::bind(IRenderDevice& rd, int32_t res_view_offset, int32_t sampler_offset, int32_t buffer_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -206,7 +206,7 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd, int32_t res_view_offset, int32
 
 RendererType ProgramBuffersD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 
@@ -225,7 +225,7 @@ ProgramD3D11::~ProgramD3D11(void)
 
 void ProgramD3D11::attach(IShader* shader)
 {
-	GAFF_ASSERT(shader->getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(shader->getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(shader->getType()) < static_cast<int32_t>(IShader::Type::Count));
 
 	_attached_shaders[static_cast<int32_t>(shader->getType())] = shader;
@@ -309,7 +309,7 @@ void ProgramD3D11::detach(IShader::Type shader)
 
 void ProgramD3D11::bind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -323,7 +323,7 @@ void ProgramD3D11::bind(IRenderDevice& rd)
 
 void ProgramD3D11::unbind(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
@@ -337,7 +337,7 @@ void ProgramD3D11::unbind(IRenderDevice& rd)
 
 RendererType ProgramD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 NS_END

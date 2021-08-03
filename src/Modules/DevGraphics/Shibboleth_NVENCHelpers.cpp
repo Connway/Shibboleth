@@ -68,7 +68,7 @@ bool InitNVENC(void)
 		return false;
 	}
 
-	using NvEncodeAPICreateInstanceFunc = NVENCSTATUS (NVENCAPI *)(NV_ENCODE_API_FUNCTION_LIST*);
+	using NvEncodeAPICreateInstanceFunc = NVENCSTATUS (NVENCAPI*)(NV_ENCODE_API_FUNCTION_LIST*);
 	const NvEncodeAPICreateInstanceFunc load_api = nvenc_module->getFunc<NvEncodeAPICreateInstanceFunc>("NvEncodeAPICreateInstance");
 
 	if (!load_api) {

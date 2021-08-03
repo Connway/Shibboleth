@@ -97,7 +97,7 @@ void MeshD3D11::setTopologyType(TopologyType topology)
 
 void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size());
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size());
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -109,7 +109,7 @@ void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t 
 
 void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset, int32_t vert_offset, int32_t instance_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -122,7 +122,7 @@ void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t instance_count, int32
 
 void MeshD3D11::render(IRenderDevice& rd, int32_t index_offset, int32_t vert_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::Direct3D11);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
@@ -135,7 +135,7 @@ void MeshD3D11::render(IRenderDevice& rd, int32_t index_offset, int32_t vert_off
 
 RendererType MeshD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 void MeshD3D11::cacheBuffers(void)
@@ -147,7 +147,7 @@ void MeshD3D11::cacheBuffers(void)
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
 		temp = _vert_data[i];
-		GAFF_ASSERT(temp && temp->getRendererType() == RendererType::DIRECT3D11);
+		GAFF_ASSERT(temp && temp->getRendererType() == RendererType::Direct3D11);
 		_buffers.emplace_back(static_cast<BufferD3D11*>(temp)->getBuffer());
 		_strides.emplace_back(temp->getStride());
 	}

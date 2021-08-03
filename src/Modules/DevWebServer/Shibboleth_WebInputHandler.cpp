@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_WebInputHandler.h"
-#include "Shibboleth_DevWebAttributes.h"
-#include "Shibboleth_DevWebUtils.h"
+#include <Shibboleth_DevWebAttributes.h>
+#include <Shibboleth_DevWebUtils.h>
 #include <Shibboleth_InputReflection.h>
 #include <Shibboleth_InputManager.h>
 #include <Gaff_Math.h>

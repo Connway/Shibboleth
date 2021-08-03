@@ -54,7 +54,7 @@ ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(texture);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -103,7 +103,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(buffer);
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
@@ -133,7 +133,7 @@ void ShaderResourceViewD3D11::destroy(void)
 
 RendererType ShaderResourceViewD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 ID3D11ShaderResourceView1* ShaderResourceViewD3D11::getResourceView(void) const

@@ -54,7 +54,7 @@ SamplerStateD3D11::~SamplerStateD3D11(void)
 
 bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::DIRECT3D11 && Gaff::Between(sampler_settings.max_anisotropy, 1, 16));
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && Gaff::Between(sampler_settings.max_anisotropy, 1, 16));
 
 	D3D11_SAMPLER_DESC desc;
 	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(sampler_settings.wrap_u);
@@ -83,7 +83,7 @@ void SamplerStateD3D11::destroy(void)
 
 RendererType SamplerStateD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 ID3D11SamplerState* SamplerStateD3D11::getSamplerState(void) const

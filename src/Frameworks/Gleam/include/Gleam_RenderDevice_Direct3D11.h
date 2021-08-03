@@ -54,6 +54,8 @@ public:
 	void setScissorRect(const IVec2& pos, const IVec2& size) override;
 	void setScissorRect(const IVec4& rect) override;
 
+	void* getUnderlyingDevice(void) override;
+
 	ID3D11DeviceContext3* getDeviceContext(void);
 	ID3D11Device5* getDevice(void);
 	IDXGIAdapter4* getAdapter(void);

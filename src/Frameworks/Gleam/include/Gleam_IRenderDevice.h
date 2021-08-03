@@ -89,6 +89,8 @@ public:
 	virtual void setScissorRect(const IVec2& pos, const IVec2& size) = 0;
 	virtual void setScissorRect(const IVec4& rect) = 0;
 
+	virtual void* getUnderlyingDevice(void) = 0;
+
 	int32_t getAdapterID(void) const { return _adapter_id; }
 
 protected:
@@ -105,6 +107,6 @@ IRenderDevice::AdapterList GetDisplayModes(void)
 }
 
 template <>
-IRenderDevice::AdapterList GetDisplayModes<RendererType::DIRECT3D11>(void);
+IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void);
 
 NS_END

@@ -30,7 +30,7 @@ NS_GLEAM
 
 bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
-	GAFF_ASSERT(device.getRendererType() == RendererType::DIRECT3D11);
+	GAFF_ASSERT(device.getRendererType() == RendererType::Direct3D11);
 	_vsync = vsync && window.getWindowMode() != IWindow::WindowMode::Fullscreen;
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
@@ -170,7 +170,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 RendererType RenderOutputD3D11::getRendererType(void) const
 {
-	return RendererType::DIRECT3D11;
+	return RendererType::Direct3D11;
 }
 
 IVec2 RenderOutputD3D11::getSize(void) const
