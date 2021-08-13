@@ -34,7 +34,6 @@ class CameraStreamHandler final : public IDevWebHandler, public Gaff::IReflectio
 public:
 	CameraStreamHandler(void);
 
-	bool init(void) override;
 	void destroy(void) override;
 
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
@@ -43,8 +42,11 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(CameraStreamHandler);
 
 private:
-	void* _encoder = nullptr;
-	bool _active = false;
+	VectorMap<int32_t, void*> _encoders/*{ ProxyAllocator() }*/;
+	int32_t _next_id = 0;
+
+	bool createEncoder(uint32_t width, uint32_t height, int32_t& out_id);
+	int32_t getNextID(void);
 };
 
 NS_END

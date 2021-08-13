@@ -41,239 +41,15 @@ CameraStreamHandler::CameraStreamHandler(void)
 {
 }
 
-bool CameraStreamHandler::init(void)
-{
-	// Should do this per-video we are encoding.
-	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	const auto* const devices = render_mgr.getDevicesByTag("main");
-
-	if (!devices) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (devices->size() <= 0) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	// Unsupported renderer type. Just ignore.
-	if (devices->front()->getRendererType() != Gleam::RendererType::Direct3D11) {
-		_active = false;
-		return true;
-	}
-
-	const auto& nvenc_funcs = GetNVENCFuncs();
-
-	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS params =
-	{
-		NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER,
-		NV_ENC_DEVICE_TYPE_DIRECTX,
-		devices->front()->getUnderlyingDevice(), // IDevice
-		0,
-		NVENCAPI_VERSION,
-		{ 0 },
-		{ 0 }
-	};
-
-	NVENCSTATUS result = nvenc_funcs.nvEncOpenEncodeSessionEx(&params, &_encoder);
-	
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	uint32_t encode_guid_count = 0;
-	result = nvenc_funcs.nvEncGetEncodeGUIDCount(_encoder, &encode_guid_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	Vector<GUID> guids(encode_guid_count, GUID());
-	result = nvenc_funcs.nvEncGetEncodeGUIDs(_encoder, guids.data(), encode_guid_count, &encode_guid_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	if (encode_guid_count == 0) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const GUID encode_guid = (Gaff::Find(guids, NV_ENC_CODEC_HEVC_GUID) != guids.end()) ?
-		NV_ENC_CODEC_HEVC_GUID :
-		NV_ENC_CODEC_H264_GUID;
-
-	uint32_t preset_guid_count = 0;
-	result = nvenc_funcs.nvEncGetEncodePresetCount(_encoder, encode_guid, &preset_guid_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	Vector<GUID> preset_guids(preset_guid_count, GUID());
-	result = nvenc_funcs.nvEncGetEncodePresetGUIDs(_encoder, encode_guid, preset_guids.data(), preset_guid_count, &preset_guid_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	if (preset_guid_count == 0) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	const GUID preset_guid_priority[] =
-	{
-		NV_ENC_PRESET_P7_GUID,
-		NV_ENC_PRESET_P6_GUID,
-		NV_ENC_PRESET_P5_GUID,
-		NV_ENC_PRESET_P4_GUID,
-		NV_ENC_PRESET_P3_GUID,
-		NV_ENC_PRESET_P2_GUID,
-		NV_ENC_PRESET_P1_GUID,
-	};
-
-
-	GUID preset_guid = NV_ENC_PRESET_P7_GUID;
-	NV_ENC_PRESET_CONFIG preset_config;
-	bool found = false;
-
-	for (const GUID& preset_guid_entry : preset_guid_priority) {
-		if (Gaff::Find(preset_guids, preset_guid_entry) == preset_guids.end()) {
-			continue;
-		}
-
-		NV_ENC_PRESET_CONFIG temp_preset_config =
-		{
-			NV_ENC_PRESET_CONFIG_VER,
-			{
-				NV_ENC_CONFIG_VER
-			},
-			{ 0 },
-			{ 0 }
-		};
-
-		result = nvenc_funcs.nvEncGetEncodePresetConfigEx(_encoder, encode_guid, preset_guid_entry, NV_ENC_TUNING_INFO_HIGH_QUALITY, &temp_preset_config);
-
-		if (result != NV_ENC_SUCCESS) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		preset_config = temp_preset_config;
-		preset_guid = preset_guid_entry;
-		found = true;
-		break;
-	}
-
-	if (!found) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	uint32_t supported_input_formats_count = 0;
-	result = nvenc_funcs.nvEncGetInputFormatCount(_encoder, encode_guid, &supported_input_formats_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	Vector<NV_ENC_BUFFER_FORMAT> supported_input_formats(supported_input_formats_count, NV_ENC_BUFFER_FORMAT_UNDEFINED);
-	result = nvenc_funcs.nvEncGetInputFormats(_encoder, encode_guid, supported_input_formats.data(), supported_input_formats_count, &supported_input_formats_count);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	if (Gaff::Find(supported_input_formats, NV_ENC_BUFFER_FORMAT_ARGB) == supported_input_formats.end()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	// Checking capabilities.
-	//NV_ENC_CAPS_PARAM caps_params =
-	//{
-	//	NV_ENC_CAPS_PARAM_VER ,
-	//	f,
-	//	{ 0 },
-	//};
-
-	//result = nvenc_funcs.nvEncGetEncodeCaps(_encoder, encode_guid, &caps_params, &caps_val);
-
-	//if (result != NV_ENC_SUCCESS) {
-	//	// $TODO: Log error.
-	//	//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-	//	return false;
-	//}
-
-	NV_ENC_INITIALIZE_PARAMS create_encode_params =
-	{
-		NV_ENC_INITIALIZE_PARAMS_VER,
-		encode_guid,
-		preset_guid,
-		800, // encode width (CHANGE ME)
-		600, // encode height (CHANGE ME)
-		800, // display aspect ratio width
-		600, // display aspect ratio height
-		60, // framerate numerator
-		1, // framerate denominator
-		1, // async
-		0, // PTD
-		0, // slice offsets
-		0, // subframe write
-		0, // external ME hints
-		0, // ME only mode
-		0, // weighted prediction
-		0, // output in video memory
-		0,
-		0,
-		NULL,
-		&preset_config.presetCfg,
-		0, // encode max width
-		0, // encode max height
-		{},
-		NV_ENC_TUNING_INFO_HIGH_QUALITY,
-		{ 0 },
-		{ 0 }
-	};
-
-	result = nvenc_funcs.nvEncInitializeEncoder(_encoder, &create_encode_params);
-
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(_encoder);
-		return false;
-	}
-
-	_active = true;
-	return true;
-}
-
 void CameraStreamHandler::destroy(void)
 {
-	if (_encoder) {
-		const auto& nvenc_funcs = GetNVENCFuncs();
-		nvenc_funcs.nvEncDestroyEncoder(_encoder);
+	const auto& nvenc_funcs = GetNVENCFuncs();
+
+	for (auto& encoder_entry : _encoders) {
+		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second);
 	}
 
-	_encoder = nullptr;
-	_active = false;
+	_encoders.clear();
 }
 
 bool CameraStreamHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
@@ -310,6 +86,253 @@ bool CameraStreamHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 	}
 
 	return true;
+}
+
+bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t& out_id)
+{
+	// Should do this per-video we are encoding.
+	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const auto* const devices = render_mgr.getDevicesByTag("main");
+
+	if (!devices) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (devices->size() <= 0) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// Unsupported renderer type. Just ignore.
+	if (devices->front()->getRendererType() != Gleam::RendererType::Direct3D11) {
+		return true;
+	}
+
+	const auto& nvenc_funcs = GetNVENCFuncs();
+
+	NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS params =
+	{
+		NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER,
+		NV_ENC_DEVICE_TYPE_DIRECTX,
+		devices->front()->getUnderlyingDevice(), // IDevice
+		0,
+		NVENCAPI_VERSION,
+		{ 0 },
+		{ 0 }
+	};
+
+	void* encoder = nullptr;
+	NVENCSTATUS result = nvenc_funcs.nvEncOpenEncodeSessionEx(&params, &encoder);
+	
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	uint32_t encode_guid_count = 0;
+	result = nvenc_funcs.nvEncGetEncodeGUIDCount(encoder, &encode_guid_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	Vector<GUID> guids(encode_guid_count, GUID());
+	result = nvenc_funcs.nvEncGetEncodeGUIDs(encoder, guids.data(), encode_guid_count, &encode_guid_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	if (encode_guid_count == 0) {
+		// $TODO: Log error.
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	const GUID encode_guid = (Gaff::Find(guids, NV_ENC_CODEC_HEVC_GUID) != guids.end()) ?
+		NV_ENC_CODEC_HEVC_GUID :
+		NV_ENC_CODEC_H264_GUID;
+
+	uint32_t preset_guid_count = 0;
+	result = nvenc_funcs.nvEncGetEncodePresetCount(encoder, encode_guid, &preset_guid_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	Vector<GUID> preset_guids(preset_guid_count, GUID());
+	result = nvenc_funcs.nvEncGetEncodePresetGUIDs(encoder, encode_guid, preset_guids.data(), preset_guid_count, &preset_guid_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	if (preset_guid_count == 0) {
+		// $TODO: Log error.
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	const GUID preset_guid_priority[] =
+	{
+		NV_ENC_PRESET_P7_GUID,
+		NV_ENC_PRESET_P6_GUID,
+		NV_ENC_PRESET_P5_GUID,
+		NV_ENC_PRESET_P4_GUID,
+		NV_ENC_PRESET_P3_GUID,
+		NV_ENC_PRESET_P2_GUID,
+		NV_ENC_PRESET_P1_GUID,
+	};
+
+
+	GUID preset_guid = NV_ENC_PRESET_P7_GUID;
+	NV_ENC_PRESET_CONFIG preset_config;
+	bool found = false;
+
+	for (const GUID& preset_guid_entry : preset_guid_priority) {
+		if (Gaff::Find(preset_guids, preset_guid_entry) == preset_guids.end()) {
+			continue;
+		}
+
+		NV_ENC_PRESET_CONFIG temp_preset_config =
+		{
+			NV_ENC_PRESET_CONFIG_VER,
+			{
+				NV_ENC_CONFIG_VER
+			},
+			{ 0 },
+			{ 0 }
+		};
+
+		result = nvenc_funcs.nvEncGetEncodePresetConfigEx(encoder, encode_guid, preset_guid_entry, NV_ENC_TUNING_INFO_HIGH_QUALITY, &temp_preset_config);
+
+		if (result != NV_ENC_SUCCESS) {
+			// $TODO: Log error.
+			nvenc_funcs.nvEncDestroyEncoder(encoder);
+			return false;
+		}
+
+		preset_config = temp_preset_config;
+		preset_guid = preset_guid_entry;
+		found = true;
+		break;
+	}
+
+	if (!found) {
+		// $TODO: Log error.
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	uint32_t supported_input_formats_count = 0;
+	result = nvenc_funcs.nvEncGetInputFormatCount(encoder, encode_guid, &supported_input_formats_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	Vector<NV_ENC_BUFFER_FORMAT> supported_input_formats(supported_input_formats_count, NV_ENC_BUFFER_FORMAT_UNDEFINED);
+	result = nvenc_funcs.nvEncGetInputFormats(encoder, encode_guid, supported_input_formats.data(), supported_input_formats_count, &supported_input_formats_count);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	if (Gaff::Find(supported_input_formats, NV_ENC_BUFFER_FORMAT_ARGB) == supported_input_formats.end()) {
+		// $TODO: Log error.
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	// Checking capabilities.
+	//NV_ENC_CAPS_PARAM caps_params =
+	//{
+	//	NV_ENC_CAPS_PARAM_VER ,
+	//	f,
+	//	{ 0 },
+	//};
+
+	//result = nvenc_funcs.nvEncGetEncodeCaps(encoder, encode_guid, &caps_params, &caps_val);
+
+	//if (result != NV_ENC_SUCCESS) {
+	//	// $TODO: Log error.
+	//	//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+	//	return false;
+	//}
+
+	NV_ENC_INITIALIZE_PARAMS create_encode_params =
+	{
+		NV_ENC_INITIALIZE_PARAMS_VER,
+		encode_guid,
+		preset_guid,
+		width, // encode width
+		height, // encode height
+		width, // display aspect ratio width
+		height, // display aspect ratio height
+		60, // framerate numerator
+		1, // framerate denominator
+		1, // async
+		0, // PTD
+		0, // slice offsets
+		0, // subframe write
+		0, // external ME hints
+		0, // ME only mode
+		0, // weighted prediction
+		0, // output in video memory
+		0,
+		0,
+		NULL,
+		&preset_config.presetCfg,
+		0, // encode max width
+		0, // encode max height
+		{},
+		NV_ENC_TUNING_INFO_HIGH_QUALITY,
+		{ 0 },
+		{ 0 }
+	};
+
+	result = nvenc_funcs.nvEncInitializeEncoder(encoder, &create_encode_params);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
+	out_id = getNextID();
+	_encoders[out_id] = encoder;
+	return true;
+}
+
+int32_t CameraStreamHandler::getNextID(void)
+{
+	while (_encoders.find(_next_id) != _encoders.end()) {
+		++_next_id;
+	}
+
+	return _next_id++;
 }
 
 NS_END
