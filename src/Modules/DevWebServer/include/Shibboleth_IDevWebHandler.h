@@ -32,6 +32,7 @@ class IDevWebHandler : public CivetHandler
 public:
 	virtual bool init(void);
 	virtual void update(void) {}
+	virtual void destroy(void) {}
 
 	virtual void handleConnectionClosed(const mg_connection* conn);
 

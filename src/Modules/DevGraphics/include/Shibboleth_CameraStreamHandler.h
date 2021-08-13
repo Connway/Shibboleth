@@ -35,6 +35,7 @@ public:
 	CameraStreamHandler(void);
 
 	bool init(void) override;
+	void destroy(void) override;
 
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
 	bool handlePut(CivetServer* server, mg_connection* conn) override;

@@ -47,6 +47,9 @@ DevWebServerManager::DevWebServerManager(void)
 
 DevWebServerManager::~DevWebServerManager(void)
 {
+	for (auto& handler : _handlers) {
+		handler->destroy();
+	}
 }
 
 bool DevWebServerManager::init(void)
