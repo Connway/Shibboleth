@@ -64,10 +64,10 @@ static bool CastNumberToType(const IReflectionDefinition& ref_def, const void* i
 template <class T>
 static bool CastFloatToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
-	if (&ref_def == &Shibboleth::Reflection<double>::GetReflectionDefinition()) {
+	if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<double>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const double*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<float>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<float>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const float*>(in));
 		return true;
 	}
@@ -78,16 +78,16 @@ static bool CastFloatToType(const IReflectionDefinition& ref_def, const void* in
 template <class T>
 static bool CastUnsignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
-	if (&ref_def == &Shibboleth::Reflection<uint64_t>::GetReflectionDefinition()) {
+	if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<uint64_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint64_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint32_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<uint32_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint32_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint16_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<uint16_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint16_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<uint8_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<uint8_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const uint8_t*>(in));
 		return true;
 	}
@@ -98,16 +98,16 @@ static bool CastUnsignedIntegerToType(const IReflectionDefinition& ref_def, cons
 template <class T>
 static bool CastSignedIntegerToType(const IReflectionDefinition& ref_def, const void* in, T& out)
 {
-	if (&ref_def == &Shibboleth::Reflection<int64_t>::GetReflectionDefinition()) {
+	if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<int64_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const int64_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int32_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<int32_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const int32_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int16_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<int16_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const int16_t*>(in));
 		return true;
-	} else if (&ref_def == &Shibboleth::Reflection<int8_t>::GetReflectionDefinition()) {
+	} else if (&ref_def == &GAFF_REFLECTION_NAMESPACE::Reflection<int8_t>::GetReflectionDefinition()) {
 		out = static_cast<T>(*reinterpret_cast<const int8_t*>(in));
 		return true;
 	}
@@ -163,7 +163,7 @@ bool CallFunc(
 	CurrentArgs&&... current_args)
 {
 	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
-	using FinalType = typename IsVectorType<ArgType>;
+	using FinalType = IsVectorType<ArgType>;
 	constexpr bool is_vector = IsVector<ArgType>;
 
 	// $TODO: Add vector support.
@@ -371,7 +371,7 @@ bool CallFunc(
 
 	} else {
 		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
-		using FinalType = typename IsVectorType<RetType>;
+		using FinalType = IsVectorType<RetType>;
 		constexpr bool is_vector = IsVector<RetType>;
 
 		if constexpr (!is_vector && std::is_enum<FinalType>::value) {
@@ -418,7 +418,7 @@ bool CallFunc(
 
 				if constexpr (is_vector) {
 					const size_t size = reinterpret_cast<RetType*>(ret.value.vp)->size();
-					ret.value.arr.vp = reinterpret_cast<RetType*>(ret.value.vp)->data();
+					ret.value.arr.data = reinterpret_cast<RetType*>(ret.value.vp)->data();
 					ret.value.arr.size = static_cast<int32_t>(size);
 
 					ret.flags.set(true, FunctionStackEntry::Flag::IsArray);

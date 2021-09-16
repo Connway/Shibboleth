@@ -231,6 +231,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hashable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashableFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeOptick.h" />

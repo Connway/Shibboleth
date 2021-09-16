@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hashable.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashableFwd.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h">
       <Filter>include</Filter>
     </ClInclude>

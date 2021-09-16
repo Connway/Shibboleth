@@ -86,7 +86,7 @@ void Flags<Enum>::toggle(Enum flag, Enum2... rest)
 	toggle(flag);
 
 	if constexpr (sizeof...(rest) > 0) {
-		toggle(rest)...;
+		toggle(rest...);
 	}
 }
 

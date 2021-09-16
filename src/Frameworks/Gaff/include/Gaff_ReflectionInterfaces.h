@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_SerializeInterfaces.h"
+#include "Gaff_HashableFwd.h"
 #include "Gaff_HashString.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
@@ -33,8 +34,8 @@ THE SOFTWARE.
 #define GET_CLASS_ATTRS(T, Allocator) getClassAttrs<T, Allocator>(Gaff::FNV1aHash64Const(#T))
 #define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
-#define GET_FUNC_ATTR(T, func_name) getFuncAttr<T>(func_name, Gaff::FNV1aHash64Const(#T))
-#define GET_STATIC_FUNC_ATTR(T, static_func_name) getStaticFuncAttr<T>(static_func_name, Gaff::FNV1aHash64Const(#T))
+//#define GET_FUNC_ATTR(T, func_name) getFuncAttr<T>(func_name, Gaff::FNV1aHash64Const(#T))
+//#define GET_STATIC_FUNC_ATTR(T, static_func_name) getStaticFuncAttr<T>(static_func_name, Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_ATTR(T) getEnumAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_VALUE_ATTR(T, value_name) getEnumValueAttr<T>(value_name, Gaff::FNV1aHash64Const(#T))
 
@@ -55,6 +56,7 @@ class IReflectionDefinition;
 class IFunctionStackAllocator;
 class IAllocator;
 struct FunctionStackEntry;
+
 
 class IReflection
 {
@@ -130,6 +132,32 @@ public:
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return Gaff::Hash64(0);
 	}
+
+	int32_t size(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return 0;
+	}
+
+	static const Gaff::IReflectionDefinition& GetReflectionDefinition(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const Gaff::IReflectionDefinition* const ref_def = nullptr;
+		return *ref_def;
+	}
+
+	static const Gaff::IReflection& GetInstance(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const Gaff::IReflection* const instance = nullptr;
+		return *instance;
+	}
+
+	//static bool IsBuiltIn(void)
+	//{
+	//	GAFF_ASSERT_MSG(false, "Unknown object type.");
+	//	return false;
+	//}
 };
 
 NS_END
@@ -137,19 +165,21 @@ NS_END
 
 NS_GAFF
 
+// Forward declares
+template <class Derived, class Base>
+const Derived* ReflectionCast(const Base& object);
+
+template <class Derived, class Base>
+Derived* ReflectionCast(Base& object);
+
+template <class Derived, class Base>
+const Derived* InterfaceCast(const Base& object, Hash64 interface_name);
+
+template <class Derived, class Base>
+Derived* InterfaceCast(Base& object, Hash64 interface_name);
+
 class IReflectionObject;
 
-//template <class T>
-//const T* ReflectionCast(const IReflectionObject& object);
-//
-//template <class T>
-//T* ReflectionCast(IReflectionObject& object);
-
-//template <class T>
-//const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name);
-//
-//template <class T>
-//T* InterfaceCast(IReflectionObject& object, Hash64 interface_name);
 
 class IReflectionObject
 {
@@ -658,16 +688,16 @@ public:
 	}
 
 	template <class T>
-	const T* getFuncAttr(Hash32 func_name, Hash64 attr_name) const
+	const T* getFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
 	{
-		const auto* const attr = getFuncAttr(func_name, attr_name);
+		const auto* const attr = getFuncAttr(name_arg_hash, attr_name);
 		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
-	const T* getStaticFuncAttr(Hash32 static_func_name, Hash64 attr_name) const
+	const T* getStaticFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
 	{
-		const auto* const attr = getStaticFuncAttr(static_func_name, attr_name);
+		const auto* const attr = getStaticFuncAttr(name_arg_hash, attr_name);
 		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
@@ -942,7 +972,7 @@ public:
 	{
 		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const Hash64 func_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name.getHash()));
-		const int32_t size = getNumFuncAttrs(name);
+		const int32_t size = getNumFuncAttrs(func_hash);
 
 		for (int32_t i = 0; i < size; ++i) {
 			const IAttribute* const attribute = getFuncAttr(func_hash, i);
@@ -982,7 +1012,7 @@ public:
 	{
 		constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
 		const Hash64 func_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name));
-		const int32_t size = getNumStaticFuncAttrs(name);
+		const int32_t size = getNumStaticFuncAttrs(func_hash);
 
 		for (int32_t i = 0; i < size; ++i) {
 			const IAttribute* const attribute = getStaticFuncAttr(func_hash, i);
@@ -1103,7 +1133,7 @@ public:
 	virtual const IAttribute* getVarAttr(Hash32 name, int32_t index) const = 0;
 	virtual bool hasVarAttr(Hash64 attr_name) const = 0;
 
-	virtual int32_t getNumFuncAttrs(Hash64 name) const = 0;
+	virtual int32_t getNumFuncAttrs(Hash64 name_arg_hash) const = 0;
 	virtual const IAttribute* getFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const = 0;
 	virtual const IAttribute* getFuncAttr(Hash64 name_arg_hash, int32_t index) const = 0;
 	virtual bool hasFuncAttr(Hash64 attr_name) const = 0;

@@ -643,20 +643,24 @@ private:
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
 			} else {
-				return reinterpret_cast<const ReflectionFunction<Ret, Args...>*>(_func)->call(object, std::forward<Args>(args)...);
+				return reinterpret_cast<const ReflectionFunction<true, Ret, Args...>*>(_func)->call(object, std::forward<Args>(args)...);
 			}
 		}
 
 		template <class Ret, class... Args>
 		Ret call(void* obj, Args&&... args) const
 		{
+			if (isConst()) {
+				return const_cast<const ReflectionBaseFunction*>(this)->call(obj, std::forward<Args>(args)...);
+			}
+
 			const auto& ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetReflectionDefinition();
 			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
 			} else {
-				return reinterpret_cast< const ReflectionFunction<Ret, Args...>* >(_func)->call(object, std::forward<Args>(args)...);
+				return reinterpret_cast< const ReflectionFunction<false, Ret, Args...>* >(_func)->call(object, std::forward<Args>(args)...);
 			}
 		}
 
@@ -681,7 +685,7 @@ private:
 		IReflectionStaticFunctionBase* clone(IAllocator& allocator) const
 		{
 			using Type = StaticFunction<Ret, Args...>;
-			return SHIB_ALLOCT(Type, allocator, reinterpret_cast<Func>(_func));
+			return GAFF_ALLOCT(Type, allocator, reinterpret_cast<Func>(getFunc()));
 		}
 
 		bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
@@ -830,10 +834,10 @@ private:
 
 
 template <class T, class... Args>
-void ConstructFunc(void* obj, Args&&... args);
+void ConstructFunc(T* obj, Args&&... args);
 
 template <class T, class... Args>
-void* FactoryFunc(IAllocator& allocator, Args&&... args);
+T* FactoryFunc(IAllocator& allocator, Args&&... args);
 
 #define REF_DEF_BUILTIN(class_type, serialize_type) \
 	template <class Allocator> \
@@ -1008,6 +1012,7 @@ struct IsHashStringView< HashStringView<T, HashType, HashingFunc> > final
 NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
+#include "Gaff_FunctionStackHelper.inl"
 
 #define CLASS_HASH(Class) Gaff::FNV1aHash64Const(#Class)
 #define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })

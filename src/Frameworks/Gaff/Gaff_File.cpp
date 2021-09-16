@@ -21,9 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_File.h"
+#include "Gaff_String.h"
 
 #ifdef PLATFORM_WINDOWS
-	#include "Gaff_String.h"
 	#include <io.h>
 #elif defined(PLATFORM_LINUX)
 	#include <sys/io.h>
@@ -244,7 +244,12 @@ size_t File::write(void* buffer, size_t element_size, size_t element_count)
 void File::printfVA(const char* format_string, va_list vl)
 {
 	GAFF_ASSERT(_file && format_string && vl);
+
+#ifdef PLATFORM_WINDOWS
 	vfprintf_s(_file, format_string, vl);
+#else
+	vfprintf(_file, format_string, vl);
+#endif
 }
 
 void File::printf(const char* format_string, ...)
@@ -253,7 +258,13 @@ void File::printf(const char* format_string, ...)
 
 	va_list vl;
 	va_start(vl, format_string);
+
+#ifdef PLATFORM_WINDOWS
 	vfprintf_s(_file, format_string, vl);
+#else
+	vfprintf(_file, format_string, vl);
+#endif
+
 	va_end(vl);
 }
 

@@ -22,49 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
-
-#include "Gaff_Flags.h"
-#include "Gaff_IncludeWindows.h"
+#include "Gaff_Hash.h"
+#include <EASTL/array.h>
 
 NS_GAFF
 
-class FileWatcher final
-{
-public:
-	enum class NotifyChangeFlag
-	{
-		FileName = 0,
-		DirName,
-		Attributes,
-		Size,
-		LastWrite,
-		LastAccess,
-		Creation,
-		Security = 9,
+template <class... T>
+constexpr Hash64 CalcTemplateHash(Hash64 init, eastl::array<const char*, sizeof...(T)> type_names);
 
-		Count
-	};
-
-	FileWatcher(const char* path, Flags<NotifyChangeFlag> flags);
-	FileWatcher(const FileWatcher& watcher) = default;
-	FileWatcher(void) = default;
-	~FileWatcher(void);
-
-	FileWatcher& operator=(const FileWatcher& rhs) = default;
-
-	const char* processEvents(void);
-	bool listen(bool watch_subtree = true);
-
-	bool isValid(void) const;
-
-private:
-	char _buffer[256] = { 0 };
-	HANDLE _dir_handle = INVALID_HANDLE_VALUE;
-	Flags<NotifyChangeFlag> _flags;
-	OVERLAPPED _overlapped;
-};
+template <class... T>
+constexpr Hash64 CalcTemplateHash(Hash64 init);
 
 NS_END
-
-#endif

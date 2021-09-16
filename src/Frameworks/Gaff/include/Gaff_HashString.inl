@@ -395,7 +395,7 @@ HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* stri
 }
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* string, size_t size, HashType hash, const Allocator&):
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* /*string*/, size_t /*size*/, HashType hash, const Allocator& /*allocator*/):
 	_hash_value(hash)
 {
 }
@@ -407,13 +407,13 @@ HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const T* stri
 //}
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-HashString<T, HashType, HashingFunc, Allocator, false>::HashString(HashType hash, const Allocator&):
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(HashType hash, const Allocator& /*allocator*/):
 	_hash_value(hash)
 {
 }
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
-HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const Allocator&):
+HashString<T, HashType, HashingFunc, Allocator, false>::HashString(const Allocator& /*allocator*/):
 	_hash_value(0)
 {
 }

@@ -41,7 +41,7 @@ template <class T, class Allocator>
 template <class DataType>
 const DataType& ReflectionDefinition<T, Allocator>::IVar::getDataT(const T& object) const
 {
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -61,7 +61,7 @@ void ReflectionDefinition<T, Allocator>::IVar::setDataT(T& object, const DataTyp
 		return;
 	}
 
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -81,7 +81,7 @@ void ReflectionDefinition<T, Allocator>::IVar::setDataMoveT(T& object, DataType&
 		return;
 	}
 
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -96,7 +96,7 @@ template <class T, class Allocator>
 template <class DataType>
 const DataType& ReflectionDefinition<T, Allocator>::IVar::getElementT(const T& object, int32_t index) const
 {
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -122,7 +122,7 @@ void ReflectionDefinition<T, Allocator>::IVar::setElementT(T& object, int32_t in
 		return;
 	}
 
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -148,7 +148,7 @@ void ReflectionDefinition<T, Allocator>::IVar::setElementMoveT(T& object, int32_
 		return;
 	}
 
-	using Type = std::remove_reference<DataType>::type;
+	using Type = typename std::remove_reference<DataType>::type;
 
 	const auto& other_refl = GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetInstance();
 	const auto& refl = getReflection();
@@ -207,7 +207,7 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setData(void* object, const void* data)
 {
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -220,7 +220,7 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, void* data)
 {
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -365,7 +365,7 @@ template <class T, class Allocator>
 template <class Enum>
 void ReflectionDefinition<T, Allocator>::VarFlagPtr<Enum>::setData(void* object, const void* data)
 {
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -450,7 +450,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::setData(
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -467,7 +467,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtrWithCache<Ret, Var>::setDataM
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -581,7 +581,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setData(void* obj
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -598,7 +598,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -697,7 +697,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setData(void* object,
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -713,7 +713,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setDataMove(void* obj
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -780,7 +780,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setElement(void* obje
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -797,7 +797,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setElementMove(void* 
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -814,7 +814,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::swap(void* object, in
 	GAFF_ASSERT(index_b < size(object));
 	GAFF_ASSERT(object);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -829,7 +829,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::resize(void* object, 
 {
 	GAFF_ASSERT(object);
 
-	if (isReadOnly() || _base_var->isReadOnly()) {
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -897,7 +897,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setData(void
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -917,7 +917,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setDataMove(
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -958,7 +958,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setElement(v
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -975,7 +975,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setElementMo
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -992,7 +992,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::swap(void* o
 	GAFF_ASSERT(index_b < array_size);
 	GAFF_ASSERT(object);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1084,7 +1084,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setData(
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1105,7 +1105,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setDataM
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1159,7 +1159,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setEleme
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1176,7 +1176,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setEleme
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1193,7 +1193,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::swap(voi
 	GAFF_ASSERT(index_b < size(object));
 	GAFF_ASSERT(object);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1208,7 +1208,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::resize(v
 {
 	GAFF_ASSERT(object);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1300,7 +1300,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1321,7 +1321,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1375,7 +1375,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1392,7 +1392,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1409,7 +1409,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 	GAFF_ASSERT(index_b < size(object));
 	GAFF_ASSERT(object);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -1424,7 +1424,7 @@ void ReflectionDefinition<T, Allocator>::VectorMapPtr<Key, Value, VecMap_Allocat
 {
 	GAFF_ASSERT(object);
 
-	if (isReadOnly()) {
+	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
@@ -2337,7 +2337,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 		eastl::pair<HashString32<Allocator>, IVarPtr> flag_pair(
 			HashString32<Allocator>(flag_path),
-			IVarPtr(GAFF_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(i)))
+			IVarPtr(GAFF_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(flag_index)))
 		);
 
 		flag_pair.second->setNoSerialize(true);
@@ -2978,7 +2978,7 @@ template <class T, class Allocator>
 template <int32_t (*to_string_func)(const T&, char*, int32_t)>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::opToString()
 {
-	staticFunc(OP_TO_STRING_NAME, ToStringHelper<T>::ToString<to_string_func>);
+	staticFunc(OP_TO_STRING_NAME, ToStringHelper<T, to_string_func>);
 	return staticFunc(OP_TO_STRING_NAME, to_string_func);
 }
 

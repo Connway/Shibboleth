@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include <EASTL/vector.h>
+#include <EASTL/sort.h>
 
 NS_GAFF
 

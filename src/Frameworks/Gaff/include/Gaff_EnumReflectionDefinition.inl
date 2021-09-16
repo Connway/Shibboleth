@@ -190,7 +190,7 @@ template <class... Attrs>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::enumAttrs(const Attrs&... attrs)
 {
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(_entry_attrs, attrs...);
+		addAttributes(_enum_attrs, attrs...);
 	}
 
 	return *this;

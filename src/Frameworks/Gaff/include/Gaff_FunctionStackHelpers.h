@@ -93,4 +93,5 @@ Ret CallCallable(const IReflectionStaticFunction<Ret, Args...>& func, void*, Cur
 
 NS_END
 
-#include "Gaff_FunctionStackHelper.inl"
+// Not including here. Including in Gaff_ReflectionDefinition.inl.
+//#include "Gaff_FunctionStackHelper.inl"

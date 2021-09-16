@@ -65,9 +65,14 @@ public:
 			return nullptr;
 		}
 
+		void* const new_ptr = g_alloc(new_size);
 
-		void* new_ptr = g_alloc(new_size);
+	#ifdef PLATFORM_WINDOWS
 		memcpy_s(new_ptr, new_size, ptr, original_size);
+	#else
+		memcpy(new_ptr, ptr, (original_size < new_size) ? original_size : new_size);
+	#endif
+
 		g_free(ptr);
 
 		return new_ptr;
@@ -307,11 +312,16 @@ bool JSON::validate(const JSON& schema) const
 	if (!getValue().Accept(validator)) {
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
-		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
 		size_t size = strlen(keyword_error) + 1;
-		char* buf = _keyword_error.Push(size);
+		char* const buf = _keyword_error.Push(size);
 
+	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buf, size, keyword_error, size);
+	#else
+		memcpy(buf, keyword_error, size);
+	#endif
+
 		return false;
 	}
 
@@ -340,7 +350,12 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 	*this = CreateNull();
 
 	FILE* file = nullptr;
+
+#ifdef PLATFORM_WINDOWS
 	fopen_s(&file, filename, "r");
+#else
+	file = fopen(filename, "r");
+#endif
 
 	if (!file) {
 		return false;
@@ -359,11 +374,15 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 	if (!_error && _error.Code() == rapidjson::kParseErrorTermination) {
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
-		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
 		size_t size = strlen(keyword_error) + 1;
-		char* buf = _keyword_error.Push(size);
+		char* const buf = _keyword_error.Push(size);
 
+	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buf, size, keyword_error, size);
+	#else
+		memcpy(buf, keyword_error, size);
+	#endif
 	}
 
 	if (_error.IsError()) {
@@ -399,7 +418,12 @@ bool JSON::parseFile(const char* filename)
 	*this = CreateNull();
 
 	FILE* file = nullptr;
+
+#ifdef PLATFORM_WINDOWS
 	fopen_s(&file, filename, "r");
+#else
+	file = fopen(filename, "r");
+#endif
 
 	if (!file) {
 		return false;
@@ -444,11 +468,15 @@ bool JSON::parse(const char* input, const JSON& schema)
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 		_schema_error.Push(0);
 
-		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
 		size_t size = strlen(keyword_error) + 1;
-		char* buffer = _keyword_error.Push(size);
+		char* const buf = _keyword_error.Push(size);
 
-		memcpy_s(buffer, size, keyword_error, size);
+	#ifdef PLATFORM_WINDOWS
+		memcpy_s(buf, size, keyword_error, size);
+	#else
+		memcpy(buf, keyword_error, size);
+	#endif
 	}
 
 	if (_error.IsError()) {
@@ -501,7 +529,12 @@ bool JSON::dumpToFile(const char* filename) const
 {
 	GAFF_ASSERT(isArray() || isObject());
 	FILE* file = nullptr;
+
+#ifdef PLATFORM_WINDOWS
 	fopen_s(&file, filename, "w");
+#else
+	file = fopen(filename, "w");
+#endif
 
 	if (!file) {
 		return false;
@@ -535,7 +568,12 @@ const char* JSON::dump(char* buffer, int32_t size)
 		const size_t str_size = string_buffer.GetSize();
 		const size_t min_size = (size < static_cast<int32_t>(str_size)) ? static_cast<size_t>(size - 1) : str_size;
 
+	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buffer, size, string_buffer.GetString(), str_size);
+	#else
+		memcpy(buffer, string_buffer.GetString(), min_size);
+	#endif
+
 		buffer[min_size] = 0;
 
 		return buffer;
@@ -558,7 +596,12 @@ const char* JSON::dump(void)
 		size_t size = buffer.GetSize();
 		char* const str = reinterpret_cast<char*>(g_alloc(size + 1));
 
+	#ifdef PLATFORM_WINDOWS
 		memcpy_s(str, size, buffer.GetString(), size);
+#else
+		memcpy(str, buffer.GetString(), size);
+	#endif
+
 		str[size] = 0;
 
 		return str;

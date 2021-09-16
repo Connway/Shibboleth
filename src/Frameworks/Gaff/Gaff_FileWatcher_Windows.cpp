@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gaff_FileWatcher_Windows.h"
 #include "Gaff_String.h"
 
@@ -102,3 +104,5 @@ bool FileWatcher::isValid(void) const
 }
 
 NS_END
+
+#endif

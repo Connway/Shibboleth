@@ -247,14 +247,10 @@ static auto Index(T& value, const Idx& index)
 	return value[index];
 }
 
-template <class T>
-struct ToStringHelper final
+template <class T, int32_t (*to_string_func)(const T&, char*, int32_t)>
+static int32_t ToStringHelper(const void* value, char* buffer, int32_t size)
 {
-	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
-	static int32_t ToString(const void* value, char* buffer, int32_t size)
-	{
-		return to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
-	}
-};
+	return to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
+}
 
 NS_END

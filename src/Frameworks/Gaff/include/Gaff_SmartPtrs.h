@@ -28,23 +28,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class T>
-using SharedPtr = eastl::shared_ptr<T>;
-
-template <class T, class Allocator, class... Args>
-SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args)
-{
-	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
-}
-
-template <class T, class Allocator>
-SharedPtr<T> MakeShared(T* value, const Allocator& allocator = Allocator())
-{
-	return SharedPtr<T>(value, AllocatorDeleter<T, Allocator>(), allocator);
-}
-
-
-
 template <class T, class Allocator = DefaultAllocator>
 class AllocatorDeleter
 {
@@ -63,6 +46,23 @@ public:
 private:
 	mutable Allocator _allocator;
 };
+
+
+template <class T>
+using SharedPtr = eastl::shared_ptr<T>;
+
+template <class T, class Allocator, class... Args>
+SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args)
+{
+	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
+}
+
+template <class T, class Allocator>
+SharedPtr<T> MakeShared(T* value, const Allocator& allocator = Allocator())
+{
+	return SharedPtr<T>(value, AllocatorDeleter<T, Allocator>(), allocator);
+}
+
 
 template <class T, class Allocator = DefaultAllocator>
 using UniquePtr = eastl::unique_ptr< T, AllocatorDeleter<T, Allocator> >;
