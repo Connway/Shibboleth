@@ -321,6 +321,29 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		return false;
 	}
 
+	NV_ENC_CREATE_INPUT_BUFFER create_input_buffer_params =
+	{
+		NV_ENC_CREATE_INPUT_BUFFER_VER,
+		width, // buffer width
+		height, // buffer height
+		NV_ENC_MEMORY_HEAP_AUTOSELECT, // deprecated: memory heap
+		NV_ENC_BUFFER_FORMAT_ARGB, // buffer format
+		0,
+		nullptr, // out input buffer
+		nullptr, // pointer to existing memory
+		{ 0 },
+		{ 0 }
+	};
+
+	result = nvenc_funcs.nvEncCreateInputBuffer(encoder, &create_input_buffer_params);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
 	out_id = getNextID();
 	_encoders[out_id] = encoder;
 	return true;
