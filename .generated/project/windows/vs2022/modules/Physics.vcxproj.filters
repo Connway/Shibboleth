@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsMaterialResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsResourceComponents.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsShapeResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_RigidBodyComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsMaterialResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsResourceComponents.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsShapeResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_RigidBodyComponent.cpp" />
+  </ItemGroup>
+</Project>

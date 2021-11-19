@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\pvd">
+      <UniqueIdentifier>{E2FDC031-4EB3-3927-D7A7-33FE435C302B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\filebuf">
+      <UniqueIdentifier>{C272B964-AE40-AD6A-97D4-1D91834189CF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\filebuf\include">
+      <UniqueIdentifier>{353CE6B8-2136-0F0B-0AA3-A51BF63B7577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\pvd">
+      <UniqueIdentifier>{4F7C15B8-3B34-5705-A43B-30619012F2F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\pvd\include">
+      <UniqueIdentifier>{C282C530-AE66-8686-17C7-80D903CA7008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\pvd\src">
+      <UniqueIdentifier>{E6C92484-D297-188A-BB2B-89B0A798F4EE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd\PxPvd.h">
+      <Filter>include\pvd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd\PxPvdTransport.h">
+      <Filter>include\pvd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.h">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsAsciiConversion.inl">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsFileBuffer.h">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.h">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsIOStream.inl">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\filebuf\include\PsMemoryBuffer.h">
+      <Filter>source\filebuf\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PsPvd.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxProfileAllocatorWrapper.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdClient.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdDataStream.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdDataStreamHelpers.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdErrorCodes.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdObjectModelBaseTypes.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdRenderBuffer.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include\PxPvdUserRenderer.h">
+      <Filter>source\pvd\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileContextProvider.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileContextProviderImpl.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileDataBuffer.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileDataParsing.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventBuffer.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventBufferAtomic.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventBufferClient.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventBufferClientManager.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventId.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventMutex.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventNames.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventSender.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventSerialization.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEvents.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileMemory.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileMemoryBuffer.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileMemoryEventBuffer.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileMemoryEvents.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileScopedEvent.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileScopedMutexLock.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileZoneImpl.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileZoneManager.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileZoneManagerImpl.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdBits.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdByteStreams.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdCommStreamEventSink.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdCommStreamEvents.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdCommStreamTypes.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdDefaultFileTransport.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdDefaultSocketTransport.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdFoundation.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdImpl.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdInternalByteStreams.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdMarshalling.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdMemClient.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectModelInternalTypeDefs.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectModelInternalTypes.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectModelMetaData.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectRegistrar.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdProfileZone.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdProfileZoneClient.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdUserRenderImpl.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdUserRenderTypes.h">
+      <Filter>source\pvd\src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxProfileEventImpl.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvd.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdDataStream.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdDefaultFileTransport.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdDefaultSocketTransport.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdImpl.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdMemClient.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectModelMetaData.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdObjectRegistrar.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdProfileZoneClient.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\src\PxPvdUserRenderer.cpp">
+      <Filter>source\pvd\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

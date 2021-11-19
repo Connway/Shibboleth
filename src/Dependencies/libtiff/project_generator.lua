@@ -13,7 +13,7 @@ project "libtiff"
 
 	defines { "ZIP_SUPPORT" }
 
-	configuration "windows"
+	filter { "system:windows" }
 		files { "tif_win32.c" }
 		excludes { "tif_unix.c" }
 

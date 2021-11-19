@@ -159,7 +159,7 @@ bool InputManager::initAllModulesLoaded(void)
 		alias.freeString(alias_str);
 
 		if (modes.isArray()) {
-			const bool failed = modes.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+			/*const bool failed =*/ modes.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 			{
 				GAFF_ASSERT(value.isString());
 				const char* const mode_string = value.getString();

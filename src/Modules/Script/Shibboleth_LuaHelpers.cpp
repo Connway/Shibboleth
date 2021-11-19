@@ -407,7 +407,7 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 
 			if (clone_non_lua) {
 				const bool other_is_reference = user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference);
-				const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
+				//const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
 
 				FreeDifferentType(entry, *ref_def, other_is_reference);
 

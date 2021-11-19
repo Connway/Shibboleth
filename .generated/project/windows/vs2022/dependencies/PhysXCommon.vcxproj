@@ -1,0 +1,537 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4A347687-B6E9-EE7C-3FDE-E853AB92E580}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PhysXCommon</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\PhysXCommon\</IntDir>
+    <TargetName>PhysXCommon</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\PhysXCommon\</IntDir>
+    <TargetName>PhysXCommon</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\PhysXCommon\</IntDir>
+    <TargetName>PhysXCommon</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\PhysXCommon\</IntDir>
+    <TargetName>PhysXCommon</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxgpu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_SUPPORT_PVD=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxgpu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxgpu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxgpu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\collision\PxCollisionDefs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxCollection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxCoreUtilityTypes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxMetaData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxMetaDataFlags.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxPhysXCommonConfig.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxPhysicsInsertionCallback.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxProfileZone.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxRenderBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxSerialFramework.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxSerializer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxStringTable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxTolerancesScale.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\common\PxTypeInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxBVHStructure.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxBoxGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxCapsuleGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxConvexMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxConvexMeshGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxGeometryHelpers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxGeometryQuery.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxHeightField.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxHeightFieldDesc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxHeightFieldFlag.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxHeightFieldGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxHeightFieldSample.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxMeshQuery.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxMeshScale.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxPlaneGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxSimpleTriangleMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxSphereGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxTriangleMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry\PxTriangleMeshGeometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils\GuContactBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils\GuContactPoint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include\windows\CmWindowsLoadLibrary.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include\windows\CmWindowsModuleUpdateLoader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmBitMap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmBlockArray.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmConeLimitHelper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmFlushPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmIDPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmIO.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmMatrix34.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPhysXCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPreallocatingPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPriorityQueue.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPtrTable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmQueue.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSort.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSortBuffered.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRefCountable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRenderBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRenderOutput.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmScaling.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmSpatialVector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmTask.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmTaskPool.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmTmpMem.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmTransformUtils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmUtils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmVisualization.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuDistanceSegmentBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuDistanceSegmentSegment.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuIntersectionBoxBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuIntersectionTriangleBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuIntersectionTriangleBoxRef.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuRaycastTests.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuSIMDHelpers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include\GuSegment.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuAABBTreeBuild.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuAABBTreeQuery.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBVHStructure.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBVHTestsSIMD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBounds.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuCapsule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuCenterExtents.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuGeometryUnion.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuInternal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuMTD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuMeshFactory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuOverlapTests.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSerialize.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSphere.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepMTD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepSharedTests.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepTests.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd\GuCCDSweepConvexMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuBarycentricCoordinates.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuBoxConversion.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuEdgeCache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuEdgeListData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuSeparatingAxes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactMethodImpl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactPolygonPolygon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuFeatureCode.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuBigConvexData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuBigConvexData2.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexEdgeFlags.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexHelper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexMeshData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexSupportTable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexUtilsInternal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuCubeIndex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuHillClimbing.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuShapeConvex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointSegment.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointTriangleSIMD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentSegmentSIMD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentTriangleSIMD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuEPA.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuEPAFacet.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJK.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKPenetration.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKRaycast.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKSimplex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKTest.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKType.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKUtil.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecCapsule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecConvex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecConvexHull.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecConvexHullNoScale.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecPlane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecSphere.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuVecTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuEntityReport.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuHeightField.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuHeightFieldData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuHeightFieldUtil.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionCapsuleTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionEdgeEdge.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRay.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayBoxSIMD.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayCapsule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayPlane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRaySphere.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionSphereBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV32.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV32Build.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4Build.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4Settings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_AABBAABBSweepTest.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_BoxBoxOverlapTest.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_BoxOverlap_Internal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_BoxSweep_Internal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_BoxSweep_Params.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_CapsuleSweep_Internal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Common.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Internal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamNoOrder_OBBOBB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamNoOrder_SegmentAABB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamNoOrder_SegmentAABB_Inflated.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamNoOrder_SphereAABB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamOrdered_OBBOBB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamOrdered_SegmentAABB.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_ProcessStreamOrdered_SegmentAABB_Inflated.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Slabs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Slabs_KajiyaNoOrder.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Slabs_KajiyaOrdered.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Slabs_SwizzledNoOrder.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Slabs_SwizzledOrdered.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBVConstants.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuMeshData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuMidphaseInterface.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuRTree.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuSweepConvexTri.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuSweepMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangle32.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleCache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMesh.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMeshBV4.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMeshRTree.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleVertexPointers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactConvexCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactGen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactGenUtil.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactMeshCallback.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMShapeConvex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMTriangleContactGen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPersistentContactManifold.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxSphere.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxTriangle_FeatureBased.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxTriangle_SAT.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleBox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleCapsule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereCapsule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereSphere.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereTriangle.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepTriangleUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmMathUtils.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPtrTable.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSort.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSortBuffered.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRenderOutput.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmVisualization.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\windows\CmWindowsDelayLoadHook.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\windows\CmWindowsModuleUpdateLoader.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuAABBTreeBuild.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBVHStructure.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBounds.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuCCTSweepTests.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuGeometryQuery.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuGeometryUnion.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuInternal.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuMTD.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuMeshFactory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuMetaData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuOverlapTests.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuRaycastTests.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSerialize.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepMTD.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepSharedTests.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\GuSweepTests.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd\GuCCDSweepConvexMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd\GuCCDSweepPrimitives.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuBarycentricCoordinates.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common\GuSeparatingAxes.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactBoxBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactCapsuleBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactCapsuleCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactCapsuleConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactCapsuleMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactConvexConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactConvexMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactPlaneBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactPlaneCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactPlaneConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactPolygonPolygon.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactSphereBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactSphereCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactSphereMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactSpherePlane.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuContactSphereSphere.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact\GuFeatureCode.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuBigConvexData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexHelper.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexSupportTable.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuConvexUtilsInternal.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuHillClimbing.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex\GuShapeConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistancePointTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentSegment.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuEPA.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKSimplex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk\GuGJKTest.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuHeightField.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuHeightFieldUtil.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuOverlapTestsHF.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf\GuSweepsHF.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionBoxBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionCapsuleTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionEdgeEdge.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRayCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionRaySphere.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionSphereBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection\GuIntersectionTriangleBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV32.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV32Build.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4Build.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_AABBSweep.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_BoxOverlap.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_CapsuleSweep.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_CapsuleSweepAA.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_OBBSweep.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_Raycast.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_SphereOverlap.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuBV4_SphereSweep.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuMeshQuery.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuMidphaseBV4.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuMidphaseRTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuOverlapTestsMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuRTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuRTreeQueries.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuSweepsMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMeshBV4.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh\GuTriangleMeshRTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactBoxBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactBoxConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactCapsuleBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactCapsuleCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactCapsuleConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactCapsuleHeightField.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactCapsuleMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactConvexCommon.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactConvexConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactConvexHeightField.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactConvexMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactGenBoxConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactGenSphereCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactPlaneBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactPlaneCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactPlaneConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereHeightField.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereMesh.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSpherePlane.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMContactSphereSphere.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMShapeConvex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPCMTriangleContactGen.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm\GuPersistentContactManifold.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxSphere.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxTriangle_FeatureBased.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepBoxTriangle_SAT.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleBox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepCapsuleTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereCapsule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereSphere.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepSphereTriangle.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep\GuSweepTriangleUtils.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
