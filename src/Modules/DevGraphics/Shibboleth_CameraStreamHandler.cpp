@@ -46,7 +46,8 @@ void CameraStreamHandler::destroy(void)
 	const auto& nvenc_funcs = GetNVENCFuncs();
 
 	for (auto& encoder_entry : _encoders) {
-		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second);
+		nvenc_funcs.nvEncDestroyInputBuffer(encoder_entry.second.encoder, encoder_entry.second.input_buffer);
+		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second.encoder);
 	}
 
 	_encoders.clear();
@@ -345,7 +346,7 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 	}
 
 	out_id = getNextID();
-	_encoders[out_id] = encoder;
+	_encoders[out_id] = StreamData{ encoder, create_input_buffer_params.inputBuffer };
 	return true;
 }
 

@@ -446,6 +446,8 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\optimum_pow.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\orthonormalize.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\orthonormalize.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\pca.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\pca.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\perpendicular.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\perpendicular.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\polar_coordinates.hpp" />

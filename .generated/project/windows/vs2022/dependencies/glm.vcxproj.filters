@@ -1071,6 +1071,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\orthonormalize.inl">
       <Filter>gtx</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\pca.hpp">
+      <Filter>gtx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\pca.inl">
+      <Filter>gtx</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\perpendicular.hpp">
       <Filter>gtx</Filter>
     </ClInclude>

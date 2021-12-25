@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2015-2018 Nicholas Fraser
- * 
+ * Copyright (c) 2015-2021 Nicholas Fraser and the MPack authors
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -34,8 +34,8 @@
 #define MPACK_PRINT_BYTE_COUNT 12
 #endif
 
-MPACK_HEADER_START
-MPACK_EXTERN_C_START
+MPACK_SILENCE_WARNINGS_BEGIN
+MPACK_EXTERN_C_BEGIN
 
 
 
@@ -51,7 +51,7 @@ MPACK_EXTERN_C_START
 /* Version information */
 
 #define MPACK_VERSION_MAJOR 1  /**< The major version number of MPack. */
-#define MPACK_VERSION_MINOR 0  /**< The minor version number of MPack. */
+#define MPACK_VERSION_MINOR 1  /**< The minor version number of MPack. */
 #define MPACK_VERSION_PATCH 0  /**< The patch version number of MPack. */
 
 /** A number containing the version number of MPack for comparison purposes. */
@@ -252,9 +252,19 @@ struct mpack_tag_t {
     union {
         uint64_t u; /*< The value if the type is unsigned int. */
         int64_t  i; /*< The value if the type is signed int. */
-        double   d; /*< The value if the type is double. */
-        float    f; /*< The value if the type is float. */
         bool     b; /*< The value if the type is bool. */
+
+        #if MPACK_FLOAT
+        float    f; /*< The value if the type is float. */
+        #else
+        uint32_t f; /*< The raw value if the type is float. */
+        #endif
+
+        #if MPACK_DOUBLE
+        double   d; /*< The value if the type is double. */
+        #else
+        uint64_t d; /*< The raw value if the type is double. */
+        #endif
 
         /* The number of bytes if the type is str, bin or ext. */
         uint32_t l;
@@ -332,16 +342,28 @@ MPACK_INLINE mpack_tag_t mpack_tag_make_uint(uint64_t value) {
     return ret;
 }
 
+#if MPACK_FLOAT
 /** Generates a float tag. */
-MPACK_INLINE mpack_tag_t mpack_tag_make_float(float value) {
+MPACK_INLINE mpack_tag_t mpack_tag_make_float(float value)
+#else
+/** Generates a float tag from a raw uint32_t. */
+MPACK_INLINE mpack_tag_t mpack_tag_make_raw_float(uint32_t value)
+#endif
+{
     mpack_tag_t ret = MPACK_TAG_ZERO;
     ret.type = mpack_type_float;
     ret.v.f = value;
     return ret;
 }
 
+#if MPACK_DOUBLE
 /** Generates a double tag. */
-MPACK_INLINE mpack_tag_t mpack_tag_make_double(double value) {
+MPACK_INLINE mpack_tag_t mpack_tag_make_double(double value)
+#else
+/** Generates a double tag from a raw uint64_t. */
+MPACK_INLINE mpack_tag_t mpack_tag_make_raw_double(uint64_t value)
+#endif
+{
     mpack_tag_t ret = MPACK_TAG_ZERO;
     ret.type = mpack_type_double;
     ret.v.d = value;
@@ -470,7 +492,13 @@ MPACK_INLINE uint64_t mpack_tag_uint_value(mpack_tag_t* tag) {
  *
  * @see mpack_type_float
  */
-MPACK_INLINE float mpack_tag_float_value(mpack_tag_t* tag) {
+MPACK_INLINE
+#if MPACK_FLOAT
+float mpack_tag_float_value(mpack_tag_t* tag)
+#else
+uint32_t mpack_tag_raw_float_value(mpack_tag_t* tag)
+#endif
+{
     mpack_assert(tag->type == mpack_type_float, "tag is not a float!");
     return tag->v.f;
 }
@@ -486,7 +514,13 @@ MPACK_INLINE float mpack_tag_float_value(mpack_tag_t* tag) {
  *
  * @see mpack_type_double
  */
-MPACK_INLINE double mpack_tag_double_value(mpack_tag_t* tag) {
+MPACK_INLINE
+#if MPACK_DOUBLE
+double mpack_tag_double_value(mpack_tag_t* tag)
+#else
+uint64_t mpack_tag_raw_double_value(mpack_tag_t* tag)
+#endif
+{
     mpack_assert(tag->type == mpack_type_double, "tag is not a double!");
     return tag->v.d;
 }
@@ -754,15 +788,19 @@ MPACK_INLINE mpack_tag_t mpack_tag_uint(uint64_t value) {
     return mpack_tag_make_uint(value);
 }
 
+#if MPACK_FLOAT
 /** \deprecated Renamed to mpack_tag_make_float(). */
 MPACK_INLINE mpack_tag_t mpack_tag_float(float value) {
     return mpack_tag_make_float(value);
 }
+#endif
 
+#if MPACK_DOUBLE
 /** \deprecated Renamed to mpack_tag_make_double(). */
 MPACK_INLINE mpack_tag_t mpack_tag_double(double value) {
     return mpack_tag_make_double(value);
 }
+#endif
 
 /** \deprecated Renamed to mpack_tag_make_array(). */
 MPACK_INLINE mpack_tag_t mpack_tag_array(int32_t count) {
@@ -906,6 +944,7 @@ MPACK_INLINE void mpack_store_i16(char* p, int16_t val) {mpack_store_u16(p, (uin
 MPACK_INLINE void mpack_store_i32(char* p, int32_t val) {mpack_store_u32(p, (uint32_t)val);}
 MPACK_INLINE void mpack_store_i64(char* p, int64_t val) {mpack_store_u64(p, (uint64_t)val);}
 
+#if MPACK_FLOAT
 MPACK_INLINE float mpack_load_float(const char* p) {
     MPACK_CHECK_FLOAT_ORDER();
     MPACK_STATIC_ASSERT(sizeof(float) == sizeof(uint32_t), "float is wrong size??");
@@ -916,7 +955,9 @@ MPACK_INLINE float mpack_load_float(const char* p) {
     v.u = mpack_load_u32(p);
     return v.f;
 }
+#endif
 
+#if MPACK_DOUBLE
 MPACK_INLINE double mpack_load_double(const char* p) {
     MPACK_CHECK_FLOAT_ORDER();
     MPACK_STATIC_ASSERT(sizeof(double) == sizeof(uint64_t), "double is wrong size??");
@@ -927,7 +968,9 @@ MPACK_INLINE double mpack_load_double(const char* p) {
     v.u = mpack_load_u64(p);
     return v.d;
 }
+#endif
 
+#if MPACK_FLOAT
 MPACK_INLINE void mpack_store_float(char* p, float value) {
     MPACK_CHECK_FLOAT_ORDER();
     union {
@@ -937,7 +980,9 @@ MPACK_INLINE void mpack_store_float(char* p, float value) {
     v.f = value;
     mpack_store_u32(p, v.u);
 }
+#endif
 
+#if MPACK_DOUBLE
 MPACK_INLINE void mpack_store_double(char* p, double value) {
     MPACK_CHECK_FLOAT_ORDER();
     union {
@@ -947,6 +992,72 @@ MPACK_INLINE void mpack_store_double(char* p, double value) {
     v.d = value;
     mpack_store_u64(p, v.u);
 }
+#endif
+
+#if MPACK_FLOAT && !MPACK_DOUBLE
+/**
+ * Performs a manual shortening conversion on the raw 64-bit representation of
+ * a double. This is useful for parsing doubles on platforms that only support
+ * floats (such as AVR.)
+ *
+ * The significand is truncated rather than rounded and subnormal numbers are
+ * set to 0 so this may not be quite as accurate as a real double-to-float
+ * conversion.
+ */
+MPACK_INLINE float mpack_shorten_raw_double_to_float(uint64_t d) {
+    MPACK_CHECK_FLOAT_ORDER();
+    union {
+        float f;
+        uint32_t u;
+    } v;
+
+    // float has  1 bit sign,  8 bits exponent, 23 bits significand
+    // double has 1 bit sign, 11 bits exponent, 52 bits significand
+
+    uint64_t d_sign = (uint64_t)(d >> 63);
+    uint64_t d_exponent = (uint32_t)(d >> 52) & ((1 << 11) - 1);
+    uint64_t d_significand = d & (((uint64_t)1 << 52) - 1);
+
+    uint32_t f_sign = (uint32_t)d_sign;
+    uint32_t f_exponent;
+    uint32_t f_significand;
+
+    if (MPACK_UNLIKELY(d_exponent == ((1 << 11) - 1))) {
+        // infinity or NAN. shift down to preserve the top bit since it
+        // indicates signaling NAN, but also set the low bit if any bits were
+        // set (that way we can't shift NAN to infinity.)
+        f_exponent = ((1 << 8) - 1);
+        f_significand = (uint32_t)(d_significand >> 29) | (d_significand ? 1 : 0);
+
+    } else {
+        int fix_bias = (int)d_exponent - ((1 << 10) - 1) + ((1 << 7) - 1);
+        if (MPACK_UNLIKELY(fix_bias <= 0)) {
+            // we don't currently handle subnormal numbers. just set it to zero.
+            f_exponent = 0;
+            f_significand = 0;
+        } else if (MPACK_UNLIKELY(fix_bias > 0xff)) {
+            // exponent is too large; saturate to infinity
+            f_exponent = 0xff;
+            f_significand = 0;
+        } else {
+            // a normal number that fits in a float. this is the usual case.
+            f_exponent = (uint32_t)fix_bias;
+            f_significand = (uint32_t)(d_significand >> 29);
+        }
+    }
+
+    #if 0
+    printf("\n===============\n");
+    for (size_t i = 0; i < 64; ++i)
+        printf("%i%s",(int)((d>>(63-i))&1),((i%8)==7)?" ":"");
+    printf("\n%lu %lu %lu\n", d_sign, d_exponent, d_significand);
+    printf("%u %u %u\n", f_sign, f_exponent, f_significand);
+    #endif
+
+    v.u = (f_sign << 31) | (f_exponent << 23) | f_significand;
+    return v.f;
+}
+#endif
 
 /** @endcond */
 
@@ -1011,6 +1122,10 @@ typedef struct mpack_track_element_t {
     // read/written key. left is not decremented until both key and value are
     // read/written.
     bool key_needs_value;
+
+    // tracks whether the map/array being written is using a builder. if true,
+    // the number of elements is automatic, and left is 0.
+    bool builder;
 } mpack_track_element_t;
 
 typedef struct mpack_track_t {
@@ -1023,7 +1138,9 @@ typedef struct mpack_track_t {
 mpack_error_t mpack_track_init(mpack_track_t* track);
 mpack_error_t mpack_track_grow(mpack_track_t* track);
 mpack_error_t mpack_track_push(mpack_track_t* track, mpack_type_t type, uint32_t count);
+mpack_error_t mpack_track_push_builder(mpack_track_t* track, mpack_type_t type);
 mpack_error_t mpack_track_pop(mpack_track_t* track, mpack_type_t type);
+mpack_error_t mpack_track_pop_builder(mpack_track_t* track, mpack_type_t type);
 mpack_error_t mpack_track_element(mpack_track_t* track, bool read);
 mpack_error_t mpack_track_peek_element(mpack_track_t* track, bool read);
 mpack_error_t mpack_track_bytes(mpack_track_t* track, bool read, size_t count);
@@ -1070,12 +1187,8 @@ bool mpack_str_check_no_null(const char* str, size_t bytes);
  * @}
  */
 
-/**
- * @}
- */
-
 MPACK_EXTERN_C_END
-MPACK_HEADER_END
+MPACK_SILENCE_WARNINGS_END
 
 #endif
 

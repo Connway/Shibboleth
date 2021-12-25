@@ -207,6 +207,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\any.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\array.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\atomic.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bit.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bitset.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bitvector.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\adaptors.h" />

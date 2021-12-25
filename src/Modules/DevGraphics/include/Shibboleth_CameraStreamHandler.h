@@ -42,13 +42,13 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(CameraStreamHandler);
 
 private:
-	struct EncoderData final
+	struct StreamData final
 	{
 		void* encoder;
 		void* input_buffer;
 	};
 
-	VectorMap<int32_t, void*> _encoders/*{ ProxyAllocator() }*/;
+	VectorMap<int32_t, StreamData> _encoders/*{ ProxyAllocator() }*/;
 	int32_t _next_id = 0;
 
 	bool createEncoder(uint32_t width, uint32_t height, int32_t& out_id);

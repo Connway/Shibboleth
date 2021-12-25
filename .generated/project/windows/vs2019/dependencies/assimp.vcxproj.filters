@@ -267,6 +267,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3DS\3DSLoader.h">
       <Filter>code\AssetLib\3DS</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\3MFTypes.h">
+      <Filter>code\AssetLib\3MF</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\3MFXmlTags.h">
       <Filter>code\AssetLib\3MF</Filter>
     </ClInclude>
@@ -277,6 +280,9 @@
       <Filter>code\AssetLib\3MF</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFOpcPackage.h">
+      <Filter>code\AssetLib\3MF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\XmlSerializer.h">
       <Filter>code\AssetLib\3MF</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AC\ACLoader.h">
@@ -687,7 +693,19 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DExporter.hpp">
       <Filter>code\AssetLib\X3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DGeoHelper.h">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter.hpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Macro.hpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Node.hpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DXmlHelper.h">
       <Filter>code\AssetLib\X3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\XGL\XGLLoader.h">
@@ -787,9 +805,6 @@
       <Filter>code\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Pbrt\PbrtExporter.h">
-      <Filter>code\Pbrt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Pbrt\stb_image.h">
       <Filter>code\Pbrt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\ArmaturePopulate.h">
@@ -1005,9 +1020,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\DefaultLogger.hpp">
       <Filter>include\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Defines.h">
-      <Filter>include\assimp</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Exceptional.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
@@ -1015,6 +1027,9 @@
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\GenericProperty.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\GltfMaterial.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Hash.h">
@@ -1251,6 +1266,9 @@
       <Filter>code\AssetLib\3MF</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFOpcPackage.cpp">
+      <Filter>code\AssetLib\3MF</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\XmlSerializer.cpp">
       <Filter>code\AssetLib\3MF</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AC\ACLoader.cpp">
@@ -1610,7 +1628,43 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DExporter.cpp">
       <Filter>code\AssetLib\X3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DGeoHelper.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Geometry2D.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Geometry3D.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Group.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Light.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Metadata.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Networking.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Postprocess.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Rendering.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Shape.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Texturing.cpp">
+      <Filter>code\AssetLib\X3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DXmlHelper.cpp">
       <Filter>code\AssetLib\X3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\XGL\XGLLoader.cpp">

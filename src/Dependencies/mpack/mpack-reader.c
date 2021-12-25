@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2015-2018 Nicholas Fraser
- * 
+ * Copyright (c) 2015-2021 Nicholas Fraser and the MPack authors
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -22,6 +22,8 @@
 #define MPACK_INTERNAL 1
 
 #include "mpack-reader.h"
+
+MPACK_SILENCE_WARNINGS_BEGIN
 
 #if MPACK_READER
 
@@ -737,14 +739,22 @@ static size_t mpack_parse_tag(mpack_reader_t* reader, mpack_tag_t* tag) {
         case 0xca:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FLOAT))
                 return 0;
+            #if MPACK_FLOAT
             *tag = mpack_tag_make_float(mpack_load_float(reader->data + 1));
+            #else
+            *tag = mpack_tag_make_raw_float(mpack_load_u32(reader->data + 1));
+            #endif
             return MPACK_TAG_SIZE_FLOAT;
 
         // double
         case 0xcb:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_DOUBLE))
                 return 0;
+            #if MPACK_DOUBLE
             *tag = mpack_tag_make_double(mpack_load_double(reader->data + 1));
+            #else
+            *tag = mpack_tag_make_raw_double(mpack_load_u64(reader->data + 1));
+            #endif
             return MPACK_TAG_SIZE_DOUBLE;
 
         // uint8
@@ -1043,7 +1053,7 @@ mpack_timestamp_t mpack_read_timestamp(mpack_reader_t* reader, size_t size) {
 
         case 8: {
             uint64_t packed = mpack_load_u64(buf);
-            timestamp.seconds = (int64_t)(packed & ((UINT64_C(1) << 34) - 1));
+            timestamp.seconds = (int64_t)(packed & ((MPACK_UINT64_C(1) << 34) - 1));
             timestamp.nanoseconds = (uint32_t)(packed >> 34);
             break;
         }
@@ -1097,11 +1107,12 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
     // We read some bytes from bin and ext so we can print its prefix in hex.
     char buffer[MPACK_PRINT_BYTE_COUNT];
     size_t count = 0;
+    size_t i, j;
 
     switch (val.type) {
         case mpack_type_str:
             mpack_print_append_cstr(print, "\"");
-            for (size_t i = 0; i < val.v.l; ++i) {
+            for (i = 0; i < val.v.l; ++i) {
                 char c;
                 mpack_read_bytes(reader, &c, 1);
                 if (mpack_reader_error(reader) != mpack_ok)
@@ -1119,8 +1130,8 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
 
         case mpack_type_array:
             mpack_print_append_cstr(print, "[\n");
-            for (size_t i = 0; i < val.v.n; ++i) {
-                for (size_t j = 0; j < depth + 1; ++j)
+            for (i = 0; i < val.v.n; ++i) {
+                for (j = 0; j < depth + 1; ++j)
                     mpack_print_append_cstr(print, "    ");
                 mpack_print_element(reader, print, depth + 1);
                 if (mpack_reader_error(reader) != mpack_ok)
@@ -1129,7 +1140,7 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
                     mpack_print_append_cstr(print, ",");
                 mpack_print_append_cstr(print, "\n");
             }
-            for (size_t i = 0; i < depth; ++i)
+            for (i = 0; i < depth; ++i)
                 mpack_print_append_cstr(print, "    ");
             mpack_print_append_cstr(print, "]");
             mpack_done_array(reader);
@@ -1137,8 +1148,8 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
 
         case mpack_type_map:
             mpack_print_append_cstr(print, "{\n");
-            for (size_t i = 0; i < val.v.n; ++i) {
-                for (size_t j = 0; j < depth + 1; ++j)
+            for (i = 0; i < val.v.n; ++i) {
+                for (j = 0; j < depth + 1; ++j)
                     mpack_print_append_cstr(print, "    ");
                 mpack_print_element(reader, print, depth + 1);
                 if (mpack_reader_error(reader) != mpack_ok)
@@ -1151,7 +1162,7 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
                     mpack_print_append_cstr(print, ",");
                 mpack_print_append_cstr(print, "\n");
             }
-            for (size_t i = 0; i < depth; ++i)
+            for (i = 0; i < depth; ++i)
                 mpack_print_append_cstr(print, "    ");
             mpack_print_append_cstr(print, "}");
             mpack_done_map(reader);
@@ -1182,7 +1193,8 @@ static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, si
 }
 
 static void mpack_print_and_destroy(mpack_reader_t* reader, mpack_print_t* print, size_t depth) {
-    for (size_t i = 0; i < depth; ++i)
+    size_t i;
+    for (i = 0; i < depth; ++i)
         mpack_print_append_cstr(print, "    ");
     mpack_print_element(reader, print, depth);
 
@@ -1271,3 +1283,5 @@ void mpack_print_stdfile_to_callback(FILE* file, mpack_print_callback_t callback
 #endif
 
 #endif
+
+MPACK_SILENCE_WARNINGS_END

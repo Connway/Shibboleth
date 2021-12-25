@@ -159,6 +159,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\atomic.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bit.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bitset.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>

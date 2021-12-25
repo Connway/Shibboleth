@@ -11,7 +11,10 @@ project "imgui"
 
 	includedirs
 	{
-		"../../Frameworks/Gaff/include"
+		"../../Frameworks/Gaff/include",
+		"."
 	}
+	
+	removefiles { "misc/freetype/*.*" }
 
 	SetupConfigMap()

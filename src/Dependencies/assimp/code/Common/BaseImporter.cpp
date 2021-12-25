@@ -65,6 +65,7 @@ using namespace Assimp;
 // Constructor to be privately used by Importer
 BaseImporter::BaseImporter() AI_NO_EXCEPT
         : m_progress() {
+    // empty
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ void BaseImporter::UpdateImporterScale(Importer *pImp) {
     // Set active scaling
     pImp->SetPropertyFloat(AI_CONFIG_APP_SCALE_KEY, static_cast<float>(activeScale));
 
-    ASSIMP_LOG_DEBUG_F("UpdateImporterScale scale set: ", activeScale);
+    ASSIMP_LOG_DEBUG("UpdateImporterScale scale set: ", activeScale);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -155,7 +156,7 @@ void BaseImporter::GetExtensionList(std::set<std::string> &extensions) {
 // ------------------------------------------------------------------------------------------------
 /*static*/ bool BaseImporter::SearchFileHeaderForToken(IOSystem *pIOHandler,
         const std::string &pFile,
-        const char **tokens,
+        const char * const *tokens,
         unsigned int numTokens,
         unsigned int searchBytes /* = 200 */,
         bool tokensSol /* false */,
@@ -207,7 +208,7 @@ void BaseImporter::GetExtensionList(std::set<std::string> &extensions) {
             if (!r) {
                 continue;
             }
-            // We need to make sure that we didn't accidentially identify the end of another token as our token,
+            // We need to make sure that we didn't accidentally identify the end of another token as our token,
             // e.g. in a previous version the "gltf " present in some gltf files was detected as "f "
             if (noAlphaBeforeTokens && (r != buffer && isalpha(static_cast<unsigned char>(r[-1])))) {
                 continue;
@@ -215,7 +216,7 @@ void BaseImporter::GetExtensionList(std::set<std::string> &extensions) {
             // We got a match, either we don't care where it is, or it happens to
             // be in the beginning of the file / line
             if (!tokensSol || r == buffer || r[-1] == '\r' || r[-1] == '\n') {
-                ASSIMP_LOG_DEBUG_F("Found positive match for header keyword: ", tokens[i]);
+                ASSIMP_LOG_DEBUG("Found positive match for header keyword: ", tokens[i]);
                 return true;
             }
         }
@@ -372,7 +373,10 @@ void BaseImporter::ConvertToUTF8(std::vector<char> &data) {
 
     // UTF 16 BE with BOM
     if (*((uint16_t *)&data.front()) == 0xFFFE) {
-
+        // Check to ensure no overflow can happen
+        if(data.size() % 2 != 0) {
+            return;
+        }
         // swap the endianness ..
         for (uint16_t *p = (uint16_t *)&data.front(), *end = (uint16_t *)&data.back(); p <= end; ++p) {
             ByteSwap::Swap2(p);
@@ -604,7 +608,7 @@ void BatchLoader::LoadAll() {
 
         if (!DefaultLogger::isNullLogger()) {
             ASSIMP_LOG_INFO("%%% BEGIN EXTERNAL FILE %%%");
-            ASSIMP_LOG_INFO_F("File: ", (*it).file);
+            ASSIMP_LOG_INFO("File: ", (*it).file);
         }
         m_data->pImporter->ReadFile((*it).file, pp);
         (*it).scene = m_data->pImporter->GetOrphanedScene();

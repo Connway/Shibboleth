@@ -97,7 +97,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;ASSIMP_BUILD_NO_M3D_IMPORTER;ASSIMP_BUILD_NO_M3D_EXPORTER;ASSIMP_BUILD_NO_PBRT_EXPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -116,7 +116,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;ASSIMP_BUILD_NO_M3D_IMPORTER;ASSIMP_BUILD_NO_M3D_EXPORTER;ASSIMP_BUILD_NO_PBRT_EXPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -141,7 +141,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;ASSIMP_BUILD_NO_M3D_IMPORTER;ASSIMP_BUILD_NO_M3D_EXPORTER;ASSIMP_BUILD_NO_PBRT_EXPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -166,7 +166,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;ASSIMP_BUILD_NO_OGRE_IMPORTER;ASSIMP_BUILD_NO_IRR_IMPORTER;ASSIMP_BUILD_NO_IRRMESH_IMPORTER;ASSIMP_BUILD_NO_X_IMPORTER;ASSIMP_BUILD_NO_X_EXPORTER;ASSIMP_BUILD_NO_X3D_IMPORTER;ASSIMP_BUILD_NO_X3D_EXPORTER;ASSIMP_BUILD_NO_XGL_IMPORTER;ASSIMP_BUILD_NO_M3D_IMPORTER;ASSIMP_BUILD_NO_M3D_EXPORTER;ASSIMP_BUILD_NO_PBRT_EXPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -191,10 +191,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3DS\3DSExporter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3DS\3DSHelper.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3DS\3DSLoader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\3MFTypes.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\3MFXmlTags.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFExporter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFImporter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFOpcPackage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\XmlSerializer.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AC\ACLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AMF\AMFImporter.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AMF\AMFImporter_Node.hpp" />
@@ -331,7 +333,11 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X\XFileImporter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X\XFileParser.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DExporter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DGeoHelper.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Macro.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Node.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DXmlHelper.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\XGL\XGLLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\glTF\glTFAsset.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\glTF\glTFAsset.inl" />
@@ -365,7 +371,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\simd.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Material\MaterialSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Pbrt\PbrtExporter.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Pbrt\stb_image.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\ArmaturePopulate.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\CalcTangentsProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\ComputeUVMappingProcess.h" />
@@ -437,10 +442,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\DefaultIOStream.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\DefaultIOSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\DefaultLogger.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Exceptional.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Exporter.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\GenericProperty.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\GltfMaterial.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Hash.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\IOStream.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\IOStreamBuffer.h" />
@@ -521,6 +526,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFExporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFImporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\D3MFOpcPackage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\3MF\XmlSerializer.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AC\ACLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AMF\AMFImporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\AMF\AMFImporter_Geometry.cpp" />
@@ -640,7 +646,19 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X\XFileImporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X\XFileParser.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DExporter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DGeoHelper.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Geometry2D.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Geometry3D.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Group.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Light.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Metadata.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Networking.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Postprocess.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Rendering.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Shape.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DImporter_Texturing.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\X3D\X3DXmlHelper.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\XGL\XGLLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\glTF\glTFCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\glTF\glTFExporter.cpp" />

@@ -153,10 +153,10 @@ void HMPImporter::InternReadFile(const std::string &pFile,
     } else {
         // Print the magic word to the logger
         std::string szBuffer = ai_str_toprintable((const char *)&iMagic, sizeof(iMagic));
-    
+
         delete[] mBuffer;
         mBuffer = nullptr;
-        
+
         // We're definitely unable to load this file
         throw DeadlyImportError("Unknown HMP subformat ", pFile,
                                 ". Magic word (", szBuffer, ") is not known");
@@ -451,6 +451,7 @@ void HMPImporter::ReadFirstSkin(unsigned int iNumSkins, const unsigned char *szC
 
     // now we need to skip any other skins ...
     for (unsigned int i = 1; i < iNumSkins; ++i) {
+        SizeCheck(szCursor + 3 * sizeof(uint32_t));
         iType = *((uint32_t *)szCursor);
         szCursor += sizeof(uint32_t);
         iWidth = *((uint32_t *)szCursor);
@@ -472,16 +473,22 @@ void HMPImporter::ReadFirstSkin(unsigned int iNumSkins, const unsigned char *szC
 
 // ------------------------------------------------------------------------------------------------
 // Generate proepr texture coords
-void HMPImporter::GenerateTextureCoords(
-        const unsigned int width, const unsigned int height) {
+void HMPImporter::GenerateTextureCoords(const unsigned int width, const unsigned int height) {
     ai_assert(nullptr != pScene->mMeshes);
     ai_assert(nullptr != pScene->mMeshes[0]);
     ai_assert(nullptr != pScene->mMeshes[0]->mTextureCoords[0]);
 
     aiVector3D *uv = pScene->mMeshes[0]->mTextureCoords[0];
-
-    const float fY = (1.0f / height) + (1.0f / height) / (height - 1);
-    const float fX = (1.0f / width) + (1.0f / width) / (width - 1);
+    if (uv == nullptr) {
+        return;
+    }
+    
+    if (height == 0.0f || width == 0.0) {
+        return;
+    }
+    
+    const float fY = (1.0f / height) + (1.0f / height) / height;
+    const float fX = (1.0f / width) + (1.0f / width) / width;
 
     for (unsigned int y = 0; y < height; ++y) {
         for (unsigned int x = 0; x < width; ++x, ++uv) {

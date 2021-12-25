@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2015-2018 Nicholas Fraser
- * 
+ * Copyright (c) 2015-2021 Nicholas Fraser and the MPack authors
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -30,8 +30,8 @@
 
 #include "mpack-reader.h"
 
-MPACK_HEADER_START
-MPACK_EXTERN_C_START
+MPACK_SILENCE_WARNINGS_BEGIN
+MPACK_EXTERN_C_BEGIN
 
 #if MPACK_EXPECT
 
@@ -146,6 +146,7 @@ int32_t mpack_expect_i32(mpack_reader_t* reader);
  */
 int64_t mpack_expect_i64(mpack_reader_t* reader);
 
+#if MPACK_FLOAT
 /**
  * Reads a number, returning the value as a float. The underlying value can be an
  * integer, float or double; the value is converted to a float.
@@ -156,7 +157,9 @@ int64_t mpack_expect_i64(mpack_reader_t* reader);
  * @throws mpack_error_type if the underlying value is not a float, double or integer.
  */
 float mpack_expect_float(mpack_reader_t* reader);
+#endif
 
+#if MPACK_DOUBLE
 /**
  * Reads a number, returning the value as a double. The underlying value can be an
  * integer, float or double; the value is converted to a double.
@@ -167,7 +170,9 @@ float mpack_expect_float(mpack_reader_t* reader);
  * @throws mpack_error_type if the underlying value is not a float, double or integer.
  */
 double mpack_expect_double(mpack_reader_t* reader);
+#endif
 
+#if MPACK_FLOAT
 /**
  * Reads a float. The underlying value must be a float, not a double or an integer.
  * This ensures no loss of precision can occur.
@@ -175,7 +180,9 @@ double mpack_expect_double(mpack_reader_t* reader);
  * @throws mpack_error_type if the underlying value is not a float.
  */
 float mpack_expect_float_strict(mpack_reader_t* reader);
+#endif
 
+#if MPACK_DOUBLE
 /**
  * Reads a double. The underlying value must be a float or double, not an integer.
  * This ensures no loss of precision can occur.
@@ -183,6 +190,27 @@ float mpack_expect_float_strict(mpack_reader_t* reader);
  * @throws mpack_error_type if the underlying value is not a float or double.
  */
 double mpack_expect_double_strict(mpack_reader_t* reader);
+#endif
+
+#if !MPACK_FLOAT
+/**
+ * Reads a float as a raw uint32_t. The underlying value must be a float, not a
+ * double or an integer.
+ *
+ * @throws mpack_error_type if the underlying value is not a float.
+ */
+uint32_t mpack_expect_raw_float(mpack_reader_t* reader);
+#endif
+
+#if !MPACK_DOUBLE
+/**
+ * Reads a double as a raw uint64_t. The underlying value must be a double, not a
+ * float or an integer.
+ *
+ * @throws mpack_error_type if the underlying value is not a double.
+ */
+uint64_t mpack_expect_raw_double(mpack_reader_t* reader);
+#endif
 
 /**
  * @}
@@ -429,6 +457,7 @@ MPACK_INLINE int mpack_expect_int_max(mpack_reader_t* reader, int max_value) {
     return mpack_expect_int_range(reader, 0, max_value);
 }
 
+#if MPACK_FLOAT
 /**
  * Reads a number, ensuring that it falls within the given range and returning
  * the value as a float. The underlying value can be an integer, float or
@@ -440,7 +469,9 @@ MPACK_INLINE int mpack_expect_int_max(mpack_reader_t* reader, int max_value) {
  * @throws mpack_error_type if the underlying value is not a float, double or integer.
  */
 float mpack_expect_float_range(mpack_reader_t* reader, float min_value, float max_value);
+#endif
 
+#if MPACK_DOUBLE
 /**
  * Reads a number, ensuring that it falls within the given range and returning
  * the value as a double. The underlying value can be an integer, float or
@@ -452,6 +483,7 @@ float mpack_expect_float_range(mpack_reader_t* reader, float min_value, float ma
  * @throws mpack_error_type if the underlying value is not a float, double or integer.
  */
 double mpack_expect_double_range(mpack_reader_t* reader, double min_value, double max_value);
+#endif
 
 /**
  * @}
@@ -481,7 +513,7 @@ MPACK_INLINE unsigned int mpack_expect_uint(mpack_reader_t* reader) {
         return (unsigned int)mpack_expect_u32(reader);
 
     // Otherwise we wrap the max function to ensure it fits.
-    return (unsigned int)mpack_expect_u64_max(reader, UINT_MAX);
+    return (unsigned int)mpack_expect_u64_max(reader, MPACK_UINT_MAX);
 
 }
 
@@ -500,7 +532,7 @@ MPACK_INLINE int mpack_expect_int(mpack_reader_t* reader) {
         return (int)mpack_expect_i32(reader);
 
     // Otherwise we wrap the range function to ensure it fits.
-    return (int)mpack_expect_i64_range(reader, INT_MIN, INT_MAX);
+    return (int)mpack_expect_i64_range(reader, MPACK_INT_MIN, MPACK_INT_MAX);
 
 }
 
@@ -530,6 +562,10 @@ void mpack_expect_uint_match(mpack_reader_t* reader, uint64_t value);
  * integer or if it does not exactly match the given value.
  */
 void mpack_expect_int_match(mpack_reader_t* reader, int64_t value);
+
+/**
+ * @}
+ */
 
 /**
  * @name Other Basic Types
@@ -1446,7 +1482,7 @@ size_t mpack_expect_key_cstr(mpack_reader_t* reader, const char* keys[],
 #endif
 
 MPACK_EXTERN_C_END
-MPACK_HEADER_END
+MPACK_SILENCE_WARNINGS_END
 
 #endif
 

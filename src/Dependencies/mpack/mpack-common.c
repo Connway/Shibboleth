@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2015-2018 Nicholas Fraser
- * 
+ * Copyright (c) 2015-2021 Nicholas Fraser and the MPack authors
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -23,9 +23,7 @@
 
 #include "mpack-common.h"
 
-#if MPACK_DEBUG && MPACK_STDIO
-#include <stdarg.h>
-#endif
+MPACK_SILENCE_WARNINGS_BEGIN
 
 const char* mpack_error_to_string(mpack_error_t error) {
     #if MPACK_STRINGS
@@ -187,7 +185,8 @@ static void mpack_tag_debug_complete_bin_ext(mpack_tag_t tag, size_t string_leng
     buffer_size -= 2;
 
     size_t hex_bytes = 0;
-    for (size_t i = 0; i < MPACK_PRINT_BYTE_COUNT && i < prefix_size && buffer_size > 2; ++i) {
+    size_t i;
+    for (i = 0; i < MPACK_PRINT_BYTE_COUNT && i < prefix_size && buffer_size > 2; ++i) {
         uint8_t byte = (uint8_t)prefix[i];
         buffer[0] = mpack_hex_char((uint8_t)(byte >> 4));
         buffer[1] = mpack_hex_char((uint8_t)(byte & 0xfu));
@@ -239,10 +238,18 @@ static void mpack_tag_debug_pseudo_json_impl(mpack_tag_t tag, char* buffer, size
             mpack_snprintf(buffer, buffer_size, "%" PRIu64, tag.v.u);
             return;
         case mpack_type_float:
+            #if MPACK_FLOAT
             mpack_snprintf(buffer, buffer_size, "%f", tag.v.f);
+            #else
+            mpack_snprintf(buffer, buffer_size, "<float>");
+            #endif
             return;
         case mpack_type_double:
+            #if MPACK_DOUBLE
             mpack_snprintf(buffer, buffer_size, "%f", tag.v.d);
+            #else
+            mpack_snprintf(buffer, buffer_size, "<double>");
+            #endif
             return;
 
         case mpack_type_str:
@@ -299,10 +306,18 @@ static void mpack_tag_debug_describe_impl(mpack_tag_t tag, char* buffer, size_t 
             mpack_snprintf(buffer, buffer_size, "uint %" PRIu64, tag.v.u);
             return;
         case mpack_type_float:
+            #if MPACK_FLOAT
             mpack_snprintf(buffer, buffer_size, "float %f", tag.v.f);
+            #else
+            mpack_snprintf(buffer, buffer_size, "float");
+            #endif
             return;
         case mpack_type_double:
+            #if MPACK_DOUBLE
             mpack_snprintf(buffer, buffer_size, "double %f", tag.v.d);
+            #else
+            mpack_snprintf(buffer, buffer_size, "double");
+            #endif
             return;
         case mpack_type_str:
             mpack_snprintf(buffer, buffer_size, "str of %u bytes", tag.v.l);
@@ -388,12 +403,34 @@ mpack_error_t mpack_track_push(mpack_track_t* track, mpack_type_t type, uint32_t
     // insert new track
     track->elements[track->count].type = type;
     track->elements[track->count].left = count;
+    track->elements[track->count].builder = false;
     track->elements[track->count].key_needs_value = false;
     ++track->count;
     return mpack_ok;
 }
 
-mpack_error_t mpack_track_pop(mpack_track_t* track, mpack_type_t type) {
+// TODO dedupe this
+mpack_error_t mpack_track_push_builder(mpack_track_t* track, mpack_type_t type) {
+    mpack_assert(track->elements, "null track elements!");
+    mpack_log("track pushing %s builder\n", mpack_type_to_string(type));
+
+    // grow if needed
+    if (track->count == track->capacity) {
+        mpack_error_t error = mpack_track_grow(track);
+        if (error != mpack_ok)
+            return error;
+    }
+
+    // insert new track
+    track->elements[track->count].type = type;
+    track->elements[track->count].left = 0;
+    track->elements[track->count].builder = true;
+    track->elements[track->count].key_needs_value = false;
+    ++track->count;
+    return mpack_ok;
+}
+
+static mpack_error_t mpack_track_pop_impl(mpack_track_t* track, mpack_type_t type, bool builder) {
     mpack_assert(track->elements, "null track elements!");
     mpack_log("track popping %s\n", mpack_type_to_string(type));
 
@@ -424,8 +461,23 @@ mpack_error_t mpack_track_pop(mpack_track_t* track, mpack_type_t type) {
         return mpack_error_bug;
     }
 
+    if (element->builder != builder) {
+        mpack_break("attempting to pop a %sbuilder but the open element is %sa builder",
+                builder ? "" : "non-",
+                element->builder ? "" : "not ");
+        return mpack_error_bug;
+    }
+
     --track->count;
     return mpack_ok;
+}
+
+mpack_error_t mpack_track_pop(mpack_track_t* track, mpack_type_t type) {
+    return mpack_track_pop_impl(track, type, false);
+}
+
+mpack_error_t mpack_track_pop_builder(mpack_track_t* track, mpack_type_t type) {
+    return mpack_track_pop_impl(track, type, true);
 }
 
 mpack_error_t mpack_track_peek_element(mpack_track_t* track, bool read) {
@@ -444,7 +496,7 @@ mpack_error_t mpack_track_peek_element(mpack_track_t* track, bool read) {
         return mpack_error_bug;
     }
 
-    if (element->left == 0 && !element->key_needs_value) {
+    if (!element->builder && element->left == 0 && !element->key_needs_value) {
         mpack_break("too many elements %s for %s", read ? "read" : "written",
                 mpack_type_to_string(element->type));
         return mpack_error_bug;
@@ -468,7 +520,8 @@ mpack_error_t mpack_track_element(mpack_track_t* track, bool read) {
         element->key_needs_value = false;
     }
 
-    --element->left;
+    if (!element->builder)
+        --element->left;
     return mpack_ok;
 }
 
@@ -476,7 +529,7 @@ mpack_error_t mpack_track_bytes(mpack_track_t* track, bool read, size_t count) {
     MPACK_UNUSED(read);
     mpack_assert(track->elements, "null track elements!");
 
-    if (count > UINT32_MAX) {
+    if (count > MPACK_UINT32_MAX) {
         mpack_break("%s more bytes than could possibly fit in a str/bin/ext!",
                 read ? "reading" : "writing");
         return mpack_error_bug;
@@ -644,7 +697,8 @@ bool mpack_utf8_check_no_null(const char* str, size_t bytes) {
 }
 
 bool mpack_str_check_no_null(const char* str, size_t bytes) {
-    for (size_t i = 0; i < bytes; ++i)
+    size_t i;
+    for (i = 0; i < bytes; ++i)
         if (str[i] == '\0')
             return false;
     return true;
@@ -693,3 +747,5 @@ void mpack_print_file_callback(void* context, const char* data, size_t count) {
     fwrite(data, 1, count, file);
 }
 #endif
+
+MPACK_SILENCE_WARNINGS_END
