@@ -192,11 +192,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\ldo.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lfunc.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lgc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\ljumptab.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\llex.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\llimits.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lmem.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lobject.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lopcodes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lopnames.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lparser.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lprefix.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\lua\lstate.h" />
@@ -214,7 +216,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lapi.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lauxlib.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lbaselib.c" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lbitlib.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lcode.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lcorolib.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lctype.c" />

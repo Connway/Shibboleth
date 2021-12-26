@@ -330,7 +330,7 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		NV_ENC_MEMORY_HEAP_AUTOSELECT, // deprecated: memory heap
 		NV_ENC_BUFFER_FORMAT_ARGB, // buffer format
 		0,
-		nullptr, // out input buffer
+		nullptr, // out: input buffer
 		nullptr, // pointer to existing memory
 		{ 0 },
 		{ 0 }
@@ -345,8 +345,36 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		return false;
 	}
 
+	NV_ENC_CREATE_BITSTREAM_BUFFER create_bitstream_buffer_params =
+	{
+		NV_ENC_CREATE_BITSTREAM_BUFFER_VER,
+		0, // deprecated: size
+		NV_ENC_MEMORY_HEAP_AUTOSELECT, // deprecated: memory heap
+		0, // reserved
+		nullptr, // out: bitstream buffer
+		nullptr, // out: reserved
+		{ 0 },
+		{ 0 }
+	};
+
+	result = nvenc_funcs.nvEncCreateBitstreamBuffer(encoder, &create_bitstream_buffer_params);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error.
+		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+		nvenc_funcs.nvEncDestroyInputBuffer(encoder, create_input_buffer_params.inputBuffer);
+		nvenc_funcs.nvEncDestroyEncoder(encoder);
+		return false;
+	}
+
 	out_id = getNextID();
-	_encoders[out_id] = StreamData{ encoder, create_input_buffer_params.inputBuffer };
+	_encoders[out_id] = StreamData
+	{
+		encoder,
+		create_input_buffer_params.inputBuffer,
+		create_bitstream_buffer_params.bitstreamBuffer
+	};
+
 	return true;
 }
 

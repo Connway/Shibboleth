@@ -97,8 +97,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ZIP_SUPPORT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\libtiff\port;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -116,8 +116,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;ZIP_SUPPORT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\libtiff\port;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -141,8 +141,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;ZIP_SUPPORT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\libtiff\port;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,8 +166,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ZIP_SUPPORT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\libtiff\port;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -188,17 +188,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\port\libport.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\port\libport_config.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\t4.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_config.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_config.vc.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_config.wince.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_dir.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_fax3.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tif_predict.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiff.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffconf.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffconf.vc.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffconf.wince.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffio.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffiop.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\libtiff\tiffvers.h" />
@@ -206,6 +204,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\mkg3states.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\port\dummy.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\port\getopt.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_aux.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_close.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_codec.c" />
@@ -225,6 +225,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_jbig.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_jpeg.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_jpeg_12.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_lerc.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_luv.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_lzma.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_lzw.c" />
@@ -242,9 +243,11 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_tile.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_version.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_warning.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_webp.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_win32.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_write.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_zip.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_zstd.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

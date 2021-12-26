@@ -46,6 +46,7 @@ private:
 	{
 		void* encoder;
 		void* input_buffer;
+		void* output_buffer;
 	};
 
 	VectorMap<int32_t, StreamData> _encoders/*{ ProxyAllocator() }*/;
