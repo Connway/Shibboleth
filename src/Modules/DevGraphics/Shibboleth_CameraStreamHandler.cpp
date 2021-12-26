@@ -46,6 +46,11 @@ void CameraStreamHandler::destroy(void)
 	const auto& nvenc_funcs = GetNVENCFuncs();
 
 	for (auto& encoder_entry : _encoders) {
+		NV_ENC_PIC_PARAMS pic_params = { 0 };
+		pic_params.encodePicFlags = NV_ENC_PIC_FLAGS::NV_ENC_PIC_FLAG_EOS;
+
+		nvenc_funcs.nvEncEncodePicture(encoder_entry.second.encoder, &pic_params);
+
 		nvenc_funcs.nvEncDestroyBitstreamBuffer(encoder_entry.second.encoder, encoder_entry.second.output_buffer);
 		nvenc_funcs.nvEncDestroyInputBuffer(encoder_entry.second.encoder, encoder_entry.second.input_buffer);
 		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second.encoder);
