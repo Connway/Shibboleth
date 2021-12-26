@@ -801,7 +801,7 @@ struct OptickApp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Scoped profiling event which automatically grabs current function name.
-// Use this macro 95% of the time.
+// Use tis macro 95% of the time.
 // Example A:
 //		void Function()
 //		{

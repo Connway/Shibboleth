@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\handle_form.inl">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\http2.inl">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\md5.inl">
       <Filter>src</Filter>
     </ClInclude>
@@ -36,11 +39,23 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_lua_shared.inl">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_mbedtls.inl">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_zlib.inl">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\openssl_dl.inl">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\response.inl">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sha1.inl">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.h">
+      <Filter>src\third_party</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\civetweb_lua.h">
       <Filter>src\third_party</Filter>
@@ -60,6 +75,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\civetweb.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\main.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.c">

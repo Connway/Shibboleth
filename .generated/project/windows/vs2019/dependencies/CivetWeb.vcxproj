@@ -216,12 +216,17 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\include\civetweb.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\civetweb_private_lua.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\handle_form.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\http2.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\md5.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_duktape.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_lua.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_lua_shared.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_mbedtls.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_zlib.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\openssl_dl.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\response.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sha1.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\civetweb_lua.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lfs.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\timer.inl" />
@@ -230,6 +235,7 @@ IF EXIST ..\..\..\..\build\windows\vs2019\output\x64\Optimized_Debug\$(TargetFil
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\CivetServer.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\civetweb.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\main.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lfs.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lsqlite3.c" />
