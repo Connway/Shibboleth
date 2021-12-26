@@ -46,6 +46,7 @@ void CameraStreamHandler::destroy(void)
 	const auto& nvenc_funcs = GetNVENCFuncs();
 
 	for (auto& encoder_entry : _encoders) {
+		nvenc_funcs.nvEncDestroyBitstreamBuffer(encoder_entry.second.encoder, encoder_entry.second.output_buffer);
 		nvenc_funcs.nvEncDestroyInputBuffer(encoder_entry.second.encoder, encoder_entry.second.input_buffer);
 		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second.encoder);
 	}
