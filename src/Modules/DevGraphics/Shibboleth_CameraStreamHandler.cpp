@@ -26,6 +26,11 @@ THE SOFTWARE.
 #include <Shibboleth_DevWebAttributes.h>
 #include <Shibboleth_DevWebUtils.h>
 
+#ifdef PLATFORM_WINDOWS
+	#include <Gleam_RenderOutput_Direct3D11.h>
+#endif
+
+
 SHIB_REFLECTION_DEFINE_BEGIN(CameraStreamHandler)
 	.classAttrs(DevWebCommandAttribute("/camera"))
 
@@ -45,18 +50,51 @@ void CameraStreamHandler::destroy(void)
 {
 	const auto& nvenc_funcs = GetNVENCFuncs();
 
-	for (auto& encoder_entry : _encoders) {
+	for (auto& stream_entry : _stream_data) {
+		// Flush encoder before destroying resources and encoder.
 		NV_ENC_PIC_PARAMS pic_params = { 0 };
 		pic_params.encodePicFlags = NV_ENC_PIC_FLAGS::NV_ENC_PIC_FLAG_EOS;
 
-		nvenc_funcs.nvEncEncodePicture(encoder_entry.second.encoder, &pic_params);
+		nvenc_funcs.nvEncEncodePicture(stream_entry.second.encoder, &pic_params);
 
-		nvenc_funcs.nvEncDestroyBitstreamBuffer(encoder_entry.second.encoder, encoder_entry.second.output_buffer);
-		nvenc_funcs.nvEncDestroyInputBuffer(encoder_entry.second.encoder, encoder_entry.second.input_buffer);
-		nvenc_funcs.nvEncDestroyEncoder(encoder_entry.second.encoder);
+		if (stream_entry.second.gleam_input) {
+			nvenc_funcs.nvEncUnregisterResource(stream_entry.second.encoder, stream_entry.second.gleam_input);
+		}
+
+		nvenc_funcs.nvEncDestroyBitstreamBuffer(stream_entry.second.encoder, stream_entry.second.output_buffer);
+		nvenc_funcs.nvEncDestroyInputBuffer(stream_entry.second.encoder, stream_entry.second.input_buffer);
+		nvenc_funcs.nvEncDestroyEncoder(stream_entry.second.encoder);
 	}
 
-	_encoders.clear();
+	_stream_data.clear();
+}
+
+bool CameraStreamHandler::createEncoder(Gleam::IRenderOutput& output, int32_t& out_id)
+{
+	// Currently only supporting D3D11.
+	if (output.getRendererType() != Gleam::RendererType::Direct3D11) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Gleam::IVec2 size = output.getSize();
+
+	if (!createEncoder(static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y), out_id)) {
+		// $TODO: Log error
+		return false;
+	}
+
+	switch (output.getRendererType()) {
+		case Gleam::RendererType::Direct3D11:
+			registerD3D11Resource(output, out_id);
+			break;
+
+		case Gleam::RendererType::Vulkan:
+			registerVulkanResource(output, out_id);
+			break;
+	}
+
+	return true;
 }
 
 bool CameraStreamHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
@@ -95,7 +133,7 @@ bool CameraStreamHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 	return true;
 }
 
-bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t& out_id)
+bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t& out_id, bool create_input_buffer)
 {
 	// Should do this per-video we are encoding.
 	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
@@ -342,13 +380,15 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		{ 0 }
 	};
 
-	result = nvenc_funcs.nvEncCreateInputBuffer(encoder, &create_input_buffer_params);
+	if (create_input_buffer) {
+		result = nvenc_funcs.nvEncCreateInputBuffer(encoder, &create_input_buffer_params);
 
-	if (result != NV_ENC_SUCCESS) {
-		// $TODO: Log error.
-		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
-		nvenc_funcs.nvEncDestroyEncoder(encoder);
-		return false;
+		if (result != NV_ENC_SUCCESS) {
+			// $TODO: Log error.
+			//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
+			nvenc_funcs.nvEncDestroyEncoder(encoder);
+			return false;
+		}
 	}
 
 	NV_ENC_CREATE_BITSTREAM_BUFFER create_bitstream_buffer_params =
@@ -374,19 +414,77 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 	}
 
 	out_id = getNextID();
-	_encoders[out_id] = StreamData
+	_stream_data[out_id] = StreamData
 	{
 		encoder,
 		create_input_buffer_params.inputBuffer,
-		create_bitstream_buffer_params.bitstreamBuffer
+		create_bitstream_buffer_params.bitstreamBuffer,
+		nullptr
 	};
 
 	return true;
 }
 
+bool CameraStreamHandler::registerVulkanResource(Gleam::IRenderOutput& output, int32_t out_id)
+{
+	GAFF_REF(output, out_id);
+	// $TODO: Log error.
+	return false;
+}
+
+bool CameraStreamHandler::registerD3D11Resource(Gleam::IRenderOutput& output, int32_t out_id)
+{
+#ifdef PLATFORM_WINDOWS
+	auto& actual_output = static_cast<Gleam::RenderOutputD3D11&>(output);
+	ID3D11Texture2D1* const back_buffer = actual_output.getBackBufferTexture();
+
+	if (!back_buffer) {
+		// $TODO: Log error
+		return false;
+	}
+
+	const Gleam::IVec2 size = output.getSize();
+
+	NV_ENC_REGISTER_RESOURCE reg_res_params =
+	{
+		NV_ENC_REGISTER_RESOURCE_VER,
+		NV_ENC_INPUT_RESOURCE_TYPE_DIRECTX,
+		static_cast<uint32_t>(size.x),
+		static_cast<uint32_t>(size.y),
+		0,
+		0,
+		back_buffer,
+		nullptr,
+		NV_ENC_BUFFER_FORMAT_ARGB, // $TODO: Make this handle other formats
+		NV_ENC_INPUT_IMAGE,
+		{ 0 },
+		{ 0 }
+	};
+
+	const auto& nvenc_funcs = GetNVENCFuncs();
+	const NVENCSTATUS result = nvenc_funcs.nvEncRegisterResource(_stream_data[out_id].encoder, &reg_res_params);
+
+	if (result != NV_ENC_SUCCESS) {
+		// $TODO: Log error
+		back_buffer->Release();
+		return false;
+	}
+
+	_stream_data[out_id].gleam_input = back_buffer;
+	back_buffer->Release(); // Still release here because encoder will hold onto a reference to this.
+
+	return true;
+
+#else
+	GAFF_REF(output, out_id);
+	// $TODO: Log error.
+	return false;
+#endif
+}
+
 int32_t CameraStreamHandler::getNextID(void)
 {
-	while (_encoders.find(_next_id) != _encoders.end()) {
+	while (_stream_data.find(_next_id) != _stream_data.end()) {
 		++_next_id;
 	}
 

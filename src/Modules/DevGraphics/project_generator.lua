@@ -65,10 +65,19 @@ local GenerateProject = function()
 
 			"CivetWeb",
 			"optick"
+
+			-- Vulkan
 		}
 
 		dependson(deps)
 		links(deps)
+
+		filter { "system:windows" }
+			links { "d3d11", "dxgi" }
+			--table.insert(deps, "D3dcompiler")
+			--table.insert(deps, "dxguid")
+
+		filter{}
 end
 
 local LinkDependencies = function()
@@ -84,4 +93,13 @@ local LinkDependencies = function()
 	links(deps)
 end
 
-return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }
+local FilterDependencies = function()
+	filter { "system:windows" }
+		links { "d3d11", "dxgi" }
+		--table.insert(deps, "D3dcompiler")
+		--table.insert(deps, "dxguid")
+
+	filter{}
+end
+
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies, FilterDependencies = FilterDependencies }

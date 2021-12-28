@@ -25,6 +25,11 @@ THE SOFTWARE.
 #include <Shibboleth_IDevWebHandler.h>
 #include <Shibboleth_Reflection.h>
 
+namespace Gleam
+{
+	class IRenderOutput;
+}
+
 NS_SHIBBOLETH
 
 class ECSManager;
@@ -35,6 +40,8 @@ public:
 	CameraStreamHandler(void);
 
 	void destroy(void) override;
+
+	bool createEncoder(Gleam::IRenderOutput& output, int32_t& out_id);
 
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
 	bool handlePut(CivetServer* server, mg_connection* conn) override;
@@ -47,12 +54,15 @@ private:
 		void* encoder;
 		void* input_buffer;
 		void* output_buffer;
+		void* gleam_input;
 	};
 
-	VectorMap<int32_t, StreamData> _encoders/*{ ProxyAllocator() }*/;
+	VectorMap<int32_t, StreamData> _stream_data/*{ ProxyAllocator() }*/;
 	int32_t _next_id = 0;
 
-	bool createEncoder(uint32_t width, uint32_t height, int32_t& out_id);
+	bool createEncoder(uint32_t width, uint32_t height, int32_t& out_id, bool create_input_buffer = false);
+	bool registerVulkanResource(Gleam::IRenderOutput& output, int32_t out_id);
+	bool registerD3D11Resource(Gleam::IRenderOutput& output, int32_t out_id);
 	int32_t getNextID(void);
 };
 

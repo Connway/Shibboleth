@@ -156,7 +156,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\optick64d.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\optick64d.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -190,7 +190,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\optick64.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\optick64.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -224,7 +224,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\optick64p.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\optick64p.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -258,7 +258,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\optick64od.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\optick64od.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>

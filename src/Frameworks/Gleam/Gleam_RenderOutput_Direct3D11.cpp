@@ -201,9 +201,27 @@ void RenderOutputD3D11::present(void)
 	_swap_chain->Present1(interval, _present_flags, &present_params);
 }
 
+const Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void) const
+{
+	return _swap_chain;
+}
+
 Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
 {
 	return _swap_chain;
+}
+
+const ID3D11Texture2D1* RenderOutputD3D11::getBackBufferTexture(void) const
+{
+	return const_cast<RenderOutputD3D11*>(this)->getBackBufferTexture();
+}
+
+ID3D11Texture2D1* RenderOutputD3D11::getBackBufferTexture(void)
+{
+	ID3D11Texture2D1* back_buffer_ptr = nullptr;
+	_swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_ptr));
+
+	return back_buffer_ptr;
 }
 
 D3D11_VIEWPORT RenderOutputD3D11::getViewport(void) const

@@ -45,7 +45,11 @@ public:
 
 	void present(void) override;
 
+	const Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void) const;
 	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
+	const ID3D11Texture2D1* getBackBufferTexture(void) const;
+	ID3D11Texture2D1* getBackBufferTexture(void);
+
 	D3D11_VIEWPORT getViewport(void) const;
 	bool isVSync(void) const;
 
