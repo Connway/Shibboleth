@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 #include "Shibboleth_Allocator.h"
-#include <rpmalloc.h>
 
 NS_SHIBBOLETH
 
@@ -96,11 +95,6 @@ void* ShibbolethRealloc(void* old_ptr, size_t new_size)
 void SetLogDir(const char* dir)
 {
 	g_allocator.setLogDir(dir);
-}
-
-void AllocatorThreadInit(void)
-{
-	coherent_rpmalloc::rpmalloc_thread_initialize();
 }
 
 NS_END

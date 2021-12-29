@@ -168,6 +168,8 @@ public:
 	virtual void removeOnFreeCallback(OnFreeCallback callback, void* data) = 0;
 
 	virtual int32_t getPoolIndex(const char* pool_name) = 0;
+	virtual size_t getUsableSize(const void* data) const = 0;
+
 	virtual void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) = 0;
 

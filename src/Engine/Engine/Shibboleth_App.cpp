@@ -998,7 +998,6 @@ void App::ModuleChanged(const char* path)
 
 void App::ThreadInit(uintptr_t /*thread_id*/)
 {
-	AllocatorThreadInit();
 }
 
 NS_END

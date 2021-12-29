@@ -35,9 +35,6 @@ intptr_t LogManager::LogThread(void* args)
 	OPTICK_THREAD(EA::Thread::GetThreadName());
 
 	LogManager& lm = *reinterpret_cast<LogManager*>(args);
-
-	AllocatorThreadInit();
-
 	const EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {

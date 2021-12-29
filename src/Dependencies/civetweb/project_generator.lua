@@ -44,6 +44,7 @@ project "CivetWeb"
 	{
 		"Engine",
 		"Memory",
+		"Gaff",
 		"Lua",
 		"sqlite",
 		"zlib-ng"

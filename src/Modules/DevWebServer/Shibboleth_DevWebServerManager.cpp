@@ -33,13 +33,6 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(DevWebServerManager)
 
-static void* InitThread(const mg_context*, int)
-{
-	AllocatorThreadInit();
-	return nullptr;
-}
-
-
 
 DevWebServerManager::DevWebServerManager(void)
 {
@@ -61,8 +54,6 @@ bool DevWebServerManager::init(void)
 
 	ProxyAllocator allocator("DevWeb");
 	CivetCallbacks callbacks;
-
-	callbacks.init_thread = InitThread;
 
 	_server.reset(SHIB_ALLOCT(CivetServer, allocator, options, &callbacks, this));
 

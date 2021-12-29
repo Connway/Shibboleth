@@ -22,25 +22,17 @@ THE SOFTWARE.
 
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
-//#include <Gaff_Assert.h>
+#include <Gaff_Assert.h>
 
-void* operator new(size_t count)
+void* operator new(size_t count) noexcept(false)
 {
 	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
-void* operator new[](size_t count)
+void* operator new[](size_t count) noexcept(false)
 {
 	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
-
-//void* operator new (size_t count, std::align_val_t al)
-//{
-//}
-
-//void* operator new[](size_t count, std::align_val_t al)
-//{
-//}
 
 void* operator new(size_t count, const std::nothrow_t&) noexcept
 {
@@ -52,15 +44,6 @@ void* operator new[](size_t count, const std::nothrow_t&) noexcept
 	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
-//void* operator new(size_t count, std::align_val_t al, const std::nothrow_t&) noexcept
-//{
-//}
-
-//void* operator new[](size_t count, std::align_val_t al, const std::nothrow_t&) noexcept
-//{
-//}
-
-
 void operator delete(void* ptr) noexcept
 {
 	SHIB_FREE(ptr, Shibboleth::GetAllocator());
@@ -71,49 +54,73 @@ void operator delete[](void* ptr) noexcept
 	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
-//void operator delete(void* ptr, std::align_val_t al) noexcept
-//{
-//}
-//
-//void operator delete[](void* ptr, std::align_val_t al) noexcept
-//{
-//}
-
-void operator delete(void* ptr, size_t) noexcept
+#if (__cplusplus >= 201402L || _MSC_VER >= 1916)
+void operator delete(void* ptr, size_t size) noexcept
 {
+	auto& allocator = Shibboleth::GetAllocator();
+	GAFF_ASSERT(ptr == NULL || size <= allocator.getUsableSize(ptr));
+	SHIB_FREE(ptr, allocator);
+}
+
+void operator delete[](void* ptr, size_t size) noexcept
+{
+	auto& allocator = Shibboleth::GetAllocator();
+	GAFF_ASSERT(ptr == NULL || size <= allocator.getUsableSize(ptr));
+	SHIB_FREE(ptr, allocator);
+}
+#endif
+
+#if (__cplusplus > 201402L || defined(__cpp_aligned_new))
+void* operator new (size_t count, std::align_val_t al) noexcept(false)
+{
+	return SHIB_ALLOC_ALIGNED(count, static_cast<size_t>(al), Shibboleth::GetAllocator());
+}
+
+void* operator new[](size_t count, std::align_val_t al) noexcept(false)
+{
+	return SHIB_ALLOC_ALIGNED(count, static_cast<size_t>(al), Shibboleth::GetAllocator());
+}
+
+void* operator new(size_t count, std::align_val_t al, const std::nothrow_t&) noexcept
+{
+	return SHIB_ALLOC_ALIGNED(count, static_cast<size_t>(al), Shibboleth::GetAllocator());
+}
+
+void* operator new[](size_t count, std::align_val_t al, const std::nothrow_t&) noexcept
+{
+	return SHIB_ALLOC_ALIGNED(count, static_cast<size_t>(al), Shibboleth::GetAllocator());
+}
+
+void operator delete(void* ptr, std::align_val_t al) noexcept
+{
+	GAFF_ASSERT(((uintptr_t)ptr % static_cast<size_t>(al)) == 0);
 	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
-void operator delete[](void* ptr, size_t) noexcept
+void operator delete[](void* ptr, std::align_val_t al) noexcept
 {
+	GAFF_ASSERT(((uintptr_t)ptr % static_cast<size_t>(al)) == 0);
 	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
-//void operator delete(void* ptr, std::size_t sz, std::align_val_t al) noexcept
-//{
-//}
-//
-//void operator delete[](void* ptr, std::size_t sz, std::align_val_t al) noexcept
-//{
-//}
-
-void operator delete(void* ptr, const std::nothrow_t&) noexcept
+void operator delete(void* ptr, std::size_t size, std::align_val_t al) noexcept
 {
-	SHIB_FREE(ptr, Shibboleth::GetAllocator());
+	auto& allocator = Shibboleth::GetAllocator();
+
+	GAFF_ASSERT(((uintptr_t)ptr % static_cast<size_t>(al)) == 0);
+	GAFF_ASSERT(ptr == NULL || size <= allocator.getUsableSize(ptr));
+	SHIB_FREE(ptr, allocator);
 }
 
-void operator delete[](void* ptr, const std::nothrow_t&) noexcept
+void operator delete[](void* ptr, std::size_t size, std::align_val_t al) noexcept
 {
-	SHIB_FREE(ptr, Shibboleth::GetAllocator());
+	auto& allocator = Shibboleth::GetAllocator();
+
+	GAFF_ASSERT(((uintptr_t)ptr % static_cast<size_t>(al)) == 0);
+	GAFF_ASSERT(ptr == NULL || size <= allocator.getUsableSize(ptr));
+	SHIB_FREE(ptr, allocator);
 }
-
-//void operator delete(void* ptr, std::align_val_t al, const std::nothrow_t&) noexcept
-//{
-//}
-
-//void operator delete[](void* ptr, std::align_val_t al, const std::nothrow_t&) noexcept
-//{
-//}
+#endif
 
 void* operator new[](size_t size, const char* /*pName*/, int /*flags*/, unsigned /*debugFlags*/, const char* file, int line)
 {

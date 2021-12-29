@@ -29,30 +29,19 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 #include <EASTL/algorithm.h>
-#include <rpmalloc.h>
+#include <mimalloc.h>
 
 MSVC_DISABLE_WARNING_PUSH(4324)
 
-//#define GATHER_ALLOCATION_STACKTRACE
-
-#ifdef GATHER_ALLOCATION_STACKTRACE
+#if defined(CHECK_FOR_LEAKS) && defined(GATHER_ALLOCATION_STACKTRACE)
 	#include <Gaff_StackTrace.h>
 #endif
 
-namespace coherent_rpmalloc
-{
-	void* rpmalloc_allocate_memory_external(size_t bytes)
-	{
-		return malloc(bytes);
-	}
-
-	void rpmalloc_deallocate_memory_external(void* ptr)
-	{
-		free(ptr);
-	}
-}
 
 NS_SHIBBOLETH
+
+// Should we change this to being a footer? If the data comes at the end of the data,
+// then we don't have to ensure the header/footer data is aligned.
 
 // Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
 struct alignas(16) AllocationHeader
@@ -62,11 +51,14 @@ struct alignas(16) AllocationHeader
 	char file[256] = { 0 };
 	int line = 0;
 
-	static constexpr int32_t s_num_free_callbacks = 4;
-	Allocator::OnFreeCallback free_callbacks[s_num_free_callbacks] = { nullptr };
+	// Not a huge fan of adding this to the header data.
+	static constexpr int32_t k_num_free_callbacks = 4;
+	Allocator::OnFreeCallback free_callbacks[k_num_free_callbacks] = { nullptr };
 
+#if REQUIRES_HEADER_LIST
 	AllocationHeader* next = nullptr;
 	AllocationHeader* prev = nullptr;
+#endif
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
 	Gaff::StackTrace trace;
@@ -74,24 +66,19 @@ struct alignas(16) AllocationHeader
 };
 
 
-Allocator::Allocator(void):
-	_list_head(nullptr)
+Allocator::Allocator(void)
 {
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[0];
 	mem_pool_info.total_bytes_allocated = 0;
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE - 1);
-
-	coherent_rpmalloc::rpmalloc_initialize();
 }
 
 Allocator::~Allocator(void)
 {
 	writeAllocationLog();
 	writeLeakLog();
-
-	coherent_rpmalloc::rpmalloc_finalize();
 }
 
 void* Allocator::allocate(size_t n, int flags)
@@ -124,7 +111,7 @@ void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
 {
 	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 
-	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
+	for (int32_t i = 0; i < AllocationHeader::k_num_free_callbacks; ++i) {
 		if (!header->free_callbacks[i]) {
 			header->free_callbacks[i] = callback;
 			return;
@@ -138,7 +125,7 @@ void Allocator::removeOnFreeCallback(OnFreeCallback callback, void* data)
 {
 	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 
-	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
+	for (int32_t i = 0; i < AllocationHeader::k_num_free_callbacks; ++i) {
 		if (header->free_callbacks[i] == callback) {
 			header->free_callbacks[i] = nullptr;
 			break;
@@ -164,9 +151,15 @@ int32_t Allocator::getPoolIndex(const char* pool_name)
 	return index + 1;
 }
 
+size_t Allocator::getUsableSize(const void* data) const
+{
+	const AllocationHeader* const header = reinterpret_cast<const AllocationHeader*>(reinterpret_cast<const int8_t*>(data) - sizeof(AllocationHeader));
+	return mi_usable_size(header);
+}
+
 void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line)
 {
-	void* data = coherent_rpmalloc::rpaligned_alloc(alignment, size_bytes + sizeof(AllocationHeader));
+	void* data = mi_malloc_aligned(size_bytes + sizeof(AllocationHeader), alignment);
 
 	if (data) {
 		setHeaderData(
@@ -185,7 +178,7 @@ void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, 
 
 void* Allocator::alloc(size_t size_bytes, int32_t pool_index, const char* file, int line)
 {
-	void* data = coherent_rpmalloc::rpmalloc(size_bytes + sizeof(AllocationHeader));
+	void* data = mi_malloc(size_bytes + sizeof(AllocationHeader));
 
 	if (data) {
 		setHeaderData(
@@ -218,37 +211,50 @@ void Allocator::free(void* data)
 		return;
 	}
 
-	//GAFF_ASSERT(data);
-
-	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
-
-	//AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
+#if defined(CHECK_FOR_MISALIGNED_POINTER)
 	AllocationHeader* header = nullptr;
+#else
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
+#endif
 
+#if REQUIRES_HEADER_LIST
 	_alloc_lock.Lock();
 
-	//bool found = false;
+	#ifdef CHECK_FOR_MISALIGNED_POINTER
+	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
 	for (AllocationHeader* list = _list_head; list; list = list->next) {
+		// Checking data range because we could be requesting a free from an interface pointer.
 		if (data >= reinterpret_cast<int8_t*>(list) + sizeof(AllocationHeader) &&
 			data < reinterpret_cast<int8_t*>(list) + list->alloc_size + sizeof(AllocationHeader)) {
 
 			header = list;
 			break;
 		}
-
-		//if (header == list) {
-		//	found = true;
-		//	break;
-		//}
 	}
 
-	//GAFF_ASSERT(found);
+	#ifdef CHECK_FOR_DOUBLE_FREE
 	GAFF_ASSERT(header);
+	#endif
 
-	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
-	++mem_pool_info.num_frees;
+	// Check if we did not free on header boundary.
+	const AllocationHeader* const header_from_pointer = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
+	GAFF_ASSERT(header == header_from_pointer);
 
-	// Process the free
+	#elif defined(CHECK_FOR_DOUBLE_FREE)
+	bool found = false;
+
+	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
+	for (AllocationHeader* list = _list_head; list; list = list->next) {
+		if (list == header) {
+			found = true;
+			break;
+		}
+	}
+
+	GAFF_ASSERT(found);
+#endif
+
+	// Process the free.
 	if (header->prev) {
 		header->prev->next = header->next;
 	}
@@ -262,6 +268,11 @@ void Allocator::free(void* data)
 	}
 
 	_alloc_lock.Unlock();
+#endif
+
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
+	mem_pool_info.curr_bytes_allocated -= header->alloc_size;
+	++mem_pool_info.num_frees;
 
 	for (OnFreeCallback callback : header->free_callbacks) {
 		if (callback) {
@@ -269,7 +280,7 @@ void Allocator::free(void* data)
 		}
 	}
 
-	coherent_rpmalloc::rpfree(header);
+	mi_free(header);
 }
 
 void* Allocator::calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line)
@@ -383,6 +394,7 @@ void Allocator::setHeaderData(
 	// Add the allocation statistics.
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[pool_index];
 	mem_pool_info.total_bytes_allocated += size_bytes;
+	mem_pool_info.curr_bytes_allocated += size_bytes;
 	++mem_pool_info.num_allocations;
 
 	// Set the header data.
@@ -391,13 +403,17 @@ void Allocator::setHeaderData(
 	strncpy_s(header->file, file, ARRAY_SIZE(header->file) - 1);
 	header->pool_index = pool_index;
 	header->line = line;
-	header->next = header->prev = nullptr;
 	memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));
+
+#if REQUIRES_HEADER_LIST
+	header->next = header->prev = nullptr;
+#endif
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
 	header->trace.captureStack("", 16, 3);
 #endif
 
+#if REQUIRES_HEADER_LIST
 	// Add to the leak list.
 	_alloc_lock.Lock();
 
@@ -410,6 +426,7 @@ void Allocator::setHeaderData(
 	_list_head = header;
 
 	_alloc_lock.Unlock();
+#endif
 }
 
 void Allocator::writeAllocationLog(void) const
@@ -476,6 +493,7 @@ void Allocator::writeAllocationLog(void) const
 
 void Allocator::writeLeakLog(void) const
 {
+#ifdef CHECK_FOR_LEAKS
 	if (!_list_head || !Gaff::CreateDir(_log_dir, 0777)) {
 		return;
 	}
@@ -498,7 +516,7 @@ void Allocator::writeLeakLog(void) const
 	for (AllocationHeader* header = _list_head; header;) {
 		const char* const pool_name = _tagged_pools[header->pool_index].pool_name;
 
-#ifdef GATHER_ALLOCATION_STACKTRACE
+	#ifdef GATHER_ALLOCATION_STACKTRACE
 		log.printf("Address 0x%p [%s]:\n", reinterpret_cast<const int8_t*>(header) + sizeof(AllocationHeader), pool_name);
 
 		const int32_t frames = header->trace.getNumCapturedFrames();
@@ -514,15 +532,16 @@ void Allocator::writeLeakLog(void) const
 		}
 
 		log.printf("\n");
-#else
+	#else
 		log.printf("%s:(%i) [%s]\n", header->file, header->line, pool_name);
-#endif
+	#endif
 
 		AllocationHeader* const old_header = header;
 		header = header->next;
 
-		coherent_rpmalloc::rpfree(old_header);
+		mi_free(old_header);
 	}
+#endif
 }
 
 NS_END

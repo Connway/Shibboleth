@@ -55,6 +55,5 @@ MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignm
 MEMORY_API void* ShibbolethRealloc(void* old_ptr, size_t new_size);
 
 MEMORY_API void SetLogDir(const char* dir);
-MEMORY_API void AllocatorThreadInit(void);
 
 NS_END

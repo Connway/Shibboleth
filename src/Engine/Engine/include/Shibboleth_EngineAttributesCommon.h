@@ -170,7 +170,6 @@ public:
 			broadcaster.listen(MemberFunc(instance, _const_func)) :
 			broadcaster.listen(MemberFunc(instance, _func));
 
-
 		s_removers.emplace(object, BroadcastRemover(id, broadcaster));
 		GetAllocator().addOnFreeCallback(OnFree, object);
 	}

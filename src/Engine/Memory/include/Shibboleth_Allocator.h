@@ -23,10 +23,16 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IAllocator.h"
-#include <EAThread/eathread_mutex.h>
 #include <EASTL/fixed_vector.h>
 #include <Gaff_Hash.h>
 #include <atomic>
+
+#define REQUIRES_HEADER_LIST CHECK_FOR_DOUBLE_FREE || CHECK_FOR_LEAKS || CHECK_FOR_MISALIGNED_POINTER
+
+#if REQUIRES_HEADER_LIST
+	#include <EAThread/eathread_spinlock.h>
+#endif
+
 
 #define NUM_TAG_POOLS 32
 #define POOL_NAME_SIZE 32
@@ -53,6 +59,8 @@ public:
 	void removeOnFreeCallback(OnFreeCallback callback, void* data) override;
 
 	int32_t getPoolIndex(const char* pool_name) override;
+	size_t getUsableSize(const void* data) const override;
+
 	void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) override;
 	void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) override;
 
@@ -82,23 +90,28 @@ private:
 	struct MemoryPoolInfo
 	{
 		MemoryPoolInfo(void):
-			total_bytes_allocated(0), num_allocations(0),
+			total_bytes_allocated(0),
+			curr_bytes_allocated(0),
+			num_allocations(0),
 			num_frees(0)
 		{
 			pool_name[0] = 0;
 		}
 
 		std::atomic_size_t total_bytes_allocated;
+		std::atomic_size_t curr_bytes_allocated;
 		std::atomic_size_t num_allocations;
 		std::atomic_size_t num_frees;
 		char pool_name[POOL_NAME_SIZE];
 	};
 
-	AllocationHeader* _list_head;
+#if REQUIRES_HEADER_LIST
+	EA::Thread::SpinLock _alloc_lock;
+	AllocationHeader* _list_head = nullptr;
+#endif
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS, false> _tag_ids;
-	EA::Thread::Mutex _alloc_lock;
 
 	char _log_dir[64] = { '.', '/', 'l', 'o', 'g', 's', 0 };
 

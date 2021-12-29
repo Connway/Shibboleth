@@ -14,21 +14,33 @@ project "Memory"
 		"include",
 		"../Engine/include",
 		"../../Frameworks/Gaff/include",
-		"../../Dependencies/rpmalloc",
+		"../../Dependencies/mimalloc/include",
 		"../../Dependencies/EASTL/include"
 	}
 
-	dependson { "Gaff", "EASTL", "rpmalloc" }
-	links { "Gaff", "EASTL", "rpmalloc" }
+	local deps =
+	{
+		"Gaff",
+		"EASTL",
+		"mimalloc"
+	}
+
+	dependson(deps)
+	links(deps)
 
 	flags { "FatalWarnings" }
+
+	filter { "configurations:*Debug* or *Optimized_Debug*" }
+		defines { "CHECK_FOR_DOUBLE_FREE", "CHECK_FOR_LEAKS", "CHECK_FOR_MISALIGNED_POINTER" }
+
+	filter { "configurations:*Release* or *Profile*" }
+		defines { "CHECK_FOR_LEAKS" }
 
 	filter { "system:windows"--[[, "options:symbols"--]] }
 		links { "Dbghelp" }
 
 	-- filter { "system:windows" }
 	-- 	links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-
 
 	filter {}
 
