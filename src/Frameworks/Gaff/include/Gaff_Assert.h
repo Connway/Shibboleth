@@ -49,6 +49,14 @@ NS_GAFF
 	#define GAFF_ASSERT_MSG(expr, msg, ...)
 #endif
 
+#ifdef _MSC_VER
+	// If we're on the MS compiler, just static_assert.
+	#define GAFF_TEMPLATE_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
+#else
+	// Otherwise, just runtime assert.
+	#define GAFF_TEMPLATE_STATIC_ASSERT(expr, msg) GAFF_ASSERT_MSG(expr, msg)
+#endif
+
 using AssertHandler = void (*)(const char* msg, const char* expr, const char* file, int line);
 void DefaultAssertHandler(const char* msg, const char* expr, const char* file, int line);
 

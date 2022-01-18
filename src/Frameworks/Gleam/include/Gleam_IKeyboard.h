@@ -37,8 +37,8 @@ public:
 
 	virtual bool init(IWindow& window, bool no_windows_key) = 0;
 	virtual bool init(bool no_windows_key) = 0;
-	virtual bool init(IWindow& window) = 0;
-	virtual bool init(void) = 0;
+	virtual bool init(IWindow& window) override = 0;
+	virtual bool init(void) override = 0;
 
 	void destroy(void) override
 	{

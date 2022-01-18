@@ -28,3 +28,6 @@ Libraries Affected:
 
 	zlib-ng
 		Fixed compilation error on Linux when compiling on a system that does not support AVX.
+
+	EASTL
+		Fixed compilation error on Linux with bitvector.

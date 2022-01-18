@@ -96,7 +96,7 @@ public:
 
 protected:
 	Vector<eastl::function<void (void)>, Allocator> _on_defined_callbacks;
-	typename RefDefType<T, Allocator>* _ref_def = nullptr;
+	RefDefType<T, Allocator>* _ref_def = nullptr;
 	ReflectionVersion<T> _version;
 	bool _defined = false;
 };

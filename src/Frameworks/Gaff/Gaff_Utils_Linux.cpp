@@ -60,16 +60,9 @@ bool SetWorkingDir(const char* directory)
 	return !chdir(directory);
 }
 
-void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t /*offset*/)
-{
-	return AlignedMalloc(size, alignment);
-}
-
 void* AlignedMalloc(size_t size, size_t alignment)
 {
-	void* data;
-	memalign(&data, alignment, size);
-	return data;
+	return aligned_alloc(alignment, size);
 }
 
 void AlignedFree(void* data)

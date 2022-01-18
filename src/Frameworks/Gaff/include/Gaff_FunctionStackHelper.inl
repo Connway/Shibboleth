@@ -289,7 +289,7 @@ bool CallFunc(
 			}
 
 		} else if constexpr (is_vector) {
-			static_assert(false, "Currently can't pass vector's to functions from script.");
+			GAFF_TEMPLATE_STATIC_ASSERT(false, "Currently can't pass vector's to functions from script.");
 
 		} else {
 			if (entry.ref_def != &GAFF_REFLECTION_NAMESPACE::Reflection<FinalType>::GetReflectionDefinition()) {
@@ -340,7 +340,7 @@ bool CallFunc(
 			ret.value.vp = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 
 		} else {
-			static_assert(false, "Cannot return void* when we don't know what to cast to. Last arg to function must be a const IReflectionDefinition[&/*].");
+			GAFF_TEMPLATE_STATIC_ASSERT(false, "Cannot return void* when we don't know what to cast to. Last arg to function must be a const IReflectionDefinition[&/*].");
 		}
 
 	} else if constexpr (std::is_same<const char*, Ret>::value) {
@@ -432,7 +432,8 @@ bool CallFunc(
 				RetType value = CallCallable(callable, object, std::forward<CurrentArgs>(current_args)...);
 
 				if constexpr (is_vector) {
-					static_assert(false, "Stack functions do not support returning a vector by value.");
+					GAFF_TEMPLATE_STATIC_ASSERT(false, "Stack functions do not support returning a vector by value.");
+
 					//ret.value.arr.data = GAFF_ALLOC(sizeof(FinalType) * value.size(), allocator);
 					//ret.flags.set(true, FunctionStackEntry::Flag::IsArray);
 

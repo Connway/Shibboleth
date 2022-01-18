@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_Assert.h"
 #include <EASTL/bitset.h>
 
 NS_GAFF

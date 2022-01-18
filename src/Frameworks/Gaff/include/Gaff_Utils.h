@@ -49,10 +49,8 @@ void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Ge
 void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
 bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
-void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 bool SetWorkingDir(const char* directory);
 
-void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset);
 void* AlignedMalloc(size_t size, size_t alignment);
 void AlignedFree(void* data);
 

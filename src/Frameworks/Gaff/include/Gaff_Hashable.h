@@ -39,9 +39,10 @@ THE SOFTWARE.
 	template <> \
 	constexpr auto GetName<type>(void) \
 	{ \
-		const char* const name = #type; \
+		constexpr const char* const name = #type; \
+		constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 		Gaff::ArrayString<char, eastl::CharStrlen(name) + 1> name_arr; \
-		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+		for (int32_t i = 0; i < len; ++i) { \
 			name_arr.data.mValue[i] = name[i]; \
 		} \
 		return name_arr; \
@@ -56,9 +57,10 @@ THE SOFTWARE.
 	template <> \
 	constexpr auto GetName<type&>(void) \
 	{ \
-		const char* const name = #type; \
+		constexpr const char* const name = #type; \
+		constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 		Gaff::ArrayString<char, eastl::CharStrlen(name) + 2> name_arr; \
-		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+		for (int32_t i = 0; i < len; ++i) { \
 			name_arr.data.mValue[i] = name[i]; \
 		} \
 		name_arr.data.mValue[name_arr.data.size() - 2] = '&'; \
@@ -72,9 +74,10 @@ THE SOFTWARE.
 	template <> \
 	constexpr auto GetName<type*>(void) \
 	{ \
-		const char* const name = #type; \
+		constexpr const char* const name = #type; \
+		constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 		Gaff::ArrayString<char, eastl::CharStrlen(name) + 2> name_arr; \
-		for (int32_t i = 0; i < eastl::CharStrlen(name); ++i) { \
+		for (int32_t i = 0; i < len; ++i) { \
 			name_arr.data.mValue[i] = name[i]; \
 		} \
 		name_arr.data.mValue[name_arr.data.size() - 2] = '*'; \
@@ -128,34 +131,18 @@ THE SOFTWARE.
 
 NS_HASHABLE
 
-template <class First, class... Rest>
-constexpr auto GetNameHelper(void)
-{
-	if constexpr (sizeof...(Rest) > 0) {
-		const auto name = GetNameHelper<First>();
-		const auto rest_name = GetNameHelper<Rest...>();
-		const auto comma = Gaff::MakeArrayString(", ");
-
-		const auto final_str = name + comma + rest_name;
-		return final_str;
-
-	} else {
-		return GetName<First>();
-	}
-}
-
 template <class... T>
 struct TemplateClassHashableHelper final
 {
 	static constexpr auto GetName(void)
 	{
-		static_assert(false, "Did not overload GetName() for type.");
+		GAFF_TEMPLATE_STATIC_ASSERT(false, "Did not overload GetName() for type.");
 		return Gaff::MakeArrayString("ERROR: No Class Name");
 	}
 
 	static constexpr Gaff::Hash64 GetHash(void)
 	{
-		static_assert(false, "Did not overload GetHash() for type.");
+		GAFF_TEMPLATE_STATIC_ASSERT(false, "Did not overload GetHash() for type.");
 		return Gaff::k_init_hash64;
 	}
 };
@@ -170,6 +157,23 @@ template <class T>
 constexpr Gaff::Hash64 GetHash(void)
 {
 	return TemplateClassHashableHelper<T>::GetHash();
+}
+
+template <class First, class... Rest>
+constexpr auto GetNameHelper(void)
+{
+	if constexpr (sizeof...(Rest) > 0) {
+		const auto name = GetNameHelper<First>();
+		const auto rest_name = GetNameHelper<Rest...>();
+		const auto comma = Gaff::MakeArrayString(", ");
+
+		const auto final_str = name + comma + rest_name;
+		return final_str;
+
+	}
+	else {
+		return GetName<First>();
+	}
 }
 
 GAFF_CLASS_HASHABLE_NO_REF(void)

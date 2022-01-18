@@ -215,6 +215,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Linux.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Windows.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
@@ -269,6 +270,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SparseStack.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace_Linux.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Utils.h" />
@@ -279,7 +281,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Assert.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Common.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_FileWatcher_Windows.cpp" />
@@ -289,8 +293,10 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePack.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePackSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_ReflectionBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Common.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Windows.cpp" />
   </ItemGroup>

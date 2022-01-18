@@ -20,7 +20,6 @@ project "Gaff"
 
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
-		excludes { "**/*_Linux.*", "*_Linux.*" }
 
 	filter {}
 

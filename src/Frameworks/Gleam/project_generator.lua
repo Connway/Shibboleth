@@ -8,8 +8,8 @@ project "Gleam"
 
 	flags { "FatalWarnings" }
 
-	filter { "action:not vs*", "configurations:*Clang" }
-		buildoptions { "-Wno-varargs" }
+	--filter { "action:not vs*", "configurations:*Clang" }
+	--	buildoptions { "-Wno-varargs" }
 
 	filter {}
 
@@ -23,5 +23,10 @@ project "Gleam"
 		"../../Dependencies/vulkan",
 		"../../Dependencies/glm"
 	}
+
+	filter { "system:not windows" }
+		excludes { "**/*_Direct3D11.*", "*_Direct3D11.*" }
+
+	filter {}
 
 	SetupConfigMap()

@@ -177,6 +177,12 @@ bool CheckVariableCondition::evaluate(const StateMachine& owner, VariableSet::In
 
 		case VariableSet::VariableType::Bool:
 			return Evaluate<bool>(variables.bools[_var_index], _bool, _operation);
+
+		case VariableSet::VariableType::Reference:
+			// Not supported.
+
+		default:
+			break;
 	}
 
 	return false;

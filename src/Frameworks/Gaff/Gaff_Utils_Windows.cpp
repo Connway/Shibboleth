@@ -65,11 +65,6 @@ bool SetWorkingDir(const char* directory)
 	return SetCurrentDirectoryW(temp) != 0;
 }
 
-void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset)
-{
-	return _aligned_offset_malloc(size, alignment, offset);
-}
-
 void* AlignedMalloc(size_t size, size_t alignment)
 {
 	return _aligned_malloc(size, alignment);
