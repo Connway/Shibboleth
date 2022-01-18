@@ -1,6 +1,10 @@
 #pragma once
 
-#include <stdint.h> // For size_t
+#ifdef _WIN32
+	#include <stdint.h> // For size_t
+#else
+	#include <stddef.h> // For size_t
+#endif
 
 //#define MPACK_EXTENSIONS 1
 

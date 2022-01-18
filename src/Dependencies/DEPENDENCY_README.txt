@@ -1,9 +1,5 @@
-This folder contains libraries that are slightly modified. What I mean by this is
-I added underscores to some of the function calls so that Visual Studio 2017 would
-stop giving errors about using POSIX names instead of ISO C++ names and other similarly
-trivial compilation fixes. I have also added a custom config header for projects
-that require them. My config header simply includes the appropriate header for
-the OS it is being compiled on.
+This folder contains libraries that are slightly modified. I have also added a custom config header
+for projects that require them.
 
 While not that much different than the original source, these packages ARE NOT
 the original source.
@@ -12,15 +8,13 @@ Libraries Affected:
 	assimp
 		Fixing RAPIDJSON_HAS_STDSTRING not being defined before inclusion of rapidjson.
 
-	LibTIFF
-		Can't remember, probably compilation errors.
-
 	minizip
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level.
 
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.
 		Changed GetModuleHandle() -> GetModuleHandleA().
+		Fixed compilation error in GuGJKType.h not returning a const reference.
 
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
@@ -31,3 +25,6 @@ Libraries Affected:
 
 	Optick
 		Made Optick::BeginFrame() and Optick::EndFrame() functions a little more friendly when frames overlap.
+
+	zlib-ng
+		Fixed compilation error on Linux when compiling on a system that does not support AVX.

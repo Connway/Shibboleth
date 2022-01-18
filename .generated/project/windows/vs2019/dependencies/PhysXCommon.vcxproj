@@ -397,7 +397,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmMathUtils.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPtrTable.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSort.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmRadixSortBuffered.cpp" />

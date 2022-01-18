@@ -16,8 +16,8 @@ project "libpng"
 	filter { "configurations:Debug* or Optimized_Debug*" }
 		defines { "PNG_DEBUG" }
 
-	filter { "action:not vs*", "toolset:gcc or clang" }
-		buildoptions { "-fPIC" }
+	--filter { "action:not vs*", "toolset:gcc or clang" }
+	--	buildoptions { "-fPIC" }
 
 	filter {}
 

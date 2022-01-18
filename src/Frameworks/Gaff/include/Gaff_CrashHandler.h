@@ -32,5 +32,6 @@ void SetCrashHandler(CrashHandler crash_handler);
 void DefaultCrashHandler(void* crash_data);
 
 void InitializeCrashHandler(void);
+void UninitializeCrashHandler(void);
 
 NS_END

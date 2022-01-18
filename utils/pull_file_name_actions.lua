@@ -1,7 +1,7 @@
 newoption
 {
 	trigger = "pull_vs_proj",
-	description = "Cleans the build outputs and builds the project. ('build' only)"
+	description = "The Visual Studio project file to pull file paths from."
 }
 
 newoption

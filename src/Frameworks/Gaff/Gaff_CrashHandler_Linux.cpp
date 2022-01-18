@@ -39,7 +39,8 @@ struct CrashData
 	void* context;
 };
 
-static uint8_t g_alternate_stack[SIGSTKSZ] = { 0 };
+//static uint8_t g_alternate_stack[SIGSTKSZ] = { 0 };
+static uint8_t* g_alternate_stack = nullptr;
 static CrashData g_crash_data;
 
 static void ExceptionHandler(int sig, siginfo_t* siginfo, void* context)
@@ -114,6 +115,14 @@ void InitializeCrashHandler(void)
 	rlimit core_limits;
 	core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
 	setrlimit(RLIMIT_CORE, &core_limits);
+
+	g_alternate_stack = new uint8_t[SIGSTKSZ];
+}
+
+void UninitializeCrashHandler(void)
+{
+	delete[] g_alternate_stack;
+	g_alternate_stack = nullptr;
 }
 
 NS_END

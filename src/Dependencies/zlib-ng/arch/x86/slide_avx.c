@@ -15,6 +15,7 @@
 #include <immintrin.h>
 
 Z_INTERNAL void slide_hash_avx2(deflate_state *s) {
+#ifdef X86_AVX2
     Pos *p;
     unsigned n;
     uint16_t wsize = (uint16_t)s->w_size;
@@ -44,4 +45,7 @@ Z_INTERNAL void slide_hash_avx2(deflate_state *s) {
         p -= 16;
         n -= 16;
     } while (n > 0);
+#else
+    (void)s;
+#endif
 }

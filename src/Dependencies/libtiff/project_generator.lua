@@ -18,8 +18,8 @@ project "libtiff"
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	filter { "action:not vs*", "toolset:gcc or clang" }
-		buildoptions { "-fPIC" }
+	--filter { "action:not vs*", "toolset:gcc or clang" }
+	--	buildoptions { "-fPIC" }
 
 	filter {}
 

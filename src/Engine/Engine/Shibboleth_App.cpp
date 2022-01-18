@@ -63,6 +63,7 @@ App::App(void)
 
 App::~App(void)
 {
+	Gaff::UninitializeCrashHandler();
 }
 
 // Still single-threaded at this point, so ok that we're not locking.

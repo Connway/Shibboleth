@@ -117,6 +117,10 @@ void InitializeCrashHandler(void)
 	SetUnhandledExceptionFilter(ExceptionHandler);
 }
 
+void UninitializeCrashHandler(void)
+{
+}
+
 NS_END
 
 #endif

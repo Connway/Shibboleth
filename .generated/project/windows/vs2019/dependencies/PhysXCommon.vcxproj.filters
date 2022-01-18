@@ -701,9 +701,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmCollection.cpp">
       <Filter>source\common\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmMathUtils.cpp">
-      <Filter>source\common\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src\CmPtrTable.cpp">
       <Filter>source\common\src</Filter>
     </ClCompile>

@@ -22,12 +22,20 @@ project "optick"
 	-- 	"$(VULKAN_SDK)/Lib",
 	-- }
 
-	links
+	--[[links
 	{
-		"d3d12",
-		"dxgi",
-		-- "vulkan-1"
-	}
+		"vulkan-1"
+	}--]]
+
+	filter { "system:windows" }
+		links
+		{
+			"d3d12",
+			"dxgi",
+			-- "vulkan-1"
+		}
+
+	filter {}
 
 	postbuildcommands
 	{

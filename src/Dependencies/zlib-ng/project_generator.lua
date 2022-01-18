@@ -12,13 +12,10 @@ project "zlib-ng"
 
 	includedirs { "." }
 
-	defines { "WITH_GZFILEOP", "Z_LARGE64", "MY_ZCALLOC" }
+	defines { "WITH_GZFILEOP", "_LARGEFILE64_SOURCE", "_LFS64_LARGEFILE" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
-
-	-- filter { "action:not vs*", "toolset:gcc or clang" }
-	-- 	buildoptions { "-fPIC" }
 
 	filter {}
 

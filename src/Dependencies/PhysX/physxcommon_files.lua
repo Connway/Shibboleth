@@ -1,7 +1,6 @@
 files
 {
 	"physx/source/common/src/CmCollection.cpp",
-	"physx/source/common/src/CmMathUtils.cpp",
 	"physx/source/common/src/CmPtrTable.cpp",
 	"physx/source/common/src/CmRadixSort.cpp",
 	"physx/source/common/src/CmRadixSortBuffered.cpp",
