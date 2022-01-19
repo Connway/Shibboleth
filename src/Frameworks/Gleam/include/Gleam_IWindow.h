@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-void SetCursor(Cursor cursor);
-//Cursor GetCursor(void);
+void SetCursor(CursorType cursor);
+//CursorType GetCursor(void);
 
 using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 

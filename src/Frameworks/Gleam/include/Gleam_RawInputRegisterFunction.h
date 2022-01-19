@@ -54,12 +54,12 @@ NS_END
 
 NS_GLEAM
 
-	extern bool gAlreadyQueried;
-	extern int gOpCode;
-	extern int gEvent;
-	extern int gError;
+	//extern bool g_raw_input_already_queried;
+	extern int g_raw_input_op_code;
+	//extern int g_raw_input_event;
+	//extern int g_raw_input_event_error;
 
-	bool RegisterForRawInput(unsigned int device, const IWindow& window);
+	bool RegisterForRawInput(unsigned int device, const IWindow* window);
 
 NS_END
 

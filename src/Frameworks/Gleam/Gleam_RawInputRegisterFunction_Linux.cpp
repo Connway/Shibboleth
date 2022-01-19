@@ -28,25 +28,26 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool gAlreadyQueried;
-int gOpCode;
-int gEvent;
-int gError;
+static bool g_raw_input_already_queried;
+/*static*/ int g_raw_input_op_code;
+static int g_raw_input_event;
+static int g_raw_input_event_error;
 
-bool RegisterForRawInput(unsigned int device, const IWindow& window)
+bool RegisterForRawInput(unsigned int device, const IWindow* window)
 {
 	GAFF_ASSERT(device >= RAW_INPUT_MOUSE && device <= RAW_INPUT_KEYBOARD);
+	GAFF_ASSERT(window); // $TODO: Handle registering for global input if null is passed.
 
-	const Window& wnd = (const Window&)window;
+	const Window* wnd = static_cast<const Window*>(window);
 
-	if (!gAlreadyQueried) {
-		if (!XQueryExtension(wnd.getDisplay(), "XInputExtension", &gOpCode, &gEvent, &gError)) {
+	if (!g_raw_input_already_queried) {
+		if (!XQueryExtension(wnd->getDisplay(), "XInputExtension", &g_raw_input_op_code, &g_raw_input_event, &g_raw_input_event_error)) {
 			return false;
 		}
 
 		int major = 2;
 		int minor = 0;
-		if (XIQueryVersion(wnd.getDisplay(), &major, &minor) != Success) {
+		if (XIQueryVersion(wnd->getDisplay(), &major, &minor) != Success) {
 			return false;
 		}
 	}
@@ -64,7 +65,7 @@ bool RegisterForRawInput(unsigned int device, const IWindow& window)
 	int num_devices;
 	XIDeviceInfo* devices;
 
-	devices = XIQueryDevice(wnd.getDisplay(), XIAllMasterDevices, &num_devices);
+	devices = XIQueryDevice(wnd->getDisplay(), XIAllMasterDevices, &num_devices);
 
 	for (int i = 0; i < num_devices; ++i) {
 		switch(devices[i].use) {
@@ -102,7 +103,7 @@ bool RegisterForRawInput(unsigned int device, const IWindow& window)
 			break;
 	}
 
-	if (XISelectEvents(wnd.getDisplay(), wnd.getWindow(), &event_mask, 1) != Success) {
+	if (XISelectEvents(wnd->getDisplay(), wnd->getWindow(), &event_mask, 1) != Success) {
 		return false;
 	}
 
@@ -112,7 +113,7 @@ bool RegisterForRawInput(unsigned int device, const IWindow& window)
 		XIClearMask(masks, XI_ButtonPress);
 		XISetMask(masks, XI_RawMotion);
 
-		if (XISelectEvents(wnd.getDisplay(), DefaultRootWindow(wnd.getDisplay()), &event_mask, 1) != Success) {
+		if (XISelectEvents(wnd->getDisplay(), DefaultRootWindow(wnd->getDisplay()), &event_mask, 1) != Success) {
 			return false;
 		}
 	}

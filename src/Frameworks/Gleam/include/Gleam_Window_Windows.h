@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
 #include "Gleam_VectorMap.h"
-#include "Gleam_Vector.h"
 #include "Gleam_String.h"
 #include <Gaff_IncludeWindows.h>
 
@@ -46,9 +45,14 @@ public:
 
 	bool init(HWND hwnd);
 
-	bool init(const char* window_name, WindowMode window_mode = WindowMode::Fullscreen,
-				int32_t width = 0, int32_t height = 0,
-				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
+	bool init(
+		const char* window_name,
+		WindowMode window_mode = WindowMode::Fullscreen,
+		int32_t width = 0,
+		int32_t height = 0,
+		int32_t pos_x = 0,
+		int32_t pos_y = 0,
+		const char* compat = nullptr) override;
 	void destroy(void) override;
 
 	int32_t addWindowMessageHandler(const MessageHandler& callback) override;

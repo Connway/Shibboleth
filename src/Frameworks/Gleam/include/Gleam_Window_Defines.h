@@ -199,7 +199,7 @@ enum class KeyCode
 	NumpadEnter = 0x0D
 };
 
-enum class Cursor
+enum class CursorType
 {
 	None = -1,
 
@@ -351,7 +351,7 @@ enum class KeyCode
 	NumpadEnter = 104
 };
 
-enum class Cursor
+enum class CursorType
 {
 	None = -1,
 

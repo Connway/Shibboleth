@@ -31,11 +31,21 @@ end
 
 function StaticHeaderGen()
 	prebuildmessage("Generating Gen_ReflectionInit.h for static build!")
-	prebuildcommands
-	{
-		"cd ../../../../../utils",
-		"premake5 gen_static_header"
-	}
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"cd ../../../../../utils",
+			"premake5 gen_static_header"
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"cd ../../../../../utils && ./premake5 gen_static_header"
+		}
+
+	filter {}
 end
 
 function StaticLinks()

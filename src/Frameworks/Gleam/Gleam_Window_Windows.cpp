@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Windows.h"
 #include "Gleam_WindowHelpers_Windows.h"
+#include "Gleam_Vector.h"
 #include <Gaff_Assert.h>
 
 NS_GLEAM
@@ -43,12 +44,12 @@ static int32_t g_global_next_id = 0;
 VectorMap<uint16_t, KeyCode> Window::g_right_keys;
 VectorMap<uint16_t, KeyCode> Window::g_left_keys;
 
-void SetCursor(Cursor cursor)
+void SetCursor(CursorType cursor)
 {
 	::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(static_cast<int32_t>(cursor))));
 }
 
-//Cursor GetCursor(void)
+//CursorType GetCursor(void)
 //{
 //	//const HCURSOR cursor = ::GetCursor();
 //
@@ -257,9 +258,14 @@ bool Window::init(HWND hwnd)
 	return true;
 }
 
-bool Window::init(const char* window_name, WindowMode window_mode,
-					int32_t width, int32_t height,
-					int32_t pos_x, int32_t pos_y, const char*)
+bool Window::init(
+	const char* window_name,
+	WindowMode window_mode,
+	int32_t width,
+	int32_t height,
+	int32_t pos_x,
+	int32_t pos_y,
+	const char* /*compat*/)
 {
 	GAFF_ASSERT(window_name);
 
@@ -440,6 +446,11 @@ bool Window::isCursorContained(void) const
 
 bool Window::setWindowMode(WindowMode window_mode)
 {
+	if (_window_mode == window_mode) {
+		return true;
+	}
+
+
 	_window_mode = window_mode;
 	DWORD flags = 0;
 

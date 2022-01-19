@@ -23,11 +23,6 @@ Shibboleth is copyrighted under The MIT License. See LICENSE.txt for the full te
     BUILD INSTRUCTIONS
 ==========================
 
-Includes Visual Studio 2019 solution/project files and should compile out of the box.
+Includes Visual Studio solution/project files and should compile out of the box.
 
-If you wish to generate your own solution files, just run "utils/premake5 vs2019".
-
-
-========================
-    WORK IN PROGRESS
-========================
+If you wish to generate your own solution files, just run "utils/premake5 vs2022".

@@ -24,53 +24,62 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
-#include "Gleam_Vector.h"
+#include "Gleam_VectorMap.h"
+#include "Gleam_String.h"
 #include <Gaff_Function.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
-#include <GL/glx.h>
 
 NS_GLEAM
 
 class Window : public IWindow
 {
 public:
-	static void AddGlobalMessageHandler(const MessageHandler& callback);
-	static bool RemoveGlobalMessageHandler(const MessageHandler& callback);
+	static int32_t AddGlobalMessageHandler(const MessageHandler& callback);
+	static int32_t AddGlobalMessageHandler(MessageHandler&& callback);
+	static bool RemoveGlobalMessageHandler(int32_t id);
 
 	static void HandleWindowMessages(void);
 
 	Window(void);
 	~Window(void);
 
-	bool init(const char* app_name, WindowMode window_mode = WM_FULLSCREEN,
-				unsigned int width = 0, unsigned int height = 0,
-				short refresh_rate = 60, int pos_x = 0, int pos_y = 0,
-				const char* device_name = nullptr);
-	void destroy(void);
+	bool init(
+		const char* window_name,
+		WindowMode window_mode = WindowMode::Fullscreen,
+		int32_t width = 0,
+		int32_t height = 0,
+		int32_t pos_x = 0,
+		int32_t pos_y = 0,
+		const char* display_name = nullptr
+	) override;
 
-	void addWindowMessageHandler(const MessageHandler& callback);
-	bool removeWindowMessageHandler(const MessageHandler& callback);
+	void destroy(void) override;
 
-	void showCursor(bool show);
-	void containCursor(bool contain);
+	int32_t addWindowMessageHandler(const MessageHandler& callback) override;
+	int32_t addWindowMessageHandler(MessageHandler&& callback) override;
+	bool removeWindowMessageHandler(int32_t id) override;
 
-	bool isCursorVisible(void) const;
-	bool isCursorContained(void) const;
+	void showCursor(bool show) override;
+	void containCursor(bool contain) override;
 
-	bool setWindowMode(WindowMode window_mode, int width = 0, int height = 0, short refresh_rate = 60);
-	WindowMode getWindowMode(void) const;
+	bool isCursorVisible(void) const override;
+	bool isCursorContained(void) const override;
 
-	void getPos(int& x, int& y) const;
-	void getDimensions(unsigned int& width, unsigned int& height) const;
-	int getPosX(void) const;
-	int getPosY(void) const;
-	unsigned int getWidth(void) const;
-	unsigned int getHeight(void) const;
-	bool isFullScreen(void) const;
+	bool setWindowMode(WindowMode window_mode) override;
+	WindowMode getWindowMode(void) const override;
 
-	bool setIcon(const char* icon);
+	const IVec2& getPos(void) const override;
+	const IVec2& getSize(void) const override;
+	void setPos(const IVec2& pos) override;
+	void setSize(const IVec2& size) override;
+
+	bool isFullScreen(void) const override;
+
+	bool setIcon(const char* icon) override;
+
+	void* getPlatformHandle(void) const override;
 
 	XVisualInfo* getVisualInfo(void) const;
 	Display* getDisplay(void) const;
@@ -81,32 +90,31 @@ public:
 	short* getRefreshRates(const XRRScreenSize& resolution, int& num_rates, int screen = -1) const;
 
 private:
-	int _pos_x, _pos_y;
-	unsigned int _width, _height;
-	GleamU8String _application_name;
-	short _refresh_rate;
+	IVec2 _pos{ 0, 0 };
+	IVec2 _size{ 1, 1 };
 
-	WindowMode _window_mode;
-	bool _cursor_visible;
-	bool _contain;
+	WindowMode _window_mode = WindowMode::Fullscreen;
+	bool _cursor_visible = true;
+	bool _contain = false;
 
-	Display* _display;
-	XVisualInfo* _visual_info;
-	::Window _window;
+	short _refresh_rate = 60;
 
-	Atom _delete_window;
-	Atom _protocols;
+	Display* _display = nullptr;
+	XVisualInfo* _visual_info = nullptr;
+	::Window _window = 0;
+
+	Atom _delete_window = None;
+	Atom _protocols = None;
 
 	XRRScreenSize _original_size;
 	Rotation _original_rotation;
 	short _original_rate;
 
-	GleamArray<MessageHandler> _window_callbacks;
+	VectorMap<int32_t, MessageHandler> _window_callbacks;
 
 	static void WindowProc(XEvent& event);
 
-	int chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
-		unsigned int width, unsigned int height);
+	int chooseClosestResolution(XRRScreenSize* sizes, int num_sizes, unsigned int width, unsigned int height);
 	int chooseClosestRate(short* rates, int num_rates, short rate);
 	void setToOriginalResolutionRate(void);
 	void handleMessage(AnyMessage* message);

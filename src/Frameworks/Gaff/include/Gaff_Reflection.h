@@ -372,7 +372,7 @@ static bool LoadHashString(const Gaff::ISerializeReader& reader, Gaff::HashStrin
 		} else if constexpr (std::is_same<HashType, Gaff::Hash64>::value) {
 			out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(HashType(static_cast<T>(reader.readUInt64())));
 		} else {
-			static_assert(false, "Unknown hash type in LoadHashString.");
+			GAFF_TEMPLATE_STATIC_ASSERT(false, "Unknown hash type in LoadHashString.");
 		}
 	}
 

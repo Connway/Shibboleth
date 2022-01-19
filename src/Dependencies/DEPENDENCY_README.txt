@@ -31,3 +31,15 @@ Libraries Affected:
 
 	EASTL
 		Fixed compilation error on Linux with bitvector.
+
+
+Linux Library Dependencies:
+In order to get code to compile on Linux, these libraries will need to be installed from your package manager.
+At this time, the codebase doesn't fully build on Linux. Even if it did, until Vulkan support is added,
+the codebase won't run.
+
+	* libx11-dev
+	* libxrandr-dev
+	* libxi-dev
+	* libgl1-mesa-dev (will be removed when Vulkan is implemented)
+	* libglx-dev (will be removed when Vulkan is implemented)

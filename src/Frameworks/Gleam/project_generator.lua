@@ -8,11 +8,6 @@ project "Gleam"
 
 	flags { "FatalWarnings" }
 
-	--filter { "action:not vs*", "configurations:*Clang" }
-	--	buildoptions { "-Wno-varargs" }
-
-	filter {}
-
 	files { "**.h", "**.cpp", "**.inl", "**.lua" }
 
 	includedirs

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_WindowHelpers_Windows.h"
 #include "Gleam_Window_Windows.h"
 #include <Gaff_Assert.h>
@@ -261,3 +263,5 @@ void WindowKillFocus(AnyMessage& message, Window* window, WPARAM, LPARAM)
 }
 
 NS_END
+
+#endif
