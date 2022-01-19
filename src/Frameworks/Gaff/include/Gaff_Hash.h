@@ -36,7 +36,7 @@ constexpr Hash64Storage k_init_hash64_storage = 14695981039346656037ULL;
 constexpr Hash32Storage k_magic_number_hash32_storage = 16777619U;
 constexpr Hash32Storage k_init_hash32_storage = 2166136261U;
 
-template <class HashType>
+template <class HashStorage>
 struct HashValueHelper;
 
 template <>
@@ -55,37 +55,32 @@ struct HashValueHelper<Hash32Storage> final
 
 
 
-template <class HashType>
+template <class HashStorage>
 class Hash final
 {
 public:
-	constexpr explicit Hash(HashType hash):
+	constexpr explicit Hash(HashStorage hash):
 		_hash(hash)
 	{
 	}
 
-	constexpr Hash(const Hash<HashType>& hash) = default;
+	constexpr Hash(const Hash<HashStorage>& hash) = default;
 	constexpr Hash(void) = default;
 
-	constexpr Hash& operator=(const Hash<HashType>& rhs) = default;
+	constexpr Hash& operator=(const Hash<HashStorage>& rhs) = default;
 
-	constexpr bool operator==(Hash<HashType> rhs) const { return _hash == rhs._hash; }
-	constexpr bool operator!=(Hash<HashType> rhs) const { return _hash != rhs._hash; }
-	constexpr bool operator<(Hash<HashType> rhs) const { return _hash < rhs._hash; }
-	constexpr bool operator<=(Hash<HashType> rhs) const { return _hash <= rhs._hash; }
-	constexpr bool operator>(Hash<HashType> rhs) const { return _hash > rhs._hash; }
-	constexpr bool operator>=(Hash<HashType> rhs) const { return _hash >= rhs._hash; }
+	constexpr bool operator==(Hash<HashStorage> rhs) const { return _hash == rhs._hash; }
+	constexpr bool operator!=(Hash<HashStorage> rhs) const { return _hash != rhs._hash; }
+	constexpr bool operator<(Hash<HashStorage> rhs) const { return _hash < rhs._hash; }
+	constexpr bool operator<=(Hash<HashStorage> rhs) const { return _hash <= rhs._hash; }
+	constexpr bool operator>(Hash<HashStorage> rhs) const { return _hash > rhs._hash; }
+	constexpr bool operator>=(Hash<HashStorage> rhs) const { return _hash >= rhs._hash; }
 
-	constexpr HashType getHash(void) const { return _hash; }
-	constexpr void setHash(HashType hash) { _hash = hash; }
-
-	//constexpr operator HashType(void)
-	//{
-	//	return _hash;
-	//}
+	constexpr HashStorage getHash(void) const { return _hash; }
+	constexpr void setHash(HashStorage hash) { _hash = hash; }
 
 private:
-	HashType _hash = HashValueHelper<HashType>::k_init_value;
+	HashStorage _hash = HashValueHelper<HashStorage>::k_init_value;
 };
 
 using Hash64 = Hash<Hash64Storage>;

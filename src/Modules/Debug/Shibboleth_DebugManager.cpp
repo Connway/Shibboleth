@@ -842,47 +842,47 @@ void DebugManager::update(void)
 			_prev_cursor = mouse_cursor;
 
 			if (mouse_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor) {
-				Gleam::SetCursor(Gleam::Cursor::None);
+				Gleam::SetCursor(Gleam::CursorType::None);
 
 			} else {
-				Gleam::Cursor cursor = Gleam::Cursor::Arrow;
+				Gleam::CursorType cursor = Gleam::CursorType::Arrow;
 
 				switch (mouse_cursor)
 				{
 					case ImGuiMouseCursor_Arrow:
-						cursor = Gleam::Cursor::Arrow;
+						cursor = Gleam::CursorType::Arrow;
 						break;
 
 					case ImGuiMouseCursor_TextInput:
-						cursor = Gleam::Cursor::IBeam;
+						cursor = Gleam::CursorType::IBeam;
 						break;
 
 					case ImGuiMouseCursor_ResizeAll:
-						cursor = Gleam::Cursor::SizeAll;
+						cursor = Gleam::CursorType::SizeAll;
 						break;
 
 					case ImGuiMouseCursor_ResizeEW:
-						cursor = Gleam::Cursor::SizeWE;
+						cursor = Gleam::CursorType::SizeWE;
 						break;
 
 					case ImGuiMouseCursor_ResizeNS:
-						cursor = Gleam::Cursor::SizeNS;
+						cursor = Gleam::CursorType::SizeNS;
 						break;
 
 					case ImGuiMouseCursor_ResizeNESW:
-						cursor = Gleam::Cursor::SizeNESW;
+						cursor = Gleam::CursorType::SizeNESW;
 						break;
 
 					case ImGuiMouseCursor_ResizeNWSE:
-						cursor = Gleam::Cursor::SizeNWSE;
+						cursor = Gleam::CursorType::SizeNWSE;
 						break;
 
 					case ImGuiMouseCursor_Hand:
-						cursor = Gleam::Cursor::Hand;
+						cursor = Gleam::CursorType::Hand;
 						break;
 
 					case ImGuiMouseCursor_NotAllowed:
-						cursor = Gleam::Cursor::No;
+						cursor = Gleam::CursorType::No;
 						break;
 				}
 
