@@ -135,6 +135,7 @@ THE SOFTWARE.
 #define GAFF_FOR_EACH_COMMA(what, ...) GAFF_FOR_EACH_COMMA_(GAFF_FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
 
 #define GAFF_SINGLE_ARG(...) __VA_ARGS__
+#define GAFF_STR_VA(...) GAFF_STR(GAFF_SINGLE_ARG(__VA_ARGS__))
 
 #ifdef PLATFORM_WINDOWS
 	// Disable nameless struct/union warning
