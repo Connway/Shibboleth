@@ -164,6 +164,15 @@ THE SOFTWARE.
 				GAFF_ASSERT(g_instance._ref_def); \
 				return *g_instance._ref_def; \
 			} \
+			static /*constexpr*/ const char* GetName(void) \
+			{ \
+				static const auto name = GAFF_HASHABLE_NAMESPACE::GetName<type>(); \
+				return name.data.data(); \
+			} \
+			static constexpr Gaff::Hash64 GetHash(void) \
+			{ \
+				return GAFF_HASHABLE_NAMESPACE::GetHash<type>(); \
+			} \
 			static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback) \
 			{ \
 				g_instance._on_defined_callbacks.emplace_back(callback); \
@@ -183,6 +192,14 @@ THE SOFTWARE.
 			static bool IsDefined(void) \
 			{ \
 				return g_instance._defined; \
+			} \
+			const char* getName(void) const override \
+			{ \
+				return GetName(); \
+			} \
+			Gaff::Hash64 getHash(void) const override \
+			{ \
+				return GetHash(); \
 			} \
 			void init(void) override \
 			{ \
@@ -254,6 +271,15 @@ THE SOFTWARE.
 				GAFF_ASSERT(g_instance._ref_def); \
 				return *g_instance._ref_def; \
 			} \
+			static /*constexpr*/ const char* GetName(void) \
+			{ \
+				static const auto name = GAFF_HASHABLE_NAMESPACE::GetName<ThisType>(); \
+				return name.data.data(); \
+			} \
+			static constexpr Gaff::Hash64 GetHash(void) \
+			{ \
+				return GAFF_HASHABLE_NAMESPACE::GetHash<ThisType>(); \
+			} \
 			static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback) \
 			{ \
 				g_instance._on_defined_callbacks.emplace_back(callback); \
@@ -273,6 +299,14 @@ THE SOFTWARE.
 			static bool IsDefined(void) \
 			{ \
 				return g_instance._defined; \
+			} \
+			const char* getName(void) const override \
+			{ \
+				return GetName(); \
+			} \
+			Gaff::Hash64 getHash(void) const override \
+			{ \
+				return GetHash(); \
 			} \
 			void init(void) override \
 			{ \

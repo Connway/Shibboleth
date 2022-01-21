@@ -51,7 +51,7 @@ using HashString = Gaff::HashString<T, HashType, ProxyAllocator>;
 using HashString32 = Gaff::HashString32<ProxyAllocator>;
 using HashString64 = Gaff::HashString64<ProxyAllocator>;
 
-using HashStringView32 = HashStringView32<>;
-using HashStringView64 = HashStringView64<>;
+using HashStringView32 = Gaff::HashStringView32<>;
+using HashStringView64 = Gaff::HashStringView64<>;
 
 NS_END

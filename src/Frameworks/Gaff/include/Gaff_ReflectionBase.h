@@ -25,9 +25,7 @@ THE SOFTWARE.
 #include "Gaff_EnumReflectionDefinition.h"
 #include "Gaff_ReflectionInterfaces.h"
 #include "Gaff_ReflectionDefinition.h"
-#include "Gaff_SerializeInterfaces.h"
 #include "Gaff_ReflectionVersion.h"
-#include "Gaff_Hashable.h"
 #include "Gaff_Utils.h"
 
 NS_GAFF
@@ -74,21 +72,13 @@ template <class T, class Allocator>
 class ReflectionBase : public IReflection
 {
 public:
-	/*constexpr*/ static const char* GetName(void);
-	constexpr static Hash64 GetHash(void);
-
 	constexpr static int32_t Size(void);
 	constexpr static bool IsEnum(void);
 
 	ReflectionBase(void);
 
 	bool isEnum(void) const override;
-
-	const char* getName(void) const override;
-	Hash64 getHash(void) const override;
-
 	Hash64 getVersion(void) const override;
-
 	int32_t size(void) const override;
 
 	const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const override;

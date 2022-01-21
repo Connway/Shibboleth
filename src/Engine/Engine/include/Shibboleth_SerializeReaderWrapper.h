@@ -20,11 +20,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_SerializeReaderWrapper.h>
+#pragma once
+
+#include "Shibboleth_SerializeReader.h"
+#include <Gaff_MessagePack.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-using SerializeReaderWrapper = Gaff::SerializeReaderWrapper<ProxyAllocator>;
+class SerializeReaderWrapper final
+{
+public:
+	SerializeReaderWrapper(const ProxyAllocator& allocator = ProxyAllocator());
+	SerializeReaderWrapper(SerializeReaderWrapper&&) = default;
+	~SerializeReaderWrapper(void);
+
+	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&);
+
+	bool parseMPack(const char* buffer, size_t size, bool take_ownership = false);
+	bool parseJSON(const char* buffer);
+
+	const ISerializeReader* getReader(void) const;
+	const char* getErrorText(void) const;
+
+private:
+	ProxyAllocator _allocator;
+
+	ISerializeReader* _reader = nullptr;
+
+	Gaff::MessagePackReader _mpack_reader;
+
+	union
+	{
+		SerializeReader<Gaff::MessagePackNode> _mpack;
+		SerializeReader<Gaff::JSON> _json;
+	};
+
+	const char* _error_text = nullptr;
+	bool _is_mpack = false;
+};
 
 NS_END

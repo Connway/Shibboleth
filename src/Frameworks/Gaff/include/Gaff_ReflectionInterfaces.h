@@ -63,9 +63,9 @@ class IReflection
 public:
 	virtual ~IReflection(void) {}
 
-	virtual bool isEnum(void) const = 0;
-
 	virtual void init(void) = 0;
+
+	virtual bool isEnum(void) const = 0;
 
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
@@ -104,15 +104,15 @@ public:
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 
+	void init(void) override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+
 	bool isEnum(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return false;
-	}
-
-	void init(void) override
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
 	}
 
 	const char* getName(void) const override

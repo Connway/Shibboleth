@@ -23,19 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 template <class T, class Allocator>
-/*constexpr*/ const char* ReflectionBase<T, Allocator>::GetName(void)
-{
-	static const auto name = GAFF_HASHABLE_NAMESPACE::GetName<T>();
-	return name.data.data();
-}
-
-template <class T, class Allocator>
-constexpr Hash64 ReflectionBase<T, Allocator>::GetHash(void)
-{
-	return GAFF_HASHABLE_NAMESPACE::GetHash<T>();
-}
-
-template <class T, class Allocator>
 constexpr int32_t ReflectionBase<T, Allocator>::Size(void)
 {
 	return sizeof(T);
@@ -66,18 +53,6 @@ template <class T, class Allocator>
 bool ReflectionBase<T, Allocator>::isEnum(void) const
 {
 	return IsEnum();
-}
-
-template <class T, class Allocator>
-const char* ReflectionBase<T, Allocator>::getName(void) const
-{
-	return GetName();
-}
-
-template <class T, class Allocator>
-Hash64 ReflectionBase<T, Allocator>::getHash(void) const
-{
-	return GetHash();
 }
 
 template <class T, class Allocator>
