@@ -282,7 +282,6 @@ premake5 gen_static_header</Command>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_RuntimeVarManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ZlibMemory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Engine\Engine\project_generator.lua" />
