@@ -340,7 +340,7 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 	using V = typename std::remove_const<NoRef>::type;
 
 	const auto name = GAFF_HASHABLE_NAMESPACE::GetName<V>();
-	const Gaff::Hash64 hash = CalcTypeHash<First>(init, name.data.data());
+	const Hash64 hash = CalcTypeHash<First>(init, name.data.data());
 
 	if constexpr (sizeof...(Rest) == 0) {
 		return hash;

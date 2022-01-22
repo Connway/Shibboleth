@@ -231,7 +231,7 @@ void ReflectionDefinition<T>::VarPtr<Var>::setDataMove(void* object, void* data)
 
 template <class T>
 template <class Var>
-bool ReflectionDefinition<T>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VarPtr<Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	Var* const var = &(object.*_ptr);
 
@@ -267,7 +267,7 @@ bool ReflectionDefinition<T>::VarPtr<Var>::load(const ISerializeReader& reader, 
 
 template <class T>
 template <class Var>
-void ReflectionDefinition<T>::VarPtr<Var>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::VarPtr<Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	const Var* const var = &(object.*_ptr);
 
@@ -332,7 +332,7 @@ bool ReflectionDefinition<T>::VarPtr<Var>::getFlagValue(void* object, int32_t fl
 // VarFlagPtr
 template <class T>
 template <class Enum>
-ReflectionDefinition<T>::VarFlagPtr<Enum>::VarFlagPtr(Flags<Enum> T::*ptr, uint8_t flag_index):
+ReflectionDefinition<T>::VarFlagPtr<Enum>::VarFlagPtr(Gaff::Flags<Enum> T::*ptr, uint8_t flag_index):
 	_ptr(ptr), _flag_index(flag_index), _cache(false)
 {
 	GAFF_ASSERT(ptr);
@@ -383,7 +383,7 @@ void ReflectionDefinition<T>::VarFlagPtr<Enum>::setDataMove(void* object, void* 
 
 template <class T>
 template <class Enum>
-bool ReflectionDefinition<T>::VarFlagPtr<Enum>::load(const ISerializeReader& /*reader*/, T& /*object*/)
+bool ReflectionDefinition<T>::VarFlagPtr<Enum>::load(const Shibboleth::ISerializeReader& /*reader*/, T& /*object*/)
 {
 	GAFF_ASSERT_MSG(false, "VarFlagPtr::load() should never be called.");
 	return false;
@@ -391,7 +391,7 @@ bool ReflectionDefinition<T>::VarFlagPtr<Enum>::load(const ISerializeReader& /*r
 
 template <class T>
 template <class Enum>
-void ReflectionDefinition<T>::VarFlagPtr<Enum>::save(ISerializeWriter& /*writer*/, const T& /*object*/)
+void ReflectionDefinition<T>::VarFlagPtr<Enum>::save(Shibboleth::ISerializeWriter& /*writer*/, const T& /*object*/)
 {
 	GAFF_ASSERT_MSG(false, "VarFlagPtr::save() should never be called.");
 }
@@ -478,7 +478,7 @@ void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::setDataMove(void* o
 
 template <class T>
 template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	GAFF_ASSERT(_getter);
 	GAFF_ASSERT(_setter);
@@ -495,7 +495,7 @@ bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const ISeriali
 
 template <class T>
 template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	GAFF_ASSERT(_getter);
 	Reflection<RetType>::Save(writer, callGetter(object));
@@ -609,7 +609,7 @@ void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::setDataMove(void* object, vo
 
 template <class T>
 template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	GAFF_ASSERT(_getter);
 
@@ -625,7 +625,7 @@ bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const ISerializeReader&
 
 template <class T>
 template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	GAFF_ASSERT(_getter);
 
@@ -660,7 +660,7 @@ Ret ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::callGetter(const T& object) c
 // BaseVarPtr
 template <class T>
 template <class Base>
-ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(typename ReflectionDefinition<Base, Allocator>::IVar* base_var):
+ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(typename ReflectionDefinition<Base>::IVar* base_var):
 	_base_var(base_var)
 {
 }
@@ -840,14 +840,14 @@ void ReflectionDefinition<T>::BaseVarPtr<Base>::resize(void* object, size_t new_
 
 template <class T>
 template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::BaseVarPtr<Base>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	return _base_var->load(reader, object);
 }
 
 template <class T>
 template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	_base_var->save(writer, object);
 }
@@ -1010,7 +1010,7 @@ void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::resize(void*, size_t)
 
 template <class T>
 template <class Var, size_t array_size>
-bool ReflectionDefinition<T>::ArrayPtr<Var, array_size>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::ArrayPtr<Var, array_size>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	constexpr int32_t size = static_cast<int32_t>(array_size);
 	GAFF_ASSERT(reader.size() == size);
@@ -1027,7 +1027,7 @@ bool ReflectionDefinition<T>::ArrayPtr<Var, array_size>::load(const ISerializeRe
 
 template <class T>
 template <class Var, size_t array_size>
-void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	constexpr int32_t size = static_cast<int32_t>(array_size);
 	writer.startArray(static_cast<uint32_t>(array_size));
@@ -1044,7 +1044,7 @@ void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::save(ISerializeWriter& 
 // VectorPtr
 template <class T>
 template <class Var, class Vec_Allocator>
-ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vector<Var, Vec_Allocator> (T::*ptr)):
+ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Gaff::Vector<Var, Vec_Allocator> (T::*ptr)):
 	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
@@ -1219,7 +1219,7 @@ void ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::resize(void* object
 
 template <class T>
 template <class Var, class Vec_Allocator>
-bool ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	const int32_t size = reader.size();
 	(object.*_ptr).resize(static_cast<size_t>(size));
@@ -1236,7 +1236,7 @@ bool ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::load(const ISeriali
 
 template <class T>
 template <class Var, class Vec_Allocator>
-void ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	const int32_t size = static_cast<int32_t>((object.*_ptr).size());
 	writer.startArray(static_cast<uint32_t>(size));
@@ -1253,7 +1253,7 @@ void ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::save(ISerializeWrit
 // VectorMapPtr
 template <class T>
 template <class Key, class Value, class VecMap_Allocator>
-ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::VectorMapPtr(VectorMap<Key, Value, VecMap_Allocator> T::* ptr):
+ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::VectorMapPtr(Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* ptr):
 	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
@@ -1435,7 +1435,7 @@ void ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::resize
 
 template <class T>
 template <class Key, class Value, class VecMap_Allocator>
-bool ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(const ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	const int32_t size = reader.size();
 	(object.*_ptr).reserve(static_cast<size_t>(size));
@@ -1465,7 +1465,7 @@ bool ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(c
 
 template <class T>
 template <class Key, class Value, class VecMap_Allocator>
-void ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::save(ISerializeWriter& writer, const T& object)
+void ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	const int32_t size = static_cast<int32_t>((object.*_ptr).size());
 	writer.startArray(static_cast<uint32_t>(size));
@@ -1502,19 +1502,19 @@ const char* ReflectionDefinition<T>::getFriendlyName(void) const
 }
 
 template <class T>
-bool ReflectionDefinition<T>::load(const ISerializeReader& reader, void* object, bool refl_load) const
+bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load) const
 {
 	return load(reader, *reinterpret_cast<T*>(object), refl_load);
 }
 
 template <class T>
-void ReflectionDefinition<T>::save(ISerializeWriter& writer, const void* object, bool refl_save) const
+void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save) const
 {
 	save(writer, *reinterpret_cast<const T*>(object), refl_save);
 }
 
 template <class T>
-bool ReflectionDefinition<T>::load(const ISerializeReader& reader, T& object, bool refl_load) const
+bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T& object, bool refl_load) const
 {
 	if (_serialize_load && !refl_load) {
 		return _serialize_load(reader, object);
@@ -1546,7 +1546,7 @@ bool ReflectionDefinition<T>::load(const ISerializeReader& reader, T& object, bo
 }
 
 template <class T>
-void ReflectionDefinition<T>::save(ISerializeWriter& writer, const T& object, bool refl_save) const
+void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save) const
 {
 	if (_serialize_save && !refl_save) {
 		_serialize_save(writer, object);
@@ -2066,7 +2066,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char* name)
 	const ptrdiff_t offset = OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
-			HashString64<Allocator>(name, _allocator),
+			Shibboleth::HashString64<>(name, _allocator),
 			offset
 		)
 	);
@@ -2090,7 +2090,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 	// Add vars, funcs, and static funcs and attrs from base class.
 	if (Reflection<Base>::IsDefined()) {
-		const ReflectionDefinition<Base, Allocator>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
+		const ReflectionDefinition<Base>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
 
 		// For calling base class functions.
 		_base_classes.emplace(
@@ -2102,7 +2102,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 		for (auto& it : base_ref_def._vars) {
 			GAFF_ASSERT(_vars.find(it.first) == _vars.end());
 
-			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+			eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 				it.first,
 				IVarPtr(SHIB_ALLOCT(BaseVarPtr<Base>, _allocator, it.second.get()))
 			);
@@ -2168,7 +2168,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 				func_data.func[index].reset(ref_func);
 
 				// Copy attributes.
-				const Hash64 attr_hash = FNV1aHash64T(func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
+				const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
 				const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
 
 				if (attr_it != base_ref_def._func_attrs.end()) {
@@ -2215,7 +2215,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 				static_func_data.func[index].reset(it.second.func[i]->clone(_allocator));
 
 				// Copy attributes.
-				const Hash64 attr_hash = FNV1aHash64T(static_func_data.hash[i], FNV1aHash64T(FNV1aHash32T(it.first.getHash())));
+				const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(static_func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
 				const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
 
 				if (attr_it != base_ref_def._static_func_attrs.end()) {
@@ -2283,8 +2283,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
 	static_assert(Reflection<Var>::HasReflection, "Var type is not reflected!");
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 		IVarPtr(SHIB_ALLOCT(VarPtr<Var>, _allocator, ptr))
 	);
 
@@ -2308,8 +2308,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
 	static_assert(Reflection<Enum>::HasReflection, "Enum is not reflected!");
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 		IVarPtr(SHIB_ALLOCT(VarPtr< Flags<Enum> >, _allocator, ptr))
 	);
 
@@ -2332,11 +2332,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 		const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 		const int32_t flag_index = ref_def.getEntryValue(i);
 
-		U8String<Allocator> flag_path(_allocator);
+		Shibboleth::U8String flag_path(_allocator);
 		flag_path.append_sprintf("%s/%s", name, flag_name.getBuffer());
 
-		eastl::pair<HashString32<Allocator>, IVarPtr> flag_pair(
-			HashString32<Allocator>(flag_path),
+		eastl::pair<Shibboleth::HashString32<>, IVarPtr> flag_pair(
+			Shibboleth::HashString32<>(flag_path),
 			IVarPtr(SHIB_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(flag_index)))
 		);
 
@@ -2364,27 +2364,27 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
 	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair;
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
 
 	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
 		using PtrType = VarFuncPtr<Ret, Var>;
 
-		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
 		);
 	} else {
 		using PtrType = VarFuncPtrWithCache<Ret, Var>;
 
-		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
 		);
 	}
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2412,27 +2412,27 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
 	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair;
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
 
 	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
 		using PtrType = VarFuncPtr<Ret, Var>;
 
-		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
 		);
 	} else {
 		using PtrType = VarFuncPtrWithCache<Ret, Var>;
 
-		pair = eastl::pair<HashString32<Allocator>, IVarPtr>(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
 		);
 	}
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2454,14 +2454,14 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, vec))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2483,14 +2483,14 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 	using PtrType = ArrayPtr<Var, array_size>;
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, arr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2517,14 +2517,14 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_siz
 
 	using PtrType = VectorMapPtr<Key, Value, VecMap_Allocator>;
 
-	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-		HashString32<Allocator>(name, name_size - 1, _allocator),
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, vec_map))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2539,7 +2539,7 @@ template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
+	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
@@ -2549,8 +2549,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 			ptr
 		);
 
-		eastl::pair<HashString32<Allocator>, FuncData> pair(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+		eastl::pair<Shibboleth::HashString32<>, FuncData> pair(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			FuncData()
 		);
 
@@ -2582,8 +2582,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	const Hash32 name_hash = FNV1aHash32Const(name);
-	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
+	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
 	attrs.set_allocator(_allocator);
@@ -2599,7 +2599,7 @@ template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
+	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _funcs.find(FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
@@ -2610,7 +2610,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 		);
 
 		it = _funcs.emplace(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			FuncData()
 		).first;
 		
@@ -2641,8 +2641,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	const Hash32 name_hash = FNV1aHash32Const(name);
-	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
+	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
 	attrs.set_allocator(_allocator);
@@ -2658,14 +2658,14 @@ template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
 {
-	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(k_init_hash64);
-	auto it = _static_funcs.find(FNV1aHash32Const(name));
+	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+	auto it = _static_funcs.find(Gaff::FNV1aHash32Const(name));
 
 	using StaticFuncType = StaticFunction<Ret, Args...>;
 
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
-			HashString32<Allocator>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			StaticFuncData(_allocator)
 		).first;
 
@@ -2691,8 +2691,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
-	const Hash32 name_hash = FNV1aHash32Const(name);
-	const Hash64 attr_hash = FNV1aHash64T(arg_hash, FNV1aHash64T(name_hash));
+	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
+	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _static_func_attrs[attr_hash];
 	attrs.set_allocator(_allocator);
@@ -3059,7 +3059,7 @@ void ReflectionDefinition<T>::RegisterBaseVariables(void)
 // Variables
 template <class T>
 template <class Var, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
@@ -3075,7 +3075,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* 
 
 template <class T>
 template <class Var, class Ret, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
@@ -3092,7 +3092,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* 
 // Functions
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
@@ -3108,7 +3108,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(A
 
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
@@ -3125,7 +3125,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(A
 // Static Functions
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
@@ -3142,7 +3142,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (*func)(Args
 // Non-apply() call version.
 template <class T>
 template <class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	attrs.emplace_back(IAttributePtr(first.clone()));
 
@@ -3154,7 +3154,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Vector<IAttribut
 }
 
 template <class T>
-ptrdiff_t ReflectionDefinition<T>::getBasePointerOffset(Hash64 interface_name) const
+ptrdiff_t ReflectionDefinition<T>::getBasePointerOffset(Gaff::Hash64 interface_name) const
 {
 	const auto it = _base_class_offsets.find(interface_name);
 	return (it != _base_class_offsets.end()) ? it->second : -1;
@@ -3187,7 +3187,7 @@ void ReflectionDefinition<T>::instantiated(void* object) const
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getAttribute(const AttributeList& attributes, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const
 {
 	for (const auto& attr : attributes) {
 		if (attr->getReflectionDefinition().hasInterface(attr_name)) {

@@ -175,7 +175,7 @@ public:
 	ReflectionDefinition& var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
 
 	template <class Enum, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char(&name)[name_size], Flags<Enum> T::*ptr, const Attrs&... attributes);
+	ReflectionDefinition& var(const char(&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
@@ -480,7 +480,7 @@ private:
 	class VectorPtr final : public IVar
 	{
 	public:
-		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
+		VectorPtr(Gaff::Vector<Var, Vec_Allocator> T::*ptr);
 
 		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;

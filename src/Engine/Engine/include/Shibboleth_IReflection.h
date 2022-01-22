@@ -40,6 +40,7 @@ public:
 
 	virtual void init(void) = 0;
 
+	virtual bool isDefined(void) const = 0;
 	virtual bool isEnum(void) const = 0;
 
 	virtual const char* getName(void) const = 0;
@@ -47,19 +48,8 @@ public:
 	virtual Gaff::Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const
-	{
-		GAFF_ASSERT_MSG(false, "Is a class reflected type!");
-		const IEnumReflectionDefinition* const ptr = nullptr;
-		return *ptr;
-	}
-
-	virtual const IReflectionDefinition& getReflectionDefinition(void) const
-	{
-		GAFF_ASSERT_MSG(false, "Is an enum reflected type!");
-		const IReflectionDefinition* const ptr = nullptr;
-		return *ptr;
-	}
+	virtual const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const = 0;
+	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
 
 	IReflection* next = nullptr;
 };
@@ -68,7 +58,7 @@ template <class T>
 class Reflection final : public Gaff::IReflection
 {
 public:
-	constexpr static bool HasReflection = false;
+	static constexpr bool HasReflection = false;
 
 	Reflection(void)
 	{
@@ -110,26 +100,21 @@ public:
 		return 0;
 	}
 
-	static const Gaff::IReflectionDefinition& GetReflectionDefinition(void)
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		const Gaff::IReflectionDefinition* const ref_def = nullptr;
-		return *ref_def;
-	}
-
-	static const Gaff::IReflection& GetInstance(void)
-	{
-		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		const Gaff::IReflection* const instance = nullptr;
-		return *instance;
-	}
-
-	//static bool IsBuiltIn(void)
+	//static const Gaff::IReflectionDefinition& GetReflectionDefinition(void)
 	//{
 	//	GAFF_ASSERT_MSG(false, "Unknown object type.");
-	//	return false;
+	//	const Gaff::IReflectionDefinition* const ref_def = nullptr;
+	//	return *ref_def;
+	//}
+
+	//static const Gaff::IReflection& GetInstance(void)
+	//{
+	//	GAFF_ASSERT_MSG(false, "Unknown object type.");
+	//	const Gaff::IReflection* const instance = nullptr;
+	//	return *instance;
 	//}
 };
+
 
 class IReflectionObject
 {

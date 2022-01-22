@@ -22,82 +22,138 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifndef GAFF_REFLECTION_NAMESPACE
-	#define GAFF_REFLECTION_NAMESPACE Shibboleth
-#endif
-
-#ifndef GAFF_REF_DEF_IS_PTR
-	#define GAFF_REF_DEF_IS_PTR
-#endif
-
-#ifndef GAFF_REF_DEF_INIT
-	#define GAFF_REF_DEF_INIT \
-		GAFF_ASSERT(!g_instance._ref_def); \
-		const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* ref_def_interface = nullptr; \
-		if constexpr (std::is_enum<ThisType>::value) { \
-			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(GetApp().getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
-		} else { \
-			ref_def_interface = reinterpret_cast< const typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(GetApp().getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
-		} \
-		g_instance._ref_def = static_cast< typename Gaff::RefDefType<ThisType, ProxyAllocator>* >( \
-			const_cast< typename Gaff::RefDefInterface<ThisType, ProxyAllocator>* >(ref_def_interface) \
-		); \
-		if (g_instance._ref_def) { \
-			GAFF_ASSERT_MSG( \
-				g_instance._version.getHash() == g_instance._ref_def->getReflectionInstance().getVersion(), \
-				"Version hash for %s does not match!", \
-				GetName() \
-			); \
-		} else { \
-			ProxyAllocator allocator("Reflection"); \
-			g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename Gaff::RefDefType<ThisType, ProxyAllocator>), allocator); \
-			g_instance._ref_def->setAllocator(allocator); \
-			BuildReflection(*g_instance._ref_def); \
-			GetApp().getReflectionManager().registerReflection(g_instance._ref_def); \
-		} \
-		g_instance._defined = true;
-#endif
-
+#include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_ReflectionManager.h"
-#include "Shibboleth_ProxyAllocator.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_Utilities.h"
-#include "Shibboleth_Hashable.h"
-#include "Shibboleth_IApp.h"
-#include <Gaff_Reflection.h>
+#include "Shibboleth_ReflectionMacros.h"
+#include <Gaff_Hashable.h>
 
-#define SHIB_REFLECTION_CLASS_DECLARE GAFF_REFLECTION_CLASS_DECLARE
-#define SHIB_REFLECTION_CLASS_DEFINE GAFF_REFLECTION_CLASS_DEFINE
-#define SHIB_REFLECTION_DECLARE(type) GAFF_REFLECTION_DECLARE(type, ProxyAllocator)
-#define SHIB_REFLECTION_DEFINE_BEGIN(type) GAFF_REFLECTION_DEFINE_BEGIN(type, ProxyAllocator)
-#define SHIB_REFLECTION_DEFINE_END GAFF_REFLECTION_DEFINE_END
-#define SHIB_REFLECTION_DEFINE(type) \
-	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-	SHIB_REFLECTION_DEFINE_END(type)
+NS_SHIBBOLETH
 
-#define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(type, base_class) \
-	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.BASE(base_class) \
-		.ctor<>() \
-	SHIB_REFLECTION_DEFINE_END(type)
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static Gaff::Hash64 HashStringInstanceHash(const Gaff::HashString<T, HashType, HashingFunc, Allocator, true> & hash_string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64String(hash_string.getBuffer(), init);
+}
 
-#define SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(type, base_class) \
-	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.BASE(base_class) \
-	SHIB_REFLECTION_DEFINE_END(type)
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static Gaff::Hash64 HashStringInstanceHash(const Gaff::HashString<T, HashType, HashingFunc, Allocator, false> & hash_string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64T(hash_string.getHash(), init);
+}
 
-#define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(type, base_class) \
-	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.base<base_class>() \
-		.ctor<>() \
-	SHIB_REFLECTION_DEFINE_END(type)
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static Gaff::Hash64 HashStringViewInstanceHash(const Gaff::HashStringView<T, HashType, HashingFunc>& hash_string, Gaff::Hash64 init)
+{
+	if (hash_string.getBuffer()) {
+		return Gaff::FNV1aHash64String(hash_string.getBuffer(), init);
+	} else {
+		return Gaff::FNV1aHash64T(hash_string.getHash(), init);
+	}
+}
 
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, true>& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
 
-#define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE
-#define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE
-#define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) GAFF_TEMPLATE_REFLECTION_DECLARE(type, ProxyAllocator, __VA_ARGS__)
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ProxyAllocator, __VA_ARGS__)
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_END GAFF_TEMPLATE_REFLECTION_DEFINE_END
+	const char* const str = reader.readString();
+	out = str;
+	reader.freeString(str);
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& out)
+{
+	if (!reader.isString() && !reader.isUInt32() && !reader.isUInt64()) {
+		return false;
+	}
+
+	if (reader.isString()) {
+		const char* const str = reader.readString();
+		out = str;
+		reader.freeString(str);
+
+	} else {
+		if constexpr (std::is_same<HashType, Gaff::Hash32>::value) {
+			out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(HashType(static_cast<T>(reader.readUInt32())));
+		} else if constexpr (std::is_same<HashType, Gaff::Hash64>::value) {
+			out = Gaff::HashString<T, HashType, HashingFunc, Allocator, false>(HashType(static_cast<T>(reader.readUInt64())));
+		} else {
+			GAFF_TEMPLATE_STATIC_ASSERT(false, "Unknown hash type in LoadHashString.");
+		}
+	}
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static bool LoadHashStringView(const Shibboleth::ISerializeReader& reader, Gaff::HashStringView<T, HashType, HashingFunc>& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
+
+	const char* const str = reader.readString();
+	out = Gaff::HashStringView<T, HashType, HashingFunc>(str);
+	reader.freeString(str);
+
+	return true;
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static void SaveHashString(Shibboleth::ISerializeWriter& writer, const Gaff::HashString<T, HashType, HashingFunc, Allocator, true>& value)
+{
+	writer.writeString(value.getBuffer());
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
+static void SaveHashString(Shibboleth::ISerializeWriter& writer, const Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& value)
+{
+	writer.writeUInt64(value.getHash().getHash());
+}
+
+template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
+static void SaveHashStringView(Shibboleth::ISerializeWriter& writer, const Gaff::HashStringView<T, HashType, HashingFunc>& value)
+{
+	if (value.getBuffer()) {
+		writer.writeString(value.getBuffer());
+	} else {
+		writer.writeUInt64(value.getHash().getHash());
+	}
+}
+
+static Gaff::Hash64 HashStringInstance(const U8String& string, Gaff::Hash64 init)
+{
+	return Gaff::FNV1aHash64String(string.data(), init);
+}
+
+static bool LoadString(const Shibboleth::ISerializeReader& reader, U8String& out)
+{
+	if (!reader.isString()) {
+		return false;
+	}
+
+	const char* const str = reader.readString();
+	out = str;
+	reader.freeString(str);
+
+	return true;
+}
+
+static void SaveString(Shibboleth::ISerializeWriter& writer, const U8String& value)
+{
+	writer.writeString(value.data());
+}
+
+NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Reflection::IReflectionDefinition)
+NS_END
 
 
 SHIB_REFLECTION_DECLARE(int8_t)
@@ -115,14 +171,10 @@ SHIB_REFLECTION_DECLARE(bool)
 SHIB_REFLECTION_DECLARE(Gaff::Hash32)
 SHIB_REFLECTION_DECLARE(Gaff::Hash64)
 
-NS_SHIBBOLETH
-NS_END
-
-// Split up to allow generator to pick up the namespace.
-SHIB_REFLECTION_DECLARE(U8String)
-SHIB_REFLECTION_DECLARE(HashString32<>)
-SHIB_REFLECTION_DECLARE(HashString64<>)
-SHIB_REFLECTION_DECLARE(HashStringNoString32<>)
-SHIB_REFLECTION_DECLARE(HashStringNoString64<>)
-SHIB_REFLECTION_DECLARE(HashStringView32<>)
-SHIB_REFLECTION_DECLARE(HashStringView64<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::U8String)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashString32<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashString64<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashStringNoString32<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashStringNoString64<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashStringView32<>)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashStringView64<>)

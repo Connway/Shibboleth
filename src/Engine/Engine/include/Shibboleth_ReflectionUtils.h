@@ -25,6 +25,18 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionDefines.h"
 #include <Gaff_Hash.h>
 
+#define REFLECTION_CAST_PTR_NAME(T, name, object) \
+	reinterpret_cast<T*>( \
+		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+			Gaff::FNV1aHash64Const(name), (object)->getBasePointer() \
+		) \
+	)
+
+#define REFLECTION_CAST_NAME(T, name, object) *REFLECTION_CAST_PTR_NAME(T, name, &object)
+#define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
+#define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
+
+
 NS_REFLECTION
 
 template <class Derived, class Base>
