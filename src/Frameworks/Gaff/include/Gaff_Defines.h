@@ -74,10 +74,7 @@ THE SOFTWARE.
 
 #define GAFF_FAIL_RETURN(expr, return_value) if (!(expr)) { return return_value; }
 
-#ifdef _DEBUG
-	#define GAFF_ASSERT_ENABLED
-#endif
-
+#define GAFF_PREPEND_CLASS(x) class x
 #define GAFF_EXPAND(x) x
 #define GAFF_FOR_EACH_NARG(...) GAFF_FOR_EACH_NARG_(__VA_ARGS__, GAFF_FOR_EACH_RSEQ_N())
 #define GAFF_FOR_EACH_NARG_(...) GAFF_EXPAND(GAFF_FOR_EACH_ARG_N(__VA_ARGS__))

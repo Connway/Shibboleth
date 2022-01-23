@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_IReflectionFunction.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_Vector.h"
+#include <Gaff_Hashable.h>
 #include <Gaff_Hash.h>
 
 NS_SHIBBOLETH
@@ -125,7 +126,7 @@ public:
 	template <class T, class... Args>
 	T* createT(Gaff::Hash64 interface_hash, Gaff::IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Gaff::Hash64 ctor_hash = CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -133,7 +134,7 @@ public:
 	T* createT(Gaff::IAllocator& allocator, Args&&... args) const
 	{
 		constexpr Gaff::Hash64 interface_hash = Reflection<T>::GetHash();
-		constexpr Gaff::Hash64 ctor_hash = CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -154,7 +155,7 @@ public:
 	template <class... Args>
 	void* create(Gaff::IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Gaff::Hash64 ctor_hash = CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return create(ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
@@ -283,7 +284,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<Shibboleth::HashStringView32<>, const T*> getFuncAttr(void) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -307,7 +308,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<Shibboleth::HashStringView32<>, const T*> getFuncAttr(Gaff::Hash64 attr_name) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -333,7 +334,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<Shibboleth::HashStringView32<>, const T*> getStaticFuncAttr(void) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -357,7 +358,7 @@ public:
 	template <class T, class Ret, class... Args>
 	eastl::pair<Shibboleth::HashStringView32<>, const T*> getStaticFuncAttr(Gaff::Hash64 attr_name) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -455,7 +456,7 @@ public:
 	template <class Ret, class... Args, class T>
 	void getFuncAttrs(Gaff::Hash32 name, Shibboleth::Vector<const T*>& out) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
 		const int32_t size = getNumFuncAttrs(func_hash);
 
@@ -472,7 +473,7 @@ public:
 	template <class Ret, class... Args, class T>
 	void getFuncAttrs(Shibboleth::Vector< eastl::pair<Shibboleth::HashStringView32<>, const T*> >& out) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -495,7 +496,7 @@ public:
 	template <class Ret, class... Args, class T>
 	void getStaticFuncAttrs(Gaff::Hash32 name, Shibboleth::Vector<const T*>& out) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name));
 		const int32_t size = getNumStaticFuncAttrs(func_hash);
 
@@ -512,7 +513,7 @@ public:
 	template <class Ret, class... Args, class T>
 	void getStaticFuncAttrs(Shibboleth::Vector< eastl::pair<Shibboleth::HashStringView32<>, const T*> >& out) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		const int32_t num_funcs = getNumStaticFuncs();
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
@@ -534,21 +535,21 @@ public:
 	template <class... Args>
 	ConstructFunc<Args...> getConstructor(void) const
 	{
-		constexpr Gaff::Hash64 ctor_hash = CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return reinterpret_cast< ConstructFunc<Args...> >(getConstructor(ctor_hash));
 	}
 
 	template <class... Args>
 	FactoryFunc<Args...> getFactory(void) const
 	{
-		constexpr Gaff::Hash64 ctor_hash = CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
 	template <class Ret, class... Args>
 	IReflectionFunction<Ret, Args...>* getFunc(Gaff::Hash32 name) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		IReflectionFunctionBase* const functor = getFunc(name, arg_hash);
 
 		if (functor) {
@@ -561,7 +562,7 @@ public:
 	template <class Ret, class... Args>
 	IReflectionStaticFunction<Ret, Args...>* getStaticFunc(Gaff::Hash32 name) const
 	{
-		constexpr Gaff::Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		IReflectionStaticFunctionBase* const func = getStaticFunc(name, arg_hash);
 		
 		if (func) {
@@ -644,33 +645,6 @@ public:
 private:
 	virtual ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const = 0;
 	virtual void instantiated(void* object) const = 0;
-};
-
-class IEnumReflectionDefinition
-{
-public:
-	virtual ~IEnumReflectionDefinition(void) {}
-
-	virtual const IReflection& getReflectionInstance(void) const = 0;
-	virtual int32_t size(void) const = 0;
-
-	virtual Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const = 0;
-
-	bool load(const Shibboleth::ISerializeReader& reader, void* object, bool) const { return load(reader, object); }
-	void save(Shibboleth::ISerializeWriter& writer, const void* object, bool) const { save(writer, object); }
-
-	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object) const = 0;
-	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object) const = 0;
-
-	virtual int32_t getNumEntries(void) const = 0;
-	virtual Shibboleth::HashStringView32<> getEntryNameFromValue(int32_t value) const = 0;
-	virtual Shibboleth::HashStringView32<> getEntryNameFromIndex(int32_t index) const = 0;
-	virtual int32_t getEntryValue(int32_t index) const = 0;
-	virtual int32_t getEntryValue(const char* name) const = 0;
-	virtual int32_t getEntryValue(Gaff::Hash32 name) const = 0;
-
-	virtual int32_t getNumEnumAttrs(void) const = 0;
-	virtual const IAttribute* getEnumAttr(int32_t index) const = 0;
 };
 
 NS_END

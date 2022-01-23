@@ -45,7 +45,7 @@ public:
 	IRuntimeVar(Gaff::Hash64 name): _name(name) {}
 	virtual ~IRuntimeVar(void) = default;
 
-	virtual const Gaff::IReflection& getReflection(void) const = 0;
+	virtual const Reflection::IReflection& getReflection(void) const = 0;
 	virtual void* getValue(void) = 0;
 
 	const void* getValue(void) const
@@ -111,9 +111,9 @@ public:
 	{
 	}
 
-	const Gaff::IReflection& getReflection(void) const override
+	const Reflection::IReflection& getReflection(void) const override
 	{
-		return Reflection<T>::GetInstance();
+		return Reflection::Reflection<T>::GetInstance();
 	}
 
 	void* getValue(void) override
@@ -134,7 +134,7 @@ public:
 	}
 
 private:
-	static_assert(Reflection<T>::HasReflection, "Cannot make a RuntimeVar from a class without Reflection.");
+	static_assert(Reflection::Reflection<T>::HasReflection, "Cannot make a RuntimeVar from a class without Reflection.");
 
 	T _value;
 };
@@ -172,7 +172,7 @@ public:
 	{
 		IRuntimeVar* const runtime_var = getRuntimeVar(Gaff::FNV1aHash64String(name));
 
-		GAFF_ASSERT(!runtime_var || &Reflection<T>::GetInstance() == &runtime_var->getReflection());
+		GAFF_ASSERT(!runtime_var || &Reflection::Reflection<T>::GetInstance() == &runtime_var->getReflection());
 		return static_cast<RuntimeVar<T>*>(runtime_var);
 	}
 

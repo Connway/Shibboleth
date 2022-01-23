@@ -232,7 +232,7 @@ void App::destroy(void)
 				}
 
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_refls) {
 					for (const Gaff::IReflectionDefinition* ref_def : *manager_refls) {
@@ -483,7 +483,7 @@ bool App::initInternal(void)
 
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
-	_reflection_mgr.registerTypeBucket(Reflection<IManager>::GetHash());
+	_reflection_mgr.registerTypeBucket(Reflection::Reflection<IManager>::GetHash());
 
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
@@ -709,7 +709,7 @@ bool App::loadModules(void)
 
 				const char* const module_name = module_row.getString();
 				const Vector<const Gaff::IReflectionDefinition*>* const manager_bucket =
-					_reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+					_reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_bucket) {
 					if (!createManagersInternal(*manager_bucket)) {
@@ -723,7 +723,7 @@ bool App::loadModules(void)
 		}
 
 		// Create the reast of the managers.
-		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash());
+		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
@@ -749,7 +749,7 @@ bool App::loadModules(void)
 			}
 
 			const char* const module_name = module_row.getString();
-			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 			if (manager_bucket) {
 				for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {

@@ -21,16 +21,18 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ReflectionManager.h"
+#include "Shibboleth_IReflectionDefinition.h"
+#include "Shibboleth_IReflection.h"
 #include <EASTL/sort.h>
 
 NS_SHIBBOLETH
 
-static bool CompareRefDef(const Gaff::IReflectionDefinition* lhs, const Gaff::IReflectionDefinition* rhs)
+static bool CompareRefDef(const Reflection::IReflectionDefinition* lhs, const Reflection::IReflectionDefinition* rhs)
 {
 	return lhs->getReflectionInstance().getHash() < rhs->getReflectionInstance().getHash();
 }
 
-bool ReflectionManager::CompareRefHash(const Gaff::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
+bool ReflectionManager::CompareRefHash(const Reflection::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
 {
 	return lhs->getReflectionInstance().getHash() < rhs;
 }
@@ -58,15 +60,15 @@ void ReflectionManager::destroy(void)
 	_type_buckets.clear();
 }
 
-const Gaff::IEnumReflectionDefinition* ReflectionManager::getEnumReflection(Gaff::Hash64 name) const
+const Reflection::IEnumReflectionDefinition* ReflectionManager::getEnumReflection(Gaff::Hash64 name) const
 {
 	auto it = _enum_reflection_map.find(name);
 	return (it == _enum_reflection_map.end()) ? nullptr : it->second.get();
 }
 
-Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflection(void) const
+Vector<const Reflection::IEnumReflectionDefinition*> ReflectionManager::getEnumReflection(void) const
 {
-	Vector<const Gaff::IEnumReflectionDefinition*> ret;
+	Vector<const Reflection::IEnumReflectionDefinition*> ret;
 
 	for (const auto& pair : _enum_reflection_map) {
 		ret.emplace_back(pair.second.get());
@@ -75,7 +77,7 @@ Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflect
 	return ret;
 }
 
-void ReflectionManager::registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def)
+void ReflectionManager::registerEnumReflection(Reflection::IEnumReflectionDefinition* ref_def)
 {
 	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
 
@@ -90,7 +92,7 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* 
 
 	const HashString64<> name_hash(module_name);
 	const auto it_module = _module_enum_owners.find(name_hash);
-	Vector<const Gaff::IEnumReflectionDefinition*>& module_bucket = (it_module == _module_enum_owners.end()) ? _module_enum_owners[name_hash] : it_module->second;
+	Vector<const Reflection::IEnumReflectionDefinition*>& module_bucket = (it_module == _module_enum_owners.end()) ? _module_enum_owners[name_hash] : it_module->second;
 
 	if (it_module == _module_enum_owners.end()) {
 		module_bucket.set_allocator(ProxyAllocator("Reflection"));
@@ -100,18 +102,18 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* 
 	module_bucket.insert(it, it_enum->second.get());
 }
 
-void ReflectionManager::registerReflection(Gaff::IEnumReflectionDefinition* ref_def)
+void ReflectionManager::registerReflection(Reflection::IEnumReflectionDefinition* ref_def)
 {
 	registerEnumReflection(ref_def);
 }
 
-const Gaff::IReflectionDefinition* ReflectionManager::getReflection(Gaff::Hash64 name) const
+const Reflection::IReflectionDefinition* ReflectionManager::getReflection(Gaff::Hash64 name) const
 {
 	auto it = _reflection_map.find(name);
 	return (it == _reflection_map.end()) ? nullptr : it->second.get();
 }
 
-void ReflectionManager::registerReflection(Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::registerReflection(Reflection::IReflectionDefinition* ref_def)
 {
 	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
 
@@ -186,7 +188,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	global_types.set_allocator(ProxyAllocator("Reflection"));
 
 	for (const auto& ref_map_pair : _reflection_map) {
-		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;
+		const UniquePtr<Reflection::IReflectionDefinition>& ref_def = ref_map_pair.second;
 		const Gaff::Hash64 class_hash = ref_def->getReflectionInstance().getHash();
 
 		// Don't care about the concrete version of class. Only reflected types that inherit from the class.
@@ -231,7 +233,7 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	bucket.set_allocator(ProxyAllocator("Reflection"));
 
 	for (const auto& ref_map_pair : _reflection_map) {
-		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;
+		const UniquePtr<Reflection::IReflectionDefinition>& ref_def = ref_map_pair.second;
 
 		// Check if we have anything with this attribute.
 		if (ref_def->hasClassAttr(attr_name) ||
@@ -256,7 +258,7 @@ ReflectionManager::TypeBucket ReflectionManager::getReflectionWithAttribute(Gaff
 		return out;
 	}
 
-	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+	for (const Reflection::IReflectionDefinition* ref_def : *bucket) {
 		if (hasAttribute(*ref_def, name)) {
 			out.emplace_back(ref_def);
 		}
@@ -297,13 +299,13 @@ Vector< HashString64<> > ReflectionManager::getModules(void) const
 }
 
 
-void ReflectionManager::insertType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::insertType(TypeBucket& bucket, const Reflection::IReflectionDefinition* ref_def)
 {
 	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def->getReflectionInstance().getHash(), CompareRefHash);
 	bucket.insert(it, ref_def);
 }
 
-void ReflectionManager::removeType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::removeType(TypeBucket& bucket, const Reflection::IReflectionDefinition* ref_def)
 {
 	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def, CompareRefDef);
 
@@ -312,7 +314,7 @@ void ReflectionManager::removeType(TypeBucket& bucket, const Gaff::IReflectionDe
 	}
 }
 
-bool ReflectionManager::hasAttribute(const Gaff::IReflectionDefinition& ref_def, Gaff::Hash64 name) const
+bool ReflectionManager::hasAttribute(const Reflection::IReflectionDefinition& ref_def, Gaff::Hash64 name) const
 {
 	return	ref_def.hasClassAttr(name) ||
 			ref_def.hasVarAttr(name) ||
@@ -320,7 +322,7 @@ bool ReflectionManager::hasAttribute(const Gaff::IReflectionDefinition& ref_def,
 			ref_def.hasStaticFuncAttr(name);
 }
 
-void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::addToAttributeBuckets(const Reflection::IReflectionDefinition* ref_def)
 {
 	for (auto& bucket_pair : _attr_buckets) {
 		if (hasAttribute(*ref_def, bucket_pair.first)) {
@@ -329,7 +331,7 @@ void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition*
 	}
 }
 
-void ReflectionManager::addToTypeBuckets(const Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::addToTypeBuckets(const Reflection::IReflectionDefinition* ref_def)
 {
 	bool was_inserted = false;
 

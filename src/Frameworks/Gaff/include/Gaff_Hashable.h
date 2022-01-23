@@ -29,6 +29,30 @@ THE SOFTWARE.
 	#define NS_HASHABLE namespace Hash {
 #endif
 
+#define GAFF_CLASS_HASHABLE_TEMPLATE_REFERENCE_GETTERS(type, ref_type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	constexpr auto GetName< type<__VA_ARGS__>##ref_type >(void) \
+	{ \
+		return ClassHashableHelper< type<__VA_ARGS__>##ref_type >::GetName(); \
+	} \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	constexpr Gaff::Hash64 GetHash< type<__VA_ARGS__>##ref_type >(void) \
+	{ \
+		return ClassHashableHelper< type<__VA_ARGS__>##ref_type >::GetHash(); \
+	}
+
+#define GAFF_CLASS_HASHABLE_TEMPLATE_GETTERS(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	constexpr auto GetName< type<__VA_ARGS__> >(void) \
+	{ \
+		return ClassHashableHelper< type<__VA_ARGS__> >::GetName(); \
+	} \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	constexpr Gaff::Hash64 GetHash< type<__VA_ARGS__> >(void) \
+	{ \
+		return ClassHashableHelper< type<__VA_ARGS__> >::GetHash(); \
+	}
+
 #define GAFF_CLASS_HASHABLE_GETTERS(type) \
 	template <> \
 	constexpr auto GetName<type>(void) \
@@ -106,8 +130,8 @@ THE SOFTWARE.
 	GAFF_CLASS_HASHABLE_NO_REF(type)
 
 #define GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, ref_type, ...) \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	struct ClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>##ref_type) > final \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	struct ClassHashableHelper< type<__VA_ARGS__>##ref_type > final \
 	{ \
 	private: \
 		template <class First, class... Rest> \
@@ -139,13 +163,13 @@ THE SOFTWARE.
 			return Gaff::FNV1aHash64Const(#ref_type, Gaff::FNV1aHash64StringConst(name.data.data())); \
 		} \
 	}; \
-	GAFF_CLASS_HASHABLE_GETTERS(GAFF_SINGLE_ARG(type<__VA_ARGS__>##ref_type)
+	GAFF_CLASS_HASHABLE_TEMPLATE_REFERENCE_GETTERS(type, ref_type, __VA_ARGS__)
 
 #define GAFF_TEMPLATE_CLASS_HASHABLE(type, ...) \
 	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, &, __VA_ARGS__); \
 	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, *, __VA_ARGS__); \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	struct ClassHashableHelper< GAFF_SINGLE_ARG(type<__VA_ARGS__>) > final \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	struct ClassHashableHelper< type<__VA_ARGS__> > final \
 	{ \
 	private: \
 		template <class First, class... Rest> \
@@ -177,7 +201,7 @@ THE SOFTWARE.
 			return Gaff::FNV1aHash64StringConst(name.data.data()); \
 		} \
 	}; \
-	GAFF_CLASS_HASHABLE_GETTERS(GAFF_SINGLE_ARG(type<__VA_ARGS__>)
+	GAFF_CLASS_HASHABLE_TEMPLATE_GETTERS(type, __VA_ARGS__)
 
 
 NS_HASHABLE
@@ -339,7 +363,7 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 	using NoRef = typename std::remove_reference<NoPtr>::type;
 	using V = typename std::remove_const<NoRef>::type;
 
-	const auto name = GAFF_HASHABLE_NAMESPACE::GetName<V>();
+	const auto name = Hash::GetName<V>();
 	const Hash64 hash = CalcTypeHash<First>(init, name.data.data());
 
 	if constexpr (sizeof...(Rest) == 0) {

@@ -52,7 +52,7 @@ ReflectionBase<T>::ReflectionBase(void)
 }
 
 template <class T>
-Hash64 ReflectionBase<T>::getVersion(void) const
+Gaff::Hash64 ReflectionBase<T>::getVersion(void) const
 {
 	return _version.getHash();
 }
@@ -60,7 +60,7 @@ Hash64 ReflectionBase<T>::getVersion(void) const
 template <class T>
 bool ReflectionBase<T>::isDefined(void) const
 {
-	return IsDefined();
+	return _defined;
 }
 
 template <class T>

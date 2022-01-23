@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IEnumReflectionDefinition.h"
 #include "Shibboleth_SerializeInterfaces.h"
-#include "Shibboleth_ReflectionDefines.h"
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_VectorMap.h"
@@ -42,7 +42,7 @@ class EnumReflectionDefinition : public IEnumReflectionDefinition
 	static_assert(std::is_enum<Enum>::value, "Template type Enum is not an enum.");
 
 public:
-	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
+	using IAttributePtr = Shibboleth::UniquePtr<IAttribute>;
 
 	GAFF_STRUCTORS_DEFAULT(EnumReflectionDefinition);
 	GAFF_NO_COPY(EnumReflectionDefinition);

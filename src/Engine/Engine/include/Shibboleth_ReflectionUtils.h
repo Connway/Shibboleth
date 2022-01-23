@@ -36,6 +36,16 @@ THE SOFTWARE.
 #define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
+#define GET_CLASS_ATTRS(T, Allocator) getClassAttrs<T>(Gaff::FNV1aHash64Const(#T))
+#define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
+#define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
+//#define GET_FUNC_ATTR(T, func_name) getFuncAttr<T>(func_name, Gaff::FNV1aHash64Const(#T))
+//#define GET_STATIC_FUNC_ATTR(T, static_func_name) getStaticFuncAttr<T>(static_func_name, Gaff::FNV1aHash64Const(#T))
+#define GET_ENUM_ATTR(T) getEnumAttr<T>(Gaff::FNV1aHash64Const(#T))
+#define GET_ENUM_VALUE_ATTR(T, value_name) getEnumValueAttr<T>(value_name, Gaff::FNV1aHash64Const(#T))
+
+#define INTERFACE_CAST(interface_type, object) Reflection::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
+
 
 NS_REFLECTION
 

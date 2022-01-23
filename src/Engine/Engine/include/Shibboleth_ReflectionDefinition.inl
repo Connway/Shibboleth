@@ -25,13 +25,13 @@ THE SOFTWARE.
 NS_REFLECTION
 
 template <class T, class... Args>
-void ConstructFunc(T* obj, Args&&... args)
+void ConstructFuncImpl(T* obj, Args&&... args)
 {
-	Construct(obj, std::forward<Args>(args)...);
+	Gaff::Construct(obj, std::forward<Args>(args)...);
 }
 
 template <class T, class... Args>
-T* FactoryFunc(Gaff::IAllocator& allocator, Args&&... args)
+T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args)
 {
 	return SHIB_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }
@@ -180,8 +180,8 @@ template <class T>
 template <class Var>
 const IReflection& ReflectionDefinition<T>::VarPtr<Var>::getReflection(void) const
 {
-	if constexpr (IsFlags<Var>()) {
-		return Reflection<typename GetFlagsEnum<Var>::Enum>::GetInstance();
+	if constexpr (Gaff::IsFlags<Var>()) {
+		return Reflection<typename Gaff::GetFlagsEnum<Var>::Enum>::GetInstance();
 	} else {
 		return Reflection<Var>::GetInstance();
 	}
@@ -235,8 +235,8 @@ bool ReflectionDefinition<T>::VarPtr<Var>::load(const Shibboleth::ISerializeRead
 {
 	Var* const var = &(object.*_ptr);
 
-	if constexpr (IsFlags<Var>()) {
-		using Enum = typename GetFlagsEnum<Var>::Enum;
+	if constexpr (Gaff::IsFlags<Var>()) {
+		using Enum = typename Gaff::GetFlagsEnum<Var>::Enum;
 
 		// Iterate over all the flags and read values.
 		const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -271,8 +271,8 @@ void ReflectionDefinition<T>::VarPtr<Var>::save(Shibboleth::ISerializeWriter& wr
 {
 	const Var* const var = &(object.*_ptr);
 
-	if constexpr (IsFlags<Var>()) {
-		using Enum = typename GetFlagsEnum<Var>::Enum;
+	if constexpr (Gaff::IsFlags<Var>()) {
+		using Enum = typename Gaff::GetFlagsEnum<Var>::Enum;
 
 		// Iterate over all the flags and write values.
 		const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -295,15 +295,15 @@ template <class T>
 template <class Var>
 bool ReflectionDefinition<T>::VarPtr<Var>::isFlags(void) const
 {
-	return IsFlags<Var>();
+	return Gaff::IsFlags<Var>();
 }
 
 template <class T>
 template <class Var>
 void ReflectionDefinition<T>::VarPtr<Var>::setFlagValue(void* object, int32_t flag_index, bool value)
 {
-	if constexpr (IsFlags<Var>()) {
-		using Enum = typename GetFlagsEnum<Var>::Enum;
+	if constexpr (Gaff::IsFlags<Var>()) {
+		using Enum = typename Gaff::GetFlagsEnum<Var>::Enum;
 		(reinterpret_cast<T*>(object)->*_ptr).set(value, static_cast<Enum>(flag_index));
 
 	} else {
@@ -316,8 +316,8 @@ template <class T>
 template <class Var>
 bool ReflectionDefinition<T>::VarPtr<Var>::getFlagValue(void* object, int32_t flag_index) const
 {
-	if constexpr (IsFlags<Var>()) {
-		using Enum = typename GetFlagsEnum<Var>::Enum;
+	if constexpr (Gaff::IsFlags<Var>()) {
+		using Enum = typename Gaff::GetFlagsEnum<Var>::Enum;
 		return (reinterpret_cast<T*>(object)->*_ptr).testAll(static_cast<Enum>(flag_index));
 
 	} else {
@@ -1018,7 +1018,7 @@ bool ReflectionDefinition<T>::ArrayPtr<Var, array_size>::load(const Shibboleth::
 	bool success = true;
 
 	for (int32_t i = 0; i < size; ++i) {
-		ScopeGuard scope = reader.enterElementGuard(i);
+		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 		success = success && Reflection<Var>::Load(reader, (object.*_ptr)[i]);
 	}
 
@@ -1227,7 +1227,7 @@ bool ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::load(const Shibbole
 	bool success = true;
 
 	for (int32_t i = 0; i < size; ++i) {
-		ScopeGuard scope = reader.enterElementGuard(i);
+		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 		success = success && Reflection<Var>::Load(reader, (object.*_ptr)[i]);
 	}
 
@@ -1443,19 +1443,19 @@ bool ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(c
 	bool success = true;
 
 	for (int32_t i = 0; i < size; ++i) {
-		ScopeGuard scope = reader.enterElementGuard(i);
+		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 		bool key_loaded = true;
 		Key key;
 
 		{
-			ScopeGuard guard_key = reader.enterElementGuard("key");
+			Shibboleth::ScopeGuard guard_key = reader.enterElementGuard("key");
 			key_loaded = Reflection<Key>::Load(reader, key);
 			success = success && key_loaded;
 		}
 
 		if (key_loaded)
 		{
-			ScopeGuard guard_value = reader.enterElementGuard("value");
+			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard("value");
 			success = success && Reflection<Value>::Load(reader, (object.*_ptr)[key]);
 		}
 	}
@@ -1536,7 +1536,7 @@ bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T
 					continue;
 				}
 
-				ScopeGuard scope = reader.enterElementGuard(name);
+				Shibboleth::ScopeGuard scope = reader.enterElementGuard(name);
 				entry.second->load(reader, object);
 			}
 		}
@@ -1579,13 +1579,13 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T
 }
 
 template <class T>
-Hash64 ReflectionDefinition<T>::getInstanceHash(const void* object, Hash64 init) const
+Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const void* object, Gaff::Hash64 init) const
 {
 	return getInstanceHash(*reinterpret_cast<const T*>(object), init);
 }
 
 template <class T>
-Hash64 ReflectionDefinition<T>::getInstanceHash(const T& object, Hash64 init) const
+Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const T& object, Gaff::Hash64 init) const
 {
 	return (_instance_hash) ? _instance_hash(object, init) : FNV1aHash64T(object, init);
 }
@@ -1598,7 +1598,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::setInstanceHash(InstanceHashFu
 }
 
 template <class T>
-const void* ReflectionDefinition<T>::getInterface(Hash64 class_hash, const void* object) const
+const void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, const void* object) const
 {
 	if (class_hash == Reflection<T>::GetHash()) {
 		return object;
@@ -1614,13 +1614,13 @@ const void* ReflectionDefinition<T>::getInterface(Hash64 class_hash, const void*
 }
 
 template <class T>
-void* ReflectionDefinition<T>::getInterface(Hash64 class_hash, void* object) const
+void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, void* object) const
 {
 	return const_cast<void*>(getInterface(class_hash, const_cast<const void*>(object)));
 }
 
 template <class T>
-bool ReflectionDefinition<T>::hasInterface(Hash64 class_hash) const
+bool ReflectionDefinition<T>::hasInterface(Gaff::Hash64 class_hash) const
 {
 	if (class_hash == Reflection<T>::GetHash()) {
 		return true;
@@ -1631,7 +1631,7 @@ bool ReflectionDefinition<T>::hasInterface(Hash64 class_hash) const
 }
 
 template <class T>
-void ReflectionDefinition<T>::setAllocator(const Allocator& allocator)
+void ReflectionDefinition<T>::setAllocator(const Shibboleth::ProxyAllocator& allocator)
 {
 	_base_class_offsets.set_allocator(allocator);
 	_factories.set_allocator(allocator);
@@ -1651,7 +1651,7 @@ void ReflectionDefinition<T>::setAllocator(const Allocator& allocator)
 }
 
 template <class T>
-IAllocator& ReflectionDefinition<T>::getAllocator(void)
+Shibboleth::ProxyAllocator& ReflectionDefinition<T>::getAllocator(void)
 {
 	return _allocator;
 }
@@ -1660,7 +1660,15 @@ template <class T>
 const IReflection& ReflectionDefinition<T>::getReflectionInstance(void) const
 {
 	return Reflection<T>::GetInstance();
+	//GAFF_ASSERT(_ref_inst);
+	//return *_ref_inst;
 }
+
+//template <class T>
+//void ReflectionDefinition<T>::setReflectionInstance(const IReflection& ref_inst)
+//{
+//	_ref_inst = &ref_inst;
+//}
 
 template <class T>
 int32_t ReflectionDefinition<T>::size(void) const
@@ -1687,7 +1695,7 @@ int32_t ReflectionDefinition<T>::getNumVars(void) const
 }
 
 template <class T>
-HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index) const
+Shibboleth::HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
 	return HashStringView32<>((_vars.begin() + index)->first);
@@ -1701,7 +1709,7 @@ IReflectionVar* ReflectionDefinition<T>::getVar(int32_t index) const
 }
 
 template <class T>
-IReflectionVar* ReflectionDefinition<T>::getVar(Hash32 name) const
+IReflectionVar* ReflectionDefinition<T>::getVar(Gaff::Hash32 name) const
 {
 	return getVarT(name);
 }
@@ -1731,14 +1739,14 @@ int32_t ReflectionDefinition<T>::getNumFuncOverrides(int32_t index) const
 }
 
 template <class T>
-HashStringView32<> ReflectionDefinition<T>::getFuncName(int32_t index) const
+Shibboleth::HashStringView32<> ReflectionDefinition<T>::getFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
 	return HashStringView32<>((_funcs.begin() + index)->first);
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getFuncIndex(Hash32 name) const
+int32_t ReflectionDefinition<T>::getFuncIndex(Gaff::Hash32 name) const
 {
 	const auto it = _funcs.find(name);
 	return (it == _funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_funcs.begin(), it));
@@ -1769,14 +1777,14 @@ int32_t ReflectionDefinition<T>::getNumStaticFuncOverrides(int32_t index) const
 }
 
 template <class T>
-HashStringView32<> ReflectionDefinition<T>::getStaticFuncName(int32_t index) const
+Shibboleth::HashStringView32<> ReflectionDefinition<T>::getStaticFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
 	return HashStringView32<>((_static_funcs.begin() + index)->first);
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getStaticFuncIndex(Hash32 name) const
+int32_t ReflectionDefinition<T>::getStaticFuncIndex(Gaff::Hash32 name) const
 {
 	const auto it = _static_funcs.find(name);
 	return (it == _static_funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_static_funcs.begin(), it));
@@ -1789,7 +1797,7 @@ int32_t ReflectionDefinition<T>::getNumClassAttrs(void) const
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getClassAttr(Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getClassAttr(Gaff::Hash64 attr_name) const
 {
 	return getAttribute(_class_attrs, attr_name);
 }
@@ -1802,7 +1810,7 @@ const IAttribute* ReflectionDefinition<T>::getClassAttr(int32_t index) const
 }
 
 template <class T>
-bool ReflectionDefinition<T>::hasClassAttr(Hash64 attr_name) const
+bool ReflectionDefinition<T>::hasClassAttr(Gaff::Hash64 attr_name) const
 {
 	return getClassAttr(attr_name) != nullptr;
 }
@@ -1814,14 +1822,14 @@ void ReflectionDefinition<T>::addClassAttr(IAttribute& attribute)
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getNumVarAttrs(Hash32 name) const
+int32_t ReflectionDefinition<T>::getNumVarAttrs(Gaff::Hash32 name) const
 {
 	const auto it = _var_attrs.find(name);
 	return (it != _var_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getVarAttr(Hash32 name, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, Gaff::Hash64 attr_name) const
 {
 	const auto it = _var_attrs.find(name);
 	GAFF_ASSERT(it != _var_attrs.end());
@@ -1830,7 +1838,7 @@ const IAttribute* ReflectionDefinition<T>::getVarAttr(Hash32 name, Hash64 attr_n
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getVarAttr(Hash32 name, int32_t index) const
+const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, int32_t index) const
 {
 	const auto it = _var_attrs.find(name);
 	GAFF_ASSERT(it != _var_attrs.end());
@@ -1839,7 +1847,7 @@ const IAttribute* ReflectionDefinition<T>::getVarAttr(Hash32 name, int32_t index
 }
 
 template <class T>
-bool ReflectionDefinition<T>::hasVarAttr(Hash64 attr_name) const
+bool ReflectionDefinition<T>::hasVarAttr(Gaff::Hash64 attr_name) const
 {
 	for (const auto& attrs : _var_attrs) {
 		if (getAttribute(attrs.second, attr_name) != nullptr) {
@@ -1851,7 +1859,7 @@ bool ReflectionDefinition<T>::hasVarAttr(Hash64 attr_name) const
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getNumFuncAttrs(Hash64 name_arg_hash) const
+int32_t ReflectionDefinition<T>::getNumFuncAttrs(Gaff::Hash64 name_arg_hash) const
 {
 	const auto it = _func_attrs.find(name_arg_hash);
 
@@ -1872,7 +1880,7 @@ int32_t ReflectionDefinition<T>::getNumFuncAttrs(Hash64 name_arg_hash) const
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
 {
 	const auto it = _func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _func_attrs.end());
@@ -1881,7 +1889,7 @@ const IAttribute* ReflectionDefinition<T>::getFuncAttr(Hash64 name_arg_hash, Has
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getFuncAttr(Hash64 name_arg_hash, int32_t index) const
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const
 {
 	const auto it = _func_attrs.find(name_arg_hash);
 
@@ -1904,7 +1912,7 @@ const IAttribute* ReflectionDefinition<T>::getFuncAttr(Hash64 name_arg_hash, int
 }
 
 template <class T>
-bool ReflectionDefinition<T>::hasFuncAttr(Hash64 attr_name) const
+bool ReflectionDefinition<T>::hasFuncAttr(Gaff::Hash64 attr_name) const
 {
 	for (const auto& attrs : _func_attrs) {
 		if (getFuncAttr(attrs.first, attr_name) != nullptr) {
@@ -1916,14 +1924,14 @@ bool ReflectionDefinition<T>::hasFuncAttr(Hash64 attr_name) const
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(Hash64 name_arg_hash) const
+int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(Gaff::Hash64 name_arg_hash) const
 {
 	const auto it = _static_func_attrs.find(name_arg_hash);
 	return (it != _static_func_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Hash64 name_arg_hash, Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
 {
 	const auto it = _static_func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _static_func_attrs.end());
@@ -1932,7 +1940,7 @@ const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Hash64 name_arg_has
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Hash64 name_arg_hash, int32_t index) const
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const
 {
 	const auto it = _static_func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _static_func_attrs.end());
@@ -1941,7 +1949,7 @@ const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Hash64 name_arg_has
 }
 
 template <class T>
-bool ReflectionDefinition<T>::hasStaticFuncAttr(Hash64 attr_name) const
+bool ReflectionDefinition<T>::hasStaticFuncAttr(Gaff::Hash64 attr_name) const
 {
 	for (const auto& attrs : _static_func_attrs) {
 		if (getStaticFuncAttr(attrs.first, attr_name) != nullptr) {
@@ -1966,14 +1974,14 @@ IReflectionStaticFunctionBase* ReflectionDefinition<T>::getConstructor(int32_t i
 }
 
 template <class T>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getConstructor(Hash64 ctor_hash) const
+IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getConstructor(Gaff::Hash64 ctor_hash) const
 {
 	const auto it = _ctors.find(ctor_hash);
 	return it == _ctors.end() ? nullptr : it->second->getFunc();
 }
 
 template <class T>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getFactory(Hash64 ctor_hash) const
+IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getFactory(Gaff::Hash64 ctor_hash) const
 {
 	const auto it = _factories.find(ctor_hash);
 	return it == _factories.end() ? nullptr : it->second;
@@ -1989,7 +1997,7 @@ IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(int32_t na
 }
 
 template <class T>
-IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(Hash32 name, Hash64 args) const
+IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(Gaff::Hash32 name, Gaff::Hash64 args) const
 {
 	const auto it = _static_funcs.find(name);
 
@@ -2014,7 +2022,7 @@ IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(int32_t name_index, in
 }
 
 template <class T>
-IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(Hash32 name, Hash64 args) const
+IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(Gaff::Hash32 name, Gaff::Hash64 args) const
 {
 	const auto it = _funcs.find(name);
 
@@ -2044,7 +2052,7 @@ typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(int32_t
 }
 
 template <class T>
-typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(Hash32 name) const
+typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(Gaff::Hash32 name) const
 {
 	const auto it = _vars.find(name);
 	return (it == _vars.end()) ? nullptr : it->second.get();
@@ -2251,14 +2259,14 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 template <class T>
 template <class... Args>
-ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(Hash64 factory_hash)
+ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(Gaff::Hash64 factory_hash)
 {
 	GAFF_ASSERT(!getFactory(factory_hash));
 
-	ConstructFuncT<T, Args...> construct_func = Gaff::ConstructFunc<T, Args...>;
-	FactoryFuncT<T, Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
+	ConstructFuncT<T, Args...> construct_func = ConstructFuncImpl<T, Args...>;
+	FactoryFuncT<T, Args...> factory_func = FactoryFuncImpl<T, Args...>;
 
-	using ConstructorFunction = StaticFunction<void, T*, Args&&...>;
+	using ConstructorFunction = ReflectionStaticFunction<void, T*, Args&&...>;
 
 	_ctors[factory_hash].reset(SHIB_ALLOCT(ConstructorFunction, _allocator, construct_func));
 	_factories.emplace(factory_hash, reinterpret_cast<VoidFunc>(factory_func));
@@ -2270,7 +2278,7 @@ template <class T>
 template <class... Args>
 ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(void)
 {
-	constexpr Hash64 hash = CalcTemplateHash<Args...>(k_init_hash64);
+	constexpr Gaff::Hash64 hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 	return ctor<Args...>(hash);
 }
 
@@ -2303,7 +2311,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 template <class T>
 template <class Enum, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Flags<Enum> T::*ptr, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes)
 {
 	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
 	static_assert(Reflection<Enum>::HasReflection, "Enum is not reflected!");
@@ -2445,7 +2453,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 template <class T>
 template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
@@ -2503,7 +2511,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 template <class T>
 template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_size], VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Key>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Key>::value, "Cannot reflect pointers.");
@@ -2661,7 +2669,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _static_funcs.find(Gaff::FNV1aHash32Const(name));
 
-	using StaticFuncType = StaticFunction<Ret, Args...>;
+	using StaticFuncType = ReflectionStaticFunction<Ret, Args...>;
 
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
@@ -3164,24 +3172,24 @@ template <class T>
 void ReflectionDefinition<T>::instantiated(void* object) const
 {
 	for (const IAttributePtr& attr : _class_attrs) {
-		const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
+		attr->instantiated(object, *this);
 	}
 
 	for (auto& it : _var_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
+			attr->instantiated(object, *this);
 		}
 	}
 
 	for (auto& it : _func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
+			attr->instantiated(object, *this);
 		}
 	}
 
 	for (auto& it : _static_func_attrs) {
 		for (const IAttributePtr& attr : it.second) {
-			const_cast<IAttributePtr&>(attr)->instantiated(object, *this);
+			attr->instantiated(object, *this);
 		}
 	}
 }
@@ -3197,5 +3205,17 @@ const IAttribute* ReflectionDefinition<T>::getAttribute(const AttributeList& att
 
 	return nullptr;
 }
+
+REF_DEF_BUILTIN(int8_t, Int8);
+REF_DEF_BUILTIN(int16_t, Int16);
+REF_DEF_BUILTIN(int32_t, Int32);
+REF_DEF_BUILTIN(int64_t, Int64);
+REF_DEF_BUILTIN(uint8_t, UInt8);
+REF_DEF_BUILTIN(uint16_t, UInt16);
+REF_DEF_BUILTIN(uint32_t, UInt32);
+REF_DEF_BUILTIN(uint64_t, UInt64);
+REF_DEF_BUILTIN(float, Float);
+REF_DEF_BUILTIN(double, Double);
+REF_DEF_BUILTIN(bool, Bool);
 
 NS_END

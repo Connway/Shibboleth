@@ -15,9 +15,9 @@ namespace
 	void RegisterOwningModule(void)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Shibboleth::Reflection<T>::GetHash(), "%s");
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Reflection::Reflection<T>::GetHash(), "%s");
 		} else {
-			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Shibboleth::Reflection<T>::GetHash(), "%s");
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Reflection::Reflection<T>::GetHash(), "%s");
 		}
 	}
 
@@ -26,17 +26,17 @@ namespace
 	{
 		if constexpr (std::is_enum<T>::value) {
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
 			if (mode == Shibboleth::InitMode::Attributes) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else {
 			if (mode == Shibboleth::InitMode::Regular) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		}
@@ -264,9 +264,9 @@ namespace
 	void RegisterOwningModule(void)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Shibboleth::Reflection<T>::GetHash(), "Engine");
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Reflection::Reflection<T>::GetHash(), "Engine");
 		} else {
-			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Shibboleth::Reflection<T>::GetHash(), "Engine");
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Reflection::Reflection<T>::GetHash(), "Engine");
 		}
 	}
 
@@ -275,17 +275,17 @@ namespace
 	{
 		if constexpr (std::is_enum<T>::value) {
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
 			if (mode == Shibboleth::InitMode::Attributes) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else {
 			if (mode == Shibboleth::InitMode::Regular) {
-				Shibboleth::Reflection<T>::Init();
+				Reflection::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		}

@@ -22,10 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_SerializeReaderWrapperFwd.h"
+#include "Shibboleth_Defines.h"
 
 NS_SHIBBOLETH
 
+class SerializeReaderWrapper;
 class IFile;
 class IApp;
 

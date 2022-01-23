@@ -31,7 +31,6 @@ NS_END
 
 NS_REFLECTION
 
-class IFunctionStackAllocator;
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
 
@@ -82,6 +81,15 @@ struct FunctionStackEntry final
 	Gaff::Flags<Flag> flags;
 	Value value;
 };
+
+class IFunctionStackAllocator : public Gaff::IAllocator
+{
+public:
+	using IAllocator::alloc;
+
+	virtual void* alloc(const IReflectionDefinition& ref_def) = 0;
+};
+
 
 class IReflectionFunctionBase
 {

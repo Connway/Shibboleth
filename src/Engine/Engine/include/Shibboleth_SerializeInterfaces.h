@@ -204,7 +204,7 @@ public:
 	virtual void writeString(const char* value) = 0;
 };
 
-class ScopeGuard
+class ScopeGuard final
 {
 public:
 	GAFF_NO_COPY(ScopeGuard);

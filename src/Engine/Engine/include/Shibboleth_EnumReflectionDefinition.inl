@@ -104,7 +104,7 @@ int32_t EnumReflectionDefinition<Enum>::getEntryValue(int32_t index) const
 template <class Enum>
 int32_t EnumReflectionDefinition<Enum>::getEntryValue(Gaff::Hash32 name) const
 {
-	auto it = Gaff::Find(_entries, name, [](const HashString32<Allocator>& lhs, Hash32 rhs) -> bool
+	auto it = Gaff::Find(_entries, name, [](const Shibboleth::HashString32<>& lhs, Gaff::Hash32 rhs) -> bool
 	{
 		return lhs.getHash() < rhs;
 	});

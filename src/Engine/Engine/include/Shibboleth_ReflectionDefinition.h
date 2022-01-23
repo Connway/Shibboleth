@@ -23,8 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IReflectionDefinition.h"
-#include "Shibboleth_ProxyAllocator.h"
+#include "Shibboleth_SerializeInterfaces.h"
+#include "Shibboleth_IReflection.h"
 #include "Shibboleth_SmartPtrs.h"
+#include <Gaff_Ops.h>
 
 NS_SHIBBOLETH
 	class ISerializeWriter;
@@ -100,6 +102,8 @@ public:
 	Shibboleth::ProxyAllocator& getAllocator(void) override;
 
 	const IReflection& getReflectionInstance(void) const override;
+	//void setReflectionInstance(const IReflection& ref_inst);
+
 	int32_t size(void) const override;
 
 	bool isPolymorphic(void) const override;
@@ -567,12 +571,6 @@ private:
 		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-
-			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
-				// $TODO: Log error.
-				return false;
-			}
-
 			return call(const_cast<void*>(object), args, num_args, ret, allocator);
 		}
 
@@ -584,10 +582,10 @@ private:
 			}
 
 			if constexpr (sizeof...(Args) > 0) {
-				return CallFunc<ReflectionFunction<is_const, Ret, Args...>, Allocator, Ret, Args...>(*this, object, args, ret, 0, allocator);
+				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
 			} else {
 				GAFF_REF(args);
-				return CallFunc<ReflectionFunction<is_const, Ret, Args...>, Allocator, Ret>(*this, object, ret, allocator);
+				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
 			}
 		}
 
@@ -670,12 +668,12 @@ private:
 	};
 
 	template <class Ret, class... Args>
-	class StaticFunction final : public IReflectionStaticFunction<Ret, Args...>
+	class ReflectionStaticFunction final : public IReflectionStaticFunction<Ret, Args...>
 	{
 	public:
 		using Func = Ret (*)(Args...);
 
-		explicit StaticFunction(Func func):
+		explicit ReflectionStaticFunction(Func func):
 			IReflectionStaticFunction<Ret, Args...>(func)
 		{
 		}
@@ -684,7 +682,7 @@ private:
 
 		IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const
 		{
-			using Type = StaticFunction<Ret, Args...>;
+			using Type = ReflectionStaticFunction<Ret, Args...>;
 			return SHIB_ALLOCT(Type, allocator, reinterpret_cast<Func>(getFunc()));
 		}
 
@@ -696,10 +694,10 @@ private:
 			}
 
 			if constexpr (sizeof...(Args) > 0) {
-				return CallFunc<StaticFunction<Ret, Args...>, Allocator, Ret, Args...>(*this, nullptr, args, ret, 0, allocator);
+				return CallFuncStackHelper<ReflectionStaticFunction<Ret, Args...>, Ret, Args...>(*this, nullptr, args, ret, 0, allocator);
 			} else {
 				GAFF_REF(args);
-				return CallFunc<StaticFunction<Ret, Args...>, Allocator, Ret>(*this, nullptr, ret, allocator);
+				return CallFuncStackHelper<ReflectionStaticFunction<Ret, Args...>, Ret>(*this, nullptr, ret, allocator);
 			}
 		}
 	};
@@ -798,6 +796,7 @@ private:
 
 	mutable Shibboleth::ProxyAllocator _allocator;
 
+	//const IReflection* _ref_inst = nullptr;
 	int32_t _dependents_remaining = 0;
 
 	template <class Base>
@@ -828,23 +827,58 @@ private:
 
 	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
 
+
+	template <class Callable, class Ret, class First, class... Rest, class... CurrentArgs>
+	static bool CallFuncStackHelper(
+		const Callable& callable,
+		void* object,
+		const FunctionStackEntry* args,
+		FunctionStackEntry& ret,
+		int32_t arg_index,
+		IFunctionStackAllocator& allocator,
+		CurrentArgs&&... current_args
+	);
+
+	template <class Callable, class Ret, class... CurrentArgs>
+	static bool CallFuncStackHelper(
+		const Callable& callable,
+		void* object,
+		FunctionStackEntry& ret,
+		IFunctionStackAllocator& allocator,
+		CurrentArgs&&... current_args
+	);
+
+	template <bool is_const, class Ret, class... Args, class... CurrentArgs>
+	static Ret CallCallableStackHelper(const ReflectionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
+
+	template <class Ret, class... Args, class... CurrentArgs>
+	static Ret CallCallableStackHelper(const ReflectionStaticFunction<Ret, Args...>& func, void*, CurrentArgs&&... current_args);
+
+
 	template <class RefT>
 	friend class ReflectionDefinition;
+
+	template <bool is_const, class Ret, class... Args>
+	friend class ReflectionFunction;
+
+	template <class Ret, class... Args>
+	class ReflectionStaticFunction;
 };
 
 
 template <class T, class... Args>
-void ConstructFunc(T* obj, Args&&... args);
+void ConstructFuncImpl(T* obj, Args&&... args);
 
 template <class T, class... Args>
-T* FactoryFunc(Gaff::IAllocator& allocator, Args&&... args);
+T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 
 #define REF_DEF_BUILTIN(class_type, serialize_type) \
+	template <> \
 	class ReflectionDefinition<class_type> final : public IReflectionDefinition \
 	{ \
 	public: \
 		constexpr static bool IsBuiltIn(void) { return true; } \
-		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance(); } \
+		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance();; } \
 		int32_t size(void) const override { return sizeof(class_type); } \
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool isBuiltIn(void) const { return true; } \
@@ -867,15 +901,15 @@ T* FactoryFunc(Gaff::IAllocator& allocator, Args&&... args);
 		bool hasInterface(Gaff::Hash64) const override { return false; } \
 		Shibboleth::ProxyAllocator& getAllocator(void) override { return _allocator; } \
 		int32_t getNumVars(void) const override { return 0; } \
-		Shibboleth::HashStringView32<> getVarName(int32_t) const override { return HashStringView32<>(); } \
+		Shibboleth::HashStringView32<> getVarName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
 		IReflectionVar* getVar(int32_t) const override { return nullptr; } \
 		IReflectionVar* getVar(Gaff::Hash32) const override { return nullptr; } \
 		int32_t getNumFuncs(void) const override { return 0; } \
 		int32_t getNumFuncOverrides(int32_t) const override { return 0; } \
-		Shibboleth::HashStringView32<> getFuncName(int32_t) const override { return HashStringView32<>(); } \
+		Shibboleth::HashStringView32<> getFuncName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
 		int32_t getFuncIndex(Gaff::Hash32) const override { return -1; } \
 		int32_t getNumStaticFuncs(void) const override { return 0; } \
-		Shibboleth::HashStringView32<> getStaticFuncName(int32_t) const override { return HashStringView32<>(); } \
+		Shibboleth::HashStringView32<> getStaticFuncName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
 		int32_t getNumStaticFuncOverrides(int32_t) const override { return 0; } \
 		int32_t getStaticFuncIndex(Gaff::Hash32) const override { return -1; } \
 		int32_t getNumClassAttrs(void) const override { return 0; } \
@@ -899,22 +933,22 @@ T* FactoryFunc(Gaff::IAllocator& allocator, Args&&... args);
 		IReflectionStaticFunctionBase* getConstructor(int32_t) const { return nullptr; } \
 		VoidFunc getConstructor(Gaff::Hash64 ctor_hash) const override \
 		{ \
-			if (ctor_hash == CalcTemplateHash<class_type>(Gaff::k_init_hash64)) { \
-				ConstructFuncT<class_type, class_type> construct_func = Gaff::ConstructFunc<class_type, class_type>; \
+			if (ctor_hash == Gaff::CalcTemplateHash<class_type>(Gaff::k_init_hash64)) { \
+				ConstructFuncT<class_type, class_type> construct_func = ConstructFuncImpl<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
-			} else if (ctor_hash == CalcTemplateHash<>(Gaff::k_init_hash64)) { \
-				ConstructFuncT<class_type> construct_func = Gaff::ConstructFunc<class_type>; \
+			} else if (ctor_hash == Gaff::CalcTemplateHash<>(Gaff::k_init_hash64)) { \
+				ConstructFuncT<class_type> construct_func = ConstructFuncImpl<class_type>; \
 				return reinterpret_cast<VoidFunc>(construct_func); \
 			} \
 			return nullptr; \
 		} \
 		VoidFunc getFactory(Gaff::Hash64 factory_hash) const override \
 		{ \
-			if (factory_hash == CalcTemplateHash<class_type>(Gaff::k_init_hash64)) { \
-				FactoryFuncT<class_type, class_type> factory_func = Gaff::FactoryFunc<class_type, class_type>; \
+			if (factory_hash == Gaff::CalcTemplateHash<class_type>(Gaff::k_init_hash64)) { \
+				FactoryFuncT<class_type, class_type> factory_func = FactoryFuncImpl<class_type, class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
-			} else if (factory_hash == CalcTemplateHash<>(Gaff::k_init_hash64)) { \
-				FactoryFuncT<class_type> factory_func = Gaff::FactoryFunc<class_type>; \
+			} else if (factory_hash == Gaff::CalcTemplateHash<>(Gaff::k_init_hash64)) { \
+				FactoryFuncT<class_type> factory_func = FactoryFuncImpl<class_type>; \
 				return reinterpret_cast<VoidFunc>(factory_func); \
 			} \
 			return nullptr; \
@@ -932,82 +966,21 @@ T* FactoryFunc(Gaff::IAllocator& allocator, Args&&... args);
 		void instantiated(void*) const override {} \
 	}
 
-REF_DEF_BUILTIN(int8_t, Int8);
-REF_DEF_BUILTIN(int16_t, Int16);
-REF_DEF_BUILTIN(int32_t, Int32);
-REF_DEF_BUILTIN(int64_t, Int64);
-REF_DEF_BUILTIN(uint8_t, UInt8);
-REF_DEF_BUILTIN(uint16_t, UInt16);
-REF_DEF_BUILTIN(uint32_t, UInt32);
-REF_DEF_BUILTIN(uint64_t, UInt64);
-REF_DEF_BUILTIN(float, Float);
-REF_DEF_BUILTIN(double, Double);
-REF_DEF_BUILTIN(bool, Bool);
-
-
-template <class T>
-struct IsVectorHelper final
-{
-	using type = T;
-	static constexpr bool value = false;
-};
-
-template <class T, class Allocator>
-struct IsVectorHelper< Gaff::Vector<T, Allocator> > final
-{
-	using type = typename std::remove_const<T>::type;
-	static constexpr bool value = true;
-};
-
-template <class T>
-static constexpr bool IsVector = IsVectorHelper<T>::value;
-
-template <class T>
-using IsVectorType = typename IsVectorHelper<T>::type;
-
-
-template <class T>
-struct IsU8StringRef final
-{
-	static constexpr bool value = false;
-};
-
-template <class Allocator>
-struct IsU8StringRef<const Gaff::U8String<Allocator>&> final
-{
-	static constexpr bool value = true;
-};
-
-template <class T>
-struct IsU8String final
-{
-	static constexpr bool value = false;
-};
-
-template <class Allocator>
-struct IsU8String< Gaff::U8String<Allocator> > final
-{
-	static constexpr bool value = true;
-};
-
-template <class T>
-struct IsHashStringView final
-{
-	static constexpr bool value = false;
-};
-
-template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
-struct IsHashStringView< const Gaff::HashStringView<T, HashType, HashingFunc>& > final
-{
-	static constexpr bool value = true;
-};
-
-template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
-struct IsHashStringView< Gaff::HashStringView<T, HashType, HashingFunc> > final
-{
-	static constexpr bool value = true;
-};
+// I don't like this, but these are defined in Shibboleth_ReflectionDefinition.inl to avoid some compiler errors.
+//REF_DEF_BUILTIN(int8_t, Int8);
+//REF_DEF_BUILTIN(int16_t, Int16);
+//REF_DEF_BUILTIN(int32_t, Int32);
+//REF_DEF_BUILTIN(int64_t, Int64);
+//REF_DEF_BUILTIN(uint8_t, UInt8);
+//REF_DEF_BUILTIN(uint16_t, UInt16);
+//REF_DEF_BUILTIN(uint32_t, UInt32);
+//REF_DEF_BUILTIN(uint64_t, UInt64);
+//REF_DEF_BUILTIN(float, Float);
+//REF_DEF_BUILTIN(double, Double);
+//REF_DEF_BUILTIN(bool, Bool);
 
 NS_END
 
-#include "Shibboleth_ReflectionDefinition.inl"
+// I don't like this, but because we hard reference built-ins (eg Reflection<bool>) in these files, we have to include it later in Shibboleth_Reflection.h
+//#include "Shibboleth_ReflectionDefinition.inl"
+//#include "Shibboleth_ReflectionDefinitionFunction.inl"

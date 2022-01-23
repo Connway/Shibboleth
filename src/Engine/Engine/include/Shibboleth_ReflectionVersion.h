@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ReflectionDefines.h"
 #include <Gaff_Assert.h>
+#include <Gaff_Utils.h>
 #include <Gaff_Hash.h>
 #include <Gaff_Ops.h>
 

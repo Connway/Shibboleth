@@ -27,6 +27,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+#ifdef _DEBUG
+	#define GAFF_ASSERT_ENABLED
+#endif
+
 #ifdef GAFF_ASSERT_ENABLED
 	#define GAFF_ASSERT(expr) GAFF_ASSERT_MSG(expr, nullptr)
 	/*#define GAFF_ASSERT_MSG(expr, msg, ...) \

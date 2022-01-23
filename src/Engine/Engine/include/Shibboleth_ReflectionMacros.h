@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
-		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override; \
+		const Reflection::IReflectionDefinition& getReflectionDefinition(void) const override; \
 		const void* getBasePointer(void) const override \
 		{ \
 			return this; \
@@ -38,7 +38,7 @@ THE SOFTWARE.
 
 
 #define SHIB_REFLECTION_CLASS_DEFINE(type) \
-	const Gaff::IReflectionDefinition& type::getReflectionDefinition(void) const \
+	const Reflection::IReflectionDefinition& type::getReflectionDefinition(void) const \
 	{ \
 		return Reflection::Reflection<type>::GetReflectionDefinition(); \
 	}
@@ -96,6 +96,7 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_BEGIN(type) \
 	NS_REFLECTION \
+		template <> \
 		Reflection<type> Reflection<type>::g_instance; \
 		template <> \
 		void Reflection<type>::Init(void) \
@@ -168,21 +169,26 @@ NS_END
 	SHIB_REFLECTION_DEFINE_END(type)
 
 
-#define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) GAFF_REFLECTION_CLASS_DECLARE(type<__VA_ARGS__>)
-#define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(type, ...) GAFF_REFLECTION_CLASS_DEFINE(type<__VA_ARGS__>)
+#define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) SHIB_REFLECTION_CLASS_DECLARE(type<__VA_ARGS__>)
+#define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	const Reflection::IReflectionDefinition& type<__VA_ARGS__>::getReflectionDefinition(void) const \
+	{ \
+		return Reflection::Reflection< type<__VA_ARGS__> >::GetReflectionDefinition(); \
+	}
 
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 	NS_HASHABLE \
 		GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
 	NS_END \
 	NS_REFLECTION \
-		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 		SHIB_REFLECTION_DECLARE_COMMON(type<__VA_ARGS__>)
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 	NS_REFLECTION \
 		Reflection< type<__VA_ARGS__> > Reflection< type<__VA_ARGS__> >::g_instance; \
-		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 		void Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
 			if (IsDefined()) { \
@@ -219,7 +225,7 @@ NS_END
 			} \
 			g_instance._on_defined_callbacks.clear(); \
 		} \
-		template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 		template <class ReflectionBuilder> \
 		void Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
 		{ \

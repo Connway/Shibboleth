@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "Shibboleth_IReflection.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
-#include "Gaff_ReflectionInterfaces.h"
 #include "Gaff_Utils.h"
 
 NS_REFLECTION

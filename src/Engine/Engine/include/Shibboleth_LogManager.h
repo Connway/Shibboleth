@@ -88,7 +88,7 @@ private:
 
 	EA::Thread::Thread _log_thread;
 
-	U8String _log_dir = "./logs";
+	U8String _log_dir = u8"./logs";
 
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);

@@ -25,6 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ReflectionMacros.h"
+#include "Shibboleth_ReflectionBase.h"
+#include "Shibboleth_IReflection.h"
 #include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH
@@ -126,12 +128,14 @@ static void SaveHashStringView(Shibboleth::ISerializeWriter& writer, const Gaff:
 	}
 }
 
-static Gaff::Hash64 HashStringInstance(const U8String& string, Gaff::Hash64 init)
+template <class Allocator>
+static Gaff::Hash64 HashStringInstance(const Gaff::U8String<Allocator>& string, Gaff::Hash64 init)
 {
 	return Gaff::FNV1aHash64String(string.data(), init);
 }
 
-static bool LoadString(const Shibboleth::ISerializeReader& reader, U8String& out)
+template <class Allocator>
+static bool LoadString(const Shibboleth::ISerializeReader& reader, Gaff::U8String<Allocator>& out)
 {
 	if (!reader.isString()) {
 		return false;
@@ -144,7 +148,8 @@ static bool LoadString(const Shibboleth::ISerializeReader& reader, U8String& out
 	return true;
 }
 
-static void SaveString(Shibboleth::ISerializeWriter& writer, const U8String& value)
+template <class Allocator>
+static void SaveString(Shibboleth::ISerializeWriter& writer, const Gaff::U8String<Allocator>& value)
 {
 	writer.writeString(value.data());
 }
@@ -178,3 +183,6 @@ SHIB_REFLECTION_DECLARE(Shibboleth::HashStringNoString32<>)
 SHIB_REFLECTION_DECLARE(Shibboleth::HashStringNoString64<>)
 SHIB_REFLECTION_DECLARE(Shibboleth::HashStringView32<>)
 SHIB_REFLECTION_DECLARE(Shibboleth::HashStringView64<>)
+
+#include "Shibboleth_ReflectionDefinition.inl"
+#include "Shibboleth_ReflectionDefinitionFunction.inl"

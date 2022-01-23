@@ -28,32 +28,32 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ReadOnlyAttribute final : public Gaff::IAttribute
+class ReadOnlyAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	template <class T, class Var>
-	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true);  }
+	void apply(Reflection::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true);  }
 
 	template <class T, class Var, class Ret>
-	void apply(Gaff::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
+	void apply(Reflection::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
 
 
 
-class NoSerializeAttribute final : public Gaff::IAttribute
+class NoSerializeAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	template <class T, class Var>
-	void apply(Gaff::IReflectionVar& ref_var, Var T::*) { ref_var.setNoSerialize(true); }
+	void apply(Reflection::IReflectionVar& ref_var, Var T::*) { ref_var.setNoSerialize(true); }
 
 	template <class T, class Var, class Ret>
-	void apply(Gaff::IReflectionVar& ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
+	void apply(Reflection::IReflectionVar& ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(NoSerializeAttribute);
 };
@@ -61,17 +61,17 @@ public:
 
 
 // Not sure what I added this for. It's not used anywhere ...
-class UniqueAttribute final : public Gaff::IAttribute
+class UniqueAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
 };
 
 
 
-class RangeAttribute final : public Gaff::IAttribute
+class RangeAttribute final : public Reflection::IAttribute
 {
 public:
 	RangeAttribute(double min = std::numeric_limits<double>::min(), double max = std::numeric_limits<double>::max(), double step = 1.0);
@@ -80,7 +80,7 @@ public:
 	double getMin(void) const;
 	double getMax(void) const;
 
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 private:
 	double _step;
@@ -94,25 +94,25 @@ private:
 
 // Gaff::Hash32 and Gaff::Hash64 are just typedefs for uint32_t and uint64_t respectively.
 // Use this attribute on vars using those types to denote that it is a string hash and not a normal integer. 
-class HashStringAttribute final : public Gaff::IAttribute
+class HashStringAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(HashStringAttribute);
 };
 
 
-class OptionalAttribute final : public Gaff::IAttribute
+class OptionalAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
 };
 
 
-class ScriptFlagsAttribute final : public Gaff::IAttribute
+class ScriptFlagsAttribute final : public Reflection::IAttribute
 {
 public:
 	enum class Flag
@@ -137,7 +137,7 @@ public:
 	{
 	}
 
-	IAttribute* clone(void) const override;
+	Reflection::IAttribute* clone(void) const override;
 
 	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
 	Gaff::Flags<Flag> getFlags(void) const { return _flags; }
@@ -151,16 +151,16 @@ private:
 
 // Template Attributes
 template <class T, class Msg>
-class GlobalMessageAttribute final : public Gaff::IAttribute
+class GlobalMessageAttribute final : public Reflection::IAttribute
 {
 public:
-	IAttribute* clone(void) const override
+	Reflection::IAttribute* clone(void) const override
 	{
 		IAllocator& allocator = GetAllocator();
 		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void instantiated(void* object, const Gaff::IReflectionDefinition& ref_def) override
+	void instantiated(void* object, const Reflection::IReflectionDefinition& ref_def) override
 	{
 		Broadcaster& broadcaster = GetApp().getBroadcaster();
 		T* const instance = ref_def.getInterface<T>(object);
@@ -205,17 +205,21 @@ VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = 
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::ReadOnlyAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::NoSerializeAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::UniqueAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::HashStringAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::OptionalAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 
-SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
-SHIB_REFLECTION_DECLARE(NoSerializeAttribute)
-SHIB_REFLECTION_DECLARE(UniqueAttribute)
-SHIB_REFLECTION_DECLARE(RangeAttribute)
-SHIB_REFLECTION_DECLARE(HashStringAttribute)
-SHIB_REFLECTION_DECLARE(OptionalAttribute)
-SHIB_REFLECTION_DECLARE(ScriptFlagsAttribute)
+//NS_HASHABLE
+//	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(Shibboleth::GlobalMessageAttribute, &, T, Msg);
+//	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(Shibboleth::GlobalMessageAttribute, *, T, Msg);
+//NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
-	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(GlobalMessageAttribute, T, Msg)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalMessageAttribute, T, Msg)
+	.BASE(IAttribute)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::GlobalMessageAttribute, T, Msg)

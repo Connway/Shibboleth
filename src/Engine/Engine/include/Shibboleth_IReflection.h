@@ -55,7 +55,7 @@ public:
 };
 
 template <class T>
-class Reflection final : public Gaff::IReflection
+class Reflection final : public IReflection
 {
 public:
 	static constexpr bool HasReflection = false;
@@ -100,19 +100,19 @@ public:
 		return 0;
 	}
 
-	//static const Gaff::IReflectionDefinition& GetReflectionDefinition(void)
-	//{
-	//	GAFF_ASSERT_MSG(false, "Unknown object type.");
-	//	const Gaff::IReflectionDefinition* const ref_def = nullptr;
-	//	return *ref_def;
-	//}
+	static const IReflectionDefinition& GetReflectionDefinition(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const IReflectionDefinition* const ref_def = nullptr;
+		return *ref_def;
+	}
 
-	//static const Gaff::IReflection& GetInstance(void)
-	//{
-	//	GAFF_ASSERT_MSG(false, "Unknown object type.");
-	//	const Gaff::IReflection* const instance = nullptr;
-	//	return *instance;
-	//}
+	static const IReflection& GetInstance(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const IReflection* const instance = nullptr;
+		return *instance;
+	}
 };
 
 
