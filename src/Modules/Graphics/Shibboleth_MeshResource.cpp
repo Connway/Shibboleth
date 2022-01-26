@@ -25,15 +25,14 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
-
 #include <assimp/mesh.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(MeshResource)
-	.classAttrs(CreatableAttribute())
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)
+	.classAttrs(Shibboleth::CreatableAttribute())
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(MeshResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::MeshResource)
 
 NS_SHIBBOLETH
 
@@ -58,7 +57,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
 	_meshes.reserve(devices.size());
@@ -145,7 +144,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	bool succeeded = true;
 
-	U8String res_name = getFilePath().getString() + ":vertex_buffer";
+	U8String res_name = getFilePath().getString() + u8":vertex_buffer";
 	_vertex_data = res_mgr.createResourceT<BufferResource>(res_name.data());
 
 	if (!_vertex_data->createBuffer(devices, settings)) {
@@ -175,7 +174,7 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 
 	settings.data = data;
 
-	res_name = getFilePath().getString() + ":indice_buffer";
+	res_name = getFilePath().getString() + u8":indice_buffer";
 	_indice_data = res_mgr.createResourceT<BufferResource>(res_name.data());
 
 	if (!_indice_data->createBuffer(devices, settings)) {

@@ -53,6 +53,7 @@ public:
 
 	~PhysicsManager(void);
 
+	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 	void updateDebug(uintptr_t thread_id_int);
 	void update(uintptr_t thread_id_int);
@@ -102,5 +103,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsManager::DebugFlag)
-SHIB_REFLECTION_DECLARE(PhysicsManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsManager::DebugFlag)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsManager)

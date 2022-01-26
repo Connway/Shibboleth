@@ -25,14 +25,14 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ShaderResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ShaderResource)
 	.classAttrs(
-		CreatableAttribute()
+		Shibboleth::CreatableAttribute()
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ShaderResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ShaderResource)
 
 NS_SHIBBOLETH
 
@@ -63,7 +63,7 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& 
 
 bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IShader* const shader = render_mgr.createShader();
 
 	if (!shader->initSource(device, shader_source, shader_type)) {

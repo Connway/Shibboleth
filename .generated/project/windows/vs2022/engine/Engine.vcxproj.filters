@@ -51,6 +51,12 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IEnumReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -67,6 +73,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionObject.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Image.h">

@@ -26,12 +26,15 @@ THE SOFTWARE.
 
 #ifdef PLATFORM_WINDOWS
 	#include "Gaff_DynamicModule_Windows.h"
+	#define DYNAMIC_EXTENSION_U8 u8".dll"
 	#define DYNAMIC_EXTENSION ".dll"
 #elif defined(PLATFORM_LINUX)
 	#include "Gaff_DynamicModule_Linux.h"
+	#define DYNAMIC_EXTENSION_U8 u8".so"
 	#define DYNAMIC_EXTENSION ".so"
 #elif defined(PLATFORM_MAC)
 	#include "Gaff_DynamicModule_Linux.h"
+	#define DYNAMIC_EXTENSION_U8 u8".dylib"
 	#define DYNAMIC_EXTENSION ".dylib"
 #else
 	#error Platform not supported

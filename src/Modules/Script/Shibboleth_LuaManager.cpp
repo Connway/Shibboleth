@@ -31,10 +31,10 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <lua.hpp>
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaManager)
 
 NS_SHIBBOLETH
 
@@ -52,9 +52,9 @@ LuaManager::~LuaManager(void)
 bool LuaManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	app.getLogManager().addChannel(HashStringView32<>("Lua"), "LuaLog");
+	app.getLogManager().addChannel(HashStringView32<>(u8"Lua"), u8"LuaLog");
 
-	const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
+	const Gaff::JSON script_threads = app.getConfigs()[u8"script_threads"];
 	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);
 
 	_states.resize(static_cast<size_t>(num_threads));
@@ -102,20 +102,20 @@ bool LuaManager::initAllModulesLoaded(void)
 
 		RegisterBuiltIns(state);
 
-		for (const Gaff::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
+		for (const Refl::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
 			RegisterEnum(state, *enum_ref_def);
 		}
 
 		if (ref_defs) {
-			for (const Gaff::IReflectionDefinition* ref_def : *ref_defs) {
+			for (const Refl::IReflectionDefinition* ref_def : *ref_defs) {
 				RegisterType(state, *ref_def);
 			}
 		}
 		
-		// $TODO: Need functions for saving persistent sstate so that Lua managers can share data between each thread.
+		// $TODO: Need functions for saving persistent state so that Lua managers can share data between each thread.
 		// Load all Lua files from Scripts/Managers
 		auto func = Gaff::MemberFunc(this, &LuaManager::loadLuaManager);
-		GetApp().getFileSystem().forEachFile("Resources/Scripts/Globals", func, ".lua", true);
+		GetApp().getFileSystem().forEachFile(u8"Resources/Scripts/Globals", func, u8".lua", true);
 	}
 
 //	constexpr const char* const test =
@@ -148,7 +148,7 @@ bool LuaManager::initAllModulesLoaded(void)
 	return true;
 }
 
-bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
+bool LuaManager::loadBuffer(const char* buffer, size_t size, const char8_t* name)
 {
 	if (!name) {
 		// $TODO: Log error.
@@ -160,7 +160,7 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 	for (LuaStateData& data: _states) {
 		EA::Thread::AutoFutex lock(*data.lock);
 
-		const int32_t err = luaL_loadbuffer(data.state, buffer, size, name);
+		const int32_t err = luaL_loadbuffer(data.state, buffer, size, reinterpret_cast<const char*>(name));
 
 		if (err != LUA_OK) {
 			// $TODO: Get error message from top of stack and log.
@@ -175,7 +175,7 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		// Make sure no one deleted the loaded chunks table.
 		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
 
-		lua_getfield(data.state, -1, name);
+		lua_getfield(data.state, -1, reinterpret_cast<const char*>(name));
 
 		// Something is already loaded into the this spot.
 		if (!lua_isnoneornil(data.state, -1)) {
@@ -198,7 +198,7 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 		}
 
 		luaL_checktype(data.state, -1, LUA_TTABLE); // top -> bottom: table, chunk_table, func
-		lua_setfield(data.state, -2, name); // Set the table to the chunk_table.
+		lua_setfield(data.state, -2, reinterpret_cast<const char*>(name)); // Set the table to the chunk_table.
 
 		lua_pop(data.state, lua_gettop(data.state));
 	}
@@ -206,7 +206,7 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char* name)
 	return success;
 }
 
-void LuaManager::unloadBuffer(const char* name)
+void LuaManager::unloadBuffer(const char8_t* name)
 {
 	if (!name) {
 		// $TODO: Log error.
@@ -221,7 +221,7 @@ void LuaManager::unloadBuffer(const char* name)
 		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
 
 		lua_pushnil(data.state);
-		lua_setfield(data.state, -2, name);
+		lua_setfield(data.state, -2, reinterpret_cast<const char*>(name));
 	}
 }
 
@@ -273,13 +273,14 @@ int LuaManager::panic(lua_State* L)
 	const char* const message = lua_tostring(L, -1);
 
 	if (message) {
-		GetApp().getLogManager().logMessage(LogType::Error, k_lua_log_channel, message);
+		CONVERT_STRING(char8_t, temp_message, message);
+		GetApp().getLogManager().logMessage(LogType::Error, k_lua_log_channel, temp_message);
 	}
 
 	return 0;
 }
 
-bool LuaManager::loadLuaManager(const char* /*file_name*/, IFile* file)
+bool LuaManager::loadLuaManager(const char8_t* /*file_name*/, IFile* file)
 {
 	loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), nullptr);
 	return false;

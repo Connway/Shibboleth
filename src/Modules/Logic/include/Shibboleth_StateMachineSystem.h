@@ -46,4 +46,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(StateMachineSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::StateMachineSystem)

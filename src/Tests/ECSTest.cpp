@@ -28,6 +28,10 @@ THE SOFTWARE.
 
 TEST_CASE("shibboleth_ecs_archetype_hash")
 {
+	Refl::InitEnumReflection();
+	Refl::InitAttributeReflection();
+	Refl::InitClassReflection();
+
 	Shibboleth::ECSArchetype archetype1;
 	Shibboleth::ECSArchetype archetype2;
 
@@ -44,6 +48,10 @@ TEST_CASE("shibboleth_ecs_archetype_hash")
 
 TEST_CASE("shibboleth_ecs_create_destroy_entity")
 {
+	Refl::InitEnumReflection();
+	Refl::InitAttributeReflection();
+	Refl::InitClassReflection();
+
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
@@ -85,6 +93,10 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 
 TEST_CASE("shibboleth_ecs_add_remove_component")
 {
+	Refl::InitEnumReflection();
+	Refl::InitAttributeReflection();
+	Refl::InitClassReflection();
+
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
@@ -116,6 +128,10 @@ TEST_CASE("shibboleth_ecs_add_remove_component")
 
 TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 {
+	Refl::InitEnumReflection();
+	Refl::InitAttributeReflection();
+	Refl::InitClassReflection();
+
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;
@@ -155,6 +171,10 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 
 TEST_CASE("shibboleth_ecs_query")
 {
+	Refl::InitEnumReflection();
+	Refl::InitAttributeReflection();
+	Refl::InitClassReflection();
+
 	Shibboleth::ECSManager ecs_mgr;
 
 	Shibboleth::ECSArchetype archetype;

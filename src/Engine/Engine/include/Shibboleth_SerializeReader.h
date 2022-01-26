@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Vector.h"
+#include "Shibboleth_String.h"
 #include <Gaff_Assert.h>
 
 NS_SHIBBOLETH
@@ -59,6 +60,12 @@ public:
 	bool isFalse(void) const override { return _stack.back().isFalse(); }
 	bool isNull(void) const override { return _stack.back().isNull(); }
 
+	void enterElement(const char8_t* key) const override
+	{
+		Node node = _stack.back().getObject(key);
+		_stack.push_back(node);
+	}
+
 	void enterElement(const char* key) const override
 	{
 		Node node = _stack.back().getObject(key);
@@ -77,19 +84,21 @@ public:
 		_stack.pop_back();
 	}
 
-	ScopeGuard enterElementGuard(const char* key) const override { return ScopeGuard(*this, key); }
+	ScopeGuard enterElementGuard(const char8_t* key) const override { return ScopeGuard(*this, key); }
+	ScopeGuard enterElementGuard(const char* key) const override { CONVERT_STRING(char8_t, temp_key, key); return ScopeGuard(*this, temp_key); }
 	ScopeGuard enterElementGuard(int32_t index) const override { return ScopeGuard(*this, index); }
 
-	const char* getKey(char* buffer, size_t buf_size, int32_t index) const override { return _stack.back().getKey(buffer, buf_size, index); }
-	const char* getKey(int32_t index) const override { return _stack.back().getKey(index); }
+	const char8_t* getKey(char8_t* buffer, size_t buf_size, int32_t index) const override { return _stack.back().getKey(buffer, buf_size, index); }
+	const char8_t* getKey(int32_t index) const override { return _stack.back().getKey(index); }
 
-	void freeString(const char* str) const override { if (isString()) _stack.back().freeString(str); }
+	void freeString(const char8_t* str) const override { if (isString()) _stack.back().freeString(str); }
 	int32_t size(void) const override { return _stack.back().size(); }
 
+	bool exists(const char8_t* key) const override { return !_stack.back()[key].isNull(); };
 	bool exists(const char* key) const override { return !_stack.back()[key].isNull(); };
 
-	const char* readString(char* buffer, size_t buf_size, const char* default_value) const override { return _stack.back().getString(buffer, buf_size, default_value); }
-	const char* readString(const char* default_value) const override { return _stack.back().getString(default_value); }
+	const char8_t* readString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const override { return _stack.back().getString(buffer, buf_size, default_value); }
+	const char8_t* readString(const char8_t* default_value) const override { return _stack.back().getString(default_value); }
 	int8_t readInt8(int8_t default_value) const override { return _stack.back().getInt8(default_value); }
 	uint8_t readUInt8(uint8_t default_value) const override { return _stack.back().getUInt8(default_value); }
 	int16_t readInt16(int16_t default_value) const override { return _stack.back().getInt16(default_value); }
@@ -103,8 +112,8 @@ public:
 	double readNumber(double default_value) const override { return _stack.back().getNumber(default_value); }
 	bool readBool(bool default_value) const override { return _stack.back().getBool(default_value); }
 
-	const char* readString(char* buffer, size_t buf_size) const override { return _stack.back().getString(buffer, buf_size); }
-	const char* readString(void) const override { return _stack.back().getString(); }
+	const char8_t* readString(char8_t* buffer, size_t buf_size) const override { return _stack.back().getString(buffer, buf_size); }
+	const char8_t* readString(void) const override { return _stack.back().getString(); }
 	int8_t readInt8(void) const override { return _stack.back().getInt8(); }
 	uint8_t readUInt8(void) const override { return _stack.back().getUInt8(); }
 	int16_t readInt16(void) const override { return _stack.back().getInt16(); }
@@ -118,23 +127,23 @@ public:
 	double readNumber(void) const override { return _stack.back().getNumber(); }
 	bool readBool(void) const override { return _stack.back().getBool(); }
 
-	//const char* readString(const char* key, char* buffer, size_t buf_size, const char* default_value) const override { ScopeGuard guard(*this, key); return readString(buffer, buf_size, default_value); }
-	//const char* readString(const char* key, const char* default_value) const override { ScopeGuard guard(*this, key); return readString(default_value); }
-	int8_t readInt8(const char* key, int8_t default_value) const override { ScopeGuard guard(*this, key); return readInt8(default_value); }
-	uint8_t readUInt8(const char* key, uint8_t default_value) const override { ScopeGuard guard(*this, key); return readUInt8(default_value); }
-	int16_t readInt16(const char* key, int16_t default_value) const override { ScopeGuard guard(*this, key); return readInt16(default_value); }
-	uint16_t readUInt16(const char* key, uint16_t default_value) const override { ScopeGuard guard(*this, key); return readUInt16(default_value); }
-	int32_t readInt32(const char* key, int32_t default_value) const override { ScopeGuard guard(*this, key); return readInt32(default_value); }
-	uint32_t readUInt32(const char* key, uint32_t default_value) const override { ScopeGuard guard(*this, key); return readUInt32(default_value); }
-	int64_t readInt64(const char* key, int64_t default_value) const override { ScopeGuard guard(*this, key); return readInt64(default_value); }
-	uint64_t readUInt64(const char* key, uint64_t default_value) const override { ScopeGuard guard(*this, key); return readUInt64(default_value); }
-	float readFloat(const char* key, float default_value) const override { ScopeGuard guard(*this, key); return readFloat(default_value); }
-	double readDouble(const char* key, double default_value) const override { ScopeGuard guard(*this, key); return readDouble(default_value); }
-	double readNumber(const char* key, double default_value) const override { ScopeGuard guard(*this, key); return readNumber(default_value); }
-	bool readBool(const char* key, bool default_value) const override { ScopeGuard guard(*this, key); return readBool(default_value); }
+	//const char8_t* readString(const char8_t* key, char8_t* buffer, size_t buf_size, const char8_t* default_value) const override { ScopeGuard guard(*this, key); return readString(buffer, buf_size, default_value); }
+	//const char8_t* readString(const char8_t* key, const char8_t* default_value) const override { ScopeGuard guard(*this, key); return readString(default_value); }
+	int8_t readInt8(const char8_t* key, int8_t default_value) const override { ScopeGuard guard(*this, key); return readInt8(default_value); }
+	uint8_t readUInt8(const char8_t* key, uint8_t default_value) const override { ScopeGuard guard(*this, key); return readUInt8(default_value); }
+	int16_t readInt16(const char8_t* key, int16_t default_value) const override { ScopeGuard guard(*this, key); return readInt16(default_value); }
+	uint16_t readUInt16(const char8_t* key, uint16_t default_value) const override { ScopeGuard guard(*this, key); return readUInt16(default_value); }
+	int32_t readInt32(const char8_t* key, int32_t default_value) const override { ScopeGuard guard(*this, key); return readInt32(default_value); }
+	uint32_t readUInt32(const char8_t* key, uint32_t default_value) const override { ScopeGuard guard(*this, key); return readUInt32(default_value); }
+	int64_t readInt64(const char8_t* key, int64_t default_value) const override { ScopeGuard guard(*this, key); return readInt64(default_value); }
+	uint64_t readUInt64(const char8_t* key, uint64_t default_value) const override { ScopeGuard guard(*this, key); return readUInt64(default_value); }
+	float readFloat(const char8_t* key, float default_value) const override { ScopeGuard guard(*this, key); return readFloat(default_value); }
+	double readDouble(const char8_t* key, double default_value) const override { ScopeGuard guard(*this, key); return readDouble(default_value); }
+	double readNumber(const char8_t* key, double default_value) const override { ScopeGuard guard(*this, key); return readNumber(default_value); }
+	bool readBool(const char8_t* key, bool default_value) const override { ScopeGuard guard(*this, key); return readBool(default_value); }
 
 private:
-	mutable Vector<Node, Allocator> _stack;
+	mutable Vector<Node> _stack;
 };
 
 template <class Node>

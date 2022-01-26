@@ -36,7 +36,7 @@ public:
 	const Esprit::StateMachine* getStateMachine(void) const;
 	Esprit::StateMachine* getStateMachine(void);
 
-	void readValues(const Gaff::ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const;
+	void readValues(const ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const;
 
 private:
 	UniquePtr<Esprit::StateMachine> _state_machine;
@@ -50,4 +50,4 @@ using StateMachineResourcePtr = Gaff::RefPtr<StateMachineResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(StateMachineResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::StateMachineResource)

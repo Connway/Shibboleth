@@ -55,4 +55,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DevWebServerManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::DevWebServerManager)

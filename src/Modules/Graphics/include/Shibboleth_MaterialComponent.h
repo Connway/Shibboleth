@@ -54,4 +54,4 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Material)
+SHIB_REFLECTION_DECLARE(Shibboleth::Material)

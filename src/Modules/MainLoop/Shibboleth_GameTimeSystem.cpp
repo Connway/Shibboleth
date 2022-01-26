@@ -24,10 +24,10 @@ THE SOFTWARE.
 #include "Shibboleth_GameTime.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(GameTimeSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(GameTimeSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeSystem)
 
 NS_SHIBBOLETH
 

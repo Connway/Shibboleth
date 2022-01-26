@@ -39,13 +39,13 @@ THE SOFTWARE.
 			#endif
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
-				app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+				app.getReflectionManager().registerAttributeBucket(Refl::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
 
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 			}
 
 			ECS::Gen::InitReflection(mode);

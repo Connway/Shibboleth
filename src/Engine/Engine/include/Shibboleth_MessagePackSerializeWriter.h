@@ -33,7 +33,7 @@ class MessagePackSerializeWriter : public ISerializeWriter
 public:
 	bool init(char** buffer, size_t* size);
 	bool init(char* buffer, size_t size);
-	bool init(const char* filename);
+	bool init(const char8_t* filename);
 
 	void finish(void);
 
@@ -45,23 +45,23 @@ public:
 	void startObject(uint32_t size) override;
 	void endObject(void) override;
 
-	void writeKey(const char* key) override;
+	void writeKey(const char8_t* key) override;
 
-	void writeInt8(const char* key, int8_t value) override;
-	void writeInt16(const char* key, int16_t value) override;
-	void writeInt32(const char* key, int32_t value) override;
-	void writeInt64(const char* key, int64_t value) override;
+	void writeInt8(const char8_t* key, int8_t value) override;
+	void writeInt16(const char8_t* key, int16_t value) override;
+	void writeInt32(const char8_t* key, int32_t value) override;
+	void writeInt64(const char8_t* key, int64_t value) override;
 
-	void writeUInt8(const char* key, uint8_t value) override;
-	void writeUInt16(const char* key, uint16_t value) override;
-	void writeUInt32(const char* key, uint32_t value) override;
-	void writeUInt64(const char* key, uint64_t value) override;
+	void writeUInt8(const char8_t* key, uint8_t value) override;
+	void writeUInt16(const char8_t* key, uint16_t value) override;
+	void writeUInt32(const char8_t* key, uint32_t value) override;
+	void writeUInt64(const char8_t* key, uint64_t value) override;
 
-	void writeFloat(const char* key, float value) override;
-	void writeDouble(const char* key, double value) override;
-	void writeBool(const char* key, bool value) override;
+	void writeFloat(const char8_t* key, float value) override;
+	void writeDouble(const char8_t* key, double value) override;
+	void writeBool(const char8_t* key, bool value) override;
 
-	void writeString(const char* key, const char* value) override;
+	void writeString(const char8_t* key, const char8_t* value) override;
 
 	void writeInt8(int8_t value) override;
 	void writeInt16(int16_t value) override;
@@ -77,7 +77,7 @@ public:
 	void writeDouble(double value) override;
 	void writeBool(bool value) override;
 
-	void writeString(const char* value) override;
+	void writeString(const char8_t* value) override;
 
 private:
 	Gaff::MessagePackWriter _writer;

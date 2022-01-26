@@ -35,11 +35,11 @@ namespace
 		Count
 	};
 
-	constexpr const char* g_special_state_names[static_cast<size_t>(SpecialStates::Count)] =
+	constexpr const char8_t* g_special_state_names[static_cast<size_t>(SpecialStates::Count)] =
 	{
-		"Start",
-		"End",
-		"Any"
+		u8"Start",
+		u8"End",
+		u8"Any"
 	};
 }
 

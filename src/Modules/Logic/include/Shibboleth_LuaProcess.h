@@ -22,15 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_CommonHelpers.h>
 #include <Shibboleth_LuaResource.h>
-#include <Shibboleth_LuaHelpers.h>
 #include <Esprit_IProcess.h>
 
 NS_SHIBBOLETH
 
 class LuaManager;
 
-class LuaProcess final : public Esprit::IProcess, public Gaff::IReflectionObject
+class LuaProcess final : public Esprit::IProcess, public Refl::IReflectionObject
 {
 public:
 	bool init(const Esprit::StateMachine& owner) override;
@@ -48,4 +48,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(LuaProcess)
+SHIB_REFLECTION_DECLARE(Shibboleth::LuaProcess)

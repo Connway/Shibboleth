@@ -43,7 +43,7 @@ public:
 	virtual bool isDefined(void) const = 0;
 	virtual bool isEnum(void) const = 0;
 
-	virtual const char* getName(void) const = 0;
+	virtual const char8_t* getName(void) const = 0;
 	virtual Gaff::Hash64 getHash(void) const = 0;
 	virtual Gaff::Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
@@ -76,10 +76,10 @@ public:
 		return false;
 	}
 
-	const char* getName(void) const override
+	const char8_t* getName(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		return "Unknown";
+		return u8"Unknown";
 	}
 
 	Gaff::Hash64 getHash(void) const override
@@ -107,24 +107,12 @@ public:
 		return *ref_def;
 	}
 
-	static const IReflection& GetInstance(void)
+	static const Reflection<T>& GetInstance(void)
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		const IReflection* const instance = nullptr;
+		const Reflection<T>* const instance = nullptr;
 		return *instance;
 	}
-};
-
-
-class IReflectionObject
-{
-public:
-	virtual ~IReflectionObject(void) {}
-
-	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
-
-	virtual const void* getBasePointer(void) const = 0;
-	virtual void* getBasePointer(void) = 0;
 };
 
 class IReflectionVar
@@ -335,43 +323,6 @@ private:
 	};
 
 	Gaff::Flags<Flag> _flags;
-};
-
-class IAttribute : public IReflectionObject
-{
-public:
-	virtual IAttribute* clone(void) const = 0;
-
-	virtual Gaff::Hash64 applyVersioning(Gaff::Hash64 hash) const { return hash; }
-	virtual bool canInherit(void) const { return true; }
-
-	virtual void finish(IEnumReflectionDefinition& /*ref_def*/) {}
-	virtual void finish(IReflectionDefinition& /*ref_def*/) {}
-
-	virtual void instantiated(void* /*object*/, const IReflectionDefinition& /*ref_def*/) {}
-
-	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
-
-	// Attributes that are applied to functions need to implement these template functions.
-	template <class T, class Ret, class... Args>
-	void apply(Ret (T::* /*func*/)(Args...) const) {}
-	template <class T, class Ret, class... Args>
-	void apply(Ret (T::* /*func*/)(Args...)) {}
-
-	// Attributes that are applied to static class functions need to implement this template function.
-	template <class T, class Ret, class... Args>
-	void apply(Ret (* /*func*/)(Args...)) {}
-
-	// Attributes that are applied to variables need to implement these template functions,
-	// or at least the ones they apply to.
-	template <class T, class Var>
-	void apply(IReflectionVar& /*ref_var*/, Var T::* /*var*/) {}
-	template <class T, class Var, class Ret>
-	void apply(IReflectionVar& /*ref_var*/, Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
-	template <class T, class Var, class Vec_Allocator, size_t size>
-	void apply(IReflectionVar& /*ref_var*/, Shibboleth::Vector<Var> T::* /*vec*/) {}
-	template <class T, class Var, size_t size>
-	void apply(IReflectionVar& /*ref_var*/, Var (T::* /*arr*/)[size]) {}
 };
 
 NS_END

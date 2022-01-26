@@ -20,21 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::Resource, T)
 	.classAttrs(
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::NoRegister,
-			ScriptFlagsAttribute::Flag::NoInherit
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::NoRegister,
+			Shibboleth::ScriptFlagsAttribute::Flag::NoInherit
 		)
 	)
 
-	.staticFunc("CopyShared", &Resource<T>::CopyShared)
-	.staticFunc("IsNonShared", &Resource<T>::IsNonShared)
-	.staticFunc("IsShared", &Resource<T>::IsShared)
+	.staticFunc("CopyShared", &Shibboleth::Resource<T>::CopyShared)
+	.staticFunc("IsNonShared", &Shibboleth::Resource<T>::IsNonShared)
+	.staticFunc("IsShared", &Shibboleth::Resource<T>::IsShared)
 
-	.var("value", &Resource<T>::value)
+	.var("value", &Shibboleth::Resource<T>::value)
 	.ctor<>()
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::Resource, T)
 
 NS_SHIBBOLETH
 

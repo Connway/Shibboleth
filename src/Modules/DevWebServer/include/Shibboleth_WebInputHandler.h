@@ -33,7 +33,7 @@ NS_SHIBBOLETH
 
 class InputManager;
 
-class WebInputHandler final : public IDevWebHandler, public Gaff::IReflectionObject
+class WebInputHandler final : public IDevWebHandler, public Refl::IReflectionObject
 {
 public:
 	WebInputHandler(void);
@@ -76,4 +76,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(WebInputHandler)
+SHIB_REFLECTION_DECLARE(Shibboleth::WebInputHandler)

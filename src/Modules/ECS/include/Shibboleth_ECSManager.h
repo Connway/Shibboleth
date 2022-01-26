@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Shibboleth_ECSArchetype.h"
 #include "Shibboleth_ECSEntity.h"
 #include "Shibboleth_ECSQuery.h"
-#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <EAThread/eathread_mutex.h>
 
@@ -78,7 +77,7 @@ void AddComponentHelper(ECSArchetype& archetype)
 class ECSManager final : public IManager
 {
 public:
-	static constexpr const char* const k_empty_archetype_res_name = "EmptyECSArchetype";
+	static constexpr const char8_t* const k_empty_archetype_res_name = u8"EmptyECSArchetype";
 
 	struct ArchetypeModifier final
 	{
@@ -91,61 +90,49 @@ public:
 	template <class T>
 	const typename T* getComponentShared(Gaff::Hash64 archetype) const
 	{
-		return reinterpret_cast<T*>(getComponentShared(archetype, Reflection<T>::GetHash()));
+		return reinterpret_cast<T*>(getComponentShared(archetype, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	const typename T* getComponentShared(EntityID id) const
 	{
-		return reinterpret_cast<T*>(getComponentShared(id, Reflection<T>::GetHash()));
+		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	typename T* getComponentShared(Gaff::Hash64 archetype)
 	{
-		return reinterpret_cast<T*>(getComponentShared(archetype, Reflection<T>::GetHash()));
+		return reinterpret_cast<T*>(getComponentShared(archetype, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	typename T* getComponentShared(EntityID id)
 	{
-		return reinterpret_cast<T*>(getComponentShared(id, Reflection<T>::GetHash()));
-	}
-
-	template <class T>
-	const void* getComponent(Gaff::Hash64 archetype) const
-	{
-		return getComponent(archetype, Reflection<T>::GetHash());
+		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	const void* getComponent(EntityID id) const
 	{
-		return getComponent(id, Reflection<T>::GetHash());
-	}
-
-	template <class T>
-	void* getComponent(Gaff::Hash64 archetype)
-	{
-		return getComponent(archetype, Reflection<T>::GetHash());
+		return getComponent(id, Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	void* getComponent(EntityID id)
 	{
-		return getComponent(id, Reflection<T>::GetHash());
+		return getComponent(id, Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasComponent(Gaff::Hash64 archetype) const
 	{
-		return hasComponent(archetype, Reflection<T>::GetHash());
+		return hasComponent(archetype, Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasComponent(EntityID id) const
 	{
-		return hasComponent(id, Reflection<T>::GetHash());
+		return hasComponent(id, Refl::Reflection<T>::GetHash());
 	}
 
 	template <class... Components>
@@ -324,27 +311,29 @@ public:
 	EntityID createEntity(const ECSArchetype& archetype);
 	EntityID createEntity(Gaff::Hash64 archetype);
 
-	EntityID loadEntity(const ECSArchetype& archetype, const Gaff::ISerializeReader& reader);
-	EntityID loadEntity(Gaff::Hash64 archetype, const Gaff::ISerializeReader& reader);
+	EntityID loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader);
+	EntityID loadEntity(Gaff::Hash64 archetype, const ISerializeReader& reader);
 
 	void destroyEntity(EntityID id);
 
-	const void* getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component) const;
+	const void* getComponentShared(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component) const;
 	const void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component) const;
-	const void* getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component) const;
+	const void* getComponentShared(EntityID id, const Refl::IReflectionDefinition& component) const;
 	const void* getComponentShared(EntityID id, Gaff::Hash64 component) const;
 
-	void* getComponentShared(Gaff::Hash64 archetype, const Gaff::IReflectionDefinition& component);
+	void* getComponentShared(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component);
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
-	void* getComponentShared(EntityID id, const Gaff::IReflectionDefinition& component);
+	void* getComponentShared(EntityID id, const Refl::IReflectionDefinition& component);
 	void* getComponentShared(EntityID id, Gaff::Hash64 component);
 
-	const void* getComponent(EntityID id, const Gaff::IReflectionDefinition& component) const;
+	const void* getComponent(EntityID id, const Refl::IReflectionDefinition& component) const;
 	const void* getComponent(EntityID id, Gaff::Hash64 component) const;
-	void* getComponent(EntityID id, const Gaff::IReflectionDefinition& component);
+	void* getComponent(EntityID id, const Refl::IReflectionDefinition& component);
 	void* getComponent(EntityID id, Gaff::Hash64 component);
 
-	bool hasComponent(EntityID id, const Gaff::IReflectionDefinition& component) const;
+	bool hasComponent(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component) const;
+	bool hasComponent(Gaff::Hash64 archetype, Gaff::Hash64 component) const;
+	bool hasComponent(EntityID id, const Refl::IReflectionDefinition& component) const;
 	bool hasComponent(EntityID id, Gaff::Hash64 component) const;
 
 	int32_t getComponentIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
@@ -460,8 +449,8 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
 
-#include "Shibboleth_ECSManager.inl"
-
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::ECSManager)
+
+#include "Shibboleth_ECSManager.inl"

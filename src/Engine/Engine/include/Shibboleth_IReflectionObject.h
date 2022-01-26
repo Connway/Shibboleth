@@ -22,25 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ISystem.h"
-#include <Shibboleth_Reflection.h>
+#include "Shibboleth_ReflectionDefines.h"
 
-NS_SHIBBOLETH
+NS_REFLECTION
 
-class GameTimeManager;
+class IReflectionDefinition;
 
-class GameTimeSystem final : public ISystem
+class IReflectionObject
 {
 public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
+	virtual ~IReflectionObject(void) {}
 
-private:
-	GameTimeManager* _manager = nullptr;
+	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
 
-	SHIB_REFLECTION_CLASS_DECLARE(GameTimeSystem);
+	virtual const void* getBasePointer(void) const = 0;
+	virtual void* getBasePointer(void) = 0;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::GameTimeSystem)

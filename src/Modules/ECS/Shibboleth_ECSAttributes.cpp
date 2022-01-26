@@ -24,30 +24,30 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSClassAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_END(ECSClassAttribute)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSClassAttribute)
+	.BASE(Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSClassAttribute)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ECSClassAttribute)
 
-ECSClassAttribute::ECSClassAttribute(const char* name, const char* category):
+ECSClassAttribute::ECSClassAttribute(const char8_t* name, const char8_t* category):
 	_name(name), _category(category)
 {
 }
 
-const char* ECSClassAttribute::getCategory(void) const
+const char8_t* ECSClassAttribute::getCategory(void) const
 {
 	return _category;
 }
 
-const char* ECSClassAttribute::getName(void) const
+const char8_t* ECSClassAttribute::getName(void) const
 {
-	return _name ? _name : Reflection<ECSClassAttribute>::GetName();
+	return _name ? _name : Refl::Reflection<ECSClassAttribute>::GetName();
 }
 
-Gaff::IAttribute* ECSClassAttribute::clone(void) const
+Refl::IAttribute* ECSClassAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ECSClassAttribute, allocator.getPoolIndex("Reflection"), allocator, _name, _category);

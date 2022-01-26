@@ -22,15 +22,15 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(CreatableAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(ResExtAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::CreatableAttribute, Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResExtAttribute, Refl::IAttribute)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CreatableAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(ResExtAttribute)
 
-Gaff::IAttribute* CreatableAttribute::clone(void) const
+Refl::IAttribute* CreatableAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(CreatableAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -38,7 +38,7 @@ Gaff::IAttribute* CreatableAttribute::clone(void) const
 
 
 
-ResExtAttribute::ResExtAttribute(const char* extension):
+ResExtAttribute::ResExtAttribute(const char8_t* extension):
 	_extension(extension, eastl::CharStrlen(extension))
 {
 }
@@ -48,7 +48,7 @@ const HashStringView32<>& ResExtAttribute::getExtension(void) const
 	return _extension;
 }
 
-Gaff::IAttribute* ResExtAttribute::clone(void) const
+Refl::IAttribute* ResExtAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ResExtAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());

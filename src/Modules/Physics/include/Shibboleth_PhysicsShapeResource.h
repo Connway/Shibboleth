@@ -57,10 +57,10 @@ private:
 
 	void loadShape(IFile* file, uintptr_t thread_id_int);
 
-	LoadResult loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadSphere(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
-	LoadResult loadBox(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr);
+	LoadResult loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr);
+	LoadResult loadSphere(const ISerializeReader& reader, PhysicsManager& phys_mgr);
+	LoadResult loadPlane(const ISerializeReader& reader, PhysicsManager& phys_mgr);
+	LoadResult loadBox(const ISerializeReader& reader, PhysicsManager& phys_mgr);
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsShapeResource);
 };
@@ -69,4 +69,4 @@ using PhysicsShapeResourcePtr = Gaff::RefPtr<PhysicsShapeResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsShapeResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsShapeResource)

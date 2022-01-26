@@ -33,8 +33,8 @@ class IApp;
 void SetApp(IApp& app);
 IApp& GetApp(void);
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path, const IFile* file, bool copy_buffer = false);
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char* path);
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const IFile* file, bool copy_buffer = false);
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path);
 
 void SetMemoryFunctions(void);
 

@@ -45,20 +45,20 @@ enum class LogType
 class LogManager final
 {
 public:
-	using LogCallback = eastl::function<void (const char*, LogType)>;
+	using LogCallback = eastl::function<void (const char8_t*, LogType)>;
 
 	LogManager(void);
 	~LogManager(void);
 
-	bool init(const char* log_dir);
+	bool init(const char8_t* log_dir);
 	void destroy(void);
 
 	int32_t addLogCallback(const LogCallback& callback);
 	int32_t addLogCallback(LogCallback&& callback);
 	bool removeLogCallback(int32_t id);
 
-	void addChannel(HashStringView32<> channel, const char* file);
-	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
+	void addChannel(HashStringView32<> channel, const char8_t* file);
+	void logMessage(LogType type, Gaff::Hash32 channel, const char8_t* format, ...);
 
 private:
 	struct LogTask
@@ -91,8 +91,8 @@ private:
 	U8String _log_dir = u8"./logs";
 
 
-	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);
-	void notifyLogCallbacks(const char* message, LogType type);
+	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl);
+	void notifyLogCallbacks(const char8_t* message, LogType type);
 
 	static intptr_t LogThread(void* args);
 
@@ -104,14 +104,14 @@ static constexpr Gaff::Hash32 k_log_channel_default = Gaff::FNV1aHash32Const("De
 
 NS_END
 
-#define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, message, ##__VA_ARGS__)
+#define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, u8##message, ##__VA_ARGS__)
 
-#define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, ##__VA_ARGS__)
-#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, "[ERROR] " message, ##__VA_ARGS__)
-#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, channel, "[WARNING] " message, ##__VA_ARGS__)
+#define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, u8##message, ##__VA_ARGS__)
+#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, "[ERROR] " u8##message, ##__VA_ARGS__)
+#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, channel, "[WARNING] " u8##message, ##__VA_ARGS__)
 #define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, channel, message, ##__VA_ARGS__)
-#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, "[ERROR] " message, ##__VA_ARGS__)
-#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, "[WARNING] " message, ##__VA_ARGS__)
+#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, "[ERROR] " u8##message, ##__VA_ARGS__)
+#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, "[WARNING] " u8##message, ##__VA_ARGS__)
 #define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Normal, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__)
 #define LogDefault(type, message, ...) LogWithApp(Shibboleth::GetApp(), type, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__)
 

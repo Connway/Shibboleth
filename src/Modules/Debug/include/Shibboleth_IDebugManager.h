@@ -78,7 +78,7 @@ public:
 		~DebugRenderHandle(void)
 		{
 			if (_instance) {
-				GetApp().GETMANAGERT(IDebugManager, DebugManager).removeDebugRender(*this);
+				GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager).removeDebugRender(*this);
 			}
 		}
 
@@ -152,8 +152,8 @@ public:
 	virtual DebugRenderHandle renderDebugCylinder(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 
-	virtual void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;
-	virtual void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) = 0;
+	virtual void registerDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) = 0;
+	virtual void unregisterDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) = 0;
 
 protected:
 	virtual void removeDebugRender(const DebugRenderHandle& handle) = 0;

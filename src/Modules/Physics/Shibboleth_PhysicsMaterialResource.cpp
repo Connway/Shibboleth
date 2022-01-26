@@ -28,16 +28,16 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <PxPhysicsAPI.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsMaterialResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsMaterialResource)
 	.classAttrs(
-		ResExtAttribute(".physics_material.bin"),
-		ResExtAttribute(".physics_material"),
-		MakeLoadFileCallbackAttribute(&PhysicsMaterialResource::loadMaterial)
+		Shibboleth::ResExtAttribute(u8".physics_material.bin"),
+		Shibboleth::ResExtAttribute(u8".physics_material"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::PhysicsMaterialResource::loadMaterial)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(PhysicsMaterialResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsMaterialResource)
 
 NS_SHIBBOLETH
 
@@ -68,7 +68,7 @@ void PhysicsMaterialResource::loadMaterial(IFile* file, uintptr_t /*thread_id_in
 		return;
 	}
 
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 
 	if (!reader.isObject()) {
 		// $TODO: Log error.
@@ -76,9 +76,9 @@ void PhysicsMaterialResource::loadMaterial(IFile* file, uintptr_t /*thread_id_in
 		return;
 	}
 
-	const float static_friction = reader.readFloat("static_friction", 0.5f);
-	const float dynamic_friction = reader.readFloat("dynamic_friction", 0.5f);
-	const float restitution = reader.readFloat("restitution", 0.5f);
+	const float static_friction = reader.readFloat(u8"static_friction", 0.5f);
+	const float dynamic_friction = reader.readFloat(u8"dynamic_friction", 0.5f);
+	const float restitution = reader.readFloat(u8"restitution", 0.5f);
 
 	// Do we need to lock here?
 	PhysicsManager& phys_mgr = GetApp().getManagerTFast<PhysicsManager>();

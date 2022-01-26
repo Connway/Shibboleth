@@ -47,17 +47,6 @@ NS_GAFF
 	};
 #endif
 
-bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
-{
-	return EndsWith(file_name, file_name_size, extension, extension_size);
-}
-
-bool File::CheckExtension(const char* file_name, const char* extension)
-{
-	return EndsWith(file_name, extension);
-}
-
-
 bool File::Remove(const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
@@ -81,6 +70,12 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 #else
 	return !rename(old_file_name, new_file_name);
 #endif
+}
+
+File::File(const char8_t* file_name, OpenMode mode)
+{
+	GAFF_ASSERT(file_name);
+	open(file_name, mode);
 }
 
 File::File(const char* file_name, OpenMode mode)
@@ -139,6 +134,11 @@ File::OpenMode File::getMode(void) const
 	return _mode;
 }
 
+bool File::open(const char8_t* file_name, OpenMode mode)
+{
+	return open(reinterpret_cast<const char*>(file_name), mode);
+}
+
 bool File::open(const char* file_name, OpenMode mode)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
@@ -157,6 +157,16 @@ bool File::open(const char* file_name, OpenMode mode)
 #endif
 
 	return _file != NULL;
+}
+
+bool File::redirect(FILE* file, const char8_t* file_name, OpenMode mode)
+{
+	return redirect(file, reinterpret_cast<const char*>(file_name), mode);
+}
+
+bool File::redirect(const char8_t* file_name, OpenMode mode)
+{
+	return redirect(reinterpret_cast<const char*>(file_name), mode);
 }
 
 bool File::redirect(FILE* file, const char* file_name, OpenMode mode)
@@ -241,6 +251,23 @@ size_t File::write(void* buffer, size_t element_size, size_t element_count)
 	return fwrite(buffer, element_size, element_count, _file);
 }
 
+void File::printfVA(const char8_t* format_string, va_list vl)
+{
+	printfVA(reinterpret_cast<const char*>(format_string), vl);
+}
+
+void File::printf(const char8_t* format_string, ...)
+{
+	GAFF_ASSERT(_file && format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+
+	printfVA(format_string, vl);
+
+	va_end(vl);
+}
+
 void File::printfVA(const char* format_string, va_list vl)
 {
 	GAFF_ASSERT(_file && format_string && vl);
@@ -259,13 +286,14 @@ void File::printf(const char* format_string, ...)
 	va_list vl;
 	va_start(vl, format_string);
 
-#ifdef PLATFORM_WINDOWS
-	vfprintf_s(_file, format_string, vl);
-#else
-	vfprintf(_file, format_string, vl);
-#endif
+	printfVA(format_string, vl);
 
 	va_end(vl);
+}
+
+bool File::writeChar(char8_t c)
+{
+	return writeChar(static_cast<char>(c));
 }
 
 bool File::writeChar(char c)
@@ -280,10 +308,20 @@ int32_t File::readChar(void)
 	return fgetc(_file);
 }
 
+bool File::writeString(const char8_t* s)
+{
+	return writeString(reinterpret_cast<const char*>(s));
+}
+
 bool File::writeString(const char* s)
 {
 	GAFF_ASSERT(_file && s);
 	return fputs(s, _file) != EOF;
+}
+
+bool File::readString(char8_t* buffer, int32_t max_byte_count)
+{
+	return readString(reinterpret_cast<char*>(buffer), max_byte_count);
 }
 
 bool File::readString(char* buffer, int32_t max_byte_count)
@@ -331,6 +369,11 @@ int32_t File::getFileSize(void)
 	::rewind(_file);
 
 	return static_cast<int32_t>(size);
+}
+
+bool File::readEntireFile(char8_t* buffer)
+{
+	return readEntireFile(reinterpret_cast<char*>(buffer));
 }
 
 bool File::readEntireFile(char* buffer)

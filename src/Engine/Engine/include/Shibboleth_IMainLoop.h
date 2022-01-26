@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IMainLoop : public Gaff::IReflectionObject
+class IMainLoop : public Refl::IReflectionObject
 {
 public:
 	virtual ~IMainLoop(void) {}

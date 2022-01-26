@@ -14,7 +14,7 @@
 			"processes":
 			[
 				{
-					"process_type": "FlyCameraProcess",
+					"process_type": "Shibboleth::FlyCameraProcess",
 
 					"angular_speed": { "x": 0.005, "y": 0.005, "z": 0.0 },
 					"linear_speed": 5.0

@@ -34,7 +34,7 @@ enum class LogMsgType
 	Error
 };
 
-using LogFunc = void (*)(const char*, LogMsgType);
+using LogFunc = void (*)(const char8_t*, LogMsgType);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 Gaff::IAllocator* GetAllocator(void);
@@ -42,7 +42,7 @@ void* GleamAlloc(size_t size_bytes, const char* filename, uint32_t line_number);
 void GleamFree(void* data);
 
 void SetLogFunc(LogFunc log_func);
-void PrintfToLog(const char* format_string, LogMsgType type, ...);
+void PrintfToLog(const char8_t* format_string, LogMsgType type, ...);
 
 template <class T, class... Args>
 T* GleamAllocT(const char* filename, uint32_t line_number, Args... args)

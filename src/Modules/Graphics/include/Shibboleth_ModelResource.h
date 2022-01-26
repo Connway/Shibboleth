@@ -60,4 +60,4 @@ using ModelResourcePtr = Gaff::RefPtr<ModelResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ModelResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelResource)

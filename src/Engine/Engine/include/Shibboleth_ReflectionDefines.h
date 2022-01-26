@@ -23,5 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #ifndef NS_REFLECTION
-	#define NS_REFLECTION namespace Reflection {
+	// Using Refl instead of Reflection to avoid clashing with the Reflection class.
+	#define NS_REFLECTION namespace Refl {
+#endif
+
+#ifndef NS_END
+	#define NS_END }
 #endif

@@ -239,12 +239,15 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashStringFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IAttribute.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IEnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IMainLoop.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionFunction.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionObject.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Image.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JSONSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JobPool.h" />

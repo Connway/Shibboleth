@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSQuery.h"
 #include "Shibboleth_ECSArchetype.h"
-#include <Shibboleth_ReflectionInterfaces.h>
 
 NS_SHIBBOLETH
 
@@ -34,27 +33,27 @@ ECSQuery::ECSQuery(const ProxyAllocator& allocator):
 {
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func, bool optional)
+void ECSQuery::addShared(const Refl::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func, bool optional)
 {
 	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(erase_func), std::move(filter_func), optional });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, bool optional)
+void ECSQuery::addShared(const Refl::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, bool optional)
 {
 	_shared_components.emplace_back(QueryDataShared{ &ref_def, std::move(push_func), std::move(erase_func), nullptr, optional });
 }
 
-void ECSQuery::addShared(const Gaff::IReflectionDefinition& ref_def, bool optional)
+void ECSQuery::addShared(const Refl::IReflectionDefinition& ref_def, bool optional)
 {
 	_shared_components.emplace_back(QueryDataShared{ &ref_def, nullptr, nullptr, nullptr, optional });
 }
 
-void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def, Output& output, bool optional)
+void ECSQuery::add(const Refl::IReflectionDefinition& ref_def, Output& output, bool optional)
 {
 	_components.emplace_back(QueryData{ &ref_def, &output, optional });
 }
 
-void ECSQuery::add(const Gaff::IReflectionDefinition& ref_def)
+void ECSQuery::add(const Refl::IReflectionDefinition& ref_def)
 {
 	_components.emplace_back(QueryData{ &ref_def, nullptr, false });
 }

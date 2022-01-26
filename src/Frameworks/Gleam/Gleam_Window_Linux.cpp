@@ -329,7 +329,7 @@ Window::~Window(void)
 }
 
 bool Window::init(
-	const char* window_name,
+	const char8_t* window_name,
 	WindowMode window_mode,
 	int32_t width,
 	int32_t height,
@@ -462,8 +462,10 @@ bool Window::init(
 		return false;
 	}
 
+	CONVERT_STRING(char, temp_window_name, window_name);
+
 	XSetWMProtocols(_display, _window, &_delete_window, 1);
-	XSetStandardProperties(_display, _window, window_name, window_name, None, nullptr, 0, nullptr);
+	XSetStandardProperties(_display, _window, temp_window_name, temp_window_name, None, nullptr, 0, nullptr);
 
 	switch (_window_mode) {
 		// On Linux, FULLSCREEN and BORDERLESS_WINDOWED are basically the same thing
@@ -795,6 +797,12 @@ void Window::setSize(const IVec2& size)
 bool Window::isFullScreen(void) const
 {
 	return _window_mode == WindowMode::Fullscreen;
+}
+
+bool Window::setIcon(const char8_t*)
+{
+	// $TODO: Implement
+	return true;
 }
 
 bool Window::setIcon(const char*)

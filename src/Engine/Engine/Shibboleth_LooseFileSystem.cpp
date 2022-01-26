@@ -66,13 +66,13 @@ LooseFileSystem::~LooseFileSystem(void)
 	}
 }
 
-IFile* LooseFileSystem::openFile(const char* file_name)
+IFile* LooseFileSystem::openFile(const char8_t* file_name)
 {
-	GAFF_ASSERT(file_name && strlen(file_name));
+	GAFF_ASSERT(file_name && eastl::CharStrlen(file_name));
 	const EA::Thread::AutoMutex lock(_file_lock);
 
 	auto it = Gaff::Find(_files, file_name,
-	[](const FileData& lhs, const char* rhs) -> bool
+	[](const FileData& lhs, const char8_t* rhs) -> bool
 	{
 		return lhs.name == rhs;
 	});
@@ -82,14 +82,14 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		return it->file;
 	}
 
-	U8String name = U8String("./") + file_name; // Pre-pend './' to name
+	const U8String name = U8String(u8"./") + file_name; // Pre-pend './' to name
 	Gaff::File loose_file;
 
 	if (!loose_file.open(name.data(), Gaff::File::OpenMode::ReadBinary)) {
 		return nullptr;
 	}
 
-	LooseFile* file = SHIB_ALLOCT(LooseFile, GetAllocator());
+	LooseFile* const file = SHIB_ALLOCT(LooseFile, GetAllocator());
 
 	// Should probably log that the allocation failed
 	if (!file) {
@@ -141,7 +141,7 @@ void LooseFileSystem::closeFile(const IFile* file)
 	}
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool(const char*, IFile*)>& callback, const char* extension, bool recursive)
+bool LooseFileSystem::forEachFile(const char8_t* directory, eastl::function<bool(const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive)
 {
 	if (!std::filesystem::is_directory(directory)) {
 		return false;
@@ -153,7 +153,7 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool(co
 		}
 
 		const wchar_t* file_name = dir_entry.path().c_str();
-		CONVERT_STRING(char, temp, file_name);
+		CONVERT_STRING(char8_t, temp, file_name);
 
 		if (recursive && dir_entry.is_directory()) {
 			forEachFile(temp, callback, extension, recursive);
@@ -183,7 +183,7 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool(co
 	return false;
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive)
+bool LooseFileSystem::forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive)
 {
 	return forEachFile(directory, callback, nullptr, recursive);
 }

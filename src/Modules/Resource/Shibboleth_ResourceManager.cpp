@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceAttributesCommon.h"
-#include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
@@ -32,15 +31,15 @@ THE SOFTWARE.
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ResourceManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
 
-	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>, bool)>(&ResourceManager::requestResource))
-	.func("requestResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>)>(&ResourceManager::requestResource))
-	//.func("createResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>, const Gaff::IReflectionDefinition&)>(&ResourceManager::createResource))
-	.func("getResource", static_cast<IResourcePtr (ResourceManager::*)(HashStringView64<>)>(&ResourceManager::getResource))
-SHIB_REFLECTION_DEFINE_END(ResourceManager)
+	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, bool)>(&Shibboleth::ResourceManager::requestResource))
+	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::requestResource))
+	//.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
+	.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::getResource))
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceManager)
 
 NS_SHIBBOLETH
 
@@ -48,18 +47,18 @@ SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
 
 struct RawJobData final
 {
-	const char* file_path;
+	const char8_t* file_path;
 	const IFile* out_file;
 };
 
 static void ResourceFileLoadRawJob(uintptr_t /*id_int*/, void* data)
 {
-	RawJobData* job_data = reinterpret_cast<RawJobData*>(data);
+	RawJobData* const job_data = reinterpret_cast<RawJobData*>(data);
 
-	char temp[1024] = { 0 };
-	snprintf(temp, 1024, "Resources/%s", job_data->file_path);
+	U8String final_path(ProxyAllocator("Resource"));
+	final_path.sprintf(u8"Resources/%s", job_data->file_path);
 
-	job_data->out_file = GetApp().getFileSystem().openFile(temp);
+	job_data->out_file = GetApp().getFileSystem().openFile(final_path.data());
 }
 
 static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
@@ -78,10 +77,11 @@ bool ResourceManager::init(void)
 	IApp& app = GetApp();
 	ReflectionManager& refl_mgr = app.getReflectionManager();
 
-	refl_mgr.registerTypeBucket(Reflection<IResource>::GetHash());
-	app.getLogManager().addChannel(HashStringView32<>("Resource"), "ResourceLog");
+	refl_mgr.registerTypeBucket(Refl::Reflection<IResource>::GetHash());
+	app.getLogManager().addChannel(HashStringView32<>(u8"Resource"), u8"ResourceLog");
 
-	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Reflection<IResource>::GetHash());
+	const Vector<const Refl::IReflectionDefinition*>* type_bucket =
+		refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetHash());
 
 	if (!type_bucket) {
 		return true;
@@ -90,7 +90,7 @@ bool ResourceManager::init(void)
 	Vector<const ResExtAttribute*> ext_attrs;
 	const CreatableAttribute* creatable = nullptr;
 
-	for (const Gaff::IReflectionDefinition* ref_def : *type_bucket) {
+	for (const Refl::IReflectionDefinition* ref_def : *type_bucket) {
 		FactoryFunc factory_func = ref_def->template getFactory<>();
 
 		creatable = ref_def->getClassAttr<CreatableAttribute>();
@@ -116,7 +116,7 @@ bool ResourceManager::init(void)
 	return true;
 }
 
-IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Gaff::IReflectionDefinition& ref_def)
+IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
@@ -148,7 +148,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Gaff
 	}
 
 	void* const data = factory(_allocator);
-	IResource* resource = ref_def.GET_INTERFACE(IResource, data);
+	IResource* resource = ref_def.GET_INTERFACE(Shibboleth::IResource, data);
 	resource->_state = ResourceState::Loaded;
 	resource->_file_path = name;
 	resource->_res_mgr = this;
@@ -176,7 +176,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 		return IResourcePtr(*it_res);
 	}
 
-	size_t pos = Gaff::FindLastOf(name.getBuffer(), '.');
+	size_t pos = Gaff::FindLastOf(name.getBuffer(), u8'.');
 
 	if (pos == SIZE_T_FAIL) {
 		// $TODO: Log error
@@ -240,7 +240,7 @@ void ResourceManager::waitForResource(const IResource& resource) const
 	}
 }
 
-const IFile* ResourceManager::loadFileAndWait(const char* file_path, uintptr_t thread_id_int)
+const IFile* ResourceManager::loadFileAndWait(const char8_t* file_path, uintptr_t thread_id_int)
 {
 	RawJobData data = { file_path, nullptr };
 	Gaff::JobData job_data = { ResourceFileLoadRawJob, &data };

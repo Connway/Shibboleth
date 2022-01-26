@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_IReflection.h"
 #include "Shibboleth_SmartPtrs.h"
+#include "Shibboleth_String.h"
 #include <Gaff_Ops.h>
 
 NS_SHIBBOLETH
@@ -83,7 +84,7 @@ public:
 	template <class... Args>
 	T* create(Args&&... args) const;
 
-	const char* getFriendlyName(void) const override;
+	const char8_t* getFriendlyName(void) const override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override;
 	void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
@@ -161,10 +162,10 @@ public:
 	IVar* getVarT(int32_t index) const;
 	IVar* getVarT(Gaff::Hash32 name) const;
 
-	ReflectionDefinition& friendlyName(const char* name);
+	ReflectionDefinition& friendlyName(const char8_t* name);
 
 	template <class Base>
-	ReflectionDefinition& base(const char* name);
+	ReflectionDefinition& base(const char8_t* name);
 
 	template <class Base>
 	ReflectionDefinition& base(void);
@@ -176,31 +177,61 @@ public:
 	ReflectionDefinition& ctor(void);
 
 	template <class Var, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
+
+	template <class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
 
 	template <class Enum, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char(&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes);
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes);
+
+	template <class Enum, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes);
+
+	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
+	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
+	template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
 
 	template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
 
 	template <class Var, size_t array_size, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
+
+	template <class Var, size_t array_size, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
+
+	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
 
 	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
@@ -274,7 +305,7 @@ public:
 	ReflectionDefinition& opMinus(void);
 	ReflectionDefinition& opPlus(void);
 
-	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
+	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 	ReflectionDefinition& opToString(void);
 
 	// apply() is not called on these functions.
@@ -671,19 +702,20 @@ private:
 	class ReflectionStaticFunction final : public IReflectionStaticFunction<Ret, Args...>
 	{
 	public:
-		using Func = Ret (*)(Args...);
+		using IReflectionStaticFunction<Ret, Args...>::getFunc;
+		using IReflectionStaticFunction<Ret, Args...>::call;
 
-		explicit ReflectionStaticFunction(Func func):
+		explicit ReflectionStaticFunction(IReflectionStaticFunction<Ret, Args...>::Func func):
 			IReflectionStaticFunction<Ret, Args...>(func)
 		{
 		}
 
 		int32_t numArgs(void) const override { return static_cast<int32_t>(sizeof...(Args)); }
 
-		IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const
+		IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const override
 		{
 			using Type = ReflectionStaticFunction<Ret, Args...>;
-			return SHIB_ALLOCT(Type, allocator, reinterpret_cast<Func>(getFunc()));
+			return SHIB_ALLOCT(Type, allocator, getFunc());
 		}
 
 		bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
@@ -882,7 +914,7 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		int32_t size(void) const override { return sizeof(class_type); } \
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool isBuiltIn(void) const { return true; } \
-		const char* getFriendlyName(void) const override { return GAFF_STR(class_type); } \
+		const char8_t* getFriendlyName(void) const override { return u8#class_type; } \
 		bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
 		void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
 		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, bool refl_load = false) const \

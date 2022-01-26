@@ -4,7 +4,7 @@
 
 	"shared_components":
 	{
-		"Material":
+		"Shibboleth::Material":
 		{
 			"material": "Materials/test.material",
 
@@ -14,17 +14,17 @@
 			]
 		},
 
-		"Model": { "value": "Models/ninja.model" },
-		"RasterState": { "value": "RasterStates/opaque.raster_state" },
-		"InstanceBufferCount": { "value": 4 },
-		//"PageSize": { "value": 512 }
+		"Shibboleth::Model": { "value": "Models/ninja.model" },
+		"Shibboleth::RasterState": { "value": "RasterStates/opaque.raster_state" },
+		"Shibboleth::InstanceBufferCount": { "value": 4 },
+		//"Shibboleth::PageSize": { "value": 512 }
 	},
 
 	"components":
 	{
-		"StateMachine": { "resource": "StateMachines/test.state_machine" },
-		"Position": {},
-		"Rotation": {},
-		"Scale": {}
+		"Shibboleth::StateMachine": { "resource": "StateMachines/test.state_machine" },
+		"Shibboleth::Position": {},
+		"Shibboleth::Rotation": {},
+		"Shibboleth::Scale": {}
 	}
 }

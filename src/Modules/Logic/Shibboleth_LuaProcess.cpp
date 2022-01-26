@@ -24,16 +24,19 @@ THE SOFTWARE.
 #include "Shibboleth_LuaProcess.h"
 #include "Shibboleth_StateMachineReflection.h"
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LuaHelpers.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <lua.hpp>
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaProcess)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaProcess)
 	.BASE(Esprit::IProcess)
 	.ctor<>()
 
-	.var("script", &LuaProcess::_script)
-SHIB_REFLECTION_DEFINE_END(LuaProcess)
+	.var("script", &Shibboleth::LuaProcess::_script)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaProcess)
 
 NS_SHIBBOLETH
 
@@ -64,7 +67,7 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 		return false;
 	}
 
-	lua_getfield(state, -1, _script->getFilePath().getBuffer());
+	lua_getfield(state, -1, reinterpret_cast<const char*>(_script->getFilePath().getBuffer()));
 
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
@@ -108,9 +111,9 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 		size_t len = 0;
 		const char* const error = lua_tolstring(state, -1, &len);
 
-		// $TODO: Log error.
-		GAFF_REF(error);
-		lua_pop(state, 1);
+		LogErrorResource("%s", error);
+
+		//lua_pop(state, 1);
 
 	} else {
 		success = lua_toboolean(state, -1);
@@ -135,7 +138,7 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 	lua_State* const state = _lua_mgr->requestState();
 
 	lua_getglobal(state, LuaManager::k_loaded_chunks_name);
-	lua_getfield(state, -1, _script->getFilePath().getBuffer());
+	lua_getfield(state, -1, reinterpret_cast<const char*>(_script->getFilePath().getBuffer()));
 
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {

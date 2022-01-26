@@ -26,23 +26,23 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ECSClassAttribute final : public Gaff::IAttribute
+class ECSClassAttribute final : public Refl::IAttribute
 {
 public:
-	ECSClassAttribute(const char* name = nullptr, const char* category = nullptr);
+	ECSClassAttribute(const char8_t* name = nullptr, const char8_t* category = nullptr);
 
-	const char* getCategory(void) const;
-	const char* getName(void) const;
+	const char8_t* getCategory(void) const;
+	const char8_t* getName(void) const;
 
-	Gaff::IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
 private:
-	const char* _category = nullptr;
-	const char* _name = nullptr;
+	const char8_t* _category = nullptr;
+	const char8_t* _name = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSClassAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSClassAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::ECSClassAttribute)

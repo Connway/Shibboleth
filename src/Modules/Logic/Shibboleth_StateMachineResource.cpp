@@ -27,28 +27,28 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(StateMachineResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineResource)
 	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".state_machine.bin"),
-		ResExtAttribute(".state_machine"),
-		MakeLoadFileCallbackAttribute(&StateMachineResource::loadStateMachine)
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResExtAttribute(u8".state_machine.bin"),
+		Shibboleth::ResExtAttribute(u8".state_machine"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::StateMachineResource::loadStateMachine)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(StateMachineResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachineResource)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(StateMachineResource)
 
-static constexpr const char* const g_variable_names[static_cast<size_t>(Esprit::VariableSet::VariableType::Count)] = {
-	"references",
-	"strings",
-	"floats",
-	"integers",
-	"bools"
+static constexpr const char8_t* const g_variable_names[static_cast<size_t>(Esprit::VariableSet::VariableType::Count)] = {
+	u8"references",
+	u8"strings",
+	u8"floats",
+	u8"integers",
+	u8"bools"
 };
 
 const Esprit::StateMachine* StateMachineResource::getStateMachine(void) const
@@ -61,7 +61,7 @@ Esprit::StateMachine* StateMachineResource::getStateMachine(void)
 	return _state_machine.get();
 }
 
-void StateMachineResource::readValues(const Gaff::ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const
+void StateMachineResource::readValues(const ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const
 {
 	const Esprit::VariableSet& variables = _state_machine->getVariables();
 
@@ -80,7 +80,7 @@ void StateMachineResource::readValues(const Gaff::ISerializeReader& reader, Espr
 
 		const Esprit::VariableSet::VariableType var_type = static_cast<Esprit::VariableSet::VariableType>(i);
 
-		reader.forEachInObject([&](const char* var_name) -> bool
+		reader.forEachInObject([&](const char8_t* var_name) -> bool
 		{
 			if (var_type == Esprit::VariableSet::VariableType::Reference) {
 				return false;
@@ -118,7 +118,7 @@ void StateMachineResource::readValues(const Gaff::ISerializeReader& reader, Espr
 				// Do nothing.
 			} else if (var_type == Esprit::VariableSet::VariableType::String) {
 				if (reader.isString()) {
-					const char* str = reader.readString();
+					const char8_t* const str = reader.readString();
 					variables.setVariable(var_inst, var_index, str);
 					reader.freeString(str);
 				}
@@ -149,11 +149,11 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 	_state_machine.reset(SHIB_ALLOCT(Esprit::StateMachine, allocator));
 
 	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 
 	// Load variables.
 	{
-		const auto guard_vars = reader.enterElementGuard("variables");
+		const auto guard_vars = reader.enterElementGuard(u8"variables");
 
 		if (!reader.isNull()) {
 			if (reader.isObject()) {
@@ -175,7 +175,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 					const Esprit::VariableSet::VariableType var_type = static_cast<Esprit::VariableSet::VariableType>(i);
 
 					// Add the variables.
-					reader.forEachInObject([&](const char* var_name) -> bool
+					reader.forEachInObject([&](const char8_t* var_name) -> bool
 					{
 						const Esprit::HashString32<> name(var_name);
 
@@ -198,7 +198,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 	// Load states and processes.
 	{
-		const auto guard_states = reader.enterElementGuard("states");
+		const auto guard_states = reader.enterElementGuard(u8"states");
 
 		if (reader.isNull()) {
 			// $TODO: Log error.
@@ -214,7 +214,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 			}
 
 			if (reader.isObject() && reader.size() > 0) {
-				reader.forEachInObject([&](const char* key) -> bool
+				reader.forEachInObject([&](const char8_t* key) -> bool
 				{
 					const Esprit::HashString32<> name(key);
 
@@ -226,19 +226,19 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 					const int32_t index = _state_machine->getStateIndex(name);
 
 					{
-						const auto guard_process = reader.enterElementGuard("processes");
+						const auto guard_process = reader.enterElementGuard(u8"processes");
 
 						if (!reader.isNull()) {
 							if (reader.isArray()) {
 								reader.forEachInArray([&](int32_t) -> bool
 								{
-									const Gaff::IReflectionDefinition* ref_def = nullptr;
+									const Refl::IReflectionDefinition* ref_def = nullptr;
 
 									{
-										const auto guard_type = reader.enterElementGuard("process_type");
+										const auto guard_type = reader.enterElementGuard(u8"process_type");
 
 										if (reader.isString()) {
-											const char* const type = reader.readString();
+											const char8_t* const type = reader.readString();
 											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 											reader.freeString(type);
 
@@ -291,7 +291,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 	// Load edges and conditions.
 	{
-		const auto guard_edges = reader.enterElementGuard("edges");
+		const auto guard_edges = reader.enterElementGuard(u8"edges");
 
 		if (reader.isNull()) {
 			// $TODO: Log error.
@@ -313,10 +313,10 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 					int32_t dest_index = -1;
 
 					{
-						const auto guard_src = reader.enterElementGuard("source");
+						const auto guard_src = reader.enterElementGuard(u8"source");
 
 						if (reader.isString()) {
-							const char* const source = reader.readString();
+							const char8_t* const source = reader.readString();
 							source_index = _state_machine->getStateIndex(Esprit::HashStringView32<>(source));
 							reader.freeString(source);
 						} else {
@@ -325,10 +325,10 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 					}
 
 					{
-						const auto guard_dest = reader.enterElementGuard("destination");
+						const auto guard_dest = reader.enterElementGuard(u8"destination");
 
 						if (reader.isString()) {
-							const char* const destination = reader.readString();
+							const char8_t* const destination = reader.readString();
 							dest_index = _state_machine->getStateIndex(Esprit::HashStringView32<>(destination));
 							reader.freeString(destination);
 						} else {
@@ -348,18 +348,18 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 						const int32_t edge_index = _state_machine->addEdge(source_index, dest_index);
 
 						if (edge_index > -1) {
-							const auto guard_conditions = reader.enterElementGuard("conditions");
+							const auto guard_conditions = reader.enterElementGuard(u8"conditions");
 
 							if (reader.isArray()) {
 								reader.forEachInArray([&](int32_t) -> bool
 								{
-									const Gaff::IReflectionDefinition* ref_def = nullptr;
+									const Refl::IReflectionDefinition* ref_def = nullptr;
 
 									{
-										const auto guard_type = reader.enterElementGuard("condition_type");
+										const auto guard_type = reader.enterElementGuard(u8"condition_type");
 
 										if (reader.isString()) {
-											const char* const type = reader.readString();
+											const char8_t* const type = reader.readString();
 											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 											reader.freeString(type);
 

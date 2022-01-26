@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 #define REFLECTION_CAST_PTR_NAME(T, name, object) \
 	reinterpret_cast<T*>( \
-		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+		const_cast<Refl::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
 			Gaff::FNV1aHash64Const(name), (object)->getBasePointer() \
 		) \
 	)
@@ -44,7 +44,7 @@ THE SOFTWARE.
 #define GET_ENUM_ATTR(T) getEnumAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_VALUE_ATTR(T, value_name) getEnumValueAttr<T>(value_name, Gaff::FNV1aHash64Const(#T))
 
-#define INTERFACE_CAST(interface_type, object) Reflection::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
+#define INTERFACE_CAST(interface_type, object) Refl::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
 
 
 NS_REFLECTION

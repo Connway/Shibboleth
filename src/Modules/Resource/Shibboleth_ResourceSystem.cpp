@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(ResourceSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ResourceSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 

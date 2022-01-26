@@ -24,29 +24,29 @@ THE SOFTWARE.
 
 #include "Gaff_Hash.h"
 
-#define OP_ADD_NAME "__add"
-#define OP_SUB_NAME "__sub"
-#define OP_MUL_NAME "__mul"
-#define OP_DIV_NAME "__div"
-#define OP_MOD_NAME "__mod"
-#define OP_BIT_AND_NAME "__band"
-#define OP_BIT_OR_NAME "__bor"
-#define OP_BIT_XOR_NAME "__bxor"
-#define OP_BIT_NOT_NAME "__bnot"
-#define OP_BIT_SHIFT_LEFT_NAME "__shl"
-#define OP_BIT_SHIFT_RIGHT_NAME "__shr"
-#define OP_LOGIC_AND_NAME "__and"
-#define OP_LOGIC_OR_NAME "__or"
-#define OP_EQUAL_NAME "__eq"
-#define OP_LESS_THAN_NAME "__lt"
-#define OP_GREATER_THAN_NAME "__gt"
-#define OP_LESS_THAN_OR_EQUAL_NAME "__le"
-#define OP_GREATER_THAN_OR_EQUAL_NAME "__ge"
-#define OP_MINUS_NAME "__unm"
-#define OP_PLUS_NAME "__unp"
-#define OP_CALL_NAME "__call"
-#define OP_INDEX_NAME "__idx"
-#define OP_TO_STRING_NAME "__tostring"
+#define OP_ADD_NAME u8"__add"
+#define OP_SUB_NAME u8"__sub"
+#define OP_MUL_NAME u8"__mul"
+#define OP_DIV_NAME u8"__div"
+#define OP_MOD_NAME u8"__mod"
+#define OP_BIT_AND_NAME u8"__band"
+#define OP_BIT_OR_NAME u8"__bor"
+#define OP_BIT_XOR_NAME u8"__bxor"
+#define OP_BIT_NOT_NAME u8"__bnot"
+#define OP_BIT_SHIFT_LEFT_NAME u8"__shl"
+#define OP_BIT_SHIFT_RIGHT_NAME u8"__shr"
+#define OP_LOGIC_AND_NAME u8"__and"
+#define OP_LOGIC_OR_NAME u8"__or"
+#define OP_EQUAL_NAME u8"__eq"
+#define OP_LESS_THAN_NAME u8"__lt"
+#define OP_GREATER_THAN_NAME u8"__gt"
+#define OP_LESS_THAN_OR_EQUAL_NAME u8"__le"
+#define OP_GREATER_THAN_OR_EQUAL_NAME u8"__ge"
+#define OP_MINUS_NAME u8"__unm"
+#define OP_PLUS_NAME u8"__unp"
+#define OP_CALL_NAME u8"__call"
+#define OP_INDEX_NAME u8"__idx"
+#define OP_TO_STRING_NAME u8"__tostring"
 
 NS_GAFF
 
@@ -85,7 +85,7 @@ enum class Operator
 	Count
 };
 
-static constexpr const char* OpNames[static_cast<size_t>(Operator::Count)] = {
+static constexpr const char8_t* k_op_names[static_cast<size_t>(Operator::Count)] = {
 	OP_ADD_NAME,
 	OP_SUB_NAME,
 	OP_MUL_NAME,
@@ -111,8 +111,8 @@ static constexpr const char* OpNames[static_cast<size_t>(Operator::Count)] = {
 	OP_TO_STRING_NAME
 };
 
-static constexpr const char* GetOpName(Operator op) { return OpNames[static_cast<size_t>(op)]; }
-static constexpr Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op)); }
+static constexpr const char8_t* GetOpName(Operator op) { return k_op_names[static_cast<size_t>(op)]; }
+static constexpr Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op), eastl::CharStrlen(GetOpName(op))); }
 
 
 template <class LHS, class RHS>
@@ -247,8 +247,8 @@ static auto Index(T& value, const Idx& index)
 	return value[index];
 }
 
-template <class T, int32_t (*to_string_func)(const T&, char*, int32_t)>
-static int32_t ToStringHelper(const void* value, char* buffer, int32_t size)
+template <class T, int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
+static int32_t ToStringHelper(const void* value, char8_t* buffer, int32_t size)
 {
 	return to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
 }

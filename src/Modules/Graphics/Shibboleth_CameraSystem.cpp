@@ -26,15 +26,15 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(CameraPreRenderSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPreRenderSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(CameraPreRenderSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPreRenderSystem)
 
-SHIB_REFLECTION_DEFINE_BEGIN(CameraPostRenderSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPostRenderSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(CameraPostRenderSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPostRenderSystem)
 
 NS_SHIBBOLETH
 
@@ -47,7 +47,7 @@ bool CameraPreRenderSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
@@ -101,7 +101,7 @@ bool CameraPostRenderSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
@@ -113,7 +113,7 @@ bool CameraPostRenderSystem::init(void)
 		return false;
 	}
 
-	constexpr const char* const k_camera_material = "Materials/CameraToTexture/camera_to_texture.material";
+	constexpr const char8_t* const k_camera_material = u8"Materials/CameraToTexture/camera_to_texture.material";
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	_camera_material = res_mgr.requestResourceT<MaterialResource>(k_camera_material);

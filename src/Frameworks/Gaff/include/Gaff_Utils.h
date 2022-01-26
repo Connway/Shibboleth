@@ -45,11 +45,14 @@ THE SOFTWARE.
 NS_GAFF
 
 unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
+void GetCurrentTimeString(char8_t* buff, size_t count, const char8_t* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
 void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
 void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
+bool CreateDir(const char8_t* dir_name, unsigned short mode);
 bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
+void DebugPrintf(const char8_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
-bool SetWorkingDir(const char* directory);
+bool SetWorkingDir(const char8_t* directory);
 
 void* AlignedMalloc(size_t size, size_t alignment);
 void AlignedFree(void* data);

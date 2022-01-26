@@ -27,8 +27,6 @@ THE SOFTWARE.
 #include "Gaff_DynamicModule_Windows.h"
 #include "Gaff_String.h"
 
-#define MAX_ERR_LEN 1024
-
 NS_GAFF
 
 DynamicModule::DynamicModule(void):
@@ -41,7 +39,7 @@ DynamicModule::~DynamicModule(void)
 	destroy();
 }
 
-bool DynamicModule::load(const char* filename)
+bool DynamicModule::load(const char8_t* filename)
 {
 	CONVERT_STRING(wchar_t, temp, filename);
 	_module = LoadLibraryEx(temp, NULL, 0);
@@ -57,6 +55,11 @@ bool DynamicModule::destroy(void)
 	return false;
 }
 
+void* DynamicModule::getAddress(const char8_t* name) const
+{
+	return getAddress(reinterpret_cast<const char*>(name));
+}
+
 void* DynamicModule::getAddress(const char* name) const
 {
 	return reinterpret_cast<void*>(GetProcAddress(_module, name));
@@ -64,7 +67,8 @@ void* DynamicModule::getAddress(const char* name) const
 
 const char* DynamicModule::GetErrorString(void)
 {
-	static char error[MAX_ERR_LEN] = { 0 };
+	static constexpr const size_t k_max_err_len = 1024;
+	static char error[k_max_err_len] = { 0 };
 
 	LPTSTR msg = nullptr;
 
@@ -81,14 +85,14 @@ const char* DynamicModule::GetErrorString(void)
 
 	const wchar_t* src_beg = msg;
 	char* error_begin = error;
-	char* error_end = error + MAX_ERR_LEN;
+	char* error_end = error + k_max_err_len;
 
 	eastl::DecodePart(src_beg, src_beg + eastl::CharStrlen(src_beg), error_begin, error_end);
 
 	LocalFree(msg);
 
 	// Strip out the \r\n at the end of the string.
-	for (size_t i = 0; i < MAX_ERR_LEN; ++i) {
+	for (size_t i = 0; i < k_max_err_len; ++i) {
 		if (error[i] == '\r') {
 			error[i] = 0;
 			break;

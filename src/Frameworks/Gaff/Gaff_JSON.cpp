@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_JSON.h"
+#include "Gaff_String.h"
 #include "Gaff_File.h"
 
 #ifdef _MSC_VER
@@ -93,7 +94,7 @@ bool WriteJSON(const JSON& json, Writer& writer)
 		success = writer.StartObject();
 
 		if (success) {
-			success = !json.forEachInObject([&](const char* key, const JSON& value) -> bool
+			success = !json.forEachInObject([&](const char8_t* key, const JSON& value) -> bool
 			{
 				success = writer.Key(key);
 
@@ -204,13 +205,13 @@ JSON JSON::CreateDouble(double val)
 	return JSON(std::move(value));
 }
 
-JSON JSON::CreateStringRef(const char* val)
+JSON JSON::CreateStringRef(const char8_t* val)
 {
 	JSONValue value = JSONValue(JSONValue::StringRefType(val));
 	return JSON(std::move(value));
 }
 
-JSON JSON::CreateString(const char* val)
+JSON JSON::CreateString(const char8_t* val)
 {
 	JSONValue value = JSONValue(val, g_allocator);
 	return JSON(std::move(value));
@@ -289,7 +290,7 @@ JSON::~JSON(void)
 	}
 }
 
-bool JSON::validateFile(const char* schema_file) const
+bool JSON::validateFile(const char8_t* schema_file) const
 {
 	JSON schema;
 
@@ -312,9 +313,9 @@ bool JSON::validate(const JSON& schema) const
 	if (!getValue().Accept(validator)) {
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
-		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
-		size_t size = strlen(keyword_error) + 1;
-		char* const buf = _keyword_error.Push(size);
+		const char8_t* const keyword_error = validator.GetInvalidSchemaKeyword();
+		const size_t size = eastl::CharStrlen(keyword_error) + 1;
+		char8_t* const buf = _keyword_error.Push(size);
 
 	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buf, size, keyword_error, size);
@@ -328,9 +329,9 @@ bool JSON::validate(const JSON& schema) const
 	return true;
 }
 
-bool JSON::validate(const char* schema_input) const
+bool JSON::validate(const char8_t* schema_input) const
 {
-	GAFF_ASSERT(schema_input && strlen(schema_input));
+	GAFF_ASSERT(schema_input && eastl::CharStrlen(schema_input));
 	JSON schema;
 
 	if (!schema.parse(schema_input)) {
@@ -341,42 +342,37 @@ bool JSON::validate(const char* schema_input) const
 	return validate(schema);
 }
 
-bool JSON::parseFile(const char* filename, const JSON& schema)
+bool JSON::parseFile(const char8_t* filename, const JSON& schema)
 {
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
-	GAFF_ASSERT(filename && strlen(filename));
+	GAFF_ASSERT(filename && eastl::CharStrlen(filename));
 	*this = CreateNull();
 
-	FILE* file = nullptr;
+	Gaff::File file;
 
-#ifdef PLATFORM_WINDOWS
-	fopen_s(&file, filename, "r");
-#else
-	file = fopen(filename, "r");
-#endif
-
-	if (!file) {
+	if (!file.open(filename)) {
 		return false;
 	}
 
+	// $TODO: Should probably just allocate this dynamically.
 	char buffer[2048];
 
 	JSONSchemaDocument sd(schema.getValue(), nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
-	rapidjson::FileReadStream stream(file, buffer, 2048);
-	rapidjson::Reader reader;
+	rapidjson::FileReadStream stream(file.getFile(), buffer, 2048);
+	rapidjson::GenericReader<rapidjson::UTF8<char8_t>, rapidjson::UTF8<char8_t> > reader;
 
 	_error = reader.Parse(stream, validator);
 
 	if (!_error && _error.Code() == rapidjson::kParseErrorTermination) {
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
-		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
-		size_t size = strlen(keyword_error) + 1;
-		char* const buf = _keyword_error.Push(size);
+		const char8_t* const keyword_error = validator.GetInvalidSchemaKeyword();
+		const size_t size = eastl::CharStrlen(keyword_error) + 1;
+		char8_t* const buf = _keyword_error.Push(size);
 
 	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buf, size, keyword_error, size);
@@ -400,7 +396,7 @@ bool JSON::parseFile(const char* filename, const JSON& schema)
 	return true;
 }
 
-bool JSON::parseFile(const char* filename, const char* schema_input)
+bool JSON::parseFile(const char8_t* filename, const char8_t* schema_input)
 {
 	JSON schema;
 
@@ -412,30 +408,23 @@ bool JSON::parseFile(const char* filename, const char* schema_input)
 	return parseFile(filename, schema);
 }
 
-bool JSON::parseFile(const char* filename)
+bool JSON::parseFile(const char8_t* filename)
 {
-	GAFF_ASSERT(filename && strlen(filename));
+	GAFF_ASSERT(filename && eastl::CharStrlen(filename));
 	*this = CreateNull();
 
-	FILE* file = nullptr;
+	Gaff::File file;
 
-#ifdef PLATFORM_WINDOWS
-	fopen_s(&file, filename, "r");
-#else
-	file = fopen(filename, "r");
-#endif
-
-	if (!file) {
+	if (!file.open(filename)) {
 		return false;
 	}
 
+	// $TODO: Should probably just allocate this dynamically.
 	char buffer[2048];
-	rapidjson::FileReadStream stream(file, buffer, 2048);
+	rapidjson::FileReadStream stream(file.getFile(), buffer, 2048);
 
 	JSONDocument document;
 	document.ParseStream(stream);
-
-	fclose(file);
 
 	if (document.HasParseError()) {
 		_error.Set(document.GetParseError(), document.GetErrorOffset());
@@ -448,9 +437,9 @@ bool JSON::parseFile(const char* filename)
 	return true;
 }
 
-bool JSON::parse(const char* input, const JSON& schema)
+bool JSON::parse(const char8_t* input, const JSON& schema)
 {
-	GAFF_ASSERT(input && strlen(input));
+	GAFF_ASSERT(input && eastl::CharStrlen(input));
 	*this = CreateNull();
 
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
@@ -459,8 +448,8 @@ bool JSON::parse(const char* input, const JSON& schema)
 	JSONSchemaDocument sd(schema.getValue(), nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
-	rapidjson::StringStream stream(input);
-	rapidjson::Reader reader;
+	rapidjson::GenericStringStream< rapidjson::UTF8<char8_t> > stream(input);
+	rapidjson::GenericReader<rapidjson::UTF8<char8_t>, rapidjson::UTF8<char8_t> > reader;
 
 	_error = reader.Parse(stream, validator);
 
@@ -468,9 +457,9 @@ bool JSON::parse(const char* input, const JSON& schema)
 		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 		_schema_error.Push(0);
 
-		const char* const keyword_error = validator.GetInvalidSchemaKeyword();
-		size_t size = strlen(keyword_error) + 1;
-		char* const buf = _keyword_error.Push(size);
+		const char8_t* const keyword_error = validator.GetInvalidSchemaKeyword();
+		const size_t size = eastl::CharStrlen(keyword_error) + 1;
+		char8_t* const buf = _keyword_error.Push(size);
 
 	#ifdef PLATFORM_WINDOWS
 		memcpy_s(buf, size, keyword_error, size);
@@ -494,7 +483,7 @@ bool JSON::parse(const char* input, const JSON& schema)
 	return true;
 }
 
-bool JSON::parse(const char* input, const char* schema_input)
+bool JSON::parse(const char8_t* input, const char8_t* schema_input)
 {
 	JSON schema;
 
@@ -506,9 +495,9 @@ bool JSON::parse(const char* input, const char* schema_input)
 	return parse(input, schema);
 }
 
-bool JSON::parse(const char* input)
+bool JSON::parse(const char8_t* input)
 {
-	GAFF_ASSERT(input && strlen(input));
+	GAFF_ASSERT(input && eastl::CharStrlen(input));
 	*this = CreateNull();
 
 	JSONDocument document;
@@ -525,43 +514,34 @@ bool JSON::parse(const char* input)
 	return true;
 }
 
-bool JSON::dumpToFile(const char* filename) const
+bool JSON::dumpToFile(const char8_t* filename) const
 {
 	GAFF_ASSERT(isArray() || isObject());
-	FILE* file = nullptr;
+	Gaff::File file;
 
-#ifdef PLATFORM_WINDOWS
-	fopen_s(&file, filename, "w");
-#else
-	file = fopen(filename, "w");
-#endif
-
-	if (!file) {
+	if (!file.open(filename, Gaff::File::OpenMode::Write)) {
 		return false;
 	}
 
 	char buffer[2048];
-	rapidjson::FileWriteStream stream(file, buffer, 2048);
+	rapidjson::FileWriteStream stream(file.getFile(), buffer, 2048);
 
 	rapidjson::PrettyWriter<
-		rapidjson::FileWriteStream, rapidjson::UTF8<>,
-		rapidjson::UTF8<>, JSONInternalAllocator
+		rapidjson::FileWriteStream, rapidjson::UTF8<char8_t>,
+		rapidjson::UTF8<char8_t>, JSONInternalAllocator
 	> writer(stream);
 
-	bool success = WriteJSON(*this, writer);
-	fclose(file);
-
-	return success;
+	return WriteJSON(*this, writer);
 }
 
-const char* JSON::dump(char* buffer, int32_t size)
+const char8_t* JSON::dump(char8_t* buffer, int32_t size)
 {
 	GAFF_ASSERT(isArray() || isObject());
 	JSONStringBuffer string_buffer;
 
 	rapidjson::PrettyWriter<
-		JSONStringBuffer, rapidjson::UTF8<>,
-		rapidjson::UTF8<>, JSONInternalAllocator
+		JSONStringBuffer, rapidjson::UTF8<char8_t>,
+		rapidjson::UTF8<char8_t>, JSONInternalAllocator
 	> writer(string_buffer);
 
 	if (WriteJSON(*this, writer)) {
@@ -582,19 +562,19 @@ const char* JSON::dump(char* buffer, int32_t size)
 	return nullptr;
 }
 
-const char* JSON::dump(void)
+const char8_t* JSON::dump(void)
 {
 	GAFF_ASSERT(isArray() || isObject());
 	JSONStringBuffer buffer;
 
 	rapidjson::PrettyWriter<
-		JSONStringBuffer, rapidjson::UTF8<>,
-		rapidjson::UTF8<>, JSONInternalAllocator
+		JSONStringBuffer, rapidjson::UTF8<char8_t>,
+		rapidjson::UTF8<char8_t>, JSONInternalAllocator
 	> writer(buffer);
 
 	if (WriteJSON(*this, writer)) {
 		size_t size = buffer.GetSize();
-		char* const str = reinterpret_cast<char*>(g_alloc(size + 1));
+		char8_t* const str = reinterpret_cast<char8_t*>(g_alloc(size + 1));
 
 	#ifdef PLATFORM_WINDOWS
 		memcpy_s(str, size, buffer.GetString(), size);
@@ -610,9 +590,9 @@ const char* JSON::dump(void)
 	return nullptr;
 }
 
-void JSON::freeDumpString(const char* string)
+void JSON::freeDumpString(const char8_t* string)
 {
-	g_free(const_cast<char*>(string));
+	g_free(const_cast<char8_t*>(string));
 }
 
 bool JSON::isObject(void) const
@@ -705,7 +685,7 @@ bool JSON::isNull(void) const
 	return getValue().IsNull();
 }
 
-JSON JSON::getObject(const char* key) const
+JSON JSON::getObject(const char8_t* key) const
 {
 	auto it = getValue().FindMember(key);
 
@@ -716,20 +696,31 @@ JSON JSON::getObject(const char* key) const
 	return JSON(const_cast<JSONValue*>(&it->value));
 }
 
+JSON JSON::getObject(const char* key) const
+{
+	CONVERT_STRING(char8_t, temp_key, key);
+	return getObject(temp_key);
+}
+
 JSON JSON::getObject(int32_t index) const
 {
 	return JSON(const_cast<JSONValue*>(&getValue()[static_cast<rapidjson::SizeType>(index)]));
 }
 
-const char* JSON::getKey(char* buffer, size_t buf_size, int32_t index) const
+const char8_t* JSON::getKey(char8_t* buffer, size_t buf_size, int32_t index) const
 {
 	GAFF_ASSERT(isObject() && index < size());
-	const char* const key = (getValue().MemberBegin() + index)->name.GetString();
-	strncpy(buffer, key, buf_size - 1);
+
+	const char8_t* const key = (getValue().MemberBegin() + index)->name.GetString();
+	const size_t len = (buf_size < (eastl::CharStrlen(key) + 1)) ? buf_size : eastl::CharStrlen(key) + 1;
+
+	memcpy(buffer, key, len);
+	buffer[buf_size - 1] = 0;
+
 	return buffer;
 }
 
-const char* JSON::getKey(int32_t index) const
+const char8_t* JSON::getKey(int32_t index) const
 {
 	GAFF_ASSERT(isObject() && index < size());
 	return (getValue().MemberBegin() + index)->name.GetString();
@@ -741,14 +732,18 @@ JSON JSON::getValue(int32_t index) const
 	return JSON(const_cast<JSONValue*>(&(getValue().MemberBegin() + index)->value));
 }
 
-const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
+const char8_t* JSON::getString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const
 {
-	return (isString()) ?
-		strncpy(buffer, getValue().GetString(), buf_size - 1) :
-		strncpy(buffer, default_value, buf_size - 1);
+	const char8_t* const str = (isString()) ? getValue().GetString() : default_value;
+	const size_t len = (buf_size < (eastl::CharStrlen(str) + 1)) ? buf_size : eastl::CharStrlen(str) + 1;
+
+	memcpy(buffer, str, len);
+	buffer[buf_size - 1] = 0;
+
+	return buffer;
 }
 
-const char* JSON::getString(const char* default_value) const
+const char8_t* JSON::getString(const char8_t* default_value) const
 {
 	return (isString()) ? getValue().GetString() : default_value;
 }
@@ -813,12 +808,19 @@ bool JSON::getBool(bool default_value) const
 	return (isBool()) ? getBool() : default_value;
 }
 
-const char* JSON::getString(char* buffer, size_t buf_size) const
+const char8_t* JSON::getString(char8_t* buffer, size_t buf_size) const
 {
-	return strncpy(buffer, getString(), buf_size - 1);
+	const char8_t* const str = getValue().GetString();
+	const size_t len = (buf_size < (eastl::CharStrlen(str) + 1)) ? buf_size : eastl::CharStrlen(str) + 1;
+
+	memcpy(buffer, str, len);
+	buffer[buf_size - 1] = 0;
+
+	return buffer;
+
 }
 
-const char* JSON::getString(void) const
+const char8_t* JSON::getString(void) const
 {
 	return getValue().GetString();
 }
@@ -900,7 +902,7 @@ bool JSON::getBool(void) const
 	return getValue().GetBool();
 }
 
-void JSON::setObject(const char* key, const JSON& json)
+void JSON::setObject(const char8_t* key, const JSON& json)
 {
 	GAFF_ASSERT(isObject());
 	JSONValue value(json.getValue(), g_allocator);
@@ -915,7 +917,7 @@ void JSON::setObject(const char* key, const JSON& json)
 	}
 }
 
-void JSON::setObject(const char* key, JSON&& json)
+void JSON::setObject(const char8_t* key, JSON&& json)
 {
 	if (json._is_reference) {
 		setObject(key, json);
@@ -982,17 +984,17 @@ int32_t JSON::size(void) const
 	return static_cast<int32_t>(getValue().GetStringLength());
 }
 
-const char* JSON::getErrorText(void) const
+const char8_t* JSON::getErrorText(void) const
 {
 	return _error.IsError() ? rapidjson::GetParseError_En(_error.Code()) : nullptr;
 }
 
-const char* JSON::getSchemaErrorText(void) const
+const char8_t* JSON::getSchemaErrorText(void) const
 {
 	return _schema_error.GetString();
 }
 
-const char* JSON::getSchemaKeywordText(void) const
+const char8_t* JSON::getSchemaKeywordText(void) const
 {
 	return _keyword_error.GetString();
 }
@@ -1032,9 +1034,16 @@ JSON& JSON::operator=(JSON&& rhs)
 	return *this;
 }
 
-JSON& JSON::operator=(const char* value)
+JSON& JSON::operator=(const char8_t* value)
 {
 	getValue().SetString(value, g_allocator);
+	return *this;
+}
+
+JSON& JSON::operator=(const char* value)
+{
+	CONVERT_STRING(char8_t, temp_value, value);
+	getValue().SetString(temp_value, g_allocator);
 	return *this;
 }
 
@@ -1076,6 +1085,11 @@ bool JSON::operator==(const JSON& rhs) const
 bool JSON::operator!=(const JSON& rhs) const
 {
 	return getValue() != rhs.getValue();
+}
+
+JSON JSON::operator[](const char8_t* key) const
+{
+	return getObject(key);
 }
 
 JSON JSON::operator[](const char* key) const

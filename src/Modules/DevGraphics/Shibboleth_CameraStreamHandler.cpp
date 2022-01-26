@@ -31,16 +31,16 @@ THE SOFTWARE.
 #endif
 
 
-SHIB_REFLECTION_DEFINE_BEGIN(CameraStreamHandler)
-	.classAttrs(DevWebCommandAttribute("/camera"))
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraStreamHandler)
+	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/camera"))
 
-	.BASE(IDevWebHandler)
+	.BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(CameraStreamHandler)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraStreamHandler)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(CameraStreamHandler)
+SHIB_REFLECTION_CLASS_DEFINE(Shibboleth::CameraStreamHandler)
 
 CameraStreamHandler::CameraStreamHandler(void)
 {
@@ -136,7 +136,7 @@ bool CameraStreamHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t& out_id, bool create_input_buffer)
 {
 	// Should do this per-video we are encoding.
-	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	auto& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const auto* const devices = render_mgr.getDevicesByTag("main");
 
 	if (!devices) {

@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IDebugManager.h"
-#include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
@@ -87,8 +86,8 @@ public:
 	DebugRenderHandle renderDebugCylinder(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
-	void registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
-	void unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def) override;
+	void registerDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) override;
+	void unregisterDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
 private:
 	struct DebugRenderInstanceData final
@@ -168,9 +167,9 @@ private:
 
 		union
 		{
-			Gaff::IReflectionStaticFunction<void>* static_func = nullptr;
-			Gaff::IReflectionFunction<void>* func;
-			Gaff::IReflectionVar* var;
+			Refl::IReflectionStaticFunction<void>* static_func = nullptr;
+			Refl::IReflectionFunction<void>* func;
+			Refl::IReflectionVar* var;
 		};
 
 
@@ -254,5 +253,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DebugManager::DebugFlag)
-SHIB_REFLECTION_DECLARE(DebugManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugManager::DebugFlag)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugManager)

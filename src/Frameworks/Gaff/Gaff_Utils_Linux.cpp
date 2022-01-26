@@ -39,10 +39,28 @@ unsigned long GetNumberOfCores(void)
 	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 
+bool CreateDir(const char8_t* dir_name, unsigned short mode)
+{
+	return CreateDir(reinterpret_cast<const char*>(dir_name), mode);
+}
+
 bool CreateDir(const char* dirname, unsigned short mode)
 {
 	GAFF_ASSERT(dirname);
-	return mkdir(dirname, mode) == 0 || errno == EEXIST;
+	return !mkdir(dirname, mode) || errno == EEXIST;
+}
+
+void DebugPrintf(const char8_t* format_string, ...)
+{
+	GAFF_ASSERT(format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+
+	CONVERT_STRING(char, temp_format_string, format_string);
+	vprintf(temp_format_string, vl);
+
+	va_end(vl);
 }
 
 void DebugPrintf(const char* format_string, ...)
@@ -51,13 +69,15 @@ void DebugPrintf(const char* format_string, ...)
 
 	va_list vl;
 	va_start(vl, format_string);
+
 	vprintf(format_string, vl);
+
 	va_end(vl);
 }
 
-bool SetWorkingDir(const char* directory)
+bool SetWorkingDir(const char8_t* directory)
 {
-	return !chdir(directory);
+	return !chdir(reinterpret_cast<const char*>(directory));
 }
 
 void* AlignedMalloc(size_t size, size_t alignment)

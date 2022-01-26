@@ -40,12 +40,12 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 
-				app.getReflectionManager().registerTypeBucket(CLASS_HASH(ISystem));
+				app.getReflectionManager().registerTypeBucket<Shibboleth::ISystem>();
 			}
 
 			Gen::InitReflection(mode);

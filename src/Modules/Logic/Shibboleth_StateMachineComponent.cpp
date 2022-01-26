@@ -26,22 +26,22 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <EAThread/eathread_sync.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(StateMachine)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachine)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Logic")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Logic")
 	)
 
-	.base< ECSComponentBaseBoth<StateMachine, StateMachine&> >()
-	.serialize(StateMachine::Load)
+	.base< Shibboleth::ECSComponentBaseBoth<Shibboleth::StateMachine, Shibboleth::StateMachine&> >()
+	.serialize(Shibboleth::StateMachine::Load)
 
-	.staticFunc("Constructor", StateMachine::Constructor)
-	.staticFunc("Destructor", StateMachine::Destructor)
+	.staticFunc("Constructor", Shibboleth::StateMachine::Constructor)
+	.staticFunc("Destructor", Shibboleth::StateMachine::Destructor)
 
-	.staticFunc("Load", static_cast<bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&)>(StateMachine::Load))
+	.staticFunc("Load", static_cast<bool (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const Shibboleth::ISerializeReader&)>(Shibboleth::StateMachine::Load))
 
-	.var("resource", &StateMachine::resource)
+	.var("resource", &Shibboleth::StateMachine::resource)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(StateMachine)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 
 NS_SHIBBOLETH
 
@@ -73,7 +73,7 @@ void StateMachine::Destructor(EntityID, void* component, int32_t comp_index)
 	GetInternal(component, comp_index).~StateMachine();
 }
 
-bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
 {
 	StateMachine& sm = GetInternal(ecs_mgr.getComponent<StateMachine>(id), ecs_mgr.getComponentIndex(id));
 
@@ -86,9 +86,9 @@ bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerialize
 	return true;
 }
 
-bool StateMachine::Load(const Gaff::ISerializeReader& reader, StateMachine& out)
+bool StateMachine::Load(const ISerializeReader& reader, StateMachine& out)
 {
-	if (!Reflection<StateMachine>::Load(reader, out, true)) {
+	if (!Refl::Reflection<StateMachine>::GetInstance().load(reader, out, true)) {
 		return false;
 	}
 

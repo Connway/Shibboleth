@@ -259,7 +259,7 @@ bool Window::init(HWND hwnd)
 }
 
 bool Window::init(
-	const char* window_name,
+	const char8_t* window_name,
 	WindowMode window_mode,
 	int32_t width,
 	int32_t height,
@@ -541,6 +541,19 @@ void Window::setSize(const IVec2& size)
 bool Window::isFullScreen(void) const
 {
 	return _window_mode == WindowMode::Fullscreen;
+}
+
+bool Window::setIcon(const char8_t* icon)
+{
+	CONVERT_STRING(wchar_t, temp, icon);
+	HANDLE hIcon = LoadImageW(_hinstance, temp, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
+
+	if (!hIcon) {
+		return false;
+	}
+
+	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
+	return true;
 }
 
 bool Window::setIcon(const char* icon)

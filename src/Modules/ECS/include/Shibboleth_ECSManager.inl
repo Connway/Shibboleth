@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+NS_SHIBBOLETH
+
 template <size_t index, size_t i, class First, class... Rest>
 static constexpr bool IsPtrHelper(void)
 {
@@ -82,11 +84,11 @@ static constexpr bool IsPointer(void)
 {
 	if constexpr (std::is_class<Callback>::value) {
 		static_assert(&Callback::operator(), "Does not have operator()");
-		return IsPointerHelper<decltype(&Callback::operator())>::IsPtr<index>();
+		return IsPointerHelper<decltype(&Callback::operator())>::template IsPtr<index>();
 	} else if constexpr (std::is_member_function_pointer<Callback>::value || std::is_function<Callback>::value) {
-		return IsPointerHelper<Callback>::IsPtr<index>();
+		return IsPointerHelper<Callback>::template IsPtr<index>();
 	} else if constexpr (std::is_pointer<Callback>::value && std::is_function<std::remove_pointer<Callback>::type>::value) {
-		return IsPointerHelper<Callback>::IsPtr<index>();
+		return IsPointerHelper<Callback>::template IsPtr<index>();
 	} else {
 		return false;
 	}
@@ -95,7 +97,7 @@ static constexpr bool IsPointer(void)
 template <class... Components>
 ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 archetype_hash)
 {
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+	GAFF_ASSERT(_entity_pages.find(archetype_hash) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
@@ -104,7 +106,7 @@ ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 arch
 	archetype.finalize(old_archetype);
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
-	migrate(id, archetype.getHash());
+	//migrate(id, archetype.getHash());
 
 	return archetype_ref;
 }
@@ -112,7 +114,7 @@ ArchetypeReference* ECSManager::removeSharedComponentsInternal(Gaff::Hash64 arch
 template <class... Components>
 ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash64 archetype_hash)
 {
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+	GAFF_ASSERT(_entity_pages.find(archetype_hash) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
@@ -121,7 +123,7 @@ ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash64 archetype_
 	archetype.finalize();
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
-	migrate(id, archetype.getHash());
+	//migrate(id, archetype.getHash());
 
 	return archetype_ref;
 }
@@ -129,7 +131,7 @@ ArchetypeReference* ECSManager::removeComponentsInternal(Gaff::Hash64 archetype_
 template <class... Components>
 ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Hash64 archetype_hash)
 {
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+	GAFF_ASSERT(_entity_pages.find(archetype_hash) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
@@ -138,7 +140,7 @@ ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Hash64 archety
 	archetype.finalize(old_archetype);
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
-	migrate(id, archetype.getHash());
+	//migrate(id, archetype.getHash());
 
 	return archetype_ref;
 }
@@ -146,7 +148,7 @@ ArchetypeReference* ECSManager::addSharedComponentsInternal(Gaff::Hash64 archety
 template <class... Components>
 ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 archetype_hash)
 {
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) != _entity_pages.end());
+	GAFF_ASSERT(_entity_pages.find(archetype_hash) != _entity_pages.end());
 	const ECSArchetype& old_archetype = _entity_pages[archetype_hash]->archetype;
 
 	ECSArchetype archetype;
@@ -155,7 +157,7 @@ ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 archetype_has
 	archetype.finalize();
 
 	const auto archetype_ref = addArchetype(std::move(archetype));
-	migrate(id, archetype.getHash());
+	//migrate(id, archetype.getHash());
 
 	return archetype_ref;
 }
@@ -238,7 +240,7 @@ void ECSManager::iterateInternalHelper(
 	if constexpr (is_pointer) {
 		GAFF_ASSERT_MSG(qr.optional, "Function passed to ECSManager::iterate() takes a pointer to a non-optional component.");
 
-		typename GetType* const component_ptr = nullptr;
+		GetType* const component_ptr = nullptr;
 
 		if (qr.component_offset >= 0) {
 			typename ComponentFirst::GetType component = ComponentFirst::Get(*this, qr, entity_index);
@@ -335,3 +337,5 @@ void ECSManager::iterateInternal(Callback&& callback, const ECSQueryResult* (&qu
 		++count;
 	}
 }
+
+NS_END

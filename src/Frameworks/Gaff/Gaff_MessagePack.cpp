@@ -44,10 +44,14 @@ bool MessagePackNode::operator!=(const MessagePackNode& rhs) const
 	return _node.data != rhs._node.data || _node.tree != rhs._node.tree;
 }
 
+MessagePackNode MessagePackNode::operator[](const char8_t* key) const
+{
+	return getObject(key);
+}
+
 MessagePackNode MessagePackNode::operator[](const char* key) const
 {
-	GAFF_ASSERT(isObject());
-	return MessagePackNode(mpack_node_map_cstr_optional(_node, key));
+	return getObject(key);
 }
 
 MessagePackNode MessagePackNode::operator[](int32_t index) const
@@ -150,10 +154,15 @@ bool MessagePackNode::isNull(void) const
 	return _node.data->type == mpack_type_nil;
 }
 
+MessagePackNode MessagePackNode::getObject(const char8_t* key) const
+{
+	return getObject(reinterpret_cast<const char*>(key));
+}
+
 MessagePackNode MessagePackNode::getObject(const char* key) const
 {
 	GAFF_ASSERT(isObject());
-	return MessagePackNode(mpack_node_map_cstr_optional(_node, key));
+	return MessagePackNode(mpack_node_map_cstr_optional(_node, reinterpret_cast<const char*>(key)));
 }
 
 MessagePackNode MessagePackNode::getObject(int32_t index) const
@@ -162,27 +171,36 @@ MessagePackNode MessagePackNode::getObject(int32_t index) const
 	return MessagePackNode(mpack_node_map_value_at(_node, static_cast<size_t>(index)));
 }
 
-const char* MessagePackNode::getKey(char* buffer, size_t buf_size, int32_t index) const
+const char8_t* MessagePackNode::getKey(char8_t* buffer, size_t buf_size, int32_t index) const
 {
 	GAFF_ASSERT(isObject() && index < size());
 
 	mpack_node_t node = mpack_node_map_key_at(_node, static_cast<size_t>(index));
 	GAFF_ASSERT(node.data->type == mpack_type_str);
 
-	mpack_node_copy_utf8(node, buffer, buf_size);
+	mpack_node_copy_utf8(node, reinterpret_cast<char*>(buffer), buf_size);
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 
 	return buffer;
 }
 
-const char* MessagePackNode::getKey(int32_t index) const
+const char8_t* MessagePackNode::getKey(int32_t index) const
 {
 	GAFF_ASSERT(isObject() && index < size());
 
 	mpack_node_t node = mpack_node_map_key_at(_node, static_cast<size_t>(index));
 	GAFF_ASSERT(node.data->type == mpack_type_str);
 
-	const char* const ret = mpack_node_utf8_cstr_alloc(node, node.data->len + 1);
+	const size_t size = static_cast<size_t>(_node.data->len + 1);
+	char8_t* const ret = reinterpret_cast<char8_t*>(MPACK_MALLOC(size));
+
+	if (ret) {
+		mpack_node_copy_utf8(_node, reinterpret_cast<char*>(ret), size);
+		ret[size - 1] = 0;
+	} else {
+		mpack_node_flag_error(_node, mpack_error_memory);
+	}
+
 	GAFF_ASSERT(node.tree->error == mpack_ok);
 
 	return ret;
@@ -194,9 +212,9 @@ MessagePackNode MessagePackNode::getValue(int32_t index) const
 	return MessagePackNode(mpack_node_map_value_at(_node, static_cast<size_t>(index)));
 }
 
-void MessagePackNode::freeString(const char* str) const
+void MessagePackNode::freeString(const char8_t* str) const
 {
-	MPACK_FREE(const_cast<char*>(str));
+	MPACK_FREE(const_cast<char8_t*>(str));
 }
 
 int32_t MessagePackNode::size(void) const
@@ -212,7 +230,7 @@ int32_t MessagePackNode::size(void) const
 	return static_cast<int32_t>(mpack_node_map_count(_node));
 }
 
-const char* MessagePackNode::getString(char* buffer, size_t buf_size, const char* default_value) const
+const char8_t* MessagePackNode::getString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const
 {
 	GAFF_ASSERT(isString() || isNull());
 
@@ -220,13 +238,13 @@ const char* MessagePackNode::getString(char* buffer, size_t buf_size, const char
 		return default_value;
 	}
 
-	mpack_node_copy_utf8(_node, buffer, buf_size);
+	mpack_node_copy_utf8(_node, reinterpret_cast<char*>(buffer), buf_size);
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 
 	return buffer;
 }
 
-const char* MessagePackNode::getString(const char* default_value) const
+const char8_t* MessagePackNode::getString(const char8_t* default_value) const
 {
 	GAFF_ASSERT(isString() || isNull());
 
@@ -234,9 +252,17 @@ const char* MessagePackNode::getString(const char* default_value) const
 		return default_value;
 	}
 
-	const char* const ret = mpack_node_utf8_cstr_alloc(_node, _node.data->len + 1);
-	GAFF_ASSERT(_node.tree->error == mpack_ok);
+	const size_t size = static_cast<size_t>(_node.data->len + 1);
+	char8_t* const ret = reinterpret_cast<char8_t*>(MPACK_MALLOC(size));
 
+	if (ret) {
+		mpack_node_copy_utf8(_node, reinterpret_cast<char*>(ret), size);
+		ret[size - 1] = 0;
+	} else {
+		mpack_node_flag_error(_node, mpack_error_memory);
+	}
+
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return ret;
 }
 
@@ -390,21 +416,29 @@ bool MessagePackNode::getBool(bool default_value) const
 	return ret;
 }
 
-const char* MessagePackNode::getString(char* buffer, size_t buf_size) const
+const char8_t* MessagePackNode::getString(char8_t* buffer, size_t buf_size) const
 {
 	GAFF_ASSERT(isString());
-	mpack_node_copy_utf8(_node, buffer, buf_size);
+	mpack_node_copy_utf8(_node, reinterpret_cast<char*>(buffer), buf_size);
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return buffer;
 }
 
-const char* MessagePackNode::getString(void) const
+const char8_t* MessagePackNode::getString(void) const
 {
 	GAFF_ASSERT(isString());
 
-	const char* const ret = mpack_node_utf8_cstr_alloc(_node, _node.data->len + 1);
-	GAFF_ASSERT(_node.tree->error == mpack_ok);
+	const size_t size = static_cast<size_t>(_node.data->len + 1);
+	char8_t* const ret = reinterpret_cast<char8_t*>(MPACK_MALLOC(size));
 
+	if (ret) {
+		mpack_node_copy_utf8(_node, reinterpret_cast<char*>(ret), size);
+		ret[size - 1] = 0;
+	} else {
+		mpack_node_flag_error(_node, mpack_error_memory);
+	}
+
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return ret;
 }
 
@@ -553,9 +587,9 @@ bool MessagePackReader::parse(const char* buffer, size_t size, bool take_ownersh
 	return _tree.error == mpack_ok;
 }
 
-bool MessagePackReader::openFile(const char* file)
+bool MessagePackReader::openFile(const char8_t* file)
 {
-	mpack_tree_init_filename(&_tree, file, 0);
+	mpack_tree_init_filename(&_tree, reinterpret_cast<const char*>(file), 0);
 
 	if (_tree.error != mpack_ok) {
 		return false;
@@ -597,9 +631,9 @@ bool MessagePackWriter::init(char* buffer, size_t size)
 	return _writer.error == mpack_ok;
 }
 
-bool MessagePackWriter::init(const char* filename)
+bool MessagePackWriter::init(const char8_t* filename)
 {
-	mpack_writer_init_filename(&_writer, filename);
+	mpack_writer_init_filename(&_writer, reinterpret_cast<const char*>(filename));
 	return _writer.error == mpack_ok;
 }
 
@@ -613,20 +647,20 @@ size_t MessagePackWriter::size(void) const
 	return mpack_writer_buffer_used(const_cast<mpack_writer_t*>(&_writer));
 }
 
-void MessagePackWriter::writeUTF8(const char* key, const char* value)
+void MessagePackWriter::writeUTF8(const char8_t* key, const char8_t* value)
 {
-	mpack_write_cstr(&_writer, key);
-	mpack_write_utf8_cstr_or_nil(&_writer, value);
+	mpack_write_utf8_cstr(&_writer, reinterpret_cast<const char*>(key));
+	mpack_write_utf8_cstr_or_nil(&_writer, reinterpret_cast<const char*>(value));
 }
 
-void MessagePackWriter::writeUTF8(const char* value)
+void MessagePackWriter::writeUTF8(const char8_t* value)
 {
-	mpack_write_utf8_cstr_or_nil(&_writer, value);
+	mpack_write_utf8_cstr_or_nil(&_writer, reinterpret_cast<const char*>(value));
 }
 
-void MessagePackWriter::writeKey(const char* value)
+void MessagePackWriter::writeKey(const char8_t* value)
 {
-	mpack_write_cstr(&_writer, value);
+	mpack_write_cstr(&_writer, reinterpret_cast<const char*>(value));
 }
 
 void MessagePackWriter::writeTrue(void)

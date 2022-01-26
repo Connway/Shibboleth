@@ -53,6 +53,6 @@ public:
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(Resource, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::Resource, T)
 
 #include "Shibboleth_ResourceComponent.inl"

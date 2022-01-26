@@ -81,6 +81,6 @@ void Broadcaster::broadcast(const Message& message)
 		}
 	};
 
-	Gaff::JobData data{ func, nullptr };
+	Gaff::JobData data = { func, nullptr };
 	_job_pool->addJobs(&data, 1, &_counter);
 }

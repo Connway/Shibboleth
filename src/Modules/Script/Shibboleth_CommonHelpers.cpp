@@ -21,23 +21,23 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CommonHelpers.h"
-#include <Shibboleth_ReflectionInterfaces.h>
+#include <Shibboleth_IReflectionFunction.h>
+#include <Shibboleth_IReflection.h>
 #include <Shibboleth_HashString.h>
-#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
 TableState::~TableState(void)
 {
 	for (auto& pair : array_entries) {
-		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference)) {
 			pair.second.ref_def->destroyInstance(pair.second.value.vp);
 			SHIB_FREE(pair.second.value.vp, GetAllocator());
 		}
 	}
 
 	for (auto& pair : key_values) {
-		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+		if (pair.second.ref_def && !pair.second.ref_def->isBuiltIn() && !pair.second.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference)) {
 			pair.second.ref_def->destroyInstance(pair.second.value.vp);
 			SHIB_FREE(pair.second.value.vp, GetAllocator());
 		}
@@ -46,9 +46,9 @@ TableState::~TableState(void)
 
 
 
-void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference)
+void FreeDifferentType(Refl::FunctionStackEntry& entry, const Refl::IReflectionDefinition& new_ref_def, bool new_is_reference)
 {
-	const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
+	const bool is_reference = entry.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference);
 
 	if (entry.ref_def && ((entry.ref_def != &new_ref_def) || (is_reference != new_is_reference))) {
 		if (!is_reference && !entry.ref_def->isBuiltIn()) {
@@ -62,10 +62,10 @@ void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionD
 	}
 }
 
-void CopyUserType(const Gaff::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
+void CopyUserType(const Refl::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
 {
 	U8String ctor_sig(allocator);
-	ctor_sig.append_sprintf("const %s&", ref_def.getReflectionInstance().getName());
+	ctor_sig.append_sprintf(u8"const %s&", ref_def.getReflectionInstance().getName());
 
 	const HashStringView64<> hash(ctor_sig);
 
@@ -86,7 +86,7 @@ void CopyUserType(const Gaff::IReflectionDefinition& ref_def, const void* value,
 	cast_ctor(dest, value);
 }
 
-void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
+void CopyUserType(const Refl::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator)
 {
 	CopyUserType(*entry.ref_def, entry.value.vp, dest, old_value_is_valid, allocator);
 }

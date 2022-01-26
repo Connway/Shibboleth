@@ -29,17 +29,15 @@ THE SOFTWARE.
 #include "Shibboleth_Reflection.h"
 
 NS_GAFF
-	class IEnumReflectionDefinition;
-	class IReflectionDefinition;
 	class JSON;
 
-	template <class Allocator>
-	class FileWatcherManager;
+	//template <class Allocator>
+	//class FileWatcherManager;
 NS_END
 
 NS_SHIBBOLETH
 
-using FileWatcherManager = Gaff::FileWatcherManager<ProxyAllocator>;
+//using FileWatcherManager = Gaff::FileWatcherManager<ProxyAllocator>;
 
 class ReflectionManager;
 class IFileSystem;
@@ -62,44 +60,44 @@ public:
 	const T& getManagerTFast(void) const
 	{
 		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		return *static_cast<T*>(getManager(Reflection::Reflection<T>::GetHash()));
+		return *static_cast<T*>(getManager(Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	T& getManagerTFast(void)
 	{
 		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		return *static_cast<T*>(getManager(Reflection::Reflection<T>::GetHash()));
+		return *static_cast<T*>(getManager(Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	const T& getManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name) const
 	{
 		const IManager* const manager = getManager(manager_name);
-		return *Reflection::InterfaceCast<T>(*manager, interface_name);
+		return *Refl::InterfaceCast<T>(*manager, interface_name);
 	}
 
 	template <class T>
 	T& getManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
 	{
 		IManager* const manager = getManager(manager_name);
-		return *Reflection::InterfaceCast<T>(*manager, interface_name);
+		return *Refl::InterfaceCast<T>(*manager, interface_name);
 	}
 
 	template <class T>
 	const T& getManagerT(void) const
 	{
 		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		const IManager* const manager = getManager(Reflection::Reflection<T>::GetHash());
-		return *Reflection::ReflectionCast<T>(*manager);
+		const IManager* const manager = getManager(Refl::Reflection<T>::GetHash());
+		return *Refl::ReflectionCast<T>(*manager);
 	}
 
 	template <class T>
 	T& getManagerT(void)
 	{
 		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		IManager* const manager = getManager(Reflection::Reflection<T>::GetHash());
-		return *Reflection::ReflectionCast<T>(*manager);
+		IManager* const manager = getManager(Refl::Reflection<T>::GetHash());
+		return *Refl::ReflectionCast<T>(*manager);
 	}
 
 	IApp(void) {}

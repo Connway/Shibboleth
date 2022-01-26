@@ -244,7 +244,7 @@ bool ReflectionDefinition<T>::VarPtr<Var>::load(const Shibboleth::ISerializeRead
 		bool success = true;
 
 		for (int32_t i = 0; i < num_entries; ++i) {
-			const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
+			const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 			const int32_t flag_index = ref_def.getEntryValue(i);
 
 			const auto guard = reader.enterElementGuard(flag_name.getBuffer());
@@ -261,7 +261,7 @@ bool ReflectionDefinition<T>::VarPtr<Var>::load(const Shibboleth::ISerializeRead
 		return success;
 
 	} else {
-		return Reflection<Var>::Load(reader, *var);
+		return Reflection<Var>::GetInstance().load(reader, *var);
 	}
 }
 
@@ -279,7 +279,7 @@ void ReflectionDefinition<T>::VarPtr<Var>::save(Shibboleth::ISerializeWriter& wr
 		const int32_t num_entries = ref_def.getNumEntries();
 
 		for (int32_t i = 0; i < num_entries; ++i) {
-			const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
+			const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 			const int32_t flag_index = ref_def.getEntryValue(i);
 			const bool value = var->testAll(static_cast<Enum>(flag_index));
 
@@ -287,7 +287,7 @@ void ReflectionDefinition<T>::VarPtr<Var>::save(Shibboleth::ISerializeWriter& wr
 		}
 
 	} else {
-		Reflection<Var>::Save(writer, *var);
+		Reflection<Var>::GetInstance().save(writer, *var);
 	}
 }
 
@@ -485,7 +485,7 @@ bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibbole
 
 	VarType var;
 		
-	if (!Reflection<RetType>::Load(reader, var)) {
+	if (!Reflection<RetType>::GetInstance().load(reader, var)) {
 		return false;
 	}
 
@@ -498,7 +498,7 @@ template <class Ret, class Var>
 void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	GAFF_ASSERT(_getter);
-	Reflection<RetType>::Save(writer, callGetter(object));
+	Reflection<RetType>::GetInstance().save(writer, callGetter(object));
 }
 
 template <class T>
@@ -615,11 +615,11 @@ bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISeri
 
 	if constexpr (std::is_reference<Ret>::value) {
 		RetType& val = const_cast<RetType&>(callGetter(object));
-		return Reflection<RetType>::Load(reader, val);
+		return Reflection<RetType>::GetInstance().load(reader, val);
 
 	} else {
 		RetType* const val = const_cast<RetType*>(callGetter(object));
-		return Reflection<RetType>::Load(reader, *val);
+		return Reflection<RetType>::GetInstance().load(reader, *val);
 	}
 }
 
@@ -631,11 +631,11 @@ void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeW
 
 	if constexpr (std::is_reference<Ret>::value) {
 		const RetType& val = callGetter(object);
-		Reflection<RetType>::Save(writer, val);
+		Reflection<RetType>::GetInstance().save(writer, val);
 
 	} else {
 		const RetType* const val = callGetter(object);
-		Reflection<RetType>::Save(writer, *val);
+		Reflection<RetType>::GetInstance().save(writer, *val);
 	}
 }
 
@@ -1019,7 +1019,7 @@ bool ReflectionDefinition<T>::ArrayPtr<Var, array_size>::load(const Shibboleth::
 
 	for (int32_t i = 0; i < size; ++i) {
 		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
-		success = success && Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+		success = success && Reflection<Var>::GetInstance().load(reader, (object.*_ptr)[i]);
 	}
 
 	return success;
@@ -1033,7 +1033,7 @@ void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::save(Shibboleth::ISeria
 	writer.startArray(static_cast<uint32_t>(array_size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		Reflection<Var>::Save(writer, (object.*_ptr)[i]);
+		Reflection<Var>::GetInstance().save(writer, (object.*_ptr)[i]);
 	}
 
 	writer.endArray();
@@ -1228,7 +1228,7 @@ bool ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::load(const Shibbole
 
 	for (int32_t i = 0; i < size; ++i) {
 		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
-		success = success && Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+		success = success && Reflection<Var>::GetInstance().load(reader, (object.*_ptr)[i]);
 	}
 
 	return success;
@@ -1242,7 +1242,7 @@ void ReflectionDefinition<T>::VectorPtr<Var, Vec_Allocator>::save(Shibboleth::IS
 	writer.startArray(static_cast<uint32_t>(size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		Reflection<Var>::Save(writer, (object.*_ptr)[i]);
+		Reflection<Var>::GetInstance().save(writer, (object.*_ptr)[i]);
 	}
 
 	writer.endArray();
@@ -1448,15 +1448,15 @@ bool ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::load(c
 		Key key;
 
 		{
-			Shibboleth::ScopeGuard guard_key = reader.enterElementGuard("key");
-			key_loaded = Reflection<Key>::Load(reader, key);
+			Shibboleth::ScopeGuard guard_key = reader.enterElementGuard(u8"key");
+			key_loaded = Reflection<Key>::GetInstance().load(reader, key);
 			success = success && key_loaded;
 		}
 
 		if (key_loaded)
 		{
-			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard("value");
-			success = success && Reflection<Value>::Load(reader, (object.*_ptr)[key]);
+			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard(u8"value");
+			success = success && Reflection<Value>::GetInstance().load(reader, (object.*_ptr)[key]);
 		}
 	}
 
@@ -1473,11 +1473,11 @@ void ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::save(S
 	for (int32_t i = 0; i < size; ++i) {
 		writer.startObject(2);
 
-		writer.writeKey("key");
-		Reflection<Key>::Save(writer, (object.*_ptr).at(i).first);
+		writer.writeKey(u8"key");
+		Reflection<Key>::GetInstance().save(writer, (object.*_ptr).at(i).first);
 
-		writer.writeKey("value");
-		Reflection<Value>::Save(writer, (object.*_ptr).at(i).second);
+		writer.writeKey(u8"value");
+		Reflection<Value>::GetInstance().save(writer, (object.*_ptr).at(i).second);
 
 		writer.endObject();
 	}
@@ -1496,7 +1496,7 @@ T* ReflectionDefinition<T>::create(Args&&... args) const
 }
 
 template <class T>
-const char* ReflectionDefinition<T>::getFriendlyName(void) const
+const char8_t* ReflectionDefinition<T>::getFriendlyName(void) const
 {
 	return _friendly_name.data();
 }
@@ -1522,11 +1522,11 @@ bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T
 	} else {
 		for (auto& entry : _vars) {
 			if (entry.second->canSerialize()) {
-				const char* const name = entry.first.getBuffer();
+				const char8_t* const name = entry.first.getBuffer();
 
 				if (!reader.exists(name)) {
 					// I don't like this method of determining something as optional.
-					const auto* const attr = getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("OptionalAttribute"));
+					const auto* const attr = getVarAttr<IAttribute>(Gaff::FNV1aHash32String(name), Gaff::FNV1aHash64Const("Shibboleth::OptionalAttribute"));
 
 					if (!attr) {
 						// $TODO: Log error.
@@ -1565,7 +1565,7 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T
 		// Write out the object.
 		writer.startObject(writable_vars + 1);
 
-		writer.writeUInt64("version", getReflectionInstance().getVersion().getHash());
+		writer.writeUInt64(u8"version", getReflectionInstance().getVersion().getHash());
 
 		for (auto& entry : _vars) {
 			if (entry.second->canSerialize()) {
@@ -1587,7 +1587,7 @@ Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const void* object, Gaff::
 template <class T>
 Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const T& object, Gaff::Hash64 init) const
 {
-	return (_instance_hash) ? _instance_hash(object, init) : FNV1aHash64T(object, init);
+	return (_instance_hash) ? _instance_hash(object, init) : Gaff::FNV1aHash64T(object, init);
 }
 
 template <class T>
@@ -1698,7 +1698,7 @@ template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return HashStringView32<>((_vars.begin() + index)->first);
+	return Shibboleth::HashStringView32<>((_vars.begin() + index)->first);
 }
 
 template <class T>
@@ -1742,7 +1742,7 @@ template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
-	return HashStringView32<>((_funcs.begin() + index)->first);
+	return Shibboleth::HashStringView32<>((_funcs.begin() + index)->first);
 }
 
 template <class T>
@@ -1780,7 +1780,7 @@ template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getStaticFuncName(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
-	return HashStringView32<>((_static_funcs.begin() + index)->first);
+	return Shibboleth::HashStringView32<>((_static_funcs.begin() + index)->first);
 }
 
 template <class T>
@@ -2041,7 +2041,7 @@ template <class T>
 void ReflectionDefinition<T>::destroyInstance(void* data) const
 {
 	T* const instance = reinterpret_cast<T*>(data);
-	Deconstruct(instance);
+	Gaff::Deconstruct(instance);
 }
 
 template <class T>
@@ -2059,7 +2059,7 @@ typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(Gaff::H
 }
 
 template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::friendlyName(const char* name)
+ReflectionDefinition<T>& ReflectionDefinition<T>::friendlyName(const char8_t* name)
 {
 	_friendly_name = name;
 	return *this;
@@ -2067,11 +2067,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::friendlyName(const char* name)
 
 template <class T>
 template <class Base>
-ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char* name)
+ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char8_t* name)
 {
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
-	const ptrdiff_t offset = OffsetOfClass<T, Base>();
+	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
 			Shibboleth::HashString64<>(name, _allocator),
@@ -2097,7 +2097,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 	}
 
 	// Add vars, funcs, and static funcs and attrs from base class.
-	if (Reflection<Base>::IsDefined()) {
+	if (Reflection<Base>::GetInstance().isDefined()) {
 		const ReflectionDefinition<Base>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
 
 		// For calling base class functions.
@@ -2251,7 +2251,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 		++_dependents_remaining;
 
 		eastl::function<void (void)> cb(&RegisterBaseVariables<Base>);
-		Reflection<Base>::RegisterOnDefinedCallback(std::move(cb));
+		Reflection<Base>::GetInstance().registerOnDefinedCallback(std::move(cb));
 	}
 
 	return *this;
@@ -2284,12 +2284,13 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(void)
 
 template <class T>
 template <class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
 	static_assert(Reflection<Var>::HasReflection, "Var type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
@@ -2298,7 +2299,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2310,20 +2311,29 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 }
 
 template <class T>
+template <class Var, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, ptr, attributes...);
+}
+
+template <class T>
 template <class Enum, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::*ptr, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes)
 {
 	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
 	static_assert(Reflection<Enum>::HasReflection, "Enum is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(SHIB_ALLOCT(VarPtr< Flags<Enum> >, _allocator, ptr))
+		IVarPtr(SHIB_ALLOCT(VarPtr< Gaff::Flags<Enum> >, _allocator, ptr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -2337,11 +2347,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 	const int32_t num_entries = ref_def.getNumEntries();
 
 	for (int32_t i = 0; i < num_entries; ++i) {
-		const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
+		const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 		const int32_t flag_index = ref_def.getEntryValue(i);
 
 		Shibboleth::U8String flag_path(_allocator);
-		flag_path.append_sprintf("%s/%s", name, flag_name.getBuffer());
+		flag_path.append_sprintf(u8"%s/%s", name, flag_name.getBuffer());
 
 		eastl::pair<Shibboleth::HashString32<>, IVarPtr> flag_pair(
 			Shibboleth::HashString32<>(flag_path),
@@ -2356,8 +2366,16 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 }
 
 template <class T>
+template <class Enum, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, ptr, attributes...);
+}
+
+template <class T>
 template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
 	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
 
@@ -2371,6 +2389,64 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 
 	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
 	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
+
+	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
+		using PtrType = VarFuncPtr<Ret, Var>;
+
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
+		);
+	} else {
+		using PtrType = VarFuncPtrWithCache<Ret, Var>;
+
+		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
+		);
+	}
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+	return *this;
+}
+
+template <class T>
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, getter, setter, attributes...);
+}
+
+template <class T>
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
+{
+	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
+
+	using RetNoRef = typename std::remove_reference<Ret>::type;
+	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
+	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
+
+	using VarNoRef = typename std::remove_reference<Var>::type;
+	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
+
+	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
+	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
 
@@ -2407,58 +2483,19 @@ template <class T>
 template <class Ret, class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
 {
-	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
-
-	using RetNoRef = typename std::remove_reference<Ret>::type;
-	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
-	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-
-	using VarNoRef = typename std::remove_reference<Var>::type;
-	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-
-	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
-	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
-
-	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
-		using PtrType = VarFuncPtr<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	} else {
-		using PtrType = VarFuncPtrWithCache<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	}
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
-	}
-
-	_vars.insert(std::move(pair));
-	return *this;
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, getter, setter, attributes...);
 }
 
 template <class T>
 template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
 	static_assert(Reflection<Var>::HasReflection, "Vector data type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
@@ -2481,13 +2518,22 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 }
 
 template <class T>
+template <class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, vec, attributes...);
+}
+
+template <class T>
 template <class Var, size_t array_size, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
 	static_assert(Reflection<Var>::HasReflection, "Array data type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using PtrType = ArrayPtr<Var, array_size>;
 
@@ -2510,8 +2556,16 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 }
 
 template <class T>
+template <class Var, size_t array_size, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, arr, attributes...);
+}
+
+template <class T>
 template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
 {
 	static_assert(!std::is_reference<Key>::value, "Cannot reflect references.");
 	static_assert(!std::is_pointer<Key>::value, "Cannot reflect pointers.");
@@ -2522,6 +2576,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_siz
 	static_assert(!std::is_pointer<Value>::value, "Cannot reflect pointers.");
 	static_assert(!std::is_const<Value>::value, "Cannot reflect const values.");
 	static_assert(Reflection<Value>::HasReflection, "Value data type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using PtrType = VectorMapPtr<Key, Value, VecMap_Allocator>;
 
@@ -2544,11 +2599,21 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char(&name)[name_siz
 }
 
 template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
+template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes)
 {
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return var(temp_name, vec_map, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
+{
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(FNV1aHash32Const(name));
+	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
@@ -2605,10 +2670,20 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 
 template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
+{
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(FNV1aHash32Const(name));
+	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
@@ -2664,8 +2739,18 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 
 template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
+{
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _static_funcs.find(Gaff::FNV1aHash32Const(name));
 
@@ -2713,280 +2798,288 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[
 }
 
 template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return staticFunc(temp_name, func, attributes...);
+}
+
+template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opAdd(void)
 {
-	staticFunc(OP_ADD_NAME, Add<T, Other>);
-	return staticFunc(OP_ADD_NAME, Add<Other, T>);
+	staticFunc(OP_ADD_NAME, Gaff::Add<T, Other>);
+	return staticFunc(OP_ADD_NAME, Gaff::Add<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opSub(void)
 {
-	staticFunc(OP_SUB_NAME, Sub<T, Other>);
-	return staticFunc(OP_SUB_NAME, Sub<Other, T>);
+	staticFunc(OP_SUB_NAME, Gaff::Sub<T, Other>);
+	return staticFunc(OP_SUB_NAME, Gaff::Sub<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opMul(void)
 {
-	staticFunc(OP_MUL_NAME, Mul<T, Other>);
-	return staticFunc(OP_MUL_NAME, Mul<Other, T>);
+	staticFunc(OP_MUL_NAME, Gaff::Mul<T, Other>);
+	return staticFunc(OP_MUL_NAME, Gaff::Mul<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opDiv(void)
 {
-	staticFunc(OP_DIV_NAME, Div<T, Other>);
-	return staticFunc(OP_DIV_NAME, Div<Other, T>);
+	staticFunc(OP_DIV_NAME, Gaff::Div<T, Other>);
+	return staticFunc(OP_DIV_NAME, Gaff::Div<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opMod(void)
 {
-	staticFunc(OP_MOD_NAME, Mod<T, Other>);
-	return staticFunc(OP_MOD_NAME, Mod<Other, T>);
+	staticFunc(OP_MOD_NAME, Gaff::Mod<T, Other>);
+	return staticFunc(OP_MOD_NAME, Gaff::Mod<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitAnd(void)
 {
-	staticFunc(OP_BIT_AND_NAME, BitAnd<T, Other>);
-	return staticFunc(OP_BIT_AND_NAME, BitAnd<Other, T>);
+	staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, Other>);
+	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitOr(void)
 {
-	staticFunc(OP_BIT_OR_NAME, BitOr<T, Other>);
-	return staticFunc(OP_BIT_OR_NAME, BitOr<Other, T>);
+	staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, Other>);
+	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitXor(void)
 {
-	staticFunc(OP_BIT_XOR_NAME, BitXor<T, Other>);
-	return staticFunc(OP_BIT_XOR_NAME, BitXor<Other, T>);
+	staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, Other>);
+	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeft(void)
 {
-	staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<Other, T>);
+	staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRight(void)
 {
-	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<Other, T>);
+	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opAnd(void)
 {
-	staticFunc(OP_LOGIC_AND_NAME, LogicAnd<T, Other>);
-	return staticFunc(OP_LOGIC_AND_NAME, LogicAnd<Other, T>);
+	staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, Other>);
+	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opOr(void)
 {
-	staticFunc(OP_LOGIC_OR_NAME, LogicOr<T, Other>);
-	return staticFunc(OP_LOGIC_OR_NAME, LogicOr<Other, T>);
+	staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, Other>);
+	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opEqual(void)
 {
-	staticFunc(OP_EQUAL_NAME, Equal<T, Other>);
-	return staticFunc(OP_EQUAL_NAME, Equal<Other, T>);
+	staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, Other>);
+	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThan(void)
 {
-	staticFunc(OP_LESS_THAN_NAME, LessThan<T, Other>);
-	return staticFunc(OP_LESS_THAN_NAME, LessThan<Other, T>);
+	staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, Other>);
+	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThan(void)
 {
-	staticFunc(OP_GREATER_THAN_NAME, GreaterThan<T, Other>);
-	return staticFunc(OP_GREATER_THAN_NAME, GreaterThan<Other, T>);
+	staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, Other>);
+	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThanOrEqual(void)
 {
-	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<T, Other>);
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<Other, T>);
+	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, Other>);
+	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<Other, T>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThanOrEqual(void)
 {
-	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<T, Other>);
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<Other, T>);
+	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, Other>);
+	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<Other, T>);
 }
 
 template <class T>
 template <class... Args>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opCall(void)
 {
-	return staticFunc(OP_CALL_NAME, Call<T, Args...>);
+	return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opIndex(void)
 {
-	return staticFunc(OP_INDEX_NAME, Index<T, Other>);
+	return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opAdd(void)
 {
-	return staticFunc(OP_ADD_NAME, Add<T, T>);
+	return staticFunc(OP_ADD_NAME, Gaff::Add<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opSub(void)
 {
-	return staticFunc(OP_SUB_NAME, Sub<T, T>);
+	return staticFunc(OP_SUB_NAME, Gaff::Sub<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opMul(void)
 {
-	return staticFunc(OP_MUL_NAME, Mul<T, T>);
+	return staticFunc(OP_MUL_NAME, Gaff::Mul<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opDiv(void)
 {
-	return staticFunc(OP_DIV_NAME, Div<T, T>);
+	return staticFunc(OP_DIV_NAME, Gaff::Div<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opMod(void)
 {
-	return staticFunc(OP_MOD_NAME, Mod<T, T>);
+	return staticFunc(OP_MOD_NAME, Gaff::Mod<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitAnd(void)
 {
-	return staticFunc(OP_BIT_AND_NAME, BitAnd<T, T>);
+	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitOr(void)
 {
-	return staticFunc(OP_BIT_OR_NAME, BitOr<T, T>);
+	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitXor(void)
 {
-	return staticFunc(OP_BIT_XOR_NAME, BitXor<T, T>);
+	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitNot(void)
 {
-	return staticFunc(OP_BIT_NOT_NAME, BitNot<T>);
+	return staticFunc(OP_BIT_NOT_NAME, Gaff::BitNot<T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeft(void)
 {
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, BitShiftLeft<T, T>);
+	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRight(void)
 {
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, BitShiftRight<T, T>);
+	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opAnd(void)
 {
-	return staticFunc(OP_LOGIC_AND_NAME, LogicAnd<T, T>);
+	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opOr(void)
 {
-	return staticFunc(OP_LOGIC_OR_NAME, LogicOr<T, T>);
+	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opEqual(void)
 {
-	return staticFunc(OP_EQUAL_NAME, Equal<T, T>);
+	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThan(void)
 {
-	return staticFunc(OP_LESS_THAN_NAME, LessThan<T, T>);
+	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThan(void)
 {
-	return staticFunc(OP_GREATER_THAN_NAME, GreaterThan<T, T>);
+	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThanOrEqual(void)
 {
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, LessThanOrEqual<T, T>);
+	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThanOrEqual(void)
 {
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, GreaterThanOrEqual<T, T>);
+	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opMinus(void)
 {
-	return staticFunc(OP_MINUS_NAME, Minus<T>);
+	return staticFunc(OP_MINUS_NAME, Gaff::Minus<T>);
 }
 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opPlus(void)
 {
-	return staticFunc(OP_PLUS_NAME, Plus<T>);
+	return staticFunc(OP_PLUS_NAME, Gaff::Plus<T>);
 }
 
 template <class T>
-template <int32_t (*to_string_func)(const T&, char*, int32_t)>
+template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opToString()
 {
-	staticFunc(OP_TO_STRING_NAME, ToStringHelper<T, to_string_func>);
+	staticFunc(OP_TO_STRING_NAME, Gaff::ToStringHelper<T, to_string_func>);
 	return staticFunc(OP_TO_STRING_NAME, to_string_func);
 }
 

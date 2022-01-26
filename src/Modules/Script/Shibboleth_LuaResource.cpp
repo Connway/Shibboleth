@@ -28,16 +28,16 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(LuaResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
 	.classAttrs(
-		//ResExtAttribute(".lua.bin"),
-		ResExtAttribute(".lua"),
-		MakeLoadFileCallbackAttribute(&LuaResource::loadScript)
+		//Shibboleth::ResExtAttribute(u8".lua.bin"),
+		Shibboleth::ResExtAttribute(u8".lua"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::LuaResource::loadScript)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(LuaResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaResource)
 
 NS_SHIBBOLETH
 

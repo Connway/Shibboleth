@@ -21,12 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaHelpers.h"
+#include "Shibboleth_CommonHelpers.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
+//#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_Flags.h>
+//#include <Shibboleth_IApp.h>
+//#include <Gaff_Flags.h>
 #include <Gaff_Math.h>
 
 namespace
@@ -41,7 +42,7 @@ namespace
 
 	static Shibboleth::ProxyAllocator g_allocator("Lua");
 
-	class LuaTypeInstanceAllocator final : public Gaff::IFunctionStackAllocator
+	class LuaTypeInstanceAllocator final : public Refl::IFunctionStackAllocator
 	{
 	public:
 		LuaTypeInstanceAllocator(lua_State* state):
@@ -99,7 +100,7 @@ namespace
 			return g_allocator.alloc(size_bytes, file, line);
 		}
 
-		void* alloc(const Gaff::IReflectionDefinition& ref_def) override
+		void* alloc(const Refl::IReflectionDefinition& ref_def) override
 		{
 			Shibboleth::UserData* const value = Shibboleth::PushUserType(_state, ref_def);
 			return value->getData();
@@ -125,24 +126,27 @@ namespace
 			switch (lua_type(state, i + 1)) {
 				case LUA_TNONE:
 				case LUA_TNIL:
-					final_string += "nil";
+					final_string += u8"nil";
 					break;
 
 				case LUA_TBOOLEAN:
-					final_string += (lua_toboolean(state, i + 1)) ? "true" : "false";
+					final_string += (lua_toboolean(state, i + 1)) ? u8"true" : u8"false";
 					break;
 
 				case LUA_TNUMBER:
 					if (lua_isinteger(state, i + 1)) {
-						final_string.append_sprintf("%lli", luaL_checkinteger(state, i + 1));
+						final_string.append_sprintf(u8"%lli", luaL_checkinteger(state, i + 1));
 					} else {
-						final_string.append_sprintf("%f", luaL_checknumber(state, i + 1));
+						final_string.append_sprintf(u8"%f", luaL_checknumber(state, i + 1));
 					}
 					break;
 
-				case LUA_TSTRING:
-					final_string += luaL_checkstring(state, i + 1);
-					break;
+				case LUA_TSTRING: {
+					const char* const str = luaL_checkstring(state, i + 1);
+					CONVERT_STRING(char8_t, temp_str, str);
+
+					final_string += temp_str;
+				} break;
 
 				case LUA_TTABLE:
 					// $TODO: Log error.
@@ -157,22 +161,22 @@ namespace
 					lua_getmetatable(state, i + 1);
 					lua_getfield(state, -1, k_ref_def_field_name);
 
-					const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+					const auto& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
 					lua_pop(state, 2);
 
 					const Shibboleth::UserData& user_data = *reinterpret_cast<Shibboleth::UserData*>(lua_touserdata(state, i + 1));
 					const void* const object = user_data.getData();
 
-					auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
+					auto* const func = ref_def.getStaticFunc<int32_t, const void*, char8_t*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
 
 					if (func) {
-						char buffer[256];
+						char8_t buffer[256];
 						func->getFunc()(object, buffer, sizeof(buffer));
 
 						final_string += buffer;
 
 					} else {
-						final_string.append_sprintf("%p", object);
+						final_string.append_sprintf(u8"%p", object);
 					}
 
 				} break;
@@ -185,7 +189,7 @@ namespace
 
 		Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Normal, Shibboleth::k_lua_log_channel, final_string.data());
 		Gaff::DebugPrintf(final_string.data());
-		Gaff::DebugPrintf("\n");
+		Gaff::DebugPrintf(u8"\n");
 		return 0;
 	}
 
@@ -206,7 +210,7 @@ namespace
 				return 0;
 			}
 
-			const auto* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			const auto* const ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
 			Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getHash());
 
 			if (!manager) {
@@ -221,7 +225,7 @@ namespace
 		return num_args;
 	}
 
-	bool PushOrUpdateTableValue(lua_State* state, const Gaff::FunctionStackEntry& entry)
+	bool PushOrUpdateTableValue(lua_State* state, const Refl::FunctionStackEntry& entry)
 	{
 		const int32_t type = lua_type(state, -1);
 
@@ -238,13 +242,13 @@ namespace
 		}
 
 		// Get the reflection definition of the Lua type.
-		const Gaff::IReflectionDefinition* ref_def = nullptr;
+		const Refl::IReflectionDefinition* ref_def = nullptr;
 
 		if (type == LUA_TUSERDATA) {
 			lua_getmetatable(state, -1);
 			lua_getfield(state, -1, k_ref_def_field_name);
 
-			ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
 			lua_pop(state, 2);
 		}
 
@@ -265,7 +269,7 @@ namespace
 
 NS_SHIBBOLETH
 
-UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
+UserData* PushUserTypeReference(lua_State* state, const void* value, const Refl::IReflectionDefinition& ref_def)
 {
 	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, sizeof(UserData)));
 
@@ -274,13 +278,15 @@ UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff:
 	user_data->reference = const_cast<void*>(value);
 	user_data->ref_def = &ref_def;
 
-	luaL_getmetatable(state, ref_def.getFriendlyName());
+	const char8_t* name = ref_def.getFriendlyName();
+
+	luaL_getmetatable(state, reinterpret_cast<const char*>(name));
 	lua_setmetatable(state, -2);
 
 	return user_data;
 }
 
-UserData* PushUserType(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def)
+UserData* PushUserType(lua_State* state, const void* value, const Refl::IReflectionDefinition& ref_def)
 {
 	UserData* const user_data = PushUserType(state, ref_def);
 	CopyUserType(ref_def, value, user_data->getData(), false, g_allocator);
@@ -288,7 +294,7 @@ UserData* PushUserType(lua_State* state, const void* value, const Gaff::IReflect
 	return user_data;
 }
 
-UserData* PushUserType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
+UserData* PushUserType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 {
 	const size_t var_size = static_cast<size_t>(ref_def.size());
 	UserData* const user_data = reinterpret_cast<UserData*>(lua_newuserdata(state, var_size + k_alloc_size_no_reference));
@@ -298,13 +304,15 @@ UserData* PushUserType(lua_State* state, const Gaff::IReflectionDefinition& ref_
 	user_data->ref_def = &ref_def;
 	//value->root = value;
 
-	luaL_getmetatable(state, ref_def.getFriendlyName());
+	const char8_t* name = ref_def.getFriendlyName();
+
+	luaL_getmetatable(state, reinterpret_cast<const char*>(name));
 	lua_setmetatable(state, -2);
 
 	return user_data;
 }
 
-void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start, int32_t end)
+void FillArgumentStack(lua_State* state, Vector<Refl::FunctionStackEntry>& stack, int32_t start, int32_t end)
 {
 	start = Gaff::Max(start, 1);
 	end = (end < 1) ? lua_gettop(state) : Gaff::Min(end, lua_gettop(state));
@@ -316,7 +324,7 @@ void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack
 	}
 }
 
-void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& entry, bool clone_non_lua)
+void FillEntry(lua_State* state, int32_t stack_index, Refl::FunctionStackEntry& entry, bool clone_non_lua)
 {
 	const int32_t type = lua_type(state, stack_index);
 
@@ -328,45 +336,48 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 
 		case LUA_TBOOLEAN:
 			if (clone_non_lua) {
-				FreeDifferentType(entry, Reflection<bool>::GetReflectionDefinition(), false);
+				FreeDifferentType(entry, Refl::Reflection<bool>::GetReflectionDefinition(), false);
 			}
 
-			entry.ref_def = &Reflection<bool>::GetReflectionDefinition();
+			entry.ref_def = &Refl::Reflection<bool>::GetReflectionDefinition();
 			entry.value.b = lua_toboolean(state, stack_index);
 			break;
 
 		case LUA_TNUMBER:
 			if (lua_isinteger(state, stack_index)) {
 				if (clone_non_lua) {
-					FreeDifferentType(entry, Reflection<int64_t>::GetReflectionDefinition(), false);
+					FreeDifferentType(entry, Refl::Reflection<int64_t>::GetReflectionDefinition(), false);
 				}
 
-				entry.ref_def = &Reflection<int64_t>::GetReflectionDefinition();
+				entry.ref_def = &Refl::Reflection<int64_t>::GetReflectionDefinition();
 				entry.value.i64 = luaL_checkinteger(state, stack_index);
 
 			} else {
 				if (clone_non_lua) {
-					FreeDifferentType(entry, Reflection<double>::GetReflectionDefinition(), false);
+					FreeDifferentType(entry, Refl::Reflection<double>::GetReflectionDefinition(), false);
 				}
 
-				entry.ref_def = &Reflection<double>::GetReflectionDefinition();
+				entry.ref_def = &Refl::Reflection<double>::GetReflectionDefinition();
 				entry.value.d = luaL_checknumber(state, stack_index);
 			}
 			break;
 
 		case LUA_TSTRING:
 			if (clone_non_lua) {
-				FreeDifferentType(entry, Reflection<U8String>::GetReflectionDefinition(), false);
+				FreeDifferentType(entry, Refl::Reflection<U8String>::GetReflectionDefinition(), false);
 
 				if (!entry.value.vp) {
 					entry.value.vp = SHIB_ALLOCT(U8String, g_allocator);
 				}
 
-				*reinterpret_cast<U8String*>(entry.value.vp) = luaL_checkstring(state, stack_index);
-				entry.ref_def = &Reflection<U8String>::GetReflectionDefinition();
+				const char* const str = luaL_checkstring(state, stack_index);
+				CONVERT_STRING(char8_t, temp_str, str);
+
+				*reinterpret_cast<U8String*>(entry.value.vp) = temp_str;
+				entry.ref_def = &Refl::Reflection<U8String>::GetReflectionDefinition();
 
 			} else {
-				entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsString);
+				entry.flags.set(true, Refl::FunctionStackEntry::Flag::IsString);
 				entry.value.vp = const_cast<char*>(luaL_checkstring(state, stack_index));
 			}
 
@@ -381,7 +392,7 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 			//// This is a type table, only pass the ReflectionDefinition.
 			//if (is_type_table) {
 			//	lua_getfield(state, stack_index, k_ref_def_field_name);
-			//	entry.ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			//	entry.ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
 
 			//	lua_pop(state, 1);
 			//	break;
@@ -400,27 +411,27 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 			lua_getmetatable(state, stack_index);
 			lua_getfield(state, -1, k_ref_def_field_name);
 
-			const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, -1));
+			const Refl::IReflectionDefinition* const ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
 			lua_pop(state, 2);
 
 			UserData* const user_data = reinterpret_cast<UserData*>(lua_touserdata(state, stack_index));
 
 			if (clone_non_lua) {
 				const bool other_is_reference = user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference);
-				//const bool is_reference = entry.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference);
+				//const bool is_reference = entry.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference);
 
 				FreeDifferentType(entry, *ref_def, other_is_reference);
 
 				// If it's just a reference, don't worry about creating a copy of the data.
 				if (other_is_reference) {
-					entry.flags.set(true, Gaff::FunctionStackEntry::Flag::IsReference);
+					entry.flags.set(true, Refl::FunctionStackEntry::Flag::IsReference);
 					entry.value.vp = user_data->getData();
 					entry.ref_def = ref_def;
 
 				// Is not a reference, we should clone the data.
 				} else {
 					U8String ctor_sig(g_allocator);
-					ctor_sig.append_sprintf("const %s&", ref_def->getReflectionInstance().getName());
+					ctor_sig.append_sprintf(u8"const %s&", ref_def->getReflectionInstance().getName());
 
 					const HashStringView64<> hash(ctor_sig);
 
@@ -460,7 +471,7 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 				// Unnecessary, but for posterity.
 				entry.flags.set(
 					user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference),
-					Gaff::FunctionStackEntry::Flag::IsReference
+					Refl::FunctionStackEntry::Flag::IsReference
 				);
 
 				entry.value.vp = user_data->getData();
@@ -475,11 +486,11 @@ void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& 
 	}
 }
 
-int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, bool create_user_data)
+int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, bool create_user_data)
 {
 	if (ret.enum_ref_def) {
-		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
+		if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsArray)) {
+			GAFF_ASSERT_MSG(ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
 			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
 			const int32_t data_size = ret.enum_ref_def->size();
@@ -505,7 +516,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 				begin += data_size;
 			}
 
-		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+		} else if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
 
 		} else {
@@ -515,18 +526,18 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 		return 1;
 
 	// Is a string.
-	} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsString)) {
+	} else if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsString)) {
 		lua_pushstring(state, reinterpret_cast<char*>(ret.value.vp));
 
-		if (!ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+		if (!ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference)) {
 			SHIB_FREE(ret.value.vp, GetAllocator());
 		}
 
 		return 1;
 
 	} else if (ret.ref_def) {
-		if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsArray)) {
-			GAFF_ASSERT_MSG(ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
+		if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsArray)) {
+			GAFF_ASSERT_MSG(ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference), "Do not support returning arrays by value.");
 
 			const int8_t* begin = reinterpret_cast<int8_t*>(ret.value.arr.data);
 			const int32_t data_size = ret.ref_def->size();
@@ -534,10 +545,10 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 
 			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
 				if (ret.ref_def->isBuiltIn()) {
-					if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
+					if (lua_Number num_value; Refl::CastFloatToType<lua_Number>(ret, num_value)) {
 						lua_pushnumber(state, num_value);
 
-					} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
+					} else if (lua_Integer int_value; Refl::CastIntegerToType<lua_Integer>(ret, int_value)) {
 						lua_pushinteger(state, int_value);
 
 					// Value is a boolean.
@@ -553,14 +564,14 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 				begin += data_size;
 			}
 
-		} else if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsMap)) {
+		} else if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsMap)) {
 			// $TODO: impl
 
 		} else if (ret.ref_def->isBuiltIn()) {
-			if (lua_Number num_value; Gaff::CastFloatToType<lua_Number>(ret, num_value)) {
+			if (lua_Number num_value; Refl::CastFloatToType<lua_Number>(ret, num_value)) {
 				lua_pushnumber(state, num_value);
 
-			} else if (lua_Integer int_value; Gaff::CastIntegerToType<lua_Integer>(ret, int_value)) {
+			} else if (lua_Integer int_value; Refl::CastIntegerToType<lua_Integer>(ret, int_value)) {
 				lua_pushinteger(state, int_value);
 
 			// Value is a boolean.
@@ -570,7 +581,7 @@ int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, b
 
 		// Is a user defined type.
 		} else {
-			if (ret.flags.testAll(Gaff::FunctionStackEntry::Flag::IsReference)) {
+			if (ret.flags.testAll(Refl::FunctionStackEntry::Flag::IsReference)) {
 				PushUserTypeReference(state, ret.value.vp, *ret.ref_def);
 
 			} else if (create_user_data) {
@@ -601,11 +612,13 @@ void RestoreTable(lua_State* state, const TableState& table)
 	}
 
 	for (const auto& pair : table.key_values) {
-		lua_getfield(state, -1, pair.first.data());
+		const char8_t* name = pair.first.data();
+
+		lua_getfield(state, -1, reinterpret_cast<const char*>(name));
 
 		if (PushOrUpdateTableValue(state, pair.second)) {
 			lua_remove(state, -2);
-			lua_setfield(state, -2, pair.first.data());
+			lua_setfield(state, -2, reinterpret_cast<const char*>(name));
 		} else {
 			lua_pop(state, 1);
 		}
@@ -629,7 +642,8 @@ void SaveTable(lua_State* state, TableState& table)
 		if (lua_type(state, -2) == LUA_TSTRING) {
 			size_t len = 0;
 			const char* const string = lua_tolstring(state, -2, &len);
-			U8String key = U8String(string, len, g_allocator);
+			CONVERT_STRING(char8_t, temp_string, string);
+			U8String key = U8String(temp_string, len, g_allocator);
 
 			FillEntry(state, -1, table.key_values[std::move(key)], true);
 
@@ -646,7 +660,7 @@ void SaveTable(lua_State* state, TableState& table)
 	}
 }
 
-void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_ref_def)
+void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_ref_def)
 {
 	const U8String name = enum_ref_def.getReflectionInstance().getName();
 
@@ -658,25 +672,26 @@ void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_
 	// Create all sub-tables.
 	do {
 		const U8String substr = name.substr(prev_index, curr_index - prev_index);
+		const char8_t* str = substr.data();
 
 		// Create first, global table.
 		if (table_count == 0) {
-			if (lua_getglobal(state, substr.data()) <= 0) {
+			if (lua_getglobal(state, reinterpret_cast<const char*>(str)) <= 0) {
 				lua_pop(state, 1);
 
 				lua_createtable(state, 0, 0);
 				lua_pushvalue(state, -1);
-				lua_setglobal(state, substr.data());
+				lua_setglobal(state, reinterpret_cast<const char*>(str));
 			}
 
 		// Create sub-table.
 		} else {
-			if (lua_getfield(state, -1, substr.data()) <= 0) {
+			if (lua_getfield(state, -1, reinterpret_cast<const char*>(str)) <= 0) {
 				lua_pop(state, 1);
 
 				lua_createtable(state, 0, 0);
 				lua_pushvalue(state, -1);
-				lua_setfield(state, -3, substr.data());
+				lua_setfield(state, -3, reinterpret_cast<const char*>(str));
 			}
 		}
 
@@ -694,20 +709,20 @@ void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_
 		const int32_t entry_value = enum_ref_def.getEntryValue(i);
 
 		lua_pushinteger(state, entry_value);
-		lua_setfield(state, -2, entry_name.getBuffer());
+		lua_setfield(state, -2, reinterpret_cast<const char*>(entry_name.getBuffer()));
 
 		// For reverse lookup.
-		lua_pushstring(state, entry_name.getBuffer());
+		lua_pushstring(state, reinterpret_cast<const char*>(entry_name.getBuffer()));
 		lua_seti(state, -2, entry_value);
 	}
 
 	lua_pop(state, table_count);
 }
 
-void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
+void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 {
 	// We do not need to register attributes or built-in types.
-	if (ref_def.hasInterface(CLASS_HASH(Gaff::IAttribute)) || ref_def.isBuiltIn()) {
+	if (ref_def.hasInterface<Refl::IAttribute>() || ref_def.isBuiltIn()) {
 		return;
 	}
 
@@ -719,14 +734,14 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	U8String friendly_name = ref_def.getFriendlyName();
 
-	if (Gaff::EndsWith(friendly_name.data(), "<>")) {
+	if (Gaff::EndsWith(friendly_name.data(), u8"<>")) {
 		friendly_name.erase(friendly_name.size() - 2);
 	}
 
 	// Type Metatable
-	luaL_newmetatable(state, friendly_name.data());
+	luaL_newmetatable(state, reinterpret_cast<const char*>(friendly_name.data()));
 
-	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+	lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 	lua_setfield(state, -2, k_ref_def_field_name);
 
 	// Register operators.
@@ -737,7 +752,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		const HashStringView32<> name = ref_def.getStaticFuncName(i);
 
 		// Is not an operator function.
-		if (Gaff::FindFirstOf(name.getBuffer(), "__") != 0) {
+		if (Gaff::FindFirstOf(name.getBuffer(), u8"__") != 0) {
 			continue;
 		}
 
@@ -747,12 +762,12 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 			continue;
 		}
 
-		lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+		lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 		lua_pushinteger(state, i);
 		lua_pushboolean(state, true); // Is static.
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-		lua_setfield(state, -2, name.getBuffer());
+		lua_setfield(state, -2, reinterpret_cast<const char*>(name.getBuffer()));
 	}
 
 	mt.emplace_back(luaL_Reg{ "__newindex", UserTypeNewIndex });
@@ -761,7 +776,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 	mt.emplace_back(luaL_Reg{ nullptr, nullptr });
 
 	// Register funcs with up values.
-	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+	lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 	luaL_setfuncs(state, mt.data(), 1);
 
 	lua_pop(state, 1);
@@ -779,22 +794,22 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 		// Create first, global table.
 		if (table_count == 0) {
-			if (lua_getglobal(state, substr.data()) <= 0) {
+			if (lua_getglobal(state, reinterpret_cast<const char*>(substr.data())) <= 0) {
 				lua_pop(state, 1);
 
 				lua_createtable(state, 0, 0);
 				lua_pushvalue(state, -1);
-				lua_setglobal(state, substr.data());
+				lua_setglobal(state, reinterpret_cast<const char*>(substr.data()));
 			}
 
 		// Create sub-table.
 		} else {
-			if (lua_getfield(state, -1, substr.data()) <= 0) {
+			if (lua_getfield(state, -1, reinterpret_cast<const char*>(substr.data())) <= 0) {
 				lua_pop(state, 1);
 
 				lua_createtable(state, 0, 0);
 				lua_pushvalue(state, -1);
-				lua_setfield(state, -3, substr.data());
+				lua_setfield(state, -3, reinterpret_cast<const char*>(substr.data()));
 			}
 		}
 
@@ -814,7 +829,7 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 
 	reg.emplace_back(luaL_Reg{ nullptr, nullptr });
 
-	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+	lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 	lua_setfield(state, -2, k_ref_def_field_name);
 
 	// Add static funcs.
@@ -822,21 +837,22 @@ void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def)
 		const HashStringView32<> func_name = ref_def.getStaticFuncName(i);
 
 		// Is an operator function.
-		if (!strncmp(func_name.getBuffer(), "__", 2)) {
+		if (const char8_t* const fn = func_name.getBuffer();
+			fn[0] == u8'_' && fn[1] == u8'_') {
 			continue;
 		}
 
-		lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+		lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 		lua_pushinteger(state, i);
 		lua_pushboolean(state, true); // Is static.
 
 		lua_pushcclosure(state, UserTypeFunctionCall, 3);
-		lua_setfield(state, -2, func_name.getBuffer());
+		lua_setfield(state, -2, reinterpret_cast<const char*>(func_name.getBuffer()));
 	}
 
 	// Push up values.
-	lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
-	luaL_getmetatable(state, friendly_name.data());
+	lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
+	luaL_getmetatable(state, reinterpret_cast<const char*>(friendly_name.data()));
 
 	luaL_setfuncs(state, reg.data(), 2);
 	lua_pop(state, table_count);
@@ -853,20 +869,20 @@ void RegisterBuiltIns(lua_State* state)
 
 int UserTypeFunctionCall(lua_State* state)
 {
-	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
 	const int32_t func_index = static_cast<int32_t>(luaL_checkinteger(state, k_func_index_index));
 	const bool is_static = lua_toboolean(state, k_func_is_static_index);
 
 	const int32_t num_overrides = (is_static) ? ref_def.getNumStaticFuncOverrides(func_index) : ref_def.getNumFuncOverrides(func_index);
 	const int32_t num_args = (is_static) ? lua_gettop(state) : (lua_gettop(state) - 1);
 
-	Vector<Gaff::FunctionStackEntry> args(g_allocator);
+	Vector<Refl::FunctionStackEntry> args(g_allocator);
 	LuaTypeInstanceAllocator allocator(state);
-	Gaff::FunctionStackEntry ret;
+	Refl::FunctionStackEntry ret;
 
 	for (int32_t i = 0; i < num_overrides; ++i) {
-		const Gaff::IReflectionStaticFunctionBase* const static_func = (is_static) ? ref_def.getStaticFunc(func_index, i) : nullptr;
-		const Gaff::IReflectionFunctionBase* const func = (is_static) ? nullptr : ref_def.getFunc(func_index, i);
+		const Refl::IReflectionStaticFunctionBase* const static_func = (is_static) ? ref_def.getStaticFunc(func_index, i) : nullptr;
+		const Refl::IReflectionFunctionBase* const func = (is_static) ? nullptr : ref_def.getFunc(func_index, i);
 		const int32_t func_args = (is_static) ? static_func->numArgs() : func->numArgs();
 
 		if (func_args == num_args) {
@@ -881,7 +897,7 @@ int UserTypeFunctionCall(lua_State* state)
 
 			} else {
 				// First element on the stack is our object instance.
-				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
+				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 
 				if (!func->call(object->getData(), args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 					continue;
@@ -898,7 +914,7 @@ int UserTypeFunctionCall(lua_State* state)
 
 int UserTypeToString(lua_State* state)
 {
-	const auto& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	const auto& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
 	const UserData& user_data = *reinterpret_cast<UserData*>(lua_touserdata(state, -1));
 
 	auto* const func = ref_def.getStaticFunc<int32_t, const void*, char*, int32_t>(Gaff::GetOpNameHash(Gaff::Operator::ToString));
@@ -917,8 +933,8 @@ int UserTypeToString(lua_State* state)
 
 int UserTypeDestroy(lua_State* state)
 {
-	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
+	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 
 	if (!user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference)) {
 		ref_def.destroyInstance(user_data->getData());
@@ -929,8 +945,8 @@ int UserTypeDestroy(lua_State* state)
 
 int UserTypeNewIndex(lua_State* state)
 {
-	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
+	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 	void* input = user_data->getData();
 
 	if (lua_type(state, 2) == LUA_TSTRING) {
@@ -949,11 +965,11 @@ int UserTypeNewIndex(lua_State* state)
 				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
 
 			} else {
-				const Gaff::IReflection& var_refl = var->getReflection();
-				const Gaff::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
+				const Refl::IReflection& var_refl = var->getReflection();
+				const Refl::IReflectionDefinition& var_ref_def = var_refl.getReflectionDefinition();
 
 				if (var_ref_def.isBuiltIn()) {
-					if (&var_ref_def == &Reflection<double>::GetReflectionDefinition()) {
+					if (&var_ref_def == &Refl::Reflection<double>::GetReflectionDefinition()) {
 						if (lua_isnumber(state, 3)) {
 							const double value = lua_tonumber(state, 3);
 							var->setDataT(input, value);
@@ -962,7 +978,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<float>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<float>::GetReflectionDefinition()) {
 						if (lua_isnumber(state, 3)) {
 							const float value = static_cast<float>(lua_tonumber(state, 3));
 							var->setDataT(input, value);
@@ -971,7 +987,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<int64_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<int64_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const int64_t value = lua_tointeger(state, 3);
 							var->setDataT(input, value);
@@ -980,7 +996,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<int32_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<int32_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const int32_t value = static_cast<int32_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -989,7 +1005,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<int16_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<int16_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const int16_t value = static_cast<int16_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -998,7 +1014,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<int8_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<int8_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const int8_t value = static_cast<int8_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -1007,7 +1023,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<uint64_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<uint64_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const uint64_t value = static_cast<uint64_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -1016,7 +1032,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<uint32_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<uint32_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const uint32_t value = static_cast<uint32_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -1025,7 +1041,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<uint16_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<uint16_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const uint16_t value = static_cast<uint16_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -1034,7 +1050,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<uint8_t>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<uint8_t>::GetReflectionDefinition()) {
 						if (lua_isinteger(state, 3)) {
 							const uint8_t value = static_cast<uint8_t>(lua_tointeger(state, 3));
 							var->setDataT(input, value);
@@ -1043,7 +1059,7 @@ int UserTypeNewIndex(lua_State* state)
 							// $TODO: Log error.
 						}
 
-					} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+					} else if (&var_ref_def == &Refl::Reflection<bool>::GetReflectionDefinition()) {
 						if (lua_isboolean(state, 3)) {
 							const bool value = lua_toboolean(state, 3);
 							var->setDataT(input, value);
@@ -1056,7 +1072,7 @@ int UserTypeNewIndex(lua_State* state)
 				// Is a user defined type.
 				} else {
 					if (&ref_def == &var_ref_def) {
-						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, ref_def.getFriendlyName()));
+						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 						var->setData(input, value->getData());
 
 					} else {
@@ -1075,8 +1091,8 @@ int UserTypeNewIndex(lua_State* state)
 
 int UserTypeIndex(lua_State* state)
 {
-	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, ref_def.getFriendlyName()));
+	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 	const void* input = user_data->getData();
 
 	if (lua_type(state, 2) == LUA_TSTRING) {
@@ -1094,29 +1110,29 @@ int UserTypeIndex(lua_State* state)
 				GAFF_ASSERT_MSG(false, "Currently do not support map variables.");
 
 			} else {
-				const Gaff::IReflectionDefinition& var_ref_def = var->getReflection().getReflectionDefinition();
+				const Refl::IReflectionDefinition& var_ref_def = var->getReflection().getReflectionDefinition();
 
 				input = var->getData(input);
 
 				// Push floating point number to stack.
-				if (lua_Number value_num; Gaff::CastFloatToType<lua_Number>(var_ref_def, input, value_num)) {
+				if (lua_Number value_num; Refl::CastFloatToType<lua_Number>(var_ref_def, input, value_num)) {
 					lua_pushnumber(state, value_num);
 					return 1;
 
 				// Push integer to stack.
-				} else if (lua_Integer value_int; Gaff::CastIntegerToType<lua_Integer>(var_ref_def, input, value_int)) {
+				} else if (lua_Integer value_int; Refl::CastIntegerToType<lua_Integer>(var_ref_def, input, value_int)) {
 					lua_pushinteger(state, value_int);
 					return 1;
 
 				// Push bool to stack.
-				} else if (&var_ref_def == &Reflection<bool>::GetReflectionDefinition()) {
+				} else if (&var_ref_def == &Refl::Reflection<bool>::GetReflectionDefinition()) {
 					lua_pushboolean(state, *reinterpret_cast<const bool*>(input));
 					return 1;
 
 				// Push string to stack.
-				} else if (&var_ref_def == &Reflection<U8String>::GetReflectionDefinition()) {
+				} else if (&var_ref_def == &Refl::Reflection<U8String>::GetReflectionDefinition()) {
 					const U8String& string = *reinterpret_cast<const U8String*>(input);
-					lua_pushlstring(state, string.data(), string.size());
+					lua_pushlstring(state, reinterpret_cast<const char*>(string.data()), string.size());
 					return 1;
 
 				// Push user defined type reference.
@@ -1133,7 +1149,7 @@ int UserTypeIndex(lua_State* state)
 
 		// Find function with name.
 		} else if (int32_t func_index = ref_def.getFuncIndex(hash); func_index > -1) {
-			lua_pushlightuserdata(state, const_cast<Gaff::IReflectionDefinition*>(&ref_def));
+			lua_pushlightuserdata(state, const_cast<Refl::IReflectionDefinition*>(&ref_def));
 			lua_pushinteger(state, func_index);
 			lua_pushboolean(state, false); // Is not static.
 			lua_pushcclosure(state, UserTypeFunctionCall, 3);
@@ -1145,12 +1161,12 @@ int UserTypeIndex(lua_State* state)
 			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
 			const int32_t num_args = lua_gettop(state);
 
-			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			Vector<Refl::FunctionStackEntry> args(g_allocator);
 			LuaTypeInstanceAllocator allocator(state);
-			Gaff::FunctionStackEntry ret;
+			Refl::FunctionStackEntry ret;
 
 			for (int32_t i = 0; i < num_overloads; ++i) {
-				const Gaff::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
+				const Refl::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
 
 				if (static_func->numArgs() == num_args) {
 					if (num_args > 0 && args.empty()) {
@@ -1177,12 +1193,12 @@ int UserTypeIndex(lua_State* state)
 			const int32_t num_overloads = ref_def.getNumStaticFuncOverrides(func_index);
 			const int32_t num_args = lua_gettop(state);
 
-			Vector<Gaff::FunctionStackEntry> args(g_allocator);
+			Vector<Refl::FunctionStackEntry> args(g_allocator);
 			LuaTypeInstanceAllocator allocator(state);
-			Gaff::FunctionStackEntry ret;
+			Refl::FunctionStackEntry ret;
 
 			for (int32_t i = 0; i < num_overloads; ++i) {
-				const Gaff::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
+				const Refl::IReflectionStaticFunctionBase* const static_func = ref_def.getStaticFunc(func_index, i);
 
 				if (static_func->numArgs() == num_args) {
 					if (num_args > 0 && args.empty()) {
@@ -1206,11 +1222,11 @@ int UserTypeIndex(lua_State* state)
 
 int UserTypeNew(lua_State* state)
 {
-	const Gaff::IReflectionDefinition& ref_def = *reinterpret_cast<Gaff::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
+	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
 
-	Vector<Gaff::FunctionStackEntry> arg_stack(g_allocator);
+	Vector<Refl::FunctionStackEntry> arg_stack(g_allocator);
 	LuaTypeInstanceAllocator allocator(state);
-	Gaff::FunctionStackEntry ret;
+	Refl::FunctionStackEntry ret;
 
 	FillArgumentStack(state, arg_stack);
 
@@ -1222,7 +1238,7 @@ int UserTypeNew(lua_State* state)
 	value->ref_def = &ref_def;
 	//value->root = value;
 
-	Gaff::FunctionStackEntry obj;
+	Refl::FunctionStackEntry obj;
 	obj.value.vp = value->getData();
 	obj.ref_def = &ref_def;
 

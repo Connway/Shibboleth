@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManager.h"
-
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_DepthStencilState.h>
 #include <Gleam_RenderDevice.h>
@@ -40,12 +39,12 @@ THE SOFTWARE.
 #include <Gleam_Mesh.h>
 #include <Gaff_Function.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(RenderManager)
-	.BASE(RenderManagerBase)
-	.BASE(IRenderManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
+	.BASE(Shibboleth::RenderManagerBase)
+	.BASE(Shibboleth::IRenderManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(RenderManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
 
 NS_SHIBBOLETH
 

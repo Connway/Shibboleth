@@ -107,9 +107,9 @@ class IShader
 {
 public:
 	// Key is RendererType.
-	static constexpr const char* g_shader_extensions[] = {
-		".hlsl",
-		".glsl"
+	static constexpr const char8_t* g_shader_extensions[] = {
+		u8".hlsl",
+		u8".glsl"
 	};
 
 	enum class Type
@@ -129,14 +129,14 @@ public:
 
 	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type) = 0;
 	virtual bool initSource(IRenderDevice& rd, const char* shader_source, Type shader_type) = 0;
-	virtual bool init(IRenderDevice& rd, const char* file_path, Type shader_type) = 0;
+	virtual bool init(IRenderDevice& rd, const char8_t* file_path, Type shader_type) = 0;
 
-	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
-	virtual bool initPixel(IRenderDevice&, const char* file_path) = 0;
-	virtual bool initDomain(IRenderDevice&, const char* file_path) = 0;
-	virtual bool initGeometry(IRenderDevice&, const char* file_path) = 0;
-	virtual bool initHull(IRenderDevice&, const char* file_path) = 0;
-	virtual bool initCompute(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initVertex(IRenderDevice&, const char8_t* file_path) = 0;
+	virtual bool initPixel(IRenderDevice&, const char8_t* file_path) = 0;
+	virtual bool initDomain(IRenderDevice&, const char8_t* file_path) = 0;
+	virtual bool initGeometry(IRenderDevice&, const char8_t* file_path) = 0;
+	virtual bool initHull(IRenderDevice&, const char8_t* file_path) = 0;
+	virtual bool initCompute(IRenderDevice&, const char8_t* file_path) = 0;
 
 	virtual bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
 	virtual bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;

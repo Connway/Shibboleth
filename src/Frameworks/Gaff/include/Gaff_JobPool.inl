@@ -51,7 +51,7 @@ bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitFunc init)
 
 	for (int32_t i = 0; i < num_threads; ++i) {
 		U8String<Allocator> thread_name(_allocator);
-		thread_name.sprintf("Job Pool Worker Thread %i", i);
+		thread_name.sprintf(u8"Job Pool Worker Thread %i", i);
 
 		EA::Thread::ThreadParameters thread_params;
 		thread_params.mbDisablePriorityBoost = false;
@@ -59,7 +59,7 @@ bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitFunc init)
 		thread_params.mnPriority = EA::Thread::kThreadPriorityDefault;
 		thread_params.mnProcessor = EA::Thread::kProcessorDefault;
 		thread_params.mnStackSize = 0;
-		thread_params.mpName = thread_name.data();
+		thread_params.mpName = reinterpret_cast<const char*>(thread_name.data());
 		thread_params.mpStack = nullptr;
 
 		const EA::Thread::ThreadId thread_id = _threads[i].Begin(JobThread, &_thread_data, &thread_params);
@@ -94,6 +94,12 @@ void JobPool<Allocator>::destroy(void)
 
 	_threads.clear();
 	_job_pools.erase(_job_pools.begin(), _job_pools.end());
+}
+
+template <class Allocator>
+void JobPool<Allocator>::pause(void)
+{
+	_thread_data.pause = true;
 }
 
 template <class Allocator>
@@ -213,7 +219,7 @@ void JobPool<Allocator>::waitForAndFreeCounter(Counter* counter)
 template <class Allocator>
 void JobPool<Allocator>::waitForCounter(const Counter& counter)
 {
-	while (counter > 0 && !_thread_data.terminate) {
+	while (counter > 0 && _thread_data.running) {
 		EA_THREAD_DO_SPIN();
 	}
 }

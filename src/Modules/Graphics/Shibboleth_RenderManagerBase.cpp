@@ -44,14 +44,14 @@ static ProxyAllocator g_allocator("Graphics");
 
 // Change this if the game supports more than one monitor.
 // "main" display is implicit. Not necessary to explicitly reference it.
-static constexpr const char* g_supported_displays[] = { nullptr };
+static constexpr const char8_t* g_supported_displays[] = { nullptr };
 
-const VectorMap< Gaff::Hash32, Vector<const char*> > g_display_tags = {
-	{ Gaff::FNV1aHash32Const("gameplay"), { "main" } }
+const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
+	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
 };
 
-static constexpr const char* const g_graphics_cfg_schema =
-R"({
+static constexpr const char8_t* const g_graphics_cfg_schema =
+u8R"({
 	"type": "object",
 
 	"properties":
@@ -94,13 +94,13 @@ RenderManagerBase::RenderManagerBase(void)
 	const ProxyAllocator allocator("Graphics");
 
 	if constexpr (g_supported_displays[0]) {
-		for (const char* tag : g_supported_displays) {
+		for (const char8_t* tag : g_supported_displays) {
 			_render_device_tags[Gaff::FNV1aHash32StringConst(tag)] = Vector<Gleam::IRenderDevice*>(allocator);
 		}
 	}
 
 	// Always have a main window. Even if not specified.
-	_render_device_tags[Gaff::FNV1aHash32StringConst("main")] = Vector<Gleam::IRenderDevice*>(allocator);
+	_render_device_tags[Gaff::FNV1aHash32StringConst(u8"main")] = Vector<Gleam::IRenderDevice*>(allocator);
 
 	for (auto entry : g_display_tags) {
 		_render_device_tags[entry.first] = Vector<Gleam::IRenderDevice*>(allocator);
@@ -110,7 +110,7 @@ RenderManagerBase::RenderManagerBase(void)
 bool RenderManagerBase::initAllModulesLoaded(void)
 {
 	IFileSystem& fs = GetApp().getFileSystem();
-	const IFile* const file = fs.openFile("cfg/graphics.cfg");
+	const IFile* const file = fs.openFile(u8"cfg/graphics.cfg");
 
 	if (!file) {
 		// $TODO: Log error.
@@ -119,7 +119,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer()), g_graphics_cfg_schema)) {
 		LogErrorDefault("Faild to parse config file with error - %s.", config.getErrorText());
 		fs.closeFile(file);
 
@@ -128,7 +128,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 	fs.closeFile(file);
 
-	const Gaff::JSON sampler = config["texture_filtering"];
+	const Gaff::JSON sampler = config[u8"texture_filtering"];
 
 	if (sampler.isString()) {
 		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
@@ -148,7 +148,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 bool RenderManagerBase::init(void)
 {
 	IFileSystem& fs = GetApp().getFileSystem();
-	const IFile* const file = fs.openFile("cfg/graphics.cfg");
+	const IFile* const file = fs.openFile(u8"cfg/graphics.cfg");
 
 	if (!file) {
 		// $TODO: Generate default config file.
@@ -157,19 +157,19 @@ bool RenderManagerBase::init(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char*>(file->getBuffer()), g_graphics_cfg_schema)) {
-		const char* const error = config.getErrorText();
-		LogErrorDefault("Faild to parse config file with error - %s.", error);
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer()), g_graphics_cfg_schema)) {
+		const char8_t* const error = config.getErrorText();
+		LogErrorDefault("Failed to parse config file with error - %s.", error);
 		fs.closeFile(file);
 		return false;
 	}
 
-	const Gaff::JSON windows = config["windows"];
+	const Gaff::JSON windows = config[u8"windows"];
 
-	windows.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool
+	windows.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
 	{
-		const int32_t adapter_id = value["adapter_id"].getInt32();
-		const int32_t display_id = value["display_id"].getInt32();
+		const int32_t adapter_id = value[u8"adapter_id"].getInt32();
+		const int32_t display_id = value[u8"display_id"].getInt32();
 
 		const auto display_modes = getDisplayModes();
 
@@ -207,18 +207,18 @@ bool RenderManagerBase::init(void)
 			}
 		}
 
-		int32_t x = Gaff::Max(0, value["x"].getInt32(0));
-		int32_t y = Gaff::Max(0, value["y"].getInt32(0));
-		int32_t width = value["width"].getInt32(0);
-		int32_t height = value["height"].getInt32(0);
-		const int32_t refresh_rate = value["refresh_rate"].getInt32(0);
-		const bool vsync = value["vsync"].getBool();
+		int32_t x = Gaff::Max(0, value[u8"x"].getInt32(0));
+		int32_t y = Gaff::Max(0, value[u8"y"].getInt32(0));
+		int32_t width = value[u8"width"].getInt32(0);
+		int32_t height = value[u8"height"].getInt32(0);
+		const int32_t refresh_rate = value[u8"refresh_rate"].getInt32(0);
+		const bool vsync = value[u8"vsync"].getBool();
 		Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
 
-		SerializeReader<Gaff::JSON> reader(value["window_mode"], ProxyAllocator("Graphics"));
-		
+		SerializeReader<Gaff::JSON> reader(value[u8"window_mode"], ProxyAllocator("Graphics"));
+
 		// Log the error, but leave default to windowed mode.
-		if (!Reflection<Gleam::IWindow::WindowMode>::Load(reader, window_mode)) {
+		if (!Refl::Reflection<Gleam::IWindow::WindowMode>::GetInstance().load(reader, window_mode)) {
 			LogWarningDefault("Failed to serialize window mode for window '%s'. Defaulting to 'Windowed' mode.", key);
 		}
 
@@ -243,7 +243,7 @@ bool RenderManagerBase::init(void)
 			return false;
 		}
 
-		if (const Gaff::JSON icon = value["icon"]; icon.isString()) {
+		if (const Gaff::JSON icon = value[u8"icon"]; icon.isString()) {
 			if (!window->setIcon(icon.getString())) {
 				// $TODO: Log warning.
 			}
@@ -253,13 +253,13 @@ bool RenderManagerBase::init(void)
 		const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
 		_render_device_tags[window_hash].emplace_back(rd);
 
-		_render_device_tags[Gaff::FNV1aHash32Const("all")].emplace_back(rd);
+		_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
 
 		// Add render device to tag list if not already present.
 		for (const auto& entry : g_display_tags) {
-			const auto it = Gaff::Find(entry.second, key, [](const char* lhs, const char* rhs) -> bool
+			const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
 			{
-				return eastl::string_view(lhs) == eastl::string_view(rhs);
+				return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
 			});
 
 			if (it == entry.second.end()) {
@@ -352,6 +352,12 @@ const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(Gaff::Ha
 {
 	const auto it = _render_device_tags.find(tag);
 	return (it == _render_device_tags.end()) ? nullptr : &it->second;
+}
+
+const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char8_t* tag) const
+{
+	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
+	return getDevicesByTag(hash);
 }
 
 const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char* tag) const

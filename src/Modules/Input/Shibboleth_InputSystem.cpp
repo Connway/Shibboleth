@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_InputManager.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(InputSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::InputSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 

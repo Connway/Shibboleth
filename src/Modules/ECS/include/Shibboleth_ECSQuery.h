@@ -23,12 +23,14 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ECSEntity.h"
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_Vector.h>
 #include <Gaff_Function.h>
 
-NS_GAFF
+namespace Refl
+{
 	class IReflectionDefinition;
-NS_END
+}
 
 NS_SHIBBOLETH
 
@@ -53,15 +55,15 @@ public:
 	using FilterFunc = eastl::function<bool (const void*)>;
 
 	template <class T>
-	using SharedOutput = Vector<const typename T*>;
+	using SharedOutput = Vector<const T*>;
 
 	using Output = Vector<ECSQueryResult>;
 
 	template <class T>
-	void addShared(SharedOutput<T>& output, TypedFilterFunc<typename T>&& filter, bool optional = false)
+	void addShared(SharedOutput<T>& output, TypedFilterFunc<T>&& filter, bool optional = false)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const T*>(data)); }
 		);
 
 		auto erase_func = Gaff::Func<void (int32_t)>(
@@ -69,60 +71,60 @@ public:
 		);
 
 		auto filter_func = Gaff::Func<bool (const void*)>(
-			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const typename T*>(data)); }
+			[filter](const void* data) -> bool { return filter(*reinterpret_cast<const T*>(data)); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter_func), optional);
+		addShared(Refl::Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter_func), optional);
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output, FilterFunc&& filter, bool optional = false)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const T*>(data)); }
 		);
 
 		auto erase_func = Gaff::Func<void(int32_t)>(
 			[&output](int32_t index) -> void { output.erase(output.begin() + index); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter), optional);
+		addShared(Refl::Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), std::move(filter), optional);
 	}
 
 	template <class T>
 	void addShared(SharedOutput<T>& output, bool optional = false)
 	{
 		auto push_func = Gaff::Func<void (const void*)>(
-			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const typename T*>(data)); }
+			[&output](const void* data) -> void { output.emplace_back(reinterpret_cast<const T*>(data)); }
 		);
 
 		auto erase_func = Gaff::Func<void(int32_t)>(
 			[&output](int32_t index) -> void { output.erase(output.begin() + index); }
 		);
 
-		addShared(Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), optional);
+		addShared(Refl::Reflection<T>::GetReflectionDefinition(), std::move(push_func), std::move(erase_func), optional);
 	}
 
 	template <class T>
 	void add(Output& output, bool optional = false)
 	{
-		add(Reflection<T>::GetReflectionDefinition(), output, optional);
+		add(Refl::Reflection<T>::GetReflectionDefinition(), output, optional);
 	}
 
 	template <class T>
 	void add(void)
 	{
-		add(Reflection<T>::GetReflectionDefinition());
+		add(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	ECSQuery(const ProxyAllocator& allocator = ProxyAllocator::GetGlobal());
 
-	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func, bool optional = false);
-	void addShared(const Gaff::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, bool optional = false);
-	void addShared(const Gaff::IReflectionDefinition& ref_def, bool optional = false);
+	void addShared(const Refl::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, FilterFunc&& filter_func, bool optional = false);
+	void addShared(const Refl::IReflectionDefinition& ref_def, SharedPushToListFunc&& push_func, SharedEraseFromListFunc&& erase_func, bool optional = false);
+	void addShared(const Refl::IReflectionDefinition& ref_def, bool optional = false);
 
-	void add(const Gaff::IReflectionDefinition& ref_def, Output& output, bool optional = false);
-	void add(const Gaff::IReflectionDefinition& ref_def);
+	void add(const Refl::IReflectionDefinition& ref_def, Output& output, bool optional = false);
+	void add(const Refl::IReflectionDefinition& ref_def);
 
 	// Used when only querying for shared components and still want to iterate over entities.
 	void addEntities(Output& output);
@@ -135,7 +137,7 @@ public:
 private:
 	struct QueryDataShared final
 	{
-		const Gaff::IReflectionDefinition* ref_def;
+		const Refl::IReflectionDefinition* ref_def;
 		SharedPushToListFunc push_func;
 		SharedEraseFromListFunc erase_func;
 		FilterFunc filter_func;
@@ -144,7 +146,7 @@ private:
 
 	struct QueryData final
 	{
-		const Gaff::IReflectionDefinition* ref_def;
+		const Refl::IReflectionDefinition* ref_def;
 		Output* output;
 		bool optional;
 	};

@@ -39,9 +39,9 @@ void DynamicLoader<Allocator>::clear(void)
 }
 
 template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char8_t* filename, const char8_t* name)
 {
-	GAFF_ASSERT(filename && name && strlen(filename) && strlen(name));
+	GAFF_ASSERT(filename && name && eastl::CharStrlen(filename) && eastl::CharStrlen(name));
 
 	auto it = Find(_modules, FNV1aHash32String(name));
 
@@ -62,9 +62,9 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 }
 
 template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char8_t* name)
 {
-	GAFF_ASSERT(name && strlen(name));
+	GAFF_ASSERT(name && eastl::CharStrlen(name));
 	auto it = Find(_modules, FNV1aHash32String(name));
 
 	if (it != _modules.end()) {
@@ -75,9 +75,9 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule
 }
 
 template <class Allocator>
-void DynamicLoader<Allocator>::removeModule(const char* name)
+void DynamicLoader<Allocator>::removeModule(const char8_t* name)
 {
-	GAFF_ASSERT(name && strlen(name));
+	GAFF_ASSERT(name && eastl::CharStrlen(name));
 	auto it = Find(_modules, FNV1aHash32String(name));
 
 	if (it != _modules.end()) {

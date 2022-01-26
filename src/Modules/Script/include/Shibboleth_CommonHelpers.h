@@ -22,17 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionInterfaces.h>
+#include <Shibboleth_IReflectionDefinition.h>
 #include <Shibboleth_ProxyAllocator.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
 #include <Shibboleth_String.h>
 #include <Gaff_Flags.h>
 
-NS_GAFF
+namespace Refl
+{
 	class IReflectionDefinition;
 	struct FunctionStackEntry;
-NS_END
+}
 
 NS_SHIBBOLETH
 
@@ -57,7 +58,7 @@ struct UserData final
 	};
 
 	MetaData meta;
-	const Gaff::IReflectionDefinition* ref_def = nullptr;
+	const Refl::IReflectionDefinition* ref_def = nullptr;
 	// Only valid if the IsReference flag in metadata is set.
 	void* reference;
 
@@ -80,15 +81,15 @@ struct TableState final
 {
 	~TableState(void);
 
-	Vector< eastl::pair<int32_t, Gaff::FunctionStackEntry> > array_entries{ ProxyAllocator("Script") };
-	VectorMap<U8String, Gaff::FunctionStackEntry> key_values{ ProxyAllocator("Script") };
+	Vector< eastl::pair<int32_t, Refl::FunctionStackEntry> > array_entries{ ProxyAllocator("Script") };
+	VectorMap<U8String, Refl::FunctionStackEntry> key_values{ ProxyAllocator("Script") };
 };
 
 
 constexpr size_t k_alloc_size_no_reference = sizeof(UserData) - sizeof(void*);
 
-void FreeDifferentType(Gaff::FunctionStackEntry& entry, const Gaff::IReflectionDefinition& new_ref_def, bool new_is_reference);
-void CopyUserType(const Gaff::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
-void CopyUserType(const Gaff::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
+void FreeDifferentType(Refl::FunctionStackEntry& entry, const Refl::IReflectionDefinition& new_ref_def, bool new_is_reference);
+void CopyUserType(const Refl::IReflectionDefinition& ref_def, const void* value, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
+void CopyUserType(const Refl::FunctionStackEntry& entry, void* dest, bool old_value_is_valid, ProxyAllocator allocator);
 
 NS_END

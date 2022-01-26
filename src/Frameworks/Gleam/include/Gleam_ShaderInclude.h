@@ -35,7 +35,7 @@ public:
 	HRESULT __stdcall Close(LPCVOID pData);
 
 	const U8String& getWorkingDir(void) const;
-	void setWorkingDir(const char* dir);
+	void setWorkingDir(const char8_t* dir);
 
 	static ShaderInclude gInclude;
 

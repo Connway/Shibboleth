@@ -3,6 +3,7 @@ project "optick"
 		location(GetDependenciesLocation())
 	end
 
+	cppdialect "C++17" -- C++20 breaks this library.
 	kind "SharedLib"
 	language "C++"
 	-- warnings "Default"

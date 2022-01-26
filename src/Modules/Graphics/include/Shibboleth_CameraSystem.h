@@ -94,5 +94,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(CameraPreRenderSystem)
-SHIB_REFLECTION_DECLARE(CameraPostRenderSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraPreRenderSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraPostRenderSystem)

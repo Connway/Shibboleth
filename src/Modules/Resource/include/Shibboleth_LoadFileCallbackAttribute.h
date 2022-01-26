@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 class IFile;
 
-class ILoadFileCallbackAttribute : public Gaff::IAttribute
+class ILoadFileCallbackAttribute : public Refl::IAttribute
 {
 public:
 	ILoadFileCallbackAttribute(bool callback_closes_file, Gaff::Hash32 pool):
@@ -70,7 +70,7 @@ public:
 		(obj->*_callback)(file, thread_id_int);
 	}
 
-	Gaff::IAttribute* clone(void) const override
+	Refl::IAttribute* clone(void) const override
 	{
 		IAllocator& allocator = GetAllocator();
 		return SHIB_ALLOCT_POOL(LoadFileCallbackAttribute<T>, allocator.getPoolIndex("Reflection"), allocator, _callback);
@@ -92,9 +92,9 @@ LoadFileCallbackAttribute<T> MakeLoadFileCallbackAttribute(void (T::*callback)(I
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(LoadFileCallbackAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::LoadFileCallbackAttribute, T)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(LoadFileCallbackAttribute, T)
-	.BASE(ILoadFileCallbackAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(LoadFileCallbackAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::LoadFileCallbackAttribute, T)
+	.BASE(Shibboleth::ILoadFileCallbackAttribute)
+	.BASE(Refl::IAttribute)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::LoadFileCallbackAttribute, T)

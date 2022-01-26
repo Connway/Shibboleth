@@ -26,7 +26,8 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ReflectionMacros.h"
 #include "Shibboleth_ReflectionBase.h"
-#include "Shibboleth_IReflection.h"
+#include "Shibboleth_Utilities.h"
+#include "Shibboleth_IApp.h"
 #include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH
@@ -60,7 +61,7 @@ static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::Has
 		return false;
 	}
 
-	const char* const str = reader.readString();
+	const char8_t* const str = reader.readString();
 	out = str;
 	reader.freeString(str);
 
@@ -75,7 +76,7 @@ static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::Has
 	}
 
 	if (reader.isString()) {
-		const char* const str = reader.readString();
+		const char8_t* const str = reader.readString();
 		out = str;
 		reader.freeString(str);
 
@@ -99,7 +100,7 @@ static bool LoadHashStringView(const Shibboleth::ISerializeReader& reader, Gaff:
 		return false;
 	}
 
-	const char* const str = reader.readString();
+	const char8_t* const str = reader.readString();
 	out = Gaff::HashStringView<T, HashType, HashingFunc>(str);
 	reader.freeString(str);
 
@@ -141,7 +142,7 @@ static bool LoadString(const Shibboleth::ISerializeReader& reader, Gaff::U8Strin
 		return false;
 	}
 
-	const char* const str = reader.readString();
+	const char8_t* const str = reader.readString();
 	out = str;
 	reader.freeString(str);
 
@@ -157,7 +158,11 @@ static void SaveString(Shibboleth::ISerializeWriter& writer, const Gaff::U8Strin
 NS_END
 
 NS_HASHABLE
-	GAFF_CLASS_HASHABLE(Reflection::IReflectionDefinition)
+	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeReader);
+	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeWriter);
+	GAFF_CLASS_HASHABLE(Refl::IReflectionDefinition);
+	GAFF_CLASS_HASHABLE(Refl::IAttribute);
+	GAFF_CLASS_HASHABLE(char8_t);
 NS_END
 
 

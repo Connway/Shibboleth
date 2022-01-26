@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class DebugDrawWebHandler final : public IDevWebHandler, public Gaff::IReflectionObject
+class DebugDrawWebHandler final : public IDevWebHandler, public Refl::IReflectionObject
 {
 public:
 	DebugDrawWebHandler(void);
@@ -51,4 +51,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DebugDrawWebHandler)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugDrawWebHandler)

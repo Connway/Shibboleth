@@ -29,17 +29,17 @@ THE SOFTWARE.
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSArchetypeResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSArchetypeResource)
 	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".archetype.bin"),
-		ResExtAttribute(".archetype"),
-		MakeLoadFileCallbackAttribute(&ECSArchetypeResource::loadArchetype)
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResExtAttribute(u8".archetype.bin"),
+		Shibboleth::ResExtAttribute(u8".archetype"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSArchetypeResource::loadArchetype)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSArchetypeResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSArchetypeResource)
 
 NS_SHIBBOLETH
 

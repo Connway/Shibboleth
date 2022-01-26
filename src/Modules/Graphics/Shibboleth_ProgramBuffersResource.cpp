@@ -25,12 +25,12 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ProgramBuffersResource)
-	.classAttrs(CreatableAttribute())
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ProgramBuffersResource)
+	.classAttrs(Shibboleth::CreatableAttribute())
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ProgramBuffersResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ProgramBuffersResource)
 
 NS_SHIBBOLETH
 
@@ -61,7 +61,7 @@ bool ProgramBuffersResource::createProgramBuffers(const Vector<Gleam::IRenderDev
 
 bool ProgramBuffersResource::createProgramBuffers(Gleam::IRenderDevice& device)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgramBuffers* const program_buffers = render_mgr.createProgramBuffers();
 
 	if (!program_buffers) {

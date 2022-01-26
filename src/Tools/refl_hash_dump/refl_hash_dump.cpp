@@ -31,9 +31,9 @@ int main(int argc, const char** argv)
 {
 	Shibboleth::App app;
 
-	app.getConfigs().setObject("working_dir", Gaff::JSON::CreateString(".."));
-	app.getConfigs().setObject("no_main_loop", Gaff::JSON::CreateBool(true));
-	app.getConfigs().setObject("no_managers", Gaff::JSON::CreateBool(true));
+	app.getConfigs().setObject(u8"working_dir", Gaff::JSON::CreateString(u8".."));
+	app.getConfigs().setObject(u8"no_main_loop", Gaff::JSON::CreateBool(true));
+	app.getConfigs().setObject(u8"no_managers", Gaff::JSON::CreateBool(true));
 
 	if (!app.init(argc, argv)) {
 		app.destroy();
@@ -50,16 +50,16 @@ int main(int argc, const char** argv)
 
 	Gaff::File csv_out;
 
-	if (!csv_out.open("reflection_hashes.csv", Gaff::File::OpenMode::Write)) {
+	if (!csv_out.open(u8"reflection_hashes.csv", Gaff::File::OpenMode::Write)) {
 		printf("Failed to open output file.");
 		return 0;
 	}
 
 	csv_out.printf("Class Name,Hash\n");
 
-	for (const Gaff::IReflectionDefinition* ref_def : *class_refl) {
+	for (const Refl::IReflectionDefinition* ref_def : *class_refl) {
 		const Gaff::Hash64 hash = ref_def->getReflectionInstance().getHash();
-		const char* const name = ref_def->getReflectionInstance().getName();
+		const char8_t* const name = ref_def->getReflectionInstance().getName();
 
 		csv_out.printf("%s,%llu\n", name, hash);
 	}

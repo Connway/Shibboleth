@@ -22,15 +22,15 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
-#include <Gaff_MessagePackSerializeWriter.h>
-#include <Gaff_JSONSerializeWriter.h>
-#include <Gaff_SerializeReader.h>
+#include <Shibboleth_MessagePackSerializeWriter.h>
+#include <Shibboleth_JSONSerializeWriter.h>
+#include <Shibboleth_SerializeReader.h>
 #include <Gaff_DynamicModule.h>
 #include <catch_amalgamated.hpp>
 #include <filesystem>
 #include <fstream>
 
-class Base : public Gaff::IReflectionObject
+class Base : public Refl::IReflectionObject
 {
 public:
 	int a = 1;
@@ -74,7 +74,7 @@ SHIB_REFLECTION_DEFINE_END(Derived)
 // Namespace Test
 namespace Foo
 {
-	class NamespaceClass : public Gaff::IReflectionObject
+	class NamespaceClass : public Refl::IReflectionObject
 	{
 		SHIB_REFLECTION_CLASS_DECLARE(NamespaceClass);
 	};
@@ -88,56 +88,56 @@ SHIB_REFLECTION_DEFINE_END(Foo::NamespaceClass)
 
 TEST_CASE("shibboleth_reflection_basic")
 {
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<int8_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<int16_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<int32_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<int64_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<uint8_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<uint16_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<uint32_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<uint64_t>::GetName());
-	printf("Reflection POD: %s\n", Shibboleth::Reflection<float>::GetName());
-	printf("Reflection POD: %s\n\n", Shibboleth::Reflection<double>::GetName());
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<int8_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<int16_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<int32_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<int64_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<uint8_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<uint16_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<uint32_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<uint64_t>::GetName()));
+	printf("Reflection POD: %s\n", reinterpret_cast<const char*>(Refl::Reflection<float>::GetName()));
+	printf("Reflection POD: %s\n\n", reinterpret_cast<const char*>(Refl::Reflection<double>::GetName()));
 
-	REQUIRE(!strcmp(Shibboleth::Reflection<int8_t>::GetName(), "int8_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<int16_t>::GetName(), "int16_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<int32_t>::GetName(), "int32_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<int64_t>::GetName(), "int64_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<uint8_t>::GetName(), "uint8_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<uint16_t>::GetName(), "uint16_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<uint32_t>::GetName(), "uint32_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<uint64_t>::GetName(), "uint64_t"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<float>::GetName(), "float"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<double>::GetName(), "double"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<int8_t>::GetName()), "int8_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<int16_t>::GetName()), "int16_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<int32_t>::GetName()), "int32_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<int64_t>::GetName()), "int64_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<uint8_t>::GetName()), "uint8_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<uint16_t>::GetName()), "uint16_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<uint32_t>::GetName()), "uint32_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<uint64_t>::GetName()), "uint64_t"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<float>::GetName()), "float"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<double>::GetName()), "double"));
 }
 
 TEST_CASE("shibboleth_reflection_class")
 {
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Derived>::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Base>::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Foo::NamespaceClass>::GetName());
-	REQUIRE(!strcmp(Shibboleth::Reflection<Derived>::GetName(), "Derived"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<Base>::GetName(), "Base"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<Foo::NamespaceClass>::GetName(), "Foo::NamespaceClass"));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection<Derived>::GetName()));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection<Base>::GetName()));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection<Foo::NamespaceClass>::GetName()));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<Derived>::GetName()), "Derived"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<Base>::GetName()), "Base"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection<Foo::NamespaceClass>::GetName()), "Foo::NamespaceClass"));
 
-	Shibboleth::Reflection<Derived>::Init();
-	Shibboleth::Reflection<Base>::Init();
+	Refl::Reflection<Derived>::Init();
+	Refl::Reflection<Base>::Init();
 	Derived test;
 
 	Base& base = test;
 	Base2& base2 = test;
-	Derived* ref_result = Gaff::ReflectionCast<Derived>(base);
+	Derived* ref_result = Refl::ReflectionCast<Derived>(base);
 	Base2* ref_result2 = REFLECTION_CAST_PTR(Base2, &base);
 
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
 
-	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetInstance().getVersion();
+	Gaff::Hash64 hash = Refl::Reflection<Derived>::GetInstance().getVersion();
 	printf("Version Hash: %llu\n", hash.getHash());
 
-	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
-	//int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
-	int test_get = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
+	int test_get_func_ref = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
+	//int test_get_func = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
+	int test_get = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
 
 	printf(
 		"GetFuncRef: %i\n"
@@ -152,7 +152,7 @@ TEST_CASE("shibboleth_reflection_class")
 	//REQUIRE(test_get_func == ref_result->c);
 	REQUIRE(test_get == ref_result->c);
 
-	auto* ref_var = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
+	auto* ref_var = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
 	int test_base_get = ref_var->getDataT<int>(*ref_result);
 	printf("GetBase: %i\n", test_base_get);
 
@@ -167,7 +167,7 @@ TEST_CASE("shibboleth_reflection_class")
 }
 
 template <class T>
-class Test1 : public Gaff::IReflectionObject
+class Test1 : public Refl::IReflectionObject
 {
 	double a = 20.0;
 	T t;
@@ -184,7 +184,7 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_END(Test1, T)
 
 
 template <class T1, class T2>
-class Test2 : public Gaff::IReflectionObject
+class Test2 : public Refl::IReflectionObject
 {
 	float a = 11.0f;
 	T1 t1;
@@ -203,24 +203,24 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_END(Test2, T1, T2)
 
 TEST_CASE("shibboleth_reflection_template_class")
 {
-	Shibboleth::Reflection< Test1<int32_t> >::Init();
-	Shibboleth::Reflection< Test1<double> >::Init();
-	Shibboleth::Reflection< Test2<int32_t, int8_t> >::Init();
-	Shibboleth::Reflection< Test2<float, double> >::Init();
+	Refl::Reflection< Test1<int32_t> >::Init();
+	Refl::Reflection< Test1<double> >::Init();
+	Refl::Reflection< Test2<int32_t, int8_t> >::Init();
+	Refl::Reflection< Test2<float, double> >::Init();
 
-	printf("\nReflection Class: %s\n", Shibboleth::Reflection< Test1<int32_t> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test1<double> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test2<int32_t, int8_t> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test2<float, double> >::GetName());
+	printf("\nReflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection< Test1<int32_t> >::GetName()));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection< Test1<double> >::GetName()));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection< Test2<int32_t, int8_t> >::GetName()));
+	printf("Reflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection< Test2<float, double> >::GetName()));
 
-	REQUIRE(!strcmp(Shibboleth::Reflection< Test1<int32_t> >::GetName(), "Test1<int32_t>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Test1<double> >::GetName(), "Test1<double>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<int32_t, int8_t> >::GetName(), "Test2<int32_t, int8_t>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<float, double> >::GetName(), "Test2<float, double>"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection< Test1<int32_t> >::GetName()), "Test1<int32_t>"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection< Test1<double> >::GetName()), "Test1<double>"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection< Test2<int32_t, int8_t> >::GetName()), "Test2<int32_t, int8_t>"));
+	REQUIRE(!strcmp(reinterpret_cast<const char*>(Refl::Reflection< Test2<float, double> >::GetName()), "Test2<float, double>"));
 }
 
 
-class VecTest : public Gaff::IReflectionObject
+class VecTest : public Refl::IReflectionObject
 {
 	Shibboleth::Vector<uint32_t> vec;
 	float arr[4] = { 0.0f, 1.0f, 2.0f, 3.0f };
@@ -240,17 +240,17 @@ SHIB_REFLECTION_DEFINE_END(VecTest)
 
 TEST_CASE("shibboleth_reflection_array_vector")
 {
-	Shibboleth::Reflection<VecTest>::Init();
+	Refl::Reflection<VecTest>::Init();
 
-	printf("\nReflection Class: %s\n", Shibboleth::Reflection<VecTest>::GetName());
+	printf("\nReflection Class: %s\n", reinterpret_cast<const char*>(Refl::Reflection<VecTest>::GetName()));
 
 	VecTest instance;
-	Gaff::IReflectionObject* ptr = &instance;
+	Refl::IReflectionObject* ptr = &instance;
 
-	const Gaff::ReflectionDefinition<VecTest, Shibboleth::ProxyAllocator>& ref_def = Shibboleth::Reflection<VecTest>::GetReflectionDefinition();
-	Gaff::IReflectionVar* vec_var = ref_def.getVar(Gaff::FNV1aHash32Const("vec"));
-	Gaff::IReflectionVar* arr_var = ref_def.getVar(Gaff::FNV1aHash32Const("arr"));
-	Gaff::IReflectionVar* base_var = ref_def.getVar(Gaff::FNV1aHash32Const("base"));
+	const Refl::ReflectionDefinition<VecTest>& ref_def = Refl::Reflection<VecTest>::GetReflectionDefinition();
+	Refl::IReflectionVar* vec_var = ref_def.getVar(Gaff::FNV1aHash32Const("vec"));
+	Refl::IReflectionVar* arr_var = ref_def.getVar(Gaff::FNV1aHash32Const("arr"));
+	Refl::IReflectionVar* base_var = ref_def.getVar(Gaff::FNV1aHash32Const("base"));
 	void* base_ptr = ptr->getBasePointer();
 
 	REQUIRE(vec_var->isVector());
@@ -344,7 +344,7 @@ TEST_CASE("shibboleth_reflection_array_vector")
 }
 
 
-class CtorTest : public Gaff::IReflectionObject
+class CtorTest : public Refl::IReflectionObject
 {
 public:
 	CtorTest(void) {}
@@ -365,9 +365,9 @@ SHIB_REFLECTION_DEFINE_END(CtorTest)
 
 TEST_CASE("shibboleth_factory")
 {
-	Shibboleth::Reflection<CtorTest>::Init();
-	CtorTest* test_a = Shibboleth::Reflection<CtorTest>::GetReflectionDefinition().create();
-	CtorTest* test_b = Shibboleth::Reflection<CtorTest>::GetReflectionDefinition().create(100);
+	Refl::Reflection<CtorTest>::Init();
+	CtorTest* test_a = Refl::Reflection<CtorTest>::GetReflectionDefinition().create();
+	CtorTest* test_b = Refl::Reflection<CtorTest>::GetReflectionDefinition().create(100);
 
 	REQUIRE(test_a->a == 200);
 	REQUIRE(test_b->a == 100);
@@ -391,7 +391,7 @@ TEST_CASE("shibboleth_factory")
 //}
 
 
-class AttrTest final : public Gaff::IReflectionObject
+class AttrTest final : public Refl::IReflectionObject
 {
 public:
 	AttrTest(void) {}
@@ -402,10 +402,10 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(AttrTest);
 };
 
-class TestAttr final : public Gaff::IAttribute
+class TestAttr final : public Refl::IAttribute
 {
 public:
-	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
+	Refl::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
 };
@@ -433,12 +433,12 @@ SHIB_REFLECTION_DEFINE_END(AttrTest)
 
 TEST_CASE("shibboleth_attribute")
 {
-	Shibboleth::Reflection<TestAttr>::Init();
-	Shibboleth::Reflection<AttrTest>::Init();
+	Refl::Reflection<TestAttr>::Init();
+	Refl::Reflection<AttrTest>::Init();
 }
 
 
-class FuncTest : public Gaff::IReflectionObject
+class FuncTest : public Refl::IReflectionObject
 {
 	int getMyInt(void) const { return _my_int; }
 	void setMyInt(int i) { _my_int = i; }
@@ -466,15 +466,15 @@ SHIB_REFLECTION_DEFINE_END(FuncTest)
 
 TEST_CASE("shibboleth_func")
 {
-	Shibboleth::Reflection<FuncTest>::Init();
+	Refl::Reflection<FuncTest>::Init();
 
-	const Gaff::IReflectionDefinition& ref_def = Shibboleth::Reflection<FuncTest>::GetReflectionDefinition();
-	Gaff::IReflectionFunction<int>* const get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("getMyInt"));
-	Gaff::IReflectionFunction<void, int>* const set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("setMyInt"));
-	Gaff::IReflectionFunction<int>* const ovl_get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("myInt"));
-	Gaff::IReflectionFunction<void, int>* const ovl_set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("myInt"));
-	Gaff::IReflectionFunction<const int&>* const ref_get_func = ref_def.getFunc<const int&>(Gaff::FNV1aHash32Const("getIntRef"));
-	Gaff::IReflectionFunction<void, const int&>* const ref_set_func = ref_def.getFunc<void, const int&>(Gaff::FNV1aHash32Const("setIntRef"));
+	const Refl::IReflectionDefinition& ref_def = Refl::Reflection<FuncTest>::GetReflectionDefinition();
+	Refl::IReflectionFunction<int>* const get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("getMyInt"));
+	Refl::IReflectionFunction<void, int>* const set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("setMyInt"));
+	Refl::IReflectionFunction<int>* const ovl_get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("myInt"));
+	Refl::IReflectionFunction<void, int>* const ovl_set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("myInt"));
+	Refl::IReflectionFunction<const int&>* const ref_get_func = ref_def.getFunc<const int&>(Gaff::FNV1aHash32Const("getIntRef"));
+	Refl::IReflectionFunction<void, const int&>* const ref_set_func = ref_def.getFunc<void, const int&>(Gaff::FNV1aHash32Const("setIntRef"));
 
 	void* data = ref_def.create(Shibboleth::ProxyAllocator::GetGlobal());
 
@@ -541,30 +541,30 @@ SHIB_REFLECTION_DEFINE_END(TestEnum)
 
 TEST_CASE("shibboleth_enum")
 {
-	Shibboleth::Reflection<TestEnum>::Init();
+	Refl::Reflection<TestEnum>::Init();
 
-	const Gaff::IEnumReflectionDefinition& ref_def = Shibboleth::Reflection<TestEnum>::GetReflectionDefinition();
+	const Refl::IEnumReflectionDefinition& ref_def = Refl::Reflection<TestEnum>::GetReflectionDefinition();
 	REQUIRE(ref_def.getNumEntries() == 5);
 
-	printf("Enum Name Index 0: %s\n", ref_def.getEntryNameFromIndex(0).getBuffer());
+	printf("Enum Name Index 0: %s\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromIndex(0).getBuffer()));
 
-	REQUIRE(!strcmp("MinusOne", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::MinusOne)).getBuffer()));
-	REQUIRE(!strcmp("Zero", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Zero)).getBuffer()));
-	REQUIRE(!strcmp("One", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::One)).getBuffer()));
-	REQUIRE(!strcmp("Two", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Two)).getBuffer()));
-	REQUIRE(!strcmp("Twenty", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Twenty)).getBuffer()));
+	REQUIRE(!strcmp("MinusOne", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::MinusOne)).getBuffer())));
+	REQUIRE(!strcmp("Zero", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Zero)).getBuffer())));
+	REQUIRE(!strcmp("One", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::One)).getBuffer())));
+	REQUIRE(!strcmp("Two", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Two)).getBuffer())));
+	REQUIRE(!strcmp("Twenty", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Twenty)).getBuffer())));
 
-	printf("MinusOne: %s\n", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::MinusOne)).getBuffer());
-	printf("Zero: %s\n", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Zero)).getBuffer());
-	printf("One: %s\n", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::One)).getBuffer());
-	printf("Two: %s\n", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Two)).getBuffer());
-	printf("Twenty: %s\n\n", ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Twenty)).getBuffer());
+	printf("MinusOne: %s\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::MinusOne)).getBuffer()));
+	printf("Zero: %s\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Zero)).getBuffer()));
+	printf("One: %s\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::One)).getBuffer()));
+	printf("Two: %s\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Two)).getBuffer()));
+	printf("Twenty: %s\n\n", reinterpret_cast<const char*>(ref_def.getEntryNameFromValue(static_cast<int32_t>(TestEnum::Twenty)).getBuffer()));
 
-	REQUIRE(ref_def.getEntryValue("MinusOne") == -1);
-	REQUIRE(ref_def.getEntryValue("Zero") == 0);
-	REQUIRE(ref_def.getEntryValue("One") == 1);
-	REQUIRE(ref_def.getEntryValue("Two") == 2);
-	REQUIRE(ref_def.getEntryValue("Twenty") == 20);
+	REQUIRE(ref_def.getEntryValue(u8"MinusOne") == -1);
+	REQUIRE(ref_def.getEntryValue(u8"Zero") == 0);
+	REQUIRE(ref_def.getEntryValue(u8"One") == 1);
+	REQUIRE(ref_def.getEntryValue(u8"Two") == 2);
+	REQUIRE(ref_def.getEntryValue(u8"Twenty") == 20);
 }
 
 
@@ -574,26 +574,26 @@ class SerializeTestClass
 
 using STCPtr = Shibboleth::UniquePtr<SerializeTestClass>;
 
-static bool LoadSTCPtr(const Gaff::ISerializeReader& reader, STCPtr& out)
+static bool LoadSTCPtr(const Shibboleth::ISerializeReader& reader, STCPtr& out)
 {
 	GAFF_REF(out);
 	printf("Load STCPtr\n");
 
 	reader.enterElement("test_string");
-	char buffer[128] = { 0 };
-	printf("Value at 'test_string' is '%s'\n", reader.readString(buffer, sizeof(buffer)));
+	char8_t buffer[128] = { 0 };
+	printf("Value at 'test_string' is '%s'\n", reinterpret_cast<const char*>(reader.readString(buffer, sizeof(buffer))));
 	reader.exitElement();
 
 	return true;
 }
 
-static void SaveSTCPtr(Gaff::ISerializeWriter& writer, const STCPtr& value)
+static void SaveSTCPtr(Shibboleth::ISerializeWriter& writer, const STCPtr& value)
 {
 	GAFF_REF(value);
 	printf("Save STCPtr\n");
 
 	writer.startObject(1);
-	writer.writeString("test_string", "This is a test string");
+	writer.writeString(u8"test_string", u8"This is a test string");
 	writer.endObject();
 }
 
@@ -611,12 +611,12 @@ class SerializeTestTemplate
 };
 
 template <class T, class TT>
-static bool LoadTest(const Gaff::ISerializeReader& reader, SerializeTestTemplate<T, TT>& out)
+static bool LoadTest(const Shibboleth::ISerializeReader& reader, SerializeTestTemplate<T, TT>& out)
 {
 	GAFF_REF(out);
-	printf("Load %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+	printf("Load %s\n", reinterpret_cast<const char*>(Refl::Reflection< SerializeTestTemplate<T, TT> >::GetName()));
 
-	reader.enterElement("test_double");
+	reader.enterElement(u8"test_double");
 	printf("Value at 'test_double' is '%f'\n", reader.readDouble());
 	reader.exitElement();
 
@@ -624,13 +624,13 @@ static bool LoadTest(const Gaff::ISerializeReader& reader, SerializeTestTemplate
 }
 
 template <class T, class TT>
-static void SaveTest(Gaff::ISerializeWriter& writer, const SerializeTestTemplate<T, TT>& value)
+static void SaveTest(Shibboleth::ISerializeWriter& writer, const SerializeTestTemplate<T, TT>& value)
 {
 	GAFF_REF(value);
-	printf("Save %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+	printf("Save %s\n", reinterpret_cast<const char*>(Refl::Reflection< SerializeTestTemplate<T, TT> >::GetName()));
 
 	writer.startObject(1);
-	writer.writeDouble("test_double", 123.0);
+	writer.writeDouble(u8"test_double", 123.0);
 	writer.endObject();
 }
 
@@ -643,37 +643,40 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_END(SerializeTestTemplate, T, TT)
 
 TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 {
+	Refl::Reflection< SerializeTestTemplate<int32_t, double> >::Init();
+	Refl::Reflection<STCPtr>::Init();
+
 	// Test STCPtr with JSON.
 	{
-		Gaff::JSONSerializeWriter<> json_writer;
+		Shibboleth::JSONSerializeWriter json_writer;
 		STCPtr stc;
 
-		Shibboleth::Reflection<STCPtr>::Save(json_writer, stc);
+		Refl::Reflection<STCPtr>::GetInstance().save(json_writer, stc);
 
-		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
-		REQUIRE(Shibboleth::Reflection<STCPtr>::Load(json_reader, stc));
+		Shibboleth::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
+		REQUIRE(Refl::Reflection<STCPtr>::GetInstance().load(json_reader, stc));
 	}
 
 	// Test STT with JSON.
 	{
-		Gaff::JSONSerializeWriter<> json_writer;
+		Shibboleth::JSONSerializeWriter json_writer;
 		SerializeTestTemplate<int32_t, double> stt;
 
-		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(json_writer, stt);
+		Refl::Reflection< SerializeTestTemplate<int32_t, double> >::GetInstance().save(json_writer, stt);
 
-		Gaff::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
-		REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(json_reader, stt));
+		Shibboleth::SerializeReader<Gaff::JSON> json_reader(json_writer.getRootNode());
+		REQUIRE(Refl::Reflection< SerializeTestTemplate<int32_t, double> >::GetInstance().load(json_reader, stt));
 	}
 
 	// Test STCPtr with MessagePack.
 	{
-		Gaff::MessagePackSerializeWriter mpack_writer;
+		Shibboleth::MessagePackSerializeWriter mpack_writer;
 		STCPtr stc;
 
 		char buffer[1024] = { 0 };
 
 		REQUIRE(mpack_writer.init(buffer, sizeof(buffer)));
-		Shibboleth::Reflection<STCPtr>::Save(mpack_writer, stc);
+		Refl::Reflection<STCPtr>::GetInstance().save(mpack_writer, stc);
 		mpack_writer.finish();
 
 		// Write buffer to a file.
@@ -691,17 +694,17 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 			Gaff::MessagePackReader reader;
 
 			REQUIRE(reader.parse(buffer, sizeof(buffer)));
-			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-			REQUIRE(Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc));
+			Shibboleth::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Refl::Reflection<STCPtr>::GetInstance().load(mpack_reader, stc));
 		}
 
 		// Test binary file written to disk.
 		{
 			Gaff::MessagePackReader reader;
 
-			REQUIRE(reader.openFile("tests/test.mpack"));
-			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-			REQUIRE(Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc));
+			REQUIRE(reader.openFile(u8"tests/test.mpack"));
+			Shibboleth::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Refl::Reflection<STCPtr>::GetInstance().load(mpack_reader, stc));
 		}
 
 		std::filesystem::remove(path); // Don't leave it on disk.
@@ -709,13 +712,13 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 
 	// Test STT with MessagePack.
 	{
-		Gaff::MessagePackSerializeWriter mpack_writer;
+		Shibboleth::MessagePackSerializeWriter mpack_writer;
 		SerializeTestTemplate<int32_t, double> stt;
 
 		char buffer[1024] = {0};
 
 		REQUIRE(mpack_writer.init(buffer, sizeof(buffer)));
-		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(mpack_writer, stt);
+		Refl::Reflection< SerializeTestTemplate<int32_t, double> >::GetInstance().save(mpack_writer, stt);
 		mpack_writer.finish();
 
 		// Write buffer to a file.
@@ -733,17 +736,17 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 			Gaff::MessagePackReader reader;
 
 			REQUIRE(reader.parse(buffer, sizeof(buffer)));
-			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-			REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt));
+			Shibboleth::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Refl::Reflection< SerializeTestTemplate<int32_t, double> >::GetInstance().load(mpack_reader, stt));
 		}
 
 		// Test binary file written to disk.
 		{
 			Gaff::MessagePackReader reader;
 
-			REQUIRE(reader.openFile("tests/test2.mpack"));
-			Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-			REQUIRE(Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt));
+			REQUIRE(reader.openFile(u8"tests/test2.mpack"));
+			Shibboleth::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+			REQUIRE(Refl::Reflection< SerializeTestTemplate<int32_t, double> >::GetInstance().load(mpack_reader, stt));
 		}
 
 		std::filesystem::remove(path); // Don't leave it on disk.

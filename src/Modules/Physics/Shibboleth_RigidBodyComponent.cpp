@@ -24,21 +24,21 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <PxPhysicsAPI.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(RigidBody)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RigidBody)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Physics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Physics")
 	)
 
-	.base< ECSComponentBaseBoth<RigidBody, RigidBody&> >()
+	.base< Shibboleth::ECSComponentBaseBoth<Shibboleth::RigidBody, Shibboleth::RigidBody&> >()
 	.ctor<>()
 
-	.staticFunc("Constructor", RigidBody::Constructor)
-	.staticFunc("Destructor", RigidBody::Destructor)
+	.staticFunc("Constructor", Shibboleth::RigidBody::Constructor)
+	.staticFunc("Destructor", Shibboleth::RigidBody::Destructor)
 
-	.var("shape", &RigidBody::shape)
-	.var("density", &RigidBody::density, OptionalAttribute())
-	.var("static", &RigidBody::is_static, OptionalAttribute())
-SHIB_REFLECTION_DEFINE_END(RigidBody)
+	.var("shape", &Shibboleth::RigidBody::shape)
+	.var("density", &Shibboleth::RigidBody::density, Shibboleth::OptionalAttribute())
+	.var("static", &Shibboleth::RigidBody::is_static, Shibboleth::OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RigidBody)
 
 NS_SHIBBOLETH
 
@@ -81,15 +81,15 @@ void RigidBody::Destructor(EntityID, void* component, int32_t comp_index)
 	GetInternal(component, comp_index).~RigidBody();
 }
 
-bool RigidBody::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool RigidBody::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
 {
 	RigidBody& rb = GetInternal(ecs_mgr.getComponent<RigidBody>(id), ecs_mgr.getComponentIndex(id));
-	return Reflection<RigidBody>::Load(reader, rb);
+	return Refl::Reflection<RigidBody>::GetInstance().load(reader, rb);
 }
 
-bool RigidBody::Load(const Gaff::ISerializeReader& reader, RigidBody& out)
+bool RigidBody::Load(const ISerializeReader& reader, RigidBody& out)
 {
-	return Reflection<RigidBody>::Load(reader, out);
+	return Refl::Reflection<RigidBody>::GetInstance().load(reader, out);
 }
 
 RigidBody& RigidBody::operator=(const RigidBody& rhs)

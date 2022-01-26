@@ -24,13 +24,13 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(ReadOnlyAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(NoSerializeAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(UniqueAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(RangeAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(HashStringAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(OptionalAttribute, Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(ScriptFlagsAttribute, Gaff::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ReadOnlyAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::NoSerializeAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::UniqueAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::RangeAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::HashStringAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::OptionalAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ScriptFlagsAttribute, IAttribute)
 
 NS_SHIBBOLETH
 
@@ -44,7 +44,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ScriptFlagsAttribute)
 
 
 
-Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
+Refl::IAttribute* ReadOnlyAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ReadOnlyAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -52,7 +52,7 @@ Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 
 
 
-Gaff::IAttribute* NoSerializeAttribute::clone(void) const
+Refl::IAttribute* NoSerializeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(NoSerializeAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -60,7 +60,7 @@ Gaff::IAttribute* NoSerializeAttribute::clone(void) const
 
 
 
-Gaff::IAttribute* UniqueAttribute::clone(void) const
+Refl::IAttribute* UniqueAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(UniqueAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -88,7 +88,7 @@ double RangeAttribute::getMax(void) const
 	return _max;
 }
 
-Gaff::IAttribute* RangeAttribute::clone(void) const
+Refl::IAttribute* RangeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(RangeAttribute, allocator.getPoolIndex("Reflection"), allocator, _min, _max);
@@ -96,7 +96,7 @@ Gaff::IAttribute* RangeAttribute::clone(void) const
 
 
 
-Gaff::IAttribute* HashStringAttribute::clone(void) const
+Refl::IAttribute* HashStringAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(HashStringAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -104,7 +104,7 @@ Gaff::IAttribute* HashStringAttribute::clone(void) const
 
 
 
-Gaff::IAttribute* OptionalAttribute::clone(void) const
+Refl::IAttribute* OptionalAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(OptionalAttribute, allocator.getPoolIndex("Reflection"), allocator);
@@ -112,7 +112,7 @@ Gaff::IAttribute* OptionalAttribute::clone(void) const
 
 
 
-Gaff::IAttribute* ScriptFlagsAttribute::clone(void) const
+Refl::IAttribute* ScriptFlagsAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ScriptFlagsAttribute, allocator.getPoolIndex("Reflection"), allocator, _flags);

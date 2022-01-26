@@ -23,13 +23,13 @@ THE SOFTWARE.
 #include "Shibboleth_ECSComponentCommon.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PlayerOwner, nullptr, "Player")
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(PageSize, nullptr, "Memory")
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Position, nullptr, "Transform", OptionalAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Rotation, nullptr, "Transform", OptionalAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scale, nullptr, "Transform", OptionalAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Scene, nullptr, "Scene", HashStringAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Layer, nullptr, "Scene", HashStringAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::PlayerOwner, nullptr, u8"Player")
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::PageSize, nullptr, u8"Memory")
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Position, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Rotation, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Scale, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Scene, nullptr, u8"Scene", Shibboleth::HashStringAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Layer, nullptr, u8"Scene", Shibboleth::HashStringAttribute())
 
 NS_SHIBBOLETH
 

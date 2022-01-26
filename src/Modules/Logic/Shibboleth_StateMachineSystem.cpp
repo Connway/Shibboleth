@@ -27,10 +27,10 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(StateMachineSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(StateMachineSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachineSystem)
 
 NS_SHIBBOLETH
 
@@ -76,7 +76,7 @@ void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 				}
 
 				const Esprit::VariableSet& vars = sm->getVariables();
-				const int32_t var_index = vars.getVariableIndex(HashStringView32<>("entity_id"), Esprit::VariableSet::VariableType::Integer);
+				const int32_t var_index = vars.getVariableIndex(HashStringView32<>(u8"entity_id"), Esprit::VariableSet::VariableType::Integer);
 
 				if (var_index > -1) {
 					state_machine.instance->variables.integers[var_index] = id;

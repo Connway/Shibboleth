@@ -29,17 +29,17 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(MaterialResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MaterialResource)
 	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".material.bin"),
-		ResExtAttribute(".material"),
-		MakeLoadFileCallbackAttribute(&MaterialResource::loadMaterial)
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResExtAttribute(u8".material.bin"),
+		Shibboleth::ResExtAttribute(u8".material"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::MaterialResource::loadMaterial)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(MaterialResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::MaterialResource)
 
 NS_SHIBBOLETH
 
@@ -112,7 +112,7 @@ bool MaterialResource::createProgram(
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	if (vert) {
@@ -177,7 +177,7 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
@@ -222,14 +222,14 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;
 
 	{
-		const auto guard = reader.enterElementGuard("devices_tag");
+		const auto guard = reader.enterElementGuard(u8"devices_tag");
 
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("Malformed material '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
@@ -237,7 +237,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 			return;
 		}
 
-		const char* const tag = reader.readString("main");
+		const char8_t* const tag = reader.readString(u8"main");
 		device_tag = tag;
 		devices = render_mgr.getDevicesByTag(tag);
 		reader.freeString(tag);
@@ -253,7 +253,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 
 	// Process the compute section first.
 	{
-		const auto guard = reader.enterElementGuard("compute");
+		const auto guard = reader.enterElementGuard(u8"compute");
 
 		// If a compute shader was specified, then don't process any other fields.
 		if (!reader.isNull()) {
@@ -263,7 +263,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 				return;
 			}
 
-			const char* const res_path = reader.readString();
+			const char8_t* const res_path = reader.readString();
 			const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
 			reader.freeString(res_path);
 
@@ -347,7 +347,7 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 			continue;
 		}
 
-		const char* const res_path = reader.readString();
+		const char8_t* const res_path = reader.readString();
 		const U8String final_path = U8String(res_path) + Gleam::IShader::g_shader_extensions[static_cast<int32_t>(render_mgr.getRendererType())];
 		reader.freeString(res_path);
 

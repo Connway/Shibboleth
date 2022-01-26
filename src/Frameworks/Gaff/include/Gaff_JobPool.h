@@ -58,6 +58,8 @@ public:
 
 	bool init(int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
 	void destroy(void);
+
+	void pause(void);
 	void run(void);
 
 	void addPool(const HashStringView32<>& name, int32_t max_concurrent_threads = 1);

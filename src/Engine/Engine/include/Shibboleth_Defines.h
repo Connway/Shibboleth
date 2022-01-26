@@ -35,14 +35,18 @@ THE SOFTWARE.
 
 #ifdef PLATFORM_64_BIT
 	#ifdef _DEBUG
+		#define BIT_EXTENSION_U8 u8"64d"
 		#define BIT_EXTENSION "64d"
 	#else
+		#define BIT_EXTENSION_U8 u8"64"
 		#define BIT_EXTENSION "64"
 	#endif
 #elif defined(PLATFORM_32_BIT)
 	#ifdef _DEBUG
+		#define BIT_EXTENSION_U8 u8"32d"
 		#define BIT_EXTENSION "32d"
 	#else
+		#define BIT_EXTENSION_U8 u8"32d"
 		#define BIT_EXTENSION "32"
 	#endif
 #else

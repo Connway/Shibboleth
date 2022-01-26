@@ -23,14 +23,14 @@ THE SOFTWARE.
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_EngineAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(IManager)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IManager)
 	.classAttrs(
 		// Do not allow scripts to create managers.
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::ReferenceOnly
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::ReferenceOnly
 		)
 	)
-SHIB_REFLECTION_DEFINE_END(IManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::IManager)
 
 NS_SHIBBOLETH
 

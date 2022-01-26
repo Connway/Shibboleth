@@ -28,18 +28,17 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
-#include <Gaff_SerializeInterfaces.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSLayerResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSLayerResource)
 	.classAttrs(
-		ResExtAttribute(".layer.bin"),
-		ResExtAttribute(".layer"),
-		MakeLoadFileCallbackAttribute(&ECSLayerResource::loadLayer)
+		Shibboleth::ResExtAttribute(u8".layer.bin"),
+		Shibboleth::ResExtAttribute(u8".layer"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSLayerResource::loadLayer)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSLayerResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSLayerResource)
 
 NS_SHIBBOLETH
 
@@ -59,7 +58,7 @@ ECSLayerResource::~ECSLayerResource(void)
 }
 
 bool ECSLayerResource::loadOverrides(
-	const Gaff::ISerializeReader& reader,
+	const ISerializeReader& reader,
 	ECSManager& ecs_mgr,
 	const ECSArchetype& base_archetype,
 	Gaff::Hash32 layer_name,
@@ -77,7 +76,7 @@ bool ECSLayerResource::loadOverrides(
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("shared_components");
+		const auto guard = reader.enterElementGuard(u8"shared_components");
 
 		if (!reader.isNull() && !reader.isObject()) {
 			LogErrorResource("ECSLayerResource - 'overrides:shared_components' is not an object.");
@@ -86,7 +85,7 @@ bool ECSLayerResource::loadOverrides(
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("components");
+		const auto guard = reader.enterElementGuard(u8"components");
 
 		if (!reader.isNull() && !reader.isObject()) {
 			LogErrorResource("ECSLayerResource - 'overrides:components' is not an object.");
@@ -132,30 +131,30 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 	const auto& reader = *_reader_wrapper.getReader();
 
 	{
-		const auto name_guard = reader.enterElementGuard("layer");
+		const auto name_guard = reader.enterElementGuard(u8"layer");
 
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("ECSLayerResource - 'layer' field is not a string.");
 		}
 
-		char name_temp[256] = { 0 };
-		reader.readString(name_temp, sizeof(name_temp), "<default>");
+		char8_t name_temp[256] = { 0 };
+		reader.readString(name_temp, sizeof(name_temp), u8"<default>");
 		layer_name = Gaff::FNV1aHash32String(name_temp);
 	}
 
 	{
-		const auto name_guard = reader.enterElementGuard("scene");
+		const auto name_guard = reader.enterElementGuard(u8"scene");
 
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("ECSLayerResource - 'scene' field is not a string.");
 		}
 
-		char name_temp[256] = { 0 };
-		reader.readString(name_temp, sizeof(name_temp), "main");
+		char8_t name_temp[256] = { 0 };
+		reader.readString(name_temp, sizeof(name_temp), u8"main");
 		scene_name = Gaff::FNV1aHash32String(name_temp);
 	}
 
-	const auto objects_guard = reader.enterElementGuard("objects");
+	const auto objects_guard = reader.enterElementGuard(u8"objects");
 	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
 
 	for (const auto& arch_res : _archetypes) {
@@ -164,11 +163,11 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 		}
 
 		const auto element_guard = reader.enterElementGuard(index);
-		const auto override_guard = reader.enterElementGuard("overrides");
+		const auto override_guard = reader.enterElementGuard(u8"overrides");
 		Gaff::Hash64 archetype(0);
 
 		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, scene_name, archetype)) {
-			const auto comps_guard = reader.enterElementGuard("components");
+			const auto comps_guard = reader.enterElementGuard(u8"components");
 
 			if (reader.isNull()) {
 				ecs_mgr.createEntity(archetype);
@@ -198,10 +197,10 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	const auto& reader = *_reader_wrapper.getReader();
 
-	char name[256] = { 0 };
+	char8_t name[256] = { 0 };
 
 	{
-		const auto guard = reader.enterElementGuard("name");
+		const auto guard = reader.enterElementGuard(u8"name");
 
 		if (!reader.isString()) {
 			LogErrorDefault("Failed to load layer '%s'. Invalid name.", getFilePath().getBuffer());
@@ -212,19 +211,19 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("objects");
+		const auto guard = reader.enterElementGuard(u8"objects");
 
 		if (!reader.isArray()) {
-			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : "<invalid_name>");
+			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : u8"<invalid_name>");
 			return;
 		}
 
 		reader.forEachInArray([&](int32_t index) -> bool
 		{
-			char archetype[256] = { 0 };
+			char8_t archetype[256] = { 0 };
 
 			{
-				const auto guard = reader.enterElementGuard("archetype");
+				const auto guard = reader.enterElementGuard(u8"archetype");
 
 				if (!reader.isNull() && !reader.isString()) {
 					LogErrorDefault("Failed to load object at index %i. Archetype not specified.", index);
@@ -242,7 +241,7 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 			}
 
 			{
-				const auto guard = reader.enterElementGuard("overrides");
+				const auto guard = reader.enterElementGuard(u8"overrides");
 
 				if (reader.isNull()) {
 					return false;

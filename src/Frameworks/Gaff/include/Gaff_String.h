@@ -207,10 +207,30 @@ NS_END
 
 #define STRING_CONVERSION_BUFFER_SIZE 256
 
+#define CONVERT_STRING_ARRAY(ToType, TempBufferName, string) \
+	ToType TempBufferName[ARRAY_SIZE(string)] = { 0 }; \
+	{ \
+		auto* str_start = string; \
+		ToType* TempBufferName##_begin = TempBufferName; \
+		ToType* TempBufferName##_end = TempBufferName + ARRAY_SIZE(string); \
+		eastl::DecodePart(str_start, str_start + ARRAY_SIZE(string), TempBufferName##_begin, TempBufferName##_end); \
+	}
+
+
+#define CONVERT_STRING_CONST(ToType, TempBufferName, string) \
+	ToType TempBufferName[eastl::CharStrlen(string)] = { 0 }; \
+	{ \
+		auto* str_start = string; \
+		ToType* TempBufferName##_begin = TempBufferName; \
+		ToType* TempBufferName##_end = TempBufferName + eastl::CharStrlen(string); \
+		eastl::DecodePart(str_start, str_start + eastl::CharStrlen(string), TempBufferName##_begin, TempBufferName##_end); \
+	}
+
 #define CONVERT_STRING(ToType, TempBufferName, string) \
 	ToType TempBufferName[STRING_CONVERSION_BUFFER_SIZE] = { 0 }; \
 	{ \
+		auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
 		ToType* TempBufferName##_end = TempBufferName + STRING_CONVERSION_BUFFER_SIZE; \
-		eastl::DecodePart(string, string + eastl::CharStrlen(string), TempBufferName##_begin, TempBufferName##_end); \
+		eastl::DecodePart(str_start, str_start + eastl::CharStrlen(string), TempBufferName##_begin, TempBufferName##_end); \
 	}

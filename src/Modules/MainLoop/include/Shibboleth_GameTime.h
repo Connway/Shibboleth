@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <EASTL/chrono.h>
 
@@ -65,5 +64,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(GameTimeManager)
-SHIB_REFLECTION_DECLARE(Time)
+SHIB_REFLECTION_DECLARE(Shibboleth::GameTimeManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::Time)

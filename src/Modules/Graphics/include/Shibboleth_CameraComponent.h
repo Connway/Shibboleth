@@ -77,4 +77,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Camera)
+SHIB_REFLECTION_DECLARE(Shibboleth::Camera)

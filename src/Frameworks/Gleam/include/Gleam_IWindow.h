@@ -42,7 +42,7 @@ public:
 	virtual ~IWindow(void) {}
 
 	virtual bool init(
-		const char* window_name, WindowMode window_mode = WindowMode::Fullscreen,
+		const char8_t* window_name, WindowMode window_mode = WindowMode::Fullscreen,
 		int32_t width = 0, int32_t height = 0,
 		int32_t pos_x = 0, int32_t pos_y = 0,
 		const char* compat = nullptr
@@ -70,6 +70,7 @@ public:
 
 	virtual bool isFullScreen(void) const = 0;
 
+	virtual bool setIcon(const char8_t* icon) = 0;
 	virtual bool setIcon(const char* icon) = 0;
 
 	virtual void* getPlatformHandle(void) const = 0;

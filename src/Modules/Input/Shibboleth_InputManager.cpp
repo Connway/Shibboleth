@@ -31,18 +31,18 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 #include <EASTL/sort.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(InputManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(InputManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 
-constexpr char* const g_binding_cfg_schema =
-R"({
+constexpr const char8_t* const g_binding_cfg_schema =
+u8R"({
 	"type": "array",
 	"items":
 	{
@@ -65,7 +65,7 @@ R"({
 
 bool InputManager::initAllModulesLoaded(void)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 
 	_keyboard.reset(render_mgr.createKeyboard());
 	_mouse.reset(render_mgr.createMouse());
@@ -84,7 +84,7 @@ bool InputManager::initAllModulesLoaded(void)
 	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 
 	// Load bindings.
-	IFile* const input_file = GetApp().getFileSystem().openFile("cfg/input_bindings.cfg");
+	IFile* const input_file = GetApp().getFileSystem().openFile(u8"cfg/input_bindings.cfg");
 
 	if (!input_file) {
 		LogErrorDefault("InputManager: Failed to open file 'cfg/input_bindings.cfg'");
@@ -93,7 +93,7 @@ bool InputManager::initAllModulesLoaded(void)
 
 	Gaff::JSON input_bindings;
 
-	if (!input_bindings.parse(reinterpret_cast<char*>(input_file->getBuffer()), g_binding_cfg_schema)) {
+	if (!input_bindings.parse(reinterpret_cast<char8_t*>(input_file->getBuffer()), g_binding_cfg_schema)) {
 		LogErrorDefault("InputManager: Failed to parse 'cfg/input_bindings.cfg' with error '%s'", input_bindings.getErrorText());
 		return false;
 	}
@@ -104,10 +104,10 @@ bool InputManager::initAllModulesLoaded(void)
 	{
 		GAFF_ASSERT(value.isObject());
 
-		const Gaff::JSON alias = value["Alias"];
+		const Gaff::JSON alias = value[u8"Alias"];
 		GAFF_ASSERT(alias.isString());
 
-		const char* const alias_string = alias.getString();
+		const char8_t* const alias_string = alias.getString();
 		_default_alias_values[Gaff::FNV1aHash32String(alias_string)] = Alias{};
 		alias.freeString(alias_string);
 
@@ -122,12 +122,12 @@ bool InputManager::initAllModulesLoaded(void)
 	{
 		GAFF_ASSERT(value.isObject());
 
-		const Gaff::JSON tap_interval = value["Tap Interval"];
-		const Gaff::JSON binding = value["Binding"];
-		const Gaff::JSON modes = value["Modes"];
-		const Gaff::JSON scale = value["Scale"];
-		const Gaff::JSON alias = value["Alias"];
-		const Gaff::JSON taps = value["Taps"];
+		const Gaff::JSON tap_interval = value[u8"Tap Interval"];
+		const Gaff::JSON binding = value[u8"Binding"];
+		const Gaff::JSON modes = value[u8"Modes"];
+		const Gaff::JSON scale = value[u8"Scale"];
+		const Gaff::JSON alias = value[u8"Alias"];
+		const Gaff::JSON taps = value[u8"Taps"];
 
 		GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
 		GAFF_ASSERT(binding.isString() || binding.isArray());
@@ -136,10 +136,10 @@ bool InputManager::initAllModulesLoaded(void)
 		GAFF_ASSERT(taps.isInt8() || taps.isNull());
 		GAFF_ASSERT(alias.isString());
 
-		const auto& mouse_ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
-		const auto& key_ref_def = Reflection<Gleam::KeyCode>::GetReflectionDefinition();
+		const auto& mouse_ref_def = Refl::Reflection<Gleam::MouseCode>::GetReflectionDefinition();
+		const auto& key_ref_def = Refl::Reflection<Gleam::KeyCode>::GetReflectionDefinition();
 
-		const char* const alias_str = alias.getString();
+		const char8_t* const alias_str = alias.getString();
 		const float scale_value = scale.getFloat(1.0f);
 
 		const Gaff::Hash32 alias_hash = Gaff::FNV1aHash32String(alias_str);
@@ -162,7 +162,7 @@ bool InputManager::initAllModulesLoaded(void)
 			/*const bool failed =*/ modes.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 			{
 				GAFF_ASSERT(value.isString());
-				const char* const mode_string = value.getString();
+				const char8_t* const mode_string = value.getString();
 
 				final_binding.modes.emplace_back(Gaff::FNV1aHash32String(mode_string));
 
@@ -171,8 +171,8 @@ bool InputManager::initAllModulesLoaded(void)
 			});
 
 		} else {
-			char mode_name[256] = { 0 };
-			const char* const mode_string = modes.getString(mode_name, 256, "Default");
+			char8_t mode_name[256] = { 0 };
+			const char8_t* const mode_string = modes.getString(mode_name, 256, u8"Default");
 
 			final_binding.modes.emplace_back(Gaff::FNV1aHash32String(mode_string));
 		}
@@ -181,7 +181,8 @@ bool InputManager::initAllModulesLoaded(void)
 			const bool failed = binding.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 			{
 				GAFF_ASSERT(value.isString());
-				const char* const binding_str = value.getString();
+
+				const char8_t* const binding_str = value.getString();
 
 				if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
 					final_binding.key_codes.emplace_back(static_cast<Gleam::KeyCode>(value_kb));
@@ -203,7 +204,7 @@ bool InputManager::initAllModulesLoaded(void)
 			}
 
 		} else {
-			const char* const binding_str = binding.getString();
+			const char8_t* const binding_str = binding.getString();
 
 			if (const int32_t value_kb = key_ref_def.getEntryValue(binding_str); value_kb != std::numeric_limits<int32_t>::min()) {
 				final_binding.key_codes.resize(1);

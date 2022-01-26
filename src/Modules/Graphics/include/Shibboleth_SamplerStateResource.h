@@ -52,4 +52,4 @@ using SamplerStateResourcePtr = Gaff::RefPtr<SamplerStateResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(SamplerStateResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::SamplerStateResource)

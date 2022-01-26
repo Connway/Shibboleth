@@ -23,30 +23,30 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsResourceComponents.h"
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InstanceBufferCount)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.base< ECSComponentBaseShared<InstanceBufferCount> >()
-	.var("value", &InstanceBufferCount::value)
+	.base< Shibboleth::ECSComponentBaseShared<Shibboleth::InstanceBufferCount> >()
+	.var("value", &Shibboleth::InstanceBufferCount::value)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(InstanceBufferCount)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InstanceBufferCount)
 
-SHIB_REFLECTION_DEFINE_BEGIN(RasterState)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RasterState)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.base< Resource<RasterStateResource> >()
+	.base< Shibboleth::Resource<Shibboleth::RasterStateResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(RasterState)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RasterState)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Model)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Model)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.base< Resource<ModelResource> >()
+	.base< Shibboleth::Resource<Shibboleth::ModelResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(Model)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::Model)

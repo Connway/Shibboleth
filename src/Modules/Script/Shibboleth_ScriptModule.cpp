@@ -38,7 +38,7 @@ THE SOFTWARE.
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				Shibboleth::SetApp(app);
 
-				const Gaff::JSON script_threads = app.getConfigs()["script_threads"];
+				const Gaff::JSON script_threads = app.getConfigs()[u8"script_threads"];
 				const int32_t num_threads = script_threads.getInt32(Shibboleth::LuaManager::k_default_num_threads);
 
 				app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::LuaManager::k_thread_pool_name), num_threads);
@@ -49,10 +49,10 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 			}
 
 			Script::Gen::InitReflection(mode);

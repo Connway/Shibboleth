@@ -35,14 +35,14 @@ public:
 
 	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type);
 	bool initSource(IRenderDevice& rd, const char* shader_source, Type shader_type);
-	bool init(IRenderDevice& rd, const char* file_path, Type shader_type);
+	bool init(IRenderDevice& rd, const char8_t* file_path, Type shader_type);
 
-	bool initVertex(IRenderDevice& rd, const char* file_path);
-	bool initPixel(IRenderDevice& rd, const char* file_path);
-	bool initDomain(IRenderDevice& rd, const char* file_path);
-	bool initGeometry(IRenderDevice& rd, const char* file_path);
-	bool initHull(IRenderDevice& rd, const char* file_path);
-	bool initCompute(IRenderDevice& rd, const char* file_path);
+	bool initVertex(IRenderDevice& rd, const char8_t* file_path);
+	bool initPixel(IRenderDevice& rd, const char8_t* file_path);
+	bool initDomain(IRenderDevice& rd, const char8_t* file_path);
+	bool initGeometry(IRenderDevice& rd, const char8_t* file_path);
+	bool initHull(IRenderDevice& rd, const char8_t* file_path);
+	bool initCompute(IRenderDevice& rd, const char8_t* file_path);
 
 	bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
 	bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);

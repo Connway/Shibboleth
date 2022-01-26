@@ -55,5 +55,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DebugRenderSystem)
-SHIB_REFLECTION_DECLARE(DebugSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugRenderSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugSystem)

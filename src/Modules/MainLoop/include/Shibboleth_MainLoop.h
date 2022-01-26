@@ -73,4 +73,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MainLoop)
+SHIB_REFLECTION_DECLARE(Shibboleth::MainLoop)

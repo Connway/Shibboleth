@@ -55,5 +55,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsDebugSystem)
-SHIB_REFLECTION_DECLARE(PhysicsSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsDebugSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsSystem)

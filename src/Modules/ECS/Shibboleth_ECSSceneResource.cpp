@@ -30,16 +30,16 @@ THE SOFTWARE.
 #include <Gaff_Function.h>
 
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSSceneResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSSceneResource)
 	.classAttrs(
-		ResExtAttribute(".scene.bin"),
-		ResExtAttribute(".scene"),
-		MakeLoadFileCallbackAttribute(&ECSSceneResource::loadScene)
+		Shibboleth::ResExtAttribute(u8".scene.bin"),
+		Shibboleth::ResExtAttribute(u8".scene"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSSceneResource::loadScene)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSSceneResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSSceneResource)
 
 NS_SHIBBOLETH
 
@@ -53,28 +53,28 @@ ECSSceneResource::~ECSSceneResource(void)
 {
 }
 
-void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
+void ECSSceneResource::load(const ISerializeReader& reader)
 {
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 
 	reader.forEachInArray([&](int32_t) -> bool
 	{
-		char name[256];
-		char path[256];
+		char8_t name[256];
+		char8_t path[256];
 		bool delay_load = false;
 
 		{
-			const auto guard = reader.enterElementGuard("name");
+			const auto guard = reader.enterElementGuard(u8"name");
 			reader.readString(name, ARRAY_SIZE(name));
 		}
 
 		{
-			const auto guard = reader.enterElementGuard("layer_file");
+			const auto guard = reader.enterElementGuard(u8"layer_file");
 			reader.readString(path, ARRAY_SIZE(path));
 		}
 
 		{
-			const auto guard = reader.enterElementGuard("delay_load");
+			const auto guard = reader.enterElementGuard(u8"delay_load");
 			delay_load = reader.readBool(false);
 		}
 
@@ -98,9 +98,10 @@ void ECSSceneResource::load(const Gaff::ISerializeReader& reader)
 	res_mgr.registerCallback(resources, callback);
 }
 
-void ECSSceneResource::save(Gaff::ISerializeWriter& writer)
+void ECSSceneResource::save(ISerializeWriter& writer)
 {
 	GAFF_REF(writer);
+	// $TODO: Implement.
 }
 
 void ECSSceneResource::layerLoaded(const Vector<IResource*>&)

@@ -54,11 +54,11 @@ public:
 	LooseFileSystem(void);
 	~LooseFileSystem(void);
 
-	IFile* openFile(const char* file_name) override;
+	IFile* openFile(const char8_t* file_name) override;
 	void closeFile(const IFile* file) override;
 
-	bool forEachFile(const char* directory, eastl::function<bool(const char*, IFile*)>& callback, const char* extension, bool recursive = false) override;
-	bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive = false) override;
+	bool forEachFile(const char8_t* directory, eastl::function<bool(const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) override;
+	bool forEachFile(const char8_t* directory, eastl::function<bool(const char8_t*, IFile*)>& callback, bool recursive = false) override;
 
 private:
 	struct FileData

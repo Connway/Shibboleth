@@ -227,35 +227,35 @@ private:
 #include "Gaff_HashString.inl"
 
 template < class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32> >
-using HashString32 = HashString<char, Hash32, HashingFunc, Allocator, true>;
+using HashString32 = HashString<char8_t, Hash32, HashingFunc, Allocator, true>;
 
 template < class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64> >
-using HashString64 = HashString<char, Hash64, HashingFunc, Allocator, true>;
+using HashString64 = HashString<char8_t, Hash64, HashingFunc, Allocator, true>;
 
 template < HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32> >
-using HashStringView32 = HashStringView< char, Hash32, HashingFunc>;
+using HashStringView32 = HashStringView<char8_t, Hash32, HashingFunc>;
 
 template < HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64> >
-using HashStringView64 = HashStringView< char, Hash64, HashingFunc>;
+using HashStringView64 = HashStringView<char8_t, Hash64, HashingFunc>;
 
 template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>
-using HashStringNoString32 = HashString<char, Hash32, HashingFunc, Allocator, false>;
+using HashStringNoString32 = HashString<char8_t, Hash32, HashingFunc, Allocator, false>;
 
 template <class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64>>
-using HashStringNoString64 = HashString<char, Hash64, HashingFunc, Allocator, false>;
+using HashStringNoString64 = HashString<char8_t, Hash64, HashingFunc, Allocator, false>;
 
 #ifdef _DEBUG
 	template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>
-	using OptimizedHashString32 = HashString<char, Hash32, HashingFunc, Allocator, true>;
+	using OptimizedHashString32 = HashString<char8_t, Hash32, HashingFunc, Allocator, true>;
 
 	template <class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64>>
-	using OptimizedHashString64 = HashString<char, Hash64, HashingFunc, Allocator, true>;
+	using OptimizedHashString64 = HashString<char8_t, Hash64, HashingFunc, Allocator, true>;
 #else
 	template <class Allocator = DefaultAllocator, HashFunc<Hash32> HashingFunc = DefaultHashFunc<Hash32>>
-	using OptimizedHashString32 = HashString<char, Hash32, HashingFunc, Allocator, false>;
+	using OptimizedHashString32 = HashString<char8_t, Hash32, HashingFunc, Allocator, false>;
 
 	template <class Allocator = DefaultAllocator, HashFunc<Hash64> HashingFunc = DefaultHashFunc<Hash64>>
-	using OptimizedHashString64 = HashString<char, Hash64, HashingFunc, Allocator, false>;
+	using OptimizedHashString64 = HashString<char8_t, Hash64, HashingFunc, Allocator, false>;
 #endif
 
 

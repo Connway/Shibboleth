@@ -87,7 +87,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 	for (int32_t i = 0; i < static_cast<int32_t>(reflection.input_params_reflection.size()); ++i) {
 		const InputParamReflection& input_ref = reflection.input_params_reflection[i];
 
-		input_desc[i].SemanticName = input_ref.semantic_name.data();
+		input_desc[i].SemanticName = reinterpret_cast<const char*>(input_ref.semantic_name.data());
 		input_desc[i].SemanticIndex = input_ref.semantic_index;
 		input_desc[i].Format = TextureD3D11::GetD3DFormat(input_ref.format);
 		input_desc[i].InputSlot = static_cast<UINT>(i);

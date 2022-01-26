@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_DevWebServerManager.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(DevWebSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::DevWebSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 

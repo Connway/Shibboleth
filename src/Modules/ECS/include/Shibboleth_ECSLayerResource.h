@@ -42,7 +42,7 @@ private:
 	ResourceCallbackID _callback_id;
 
 	bool loadOverrides(
-		const Gaff::ISerializeReader& reader,
+		const ISerializeReader& reader,
 		ECSManager& ecs_mgr,
 		const ECSArchetype& base_archetype,
 		Gaff::Hash32 layer_name,
@@ -60,4 +60,4 @@ using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSLayerResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ECSLayerResource)

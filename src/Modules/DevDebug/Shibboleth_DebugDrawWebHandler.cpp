@@ -24,12 +24,12 @@ THE SOFTWARE.
 #include <Shibboleth_DevWebAttributes.h>
 #include <Gaff_JSON.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugDrawWebHandler)
-	.classAttrs(DevWebCommandAttribute("/debug_draw"))
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugDrawWebHandler)
+	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/debug_draw"))
 
-	.BASE(IDevWebHandler)
+	.BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugDrawWebHandler)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugDrawWebHandler)
 
 NS_SHIBBOLETH
 
@@ -44,7 +44,7 @@ static void ReturnError(mg_connection* conn)
 }
 
 DebugDrawWebHandler::DebugDrawWebHandler(void):
-	_debug_mgr(GetApp().GETMANAGERT(IDebugManager, DebugManager))
+	_debug_mgr(GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager))
 {
 }
 
@@ -118,9 +118,9 @@ bool DebugDrawWebHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 	}
 
 	Gaff::JSON response = Gaff::JSON::CreateObject();
-	response.setObject("id", Gaff::JSON::CreateUInt64(handle.getHash().getHash()));
+	response.setObject(u8"id", Gaff::JSON::CreateUInt64(handle.getHash().getHash()));
 
-	char buffer[64] = { 0 };
+	char8_t buffer[64] = { 0 };
 	response.dump(buffer, sizeof(buffer));
 
 	mg_printf(conn, "HTTP/1.1 201 Created\r\n");

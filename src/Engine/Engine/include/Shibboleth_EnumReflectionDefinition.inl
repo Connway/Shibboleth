@@ -49,7 +49,7 @@ void EnumReflectionDefinition<Enum>::save(Shibboleth::ISerializeWriter& writer, 
 template <class Enum>
 bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& reader, Enum& value) const
 {
-	const char* const name = reader.readString();
+	const char8_t* const name = reader.readString();
 	const int32_t intValue = getEntryValue(name);
 
 	if (intValue == std::numeric_limits<int32_t>::min()) {
@@ -63,7 +63,7 @@ bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& re
 template <class Enum>
 void EnumReflectionDefinition<Enum>::save(Shibboleth::ISerializeWriter& writer, Enum value) const
 {
-	const HashStringView32<> name = getEntryName(value);
+	const Shibboleth::HashStringView32<> name = getEntryName(value);
 	GAFF_ASSERT(name.getBuffer());
 
 	writer.writeString(name.getBuffer());
@@ -85,11 +85,11 @@ template <class Enum>
 Shibboleth::HashStringView32<> EnumReflectionDefinition<Enum>::getEntryNameFromIndex(int32_t index) const
 {
 	GAFF_ASSERT(static_cast<size_t>(index) < _entries.size());
-	return HashStringView32<>((_entries.begin() + index)->first);
+	return Shibboleth::HashStringView32<>((_entries.begin() + index)->first);
 }
 
 template <class Enum>
-int32_t EnumReflectionDefinition<Enum>::getEntryValue(const char* name) const
+int32_t EnumReflectionDefinition<Enum>::getEntryValue(const char8_t* name) const
 {
 	return getEntryValue(Gaff::FNV1aHash32String(name));
 }
@@ -113,7 +113,7 @@ int32_t EnumReflectionDefinition<Enum>::getEntryValue(Gaff::Hash32 name) const
 }
 
 template <class Enum>
-Enum EnumReflectionDefinition<Enum>::getEntry(const char* name) const
+Enum EnumReflectionDefinition<Enum>::getEntry(const char8_t* name) const
 {
 	return getEntry(Gaff::FNV1aHash32String(name));
 }
@@ -149,7 +149,7 @@ Shibboleth::HashStringView32<> EnumReflectionDefinition<Enum>::getEntryName(Enum
 }
 
 template <class Enum>
-bool EnumReflectionDefinition<Enum>::entryExists(const char* name) const
+bool EnumReflectionDefinition<Enum>::entryExists(const char8_t* name) const
 {
 	return entryExists(Gaff::FNV1aHash32String(name));
 }
@@ -198,7 +198,7 @@ EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::enumAttrs(const 
 
 template <class Enum>
 template <size_t name_size, class... Attrs>
-EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::entry(const char (&name)[name_size], Enum value)
+EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::entry(const char8_t (&name)[name_size], Enum value)
 {
 	eastl::pair<Shibboleth::HashString32<>, Enum> pair(
 		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
@@ -209,6 +209,14 @@ EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::entry(const char
 	_entries.insert(std::move(pair));
 
 	return *this;
+}
+
+template <class Enum>
+template <size_t name_size, class... Attrs>
+EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::entry(const char (&name)[name_size], Enum value)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return entry(temp_name, value);
 }
 
 template <class Enum>

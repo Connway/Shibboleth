@@ -147,4 +147,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(InputManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::InputManager)

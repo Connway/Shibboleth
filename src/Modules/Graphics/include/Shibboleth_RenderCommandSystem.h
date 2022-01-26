@@ -69,9 +69,9 @@ private:
 class RenderCommandSystem final : public ISystem
 {
 public:
-	static constexpr const char* StructuredBufferFormat = "RenderCommandSystem:StructuredBuffer:%s:%llu:%i";
-	static constexpr const char* ProgramBuffersFormat = "RenderCommandSystem:ProgramBuffers:%llu";
-	static constexpr const char* ConstBufferFormat = "RenderCommandSystem:ConstBuffer:%s:%llu";
+	static constexpr const char8_t* StructuredBufferFormat = u8"RenderCommandSystem:StructuredBuffer:%s:%llu:%i";
+	static constexpr const char8_t* ProgramBuffersFormat = u8"RenderCommandSystem:ProgramBuffers:%llu";
+	static constexpr const char8_t* ConstBufferFormat = u8"RenderCommandSystem:ConstBuffer:%s:%llu";
 
 	bool init(void) override;
 	void update(uintptr_t thread_id_int) override;
@@ -227,5 +227,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(RenderCommandSubmissionSystem)
-SHIB_REFLECTION_DECLARE(RenderCommandSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderCommandSubmissionSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderCommandSystem)

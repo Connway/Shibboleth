@@ -51,4 +51,4 @@ using ProgramBuffersResourcePtr = Gaff::RefPtr<ProgramBuffersResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ProgramBuffersResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ProgramBuffersResource)

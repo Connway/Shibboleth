@@ -24,15 +24,15 @@ THE SOFTWARE.
 #include "Shibboleth_DebugManager.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugRenderSystem)
-	.base<ISystem>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugRenderSystem)
+	.base<Shibboleth::ISystem>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugRenderSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugRenderSystem)
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugSystem)
-	.base<ISystem>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugSystem)
+	.base<Shibboleth::ISystem>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DebugSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugSystem)
 
 
 NS_SHIBBOLETH

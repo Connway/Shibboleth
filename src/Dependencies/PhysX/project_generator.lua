@@ -5,6 +5,7 @@ function PhysXProject(proj_name, lib_type)
 		location(GetDependenciesLocation())
 	end
 
+	cppdialect "C++17" -- C++20 breaks this library.
 	kind(lib_type)
 	language "C++"
 

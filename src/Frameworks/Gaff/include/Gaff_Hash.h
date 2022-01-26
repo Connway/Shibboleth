@@ -103,6 +103,185 @@ Hash64 FNV1Hash64(const char* key, size_t len);
 Hash32 FNV1aHash32(const char* key, size_t len);
 Hash32 FNV1Hash32(const char* key, size_t len);
 
+
+constexpr Hash64Storage FNV1aHash64ConstHelper(Hash64Storage hash, char character)
+{
+	return (hash ^ static_cast<Hash64Storage>(character)) * k_magic_number_hash64_storage;
+}
+
+constexpr Hash64Storage FNV1aHash64ConstHelper(Hash64Storage hash, wchar_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1aHash64ConstHelper(hash, left);
+	hash = FNV1aHash64ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash64Storage FNV1aHash64ConstHelper(Hash64Storage hash, char8_t character)
+{
+	return (hash ^ static_cast<Hash64Storage>(character)) * k_magic_number_hash64_storage;
+}
+
+constexpr Hash64Storage FNV1aHash64ConstHelper(Hash64Storage hash, char16_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1aHash64ConstHelper(hash, left);
+	hash = FNV1aHash64ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash64Storage FNV1aHash64ConstHelper(Hash64Storage hash, char32_t character)
+{
+	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
+	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
+	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
+	const char part_4 = static_cast<char>(0x000000FF & character);
+	hash = FNV1aHash64ConstHelper(hash, part_1);
+	hash = FNV1aHash64ConstHelper(hash, part_2);
+	hash = FNV1aHash64ConstHelper(hash, part_3);
+	hash = FNV1aHash64ConstHelper(hash, part_4);
+
+	return  hash;
+}
+
+constexpr Hash64Storage FNV1Hash64ConstHelper(Hash64Storage hash, char character)
+{
+	return hash = (hash ^ k_magic_number_hash64_storage) * static_cast<Hash64Storage>(character);
+}
+
+constexpr Hash64Storage FNV1Hash64ConstHelper(Hash64Storage hash, wchar_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1Hash64ConstHelper(hash, left);
+	hash = FNV1Hash64ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash64Storage FNV1Hash64ConstHelper(Hash64Storage hash, char8_t character)
+{
+	return hash = (hash ^ k_magic_number_hash64_storage) * static_cast<Hash64Storage>(character);
+}
+
+constexpr Hash64Storage FNV1Hash64ConstHelper(Hash64Storage hash, char16_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1Hash64ConstHelper(hash, left);
+	hash = FNV1Hash64ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash64Storage FNV1Hash64ConstHelper(Hash64Storage hash, char32_t character)
+{
+	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
+	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
+	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
+	const char part_4 = static_cast<char>(0x000000FF & character);
+	hash = FNV1Hash64ConstHelper(hash, part_1);
+	hash = FNV1Hash64ConstHelper(hash, part_2);
+	hash = FNV1Hash64ConstHelper(hash, part_3);
+	hash = FNV1Hash64ConstHelper(hash, part_4);
+
+	return  hash;
+}
+
+constexpr Hash32Storage FNV1aHash32ConstHelper(Hash32Storage hash, char character)
+{
+	return (hash ^ static_cast<Hash32Storage>(character)) * k_magic_number_hash32_storage;
+}
+
+constexpr Hash32Storage FNV1aHash32ConstHelper(Hash32Storage hash, wchar_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1aHash32ConstHelper(hash, left);
+	hash = FNV1aHash32ConstHelper(hash, right);
+
+	return  hash;
+}
+
+
+constexpr Hash32Storage FNV1aHash32ConstHelper(Hash32Storage hash, char8_t character)
+{
+	return (hash ^ static_cast<Hash32Storage>(character)) * k_magic_number_hash32_storage;
+}
+
+constexpr Hash32Storage FNV1aHash32ConstHelper(Hash32Storage hash, char16_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1aHash32ConstHelper(hash, left);
+	hash = FNV1aHash32ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash32Storage FNV1aHash32ConstHelper(Hash32Storage hash, char32_t character)
+{
+	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
+	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
+	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
+	const char part_4 = static_cast<char>(0x000000FF & character);
+	hash = FNV1aHash32ConstHelper(hash, part_1);
+	hash = FNV1aHash32ConstHelper(hash, part_2);
+	hash = FNV1aHash32ConstHelper(hash, part_3);
+	hash = FNV1aHash32ConstHelper(hash, part_4);
+
+	return  hash;
+}
+
+constexpr Hash32Storage FNV1Hash32ConstHelper(Hash32Storage hash, char character)
+{
+	return hash = (hash ^ k_magic_number_hash32_storage) * static_cast<Hash32Storage>(character);
+}
+
+constexpr Hash32Storage FNV1Hash32ConstHelper(Hash32Storage hash, wchar_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1Hash32ConstHelper(hash, left);
+	hash = FNV1Hash32ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash32Storage FNV1Hash32ConstHelper(Hash32Storage hash, char8_t character)
+{
+	return hash = (hash ^ k_magic_number_hash32_storage) * static_cast<Hash32Storage>(character);
+}
+
+constexpr Hash32Storage FNV1Hash32ConstHelper(Hash32Storage hash, char16_t character)
+{
+	const char left = static_cast<char>((0xFF00 & character) >> 8);
+	const char right = static_cast<char>(0x00FF & character);
+	hash = FNV1Hash32ConstHelper(hash, left);
+	hash = FNV1Hash32ConstHelper(hash, right);
+
+	return  hash;
+}
+
+constexpr Hash32Storage FNV1Hash32ConstHelper(Hash32Storage hash, char32_t character)
+{
+	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
+	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
+	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
+	const char part_4 = static_cast<char>(0x000000FF & character);
+	hash = FNV1Hash32ConstHelper(hash, part_1);
+	hash = FNV1Hash32ConstHelper(hash, part_2);
+	hash = FNV1Hash32ConstHelper(hash, part_3);
+	hash = FNV1Hash32ConstHelper(hash, part_4);
+
+	return  hash;
+}
+
+
 template <class T>
 Hash64 FNV1Hash64VAdd(Hash64 init, const T* front)
 {
@@ -227,70 +406,74 @@ Hash32 FNV1Hash32T(const T& value, Hash32 init = k_init_hash32)
 	return FNV1Hash32(reinterpret_cast<const char*>(&value), sizeof(T), init);
 }
 
-constexpr Hash64 FNV1aHash64Const(const char* key, size_t len, Hash64 init = k_init_hash64)
+template <class T>
+constexpr Hash64 FNV1aHash64Const(const T* key, size_t len, Hash64 init = k_init_hash64)
 {
 	Hash64Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ static_cast<Hash64Storage>(key[i])) * k_magic_number_hash64_storage;
+		hash = FNV1aHash64ConstHelper(hash, key[i]);
 	}
 
 	return Hash64(hash);
 }
 
-constexpr Hash64 FNV1Hash64Const(const char* key, size_t len, Hash64 init = k_init_hash64)
+template <class T>
+constexpr Hash64 FNV1Hash64Const(const T* key, size_t len, Hash64 init = k_init_hash64)
 {
 	Hash64Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ k_magic_number_hash64_storage) * static_cast<Hash64Storage>(key[i]);
+		hash = FNV1Hash64ConstHelper(hash, key[i]);
 	}
 
 	return Hash64(hash);
 }
 
-constexpr Hash32 FNV1aHash32Const(const char* key, size_t len, Hash32 init = k_init_hash32)
+template <class T>
+constexpr Hash32 FNV1aHash32Const(const T* key, size_t len, Hash32 init = k_init_hash32)
 {
 	Hash32Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash ^ static_cast<Hash32Storage>(key[i])) * k_magic_number_hash32_storage;
+		hash = FNV1aHash32ConstHelper(hash, key[i]);
 	}
 
 	return Hash32(hash);
 }
 
-constexpr Hash32 FNV1Hash32Const(const char* key, size_t len, Hash32 init = k_init_hash32)
+template <class T>
+constexpr Hash32 FNV1Hash32Const(const T* key, size_t len, Hash32 init = k_init_hash32)
 {
 	Hash32Storage hash = init.getHash();
 
 	for (size_t i = 0; i < len; ++i) {
-		hash = (hash * k_magic_number_hash32_storage) ^ static_cast<Hash32Storage>(key[i]);
+		hash = FNV1Hash32ConstHelper(hash, key[i]);
 	}
 
 	return Hash32(hash);
 }
 
-template <size_t size>
-constexpr Hash64 FNV1aHash64Const(const char (&key)[size], Hash64 init = k_init_hash64)
+template <class T, size_t size>
+constexpr Hash64 FNV1aHash64Const(const T (&key)[size], Hash64 init = k_init_hash64)
 {
 	return FNV1aHash64Const(key, size - 1, init);
 }
 
-template <size_t size>
-constexpr Hash64 FNV1Hash64Const(const char (&key)[size], Hash64 init = k_init_hash64)
+template <class T, size_t size>
+constexpr Hash64 FNV1Hash64Const(const T (&key)[size], Hash64 init = k_init_hash64)
 {
 	return FNV1Hash64Const(key, size - 1, init);
 }
 
-template <size_t size>
-constexpr Hash32 FNV1aHash32Const(const char (&key)[size], Hash32 init = k_init_hash32)
+template <class T, size_t size>
+constexpr Hash32 FNV1aHash32Const(const T (&key)[size], Hash32 init = k_init_hash32)
 {
 	return FNV1aHash32Const(key, size - 1, init);
 }
 
-template <size_t size>
-constexpr Hash32 FNV1Hash32Const(const char (&key)[size], Hash32 init = k_init_hash32)
+template <class T, size_t size>
+constexpr Hash32 FNV1Hash32Const(const T (&key)[size], Hash32 init = k_init_hash32)
 {
 	return FNV1Hash32Const(key, size - 1, init);
 }
@@ -301,17 +484,20 @@ constexpr Hash64 FNV1aHash64Const(eastl::basic_string_view<T> key, Hash64 init =
 	return FNV1aHash64Const(key.data(), key.size(), init);
 }
 
-constexpr Hash64 FNV1Hash64Const(eastl::string_view key, Hash64 init = k_init_hash64)
+template <class T>
+constexpr Hash64 FNV1Hash64Const(eastl::basic_string_view<T> key, Hash64 init = k_init_hash64)
 {
 	return FNV1Hash64Const(key.data(), key.size(), init);
 }
 
-constexpr Hash32 FNV1aHash32Const(eastl::string_view key, Hash32 init = k_init_hash32)
+template <class T>
+constexpr Hash32 FNV1aHash32Const(eastl::basic_string_view<T> key, Hash32 init = k_init_hash32)
 {
 	return FNV1aHash32Const(key.data(), key.size(), init);
 }
 
-constexpr Hash32 FNV1Hash32Const(eastl::string_view key, Hash32 init = k_init_hash32)
+template <class T>
+constexpr Hash32 FNV1Hash32Const(eastl::basic_string_view<T> key, Hash32 init = k_init_hash32)
 {
 	return FNV1Hash32Const(key.data(), key.size(), init);
 }
@@ -340,169 +526,13 @@ Hash32 FNV1Hash32String(const T* string, Hash32 init = k_init_hash32)
 	return FNV1Hash32(reinterpret_cast<const char*>(string), eastl::CharStrlen(string) * sizeof(T), init);
 }
 
-constexpr Hash64Storage FNV1aHash64StringConstHelper(Hash64Storage hash, char character)
-{
-	return (hash ^ static_cast<Hash64Storage>(character)) * k_magic_number_hash64_storage;
-}
-
-constexpr Hash64Storage FNV1aHash64StringConstHelper(Hash64Storage hash, wchar_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1aHash64StringConstHelper(hash, left);
-	hash = FNV1aHash64StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash64Storage FNV1aHash64StringConstHelper(Hash64Storage hash, char16_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1aHash64StringConstHelper(hash, left);
-	hash = FNV1aHash64StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash64Storage FNV1aHash64StringConstHelper(Hash64Storage hash, char32_t character)
-{
-	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
-	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
-	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
-	const char part_4 = static_cast<char>(0x000000FF & character);
-	hash = FNV1aHash64StringConstHelper(hash, part_1);
-	hash = FNV1aHash64StringConstHelper(hash, part_2);
-	hash = FNV1aHash64StringConstHelper(hash, part_3);
-	hash = FNV1aHash64StringConstHelper(hash, part_4);
-
-	return  hash;
-}
-
-constexpr Hash64Storage FNV1Hash64StringConstHelper(Hash64Storage hash, char character)
-{
-	return hash = (hash ^ k_magic_number_hash64_storage) * static_cast<Hash64Storage>(character);
-}
-
-constexpr Hash64Storage FNV1Hash64StringConstHelper(Hash64Storage hash, wchar_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1Hash64StringConstHelper(hash, left);
-	hash = FNV1Hash64StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash64Storage FNV1Hash64StringConstHelper(Hash64Storage hash, char16_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1Hash64StringConstHelper(hash, left);
-	hash = FNV1Hash64StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash64Storage FNV1Hash64StringConstHelper(Hash64Storage hash, char32_t character)
-{
-	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
-	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
-	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
-	const char part_4 = static_cast<char>(0x000000FF & character);
-	hash = FNV1Hash64StringConstHelper(hash, part_1);
-	hash = FNV1Hash64StringConstHelper(hash, part_2);
-	hash = FNV1Hash64StringConstHelper(hash, part_3);
-	hash = FNV1Hash64StringConstHelper(hash, part_4);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1aHash32StringConstHelper(Hash32Storage hash, char character)
-{
-	return (hash ^ static_cast<Hash32Storage>(character)) * k_magic_number_hash32_storage;
-}
-
-constexpr Hash32Storage FNV1aHash32StringConstHelper(Hash32Storage hash, wchar_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1aHash32StringConstHelper(hash, left);
-	hash = FNV1aHash32StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1aHash32StringConstHelper(Hash32Storage hash, char16_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1aHash32StringConstHelper(hash, left);
-	hash = FNV1aHash32StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1aHash32StringConstHelper(Hash32Storage hash, char32_t character)
-{
-	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
-	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
-	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
-	const char part_4 = static_cast<char>(0x000000FF & character);
-	hash = FNV1aHash32StringConstHelper(hash, part_1);
-	hash = FNV1aHash32StringConstHelper(hash, part_2);
-	hash = FNV1aHash32StringConstHelper(hash, part_3);
-	hash = FNV1aHash32StringConstHelper(hash, part_4);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1Hash32StringConstHelper(Hash32Storage hash, char character)
-{
-	return hash = (hash ^ k_magic_number_hash32_storage) * static_cast<Hash32Storage>(character);
-}
-
-constexpr Hash32Storage FNV1Hash32StringConstHelper(Hash32Storage hash, wchar_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1Hash32StringConstHelper(hash, left);
-	hash = FNV1Hash32StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1Hash32StringConstHelper(Hash32Storage hash, char16_t character)
-{
-	const char left = static_cast<char>((0xFF00 & character) >> 8);
-	const char right = static_cast<char>(0x00FF & character);
-	hash = FNV1Hash32StringConstHelper(hash, left);
-	hash = FNV1Hash32StringConstHelper(hash, right);
-
-	return  hash;
-}
-
-constexpr Hash32Storage FNV1Hash32StringConstHelper(Hash32Storage hash, char32_t character)
-{
-	const char part_1 = static_cast<char>((0xFF000000 & character) >> 24);
-	const char part_2 = static_cast<char>((0x00FF0000 & character) >> 16);
-	const char part_3 = static_cast<char>((0x0000FF00 & character) >> 8);
-	const char part_4 = static_cast<char>(0x000000FF & character);
-	hash = FNV1Hash32StringConstHelper(hash, part_1);
-	hash = FNV1Hash32StringConstHelper(hash, part_2);
-	hash = FNV1Hash32StringConstHelper(hash, part_3);
-	hash = FNV1Hash32StringConstHelper(hash, part_4);
-
-	return  hash;
-}
-
 template <class T>
 constexpr Hash64 FNV1aHash64StringConst(const T* string, Hash64 init = k_init_hash64)
 {
 	Hash64Storage hash = init.getHash();
 
 	while (*string) {
-		hash = FNV1aHash64StringConstHelper(hash, *string);
+		hash = FNV1aHash64ConstHelper(hash, *string);
 		++string;
 	}
 
@@ -515,7 +545,7 @@ constexpr Hash64 FNV1Hash64StringConst(const T* string, Hash64 init = k_init_has
 	Hash64Storage hash = init.getHash();
 
 	while (*string) {
-		hash = FNV1Hash64StringConstHelper(hash, *string);
+		hash = FNV1Hash64ConstHelper(hash, *string);
 		++string;
 	}
 
@@ -528,7 +558,7 @@ constexpr Hash32 FNV1aHash32StringConst(const T* string, Hash32 init = k_init_ha
 	Hash32Storage hash = init.getHash();
 
 	while (*string) {
-		hash = FNV1aHash32StringConstHelper(hash, *string);
+		hash = FNV1aHash32ConstHelper(hash, *string);
 		++string;
 	}
 
@@ -541,7 +571,7 @@ constexpr Hash32 FNV1Hash32StringConst(const T* string, Hash32 init = k_init_has
 	Hash32Storage hash = init.getHash();
 
 	while (*string) {
-		hash = FNV1Hash32StringConstHelper(hash, *string);
+		hash = FNV1Hash32ConstHelper(hash, *string);
 		++string;
 	}
 

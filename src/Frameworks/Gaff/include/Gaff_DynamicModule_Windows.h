@@ -45,10 +45,11 @@ public:
 		return reinterpret_cast<T*>(getAddress(name));
 	}
 
-	bool load(const char* filename);
+	bool load(const char8_t* filename);
 
 	bool destroy(void);
 
+	void* getAddress(const char8_t* name) const;
 	void* getAddress(const char* name) const;
 
 	static const char* GetErrorString(void);

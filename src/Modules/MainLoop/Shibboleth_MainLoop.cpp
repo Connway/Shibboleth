@@ -30,10 +30,10 @@ THE SOFTWARE.
 #include <Gaff_IncludeOptick.h>
 #include <EAThread/eathread.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(MainLoop)
-	.BASE(IMainLoop)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
+	.BASE(Shibboleth::IMainLoop)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(MainLoop)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::MainLoop)
 
 NS_SHIBBOLETH
 
@@ -51,10 +51,10 @@ bool MainLoop::init(void)
 {
 	IApp& app = GetApp();
 
-	_render_mgr = &app.GETMANAGERT(IRenderManager, RenderManager);
+	_render_mgr = &app.GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	_job_pool = &app.getJobPool();
 
-	const auto* const systems = app.getReflectionManager().getTypeBucket(CLASS_HASH(ISystem));
+	const auto* const systems = app.getReflectionManager().template getTypeBucket<ISystem>();
 
 	if (!systems || systems->empty()) {
 		return true;
@@ -63,20 +63,17 @@ bool MainLoop::init(void)
 	ProxyAllocator allocator("MainLoop");
 	SerializeReaderWrapper readerWrapper(allocator);
 
-	if (!OpenJSONOrMPackFile(readerWrapper, "cfg/update_phases.cfg")) {
+	if (!OpenJSONOrMPackFile(readerWrapper, u8"cfg/update_phases.cfg")) {
 		LogErrorDefault("Failed to read cfg/update_phases.cfg[.bin].");
 		return false;
 	}
 
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 
 	if (!reader.isArray()) {
 		LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Root is not a 3-dimensional array of strings.");
 		return false;
 	}
-
-	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-	const auto* bucket = refl_mgr.getTypeBucket(CLASS_HASH(ISystem));
 
 	_blocks.resize(reader.size());
 
@@ -114,18 +111,17 @@ bool MainLoop::init(void)
 					return false;
 				}
 
-				const char* system_name = reader.readString();
-				const bool optional = system_name[0] == '!';
+				const char8_t* system_name = reader.readString();
+				const bool optional = system_name[0] == u8'!';
 
 				if (optional) {
 					++system_name;
 				}
 
 				const Gaff::Hash64 hash =  Gaff::FNV1aHash64String(system_name);
+				const auto it = eastl::lower_bound(systems->begin(), systems->end(), hash, ReflectionManager::CompareRefHash);
 
-				const auto it = eastl::lower_bound(bucket->begin(), bucket->end(), hash, ReflectionManager::CompareRefHash);
-
-				if (it == bucket->end() || hash != (*it)->getReflectionInstance().getHash()) {
+				if (it == systems->end() || hash != (*it)->getReflectionInstance().getHash()) {
 					if (optional) {
 						LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
 						reader.freeString(system_name - 1);
@@ -138,7 +134,7 @@ bool MainLoop::init(void)
 					}
 				}
 
-				ISystem* const system = (*it)->createT<ISystem>(CLASS_HASH(ISystem), allocator);
+				ISystem* const system = (*it)->createT<ISystem>(allocator);
 
 				if (!system) {
 					LogErrorDefault("MainLoop: Failed to create system '%s'", system_name);

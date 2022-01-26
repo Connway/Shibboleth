@@ -34,7 +34,7 @@ bool MessagePackSerializeWriter::init(char* buffer, size_t size)
 	return _writer.init(buffer, size);
 }
 
-bool MessagePackSerializeWriter::init(const char* filename)
+bool MessagePackSerializeWriter::init(const char8_t* filename)
 {
 	return _writer.init(filename);
 }
@@ -69,67 +69,67 @@ void MessagePackSerializeWriter::endObject(void)
 	_writer.endObject();
 }
 
-void MessagePackSerializeWriter::writeKey(const char* key)
+void MessagePackSerializeWriter::writeKey(const char8_t* key)
 {
 	_writer.writeKey(key);
 }
 
-void MessagePackSerializeWriter::writeInt8(const char* key, int8_t value)
+void MessagePackSerializeWriter::writeInt8(const char8_t* key, int8_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeInt16(const char* key, int16_t value)
+void MessagePackSerializeWriter::writeInt16(const char8_t* key, int16_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeInt32(const char* key, int32_t value)
+void MessagePackSerializeWriter::writeInt32(const char8_t* key, int32_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeInt64(const char* key, int64_t value)
+void MessagePackSerializeWriter::writeInt64(const char8_t* key, int64_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeUInt8(const char* key, uint8_t value)
+void MessagePackSerializeWriter::writeUInt8(const char8_t* key, uint8_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeUInt16(const char* key, uint16_t value)
+void MessagePackSerializeWriter::writeUInt16(const char8_t* key, uint16_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeUInt32(const char* key, uint32_t value)
+void MessagePackSerializeWriter::writeUInt32(const char8_t* key, uint32_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeUInt64(const char* key, uint64_t value)
+void MessagePackSerializeWriter::writeUInt64(const char8_t* key, uint64_t value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeFloat(const char* key, float value)
+void MessagePackSerializeWriter::writeFloat(const char8_t* key, float value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeDouble(const char* key, double value)
+void MessagePackSerializeWriter::writeDouble(const char8_t* key, double value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeBool(const char* key, bool value)
+void MessagePackSerializeWriter::writeBool(const char8_t* key, bool value)
 {
 	_writer.write(key, value);
 }
 
-void MessagePackSerializeWriter::writeString(const char* key, const char* value)
+void MessagePackSerializeWriter::writeString(const char8_t* key, const char8_t* value)
 {
 	_writer.writeUTF8(key, value);
 }
@@ -189,7 +189,7 @@ void MessagePackSerializeWriter::writeBool(bool value)
 	_writer.write(value);
 }
 
-void MessagePackSerializeWriter::writeString(const char* value)
+void MessagePackSerializeWriter::writeString(const char8_t* value)
 {
 	_writer.writeUTF8(value);
 }

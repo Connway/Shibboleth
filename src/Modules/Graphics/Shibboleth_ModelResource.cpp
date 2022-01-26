@@ -33,24 +33,24 @@ THE SOFTWARE.
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ModelResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelResource)
 	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".model.bin"),
-		ResExtAttribute(".model"),
-		MakeLoadFileCallbackAttribute(&ModelResource::loadModel)
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResExtAttribute(u8".model.bin"),
+		Shibboleth::ResExtAttribute(u8".model"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ModelResource::loadModel)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ModelResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelResource)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ModelResource)
 
 template <int32_t flag, size_t size>
-static int32_t GetIgnoreFlag(const char (&field)[size], const Gaff::ISerializeReader& reader)
+static int32_t GetIgnoreFlag(const char (&field)[size], const ISerializeReader& reader)
 {
 	const auto guard = reader.enterElementGuard(field);
 	return (reader.readBool(false)) ? flag : 0;
@@ -78,12 +78,13 @@ bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, con
 
 	for (int32_t i = 0; i < static_cast<int32_t>(scene.mNumMeshes); ++i) {
 		const aiMesh* const mesh = scene.mMeshes[i];
-		U8String mesh_name = getFilePath().getString() + ":";
+		U8String mesh_name = getFilePath().getString() + u8":";
 
 		if (mesh->mName.length) {
-			mesh_name += mesh->mName.C_Str();
+			CONVERT_STRING(char8_t, temp_name, mesh->mName.C_Str());
+			mesh_name += temp_name;
 		} else {
-			mesh_name.append_sprintf("%i", i);
+			mesh_name.append_sprintf(u8"%i", i);
 		}
 
 		auto mesh_res = res_mgr.createResourceT<MeshResource>(mesh_name.data());
@@ -187,16 +188,16 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	const IFile* model_file = nullptr;
 	U8String model_file_path;
 	U8String device_tag;
 
 	{
-		const auto guard = reader.enterElementGuard("devices_tag");
+		const auto guard = reader.enterElementGuard(u8"devices_tag");
 	
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("Malformed mesh '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
@@ -204,7 +205,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 			return;
 		}
 	
-		const char* const tag = reader.readString("main");
+		const char8_t* const tag = reader.readString(u8"main");
 		device_tag = tag;
 		devices = render_mgr.getDevicesByTag(tag);
 		reader.freeString(tag);
@@ -217,7 +218,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("model_file");
+		const auto guard = reader.enterElementGuard(u8"model_file");
 	
 		if (!reader.isString()) {
 			LogErrorResource("Malformed mesh '%s'. 'model_file' element is not a string.", getFilePath().getBuffer());
@@ -225,7 +226,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 			return;
 		}
 	
-		const char* const path = reader.readString();
+		const char8_t* const path = reader.readString();
 
 		model_file_path = path;
 		model_file = res_mgr.loadFileAndWait(path, thread_id_int);
@@ -249,7 +250,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 									GetIgnoreFlag<aiComponent_TEXCOORDS>("ignore_uvs", reader);
 
 
-	const size_t index = model_file_path.find_last_of('.');
+	const size_t index = model_file_path.find_last_of(u8'.');
 	
 	Assimp::Importer importer;
 	
@@ -263,7 +264,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 		model_file->getBuffer(),
 		model_file->size(),
 		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | static_cast<unsigned int>(aiProcess_GenBoundingBoxes),
-		model_file_path.data() + index
+		reinterpret_cast<const char*>(model_file_path.data() + index)
 	);
 	
 	if (!scene) {
@@ -275,7 +276,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 	Vector<int32_t> centering_meshes(ProxyAllocator("Resource"));
 
 	{
-		const auto guard = reader.enterElementGuard("center");
+		const auto guard = reader.enterElementGuard(u8"center");
 
 		if (reader.isTrue()) {
 			centering_meshes.set_capacity(scene->mNumMeshes);

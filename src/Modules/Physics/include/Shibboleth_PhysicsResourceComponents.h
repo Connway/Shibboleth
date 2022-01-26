@@ -37,5 +37,5 @@ class PhysicsShape final : public Resource<PhysicsShapeResource>
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsMaterial)
-SHIB_REFLECTION_DECLARE(PhysicsShape)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsMaterial)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsShape)

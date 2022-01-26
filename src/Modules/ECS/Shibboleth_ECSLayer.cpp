@@ -21,11 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSLayer.h"
+#include <Shibboleth_SerializeInterfaces.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_SerializeInterfaces.h>
 
 NS_SHIBBOLETH
 
@@ -37,15 +37,15 @@ ECSLayer::~ECSLayer(void)
 {
 }
 
-void ECSLayer::load(const Gaff::ISerializeReader& reader)
+void ECSLayer::load(const ISerializeReader& reader)
 {
 	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
 	GAFF_REF(ecs_mgr);
 
-	char name[256] = { 0 };
+	char8_t name[256] = { 0 };
 
 	{
-		const auto guard = reader.enterElementGuard("name");
+		const auto guard = reader.enterElementGuard(u8"name");
 
 		if (reader.isString()) {
 			reader.readString(name, ARRAY_SIZE(name));
@@ -53,19 +53,19 @@ void ECSLayer::load(const Gaff::ISerializeReader& reader)
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("objects");
+		const auto guard = reader.enterElementGuard(u8"objects");
 
 		if (!reader.isArray()) {
-			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : "<invalid_name>");
+			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : u8"<invalid_name>");
 			return;
 		}
 
 		reader.forEachInArray([&](int32_t index) -> bool
 		{
-			char archetype[256] = { 0 };
+				char8_t archetype[256] = { 0 };
 
 			{
-				const auto guard = reader.enterElementGuard("archetype");
+				const auto guard = reader.enterElementGuard(u8"archetype");
 
 				if (!reader.isString()) {
 					LogErrorDefault("Failed to load object at index %i. Malformed object definition.", index);
@@ -76,7 +76,7 @@ void ECSLayer::load(const Gaff::ISerializeReader& reader)
 			}
 
 			{
-				const auto guard = reader.enterElementGuard("overrides");
+				const auto guard = reader.enterElementGuard(u8"overrides");
 
 				if (reader.isNull()) {
 					return false;
@@ -93,9 +93,10 @@ void ECSLayer::load(const Gaff::ISerializeReader& reader)
 	}
 }
 
-void ECSLayer::save(Gaff::ISerializeWriter& writer)
+void ECSLayer::save(ISerializeWriter& writer)
 {
 	GAFF_REF(writer);
+	// $TODO: Implement
 }
 
 const U8String& ECSLayer::getName(void) const
@@ -103,7 +104,7 @@ const U8String& ECSLayer::getName(void) const
 	return _name;
 }
 
-void ECSLayer::setName(const char* name)
+void ECSLayer::setName(const char8_t* name)
 {
 	_name = name;
 }

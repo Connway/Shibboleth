@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Function.h>
+#include <Gaff_JobPool.h>
 #include <EAThread/eathread_mutex.h>
 #include <atomic>
 

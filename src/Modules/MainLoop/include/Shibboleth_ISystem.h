@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ISystem : public Gaff::IReflectionObject
+class ISystem : public Refl::IReflectionObject
 {
 public:
 	ISystem(void) = default;
@@ -42,4 +42,4 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ISystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::ISystem)

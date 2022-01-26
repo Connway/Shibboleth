@@ -40,7 +40,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 using ShaderInitSourceFunc = bool (ShaderD3D11::*)(IRenderDevice&, const char*, size_t);
-using ShaderInitFunc = bool (ShaderD3D11::*)(IRenderDevice&, const char*);
+using ShaderInitFunc = bool (ShaderD3D11::*)(IRenderDevice&, const char8_t*);
 
 static ShaderInitFunc g_init_funcs[static_cast<size_t>(IShader::Type::Count)] = {
 	&ShaderD3D11::initVertex,
@@ -121,7 +121,9 @@ static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*mac
 	if (FAILED(result)) {
 		if (error_buffer) {
 			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
-			PrintfToLog(error_msg, LogMsgType::Error);
+			CONVERT_STRING(char8_t, temp_error_msg, error_msg);
+
+			PrintfToLog(temp_error_msg, LogMsgType::Error);
 
 			error_buffer->Release();
 		}
@@ -132,14 +134,14 @@ static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*mac
 	return shader_buffer;
 }
 
-static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size)
+static bool LoadFile(const char8_t* file_path, char*& shader_src, SIZE_T& shader_size)
 {
 	GAFF_ASSERT(file_path);
 
 	Gaff::File shader(file_path, Gaff::File::OpenMode::ReadBinary);
 
 	if (!shader.isOpen()) {
-		U8String msg("Failed to open shader file: ");
+		U8String msg(u8"Failed to open shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.data(), LogMsgType::Error);
@@ -160,7 +162,7 @@ static bool LoadFile(const char* file_path, char*& shader_src, SIZE_T& shader_si
 		shader_src = nullptr;
 		shader_size = 0;
 
-		U8String msg("Failed to read shader file: ");
+		U8String msg(u8"Failed to read shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.data(), LogMsgType::Error);
@@ -188,7 +190,10 @@ static void MakeVarReflection(
 		ID3D11ShaderReflectionType* const member_type_refl = type_refl->GetMemberTypeByIndex(static_cast<UINT>(i));
 		member_type_refl->GetDesc(&member_type_desc);
 
-		out.name = type_refl->GetMemberTypeName(static_cast<UINT>(i));
+		const char* name = type_refl->GetMemberTypeName(static_cast<UINT>(i));
+		CONVERT_STRING(char8_t, temp_name, name);
+
+		out.name = temp_name;
 		out.start_offset = member_type_desc.Offset;
 
 		switch (member_type_desc.Class) {
@@ -240,7 +245,12 @@ static void MakeStructuredBufferReflection(
 	const D3D11_SHADER_DESC& shader_desc,
 	ID3D11ShaderReflection* refl)
 {
-	out_refl.name = input_desc.Name;
+	const char* name = input_desc.Name;
+
+	{
+		CONVERT_STRING(char8_t, temp_name, name);
+		out_refl.name = temp_name;
+	}
 
 	for (int32_t i = 0; i < static_cast<int32_t>(shader_desc.ConstantBuffers); ++i) {
 		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
@@ -248,7 +258,10 @@ static void MakeStructuredBufferReflection(
 
 		cb_refl->GetDesc(&cb_desc);
 
-		if (cb_desc.Name == out_refl.name) {
+		name = cb_desc.Name;
+		CONVERT_STRING(char8_t, temp_name, name);
+
+		if (temp_name == out_refl.name) {
 			out_refl.size_bytes = cb_desc.Size;
 			MakeVarReflection(out_refl, cb_refl);
 		}
@@ -275,17 +288,17 @@ bool ShaderD3D11::initSource(IRenderDevice& rd, const char* shader_source, size_
 
 bool ShaderD3D11::initSource(IRenderDevice& rd, const char* shader_source, Type shader_type)
 {
-		GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
 	return (this->*g_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, strlen(shader_source));
 }
 
-bool ShaderD3D11::init(IRenderDevice& rd, const char* file_path, Type shader_type)
+bool ShaderD3D11::init(IRenderDevice& rd, const char8_t* file_path, Type shader_type)
 {
-		GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
 	return (this->*g_init_funcs[static_cast<int32_t>(shader_type)])(rd, file_path);
 }
 
-bool ShaderD3D11::initVertex(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initVertex(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -314,7 +327,7 @@ bool ShaderD3D11::initVertex(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D11::initPixel(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initPixel(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -343,7 +356,7 @@ bool ShaderD3D11::initPixel(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D11::initDomain(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initDomain(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -372,7 +385,7 @@ bool ShaderD3D11::initDomain(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D11::initGeometry(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initGeometry(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -401,7 +414,7 @@ bool ShaderD3D11::initGeometry(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D11::initHull(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initHull(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -430,7 +443,7 @@ bool ShaderD3D11::initHull(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D11::initCompute(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initCompute(IRenderDevice& rd, const char8_t* file_path)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && file_path);
 
@@ -650,8 +663,11 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 			return reflection;
 		}
 
+		const char* semantic_name = input_desc.SemanticName;
+		CONVERT_STRING(char8_t, temp_semantic_name, semantic_name);
+
 		auto& input_refl = reflection.input_params_reflection[i];
-		input_refl.semantic_name = input_desc.SemanticName;
+		input_refl.semantic_name = temp_semantic_name;
 		input_refl.semantic_index = input_desc.SemanticIndex;
 		input_refl.format = GetFormat(input_desc);
 
@@ -673,8 +689,11 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 			continue;
 		}
 
+		const char* name = cb_desc.Name;
+		CONVERT_STRING(char8_t, temp_name, name);
+
 		auto& const_buff_refl = reflection.const_buff_reflection.emplace_back();
-		const_buff_refl.name = cb_desc.Name;
+		const_buff_refl.name = temp_name;
 		const_buff_refl.size_bytes = cb_desc.Size;
 	}
 
@@ -689,14 +708,17 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 			return reflection;
 		}
 
+		const char* name = res_desc.Name;
+		CONVERT_STRING(char8_t, temp_name, name);
+
 		switch (res_desc.Type) {
 			case D3D_SIT_TEXTURE:
-				reflection.textures.emplace_back(res_desc.Name);
-				reflection.var_decl_order.emplace_back(res_desc.Name);
+				reflection.textures.emplace_back(temp_name);
+				reflection.var_decl_order.emplace_back(temp_name);
 				break;
 
 			case D3D_SIT_SAMPLER:
-				reflection.samplers.emplace_back(res_desc.Name);
+				reflection.samplers.emplace_back(temp_name);
 				break;
 
 			case D3D_SIT_STRUCTURED:
@@ -707,7 +729,7 @@ ShaderReflection ShaderD3D11::getReflectionData(void) const
 					refl
 				);
 
-				reflection.var_decl_order.emplace_back(res_desc.Name);
+				reflection.var_decl_order.emplace_back(temp_name);
 				break;
 
 			default:

@@ -15,9 +15,9 @@ namespace
 	void RegisterOwningModule(void)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Reflection::Reflection<T>::GetHash(), "%s");
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Refl::Reflection<T>::GetHash(), u8"%s");
 		} else {
-			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Reflection::Reflection<T>::GetHash(), "%s");
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Refl::Reflection<T>::GetHash(), u8"%s");
 		}
 	}
 
@@ -26,17 +26,17 @@ namespace
 	{
 		if constexpr (std::is_enum<T>::value) {
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
-		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
+		} else if constexpr (std::is_base_of<Refl::IAttribute, T>::value) {
 			if (mode == Shibboleth::InitMode::Attributes) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else {
 			if (mode == Shibboleth::InitMode::Regular) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		}
@@ -48,13 +48,13 @@ namespace %s::Gen
 	void InitNonOwnedReflection(void)
 	{
 		// Initialize Enums.
-		Gaff::InitEnumReflection();
+		Refl::InitEnumReflection();
 
 		// Initialize Attributes.
-		Gaff::InitAttributeReflection();
+		Refl::InitAttributeReflection();
 
 		// Initialize regular classes.
-		Gaff::InitClassReflection();
+		Refl::InitClassReflection();
 	}
 
 	void InitReflection(Shibboleth::InitMode mode)
@@ -127,10 +127,10 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 			}
 
 			%s::Gen::InitReflection(mode);
@@ -264,9 +264,9 @@ namespace
 	void RegisterOwningModule(void)
 	{
 		if constexpr (std::is_enum<T>::value) {
-			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Reflection::Reflection<T>::GetHash(), "Engine");
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Refl::Reflection<T>::GetHash(), u8"Engine");
 		} else {
-			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Reflection::Reflection<T>::GetHash(), "Engine");
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Refl::Reflection<T>::GetHash(), u8"Engine");
 		}
 	}
 
@@ -275,17 +275,17 @@ namespace
 	{
 		if constexpr (std::is_enum<T>::value) {
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
-		} else if constexpr (std::is_base_of<Gaff::IAttribute, T>::value) {
+		} else if constexpr (std::is_base_of<Refl::IAttribute, T>::value) {
 			if (mode == Shibboleth::InitMode::Attributes) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		} else {
 			if (mode == Shibboleth::InitMode::Regular) {
-				Reflection::Reflection<T>::Init();
+				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}
 		}
@@ -362,18 +362,26 @@ newaction
 			end
 
 			local lines = io.readfile(file):explode("\n")
-			local last_namespace = ""
+			-- local last_namespace = ""
 
 			for _, line in next, lines do
-				local match = line:match("NS_(.+)")
-
-				if match then
-					if match:find("END") == nil then
-						last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
-					end
-
+				if line:match("#define") then
 					goto continue
 				end
+
+				if line:match("NS_(.+)") then
+					goto continue
+				end
+
+				-- local match = line:match("NS_(.+)")
+
+				-- if match then
+				-- 	if match:find("END") == nil then
+				-- 		last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
+				-- 	end
+
+				-- 	goto continue
+				-- end
 
 				-- Detect classes
 				match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
@@ -383,7 +391,8 @@ newaction
 						file_class_map[stripped_file] = {}
 					end
 
-					table.insert(file_class_map[stripped_file], last_namespace .. match)
+					-- table.insert(file_class_map[stripped_file], last_namespace .. match)
+					table.insert(file_class_map[stripped_file], match)
 					goto continue
 				end
 
@@ -542,22 +551,26 @@ newaction
 			end
 
 			local lines = io.readfile(file):explode("\n")
-			local last_namespace = ""
+			-- local last_namespace = ""
 
 			for _, line in next, lines do
 				if line:match("#define") then
 					goto continue
 				end
 
-				local match = line:match("NS_(.+)")
-
-				if match then
-					if match:find("END") == nil then
-						last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
-					end
-
+				if line:match("NS_(.+)") then
 					goto continue
 				end
+
+				-- local match = line:match("NS_(.+)")
+
+				-- if match then
+				-- 	if match:find("END") == nil then
+				-- 		last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
+				-- 	end
+
+				-- 	goto continue
+				-- end
 
 				-- Detect classes
 				match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
@@ -567,7 +580,8 @@ newaction
 						file_class_map[stripped_file] = {}
 					end
 
-					table.insert(file_class_map[stripped_file], last_namespace .. match)
+					-- table.insert(file_class_map[stripped_file], last_namespace .. match)
+					table.insert(file_class_map[stripped_file], match)
 					goto continue
 				end
 

@@ -48,7 +48,7 @@ const U8String& ShaderInclude::getWorkingDir(void) const
 	return _working_dir;
 }
 
-void ShaderInclude::setWorkingDir(const char* dir)
+void ShaderInclude::setWorkingDir(const char8_t* dir)
 {
 	_working_dir = dir;
 }

@@ -24,12 +24,12 @@ THE SOFTWARE.
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_DevWebAttributes.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ECSEntityWebHandler)
-	.classAttrs(DevWebCommandAttribute("/entity"))
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSEntityWebHandler)
+	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/entity"))
 
-	.BASE(IDevWebHandler)
+	.BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ECSEntityWebHandler)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSEntityWebHandler)
 
 NS_SHIBBOLETH
 

@@ -50,7 +50,7 @@ public:
 	ReflectionVersion& friendlyName(const char* name);
 
 	template <class Base>
-	ReflectionVersion& base(const char* name);
+	ReflectionVersion& base(const char8_t* name);
 
 	template <class Base>
 	ReflectionVersion& base(void);
@@ -64,19 +64,37 @@ public:
 	ReflectionVersion& ctor(void);
 
 	template <class Var, size_t size, class... Attrs>
+	ReflectionVersion& var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes);
+
+	template <class Var, size_t size, class... Attrs>
 	ReflectionVersion& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
+
+	template <class Ret, class Var, size_t size, class... Attrs>
+	ReflectionVersion& var(const char8_t (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t size, class... Attrs>
 	ReflectionVersion& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
+	ReflectionVersion& var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
+	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionVersion& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+
+	template <size_t size, class Ret, class... Args, class... Attrs>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& staticFunc(const char8_t (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
 	ReflectionVersion& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
@@ -150,7 +168,7 @@ public:
 	ReflectionVersion& opMinus(void);
 	ReflectionVersion& opPlus(void);
 
-	template <int32_t (*to_string_func)(const T&, char*, int32_t)>
+	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 	ReflectionVersion& opToString(void);
 
 	template <class... Attrs>

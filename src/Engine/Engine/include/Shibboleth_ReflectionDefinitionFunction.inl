@@ -244,40 +244,91 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 
 	// $TODO: Add vector support.
 
-	if constexpr (std::is_same<const char*, First>::value || IsU8StringRef<First> || IsU8String<First> || IsHashStringView<First>) {
+	if constexpr (
+		std::is_same<const char*, First>::value ||
+		std::is_same<const char8_t*, First>::value ||
+		IsU8StringRef<First> ||
+		IsU8String<First> ||
+		IsHashStringView<First>) {
+
 		// Get current value from arg stack.
 		const FunctionStackEntry& entry = args[arg_index];
+		const char8_t* str_u8 = nullptr;
 		const char* str = nullptr;
 
-		if (entry.flags.testAll(FunctionStackEntry::Flag::IsString)) {
+		if (entry.flags.testAll(FunctionStackEntry::Flag::IsStringU8)) {
+			str_u8 = reinterpret_cast<char8_t*>(entry.value.vp);
+			str = reinterpret_cast<const char*>(str_u8);
+
+		} else if (entry.flags.testAll(FunctionStackEntry::Flag::IsString)) {
 			str = reinterpret_cast<char*>(entry.value.vp);
 
 		// It's a U8String.
-		} else if (Gaff::FindFirstOf(entry.ref_def->getReflectionInstance().getName(), "U8String") != SIZE_T_FAIL) {
+		} else if (Gaff::FindFirstOf(entry.ref_def->getReflectionInstance().getName(), u8"U8String") != SIZE_T_FAIL) {
 			// I think this *SHOULD* be safe, since the string data is stored in the first part. So even if the allocator is a different size,
 			// the memory for the actual string should be in the same offset.
-			str = reinterpret_cast<Shibboleth::U8String*>(entry.value.vp)->data();
+			str_u8 = reinterpret_cast<Shibboleth::U8String*>(entry.value.vp)->data();
 		}
 		
-		if (!str) {
+		if (!str_u8 && !str) {
 			// $TODO: Log error.
 			return false;
 		}
 
 		if constexpr (sizeof...(Rest) > 0) {
-			if constexpr (std::is_same<const char*, First>::value) {
+			if constexpr (std::is_same<const char8_t*, First>::value) {
+				if (str_u8) {
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+				} else {
+					CONVERT_STRING(char8_t, temp_str, str);
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(temp_str));
+				}
+
+			} else if constexpr (std::is_same<const char*, First>::value) {
 				return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+
 			} else {
-				ArgType value(str);
-				return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+				if constexpr (std::is_constructible<ArgType, const char8_t*>::value) {
+					if (str_u8) {
+						ArgType value(str_u8);
+						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+					} else {
+						CONVERT_STRING(char8_t, temp_str, str);
+						ArgType value(temp_str);
+						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+					}
+				} else {
+					ArgType value(str);
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+				}
 			}
 
 		} else {
-			if constexpr (std::is_same<const char*, First>::value) {
+			if constexpr (std::is_same<const char8_t*, First>::value) {
+				if (str_u8) {
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+				} else {
+					CONVERT_STRING(char8_t, temp_str, str);
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(temp_str));
+				}
+
+			} else if constexpr (std::is_same<const char*, First>::value) {
 				return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(str));
+
 			} else {
-				ArgType value(str);
-				return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+				if constexpr (std::is_constructible<ArgType, const char8_t*>::value) {
+					if (str_u8) {
+						ArgType value(str_u8);
+						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+					} else {
+						CONVERT_STRING(char8_t, temp_str, str);
+						ArgType value(temp_str);
+						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+					}
+				} else {
+					ArgType value(str);
+					return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
+				}
 			}
 		}
 
@@ -299,7 +350,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 	// We don't support passing in void pointers or unreflected types as arguments.
 	} else if constexpr (std::is_void<FinalType>::value || !Reflection<FinalType>::HasReflection) {
 		GAFF_REF(callable, object, args, ret, arg_index, allocator);
-		VarArgRef<CurrentArgs...>(std::forward<CurrentArgs>(current_args)...);
+		Gaff::VarArgRef<CurrentArgs...>(std::forward<CurrentArgs>(current_args)...);
 
 		// $TODO: Log error.
 		return false;
@@ -420,17 +471,21 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 			GAFF_TEMPLATE_STATIC_ASSERT(false, "Cannot return void* when we don't know what to cast to. Last arg to function must be a const IReflectionDefinition[&/*].");
 		}
 
+	} else if constexpr (std::is_same<const char8_t*, Ret>::value) {
+		ret.flags.set(true, FunctionStackEntry::Flag::IsStringU8, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
+		ret.value.vp = const_cast<char8_t*>(CallCallableStackHelper(callable, object, std::forward<CurrentArgs>(current_args)...));
+
 	} else if constexpr (std::is_same<const char*, Ret>::value) {
 		ret.flags.set(true, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
 		ret.value.vp = const_cast<char*>(CallCallableStackHelper(callable, object, std::forward<CurrentArgs>(current_args)...));
 
 	} else if constexpr (IsU8StringRef<Ret> || IsU8String<Ret>) {
 		Ret string = CallCallableStackHelper(callable, object, std::forward<CurrentArgs>(current_args)...);
-		ret.flags.set(true, FunctionStackEntry::Flag::IsString);
+		ret.flags.set(true, FunctionStackEntry::Flag::IsStringU8, FunctionStackEntry::Flag::IsString);
 
 		if constexpr (IsU8StringRef<Ret>) {
-			ret.flags.set(true, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
-			ret.value.vp = const_cast<char*>(string.data());
+			ret.flags.set(true, FunctionStackEntry::Flag::IsStringU8, FunctionStackEntry::Flag::IsString, FunctionStackEntry::Flag::IsReference);
+			ret.value.vp = const_cast<char8_t*>(string.data());
 
 		} else {
 			ret.value.vp = GAFF_ALLOC(string.size() + 1, allocator);

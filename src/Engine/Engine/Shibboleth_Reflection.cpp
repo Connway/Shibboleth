@@ -42,74 +42,74 @@ SHIB_REFLECTION_DEFINE(bool)
 // $TODO: May want to reflect the Gaff versions of these in the future.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::U8String)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)
 
-	.setInstanceHash(Gaff::HashStringInstance<ProxyAllocator>)
-	.serialize(Gaff::LoadString<ProxyAllocator>, Gaff::SaveString<ProxyAllocator>)
+	.setInstanceHash(Shibboleth::HashStringInstance<Shibboleth::ProxyAllocator>)
+	.serialize(Shibboleth::LoadString<Shibboleth::ProxyAllocator>, Shibboleth::SaveString<Shibboleth::ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>)
+	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>
+		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>,
+		Shibboleth::SaveHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>)
+	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>
+		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>,
+		Shibboleth::SaveHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString32<>)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)
 
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>)
+	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, ProxyAllocator>
+		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>,
+		Shibboleth::SaveHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString64<>)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)
 
-	.setInstanceHash(HashStringInstanceHash<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>)
+	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>)
 	.serialize(
-		LoadHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>,
-		SaveHashString<char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, ProxyAllocator>
+		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>,
+		Shibboleth::SaveHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView32<>)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)
 
-	.setInstanceHash(HashStringViewInstanceHash< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
+	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
 	.serialize(
-		LoadHashStringView< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
-		SaveHashStringView< char, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
+		Shibboleth::LoadHashStringView< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
+		Shibboleth::SaveHashStringView< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)
 
-	.setInstanceHash(HashStringViewInstanceHash< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
+	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
 	.serialize(
-		LoadHashStringView< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
-		SaveHashStringView< char, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
+		Shibboleth::LoadHashStringView< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
+		Shibboleth::SaveHashStringView< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView64<>)
 

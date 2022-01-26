@@ -40,10 +40,10 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 			}
 
 			DevECS::Gen::InitReflection(mode);

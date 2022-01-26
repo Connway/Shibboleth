@@ -51,4 +51,4 @@ using PhysicsMaterialResourcePtr = Gaff::RefPtr<PhysicsMaterialResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(PhysicsMaterialResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsMaterialResource)

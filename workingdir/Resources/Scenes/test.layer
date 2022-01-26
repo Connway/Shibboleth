@@ -9,8 +9,8 @@
 			{
 				"components":
 				{
-					"Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
-					//"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+					"Shibboleth::Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
+					//"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
 				}
 			}
 		},
@@ -21,9 +21,9 @@
 			{
 				"components":
 				{
-					"Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
-					//"Rotation": { "value": {"x": 0.25, "y": 0.0, "z": 0.0} },
-					"StateMachine":
+					"Shibboleth::Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
+					//"Shibboleth::Rotation": { "value": {"x": 0.25, "y": 0.0, "z": 0.0} },
+					"Shibboleth::StateMachine":
 					{
 						"floats":
 						{
@@ -41,8 +41,8 @@
 				"shared_components": {},
 				"components":
 				{
-					"Position": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
-					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
 				}
 			}
 		},
@@ -52,10 +52,10 @@
 			{
 				"components":
 				{
-					"RigidBody": { "shape": "Physics/Shapes/plane.physics_shape", "static": true },
-					"Position": { "value": {"x": 0.0, "y": -10.0, "z": 0.0} },
-					"Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
-					"Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
+					"Shibboleth::RigidBody": { "shape": "Physics/Shapes/plane.physics_shape", "static": true },
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": -10.0, "z": 0.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
 		},
@@ -67,10 +67,10 @@
 			{
 				"components":
 				{
-					"RigidBody": { "shape": "Physics/Shapes/capsule.physics_shape" },
-					"Position": { "value": {"x": 0.0, "y": 10.0, "z": 15.0} },
-					"Rotation": { "value": {"x": 0.1, "y": 0.0, "z": 0.0} },
-					"Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
+					"Shibboleth::RigidBody": { "shape": "Physics/Shapes/capsule.physics_shape" },
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": 10.0, "z": 15.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.1, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
 		}

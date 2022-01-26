@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_IEnumReflectionDefinition.h"
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_ProxyAllocator.h"
+#include "Shibboleth_IAttribute.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_SmartPtrs.h"
@@ -34,7 +35,6 @@ THE SOFTWARE.
 NS_REFLECTION
 
 class IReflection;
-class IAttribute;
 
 template <class Enum>
 class EnumReflectionDefinition : public IEnumReflectionDefinition
@@ -69,17 +69,17 @@ public:
 	int32_t getNumEntries(void) const override;
 	Shibboleth::HashStringView32<> getEntryNameFromValue(int32_t value) const override;
 	Shibboleth::HashStringView32<> getEntryNameFromIndex(int32_t index) const override;
-	int32_t getEntryValue(const char* name) const override;
+	int32_t getEntryValue(const char8_t* name) const override;
 	int32_t getEntryValue(int32_t index) const override;
 	int32_t getEntryValue(Gaff::Hash32 name) const override;
 
-	Enum getEntry(const char* name) const;
+	Enum getEntry(const char8_t* name) const;
 	Enum getEntry(int32_t index) const;
 	Enum getEntry(Gaff::Hash32 name) const;
 
 	Shibboleth::HashStringView32<> getEntryName(Enum value) const;
 
-	bool entryExists(const char* name) const;
+	bool entryExists(const char8_t* name) const;
 	bool entryExists(Gaff::Hash32 name) const;
 
 	int32_t getNumEnumAttrs(void) const override;
@@ -89,6 +89,9 @@ public:
 
 	template <class... Attrs>
 	EnumReflectionDefinition& enumAttrs(const Attrs&... attrs);
+
+	template <size_t name_size, class... Attrs>
+	EnumReflectionDefinition& entry(const char8_t (&name)[name_size], Enum value);
 
 	template <size_t name_size, class... Attrs>
 	EnumReflectionDefinition& entry(const char (&name)[name_size], Enum value);

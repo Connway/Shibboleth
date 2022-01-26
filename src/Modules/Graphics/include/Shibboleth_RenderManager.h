@@ -66,4 +66,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(RenderManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderManager)

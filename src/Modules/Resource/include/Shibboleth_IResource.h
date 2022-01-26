@@ -64,7 +64,7 @@ enum class ResourceState
 	Delayed
 };
 
-class IResource : public Gaff::IRefCounted, public Gaff::IReflectionObject
+class IResource : public Gaff::IRefCounted, public Refl::IReflectionObject
 {
 public:
 	static constexpr bool Creatable = false;
@@ -85,7 +85,7 @@ public:
 	bool isLoaded(void) const;
 
 protected:
-	const IFile* loadFile(const char* file_path);
+	const IFile* loadFile(const char8_t* file_path);
 
 	void succeeded(void);
 	void failed(void);
@@ -105,5 +105,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ResourceState)
-SHIB_REFLECTION_DECLARE(IResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ResourceState)
+SHIB_REFLECTION_DECLARE(Shibboleth::IResource)

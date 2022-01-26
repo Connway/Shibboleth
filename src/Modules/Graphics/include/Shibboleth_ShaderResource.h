@@ -56,4 +56,4 @@ using ShaderResourcePtr = Gaff::RefPtr<ShaderResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ShaderResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ShaderResource)

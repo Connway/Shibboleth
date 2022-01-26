@@ -29,12 +29,12 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <EAStdC/EAString.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(WebInputHandler)
-	.classAttrs(DevWebCommandAttribute("/input"))
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::WebInputHandler)
+	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/input"))
 
-	.BASE(IDevWebHandler)
+	.BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(WebInputHandler)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::WebInputHandler)
 
 NS_SHIBBOLETH
 
@@ -114,43 +114,43 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const Gaff::JSON inputs = req_data["inputs"];
+	const Gaff::JSON inputs = req_data[u8"inputs"];
 
 	if (!inputs.isArray()) {
 		// $TODO: Log error.
 		return true;
 	}
 
-	const int32_t player_id = req_data["player_id"].getInt32(-1);
+	const int32_t player_id = req_data[u8"player_id"].getInt32(-1);
 
 	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
-		const Gaff::JSON mouse_pos_state = value["mouse_pos_state"];
-		const Gaff::JSON mouse_code = value["mouse_code"];
-		const Gaff::JSON char_code = value["char_code"];
-		const Gaff::JSON key_code = value["key_code"];
+		const Gaff::JSON mouse_pos_state = value[u8"mouse_pos_state"];
+		const Gaff::JSON mouse_code = value[u8"mouse_code"];
+		const Gaff::JSON char_code = value[u8"char_code"];
+		const Gaff::JSON key_code = value[u8"key_code"];
 
 		InputEntry entry;
 		entry.message.base.window = nullptr;
 		entry.player_id = player_id;
 
 		// Parse each input and put into input queue.
-		const float input_value = value["value"].getFloat(0.0f);
+		const float input_value = value[u8"value"].getFloat(0.0f);
 
-		char buffer[64] = { 0 };
+		char8_t buffer[64] = { 0 };
 
 		if (mouse_pos_state.isObject()) {
 			entry.message.base.type = Gleam::EventType::InputMouseMove;
-			entry.message.mouse_move.abs_x = mouse_pos_state["abs_x"].getInt32(0);
-			entry.message.mouse_move.abs_y = mouse_pos_state["abs_y"].getInt32(0);
-			entry.message.mouse_move.rel_x = mouse_pos_state["rel_x"].getInt32(0);
-			entry.message.mouse_move.rel_y = mouse_pos_state["rel_y"].getInt32(0);
-			entry.message.mouse_move.dx = mouse_pos_state["dx"].getInt32(0);
-			entry.message.mouse_move.dy = mouse_pos_state["dy"].getInt32(0);
+			entry.message.mouse_move.abs_x = mouse_pos_state[u8"abs_x"].getInt32(0);
+			entry.message.mouse_move.abs_y = mouse_pos_state[u8"abs_y"].getInt32(0);
+			entry.message.mouse_move.rel_x = mouse_pos_state[u8"rel_x"].getInt32(0);
+			entry.message.mouse_move.rel_y = mouse_pos_state[u8"rel_y"].getInt32(0);
+			entry.message.mouse_move.dx = mouse_pos_state[u8"dx"].getInt32(0);
+			entry.message.mouse_move.dy = mouse_pos_state[u8"dy"].getInt32(0);
 
 		} else if (mouse_code.isString()) {
-			const char* const code_name = mouse_code.getString(buffer, sizeof(buffer));
-			const auto& ref_def = Reflection<Gleam::MouseCode>::GetReflectionDefinition();
+			const char8_t* const code_name = mouse_code.getString(buffer, sizeof(buffer));
+			const auto& ref_def = Refl::Reflection<Gleam::MouseCode>::GetReflectionDefinition();
 
 			if (!ref_def.entryExists(code_name)) {
 				// $TODO: Log error.
@@ -179,14 +179,14 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 			entry.message.base.type = Gleam::EventType::InputCharacter;
 
 			// All this nonsense because eastl::DecodePart() takes pointer references ... for some reason.
-			const char* character = char_code.getString(buffer, sizeof(buffer));
+			const char8_t* character = char_code.getString(buffer, sizeof(buffer));
 
 			char32_t out_character;
 			char32_t* out_character_begin = &out_character;
 
 			eastl::DecodePart(
 				character,
-				EA::StdC::Strend(character),
+				character + eastl::CharStrlen(character),
 				out_character_begin,
 				out_character_begin + 1
 			);
@@ -195,8 +195,8 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 			entry.message.key_char.character = static_cast<uint32_t>(out_character);
 
 		} else if (key_code.isString()) {
-			const char* const code_name = key_code.getString(buffer, sizeof(buffer));
-			const auto& ref_def = Reflection<Gleam::KeyCode>::GetReflectionDefinition();
+			const char8_t* const code_name = key_code.getString(buffer, sizeof(buffer));
+			const auto& ref_def = Refl::Reflection<Gleam::KeyCode>::GetReflectionDefinition();
 
 			if (!ref_def.entryExists(code_name)) {
 				// $TODO: Log error.
@@ -231,11 +231,11 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const bool create_keyboard = req_data["create_keyboard"].getBool(false);
-	const bool create_mouse = req_data["create_mouse"].getBool(false);
+	const bool create_keyboard = req_data[u8"create_keyboard"].getBool(false);
+	const bool create_mouse = req_data[u8"create_mouse"].getBool(false);
 
 	NewDeviceEntry entry;
-	entry.player_id = req_data["player_id"].getInt32(-1);
+	entry.player_id = req_data[u8"player_id"].getInt32(-1);
 
 	Gaff::JSON response = Gaff::JSON::CreateObject();
 
@@ -245,7 +245,7 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		if (keyboard->init()) {
 			entry.devices.emplace_back(keyboard);
 
-			response.setObject("keyboard", Gaff::JSON::CreateBool(true));
+			response.setObject(u8"keyboard", Gaff::JSON::CreateBool(true));
 
 			const EA::Thread::AutoMutex lock(_device_lock);
 			_keyboards[entry.player_id].reset(keyboard);
@@ -261,7 +261,7 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		if (mouse->init()) {
 			entry.devices.emplace_back(mouse);
 
-			response.setObject("mouse", Gaff::JSON::CreateBool(true));
+			response.setObject(u8"mouse", Gaff::JSON::CreateBool(true));
 
 			const EA::Thread::AutoMutex lock(_device_lock);
 			_mice[entry.player_id].reset(mouse);
@@ -276,10 +276,11 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		_new_device_queue.emplace_back(std::move(entry));
 	}
 
-	char response_buffer[1024] = { 0 };
+	char8_t response_buffer[1024] = { 0 };
+	const char8_t* rb_beg = response_buffer;
 	response.dump(response_buffer, sizeof(response_buffer));
 
-	WriteResponse(*conn, response_buffer);
+	WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
 
 	return true;
 }
@@ -299,7 +300,7 @@ bool WebInputHandler::handleDelete(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	int32_t player_id = req_data["player_id"].getInt32(-1);
+	int32_t player_id = req_data[u8"player_id"].getInt32(-1);
 
 	const EA::Thread::AutoMutex lock(_input_mgr_lock);
 	_input_mgr->removePlayer(player_id);
@@ -322,13 +323,13 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 		return true;
 	}
 
-	const Gaff::JSON req_type = req_data["request_type"];
+	const Gaff::JSON req_type = req_data[u8"request_type"];
 
-	char req_type_buffer[32] = { 0 };
+	char8_t req_type_buffer[32] = { 0 };
 	req_type.getString(req_type_buffer, sizeof(req_type_buffer));
 
 	// $TODO: Refactor this if more GET request type are introduced.
-	if (strncmp(req_type_buffer, "player_devices", sizeof(req_type_buffer))) {
+	if (eastl::u8string_view(req_type_buffer) != u8"player_devices") {
 		return true;
 	}
 
@@ -354,7 +355,8 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 		Gaff::JSON devices_json = Gaff::JSON::CreateArray();
 
 		for (const Gleam::IInputDevice* device : devices) {
-			Gaff::JSON device_name = Gaff::JSON::CreateString(device->getDeviceName());
+			CONVERT_STRING(char8_t, temp_device_name, device->getDeviceName());
+			Gaff::JSON device_name = Gaff::JSON::CreateString(temp_device_name);
 			devices_json.push(std::move(device_name));
 		}
 
@@ -368,10 +370,11 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 		response.setObject(player_id, std::move(devices_json));
 	}
 
-	char response_buffer[1024] = { 0 };
+	char8_t response_buffer[1024] = { 0 };
+	const char8_t* rb_beg = response_buffer;
 	response.dump(response_buffer, sizeof(response_buffer));
 
-	WriteResponse(*conn, response_buffer);
+	WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
 	return true;
 }
 

@@ -37,8 +37,8 @@ public:
 	static void Constructor(EntityID, void* component, int32_t entity_index);
 	static void Destructor(EntityID, void* component, int32_t entity_index);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
-	static bool Load(const Gaff::ISerializeReader& reader, StateMachine& out);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader);
+	static bool Load(const ISerializeReader& reader, StateMachine& out);
 
 	StateMachine& operator=(const StateMachine& rhs);
 	StateMachine& operator=(StateMachine&& rhs) = default;
@@ -49,4 +49,4 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(StateMachine)
+SHIB_REFLECTION_DECLARE(Shibboleth::StateMachine)

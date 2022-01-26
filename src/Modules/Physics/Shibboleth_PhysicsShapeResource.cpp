@@ -30,16 +30,16 @@ THE SOFTWARE.
 #include <Shibboleth_Math.h>
 #include <PxPhysicsAPI.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsShapeResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsShapeResource)
 	.classAttrs(
-		ResExtAttribute(".physics_shape.bin"),
-		ResExtAttribute(".physics_shape"),
-		MakeLoadFileCallbackAttribute(&PhysicsShapeResource::loadShape)
+		Shibboleth::ResExtAttribute(u8".physics_shape.bin"),
+		Shibboleth::ResExtAttribute(u8".physics_shape"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::PhysicsShapeResource::loadShape)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(PhysicsShapeResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsShapeResource)
 
 NS_SHIBBOLETH
 
@@ -80,7 +80,7 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 		return;
 	}
 
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *readerWrapper.getReader();
 
 	if (!reader.isObject()) {
 		// $TODO: Log error.
@@ -89,9 +89,9 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 	}
 
 	{
-		const auto guard = reader.enterElementGuard("material");
+		const auto guard = reader.enterElementGuard(u8"material");
 		
-		if (!Reflection<PhysicsMaterialResourcePtr>::Load(reader, _material)) {
+		if (!Refl::Reflection<PhysicsMaterialResourcePtr>::GetInstance().load(reader, _material)) {
 			// $TODO: Log error.
 			failed();
 			return;
@@ -100,7 +100,7 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 
 	PhysicsManager& phys_mgr = GetApp().getManagerTFast<PhysicsManager>();
 
-	using LoadPtr = PhysicsShapeResource::LoadResult (PhysicsShapeResource::*)(const Gaff::ISerializeReader&, PhysicsManager& phys_mgr);
+	using LoadPtr = PhysicsShapeResource::LoadResult (PhysicsShapeResource::*)(const ISerializeReader&, PhysicsManager& phys_mgr);
 
 	constexpr LoadPtr k_load_funcs[] = {
 		&PhysicsShapeResource::loadCapsule,
@@ -127,9 +127,9 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 	}
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
-	const auto capsule_guard = reader.enterElementGuard("capsule");
+	const auto capsule_guard = reader.enterElementGuard(u8"capsule");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -145,8 +145,8 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const Gaff::I
 		return LoadResult::Error;
 	}
 
-	const float half_height = reader.readFloat("half_height", 0.25f);
-	const float radius = reader.readFloat("radius", 0.25f);
+	const float half_height = reader.readFloat(u8"half_height", 0.25f);
+	const float radius = reader.readFloat(u8"radius", 0.25f);
 
 	// Do we need to lock here?
 	_shape = phys_mgr.getPhysics()->createShape(physx::PxCapsuleGeometry(radius, half_height), *_material->getMaterial());
@@ -159,9 +159,9 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const Gaff::I
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
-	const auto plane_guard = reader.enterElementGuard("sphere");
+	const auto plane_guard = reader.enterElementGuard(u8"sphere");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -177,7 +177,7 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const Gaff::IS
 		return LoadResult::Error;
 	}
 
-	const float radius = reader.readFloat("radius", 0.5f);
+	const float radius = reader.readFloat(u8"radius", 0.5f);
 
 	// Do we need to lock here?
 	_shape = phys_mgr.getPhysics()->createShape(physx::PxSphereGeometry(radius), *_material->getMaterial(), false);
@@ -190,9 +190,9 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const Gaff::IS
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
-	const auto plane_guard = reader.enterElementGuard("plane");
+	const auto plane_guard = reader.enterElementGuard(u8"plane");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -219,9 +219,9 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const Gaff::ISe
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const Gaff::ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const ISerializeReader& reader, PhysicsManager& phys_mgr)
 {
-	const auto plane_guard = reader.enterElementGuard("box");
+	const auto plane_guard = reader.enterElementGuard(u8"box");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -242,12 +242,12 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const Gaff::ISeri
 	float hz = 0.5f;
 
 	{
-		const auto size_guard = reader.enterElementGuard("half_extents");
+		const auto size_guard = reader.enterElementGuard(u8"half_extents");
 
 		if (reader.isObject()) {
-			hx = reader.readFloat("x", 0.5f);
-			hy = reader.readFloat("y", 0.5f);
-			hz = reader.readFloat("z", 0.5f);
+			hx = reader.readFloat(u8"x", 0.5f);
+			hy = reader.readFloat(u8"y", 0.5f);
+			hz = reader.readFloat(u8"z", 0.5f);
 		}
 	}
 

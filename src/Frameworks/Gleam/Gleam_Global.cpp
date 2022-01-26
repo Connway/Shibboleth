@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Global.h"
+#include "Gleam_String.h"
 #include <Gaff_DefaultAlignedAllocator.h>
 
 NS_GLEAM
@@ -44,7 +45,7 @@ void* GleamAlloc(size_t size_bytes, const char* filename, uint32_t line_number)
 	void* data = g_allocator->alloc(size_bytes, filename, line_number);
 
 	if (!data) {
-		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LogMsgType::Error, filename, line_number);
+		PrintfToLog(u8"Failed to allocate %i bytes in \'%s\':%i", LogMsgType::Error, filename, line_number);
 		return nullptr;
 	}
 
@@ -61,17 +62,17 @@ void SetLogFunc(LogFunc log_func)
 	g_log_func = log_func;
 }
 
-void PrintfToLog(const char* format_string, LogMsgType type, ...)
+void PrintfToLog(const char8_t* format_string, LogMsgType type, ...)
 {
 	if (g_log_func) {
-		char temp[2048] = { 0 };
 		va_list vl;
-
 		va_start(vl, type);
-		vsnprintf(temp, 2048, format_string, vl);
+
+		const U8String msg(U8String::CtorSprintf(), format_string, vl);
+
 		va_end(vl);
 
-		g_log_func(temp, type);
+		g_log_func(msg.data(), type);
 	}
 }
 

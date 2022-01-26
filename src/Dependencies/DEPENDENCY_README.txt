@@ -31,6 +31,7 @@ Libraries Affected:
 
 	EASTL
 		Fixed compilation error on Linux with bitvector.
+		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 
 
 Linux Library Dependencies:

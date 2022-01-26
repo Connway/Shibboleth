@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
+#include "Gaff_Math.h"
 
 NS_GAFF
 

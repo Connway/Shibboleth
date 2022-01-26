@@ -24,17 +24,24 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(DevWebCommandAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_DEFINE_END(DevWebCommandAttribute)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DevWebCommandAttribute)
+	.BASE(Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DevWebCommandAttribute)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(DevWebCommandAttribute)
 
-DevWebCommandAttribute::DevWebCommandAttribute(const char* uri):
+DevWebCommandAttribute::DevWebCommandAttribute(const char8_t* uri):
 	_uri(uri, ProxyAllocator("Reflection"))
 {
+}
+
+DevWebCommandAttribute::DevWebCommandAttribute(const char* uri):
+	_uri(ProxyAllocator("Reflection"))
+{
+	CONVERT_STRING(char8_t, temp_uri, uri);
+	_uri = temp_uri;
 }
 
 const U8String& DevWebCommandAttribute::getURI(void) const
@@ -42,7 +49,7 @@ const U8String& DevWebCommandAttribute::getURI(void) const
 	return _uri;
 }
 
-Gaff::IAttribute* DevWebCommandAttribute::clone(void) const
+Refl::IAttribute* DevWebCommandAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(DevWebCommandAttribute, allocator.getPoolIndex("Reflection"), allocator, _uri.data());

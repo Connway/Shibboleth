@@ -32,13 +32,13 @@ THE SOFTWARE.
 #include <Gleam_Matrix3x3.h>
 #include <Gaff_Math.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(FlyCameraProcess)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::FlyCameraProcess)
 	.BASE(Esprit::IProcess)
 	.ctor<>()
 
-	.var("angular_speed", &FlyCameraProcess::_angular_speed)
-	.var("linear_speed", &FlyCameraProcess::_linear_speed)
-SHIB_REFLECTION_DEFINE_END(FlyCameraProcess)
+	.var("angular_speed", &Shibboleth::FlyCameraProcess::_angular_speed)
+	.var("linear_speed", &Shibboleth::FlyCameraProcess::_linear_speed)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::FlyCameraProcess)
 
 NS_SHIBBOLETH
 
@@ -47,7 +47,7 @@ SHIB_REFLECTION_CLASS_DEFINE(FlyCameraProcess);
 bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 {
 	const Esprit::VariableSet& variables = owner.getVariables();
-	_entity_id_index = variables.getVariableIndex(HashStringView32<>("entity_id"), Esprit::VariableSet::VariableType::Integer);
+	_entity_id_index = variables.getVariableIndex(HashStringView32<>(u8"entity_id"), Esprit::VariableSet::VariableType::Integer);
 
 	if (_entity_id_index < 0) {
 		// $TODO: Log error.

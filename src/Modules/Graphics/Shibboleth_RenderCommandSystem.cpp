@@ -29,22 +29,22 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 
-SHIB_REFLECTION_DEFINE_BEGIN(RenderCommandSubmissionSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderCommandSubmissionSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(RenderCommandSubmissionSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderCommandSubmissionSystem)
 
-SHIB_REFLECTION_DEFINE_BEGIN(RenderCommandSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderCommandSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(RenderCommandSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderCommandSystem)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSubmissionSystem)
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSystem)
 
-static constexpr const char* k_mtp_mat_name = "_model_to_proj_matrix";
+static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
 
 static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
 {
@@ -123,7 +123,7 @@ static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& 
 //RenderCommandSubmissionSystem
 bool RenderCommandSubmissionSystem::init(void)
 {
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	return true;
 }
 
@@ -218,7 +218,7 @@ bool RenderCommandSystem::init(void)
 
 	object_query.addArchetypeCallbacks(std::move(object_add_func), std::move(object_remove_func));
 
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_job_pool = &GetApp().getJobPool();
@@ -369,7 +369,7 @@ void RenderCommandSystem::processNewArchetypeMaterial(
 
 			if (shader_type == Gleam::IShader::Type::Vertex) {
 				for (const auto& sb_refl : shader_refl.structured_buffers) {
-					const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char* rhs) -> bool { return lhs.name == rhs; });
+					const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char8_t* rhs) -> bool { return lhs.name == rhs; });
 
 					if (it != sb_refl.vars.end()) {
 						instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
@@ -653,7 +653,7 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 			const size_t colon_index = instance_data.instance_data->buffer_string.find_last_of(':');
 
 			instance_data.instance_data->buffer_string.erase(colon_index + 1);
-			instance_data.instance_data->buffer_string.append_sprintf("%i", start_index);
+			instance_data.instance_data->buffer_string.append_sprintf(u8"%i", start_index);
 
 			BufferResourcePtr buffer = job_data.rcs->_res_mgr->createResourceT<BufferResource>(
 				instance_data.instance_data->buffer_string.data()

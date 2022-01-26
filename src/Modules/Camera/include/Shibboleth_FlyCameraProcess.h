@@ -33,7 +33,7 @@ class GameTimeManager;
 class InputManager;
 class ECSManager;
 
-class FlyCameraProcess final : public Esprit::IProcess, public Gaff::IReflectionObject
+class FlyCameraProcess final : public Esprit::IProcess, public Refl::IReflectionObject
 {
 public:
 	bool init(const Esprit::StateMachine& owner) override;
@@ -61,4 +61,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(FlyCameraProcess)
+SHIB_REFLECTION_DECLARE(Shibboleth::FlyCameraProcess)

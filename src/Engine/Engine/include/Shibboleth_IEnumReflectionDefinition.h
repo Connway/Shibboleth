@@ -56,7 +56,7 @@ public:
 	virtual Shibboleth::HashStringView32<> getEntryNameFromValue(int32_t value) const = 0;
 	virtual Shibboleth::HashStringView32<> getEntryNameFromIndex(int32_t index) const = 0;
 	virtual int32_t getEntryValue(int32_t index) const = 0;
-	virtual int32_t getEntryValue(const char* name) const = 0;
+	virtual int32_t getEntryValue(const char8_t* name) const = 0;
 	virtual int32_t getEntryValue(Gaff::Hash32 name) const = 0;
 
 	virtual int32_t getNumEnumAttrs(void) const = 0;

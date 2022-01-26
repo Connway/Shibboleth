@@ -26,23 +26,23 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_Math.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(GameTimeManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
 
-	.var("game_time_scale", &GameTimeManager::_game_time_scale)
-	.var("real_time", &GameTimeManager::_real_time)
-	.var("game_time", &GameTimeManager::_game_time)
-SHIB_REFLECTION_DEFINE_END(GameTimeManager)
+	.var("game_time_scale", &Shibboleth::GameTimeManager::_game_time_scale)
+	.var("real_time", &Shibboleth::GameTimeManager::_real_time)
+	.var("game_time", &Shibboleth::GameTimeManager::_game_time)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeManager)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Time)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Time)
 	.classAttrs(
-		ScriptFlagsAttribute(ScriptFlagsAttribute::Flag::ReferenceOnly)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ReferenceOnly)
 	)
 
-	.var("total", &Time::total)
-	.var("delta", &Time::delta)
-SHIB_REFLECTION_DEFINE_END(Time)
+	.var("total", &Shibboleth::Time::total)
+	.var("delta", &Shibboleth::Time::delta)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::Time)
 
 NS_SHIBBOLETH
 

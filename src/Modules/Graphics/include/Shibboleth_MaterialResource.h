@@ -78,4 +78,4 @@ using MaterialResourcePtr = Gaff::RefPtr<MaterialResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(MaterialResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::MaterialResource)

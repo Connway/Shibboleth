@@ -24,6 +24,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
+void GetCurrentTimeString(char8_t* buff, size_t size, const char8_t* format)
+{
+	GetCurrentTimeString(reinterpret_cast<char*>(buff), size, reinterpret_cast<const char*>(format));
+}
+
 void GetCurrentTimeString(char* buff, size_t size, const char* format)
 {
 	time_t t = time(nullptr);

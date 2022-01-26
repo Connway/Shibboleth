@@ -32,21 +32,21 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <EASTL/algorithm.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ResourceState)
-	.entry("Pending", ResourceState::Pending)
-	.entry("Failed", ResourceState::Failed)
-	.entry("Loaded", ResourceState::Loaded)
-	.entry("Delayed", ResourceState::Delayed)
-SHIB_REFLECTION_DEFINE_END(ResourceState)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
+	.entry("Pending", Shibboleth::ResourceState::Pending)
+	.entry("Failed", Shibboleth::ResourceState::Failed)
+	.entry("Loaded", Shibboleth::ResourceState::Loaded)
+	.entry("Delayed", Shibboleth::ResourceState::Delayed)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
 
-SHIB_REFLECTION_DEFINE_BEGIN(IResource)
-	.func("requestLoad", &IResource::requestLoad)
-	.func("getFilePath", &IResource::getFilePath)
-	.func("getState", &IResource::getState)
-	.func("hasFailed", &IResource::hasFailed)
-	.func("isPending", &IResource::isPending)
-	.func("isLoaded", &IResource::isLoaded)
-SHIB_REFLECTION_DEFINE_END(IResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
+	.func("requestLoad", &Shibboleth::IResource::requestLoad)
+	.func("getFilePath", &Shibboleth::IResource::getFilePath)
+	.func("getState", &Shibboleth::IResource::getState)
+	.func("hasFailed", &Shibboleth::IResource::hasFailed)
+	.func("isPending", &Shibboleth::IResource::isPending)
+	.func("isLoaded", &Shibboleth::IResource::isLoaded)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
 
 NS_SHIBBOLETH
 
@@ -56,7 +56,7 @@ static void LoadJob(uintptr_t thread_id_int, void* data)
 {
 	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
 
-	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
+	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(Shibboleth::ILoadFileCallbackAttribute);
 	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second, thread_id_int);
 
 	if (!cb_attr->doesCallbackCloseFile()) {
@@ -80,7 +80,7 @@ void IResource::load(void)
 	const IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {
-		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
+		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTR(Shibboleth::ILoadFileCallbackAttribute);
 		GAFF_ASSERT(cb_attr);
 
 		eastl::pair<IResource*, const IFile*>* const res_data = SHIB_ALLOCT(
@@ -142,12 +142,12 @@ bool IResource::isLoaded(void) const
 	return _state == ResourceState::Loaded;
 }
 
-const IFile* IResource::loadFile(const char* file_path)
+const IFile* IResource::loadFile(const char8_t* file_path)
 {
-	char temp[1024] = { 0 };
-	snprintf(temp, 1024, "Resources/%s", file_path);
+	U8String final_path(ProxyAllocator("Resource"));
+	final_path.sprintf(u8"Resources/%s", file_path);
 
-	const IFile* file = GetApp().getFileSystem().openFile(temp);
+	const IFile* const file = GetApp().getFileSystem().openFile(final_path.data());
 
 	if (!file) {
 		// $TODO: Log error.

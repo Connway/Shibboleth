@@ -24,10 +24,10 @@ THE SOFTWARE.
 #include "Shibboleth_DevWebAttributes.h"
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(DevWebServerManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DevWebServerManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(DevWebServerManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DevWebServerManager)
 
 NS_SHIBBOLETH
 
@@ -67,13 +67,13 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 
 	_server->addHandler("", _default_handler);
 
-	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		if (!ref_def->hasInterface(CLASS_HASH(IDevWebHandler))) {
+	for (const Refl::IReflectionDefinition* ref_def : ref_defs) {
+		if (!ref_def->hasInterface(CLASS_HASH(Shibboleth::IDevWebHandler))) {
 			// $TODO: Log error.
 			continue;
 		}
 
-		IDevWebHandler* const handler = ref_def->createT<IDevWebHandler>(CLASS_HASH(IDevWebHandler), allocator);
+		IDevWebHandler* const handler = ref_def->createT<IDevWebHandler>(CLASS_HASH(Shibboleth::IDevWebHandler), allocator);
 
 		if (!handler) {
 			// $TODO: Log error.
@@ -89,7 +89,7 @@ bool DevWebServerManager::initAllModulesLoaded(void)
 
 		const DevWebCommandAttribute* const attr = ref_def->getClassAttr<DevWebCommandAttribute>();
 
-		_server->addHandler(attr->getURI().data(), handler);
+		_server->addHandler(reinterpret_cast<const char*>(attr->getURI().data()), handler);
 		_handlers.emplace_back(handler);
 	}
 

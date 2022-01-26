@@ -24,21 +24,21 @@ int RunTests(int argc, const char** argv)
 	Gaff::JSON& configs = app.getConfigs();
 
 	if (index != Shibboleth::U8String::npos) {
-		Shibboleth::U8String log_dir(Shibboleth::U8String::CtorSprintf(), "./tests/logs/%s", argv[0] + index + 1);
+		Shibboleth::U8String log_dir(Shibboleth::U8String::CtorSprintf(), u8"./tests/logs/%s", argv[0] + index + 1);
 		log_dir.erase(log_dir.size() - 4);
 
-		configs.setObject("log_dir", Gaff::JSON::CreateString(log_dir.data()));
+		configs.setObject(u8"log_dir", Gaff::JSON::CreateString(log_dir.data()));
 
 	} else {
-		configs.setObject("log_dir", Gaff::JSON::CreateString("./tests/logs"));
+		configs.setObject(u8"log_dir", Gaff::JSON::CreateString(u8"./tests/logs"));
 	}
 
-	configs.setObject("working_dir", Gaff::JSON::CreateString(".."));
+	configs.setObject(u8"working_dir", Gaff::JSON::CreateString(u8".."));
 
 	// $TODO: Make this configurable.
 	// No main loop or modules.
-	configs.setObject("no_load_modules", Gaff::JSON::CreateTrue());
-	configs.setObject("no_main_loop", Gaff::JSON::CreateTrue());
+	configs.setObject(u8"no_load_modules", Gaff::JSON::CreateTrue());
+	configs.setObject(u8"no_main_loop", Gaff::JSON::CreateTrue());
 
 	if (!app.init(argc, argv)) {
 		app.destroy();
@@ -65,7 +65,7 @@ int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR
 	int argc = 0;
 	const wchar_t* const* const argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-	Shibboleth::Vector<Shibboleth::U8String> args;
+	Shibboleth::Vector< Shibboleth::String<char> > args;
 	Shibboleth::Vector<const char*> args_raw;
 	args_raw.set_capacity(argc);
 	args.set_capacity(argc);

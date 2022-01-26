@@ -77,6 +77,7 @@ public:
 
 	bool isFullScreen(void) const override;
 
+	bool setIcon(const char8_t* icon) override;
 	bool setIcon(const char* icon) override;
 
 	void* getPlatformHandle(void) const override;

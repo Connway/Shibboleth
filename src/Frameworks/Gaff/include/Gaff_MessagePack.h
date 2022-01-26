@@ -80,6 +80,7 @@ public:
 	bool operator==(const MessagePackNode& rhs) const;
 	bool operator!=(const MessagePackNode& rhs) const;
 
+	MessagePackNode operator[](const char8_t* key) const;
 	MessagePackNode operator[](const char* key) const;
 	MessagePackNode operator[](int32_t index) const;
 
@@ -102,18 +103,19 @@ public:
 	bool isFalse(void) const;
 	bool isNull(void) const;
 
+	MessagePackNode getObject(const char8_t* key) const;
 	MessagePackNode getObject(const char* key) const;
 	MessagePackNode getObject(int32_t index) const;
 
-	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
-	const char* getKey(int32_t index) const;
+	const char8_t* getKey(char8_t* buffer, size_t buf_size, int32_t index) const;
+	const char8_t* getKey(int32_t index) const;
 	MessagePackNode getValue(int32_t index) const;
 
-	void freeString(const char* str) const;
+	void freeString(const char8_t* str) const;
 	int32_t size(void) const;
 
-	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
-	const char* getString(const char* default_value) const;
+	const char8_t* getString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const;
+	const char8_t* getString(const char8_t* default_value) const;
 	int8_t getInt8(int8_t default_value) const;
 	uint8_t getUInt8(uint8_t default_value) const;
 	int16_t getInt16(int16_t default_value) const;
@@ -127,8 +129,8 @@ public:
 	double getNumber(double default_value) const;
 	bool getBool(bool default_value) const;
 
-	const char* getString(char* buffer, size_t buf_size) const;
-	const char* getString(void) const;
+	const char8_t* getString(char8_t* buffer, size_t buf_size) const;
+	const char8_t* getString(void) const;
 	int8_t getInt8(void) const;
 	uint8_t getUInt8(void) const;
 	int16_t getInt16(void) const;
@@ -163,7 +165,7 @@ public:
 	~MessagePackReader(void);
 
 	bool parse(const char* buffer, size_t size, bool take_ownership = false);
-	bool openFile(const char* file);
+	bool openFile(const char8_t* file);
 
 	MessagePackNode getRoot(void) const;
 
@@ -184,15 +186,15 @@ public:
 
 	bool init(char** buffer, size_t* size);
 	bool init(char* buffer, size_t size);
-	bool init(const char* filename);
+	bool init(const char8_t* filename);
 	void finish(void);
 
 	size_t size(void) const;
 
 	template <class T>
-	void write(const char* key, T value)
+	void write(const char8_t* key, T value)
 	{
-		mpack_write_kv(&_writer, key, value);
+		mpack_write_kv(&_writer, reinterpret_cast<const char*>(key), value);
 	}
 
 	template <class T>
@@ -201,9 +203,9 @@ public:
 		mpack_write(&_writer, value);
 	}
 
-	void writeUTF8(const char* key, const char* value);
-	void writeUTF8(const char* value);
-	void writeKey(const char* value);
+	void writeUTF8(const char8_t* key, const char8_t* value);
+	void writeUTF8(const char8_t* value);
+	void writeKey(const char8_t* value);
 	void writeTrue(void);
 	void writeFalse(void);
 	void writeNull(void);

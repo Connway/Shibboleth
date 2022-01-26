@@ -30,21 +30,21 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 #include <PxPhysicsAPI.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager::DebugFlag)
-	.entry("Draw Rigid Bodies", PhysicsManager::DebugFlag::DrawRigidBodies)
-SHIB_REFLECTION_DEFINE_END(PhysicsManager::DebugFlag)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager::DebugFlag)
+	.entry("Draw Rigid Bodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager::DebugFlag)
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
 
 	.var(
 		"Debug Flags",
-		&PhysicsManager::_debug_flags,
-		DebugMenuItemAttribute("Physics"),
-		NoSerializeAttribute()
+		&Shibboleth::PhysicsManager::_debug_flags,
+		Shibboleth::DebugMenuItemAttribute(u8"Physics"),
+		Shibboleth::NoSerializeAttribute()
 	)
-SHIB_REFLECTION_DEFINE_END(PhysicsManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager)
 
 
 namespace
@@ -109,6 +109,18 @@ namespace
 	static PhysicsTaskDispatcher g_physics_task_dispatcher;
 	static PhysicsErrorHandler g_physics_error_handler;
 	static PhysicsAllocator g_physics_allocator;
+
+	static constexpr Shibboleth::IDebugManager::DebugRenderType k_render_type_map[] =
+	{
+		Shibboleth::IDebugManager::DebugRenderType::Sphere,
+		Shibboleth::IDebugManager::DebugRenderType::Plane,
+		Shibboleth::IDebugManager::DebugRenderType::Capsule,
+		Shibboleth::IDebugManager::DebugRenderType::Box,
+		Shibboleth::IDebugManager::DebugRenderType::Count, // Convex Mesh
+		Shibboleth::IDebugManager::DebugRenderType::Count, // Triangle Mesh
+		Shibboleth::IDebugManager::DebugRenderType::Count  // Height field
+	};
+
 }
 
 
@@ -133,9 +145,14 @@ PhysicsManager::~PhysicsManager(void)
 	SAFEGAFFRELEASE(_foundation);
 }
 
-bool PhysicsManager::init(void)
+bool PhysicsManager::initAllModulesLoaded(void)
 {
 	_game_time = &GetApp().getManagerTFast<GameTimeManager>().getGameTime();
+	return true;
+}
+
+bool PhysicsManager::init(void)
+{
 	_job_pool = &GetApp().getJobPool();
 
 	g_physics_task_dispatcher.init();
@@ -161,7 +178,7 @@ bool PhysicsManager::init(void)
 	scene_desc.filterShader = physx::PxDefaultSimulationFilterShader;
 	physx::PxScene* main_scene = _physics->createScene(scene_desc);
 
-	_scenes[Gaff::FNV1aHash32Const("main")] = main_scene;
+	_scenes[Gaff::FNV1aHash32Const(u8"main")] = main_scene;
 
 	if (physx::PxPvdSceneClient* pvd_client = main_scene->getScenePvdClient()) {
 		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
@@ -187,7 +204,7 @@ bool PhysicsManager::init(void)
 	rb_query.add<Rotation>(_rotations);
 	rb_query.add<Scale>(_scales);
 
-	_debug_mgr = &GetApp().GETMANAGERT(IDebugManager, DebugManager);
+	_debug_mgr = &GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(rb_query));
 
@@ -196,17 +213,6 @@ bool PhysicsManager::init(void)
 
 void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 {
-	constexpr IDebugManager::DebugRenderType k_render_type_map[] =
-	{
-		IDebugManager::DebugRenderType::Sphere,
-		IDebugManager::DebugRenderType::Plane,
-		IDebugManager::DebugRenderType::Capsule,
-		IDebugManager::DebugRenderType::Box,
-		IDebugManager::DebugRenderType::Count, // Convex Mesh
-		IDebugManager::DebugRenderType::Count, // Triangle Mesh
-		IDebugManager::DebugRenderType::Count  // Height field
-	};
-
 	// Update all rigid body debug draws.
 	if (_debug_flags.testAll(DebugFlag::DrawRigidBodies)) {
 		int32_t handle_indices[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] = { 0 };

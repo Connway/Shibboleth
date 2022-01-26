@@ -26,10 +26,10 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(ClearRenderTargetSystem)
-	.BASE(ISystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ClearRenderTargetSystem)
+	.BASE(Shibboleth::ISystem)
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(ClearRenderTargetSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ClearRenderTargetSystem)
 
 NS_SHIBBOLETH
 
@@ -40,7 +40,7 @@ bool ClearRenderTargetSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
 
 	_ecs_mgr->registerQuery(std::move(camera_query));

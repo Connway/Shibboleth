@@ -22,27 +22,33 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_CommonHelpers.h"
+#include <Shibboleth_IReflectionFunction.h>
+#include <Shibboleth_IReflection.h>
+#include <Shibboleth_Vector.h>
+#include <Gaff_Hash.h>
 #include <lua.hpp>
 
 struct lua_State;
 
 NS_SHIBBOLETH
 
-static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const("Lua");
+struct TableState;
+struct UserData;
 
-UserData* PushUserTypeReference(lua_State* state, const void* value, const Gaff::IReflectionDefinition& ref_def);
-UserData* PushUserType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
+static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const(u8"Lua");
 
-void FillArgumentStack(lua_State* state, Vector<Gaff::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
-void FillEntry(lua_State* state, int32_t stack_index, Gaff::FunctionStackEntry& entry, bool clone_non_lua);
-int32_t PushReturnValue(lua_State* state, const Gaff::FunctionStackEntry& ret, bool create_user_data);
+UserData* PushUserTypeReference(lua_State* state, const void* value, const Refl::IReflectionDefinition& ref_def);
+UserData* PushUserType(lua_State* state, const Refl::IReflectionDefinition& ref_def);
+
+void FillArgumentStack(lua_State* state, Vector<Refl::FunctionStackEntry>& stack, int32_t start = -1, int32_t end = -1);
+void FillEntry(lua_State* state, int32_t stack_index, Refl::FunctionStackEntry& entry, bool clone_non_lua);
+int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, bool create_user_data);
 
 void RestoreTable(lua_State* state, const TableState& table);
 void SaveTable(lua_State* state, TableState& table);
 
-void RegisterEnum(lua_State* state, const Gaff::IEnumReflectionDefinition& enum_ref_def);
-void RegisterType(lua_State* state, const Gaff::IReflectionDefinition& ref_def);
+void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_ref_def);
+void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def);
 void RegisterBuiltIns(lua_State* state);
 
 int UserTypeFunctionCall(lua_State* state);
@@ -55,13 +61,13 @@ int UserTypeNew(lua_State* state);
 template <class T>
 UserData* PushUserTypeReference(lua_State* state, const T& value)
 {
-	return PushUserTypeReference(state, &value, Reflection<T>::GetReflectionDefinition());
+	return PushUserTypeReference(state, &value, Refl::Reflection<T>::GetReflectionDefinition());
 }
 
 template <class T>
 UserData* PushUserType(lua_State* state, const T& value)
 {
-	UserData* const user_data = PushUserType(state, Reflection<T>::GetReflectionDefinition());
+	UserData* const user_data = PushUserType(state, Refl::Reflection<T>::GetReflectionDefinition());
 	new(user_data->getData()) T(value);
 
 	return user_data;

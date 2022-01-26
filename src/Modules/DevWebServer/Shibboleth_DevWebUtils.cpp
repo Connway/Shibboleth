@@ -45,7 +45,7 @@ Gaff::JSON ReadJSON(mg_connection& connection, const mg_request_info& request)
 
 	Gaff::JSON req_data;
 
-	if (!req_data.parse(reinterpret_cast<char*>(data_buffer.data()))) {
+	if (!req_data.parse(reinterpret_cast<char8_t*>(data_buffer.data()))) {
 		return Gaff::JSON::CreateNull();
 	}
 

@@ -40,12 +40,12 @@ static void SendDefaultPage(mg_connection* conn)
 	mg_printf(conn, "</body></html>\r\n");
 }
 
-static bool SendFile(mg_connection* conn, IFileSystem& fs, const char* file_path)
+static bool SendFile(mg_connection* conn, IFileSystem& fs, const char8_t* file_path)
 {
 	IFile* const file = fs.openFile(file_path);
 
 	if (file) {
-		const char* const mime_type = mg_get_builtin_mime_type(file_path);
+		const char* const mime_type = mg_get_builtin_mime_type(reinterpret_cast<const char*>(file_path));
 
 		mg_printf(conn, "HTTP/1.1 200 OK\r\n");
 		mg_printf(conn, "Content-Type: %s; charset=utf-8\r\n", mime_type);
@@ -68,14 +68,14 @@ bool DefaultHandler::handleGet(CivetServer*, mg_connection* conn)
 		SendDefaultPage(conn);
 
 	} else if (req_info->local_uri) {
-		U8String file_path = U8String("WebRoot") + req_info->local_uri;
+		U8String file_path(U8String::CtorSprintf(), u8"WebRoot%s", req_info->local_uri);
 		IFileSystem& fs = GetApp().getFileSystem();
 
 		if (!SendFile(conn, fs, file_path.data())) {
 			if (file_path.back() == '/') {
-				file_path += "index.html";
+				file_path += u8"index.html";
 			} else {
-				file_path += "/index.html";
+				file_path += u8"/index.html";
 			}
 
 			if (!SendFile(conn, fs, file_path.data())) {

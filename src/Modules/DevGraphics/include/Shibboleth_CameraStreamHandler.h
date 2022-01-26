@@ -34,7 +34,7 @@ NS_SHIBBOLETH
 
 class ECSManager;
 
-class CameraStreamHandler final : public IDevWebHandler, public Gaff::IReflectionObject
+class CameraStreamHandler final : public IDevWebHandler, public Refl::IReflectionObject
 {
 public:
 	CameraStreamHandler(void);
@@ -68,4 +68,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(CameraStreamHandler)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraStreamHandler)

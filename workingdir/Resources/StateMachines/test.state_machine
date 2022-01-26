@@ -19,7 +19,7 @@
 			"processes":
 			[
 				{
-					"process_type": "LuaProcess",
+					"process_type": "Shibboleth::LuaProcess",
 					"script": "Scripts/Processes/test_process.lua"
 				}
 			]

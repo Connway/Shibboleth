@@ -22,16 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_RefCounted.h>
 #include <Shibboleth_ECSEntity.h>
-#include <Shibboleth_Vector.h>
 #include <Gaff_RefPtr.h>
 #include <Gaff_Hash.h>
-
-NS_GAFF
-	class IReflectionDefinition;
-	class ISerializeReader;
-NS_END
 
 NS_SHIBBOLETH
 
@@ -45,20 +40,20 @@ public:
 	template <class T>
 	bool removeShared(void)
 	{
-		return removeShared(Reflection<T>::GetReflectionDefinition());
+		return removeShared(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	bool remove(void)
 	{
-		return remove(Reflection<T>::GetReflectionDefinition());
+		return remove(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	bool addShared(void)
 	{
 		static_assert(T::IsShared(), "Cannot add an ECS component that does not support shared operations.");
-		return addShared(Reflection<T>::GetReflectionDefinition());
+		return addShared(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
@@ -66,61 +61,61 @@ public:
 	{
 		static_assert(std::is_standard_layout<T>::value, "Cannot add an ECS component that does not have a standard layout.");
 		static_assert(T::IsNonShared(), "Cannot add an ECS component that does not support non-shared operations.");
-		return add(Reflection<T>::GetReflectionDefinition(), has_default_value);
+		return add(Refl::Reflection<T>::GetReflectionDefinition(), has_default_value);
 	}
 
 	template <class T>
 	int32_t getComponentSharedOffset(void) const
 	{
-		return getComponentSharedOffset(Reflection<T>::GetHash());
+		return getComponentSharedOffset(Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	int32_t getComponentOffset(void) const
 	{
-		return getComponentOffset(Reflection<T>::GetHash());
+		return getComponentOffset(Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasSharedComponent(void) const
 	{
-		return hasSharedComponent(Reflection<T>::GetHash());
+		return hasSharedComponent(Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasComponent(void) const
 	{
-		return hasComponent(Reflection<T>::GetHash());
+		return hasComponent(Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getSharedComponent(void) const
 	{
-		return reinterpret_cast<const T*>(getSharedComponent(Reflection<T>::GetHash()));
+		return reinterpret_cast<const T*>(getSharedComponent(Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	T* getSharedComponent(void)
 	{
-		return reinterpret_cast<T*>(getSharedComponent(Reflection<T>::GetHash()));
+		return reinterpret_cast<T*>(getSharedComponent(Refl::Reflection<T>::GetHash()));
 	}
 
-	template <class T>
-	void setDefaultValues(const T& value)
-	{
-		const auto it = Gaff::LowerBound(_vars_defaults, Reflection<T>::GetHash(), [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool
-		{
-			return lhs.ref_def->getReflectionInstance().getHash() < rhs;
-		});
+	//template <class T>
+	//void setDefaultValues(const T& value)
+	//{
+	//	const auto it = Gaff::LowerBound(_vars_defaults, Refl::Reflection<T>::GetHash(), [](const RefDefOffset& lhs, Gaff::Hash64 rhs) -> bool
+	//	{
+	//		return lhs.ref_def->getReflectionInstance().getHash() < rhs;
+	//	});
 
-		// Component was deleted.
-		if (it == it_end || it->ref_def != rdo.ref_def) {
-			continue;
-		}
+	//	// Component was deleted.
+	//	if (it == _vars_defaults.end() || it->ref_def != rdo.ref_def) {
+	//		continue;
+	//	}
 
-		void* const component = reinterpret_cast<int8_t*>(_default_data) + it->offset;
-		*reinterpret_cast<T*>(component) = value;
-	}
+	//	void* const component = reinterpret_cast<int8_t*>(_default_data) + it->offset;
+	//	*reinterpret_cast<T*>(component) = value;
+	//}
 
 
 	ECSArchetype(ECSArchetype&& archetype);
@@ -129,20 +124,20 @@ public:
 
 	ECSArchetype& operator=(ECSArchetype&& rhs);
 
-	bool addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	bool addShared(const Gaff::IReflectionDefinition& ref_def);
-	bool removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	bool removeShared(const Gaff::IReflectionDefinition& ref_def);
+	bool addShared(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
+	bool addShared(const Refl::IReflectionDefinition& ref_def);
+	bool removeShared(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
+	bool removeShared(const Refl::IReflectionDefinition& ref_def);
 
-	bool finalize(const Gaff::ISerializeReader& reader, const ECSArchetype& base_archetype, bool read_default_overrides = true);
-	bool finalize(const Gaff::ISerializeReader& reader);
+	bool finalize(const ISerializeReader& reader, const ECSArchetype& base_archetype, bool read_default_overrides = true);
+	bool finalize(const ISerializeReader& reader);
 	bool finalize(const ECSArchetype& base_archetype);
 	bool finalize(bool is_base = false);
 
-	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool has_default_values = false);
-	bool add(const Gaff::IReflectionDefinition& ref_def, bool has_default_value = false);
-	bool remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	bool remove(const Gaff::IReflectionDefinition& ref_def);
+	bool add(const Vector<const Refl::IReflectionDefinition*>& ref_defs, bool has_default_values = false);
+	bool add(const Refl::IReflectionDefinition& ref_def, bool has_default_value = false);
+	bool remove(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
+	bool remove(const Refl::IReflectionDefinition& ref_def);
 
 	void append(const ECSArchetype& base);
 
@@ -173,17 +168,17 @@ public:
 	const void* getSharedData(void) const;
 	void* getSharedData(void);
 
-	const Gaff::IReflectionDefinition& getSharedComponentRefDef(int32_t index) const;
+	const Refl::IReflectionDefinition& getSharedComponentRefDef(int32_t index) const;
 	int32_t getNumSharedComponents(void) const;
 
-	const Gaff::IReflectionDefinition& getComponentRefDef(int32_t index) const;
+	const Refl::IReflectionDefinition& getComponentRefDef(int32_t index) const;
 	int32_t getNumComponents(void) const;
 
 	const void* getSharedComponent(Gaff::Hash64 component) const;
 	void* getSharedComponent(Gaff::Hash64 component);
 
-	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, Gaff::Hash64 component) const;
-	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader, int32_t index) const;
+	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, Gaff::Hash64 component) const;
+	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, int32_t index) const;
 	void loadDefaults(ECSManager& ecs_mgr, EntityID id) const;
 
 	bool isBase(void) const;
@@ -197,11 +192,11 @@ private:
 		using CopyDefaultToNonSharedFunc = void (*)(ECSManager&, EntityID, const void*);
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
-		using LoadFunc = bool (*)(ECSManager&, EntityID, const Gaff::ISerializeReader&);
+		using LoadFunc = bool (*)(ECSManager&, EntityID, const ISerializeReader&);
 		using ConstructorFunc = void (*)(EntityID, void*, int32_t);
 		using DestructorFunc = void (*)(EntityID, void*, int32_t);
 
-		const Gaff::IReflectionDefinition* ref_def;
+		const Refl::IReflectionDefinition* ref_def;
 		int32_t offset;
 
 		CopyDefaultToNonSharedFunc copy_default_to_non_shared_func;
@@ -228,27 +223,27 @@ private:
 	bool _is_base = false;
 
 	template <bool shared>
-	bool add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs, bool has_default_values = false);
+	bool add(const Vector<const Refl::IReflectionDefinition*>& ref_defs, bool has_default_values = false);
 
 	template <bool shared>
-	bool add(const Gaff::IReflectionDefinition& ref_def, bool has_default_value = false);
+	bool add(const Refl::IReflectionDefinition& ref_def, bool has_default_value = false);
 
 	template <bool shared>
-	bool remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	bool remove(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 
 	template <bool shared>
-	bool remove(const Gaff::IReflectionDefinition& ref_def);
+	bool remove(const Refl::IReflectionDefinition& ref_def);
 
 	template <bool shared>
-	bool finalize(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype, bool read_default_overrides);
+	bool finalize(const ISerializeReader& reader, const ECSArchetype* base_archetype, bool read_default_overrides);
 
-	void initShared(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype);
+	void initShared(const ISerializeReader& reader, const ECSArchetype* base_archetype);
 	void initShared(void);
 
 	void copySharedInstanceData(const ECSArchetype& old_archetype);
 	void destroySharedData(void);
 
-	void initDefaultData(const Gaff::ISerializeReader& reader, const ECSArchetype* base_archetype, bool read_default_overrides);
+	void initDefaultData(const ISerializeReader& reader, const ECSArchetype* base_archetype, bool read_default_overrides);
 	void initDefaultData(void);
 
 	void copyDefaultData(const ECSArchetype& old_archetype);

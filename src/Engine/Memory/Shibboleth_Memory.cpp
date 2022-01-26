@@ -92,7 +92,7 @@ void* ShibbolethRealloc(void* old_ptr, size_t new_size)
 	return SHIB_REALLOC(old_ptr, new_size, g_allocator);
 }
 
-void SetLogDir(const char* dir)
+void SetLogDir(const char8_t* dir)
 {
 	g_allocator.setLogDir(dir);
 }

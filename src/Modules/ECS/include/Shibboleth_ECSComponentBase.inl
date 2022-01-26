@@ -20,71 +20,71 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseNonShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSComponentBaseNonShared, T, GetT)
 	.classAttrs(
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::NoRegister,
-			ScriptFlagsAttribute::Flag::NoInherit
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::NoRegister,
+			Shibboleth::ScriptFlagsAttribute::Flag::NoInherit
 		)
 	)
 
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseNonShared<T, GetT>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseNonShared<T, GetT>::CopyShared)
-	.staticFunc("Copy", &ECSComponentBaseNonShared<T, GetT>::Copy)
+	.staticFunc("CopyDefaultToNonShared", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::CopyShared)
+	.staticFunc("Copy", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::Copy)
 
-	.staticFunc("Load", &ECSComponentBaseNonShared<T, GetT>::Load)
+	.staticFunc("Load", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::Load)
 
-	.staticFunc("IsNonShared", &ECSComponentBaseNonShared<T, GetT>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBaseNonShared<T, GetT>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseNonShared, T, GetT)
+	.staticFunc("IsNonShared", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &Shibboleth::ECSComponentBaseNonShared<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ECSComponentBaseNonShared, T, GetT)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSComponentBaseShared, T, GetT)
 	.classAttrs(
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::NoRegister,
-			ScriptFlagsAttribute::Flag::NoInherit
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::NoRegister,
+			Shibboleth::ScriptFlagsAttribute::Flag::NoInherit
 		)
 	)
 
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseShared<T, GetT>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseShared<T, GetT>::CopyShared)
+	.staticFunc("CopyDefaultToNonShared", &Shibboleth::ECSComponentBaseShared<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &Shibboleth::ECSComponentBaseShared<T, GetT>::CopyShared)
 
-	.staticFunc("Load", &ECSComponentBaseShared<T, GetT>::Load)
+	.staticFunc("Load", &Shibboleth::ECSComponentBaseShared<T, GetT>::Load)
 
-	.staticFunc("IsNonShared", &ECSComponentBaseShared<T, GetT>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBaseShared<T, GetT>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBaseShared, T, GetT)
+	.staticFunc("IsNonShared", &Shibboleth::ECSComponentBaseShared<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &Shibboleth::ECSComponentBaseShared<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ECSComponentBaseShared, T, GetT)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentBaseBoth, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSComponentBaseBoth, T, GetT)
 	.classAttrs(
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::NoRegister,
-			ScriptFlagsAttribute::Flag::NoInherit
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::NoRegister,
+			Shibboleth::ScriptFlagsAttribute::Flag::NoInherit
 		)
 	)
 
-	.staticFunc("CopyDefaultToNonShared", &ECSComponentBaseBoth<T, GetT>::CopyDefaultToNonShared)
-	.staticFunc("CopyShared", &ECSComponentBaseBoth<T, GetT>::CopyShared)
-	.staticFunc("Copy", &ECSComponentBaseBoth<T, GetT>::Copy)
+	.staticFunc("CopyDefaultToNonShared", &Shibboleth::ECSComponentBaseBoth<T, GetT>::CopyDefaultToNonShared)
+	.staticFunc("CopyShared", &Shibboleth::ECSComponentBaseBoth<T, GetT>::CopyShared)
+	.staticFunc("Copy", &Shibboleth::ECSComponentBaseBoth<T, GetT>::Copy)
 
-	.staticFunc("Load", &ECSComponentBaseBoth<T, GetT>::Load)
+	.staticFunc("Load", &Shibboleth::ECSComponentBaseBoth<T, GetT>::Load)
 
-	.staticFunc("IsNonShared", &ECSComponentBaseBoth<T, GetT>::IsNonShared)
-	.staticFunc("IsShared", &ECSComponentBaseBoth<T, GetT>::IsShared)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentBase, T, GetT)
+	.staticFunc("IsNonShared", &Shibboleth::ECSComponentBaseBoth<T, GetT>::IsNonShared)
+	.staticFunc("IsShared", &Shibboleth::ECSComponentBaseBoth<T, GetT>::IsShared)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ECSComponentBase, T, GetT)
 
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(ECSComponentDestructable, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSComponentDestructable, T)
 	.classAttrs(
-		ScriptFlagsAttribute(
-			ScriptFlagsAttribute::Flag::NoRegister,
-			ScriptFlagsAttribute::Flag::NoInherit
+		Shibboleth::ScriptFlagsAttribute(
+			Shibboleth::ScriptFlagsAttribute::Flag::NoRegister,
+			Shibboleth::ScriptFlagsAttribute::Flag::NoInherit
 		)
 	)
 
-	.staticFunc("Constructor", &ECSComponentDestructable<T>::Constructor)
-	.staticFunc("Destructor", &ECSComponentDestructable<T>::Destructor)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(ECSComponentDestructable, T)
+	.staticFunc("Constructor", &Shibboleth::ECSComponentDestructable<T>::Constructor)
+	.staticFunc("Destructor", &Shibboleth::ECSComponentDestructable<T>::Destructor)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ECSComponentDestructable, T)
 
 NS_SHIBBOLETH
 
@@ -186,12 +186,12 @@ void ECSComponentBase<T, GetT, type>::Copy(const void* old_begin, int32_t old_in
 }
 
 template <class T, class GetT, ECSComponentType type>
-bool ECSComponentBase<T, GetT, type>::Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader)
+bool ECSComponentBase<T, GetT, type>::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
 {
 	if constexpr (IsNonShared()) {
 		T value;
 
-		if (!Reflection<T>::Load(reader, value)) {
+		if (!Refl::Reflection<T>::GetInstance().load(reader, value)) {
 			// $TODO: Log error.
 			return false;
 		}
@@ -223,7 +223,7 @@ void ECSComponentBase<T, GetT, type>::CopyInternal(const void* old_begin, int32_
 {
 	GAFF_REF(old_begin, old_index, new_begin, new_index);
 	GAFF_ASSERT_MSG(IsNonShared(), "CopyInternal() called on a component that doesn't support non-shared behavior.");
-	GAFF_ASSERT_MSG(false, "CopyInternal() not implemented with type '%s'.", Reflection<T>::GetName());
+	GAFF_ASSERT_MSG(false, "CopyInternal() not implemented with type '%s'.", Refl::Reflection<T>::GetName());
 }
 
 template <class T, class GetT, ECSComponentType type>
@@ -231,7 +231,7 @@ void ECSComponentBase<T, GetT, type>::SetInternal(void* component, int32_t page_
 {
 	GAFF_REF(component, page_index, value);
 	GAFF_ASSERT_MSG(IsNonShared(), "SetInternal() called on a component that doesn't support non-shared behavior.");
-	GAFF_ASSERT_MSG(false, "SetInternal() not implemented with type '%s'.", Reflection<T>::GetName());
+	GAFF_ASSERT_MSG(false, "SetInternal() not implemented with type '%s'.", Refl::Reflection<T>::GetName());
 }
 
 template <class T, class GetT, ECSComponentType type>
@@ -239,7 +239,7 @@ GetT ECSComponentBase<T, GetT, type>::GetInternal(const void* component, int32_t
 {
 	GAFF_REF(component, page_index);
 	GAFF_ASSERT_MSG(IsNonShared(), "GetInternal() called on a component that doesn't support non-shared behavior.");
-	GAFF_ASSERT_MSG(false, "GetInternal() not implemented with type '%s'.", Reflection<T>::GetName());
+	GAFF_ASSERT_MSG(false, "GetInternal() not implemented with type '%s'.", Refl::Reflection<T>::GetName());
 }
 
 

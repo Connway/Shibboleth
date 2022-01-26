@@ -54,4 +54,4 @@ using RasterStateResourcePtr = Gaff::RefPtr<RasterStateResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(RasterStateResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::RasterStateResource)

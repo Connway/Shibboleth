@@ -27,10 +27,6 @@ THE SOFTWARE.
 #include "Shibboleth_ECSEntity.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 
-NS_GAFF
-	class ISerializeReader;
-NS_END
-
 NS_SHIBBOLETH
 
 struct ECSQueryResult;
@@ -70,7 +66,7 @@ public:
 	static void CopyShared(const void* old_value, void* new_value);
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader);
 
 	static constexpr bool IsNonShared(void);
 	static constexpr bool IsShared(void);
@@ -117,29 +113,31 @@ public:
 
 NS_END
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseNonShared, T, GetT)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseShared, T, GetT)
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentBaseBoth, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentBaseNonShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentBaseShared, T, GetT)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentBaseBoth, T, GetT)
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentDestructable, T)
 
 #include "Shibboleth_ECSComponentBase.inl"
 
 #define SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
 		.classAttrs( \
-			ECSClassAttribute(name, category) \
+			Shibboleth::ECSClassAttribute(name, category) \
 		) \
-		.ctor<>(); \
+		.ctor<>() \
+		.staticFunc("IsNonShared", &type::IsNonShared) \
+		.staticFunc("IsShared", &type::IsShared); \
 		if constexpr (type::IsNonShared() && type::IsShared()) { \
 			builder \
-				.base< ECSComponentBaseBoth<type> >(); \
+				.base< Shibboleth::ECSComponentBaseBoth<type> >(); \
 		} else if constexpr (type::IsNonShared()) { \
 			builder \
-				.base< ECSComponentBaseNonShared<type> >(); \
+				.base< Shibboleth::ECSComponentBaseNonShared<type> >(); \
 		} else if constexpr (type::IsShared()) { \
 			builder \
-				.base< ECSComponentBaseShared<type> >(); \
+				.base< Shibboleth::ECSComponentBaseShared<type> >(); \
 		} \
 		builder
 
@@ -177,12 +175,12 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(ECSComponentDestructable, T)
 		.var("value", &type::value, ##__VA_ARGS__); \
 		if constexpr (type::IsNonShared()) { \
 			builder \
-				.staticFunc("Get", static_cast<typename type::GetType (*)(ECSManager&, EntityID)>(&type::Get)) \
-				.staticFunc("Set", static_cast<void (*)(ECSManager&, EntityID, const type&)>(&type::Set)); \
+				.staticFunc("Get", static_cast<typename type::GetType (*)(Shibboleth::ECSManager&, Shibboleth::EntityID)>(&type::Get)) \
+				.staticFunc("Set", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const type&)>(&type::Set)); \
 		} \
 		if constexpr (type::IsShared()) { \
 			builder \
-				.staticFunc("GetShared", static_cast<type& (*)(ECSManager&, EntityID)>(&type::GetShared)) \
-				.staticFunc("SetShared", static_cast<void (*)(ECSManager&, EntityID, const type&)>(&type::SetShared)); \
+				.staticFunc("GetShared", static_cast<type& (*)(Shibboleth::ECSManager&, Shibboleth::EntityID)>(&type::GetShared)) \
+				.staticFunc("SetShared", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const type&)>(&type::SetShared)); \
 		} \
 	SHIB_REFLECTION_DEFINE_END(type)

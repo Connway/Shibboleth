@@ -26,16 +26,16 @@ THE SOFTWARE.
 namespace
 {
 	template <class T>
-	int32_t VecToString(const T& value, char* buffer, int32_t size)
+	int32_t VecToString(const T& value, char8_t* buffer, int32_t size)
 	{
 		if constexpr (std::is_same<T, Gleam::Quat>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Quat(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, Gleam::Vec4>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec4(%f, %f, %f, %f)", value.x, value.y, value.z, value.w);
 		} else if constexpr (std::is_same<T, Gleam::Vec3>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec3(%f, %f, %f)", value.x, value.y, value.z);
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec3(%f, %f, %f)", value.x, value.y, value.z);
 		} else if constexpr (std::is_same<T, Gleam::Vec2>::value) {
-			return snprintf(buffer, static_cast<size_t>(size), "Gleam::Vec2(%f, %f)", value.x, value.y);
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec2(%f, %f)", value.x, value.y);
 		}
 	}
 }
@@ -97,20 +97,20 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec4)
 
 	.opToString< VecToString<Gleam::Vec4> >()
 
-	.var("x", &Gleam::Vec4::x, OptionalAttribute())
-	.var("y", &Gleam::Vec4::y, OptionalAttribute())
-	.var("z", &Gleam::Vec4::z, OptionalAttribute())
-	.var("w", &Gleam::Vec4::w, OptionalAttribute())
+	.var("x", &Gleam::Vec4::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::Vec4::y, Shibboleth::OptionalAttribute())
+	.var("z", &Gleam::Vec4::z, Shibboleth::OptionalAttribute())
+	.var("w", &Gleam::Vec4::w, Shibboleth::OptionalAttribute())
 
-	.var("r", &Gleam::Vec4::r, OptionalAttribute())
-	.var("g", &Gleam::Vec4::g, OptionalAttribute())
-	.var("b", &Gleam::Vec4::b, OptionalAttribute())
-	.var("a", &Gleam::Vec4::a, OptionalAttribute())
+	.var("r", &Gleam::Vec4::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::Vec4::g, Shibboleth::OptionalAttribute())
+	.var("b", &Gleam::Vec4::b, Shibboleth::OptionalAttribute())
+	.var("a", &Gleam::Vec4::a, Shibboleth::OptionalAttribute())
 
-	.var("s", &Gleam::Vec4::s, OptionalAttribute())
-	.var("t", &Gleam::Vec4::t, OptionalAttribute())
-	.var("p", &Gleam::Vec4::p, OptionalAttribute())
-	.var("q", &Gleam::Vec4::q, OptionalAttribute())
+	.var("s", &Gleam::Vec4::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::Vec4::t, Shibboleth::OptionalAttribute())
+	.var("p", &Gleam::Vec4::p, Shibboleth::OptionalAttribute())
+	.var("q", &Gleam::Vec4::q, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Gleam::Vec4)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec3)
@@ -139,17 +139,17 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec3)
 
 	.opToString< VecToString<Gleam::Vec3> >()
 
-	.var("x", &Gleam::Vec3::x, OptionalAttribute())
-	.var("y", &Gleam::Vec3::y, OptionalAttribute())
-	.var("z", &Gleam::Vec3::z, OptionalAttribute())
+	.var("x", &Gleam::Vec3::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::Vec3::y, Shibboleth::OptionalAttribute())
+	.var("z", &Gleam::Vec3::z, Shibboleth::OptionalAttribute())
 
-	.var("r", &Gleam::Vec3::r, OptionalAttribute())
-	.var("g", &Gleam::Vec3::g, OptionalAttribute())
-	.var("b", &Gleam::Vec3::b, OptionalAttribute())
+	.var("r", &Gleam::Vec3::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::Vec3::g, Shibboleth::OptionalAttribute())
+	.var("b", &Gleam::Vec3::b, Shibboleth::OptionalAttribute())
 
-	.var("s", &Gleam::Vec3::s, OptionalAttribute())
-	.var("t", &Gleam::Vec3::t, OptionalAttribute())
-	.var("p", &Gleam::Vec3::p, OptionalAttribute())
+	.var("s", &Gleam::Vec3::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::Vec3::t, Shibboleth::OptionalAttribute())
+	.var("p", &Gleam::Vec3::p, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Gleam::Vec3)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
@@ -177,14 +177,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
 
 	.opToString< VecToString<Gleam::Vec2> >()
 
-	.var("x", &Gleam::Vec2::x, OptionalAttribute())
-	.var("y", &Gleam::Vec2::y, OptionalAttribute())
+	.var("x", &Gleam::Vec2::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::Vec2::y, Shibboleth::OptionalAttribute())
 
-	.var("r", &Gleam::Vec2::r, OptionalAttribute())
-	.var("g", &Gleam::Vec2::g, OptionalAttribute())
+	.var("r", &Gleam::Vec2::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::Vec2::g, Shibboleth::OptionalAttribute())
 
-	.var("s", &Gleam::Vec2::s, OptionalAttribute())
-	.var("t", &Gleam::Vec2::t, OptionalAttribute())
+	.var("s", &Gleam::Vec2::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::Vec2::t, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Gleam::Vec2)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)

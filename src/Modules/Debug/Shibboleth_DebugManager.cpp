@@ -239,21 +239,21 @@ GAFF_STATIC_FILE_FUNC
 	ImGui::SetAllocatorFunctions(ImGuiAlloc, ImGuiFree);
 }
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugManager::DebugFlag)
-	.entry("Draw FPS", DebugManager::DebugFlag::DrawFPS)
-SHIB_REFLECTION_DEFINE_END(DebugManager::DebugFlag)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager::DebugFlag)
+	.entry("Draw FPS", Shibboleth::DebugManager::DebugFlag::DrawFPS)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager::DebugFlag)
 
-SHIB_REFLECTION_DEFINE_BEGIN(DebugManager)
-	.BASE(IDebugManager)
-	.base<IManager>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
+	.BASE(Shibboleth::IDebugManager)
+	.base<Shibboleth::IManager>()
 	.ctor<>()
 
 	.var(
 		"Debug Flags",
-		&DebugManager::_debug_flags,
-		DebugMenuItemAttribute("Debug")
+		&Shibboleth::DebugManager::_debug_flags,
+		Shibboleth::DebugMenuItemAttribute(u8"Debug")
 	)
-SHIB_REFLECTION_DEFINE_END(DebugManager)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager)
 
 NS_SHIBBOLETH
 
@@ -334,7 +334,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 			job_data.debug_mgr->_camera[i],
 			[&](EntityID id, const Position& position, const Rotation& rotation, const Camera& camera) -> void
 			{
-				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const("main");
+				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const(u8"main");
 
 				if (camera.device_tag == main_tag) {
 					const Gleam::IVec2 size = job_data.debug_mgr->_main_output->getSize();
@@ -361,7 +361,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 		return;
 	}
 
-	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag("main");
+	const auto* const devices = job_data.debug_mgr->_render_mgr->getDevicesByTag(u8"main");
 	GAFF_ASSERT(devices && devices->size() > 0);
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
@@ -779,7 +779,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 void DebugManager::SetupModuleToUseImGui(void)
 {
 	// Go through IDebugManager so that we get DebugModule's ImGui context.
-	const IDebugManager& dbg_mgr = GetApp().GETMANAGERT(IDebugManager, DebugManager);
+	const IDebugManager& dbg_mgr = GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
 }
 
@@ -791,7 +791,7 @@ DebugManager::~DebugManager(void)
 bool DebugManager::initAllModulesLoaded(void)
 {
 	_time = &GetApp().getManagerTFast<GameTimeManager>().getRealTime();
-	_render_mgr = &GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_input_mgr = &GetApp().getManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
 
@@ -1072,7 +1072,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugModel(const ModelResour
 	return DebugRenderHandle(instance, model.get(), has_depth);
 }
 
-void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
+void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def)
 {
 	const ProxyAllocator allocator("Debug");
 	DebugMenuEntry menu_entry;
@@ -1082,10 +1082,10 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 	ref_def.getVarAttrs(results);
 
 	for (const auto& entry : results) {
-		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
+		Refl::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
 		DebugMenuEntry* root = &_debug_menu_root;
 
-		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
+		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Refl::Reflection<bool>::GetReflectionDefinition()) {
 			// Menu items only support flags and bools.
 			// $TODO: Log error.
 			continue;
@@ -1109,7 +1109,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 			prev_index = index;
 			root = &(*it);
 
-			index = path.find_first_of("/", index + 1);
+			index = path.find_first_of(u8"/", index + 1);
 		}
 
 		menu_entry.name = entry.first;
@@ -1121,7 +1121,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 
 		// If an entry with this name already exists, then add numbers to the end until we don't find a match.
 		while (it != root->children.end() && it->name == menu_entry.name) {
-			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
+			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), u8" %i", i++);
 			it = Gaff::LowerBound(root->children, menu_entry.name);
 		}
 
@@ -1137,7 +1137,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 	ref_def.getFuncAttrs<void>(results);
 
 	for (const auto& entry : results) {
-		Gaff::IReflectionFunction<void>* const func = ref_def.getFunc<void>(entry.first.getHash());
+		Refl::IReflectionFunction<void>* const func = ref_def.getFunc<void>(entry.first.getHash());
 		DebugMenuEntry* root = &_debug_menu_root;
 
 		if (!func) {
@@ -1164,7 +1164,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 			prev_index = index;
 			root = &(*it);
 
-			index = path.find_first_of("/", index + 1);
+			index = path.find_first_of(u8"/", index + 1);
 		}
 
 		menu_entry.name = entry.first;
@@ -1176,7 +1176,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 
 		// If an entry with this name already exists, then add numbers to the end until we don't find a match.
 		while (it != root->children.end() && it->name == menu_entry.name) {
-			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), " %i", i++);
+			menu_entry.name = base_name + U8String(U8String::CtorSprintf(), u8" %i", i++);
 			it = Gaff::LowerBound(root->children, menu_entry.name);
 		}
 
@@ -1244,7 +1244,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Gaff::IReflectionD
 	//}
 }
 
-void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectionDefinition& ref_def)
+void DebugManager::unregisterDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def)
 {
 	const ProxyAllocator allocator("Debug");
 
@@ -1253,9 +1253,9 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 	ref_def.getFuncAttrs<void>(results);
 
 	for (const auto& entry : results) {
-		Gaff::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
+		Refl::IReflectionVar* const var = ref_def.getVar(entry.first.getHash());
 
-		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Reflection<bool>::GetReflectionDefinition()) {
+		if (!var->isFlags() && &var->getReflection().getReflectionDefinition() != &Refl::Reflection<bool>::GetReflectionDefinition()) {
 			// Menu items only support flags and bools.
 			// $TODO: Log error.
 			continue;
@@ -1285,7 +1285,7 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Gaff::IReflectio
 			}
 
 			prev_index = index;
-			index = path.find_first_of("/", index + 1);
+			index = path.find_first_of(u8"/", index + 1);
 
 			entries.emplace_back(it);
 		}
@@ -2142,15 +2142,15 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 		switch (entry.type) {
 			case DebugMenuEntry::Type::Var:
 				if (entry.var->isFlags()) {
-					const Gaff::IEnumReflectionDefinition& ref_def = entry.var->getReflection().getEnumReflectionDefinition();
+					const Refl::IEnumReflectionDefinition& ref_def = entry.var->getReflection().getEnumReflectionDefinition();
 					const int32_t num_entries = ref_def.getNumEntries();
 
-					if (ImGui::BeginMenu(entry.name.getBuffer())) {
+					if (ImGui::BeginMenu(reinterpret_cast<const char*>(entry.name.getBuffer()))) {
 						for (int32_t i = 0; i < num_entries; ++i) {
 							const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 							bool value = entry.var->getFlagValue(entry.object, i);
 					
-							if (ImGui::MenuItem(flag_name.getBuffer(), nullptr, value)) {
+							if (ImGui::MenuItem(reinterpret_cast<const char*>(flag_name.getBuffer()), nullptr, value)) {
 								entry.var->setFlagValue(entry.object, i, !value);
 							}
 						}
@@ -2160,25 +2160,25 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 
 				} else {
 					bool* const var = reinterpret_cast<bool*>(entry.var->getData(entry.object));
-					ImGui::MenuItem(entry.name.getBuffer(), nullptr, var);
+					ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer()), nullptr, var);
 				}
 					break;
 
 			case DebugMenuEntry::Type::Func:
-				if (ImGui::MenuItem(entry.name.getBuffer())) {
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer()))) {
 					entry.func->call(entry.object);
 				}
 				break;
 
 			case DebugMenuEntry::Type::StaticFunc:
-				if (ImGui::MenuItem(entry.name.getBuffer())) {
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer()))) {
 					entry.static_func->call();
 				}
 				break;
 		}
 
 	} else {
-		if (ImGui::BeginMenu(entry.name.getBuffer())) {
+		if (ImGui::BeginMenu(reinterpret_cast<const char*>(entry.name.getBuffer()))) {
 			for (const DebugMenuEntry& child_entry : entry.children) {
 				renderDebugMenu(child_entry);
 			}

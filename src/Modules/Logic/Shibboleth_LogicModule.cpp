@@ -43,10 +43,10 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 
 				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
 				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));

@@ -30,17 +30,17 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(RasterStateResource)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RasterStateResource)
 	.classAttrs(
-		CreatableAttribute(),
-		ResExtAttribute(".raster_state.bin"),
-		ResExtAttribute(".raster_state"),
-		MakeLoadFileCallbackAttribute(&RasterStateResource::loadRasterState)
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResExtAttribute(u8".raster_state.bin"),
+		Shibboleth::ResExtAttribute(u8".raster_state"),
+		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::RasterStateResource::loadRasterState)
 	)
 
-	.base<IResource>()
+	.base<Shibboleth::IResource>()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(RasterStateResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RasterStateResource)
 
 NS_SHIBBOLETH
 
@@ -71,7 +71,7 @@ bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>&
 
 bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(IRenderManager, RenderManager);
+	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
 
 	if (!raster_state->init(device, raster_state_settings)) {
@@ -106,13 +106,13 @@ void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
-	const Gaff::ISerializeReader& reader = *readerWrapper.getReader();
+	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;
 
 	{
-		const auto guard = reader.enterElementGuard("devices_tag");
+		const auto guard = reader.enterElementGuard(u8"devices_tag");
 
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("Malformed shader '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
@@ -120,7 +120,7 @@ void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int
 			return;
 		}
 
-		const char* const tag = reader.readString("main");
+		const char8_t* const tag = reader.readString(u8"main");
 		device_tag = tag;
 		devices = render_mgr.getDevicesByTag(tag);
 		reader.freeString(tag);
@@ -134,7 +134,7 @@ void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int
 
 	Gleam::IRasterState::Settings raster_state_settings;
 	
-	if (!Reflection<Gleam::IRasterState::Settings>::Load(reader, raster_state_settings)) {
+	if (!Refl::Reflection<Gleam::IRasterState::Settings>::GetInstance().load(reader, raster_state_settings)) {
 		LogErrorResource("Failed to load raster state '%s'. Failed to deserialize raster settings.", getFilePath().getBuffer());
 		failed();
 		return;

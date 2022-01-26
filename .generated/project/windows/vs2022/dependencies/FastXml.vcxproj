@@ -105,7 +105,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,7 +128,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -153,7 +153,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -178,7 +178,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

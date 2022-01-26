@@ -31,9 +31,6 @@ NS_GAFF
 class File
 {
 public:
-	static bool CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size);
-	static bool CheckExtension(const char* file_name, const char* extension);
-
 	static bool Remove(const char* file_name);
 	static bool Rename(const char* old_file_name, const char* new_file_name);
 
@@ -60,6 +57,7 @@ public:
 		End = SEEK_END // Starts seeking from the end of the file.
 	};
 
+	File(const char8_t* file_name, OpenMode mode = OpenMode::Read);
 	File(const char* file_name, OpenMode mode = OpenMode::Read);
 	File(File&& rhs);
 	File(FILE* rhs);
@@ -87,8 +85,11 @@ public:
 		return write(&data, sizeof(T), 1);
 	}
 
+	bool open(const char8_t* file_name, OpenMode mode = OpenMode::Read);
 	bool open(const char* file_name, OpenMode mode = OpenMode::Read);
 
+	bool redirect(FILE* file, const char8_t* file_name, OpenMode mode = OpenMode::Write);
+	bool redirect(const char8_t* file_name, OpenMode mode = OpenMode::Write);
 	bool redirect(FILE* file, const char* file_name, OpenMode mode = OpenMode::Write);
 	bool redirect(const char* file_name, OpenMode mode = OpenMode::Write);
 
@@ -103,13 +104,18 @@ public:
 	size_t read(void* buffer, size_t element_size, size_t element_count);
 	size_t write(void* buffer, size_t element_size, size_t element_count);
 
+	void printfVA(const char8_t* format_string, va_list vl);
+	void printf(const char8_t* format_string, ...);
 	void printfVA(const char* format_string, va_list vl);
 	void printf(const char* format_string, ...);
 
+	bool writeChar(char8_t c);
 	bool writeChar(char c);
 	int32_t readChar(void);
 
+	bool writeString(const char8_t* s);
 	bool writeString(const char* s);
+	bool readString(char8_t* buffer, int32_t max_byte_count);
 	bool readString(char* buffer, int32_t max_byte_count);
 
 	int32_t getFilePos(void) const;
@@ -120,6 +126,7 @@ public:
 
 	// Only useful in BINARY mode
 	int32_t getFileSize(void);
+	bool readEntireFile(char8_t* buffer);
 	bool readEntireFile(char* buffer);
 
 private:

@@ -42,7 +42,7 @@ static void WriteMPack(Gaff::MessagePackWriter& writer, const Gaff::JSON& json)
 	} else if (json.isObject()) {
 		writer.startObject(json.size());
 
-		json.forEachInObject([&](const char* name, const Gaff::JSON& value) -> bool
+		json.forEachInObject([&](const char8_t* name, const Gaff::JSON& value) -> bool
 		{
 			writer.writeKey(name);
 			WriteMPack(writer, value);
@@ -88,18 +88,19 @@ int main(int argc, const char** argv)
 	}
 
 	for (int32_t i = 1; i < argc; ++i) {
+		CONVERT_STRING(char8_t, file, argv[i]);
 		Gaff::JSON json;
 
-		if (!json.parseFile(argv[i])) {
-			printf("Failed to parse '%s' with error '%s'", argv[i], json.getErrorText());
+		if (!json.parseFile(file)) {
+			printf("Failed to parse '%s' with error '%s'", argv[i], reinterpret_cast<const char*>(json.getErrorText()));
 			continue;
 		}
 
-		const Gaff::U8String<> mpack_file = Gaff::U8String<>(argv[i]) + ".bin";
+		const Gaff::U8String<> mpack_file = Gaff::U8String<>(argv[i]) + u8".bin";
 		Gaff::MessagePackWriter mpack;
 		
 		if (!mpack.init(mpack_file.data())) {
-			printf("Failed to initialize mpack file '%s'.", mpack_file.data());
+			printf("Failed to initialize mpack file '%s'.", reinterpret_cast<const char*>(mpack_file.data()));
 			continue;
 		}
 

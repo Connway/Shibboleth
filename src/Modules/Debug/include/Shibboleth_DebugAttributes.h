@@ -27,25 +27,25 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class DebugMenuClassAttribute final : public Gaff::IAttribute
+class DebugMenuClassAttribute final : public Refl::IAttribute
 {
-	IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
-	void instantiated(void* object, const Gaff::IReflectionDefinition& ref_def) override;
+	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuClassAttribute);
 };
 
-class DebugMenuItemAttribute final : public Gaff::IAttribute
+class DebugMenuItemAttribute final : public Refl::IAttribute
 {
 public:
-	DebugMenuItemAttribute(const char* path);
+	DebugMenuItemAttribute(const char8_t* path);
 
 	const U8String& getPath(void) const;
 
-	IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
-	void finish(Gaff::IReflectionDefinition& ref_def) override;
+	void finish(Refl::IReflectionDefinition& ref_def) override;
 
 private:
 	U8String _path;
@@ -55,5 +55,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DebugMenuClassAttribute)
-SHIB_REFLECTION_DECLARE(DebugMenuItemAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugMenuClassAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::DebugMenuItemAttribute)

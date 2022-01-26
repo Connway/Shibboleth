@@ -37,7 +37,7 @@ public:
 	{
 		GAFF_ASSERT(isObject());
 		const int32_t len = size();
-		char key[256] = {};
+		char8_t key[256] = {};
 
 		for (int32_t i = 0; i < len; ++i) {
 			getKey(key, ARRAY_SIZE(key), i);
@@ -96,23 +96,26 @@ public:
 	virtual bool isFalse(void) const = 0;
 	virtual bool isNull(void) const = 0;
 
+	virtual void enterElement(const char8_t* key) const = 0;
 	virtual void enterElement(const char* key) const = 0;
 	virtual void enterElement(int32_t index)  const = 0;
 	virtual void exitElement(void)  const = 0;
 
+	virtual ScopeGuard enterElementGuard(const char8_t* key) const = 0;
 	virtual ScopeGuard enterElementGuard(const char* key) const = 0;
 	virtual ScopeGuard enterElementGuard(int32_t index) const = 0;
 
-	virtual void freeString(const char* str) const = 0;
+	virtual void freeString(const char8_t* str) const = 0;
 	virtual int32_t size(void) const = 0;
 
+	virtual bool exists(const char8_t* key) const = 0;
 	virtual bool exists(const char* key) const = 0;
 
-	virtual const char* getKey(char* buffer, size_t buf_size, int32_t index) const = 0;
-	virtual const char* getKey(int32_t index) const = 0;
+	virtual const char8_t* getKey(char8_t* buffer, size_t buf_size, int32_t index) const = 0;
+	virtual const char8_t* getKey(int32_t index) const = 0;
 
-	virtual const char* readString(char* buffer, size_t buf_size, const char* default_value) const = 0;
-	virtual const char* readString(const char* default_value) const = 0;
+	virtual const char8_t* readString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const = 0;
+	virtual const char8_t* readString(const char8_t* default_value) const = 0;
 	virtual int8_t readInt8(int8_t default_value) const = 0;
 	virtual uint8_t readUInt8(uint8_t default_value) const = 0;
 	virtual int16_t readInt16(int16_t default_value) const = 0;
@@ -126,8 +129,8 @@ public:
 	virtual double readNumber(double default_value) const = 0;
 	virtual bool readBool(bool default_value) const = 0;
 
-	virtual const char* readString(char* buffer, size_t buf_size) const = 0;
-	virtual const char* readString(void) const = 0;
+	virtual const char8_t* readString(char8_t* buffer, size_t buf_size) const = 0;
+	virtual const char8_t* readString(void) const = 0;
 	virtual int8_t readInt8(void) const = 0;
 	virtual uint8_t readUInt8(void) const = 0;
 	virtual int16_t readInt16(void) const = 0;
@@ -141,20 +144,20 @@ public:
 	virtual double readNumber(void) const = 0;
 	virtual bool readBool(void) const = 0;
 
-	//virtual const char* readString(const char* key, char* buffer, size_t buf_size, const char* default_value) const = 0;
-	//virtual const char* readString(const char* key, const char* default_value) const = 0;
-	virtual int8_t readInt8(const char* key, int8_t default_value) const = 0;
-	virtual uint8_t readUInt8(const char* key, uint8_t default_value) const = 0;
-	virtual int16_t readInt16(const char* key, int16_t default_value) const = 0;
-	virtual uint16_t readUInt16(const char* key, uint16_t default_value) const = 0;
-	virtual int32_t readInt32(const char* key, int32_t default_value) const = 0;
-	virtual uint32_t readUInt32(const char* key, uint32_t default_value) const = 0;
-	virtual int64_t readInt64(const char* key, int64_t default_value) const = 0;
-	virtual uint64_t readUInt64(const char* key, uint64_t default_value) const = 0;
-	virtual float readFloat(const char* key, float default_value) const = 0;
-	virtual double readDouble(const char* key, double default_value) const = 0;
-	virtual double readNumber(const char* key, double default_value) const = 0;
-	virtual bool readBool(const char* key, bool default_value) const = 0;
+	//virtual const char8_t* readString(const char8_t* key, char8_t* buffer, size_t buf_size, const char8_t* default_value) const = 0;
+	//virtual const char8_t* readString(const char8_t* key, const char8_t* default_value) const = 0;
+	virtual int8_t readInt8(const char8_t* key, int8_t default_value) const = 0;
+	virtual uint8_t readUInt8(const char8_t* key, uint8_t default_value) const = 0;
+	virtual int16_t readInt16(const char8_t* key, int16_t default_value) const = 0;
+	virtual uint16_t readUInt16(const char8_t* key, uint16_t default_value) const = 0;
+	virtual int32_t readInt32(const char8_t* key, int32_t default_value) const = 0;
+	virtual uint32_t readUInt32(const char8_t* key, uint32_t default_value) const = 0;
+	virtual int64_t readInt64(const char8_t* key, int64_t default_value) const = 0;
+	virtual uint64_t readUInt64(const char8_t* key, uint64_t default_value) const = 0;
+	virtual float readFloat(const char8_t* key, float default_value) const = 0;
+	virtual double readDouble(const char8_t* key, double default_value) const = 0;
+	virtual double readNumber(const char8_t* key, double default_value) const = 0;
+	virtual bool readBool(const char8_t* key, bool default_value) const = 0;
 
 };
 
@@ -169,23 +172,23 @@ public:
 	virtual void startObject(uint32_t size) = 0;
 	virtual void endObject(void) = 0;
 
-	virtual void writeKey(const char* key) = 0;
+	virtual void writeKey(const char8_t* key) = 0;
 
-	virtual void writeInt8(const char* key, int8_t value) = 0;
-	virtual void writeInt16(const char* key, int16_t value) = 0;
-	virtual void writeInt32(const char* key, int32_t value) = 0;
-	virtual void writeInt64(const char* key, int64_t value) = 0;
+	virtual void writeInt8(const char8_t* key, int8_t value) = 0;
+	virtual void writeInt16(const char8_t* key, int16_t value) = 0;
+	virtual void writeInt32(const char8_t* key, int32_t value) = 0;
+	virtual void writeInt64(const char8_t* key, int64_t value) = 0;
 
-	virtual void writeUInt8(const char* key, uint8_t value) = 0;
-	virtual void writeUInt16(const char* key, uint16_t value) = 0;
-	virtual void writeUInt32(const char* key, uint32_t value) = 0;
-	virtual void writeUInt64(const char* key, uint64_t value) = 0;
+	virtual void writeUInt8(const char8_t* key, uint8_t value) = 0;
+	virtual void writeUInt16(const char8_t* key, uint16_t value) = 0;
+	virtual void writeUInt32(const char8_t* key, uint32_t value) = 0;
+	virtual void writeUInt64(const char8_t* key, uint64_t value) = 0;
 
-	virtual void writeFloat(const char* key, float value) = 0;
-	virtual void writeDouble(const char* key, double value) = 0;
-	virtual void writeBool(const char* key, bool value) = 0;
+	virtual void writeFloat(const char8_t* key, float value) = 0;
+	virtual void writeDouble(const char8_t* key, double value) = 0;
+	virtual void writeBool(const char8_t* key, bool value) = 0;
 
-	virtual void writeString(const char* key, const char* value) = 0;
+	virtual void writeString(const char8_t* key, const char8_t* value) = 0;
 
 	virtual void writeInt8(int8_t value) = 0;
 	virtual void writeInt16(int16_t value) = 0;
@@ -201,7 +204,7 @@ public:
 	virtual void writeDouble(double value) = 0;
 	virtual void writeBool(bool value) = 0;
 
-	virtual void writeString(const char* value) = 0;
+	virtual void writeString(const char8_t* value) = 0;
 };
 
 class ScopeGuard final
@@ -209,7 +212,7 @@ class ScopeGuard final
 public:
 	GAFF_NO_COPY(ScopeGuard);
 
-	ScopeGuard(const ISerializeReader& reader, const char* key): _reader(&reader) { _reader->enterElement(key); }
+	ScopeGuard(const ISerializeReader& reader, const char8_t* key): _reader(&reader) { _reader->enterElement(key); }
 	ScopeGuard(const ISerializeReader& reader, int32_t index): _reader(&reader) { _reader->enterElement(index); }
 	~ScopeGuard(void) { if (_reader) _reader->exitElement(); }
 

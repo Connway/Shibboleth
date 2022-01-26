@@ -34,16 +34,16 @@ class LuaManager final : public IManager
 {
 public:
 	static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
-	static constexpr const char* k_thread_pool_name = "Lua";
-	static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name);
+	static constexpr const char8_t* k_thread_pool_name = u8"Lua";
+	static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name, eastl::CharStrlen(k_thread_pool_name));
 	static constexpr int32_t k_default_num_threads = 4;
 
 	~LuaManager(void);
 
 	bool initAllModulesLoaded(void) override;
 
-	bool loadBuffer(const char* buffer, size_t size, const char* name);
-	void unloadBuffer(const char* name);
+	bool loadBuffer(const char* buffer, size_t size, const char8_t* name);
+	void unloadBuffer(const char8_t* name);
 
 	lua_State* requestState(void);
 	void returnState(lua_State* state);
@@ -60,11 +60,11 @@ private:
 	static void* alloc(void*, void* ptr, size_t, size_t new_size);
 	static int panic(lua_State* L);
 
-	bool loadLuaManager(const char* file_name, IFile* file);
+	bool loadLuaManager(const char8_t* file_name, IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(LuaManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::LuaManager)

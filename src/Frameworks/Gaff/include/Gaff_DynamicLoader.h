@@ -64,10 +64,9 @@ public:
 
 	void clear(void);
 
-	ModulePtr loadModule(const char* filename, const char* name);
-	ModulePtr getModule(const char* name);
-
-	void removeModule(const char* name);
+	ModulePtr loadModule(const char8_t* filename, const char8_t* name);
+	ModulePtr getModule(const char8_t* name);
+	void removeModule(const char8_t* name);
 
 private:
 	using HString = HashString32<Allocator>;

@@ -43,4 +43,4 @@ using LuaResourcePtr = Gaff::RefPtr<LuaResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(LuaResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::LuaResource)

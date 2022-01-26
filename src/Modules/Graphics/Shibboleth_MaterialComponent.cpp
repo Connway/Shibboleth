@@ -25,31 +25,35 @@ THE SOFTWARE.
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Material)
+NS_SHIBBOLETH
+	static Gaff::Hash64 MaterialComponentHash(const Material& material, Gaff::Hash64 init);
+NS_END
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Material)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.setInstanceHash(MaterialComponentHash)
+	.setInstanceHash(Shibboleth::MaterialComponentHash)
 
-	.base< ECSComponentBaseShared<Material> >()
+	.base< Shibboleth::ECSComponentBaseShared<Shibboleth::Material> >()
 
-	.var("material", &Material::material)
+	.var("material", &Shibboleth::Material::material)
 
-	.var("textures_vertex", &Material::textures_vertex, OptionalAttribute())
-	.var("textures_pixel", &Material::textures_pixel, OptionalAttribute())
-	.var("textures_domain", &Material::textures_domain, OptionalAttribute())
-	.var("textures_geometry", &Material::textures_geometry, OptionalAttribute())
-	.var("textures_hull", &Material::textures_hull, OptionalAttribute())
+	.var("textures_vertex", &Shibboleth::Material::textures_vertex, Shibboleth::OptionalAttribute())
+	.var("textures_pixel", &Shibboleth::Material::textures_pixel, Shibboleth::OptionalAttribute())
+	.var("textures_domain", &Shibboleth::Material::textures_domain, Shibboleth::OptionalAttribute())
+	.var("textures_geometry", &Shibboleth::Material::textures_geometry, Shibboleth::OptionalAttribute())
+	.var("textures_hull", &Shibboleth::Material::textures_hull, Shibboleth::OptionalAttribute())
 
-	.var("samplers_vertex", &Material::samplers_vertex, OptionalAttribute())
-	.var("samplers_pixel", &Material::samplers_pixel, OptionalAttribute())
-	.var("samplers_domain", &Material::samplers_domain, OptionalAttribute())
-	.var("samplers_geometry", &Material::samplers_geometry, OptionalAttribute())
-	.var("samplers_hull", &Material::samplers_hull, OptionalAttribute())
+	.var("samplers_vertex", &Shibboleth::Material::samplers_vertex, Shibboleth::OptionalAttribute())
+	.var("samplers_pixel", &Shibboleth::Material::samplers_pixel, Shibboleth::OptionalAttribute())
+	.var("samplers_domain", &Shibboleth::Material::samplers_domain, Shibboleth::OptionalAttribute())
+	.var("samplers_geometry", &Shibboleth::Material::samplers_geometry, Shibboleth::OptionalAttribute())
+	.var("samplers_hull", &Shibboleth::Material::samplers_hull, Shibboleth::OptionalAttribute())
 
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(Material)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::Material)
 
 NS_SHIBBOLETH
 

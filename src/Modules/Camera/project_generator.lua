@@ -51,6 +51,7 @@ local GenerateProject = function()
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("Camera")
+		NewDeleteLinkFix()
 		SetupConfigMap()
 
 		local deps =

@@ -82,8 +82,8 @@ public:
 	static JSON CreateInt64(int64_t val);
 	static JSON CreateUInt64(uint64_t val);
 	static JSON CreateDouble(double val);
-	static JSON CreateStringRef(const char* val);
-	static JSON CreateString(const char* val);
+	static JSON CreateStringRef(const char8_t* val);
+	static JSON CreateString(const char8_t* val);
 	static JSON CreateBool(bool val);
 	static JSON CreateTrue(void);
 	static JSON CreateFalse(void);
@@ -94,21 +94,21 @@ public:
 	JSON(void);
 	~JSON(void);
 
-	bool validateFile(const char* schema_file) const;
+	bool validateFile(const char8_t* schema_file) const;
 	bool validate(const JSON& schema) const;
-	bool validate(const char* schema_input) const;
+	bool validate(const char8_t* schema_input) const;
 
-	bool parseFile(const char* filename, const JSON& schema);
-	bool parseFile(const char* filename, const char* schema_input);
-	bool parseFile(const char* filename);
-	bool parse(const char* input, const JSON& schema_object);
-	bool parse(const char* input, const char* schema_input);
-	bool parse(const char* input);
+	bool parseFile(const char8_t* filename, const JSON& schema);
+	bool parseFile(const char8_t* filename, const char8_t* schema_input);
+	bool parseFile(const char8_t* filename);
+	bool parse(const char8_t* input, const JSON& schema_object);
+	bool parse(const char8_t* input, const char8_t* schema_input);
+	bool parse(const char8_t* input);
 
-	bool dumpToFile(const char* filename) const;
-	const char* dump(char* buffer, int32_t size);
-	const char* dump(void);
-	void freeDumpString(const char* string);
+	bool dumpToFile(const char8_t* filename) const;
+	const char8_t* dump(char8_t* buffer, int32_t size);
+	const char8_t* dump(void);
+	void freeDumpString(const char8_t* string);
 
 	bool isObject(void) const;
 	bool isArray(void) const;
@@ -129,15 +129,16 @@ public:
 	bool isFalse(void) const;
 	bool isNull(void) const;
 
+	JSON getObject(const char8_t* key) const;
 	JSON getObject(const char* key) const;
 	JSON getObject(int32_t index) const;
 
-	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
-	const char* getKey(int32_t index) const;
+	const char8_t* getKey(char8_t* buffer, size_t buf_size, int32_t index) const;
+	const char8_t* getKey(int32_t index) const;
 	JSON getValue(int32_t index) const;
 
-	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
-	const char* getString(const char* default_value) const;
+	const char8_t* getString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const;
+	const char8_t* getString(const char8_t* default_value) const;
 	int8_t getInt8(int8_t default_value) const;
 	uint8_t getUInt8(uint8_t default_value) const;
 	int16_t getInt16(int16_t default_value) const;
@@ -151,8 +152,8 @@ public:
 	double getNumber(double default_value) const;
 	bool getBool(bool default_value) const;
 
-	const char* getString(char* buffer, size_t buf_size) const;
-	const char* getString(void) const;
+	const char8_t* getString(char8_t* buffer, size_t buf_size) const;
+	const char8_t* getString(void) const;
 	int8_t getInt8(void) const;
 	uint8_t getUInt8(void) const;
 	int16_t getInt16(void) const;
@@ -166,23 +167,24 @@ public:
 	double getNumber(void) const;
 	bool getBool(void) const;
 
-	void setObject(const char* key, const JSON& json);
-	void setObject(const char* key, JSON&& json);
+	void setObject(const char8_t* key, const JSON& json);
+	void setObject(const char8_t* key, JSON&& json);
 	void setObject(int32_t index, const JSON& json);
 	void setObject(int32_t index, JSON&& json);
 	void push(const JSON& json);
 	void push(JSON&& json);
 
-	void freeString(const char*) const {}
+	void freeString(const char8_t*) const {}
 	int32_t size(void) const;
 
-	const char* getErrorText(void) const;
-	const char* getSchemaErrorText(void) const;
-	const char* getSchemaKeywordText(void) const;
+	const char8_t* getErrorText(void) const;
+	const char8_t* getSchemaErrorText(void) const;
+	const char8_t* getSchemaKeywordText(void) const;
 
 	JSON& operator=(const JSON& rhs);
 	JSON& operator=(JSON&& rhs);
 
+	JSON& operator=(const char8_t* value);
 	JSON& operator=(const char* value);
 	JSON& operator=(int32_t value);
 	JSON& operator=(uint32_t value);
@@ -192,6 +194,7 @@ public:
 
 	bool operator==(const JSON& rhs) const;
 	bool operator!=(const JSON& rhs) const;
+	JSON operator[](const char8_t* key) const;
 	JSON operator[](const char* key) const;
 	JSON operator[](int32_t index) const;
 
@@ -201,9 +204,9 @@ private:
 	// This allocator is stateful, so cross EXE/DLL boundaries will produce memory dereference crashes.
 	//using JSONInternalAllocator = rapidjson::MemoryPoolAllocator<JSONAllocator>;
 	using JSONInternalAllocator = JSONAllocator;
-	using JSONDocument = rapidjson::GenericDocument<rapidjson::UTF8<>, JSONInternalAllocator, JSONAllocator>;
-	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<>, JSONInternalAllocator>;
-	using JSONStringBuffer = rapidjson::GenericStringBuffer<rapidjson::UTF8<>, JSONAllocator>;
+	using JSONDocument = rapidjson::GenericDocument<rapidjson::UTF8<char8_t>, JSONInternalAllocator, JSONAllocator>;
+	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<char8_t>, JSONInternalAllocator>;
+	using JSONStringBuffer = rapidjson::GenericStringBuffer<rapidjson::UTF8<char8_t>, JSONAllocator>;
 
 	union
 	{

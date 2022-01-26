@@ -24,8 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsManager.h"
 #include <Gaff_IncludeOptick.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsDebugSystem, ISystem)
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(PhysicsSystem, ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsDebugSystem, Shibboleth::ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 

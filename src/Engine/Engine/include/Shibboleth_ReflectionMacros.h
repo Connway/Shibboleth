@@ -22,9 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
+#define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(u8#class_type)
+#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
+#define BASE(type) template base<type>(u8#type)
+#define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
+#define GET_INTERFACE(class_type, data) getInterface<class_type>(CLASS_HASH(class_type), data)
+
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
-		const Reflection::IReflectionDefinition& getReflectionDefinition(void) const override; \
+		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \
 		const void* getBasePointer(void) const override \
 		{ \
 			return this; \
@@ -34,13 +40,13 @@ THE SOFTWARE.
 			return this; \
 		} \
 	private: \
-		friend class Reflection::Reflection<type>
+		friend class Refl::Reflection<type>
 
 
 #define SHIB_REFLECTION_CLASS_DEFINE(type) \
-	const Reflection::IReflectionDefinition& type::getReflectionDefinition(void) const \
+	const Refl::IReflectionDefinition& type::getReflectionDefinition(void) const \
 	{ \
-		return Reflection::Reflection<type>::GetReflectionDefinition(); \
+		return Refl::Reflection<type>::GetReflectionDefinition(); \
 	}
 
 #define SHIB_REFLECTION_DECLARE_COMMON(type) \
@@ -50,7 +56,7 @@ THE SOFTWARE.
 		static constexpr bool HasReflection = true; \
 		static void Init(void); \
 		template <class ReflectionBuilder> \
-		void BuildReflection(ReflectionBuilder& builder); \
+		static void BuildReflection(ReflectionBuilder& builder); \
 		static Reflection<type>& GetInstance(void) \
 		{ \
 			return g_instance; \
@@ -60,16 +66,16 @@ THE SOFTWARE.
 			GAFF_ASSERT(g_instance._ref_def); \
 			return *g_instance._ref_def; \
 		} \
-		static /*constexpr*/ const char* GetName(void) \
+		static /*constexpr*/ const char8_t* GetName(void) \
 		{ \
-			static const auto name = Hash::GetName<type>(); \
+			static const auto name = Hash::ClassHashable<type>::GetName(); \
 			return name.data.data(); \
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
-			return Hash::GetHash<type>(); \
+			return Hash::ClassHashable<type>::GetHash(); \
 		} \
-		const char* getName(void) const override \
+		const char8_t* getName(void) const override \
 		{ \
 			return GetName(); \
 		} \
@@ -88,7 +94,7 @@ NS_END
 
 #define SHIB_REFLECTION_DECLARE(type) \
 	NS_HASHABLE \
-		GAFF_CLASS_HASHABLE(type) \
+		GAFF_CLASS_HASHABLE(type); \
 	NS_END \
 	NS_REFLECTION \
 	template <> \
@@ -96,12 +102,10 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_BEGIN(type) \
 	NS_REFLECTION \
-		template <> \
 		Reflection<type> Reflection<type>::g_instance; \
-		template <> \
 		void Reflection<type>::Init(void) \
 		{ \
-			if (IsDefined()) { \
+			if (g_instance._defined) { \
 				return; \
 			} \
 			GAFF_ASSERT(!g_instance._ref_def); \
@@ -135,7 +139,6 @@ NS_END
 			} \
 			g_instance._on_defined_callbacks.clear(); \
 		} \
-		template <> \
 		template <class ReflectionBuilder> \
 		void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 		{ \
@@ -172,14 +175,14 @@ NS_END
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) SHIB_REFLECTION_CLASS_DECLARE(type<__VA_ARGS__>)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
-	const Reflection::IReflectionDefinition& type<__VA_ARGS__>::getReflectionDefinition(void) const \
+	const Refl::IReflectionDefinition& type<__VA_ARGS__>::getReflectionDefinition(void) const \
 	{ \
-		return Reflection::Reflection< type<__VA_ARGS__> >::GetReflectionDefinition(); \
+		return Refl::Reflection< type<__VA_ARGS__> >::GetReflectionDefinition(); \
 	}
 
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 	NS_HASHABLE \
-		GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__) \
+		GAFF_TEMPLATE_CLASS_HASHABLE(type, __VA_ARGS__); \
 	NS_END \
 	NS_REFLECTION \
 		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
@@ -187,24 +190,20 @@ NS_END
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 	NS_REFLECTION \
+		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 		Reflection< type<__VA_ARGS__> > Reflection< type<__VA_ARGS__> >::g_instance; \
 		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 		void Reflection< type<__VA_ARGS__> >::Init(void) \
 		{ \
-			if (IsDefined()) { \
+			if (g_instance._defined) { \
 				return; \
 			} \
 			GAFF_ASSERT(!g_instance._ref_def); \
 			BuildReflection(g_instance._version); \
-			const typename RefDefInterface< type<__VA_ARGS__> >* ref_def_interface = nullptr; \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
-			if constexpr (std::is_enum< type<__VA_ARGS__> >::value) { \
-				ref_def_interface = reinterpret_cast<const typename RefDefInterface< type<__VA_ARGS__> >*>(app.getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
-			} else { \
-				ref_def_interface = reinterpret_cast<const typename RefDefInterface< type<__VA_ARGS__> >*>(app.getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
-			} \
-			g_instance._ref_def = static_cast<typename RefDefType< type<__VA_ARGS__> >*>( \
-				const_cast<typename RefDefInterface< type<__VA_ARGS__> >*>(ref_def_interface) \
+			const IReflectionDefinition* ref_def_interface = app.getReflectionManager().getReflection(GetHash()); \
+			g_instance._ref_def = static_cast<ReflectionDefinition<type<__VA_ARGS__> >*>( \
+				const_cast<IReflectionDefinition*>(ref_def_interface) \
 			); \
 			if (g_instance._ref_def) { \
 				GAFF_ASSERT_MSG( \
@@ -214,7 +213,7 @@ NS_END
 				); \
 			} else { \
 				Shibboleth::ProxyAllocator allocator("Reflection"); \
-				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename RefDefType< type<__VA_ARGS__> >), allocator); \
+				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(ReflectionDefinition< type<__VA_ARGS__> >), allocator); \
 				g_instance._ref_def->setAllocator(allocator); \
 				BuildReflection(*g_instance._ref_def); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \

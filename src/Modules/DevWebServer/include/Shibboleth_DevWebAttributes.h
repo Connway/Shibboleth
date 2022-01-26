@@ -26,14 +26,15 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class DevWebCommandAttribute final : public Gaff::IAttribute
+class DevWebCommandAttribute final : public Refl::IAttribute
 {
 public:
+	DevWebCommandAttribute(const char8_t* uri);
 	DevWebCommandAttribute(const char* uri);
 
 	const U8String& getURI(void) const;
 
-	Gaff::IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
 private:
 	U8String _uri;
@@ -43,4 +44,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(DevWebCommandAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::DevWebCommandAttribute)

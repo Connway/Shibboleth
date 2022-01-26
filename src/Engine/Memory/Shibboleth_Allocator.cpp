@@ -379,9 +379,14 @@ const char* Allocator::getPoolName(size_t pool_index) const
 	return _tagged_pools[pool_index].pool_name;
 }
 
-void Allocator::setLogDir(const char* log_dir)
+void Allocator::setLogDir(const char8_t* log_dir)
 {
-	strncpy(_log_dir, log_dir, ARRAY_SIZE(_log_dir) - 1);
+	const size_t in_len = eastl::CharStrlen(log_dir);
+	const size_t log_dir_len = ARRAY_SIZE(_log_dir);
+	const size_t len = (log_dir_len < in_len) ? log_dir_len : in_len;
+
+	memcpy(_log_dir, log_dir, len);
+	_log_dir[len - 1] = 0;
 }
 
 void Allocator::setHeaderData(
@@ -436,7 +441,7 @@ void Allocator::writeAllocationLog(void) const
 	}
 
 	char log_file_name[64] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog.txt", _log_dir);
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;
 
@@ -499,7 +504,7 @@ void Allocator::writeLeakLog(void) const
 	}
 
 	char log_file_name[64] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog.txt", _log_dir);
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;
 

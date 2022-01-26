@@ -23,11 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionDefines.h"
+#include <Gaff_IAllocator.h>
 #include <Gaff_Flags.h>
 
-NS_GAFF
-	class IAllocator;
-NS_END
+namespace Shibboleth
+{
+	class ProxyAllocator;
+}
 
 NS_REFLECTION
 
@@ -39,6 +41,7 @@ struct FunctionStackEntry final
 	enum class Flag
 	{
 		IsReference,
+		IsStringU8,
 		IsString,
 		IsArray,
 		IsMap,
@@ -133,7 +136,7 @@ public:
 	virtual bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
 
 	virtual int32_t numArgs(void) const = 0;
-	virtual IReflectionStaticFunctionBase* clone(Gaff::IAllocator& allocator) const = 0;
+	virtual IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const = 0;
 
 protected:
 	VoidFunc _func = nullptr;
@@ -143,14 +146,17 @@ template <class Ret, class... Args>
 class IReflectionStaticFunction : public IReflectionStaticFunctionBase
 {
 public:
-	using Func = Ret(*)(Args...);
+	using Func = Ret (*)(Args...);
 
 	explicit IReflectionStaticFunction(Func func) :
 		IReflectionStaticFunctionBase(reinterpret_cast<VoidFunc>(func))
 	{
 	}
 
-	Func getFunc(void) const { return reinterpret_cast<Func>(_func); }
+	Func getFunc(void) const
+	{
+		return reinterpret_cast<Func>(_func);
+	}
 
 	Ret call(Args&&... args) const
 	{

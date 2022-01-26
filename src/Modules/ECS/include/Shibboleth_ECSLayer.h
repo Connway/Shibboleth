@@ -24,13 +24,10 @@ THE SOFTWARE.
 
 #include <Shibboleth_String.h>
 
-namespace Gaff
-{
-	class ISerializeReader;
-	class ISerializeWriter;
-}
-
 NS_SHIBBOLETH
+
+class ISerializeReader;
+class ISerializeWriter;
 
 class ECSLayer final
 {
@@ -38,11 +35,11 @@ public:
 	ECSLayer(void);
 	~ECSLayer(void);
 
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+	void load(const ISerializeReader& reader);
+	void save(ISerializeWriter& writer);
 
 	const U8String& getName(void) const;
-	void setName(const char* name);
+	void setName(const char8_t* name);
 
 private:
 	U8String _name;

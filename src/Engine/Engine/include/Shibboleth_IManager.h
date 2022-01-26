@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IManager : public Gaff::IReflectionObject
+class IManager : public Refl::IReflectionObject
 {
 public:
 	IManager(void) = default;
@@ -45,4 +45,4 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(IManager)
+SHIB_REFLECTION_DECLARE(Shibboleth::IManager)

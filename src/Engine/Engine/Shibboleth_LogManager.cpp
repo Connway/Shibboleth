@@ -56,7 +56,7 @@ intptr_t LogManager::LogThread(void* args)
 
 			Gaff::File file(task.file);
 			file.writeString(task.message.data());
-			file.writeChar('\n');
+			file.writeChar(u8'\n');
 			file.flush();
 			file.release();
 
@@ -75,7 +75,7 @@ intptr_t LogManager::LogThread(void* args)
 
 		Gaff::File file(task.file);
 		file.writeString(task.message.data());
-		file.writeChar('\n');
+		file.writeChar(u8'\n');
 		file.flush();
 		file.release();
 
@@ -95,11 +95,11 @@ LogManager::~LogManager(void)
 	destroy();
 }
 
-bool LogManager::init(const char* log_dir)
+bool LogManager::init(const char8_t* log_dir)
 {
 	_log_dir = log_dir;
 
-	addChannel(HashStringView32<>("Default"), "Log");
+	addChannel(HashStringView32<>(u8"Default"), u8"Log");
 
 	EA::Thread::ThreadParameters thread_params;
 	thread_params.mbDisablePriorityBoost = false;
@@ -159,24 +159,15 @@ bool LogManager::removeLogCallback(int32_t id)
 	return false;
 }
 
-void LogManager::addChannel(HashStringView32<> channel, const char* file)
+void LogManager::addChannel(HashStringView32<> channel, const char8_t* file)
 {
 	auto it = Gaff::Find(_channels, channel);
 
 	if (it == _channels.end()) {
-		char8_t file_name[256] = { 0 };
-
-		snprintf(
-			file_name,
-			ARRAY_SIZE(file_name),
-			"%s/%s.txt",
-			_log_dir.data(),
-			file
-		);
-
+		const U8String file_name(U8String::CtorSprintf(), u8"%s/%s.txt", _log_dir.data(), file);
 		auto pair = eastl::make_pair<HashString32<>, Gaff::File>(HashString32<>(channel), Gaff::File());
 
-		if (pair.second.open(file_name, Gaff::File::OpenMode::Write)) {
+		if (pair.second.open(file_name.data(), Gaff::File::OpenMode::Write)) {
 			_channels.insert(std::move(pair));
 
 		} else {
@@ -185,16 +176,16 @@ void LogManager::addChannel(HashStringView32<> channel, const char* file)
 				logMessage(
 					LogType::Error,
 					k_log_channel_default,
-					"Failed to create channel '%s'! Failed to open file '%s'!",
+					u8"Failed to create channel '%s'! Failed to open file '%s'!",
 					channel.getBuffer(),
-					file_name
+					file_name.data()
 				);
 			}
 		}
 	}
 }
 
-void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...)
+void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char8_t* format, ...)
 {
 	va_list vl;
 	va_start(vl, format);
@@ -203,7 +194,7 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* form
 		logMessage(
 			LogType::Error,
 			k_log_channel_default,
-			"Failed to find channel with hash '%u'!",
+			u8"Failed to find channel with hash '%u'!",
 			channel
 		);
 
@@ -214,13 +205,13 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* form
 	va_end(vl);
 }
 
-bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl)
+bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl)
 {
-	char time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "[%H-%M-%S] ");
+	char8_t time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), u8"[%H-%M-%S] ");
 
-	char message[2048] = { 0 };
-	vsnprintf(message, ARRAY_SIZE(message), format, vl);
+	U8String message;
+	message.sprintf_va_list(format, vl);
 
 	auto it = Gaff::Find(_channels, channel);
 
@@ -234,10 +225,14 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 	}
 
 	_log_event.Signal(true);
+
+	Gaff::DebugPrintf(message.data());
+	Gaff::DebugPrintf(u8"\n");
+
 	return true;
 }
 
-void LogManager::notifyLogCallbacks(const char* message, LogType type)
+void LogManager::notifyLogCallbacks(const char8_t* message, LogType type)
 {
 	const EA::Thread::AutoMutex lock(_log_callback_lock);
 

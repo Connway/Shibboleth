@@ -27,22 +27,22 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class CreatableAttribute final : public Gaff::IAttribute
+class CreatableAttribute final : public Refl::IAttribute
 {
 public:
-	Gaff::IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
 };
 
-class ResExtAttribute final : public Gaff::IAttribute
+class ResExtAttribute final : public Refl::IAttribute
 {
 public:
-	ResExtAttribute(const char* extension);
+	ResExtAttribute(const char8_t* extension);
 
 	const HashStringView32<>& getExtension(void) const;
 
-	Gaff::IAttribute* clone(void) const override;
+	Refl::IAttribute* clone(void) const override;
 
 private:
 	HashStringView32<> _extension;
@@ -52,5 +52,5 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(CreatableAttribute)
-SHIB_REFLECTION_DECLARE(ResExtAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::CreatableAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::ResExtAttribute)

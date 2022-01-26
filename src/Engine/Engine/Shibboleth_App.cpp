@@ -76,7 +76,7 @@ bool App::init(int argc, const char** argv)
 		[]() { /* Do some TLS initialization here if needed */ }
 	);
 
-	const bool application_set_configs = _configs.size() > 0 && _configs["working_dir"].isString();
+	const bool application_set_configs = _configs.size() > 0 && _configs[u8"working_dir"].isString();
 
 	// Check if application set working directory.
 	if (application_set_configs && !initApp()) {
@@ -85,8 +85,8 @@ bool App::init(int argc, const char** argv)
 
 	Gaff::JSON main_config;
 
-	if (main_config.parseFile("cfg/app.cfg")) {
-		main_config.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+	if (main_config.parseFile(u8"cfg/app.cfg")) {
+		main_config.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
 			_configs.setObject(key, value);
 			return false;
 		});
@@ -94,15 +94,17 @@ bool App::init(int argc, const char** argv)
 
 	// Load any extra configs and add their values to the _configs object.
 	for (int i = 0; i < argc; ++i) {
-		const char* const arg = argv[i];
+		const char* arg = argv[i];
 		Gaff::JSON extra_configs;
 
-		if (Gaff::File::CheckExtension(arg, ".cfg")) {
-			if (!extra_configs.parseFile(arg)) {
+		if (Gaff::EndsWith(arg, ".cfg")) {
+			CONVERT_STRING(char8_t, temp_arg, arg);
+
+			if (!extra_configs.parseFile(temp_arg)) {
 				continue;
 			}
 
-			extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+			extra_configs.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
 				_configs.setObject(key, value);
 				return false;
 			});
@@ -121,7 +123,7 @@ bool App::init(int argc, const char** argv)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(void)
 {
-	const bool application_set_configs = _configs.size() > 0 && _configs["working_dir"].isString();
+	const bool application_set_configs = _configs.size() > 0 && _configs[u8"working_dir"].isString();
 
 	// Check if application set working directory.
 	if (application_set_configs && !initApp()) {
@@ -130,8 +132,8 @@ bool App::init(void)
 
 	Gaff::JSON main_config;
 
-	if (main_config.parseFile("cfg/app.cfg")) {
-		main_config.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+	if (main_config.parseFile(u8"cfg/app.cfg")) {
+		main_config.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
 			_configs.setObject(key, value);
 			return false;
 		});
@@ -143,14 +145,14 @@ bool App::init(void)
 	// Load any extra configs and add their values to the _configs object.
 	for (int i = 0; i < argc; ++i) {
 		const wchar_t* tmp = argv[i];
-		CONVERT_STRING(char, arg, tmp);
+		CONVERT_STRING(char8_t, arg, tmp);
 		Gaff::JSON extra_configs;
 
-		if (!Gaff::File::CheckExtension(arg, ".cfg") || !extra_configs.parseFile(arg)) {
+		if (!Gaff::EndsWith(arg, u8".cfg") || !extra_configs.parseFile(arg)) {
 			continue;
 		}
 
-		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+		extra_configs.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
 			_configs.setObject(key, value);
 			return false;
 		});
@@ -205,7 +207,7 @@ void App::destroy(void)
 	_job_pool.helpWhileWaiting(counter);
 	_job_pool.destroy();
 
-	const Gaff::JSON module_unload_order = _configs["module_unload_order"];
+	const Gaff::JSON module_unload_order = _configs[u8"module_unload_order"];
 	Vector<Gaff::Hash32> module_hashes;
 
 	// Free managers and shutdown modules in requested to close these first.
@@ -213,7 +215,7 @@ void App::destroy(void)
 		if (module_unload_order.isArray()) {
 			module_unload_order.forEachInArray([&](int32_t index, const Gaff::JSON& value) -> bool
 			{
-				const char* module_name = nullptr;
+				const char8_t* module_name = nullptr;
 
 				if (value.isString()) {
 					module_name = value.getString();
@@ -232,10 +234,10 @@ void App::destroy(void)
 				}
 
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_refls) {
-					for (const Gaff::IReflectionDefinition* ref_def : *manager_refls) {
+					for (const Refl::IReflectionDefinition* ref_def : *manager_refls) {
 						const auto it = _manager_map.find(ref_def->getReflectionInstance().getHash());
 
 						if (it != _manager_map.end()) {
@@ -245,7 +247,7 @@ void App::destroy(void)
 				}
 
 				// Shutdown the module.
-				const auto module_shutdown = [&](const char* name) -> void
+				const auto module_shutdown = [&](const char8_t* name) -> void
 				{
 					DynamicLoader::ModulePtr module = _dynamic_loader.getModule(name);
 
@@ -274,7 +276,7 @@ void App::destroy(void)
 							return false;
 						}
 
-						const char* const name = module_flavor.getString();
+						const char8_t* const name = module_flavor.getString();
 						module_shutdown(name);
 						module_flavor.freeString(name);
 
@@ -368,8 +370,8 @@ Gaff::JSON& App::getConfigs(void)
 
 U8String App::getProjectDirectory(void) const
 {
-	const Gaff::JSON& wd = _configs["working_dir"];
-	return (wd.isString()) ? wd.getString() : ".";
+	const Gaff::JSON& wd = _configs[u8"working_dir"];
+	return (wd.isString()) ? wd.getString() : u8".";
 }
 
 const ReflectionManager& App::getReflectionManager(void) const
@@ -421,13 +423,13 @@ RuntimeVarManager& App::getRuntimeVarManager(void)
 
 bool App::initInternal(void)
 {
-	const char* log_dir = _configs["log_dir"].getString("./logs");
+	const char8_t* const log_dir = _configs[u8"log_dir"].getString(u8"./logs");
 
 	size_t prev_index = 0;
-	size_t index = Gaff::FindFirstOf(log_dir, '/');
+	size_t index = Gaff::FindFirstOf(log_dir, u8'/');
 
 	if (log_dir[0] == '.' && index == 1) {
-		index = Gaff::FindFirstOf(log_dir + 2, '/') + 2;
+		index = Gaff::FindFirstOf(log_dir + 2, u8'/') + 2;
 	}
 
 	while (index != U8String::npos) {
@@ -440,30 +442,29 @@ bool App::initInternal(void)
 		}
 
 		prev_index = index + 1;
-		index = Gaff::FindFirstOf(log_dir + prev_index, '/');
+		index = Gaff::FindFirstOf(log_dir + prev_index, u8'/');
 	}
 
 	if (!Gaff::CreateDir(log_dir, 0777)) {
 		return false;
 	}
 
-	char log_file_with_time[64] = { 0 };
-	char time_string[64] = { 0 };
+	char8_t time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), u8"%Y-%m-%d_%H-%M-%S");
 
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
-	snprintf(log_file_with_time, ARRAY_SIZE(log_file_with_time), "%s/%s", log_dir, time_string);
+	const U8String log_file_with_time(U8String::CtorSprintf(), u8"%s/%s", log_dir, time_string);
 
-	if (!Gaff::CreateDir(log_file_with_time, 0777)) {
+	if (!Gaff::CreateDir(log_file_with_time.data(), 0777)) {
 		return false;
 	}
 
-	SetLogDir(log_file_with_time);
+	SetLogDir(log_file_with_time.data());
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
 	EA::Thread::SetAllocator(&_thread_allocator);
 
-	if (!_log_mgr.init(log_file_with_time)) {
+	if (!_log_mgr.init(log_file_with_time.data())) {
 		return false;
 	}
 
@@ -474,16 +475,16 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	const Gaff::JSON read_file_threads = _configs["read_file_threads"];
+	const Gaff::JSON read_file_threads = _configs[u8"read_file_threads"];
 	_job_pool.addPool(HashStringView32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
 
 	if (!loadFileSystem()) {
 		return false;
 	}
 
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
-	_reflection_mgr.registerTypeBucket(Reflection::Reflection<IManager>::GetHash());
+	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const(u8"Shibboleth::IMainLoop"));
+	_reflection_mgr.registerTypeBucket<IManager>();
 
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
@@ -512,23 +513,23 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	const Gaff::JobData thread_init_job =
-	{
-		[](uintptr_t thread_id, void* data) -> void
-		{
-			App* const app = reinterpret_cast<App*>(data);
+	//const Gaff::JobData thread_init_job =
+	//{
+	//	[](uintptr_t thread_id, void* data) -> void
+	//	{
+	//		App* const app = reinterpret_cast<App*>(data);
 
-			for (const auto& entry : app->_manager_map) {
-				if (!entry.second->initThread(thread_id)) {
-					LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
-					app->quit();
-				}
-			}
-		},
-		static_cast<App*>(&GetApp())
-	};
+	//		for (const auto& entry : app->_manager_map) {
+	//			if (!entry.second->initThread(thread_id)) {
+	//				LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
+	//				app->quit();
+	//			}
+	//		}
+	//	},
+	//	static_cast<App*>(&GetApp())
+	//};
 
-	_job_pool.addJobsForAllThreads(&thread_init_job, 1);
+	//_job_pool.addJobsForAllThreads(&thread_init_job, 1);
 
 	LogInfoDefault("Game Successfully Initialized.");
 	return true;
@@ -537,13 +538,13 @@ bool App::initInternal(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
-	const Gaff::JSON& lfs = _configs["file_system"];
-	U8String fs = "";
+	const Gaff::JSON& lfs = _configs[u8"file_system"];
+	U8String fs = u8"";
 
 	if (lfs.isString()) {
-		fs.append_sprintf("%s%s", lfs.getString(), BIT_EXTENSION DYNAMIC_EXTENSION);
+		fs.append_sprintf(u8"%s%s", lfs.getString(), BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8);
 
-		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "FileSystem");
+		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), u8"FileSystem");
 
 		if (!_fs.file_system_module) {
 			LogInfoDefault("Failed to find file system '%s'.", fs.data());
@@ -599,20 +600,20 @@ bool App::loadFileSystem(void)
 
 bool App::loadMainLoop(void)
 {
-	if (_configs["no_main_loop"].isTrue()) {
+	if (_configs[u8"no_main_loop"].isTrue()) {
 		return true;
 	}
 
-	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
+	const Vector<const Refl::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 
 	if (!bucket || bucket->empty()) {
 		LogErrorDefault("Failed to find a class that implements the 'IMainLoop' interface.");
 		return false;
 	}
 
-	const Gaff::IReflectionDefinition* refl = bucket->front();
+	const Refl::IReflectionDefinition* refl = bucket->front();
 
-	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(IMainLoop), ProxyAllocator::GetGlobal());
+	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(Shibboleth::IMainLoop), ProxyAllocator::GetGlobal());
 
 	if (!_main_loop) {
 		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
@@ -629,12 +630,13 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-	if (_configs["no_load_modules"].isTrue()) {
+	if (_configs[u8"no_load_modules"].isTrue()) {
+		_job_pool.run();
 		return true;
 	}
 
-	const Gaff::JSON& module_load_order = _configs["module_load_order"];
-	const Gaff::JSON& module_dirs = _configs["module_directories"];
+	const Gaff::JSON& module_load_order = _configs[u8"module_load_order"];
+	const Gaff::JSON& module_dirs = _configs[u8"module_directories"];
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
 		LogErrorDefault("'module_directories' config option is not an array of strings.");
@@ -691,7 +693,7 @@ bool App::loadModules(void)
 		return false;
 	});
 
-	const bool no_managers = _configs["no_managers"].getBool(false);
+	const bool no_managers = _configs[u8"no_managers"].getBool(false);
 
 	// Create manager instances.
 	if (!no_managers) {
@@ -707,9 +709,9 @@ bool App::loadModules(void)
 					continue;
 				}
 
-				const char* const module_name = module_row.getString();
-				const Vector<const Gaff::IReflectionDefinition*>* const manager_bucket =
-					_reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+				const char8_t* const module_name = module_row.getString();
+				const Vector<const Refl::IReflectionDefinition*>* const manager_bucket =
+					_reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_bucket) {
 					if (!createManagersInternal(*manager_bucket)) {
@@ -723,7 +725,7 @@ bool App::loadModules(void)
 		}
 
 		// Create the reast of the managers.
-		const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash());
+		const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
@@ -731,10 +733,30 @@ bool App::loadModules(void)
 				return false;
 			}
 		}
+
+		const Gaff::JobData thread_init_job =
+		{
+			[](uintptr_t thread_id, void* data) -> void
+			{
+				App* const app = reinterpret_cast<App*>(data);
+
+				for (const auto& entry : app->_manager_map) {
+					if (!entry.second->initThread(thread_id)) {
+						LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
+						app->quit();
+					}
+				}
+			},
+			this
+		};
+
+		Gaff::Counter counter;
+		_job_pool.addJobsForAllThreads(&thread_init_job, 1, counter);
+		_job_pool.waitForCounter(counter);
 	}
 
 	// Call initAllModulesLoaded() on all managers.
-	Vector<const Gaff::IReflectionDefinition*> already_initialized_managers;
+	Vector<const Refl::IReflectionDefinition*> already_initialized_managers;
 
 	// Call on module load order first.
 	if (module_load_order.isArray()) {
@@ -748,11 +770,11 @@ bool App::loadModules(void)
 				continue;
 			}
 
-			const char* const module_name = module_row.getString();
-			const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Reflection::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+			const char8_t* const module_name = module_row.getString();
+			const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
 
 			if (manager_bucket) {
-				for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
+				for (const Refl::IReflectionDefinition* ref_def : *manager_bucket) {
 					if (!_manager_map[ref_def->getReflectionInstance().getHash()]->initAllModulesLoaded()) {
 						LogErrorDefault("Failed to initialize manager after all modules loaded '%s'!", ref_def->getReflectionInstance().getName());
 						return false;
@@ -796,7 +818,7 @@ bool App::loadModules(void)
 
 bool App::initApp(void)
 {
-	const Gaff::JSON& wd = _configs["working_dir"];
+	const Gaff::JSON& wd = _configs[u8"working_dir"];
 
 	if (wd.isString()) {
 		if (!Gaff::SetWorkingDir(wd.getString())) {
@@ -835,7 +857,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 {
 	const auto abs_path = std::filesystem::absolute(module_path);
 	const wchar_t* name = abs_path.c_str();
-	CONVERT_STRING(char, temp, name);
+	CONVERT_STRING(char8_t, temp, name);
 
 	U8String module_name(temp);
 	size_t pos = module_name.find_first_of('\\');
@@ -846,7 +868,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	}
 
 	pos = module_name.find_last_of('/');
-	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION DYNAMIC_EXTENSION) - (pos + 1));
+	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8) - (pos + 1));
 
 	DynamicLoader::ModulePtr module = _dynamic_loader.getModule(module_name.data());
 
@@ -875,7 +897,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	}
 
 	//if (_configs["hot_reload_modules"].isTrue()) {
-	//	const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION DYNAMIC_EXTENSION, module_name.data());
+	//	const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8, module_name.data());
 	//	const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
 
 
@@ -888,7 +910,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	//		const wchar_t* file_name = abs_file_path.c_str();
 	//		CONVERT_STRING(char, temp_path, file_name);
 
-	//		if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION DYNAMIC_EXTENSION)) {
+	//		if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8)) {
 	//			temp_path[Gaff::FindLastOf(temp_path, '\\')] = 0;
 
 	//			size_t index = Gaff::FindFirstOf(temp_path, '\\');
@@ -912,8 +934,8 @@ bool App::loadModule(const char* module_path, InitMode mode)
 
 void App::removeExtraLogs(void)
 {
-	const Gaff::JSON log_dir_holder = _configs["log_dir"]; // Need to hold this otherwise the string gets deallocated.
-	const char* const log_dir = log_dir_holder.getString("./logs");
+	const Gaff::JSON log_dir_holder = _configs[u8"log_dir"]; // Need to hold this otherwise the string gets deallocated.
+	const char8_t* const log_dir = log_dir_holder.getString(u8"./logs");
 	int32_t dir_count = 0;
 
 	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
@@ -943,11 +965,11 @@ void App::removeExtraLogs(void)
 	}
 }
 
-bool App::createManagersInternal(const Vector<const Gaff::IReflectionDefinition*>& managers)
+bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers)
 {
 	ProxyAllocator allocator;
 
-	for (const Gaff::IReflectionDefinition* ref_def : managers) {
+	for (const Refl::IReflectionDefinition* ref_def : managers) {
 		if (hasManager(ref_def->getReflectionInstance().getHash())) {
 			continue;
 		}
@@ -956,6 +978,15 @@ bool App::createManagersInternal(const Vector<const Gaff::IReflectionDefinition*
 
 		if (!manager->init()) {
 			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
+			SHIB_FREET(manager, GetAllocator());
+			return false;
+		}
+
+		const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+		const uintptr_t id_int = (uintptr_t)&thread_id;
+
+		if (!manager->initThread(id_int)) {
+			LogErrorDefault("Failed to initialize manager '%s' for main thread!", ref_def->getReflectionInstance().getName());
 			SHIB_FREET(manager, GetAllocator());
 			return false;
 		}
@@ -975,9 +1006,9 @@ bool App::hasManager(Gaff::Hash64 name) const
 	return it != _manager_map.end();
 }
 
-void App::ModuleChanged(const char* path)
+void App::ModuleChanged(const char8_t* path)
 {
-	if (!Gaff::EndsWith(path, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+	if (!Gaff::EndsWith(path, BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8)) {
 		return;
 	}
 

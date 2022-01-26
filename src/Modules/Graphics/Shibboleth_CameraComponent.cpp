@@ -27,23 +27,23 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Gaff_Math.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Camera)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Camera)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Graphics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.base< ECSComponentBaseNonShared<Camera> >()
+	.base< Shibboleth::ECSComponentBaseNonShared<Shibboleth::Camera> >()
 
-	.staticFunc("Destructor", Camera::Destructor)
+	.staticFunc("Destructor", Shibboleth::Camera::Destructor)
 
-	.var("device_tag", &Camera::device_tag, HashStringAttribute())
-	.var("v_fov", &Camera::v_fov, OptionalAttribute())
-	.var("z_near", &Camera::z_near, OptionalAttribute())
-	.var("z_far", &Camera::z_far, OptionalAttribute())
-	//.var("focus_distance", &Camera::focus_distance, OptionalAttribute())
-	//.var("f_stop", &Camera::f_stop, OptionalAttribute())
+	.var("device_tag", &Shibboleth::Camera::device_tag, Shibboleth::HashStringAttribute())
+	.var("v_fov", &Shibboleth::Camera::v_fov, Shibboleth::OptionalAttribute())
+	.var("z_near", &Shibboleth::Camera::z_near, Shibboleth::OptionalAttribute())
+	.var("z_far", &Shibboleth::Camera::z_far, Shibboleth::OptionalAttribute())
+	//.var("focus_distance", &Shibboleth::Camera::focus_distance, Shibboleth::OptionalAttribute())
+	//.var("f_stop", &Shibboleth::Camera::f_stop, Shibboleth::OptionalAttribute())
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(Camera)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::Camera)
 
 NS_SHIBBOLETH
 
@@ -86,7 +86,7 @@ Camera Camera::GetInternal(const void* component, int32_t page_index)
 
 void Camera::Destructor(EntityID id, void*, int32_t)
 {
-	auto& render_mgr = GetApp().GETMANAGERT(RenderManagerBase, RenderManager);
+	auto& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	render_mgr.removeGBuffer(id);
 }
 

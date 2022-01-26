@@ -43,4 +43,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ResourceSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::ResourceSystem)

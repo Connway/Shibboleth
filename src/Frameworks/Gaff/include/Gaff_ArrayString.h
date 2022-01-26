@@ -76,6 +76,12 @@ public:
 };
 
 template <size_t size>
+constexpr ArrayString<char8_t, size> MakeArrayString(const char8_t (&str)[size])
+{
+	return ArrayString<char8_t, size>(str);
+}
+
+template <size_t size>
 constexpr ArrayString<char, size> MakeArrayString(const char (&str)[size])
 {
 	return ArrayString<char, size>(str);

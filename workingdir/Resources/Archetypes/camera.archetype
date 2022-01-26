@@ -4,15 +4,15 @@
 
 	"shared_components":
 	{
-		"PageSize": { "value": 512 }
+		"Shibboleth::PageSize": { "value": 512 }
 	},
 
 	"components":
 	{
-		"PlayerOwner": { "value": 0 },
-		"Camera": {},
-		"Position": {},
-		"Rotation": {},
-		"StateMachine": { "resource": "StateMachines/camera.state_machine" }
+		"Shibboleth::PlayerOwner": { "value": 0 },
+		"Shibboleth::Camera": {},
+		"Shibboleth::Position": {},
+		"Shibboleth::Rotation": {},
+		"Shibboleth::StateMachine": { "resource": "StateMachines/camera.state_machine" }
 	}
 }

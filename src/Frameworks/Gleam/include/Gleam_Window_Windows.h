@@ -46,7 +46,7 @@ public:
 	bool init(HWND hwnd);
 
 	bool init(
-		const char* window_name,
+		const char8_t* window_name,
 		WindowMode window_mode = WindowMode::Fullscreen,
 		int32_t width = 0,
 		int32_t height = 0,
@@ -75,6 +75,7 @@ public:
 
 	bool isFullScreen(void) const override;
 
+	bool setIcon(const char8_t* icon) override;
 	bool setIcon(const char* icon) override;
 
 	void* getPlatformHandle(void) const override;

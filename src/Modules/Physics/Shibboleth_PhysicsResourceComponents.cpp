@@ -22,20 +22,20 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsResourceComponents.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsMaterial)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsMaterial)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Physics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Physics")
 	)
 
-	.base< Resource<PhysicsMaterialResource> >()
+	.base< Shibboleth::Resource<Shibboleth::PhysicsMaterialResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(PhysicsMaterial)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsMaterial)
 
-SHIB_REFLECTION_DEFINE_BEGIN(PhysicsShape)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsShape)
 	.classAttrs(
-		ECSClassAttribute(nullptr, "Physics")
+		Shibboleth::ECSClassAttribute(nullptr, u8"Physics")
 	)
 
-	.base< Resource<PhysicsShapeResource> >()
+	.base< Shibboleth::Resource<Shibboleth::PhysicsShapeResource> >()
 	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(PhysicsShape)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsShape)

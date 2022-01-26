@@ -35,8 +35,8 @@ public:
 	ECSSceneResource(void);
 	~ECSSceneResource(void);
 
-	void load(const Gaff::ISerializeReader& reader);
-	void save(Gaff::ISerializeWriter& writer);
+	void load(const ISerializeReader& reader);
+	void save(ISerializeWriter& writer);
 
 private:
 	struct LayerData final
@@ -57,4 +57,4 @@ using ECSSceneResourcePtr = Gaff::RefPtr<ECSSceneResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ECSSceneResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ECSSceneResource)

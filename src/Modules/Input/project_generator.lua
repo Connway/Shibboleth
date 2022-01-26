@@ -47,6 +47,7 @@ local GenerateProject = function()
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("Input")
+		NewDeleteLinkFix()
 		SetupConfigMap()
 
 		local deps =

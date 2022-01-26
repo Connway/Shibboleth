@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IReflectionFunction.h"
 #include "Shibboleth_HashString.h"
+#include "Shibboleth_IAttribute.h"
 #include "Shibboleth_Vector.h"
 #include <Gaff_Hashable.h>
 #include <Gaff_Hash.h>
@@ -77,25 +78,25 @@ public:
 	template <class T>
 	const void* getBasePointer(const T* object) const
 	{
-		return getBasePointer(Reflection<T>::GetHash(), object);
+		return getBasePointer(Hash::template ClassHashable<T>::GetHash(), object);
 	}
 
 	template <class T>
 	void* getBasePointer(T* object) const
 	{
-		return getBasePointer(Reflection<T>::GetHash(), object);
+		return getBasePointer(Hash::template ClassHashable<T>::GetHash(), object);
 	}
 
 	template <class T>
 	const T* getInterface(const void* object) const
 	{
-		return reinterpret_cast<const T*>(getInterface(Reflection<T>::GetHash(), object));
+		return reinterpret_cast<const T*>(getInterface(Hash::template ClassHashable<T>::GetHash(), object));
 	}
 
 	template <class T>
 	T* getInterface(void* object) const
 	{
-		return reinterpret_cast<T*>(getInterface(Reflection<T>::GetHash(), object));
+		return reinterpret_cast<T*>(getInterface(Hash::template ClassHashable<T>::GetHash(), object));
 	}
 
 	template <class T>
@@ -108,6 +109,12 @@ public:
 	T* getInterface(Gaff::Hash64 interface_hash, void* object) const
 	{
 		return reinterpret_cast<T*>(getInterface(interface_hash, object));
+	}
+
+	template <class T>
+	bool hasInterface(void) const
+	{
+		return hasInterface(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T, class... Args>
@@ -133,7 +140,7 @@ public:
 	template <class T, class... Args>
 	T* createT(Gaff::IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Gaff::Hash64 interface_hash = Reflection<T>::GetHash();
+		constexpr Gaff::Hash64 interface_hash = Hash::template ClassHashable<T>::GetHash();
 		constexpr Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
@@ -190,49 +197,49 @@ public:
 	template <class T>
 	const T* getClassAttr(void) const
 	{
-		return getClassAttr<T>(Reflection<T>::GetHash());
+		return getClassAttr<T>(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getVarAttr(Gaff::Hash32 name) const
 	{
-		return getVarAttr<T>(name, Reflection<T>::GetHash());
+		return getVarAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getFuncAttr(Gaff::Hash32 name) const
 	{
-		return getFuncAttr<T>(name, Reflection<T>::GetHash());
+		return getFuncAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	const T* getStaticFuncAttr(Gaff::Hash32 name) const
 	{
-		return getStaticFuncAttr<T>(name, Reflection<T>::GetHash());
+		return getStaticFuncAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasClassAttr(void) const
 	{
-		return hasClassAttr(Reflection<T>::GetHash());
+		return hasClassAttr(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasVarAttr(void) const
 	{
-		return hasVarAttr(Reflection<T>::GetHash());
+		return hasVarAttr(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasFuncAttr(void) const
 	{
-		return hasFuncAttr(Reflection<T>::GetHash());
+		return hasFuncAttr(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
 	bool hasStaticFuncAttr(void) const
 	{
-		return hasStaticFuncAttr(Reflection<T>::GetHash());
+		return hasStaticFuncAttr(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
@@ -580,7 +587,7 @@ public:
 	virtual bool isPolymorphic(void) const = 0;
 	virtual bool isBuiltIn(void) const = 0;
 
-	virtual const char* getFriendlyName(void) const = 0;
+	virtual const char8_t* getFriendlyName(void) const = 0;
 
 	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
 	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;

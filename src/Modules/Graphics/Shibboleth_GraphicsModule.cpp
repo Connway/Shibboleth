@@ -51,10 +51,10 @@ THE SOFTWARE.
 		//	return SHIB_REALLOC(old_ptr, new_size, g_graphics_allocator);
 		//}
 
-		static void GraphicsLog(const char* msg, Gleam::LogMsgType type)
+		static void GraphicsLog(const char8_t* msg, Gleam::LogMsgType type)
 		{
 			const Shibboleth::LogType msg_type = static_cast<Shibboleth::LogType>(type);
-			LogDefault(msg_type, msg);
+			Shibboleth::GetApp().getLogManager().logMessage(msg_type, Shibboleth::k_log_channel_default, msg);
 		}
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
@@ -70,10 +70,10 @@ THE SOFTWARE.
 
 			} else if (mode == Shibboleth::InitMode::Regular) {
 				// Initialize Enums.
-				Gaff::InitEnumReflection();
+				Refl::InitEnumReflection();
 
 				// Initialize Attributes.
-				Gaff::InitAttributeReflection();
+				Refl::InitAttributeReflection();
 			}
 
 			Graphics::Gen::InitReflection(mode);

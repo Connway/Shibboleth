@@ -145,18 +145,24 @@ static int TIFFMap(thandle_t st, tdata_t* buffer, toff_t* size)
 
 static void TIFFError(const char* module, const char* format, va_list va)
 {
-	U8String format_string;
-	format_string.sprintf_va_list(format, va);
+	CONVERT_STRING(char8_t, temp_module, module);
+	CONVERT_STRING(char8_t, temp_format, format);
 
-	LogErrorDefault("TIFF [%s]: %s", module, format);
+	U8String format_string;
+	format_string.sprintf_va_list(temp_format, va);
+
+	LogErrorDefault("TIFF [%s]: %s", temp_module, temp_format);
 }
 
 static void TIFFWarning(const char* module, const char* format, va_list va)
 {
-	U8String format_string;
-	format_string.sprintf_va_list(format, va);
+	CONVERT_STRING(char8_t, temp_module, module);
+	CONVERT_STRING(char8_t, temp_format, format);
 
-	LogWarningDefault("TIFF [%s]: %s", module, format);
+	U8String format_string;
+	format_string.sprintf_va_list(temp_format, va);
+
+	LogWarningDefault("TIFF [%s]: %s", temp_module, temp_format);
 }
 
 
@@ -195,15 +201,21 @@ uint8_t* Image::getBuffer(void)
 	return _image.data();
 }
 
-bool Image::load(const void* buffer, size_t size, const char* file_ext)
+bool Image::load(const void* buffer, size_t size, const char8_t* file_ext)
 {
-	if (Gaff::EndsWith(file_ext, ".png")) {
+	if (Gaff::EndsWith(file_ext, u8".png")) {
 		return loadPNG(buffer, size);
-	} else if (Gaff::EndsWith(file_ext, ".tiff") || Gaff::EndsWith(file_ext, ".tif")) {
+	} else if (Gaff::EndsWith(file_ext, u8".tiff") || Gaff::EndsWith(file_ext, u8".tif")) {
 		return loadTIFF(buffer, size);
 	}
 
 	return false;
+}
+
+bool Image::load(const void* buffer, size_t size, const char* file_ext)
+{
+	CONVERT_STRING(char8_t, temp_file_ext, file_ext);
+	return load(buffer, size, temp_file_ext);
 }
 
 bool Image::loadTIFF(const void* buffer, size_t size)

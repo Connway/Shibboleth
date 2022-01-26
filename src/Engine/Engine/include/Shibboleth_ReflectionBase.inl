@@ -78,21 +78,21 @@ bool ReflectionBase<T>::isEnum(void) const
 template <class T>
 const IEnumReflectionDefinition& ReflectionBase<T>::getEnumReflectionDefinition(void) const
 {
-	if constexpr (std::is_enum<T>::value) {
-		return reinterpret_cast<const IEnumReflectionDefinition&>(*_ref_def); /* To calm the compiler, even though this should be compiled out ... */
-	} else {
-		return IReflection::getEnumReflectionDefinition();
+	if constexpr (!std::is_enum<T>::value) {
+		GAFF_ASSERT(false);
 	}
+
+	return *reinterpret_cast<const IEnumReflectionDefinition*>(_ref_def);
 }
 
 template <class T>
 const IReflectionDefinition& ReflectionBase<T>::getReflectionDefinition(void) const
 {
 	if constexpr (std::is_enum<T>::value) {
-		return IReflection::getReflectionDefinition();
-	} else {
-		return reinterpret_cast<const IReflectionDefinition&>(*_ref_def); /* To calm the compiler, even though this should be compiled out ... */
+		GAFF_ASSERT(false);
 	}
+
+	return *reinterpret_cast<const IReflectionDefinition*>(_ref_def);
 }
 
 template <class T>

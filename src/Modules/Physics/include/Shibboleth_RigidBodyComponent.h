@@ -43,8 +43,8 @@ public:
 	static void Constructor(EntityID, void* component, int32_t entity_index);
 	static void Destructor(EntityID, void* component, int32_t entity_index);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const Gaff::ISerializeReader& reader);
-	static bool Load(const Gaff::ISerializeReader& reader, RigidBody& out);
+	static bool Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader);
+	static bool Load(const ISerializeReader& reader, RigidBody& out);
 
 	~RigidBody(void);
 
@@ -68,4 +68,4 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(RigidBody)
+SHIB_REFLECTION_DECLARE(Shibboleth::RigidBody)
