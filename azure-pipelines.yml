@@ -23,7 +23,7 @@ jobs:
       platform: 'x64'
       configuration: 'Debug'
       clean: true
-      vsVersion: '17.0'
+      vsVersion: 'latest'
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.
