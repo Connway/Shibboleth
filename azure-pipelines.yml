@@ -16,13 +16,14 @@ jobs:
   steps:
   - script: |
       cd utils
-      premake5 vs2019
+      premake5 vs2022
   - task: VSBuild@1
     inputs:
-      solution: '.generated\project\windows\vs2019\Shibboleth.sln'
+      solution: '.generated\project\windows\vs2022\Shibboleth.sln'
       platform: 'x64'
       configuration: 'Debug'
       clean: true
+      vsVersion: 'latest'
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.
