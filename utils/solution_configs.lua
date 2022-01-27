@@ -21,7 +21,7 @@ configs =
 	-- "Static_Release_Vulkan"
 }
 
-if (_ACTION == "vs2019" and _OPTIONS["gen-clang"]) or
+if ((_ACTION == "vs2019" or _ACTION == "vs2022") and _OPTIONS["gen-clang"]) or
 	_ACTION == "gmake2" then
 
 	table.insert(configs, "Debug_Clang")

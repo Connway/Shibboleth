@@ -106,7 +106,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@ premake5 gen_static_header</Command>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +172,7 @@ premake5 gen_static_header</Command>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -206,7 +206,7 @@ premake5 gen_static_header</Command>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -233,32 +233,49 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_FileWatcher.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashStringFwd.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Hashable.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IAttribute.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IEnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IMainLoop.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionFunction.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionObject.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Image.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JSONSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JobPool.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JobPoolFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_LogManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_LooseFileSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Math.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_MessagePackSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionBase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionBase.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefines.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinition.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinitionFunction.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionMacros.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionUtils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionVersion.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionVersion.inl" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapper.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapperFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SparseStack.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h" />
@@ -273,14 +290,18 @@ premake5 gen_static_header</Command>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_JSONSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Math.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_MessagePackSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_RuntimeVarManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_SerializeReaderWrapper.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>

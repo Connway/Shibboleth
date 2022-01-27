@@ -45,12 +45,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -70,12 +64,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Function.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FunctionStackHelper.inl">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FunctionStackHelpers.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hash.h">
@@ -111,12 +99,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSON.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSONSerializeWriter.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -127,9 +109,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_MessagePack.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_MessagePackSerializeWriter.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_NetworkDefines.h">
@@ -153,43 +132,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefPtr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Reflection.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionBase.inl">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.inl">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionInterfaces.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionVersion.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionVersion.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ScopedExit.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeInterfaces.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReaderWrapper.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReaderWrapper.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SmartPtrs.h">
@@ -239,8 +182,6 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Math.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePack.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePackSerializeWriter.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_ReflectionBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Common.cpp" />

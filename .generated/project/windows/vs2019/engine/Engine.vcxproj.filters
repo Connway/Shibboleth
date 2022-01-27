@@ -33,6 +33,12 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_FileWatcher.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -42,10 +48,13 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_HashStringFwd.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Hashable.h">
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h">
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IEnumReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h">
@@ -57,7 +66,22 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Image.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JSONSerializeWriter.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_JobPool.h">
@@ -75,6 +99,9 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Math.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_MessagePackSerializeWriter.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -87,10 +114,37 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h">
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionBase.inl">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinition.inl">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionDefinitionFunction.inl">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionMacros.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionVersion.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionVersion.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManager.h">
@@ -99,16 +153,13 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_RuntimeVarManagerFwd.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeInterfaces.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderFwd.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapper.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReaderWrapperFwd.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h">
@@ -139,14 +190,18 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_JSONSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Math.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_MessagePackSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_RuntimeVarManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_SerializeReaderWrapper.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
