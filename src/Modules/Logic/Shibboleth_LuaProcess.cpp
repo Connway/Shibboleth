@@ -113,8 +113,6 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 
 		LogErrorResource("%s", error);
 
-		//lua_pop(state, 1);
-
 	} else {
 		success = lua_toboolean(state, -1);
 	}

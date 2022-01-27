@@ -294,7 +294,8 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
 					} else {
 						CONVERT_STRING(char8_t, temp_str, str);
-						ArgType value(temp_str);
+						const char8_t* const beg = temp_str;
+						ArgType value(beg);
 						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, args, ret, arg_index + 1, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
 					}
 				} else {
@@ -322,7 +323,8 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
 					} else {
 						CONVERT_STRING(char8_t, temp_str, str);
-						ArgType value(temp_str);
+						const char8_t* const beg = temp_str;
+						ArgType value(beg);
 						return CallFuncStackHelper<Callable, Ret, Rest...>(callable, object, ret, allocator, std::forward<CurrentArgs>(current_args)..., std::forward<First>(value));
 					}
 				} else {
