@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ResourceLogging.h>
 #include <assimp/mesh.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)

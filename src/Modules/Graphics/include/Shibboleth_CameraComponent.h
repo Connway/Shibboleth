@@ -67,9 +67,6 @@ public:
 	float z_near = 0.001f; // m
 	float z_far = 2000.0f; // m
 
-	//float focus_distance;
-	//float f_stop;
-
 private:
 	static const float* GetFloatBegin(const void* component, int32_t page_index);
 	static float* GetFloatBegin(void* component, int32_t page_index);

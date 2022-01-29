@@ -35,8 +35,6 @@ NS_SHIBBOLETH
 struct TableState;
 struct UserData;
 
-static constexpr Gaff::Hash32 k_lua_log_channel = Gaff::FNV1aHash32Const(u8"Lua");
-
 UserData* PushUserTypeReference(lua_State* state, const void* value, const Refl::IReflectionDefinition& ref_def);
 UserData* PushUserType(lua_State* state, const Refl::IReflectionDefinition& ref_def);
 

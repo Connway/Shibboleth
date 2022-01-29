@@ -26,8 +26,8 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LogManager.h>
 
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>

@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_Utilities.h>
 #include <Gaff_Function.h>
 

@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceAttributesCommon.h"
+#include "Shibboleth_ResourceLogging.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
@@ -78,7 +79,7 @@ bool ResourceManager::init(void)
 	ReflectionManager& refl_mgr = app.getReflectionManager();
 
 	refl_mgr.registerTypeBucket(Refl::Reflection<IResource>::GetHash());
-	app.getLogManager().addChannel(HashStringView32<>(u8"Resource"), u8"ResourceLog");
+	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_resource));
 
 	const Vector<const Refl::IReflectionDefinition*>* type_bucket =
 		refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetHash());

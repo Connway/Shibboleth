@@ -251,6 +251,26 @@ size_t File::write(void* buffer, size_t element_size, size_t element_count)
 	return fwrite(buffer, element_size, element_count, _file);
 }
 
+bool File::write(const char8_t* str)
+{
+	return writeString(str);
+}
+
+bool File::write(const char* str)
+{
+	return writeString(str);
+}
+
+bool File::write(char8_t c)
+{
+	return writeChar(c);
+}
+
+bool File::write(char c)
+{
+	return writeChar(c);
+}
+
 void File::printfVA(const char8_t* format_string, va_list vl)
 {
 	printfVA(reinterpret_cast<const char*>(format_string), vl);

@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_LuaProcess.h"
 #include "Shibboleth_StateMachineReflection.h"
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ScriptLogging.h>
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LuaHelpers.h>
 #include <Shibboleth_Utilities.h>
@@ -58,8 +58,12 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
+
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 2);
@@ -72,8 +76,12 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
+
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 2);
@@ -93,8 +101,12 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 
 	if (!lua_isfunction(state, -1)) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
+
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 3);
@@ -111,7 +123,7 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 		size_t len = 0;
 		const char* const error = lua_tolstring(state, -1, &len);
 
-		LogErrorResource("%s", error);
+		LogErrorScript("%s", error);
 
 	} else {
 		success = lua_toboolean(state, -1);
@@ -141,8 +153,12 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
+
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 2);
@@ -154,8 +170,12 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 
 	if (!lua_isfunction(state, -1)) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
+
+			size_t len = 0;
+			const char* const error = lua_tolstring(state, -1, &len);
+
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 3);
@@ -174,14 +194,12 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 
 	if (err != LUA_OK) {
 		if (_log_error) {
-			// $TODO: Log error once.
 			_log_error = false;
 
 			size_t len = 0;
 			const char* const error = lua_tolstring(state, -1, &len);
 
-			// $TODO: Log error.
-			GAFF_REF(error);
+			LogErrorScript("%s", error);
 		}
 
 		lua_pop(state, 1);

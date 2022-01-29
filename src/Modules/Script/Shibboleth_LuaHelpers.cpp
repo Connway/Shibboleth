@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_LuaHelpers.h"
 #include "Shibboleth_CommonHelpers.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ScriptLogging.h>
 //#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>
 //#include <Shibboleth_IApp.h>
@@ -187,9 +187,11 @@ namespace
 			}
 		}
 
-		Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Normal, Shibboleth::k_lua_log_channel, final_string.data());
+		LogInfoStringScript(final_string.data());
+
 		Gaff::DebugPrintf(final_string.data());
 		Gaff::DebugPrintf(u8"\n");
+
 		return 0;
 	}
 

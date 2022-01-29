@@ -102,7 +102,12 @@ public:
 	void setBuffer(char* buffer);
 
 	size_t read(void* buffer, size_t element_size, size_t element_count);
+
 	size_t write(void* buffer, size_t element_size, size_t element_count);
+	bool write(const char8_t* str);
+	bool write(const char* str);
+	bool write(char8_t c);
+	bool write(char c);
 
 	void printfVA(const char8_t* format_string, va_list vl);
 	void printf(const char8_t* format_string, ...);

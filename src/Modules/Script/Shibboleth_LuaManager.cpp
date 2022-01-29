@@ -23,8 +23,8 @@ THE SOFTWARE.
 #include "Shibboleth_LuaManager.h"
 #include "Shibboleth_LuaHelpers.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_ScriptLogging.h>
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LogManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Math.h>
 #include <Gaff_Function.h>
@@ -52,7 +52,7 @@ LuaManager::~LuaManager(void)
 bool LuaManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	app.getLogManager().addChannel(HashStringView32<>(u8"Lua"), u8"LuaLog");
+	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_script));
 
 	const Gaff::JSON script_threads = app.getConfigs()[u8"script_threads"];
 	const int32_t num_threads = script_threads.getInt32(k_default_num_threads);
@@ -274,7 +274,7 @@ int LuaManager::panic(lua_State* L)
 
 	if (message) {
 		CONVERT_STRING(char8_t, temp_message, message);
-		GetApp().getLogManager().logMessage(LogType::Error, k_lua_log_channel, temp_message);
+		GetApp().getLogManager().logMessage(LogType::Error, k_log_channel_script, temp_message);
 	}
 
 	return 0;

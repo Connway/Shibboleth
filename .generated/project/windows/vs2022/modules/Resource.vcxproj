@@ -228,6 +228,7 @@ premake5 gen_module_header --module=Resource</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceAttributesCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceLogging.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h" />
   </ItemGroup>

@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_Math.h>
 #include <PxPhysicsAPI.h>
 

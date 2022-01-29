@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResource.h"
 #include "Shibboleth_LoadFileCallbackAttribute.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include "Shibboleth_ResourceLogging.h"
 #include "Shibboleth_ResourceManager.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Utilities.h>

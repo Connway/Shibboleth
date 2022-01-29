@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ProgramBuffersResource.h"
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ResourceLogging.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ProgramBuffersResource)
 	.classAttrs(Shibboleth::CreatableAttribute())

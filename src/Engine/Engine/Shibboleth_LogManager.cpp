@@ -45,10 +45,7 @@ intptr_t LogManager::LogThread(void* args)
 
 		lm._log_queue_lock.Lock();
 
-		if (lm._logs.empty()) {
-			lm._log_queue_lock.Unlock();
-
-		} else {
+		while (!lm._logs.empty()) {
 			LogTask task = std::move(lm._logs.front());
 			lm._logs.pop();
 
@@ -58,28 +55,14 @@ intptr_t LogManager::LogThread(void* args)
 			file.writeString(task.message.data());
 			file.writeChar(u8'\n');
 			file.flush();
-			file.release();
+			file.release(); // We don't want to close the file.
 
 			lm.notifyLogCallbacks(task.message.data(), task.type);
+
+			lm._log_queue_lock.Lock();
 		}
-	}
 
-	const EA::Thread::AutoMutex queue_lock(lm._log_queue_lock);
-
-	while (!lm._logs.empty()) {
-		OPTICK_CATEGORY("Logging", Optick::Category::IO);
-		OPTICK_EVENT("Processing Log Queue for Shutdown");
-
-		LogTask task = std::move(lm._logs.front());
-		lm._logs.pop();
-
-		Gaff::File file(task.file);
-		file.writeString(task.message.data());
-		file.writeChar(u8'\n');
-		file.flush();
-		file.release();
-
-		lm.notifyLogCallbacks(task.message.data(), task.type);
+		lm._log_queue_lock.Unlock();
 	}
 
 	return 0;
@@ -99,7 +82,7 @@ bool LogManager::init(const char8_t* log_dir)
 {
 	_log_dir = log_dir;
 
-	addChannel(HashStringView32<>(u8"Default"), u8"Log");
+	addChannel(HashStringView32<>(k_log_channel_name_default));
 
 	EA::Thread::ThreadParameters thread_params;
 	thread_params.mbDisablePriorityBoost = false;
@@ -159,15 +142,15 @@ bool LogManager::removeLogCallback(int32_t id)
 	return false;
 }
 
-void LogManager::addChannel(HashStringView32<> channel, const char8_t* file)
+void LogManager::addChannel(HashStringView32<> channel)
 {
 	auto it = Gaff::Find(_channels, channel);
 
 	if (it == _channels.end()) {
-		const U8String file_name(U8String::CtorSprintf(), u8"%s/%s.txt", _log_dir.data(), file);
+		const U8String file_name(U8String::CtorSprintf(), u8"%s/%sLog.txt", _log_dir.data(), channel.getBuffer());
 		auto pair = eastl::make_pair<HashString32<>, Gaff::File>(HashString32<>(channel), Gaff::File());
 
-		if (pair.second.open(file_name.data(), Gaff::File::OpenMode::Write)) {
+		if (pair.second.open(file_name.data(), Gaff::File::OpenMode::/*Write*/Append)) {
 			_channels.insert(std::move(pair));
 
 		} else {
@@ -221,13 +204,13 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 
 	{
 		const EA::Thread::AutoMutex lock(_log_queue_lock);
-		_logs.emplace(it->second, U8String(time_string) + message, type);
+		_logs.emplace(LogTask{ it->second.getFile(), U8String(time_string) + message, type});
 	}
 
 	_log_event.Signal(true);
 
-	Gaff::DebugPrintf(message.data());
-	Gaff::DebugPrintf(u8"\n");
+	const U8String debug_msg(U8String::CtorSprintf(), u8"[%s] %s\n", it->first.getBuffer(), message.data());
+	Gaff::DebugPrintf(debug_msg.data());
 
 	return true;
 }

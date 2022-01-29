@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
-#include <Shibboleth_LogManager.h>
+#include <Shibboleth_ResourceLogging.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSArchetypeResource)
 	.classAttrs(

@@ -26,6 +26,8 @@ function TestProcess:update(owner, var_inst)
 	-- pos.value.x = pos.value.x + 0.5 * self.game_time.delta
 	-- Shibboleth.Position.Set(self.ecs_mgr, entity_id, pos)
 
+	Print("X: ", rot.value.x, ", Y: ", rot.value.y, ", Z: ", rot.value.z)
+
 	local rot = Shibboleth.Rotation.Get(self.ecs_mgr, entity_id)
 	rot.value.y = rot.value.y + rot_speed * self.game_time.delta
 	Shibboleth.Rotation.Set(self.ecs_mgr, entity_id, rot)
