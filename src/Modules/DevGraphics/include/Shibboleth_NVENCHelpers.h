@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2021 by Nicholas LaCroix
+Copyright (C) 2022 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

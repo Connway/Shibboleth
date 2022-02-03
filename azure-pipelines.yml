@@ -8,7 +8,7 @@ trigger:
 - dev
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
 jobs:
 - job: build_debug
