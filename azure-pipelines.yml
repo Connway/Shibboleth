@@ -1,18 +1,12 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 - dev
 
-pool:
-  vmImage: 'windows-2022'
-
 jobs:
-- job: build_debug
-  displayName: 'Build Debug'
+- job: build_debug_windows
+  displayName: 'Build Debug - Windows'
+  pool:
+    vmImage: 'windows-2022'
   steps:
   - script: |
       cd utils
@@ -24,6 +18,17 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
+- job: build_debug_linux
+  displayName: 'Build Debug - Linux'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      cd utils
+      ./premake5 gmake2
+      cd ../.generated/project/gmake2
+      gmake clean
+      gmake config=debug_x64 Gaff Gleam Esprit Engine FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp Catch2 CivetWeb EASTL imgui libpng libtiff Lua mimalloc minizip mpack optick sqlite zlib-ng
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.
