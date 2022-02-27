@@ -26,16 +26,11 @@ THE SOFTWARE.
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_RefPtr.h>
 
-struct ID3D11DeviceContext3;
-struct ID3D11Device5;
-
 NS_GLEAM
 
 class RenderDeviceD3D11 : public IRenderDevice
 {
 public:
-	static void Cleanup(void);
-
 	bool init(int32_t adapter_id) override;
 
 	IRenderDevice* getOwningDevice(void) const override;
@@ -73,8 +68,6 @@ private:
 		Vector<OutputInfo> output_info;
 		int32_t memory;
 	};
-
-	static Vector<AdapterInfo> g_display_info;
 
 	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
 	Gaff::COMRefPtr<ID3D11Device5> _device;

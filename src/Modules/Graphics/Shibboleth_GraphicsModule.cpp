@@ -27,7 +27,6 @@ THE SOFTWARE.
 	#include <Shibboleth_ProxyAllocator.h>
 	#include <Shibboleth_LogManager.h>
 	#include <Shibboleth_Utilities.h>
-	#include <Gleam_RenderDevice.h>
 	#include <Gleam_Window.h>
 	#include <Gleam_Global.h>
 
@@ -83,7 +82,6 @@ THE SOFTWARE.
 
 		void Shutdown(void)
 		{
-			Gleam::RenderDevice::Cleanup();
 			Gleam::Window::Cleanup();
 		}
 	}

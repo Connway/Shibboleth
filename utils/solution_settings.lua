@@ -92,4 +92,7 @@ filter { "configurations:not *Clang", "action:not vs*" }
 filter { "configurations:*Clang" }
 	toolset "clang"
 
+filter { "action:vs2022" }
+	buildoptions { "/permissive-", "/Zc:static_assert-" }
+
 filter {}

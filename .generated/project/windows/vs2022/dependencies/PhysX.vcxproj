@@ -105,6 +105,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,6 +136,7 @@ rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc142.mt\
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -167,6 +169,7 @@ rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc142.mt\
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -192,6 +195,7 @@ rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc142.mt\
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

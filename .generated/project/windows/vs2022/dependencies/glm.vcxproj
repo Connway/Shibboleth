@@ -74,19 +74,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)glm</NMakeOutput>
-    <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+    <AdditionalOptions>/permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)glm</NMakeOutput>
-    <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+    <AdditionalOptions>/permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)glm</NMakeOutput>
-    <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+    <AdditionalOptions>/permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)glm</NMakeOutput>
-    <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+    <AdditionalOptions>/permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
