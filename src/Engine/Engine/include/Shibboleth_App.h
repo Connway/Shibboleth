@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_RuntimeVarManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_FileWatcher.h"
+//#include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_JobPool.h"

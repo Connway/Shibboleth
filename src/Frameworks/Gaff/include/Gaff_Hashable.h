@@ -35,7 +35,7 @@ THE SOFTWARE.
 	{ \
 		static constexpr auto GetName(void) \
 		{ \
-			constexpr const char8_t* const name = u8#type; \
+			constexpr const char8_t* const name = GAFF_STR_U8(type); \
 			constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 			Gaff::ArrayString<char8_t, eastl::CharStrlen(name) + 1> name_arr; \
 			for (int32_t i = 0; i < len; ++i) { \
@@ -45,7 +45,7 @@ THE SOFTWARE.
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
-			return Gaff::FNV1aHash64Const(u8#type); \
+			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type)); \
 		} \
 	}
 
@@ -55,7 +55,7 @@ THE SOFTWARE.
 	{ \
 		static constexpr auto GetName(void) \
 		{ \
-			constexpr const char8_t* const name = u8#type; \
+			constexpr const char8_t* const name = GAFF_STR_U8(type); \
 			constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 			Gaff::ArrayString<char8_t, eastl::CharStrlen(name) + 2> name_arr; \
 			for (int32_t i = 0; i < len; ++i) { \
@@ -66,7 +66,7 @@ THE SOFTWARE.
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
-			return Gaff::FNV1aHash64Const(u8#type u8"&"); \
+			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type) u8"&"); \
 		} \
 	}; \
 	template <> \
@@ -74,7 +74,7 @@ THE SOFTWARE.
 	{ \
 		static constexpr auto GetName(void) \
 		{ \
-			constexpr const char8_t* const name = u8#type; \
+			constexpr const char8_t* const name = GAFF_STR_U8(type); \
 			constexpr const int32_t len = static_cast<int32_t>(eastl::CharStrlen(name)); \
 			Gaff::ArrayString<char8_t, eastl::CharStrlen(name) + 2> name_arr; \
 			for (int32_t i = 0; i < len; ++i) { \
@@ -85,7 +85,7 @@ THE SOFTWARE.
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
-			return Gaff::FNV1aHash64Const(u8#type u8"*"); \
+			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type) u8"*"); \
 		} \
 	}; \
 	GAFF_CLASS_HASHABLE_NO_REF(type)
@@ -112,16 +112,16 @@ THE SOFTWARE.
 		static constexpr auto GetName(void) \
 		{ \
 			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
-			const auto name = Gaff::MakeArrayString(u8#type); \
+			const auto name = Gaff::MakeArrayString(GAFF_STR_U8(type)); \
 			const auto lb = Gaff::MakeArrayString(u8"<"); \
-			const auto rb = Gaff::MakeArrayString(u8">" u8#ref_type); \
+			const auto rb = Gaff::MakeArrayString(u8">" GAFF_STR_U8(ref_type)); \
 			const auto final_str = name + lb + rest_names + rb; \
 			return final_str; \
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
 			const auto name = GetName(); \
-			return Gaff::FNV1aHash64Const(u8#ref_type, Gaff::FNV1aHash64StringConst(name.data.data())); \
+			return Gaff::FNV1aHash64Const(GAFF_STR_U8(ref_type), Gaff::FNV1aHash64StringConst(name.data.data())); \
 		} \
 	}
 
@@ -149,7 +149,7 @@ THE SOFTWARE.
 		static constexpr auto GetName(void) \
 		{ \
 			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
-			const auto name = Gaff::MakeArrayString(u8#type); \
+			const auto name = Gaff::MakeArrayString(GAFF_STR_U8(type)); \
 			const auto lb = Gaff::MakeArrayString(u8"<"); \
 			const auto rb = Gaff::MakeArrayString(u8">"); \
 			const auto final_str = name + lb + rest_names + rb; \

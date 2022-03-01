@@ -39,9 +39,9 @@ DynamicModule::~DynamicModule(void)
 	destroy();
 }
 
-bool DynamicModule::load(const char* filename)
+bool DynamicModule::load(const char8_t* filename)
 {
-	_module = dlopen(filename, RTLD_LAZY);
+	_module = dlopen(reinterpret_cast<const char*>(filename), RTLD_LAZY);
 	return _module != nullptr;
 }
 

@@ -2072,11 +2072,9 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char8_t* name)
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
-	auto pair = std::move(
-		eastl::make_pair(
-			Shibboleth::HashString64<>(name, _allocator),
-			offset
-		)
+	auto pair = eastl::make_pair(
+		Shibboleth::HashString64<>(name, _allocator),
+		offset
 	);
 
 	GAFF_ASSERT(_base_class_offsets.find(pair.first) == _base_class_offsets.end());

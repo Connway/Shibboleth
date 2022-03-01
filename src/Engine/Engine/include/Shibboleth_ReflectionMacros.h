@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(u8#class_type)
+#define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(GAFF_STR_U8(class_type))
 #define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
-#define BASE(type) template base<type>(u8#type)
+#define BASE(type) template base<type>(GAFF_STR_U8(type))
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(class_type, data) getInterface<class_type>(CLASS_HASH(class_type), data)
 
@@ -61,7 +61,7 @@ THE SOFTWARE.
 		{ \
 			return g_instance; \
 		} \
-		static const typename RefDefType<type>& GetReflectionDefinition(void) \
+		static const RefDefType<type>& GetReflectionDefinition(void) \
 		{ \
 			GAFF_ASSERT(g_instance._ref_def); \
 			return *g_instance._ref_def; \

@@ -68,6 +68,7 @@ THE SOFTWARE.
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
 #define GAFF_CAT_HELPER(x, y) x##y
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
+#define GAFF_STR_U8(x) GAFF_CAT(u8, GAFF_STR(x))
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #define GAFF_FLAG_BIT(index) (1 << index)

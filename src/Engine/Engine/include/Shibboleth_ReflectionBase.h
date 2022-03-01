@@ -70,8 +70,8 @@ template <class T>
 class ReflectionBase : public IReflection
 {
 public:
-	consteval static int32_t Size(void);
-	consteval static bool IsEnum(void);
+	constexpr static int32_t Size(void);
+	constexpr static bool IsEnum(void);
 
 	ReflectionBase(void);
 

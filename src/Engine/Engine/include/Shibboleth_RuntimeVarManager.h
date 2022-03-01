@@ -94,19 +94,19 @@ public:
 	}
 
 	template <size_t name_size>
-	RuntimeVar(const char(&name)[name_size], const T& initial_value):
+	RuntimeVar(const char (&name)[name_size], const T& initial_value):
 		RuntimeVar(Gaff::FNV1aHash64Const(name), initial_value)
 	{
 	}
 
 	template <size_t name_size>
-	RuntimeVar(const char(&name)[name_size], T&& initial_value):
+	RuntimeVar(const char (&name)[name_size], T&& initial_value):
 		RuntimeVar(Gaff::FNV1aHash64Const(name), std::move(initial_value))
 	{
 	}
 
 	template <size_t name_size>
-	RuntimeVar(const char(&name)[name_size]):
+	RuntimeVar(const char (&name)[name_size]):
 		RuntimeVar(Gaff::FNV1aHash64Const(name))
 	{
 	}
@@ -170,7 +170,7 @@ public:
 	template <class T>
 	RuntimeVar<T>* getRuntimeVar(Gaff::Hash64 name) const
 	{
-		IRuntimeVar* const runtime_var = getRuntimeVar(Gaff::FNV1aHash64String(name));
+		IRuntimeVar* const runtime_var = getRuntimeVar(name);
 
 		GAFF_ASSERT(!runtime_var || &Refl::Reflection<T>::GetInstance() == &runtime_var->getReflection());
 		return static_cast<RuntimeVar<T>*>(runtime_var);

@@ -46,7 +46,7 @@ public:
 	~Window(void);
 
 	bool init(
-		const char* window_name,
+		const char8_t* window_name,
 		WindowMode window_mode = WindowMode::Fullscreen,
 		int32_t width = 0,
 		int32_t height = 0,

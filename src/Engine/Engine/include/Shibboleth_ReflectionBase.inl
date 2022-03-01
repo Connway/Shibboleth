@@ -25,13 +25,13 @@ THE SOFTWARE.
 NS_REFLECTION
 
 template <class T>
-consteval int32_t ReflectionBase<T>::Size(void)
+constexpr int32_t ReflectionBase<T>::Size(void)
 {
 	return sizeof(T);
 }
 
 template <class T>
-consteval bool ReflectionBase<T>::IsEnum(void)
+constexpr bool ReflectionBase<T>::IsEnum(void)
 {
 	return std::is_enum<T>::value;
 }

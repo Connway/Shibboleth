@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_Reflection.h"
-#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
@@ -160,18 +159,20 @@ public:
 		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override
+	void instantiated(void* /*object*/, const Refl::IReflectionDefinition& /*ref_def*/) override
 	{
-		Broadcaster& broadcaster = GetApp().getBroadcaster();
-		T* const instance = ref_def.getInterface<T>(object);
+		// $TODO: Implement
 
-		const BroadcastID id = 
-			(_const_func) ?
-			broadcaster.listen(MemberFunc(instance, _const_func)) :
-			broadcaster.listen(MemberFunc(instance, _func));
+		//Broadcaster& broadcaster = GetApp().getBroadcaster();
+		//T* const instance = ref_def.getInterface<T>(object);
 
-		s_removers.emplace(object, BroadcastRemover(id, broadcaster));
-		GetAllocator().addOnFreeCallback(OnFree, object);
+		//const BroadcastID id = 
+		//	(_const_func) ?
+		//	broadcaster.listen(MemberFunc(instance, _const_func)) :
+		//	broadcaster.listen(MemberFunc(instance, _func));
+
+		//s_removers.emplace(object, BroadcastRemover(id, broadcaster));
+		//GetAllocator().addOnFreeCallback(OnFree, object);
 	}
 
 	void apply(void (T::*func)(const Msg&) const)

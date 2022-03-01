@@ -705,7 +705,7 @@ private:
 		using IReflectionStaticFunction<Ret, Args...>::getFunc;
 		using IReflectionStaticFunction<Ret, Args...>::call;
 
-		explicit ReflectionStaticFunction(IReflectionStaticFunction<Ret, Args...>::Func func):
+		explicit ReflectionStaticFunction(typename IReflectionStaticFunction<Ret, Args...>::Func func):
 			IReflectionStaticFunction<Ret, Args...>(func)
 		{
 		}
@@ -913,8 +913,8 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance();; } \
 		int32_t size(void) const override { return sizeof(class_type); } \
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
-		bool isBuiltIn(void) const { return true; } \
-		const char8_t* getFriendlyName(void) const override { return u8#class_type; } \
+		bool isBuiltIn(void) const override { return true; } \
+		const char8_t* getFriendlyName(void) const override { return GAFF_STR_U8(class_type); } \
 		bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
 		void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
 		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, bool refl_load = false) const \

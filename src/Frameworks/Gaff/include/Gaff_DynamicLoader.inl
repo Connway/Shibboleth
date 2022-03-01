@@ -49,12 +49,12 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 		return it->second;
 	}
 
-	ModulePtr module = MakeShared<DynamicModule, Allocator>(_allocator);
+	ModulePtr module_ptr = MakeShared<DynamicModule, Allocator>(_allocator);
 
-	if (module) {
-		if (module->load(filename)) {
-			_modules.emplace(std::move(HString(name, _allocator)), module);
-			return module;
+	if (module_ptr) {
+		if (module_ptr->load(filename)) {
+			_modules.emplace(std::move(HString(name, _allocator)), module_ptr);
+			return module_ptr;
 		}
 	}
 

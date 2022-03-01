@@ -25,8 +25,8 @@ BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& ca
 {
 	const EA::Thread::AutoMutex lock(_listener_lock);
 
-	auto& listener_data = _listeners[Reflection<Message>::GetHash()];
-	BroadcastID id(Reflection<Message>::GetHash(), 0);
+	auto& listener_data = _listeners[Refl::Reflection<Message>::GetHash()];
+	BroadcastID id(Refl::Reflection<Message>::GetHash(), 0);
 
 	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void {
 		const Message* const msg = reinterpret_cast<const Message*>(message);
@@ -48,7 +48,7 @@ BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& ca
 template <class Message>
 void Broadcaster::broadcastSync(const Message& message)
 {
-	const auto it = _listeners.find(Reflection<Message>::GetHash());
+	const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
 
 	if (it == _listeners.end()) {
 		return;
@@ -68,7 +68,7 @@ void Broadcaster::broadcast(const Message& message)
 	{
 		const EA::Thread::AutoMutex lock(_listener_lock);
 
-		const auto it = _listeners.find(Reflection<Message>::GetHash());
+		const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
 
 		if (it == _listeners.end()) {
 			return;
