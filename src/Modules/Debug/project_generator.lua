@@ -27,7 +27,6 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
-			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../MainLoop/include",
@@ -60,7 +59,6 @@ local GenerateProject = function()
 			"Assimp",
 			"imgui",
 			"minizip",
-			"optick",
 			"zlib-ng",
 
 			"Gleam",
@@ -80,7 +78,6 @@ local LinkDependencies = function()
 	table.insert(deps, "Assimp")
 	table.insert(deps, "imgui")
 	table.insert(deps, "minizip")
-	table.insert(deps, "optick")
 	table.insert(deps, "zlib-ng")
 
 	table.insert(deps, "Gleam")

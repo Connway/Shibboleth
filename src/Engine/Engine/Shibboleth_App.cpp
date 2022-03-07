@@ -69,13 +69,6 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, const char** argv)
 {
-	// Setting memory allocators
-	OPTICK_SET_MEMORY_ALLOCATOR(
-		[](size_t size) -> void* { return SHIB_ALLOC(size, g_profiler_allocator); },
-		[](void* p) { SHIB_FREE(p, g_profiler_allocator); },
-		[]() { /* Do some TLS initialization here if needed */ }
-	);
-
 	const bool application_set_configs = _configs.size() > 0 && _configs[u8"working_dir"].isString();
 
 	// Check if application set working directory.
@@ -332,8 +325,6 @@ void App::destroy(void)
 #endif
 
 	_log_mgr.destroy();
-
-	OPTICK_SHUTDOWN();
 }
 
 const IManager* App::getManager(Gaff::Hash64 name) const

@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
-#include "Gaff_IncludeOptick.h"
 #include <EAThread/eathread_condition.h>
 #include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>

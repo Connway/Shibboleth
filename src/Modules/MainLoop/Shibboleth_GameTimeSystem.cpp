@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_GameTimeSystem.h"
 #include "Shibboleth_GameTime.h"
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeSystem)
 	.BASE(Shibboleth::ISystem)
@@ -42,7 +41,6 @@ bool GameTimeSystem::init(void)
 
 void GameTimeSystem::update(uintptr_t /*thread_id_int*/)
 {
-	OPTICK_EVENT();
 	_manager->update();
 }
 

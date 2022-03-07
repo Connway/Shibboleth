@@ -13,7 +13,6 @@ project "Catch2"
 	{
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
-		"../../Dependencies/optick",
 		"../../Frameworks/Gaff/include",
 		"../../Engine/Engine/include",
 		"../../Engine/Memory/include"
@@ -30,8 +29,7 @@ project "Catch2"
 		"Engine",
 		"Memory",
 
-		"EASTL",
-		"optick"
+		"EASTL"
 	}
 
 	SetupConfigMap()

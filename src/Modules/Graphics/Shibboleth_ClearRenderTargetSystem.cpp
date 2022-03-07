@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ECSManager.h>
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ClearRenderTargetSystem)
 	.BASE(Shibboleth::ISystem)
@@ -58,8 +57,6 @@ bool ClearRenderTargetSystem::init(void)
 
 void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
 {
-	OPTICK_EVENT();
-
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 

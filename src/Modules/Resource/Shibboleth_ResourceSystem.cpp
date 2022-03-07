@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceSystem.h"
 #include "Shibboleth_ResourceManager.h"
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ResourceSystem, Shibboleth::ISystem)
 
@@ -38,7 +37,6 @@ bool ResourceSystem::init(void)
 
 void ResourceSystem::update(uintptr_t /*thread_id_int*/)
 {
-	OPTICK_EVENT();
 	_res_mgr->checkCallbacks();
 	_res_mgr->checkAndRemoveResources();
 }

@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_IncludeOptick.h>
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
@@ -305,8 +304,6 @@ void ResourceManager::removeCallback(ResourceCallbackID id)
 
 void ResourceManager::checkAndRemoveResources(void)
 {
-	OPTICK_EVENT();
-
 	const EA::Thread::AutoMutex lock(_removal_lock);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
@@ -322,8 +319,6 @@ void ResourceManager::checkAndRemoveResources(void)
 
 void ResourceManager::checkCallbacks(void)
 {
-	OPTICK_EVENT();
-
 	for (const auto& pair : _callbacks) {
 		_callback_keys.emplace_back(pair.first);
 	}

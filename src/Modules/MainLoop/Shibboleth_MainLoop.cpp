@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_IncludeOptick.h>
 #include <EAThread/eathread.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
@@ -41,8 +40,6 @@ SHIB_REFLECTION_CLASS_DEFINE(MainLoop)
 
 static void UpdateSystemJob(uintptr_t thread_id_int, void* data)
 {
-	OPTICK_EVENT();
-
 	ISystem* const system = reinterpret_cast<ISystem*>(data);
 	system->update(thread_id_int);
 }
@@ -194,11 +191,6 @@ void MainLoop::destroy(void)
 
 void MainLoop::update(void)
 {
-#ifndef RELEASE
-	static Optick::ThreadScope main_thread_scope("Main Thread");
-	OPTICK_UNUSED(main_thread_scope);
-#endif
-
 	// This has to happen in the main thread.
 	_render_mgr->updateWindows();
 
@@ -221,14 +213,6 @@ void MainLoop::update(void)
 			if (block.curr_row >= static_cast<int32_t>(block.rows.size())) {
 				block.frame = (block.frame + 1) % 3;
 				block.curr_row = -1;
-
-#ifndef RELEASE
-				// We just finished the frame on the last block.
-				if (i == (static_cast<int32_t>(_blocks.size()) - 1)) {
-					Optick::EndFrame();
-					Optick::Update();
-				}
-#endif
 			}
 		}
 
@@ -260,15 +244,6 @@ void MainLoop::update(void)
 
 		// Process the next row.
 		block.counter = 0;
-
-#ifndef RELEASE
-		// We just started the next frame on the first block.
-		if (i == 0 && block.curr_row == 0) {
-			const uint32_t frame_number = Optick::BeginFrame();
-			const Optick::Event OPTICK_CONCAT(autogen_event_, __LINE__)(*Optick::GetFrameDescription());
-			OPTICK_TAG("Frame", frame_number);
-		}
-#endif
 
 		_job_pool->addJobs(
 			block.rows[block.curr_row].job_data.data(),

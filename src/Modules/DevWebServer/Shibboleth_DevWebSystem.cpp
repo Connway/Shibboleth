@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_DevWebSystem.h"
 #include "Shibboleth_DevWebServerManager.h"
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::DevWebSystem, Shibboleth::ISystem)
 
@@ -38,7 +37,6 @@ bool DevWebSystem::init(void)
 
 void DevWebSystem::update(uintptr_t /*thread_id_int*/)
 {
-	OPTICK_EVENT();
 	_dev_web_mgr->update();
 }
 

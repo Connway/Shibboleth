@@ -256,9 +256,6 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\optick.vcxproj">
-      <Project>{CFC2F712-BB64-22E9-A41F-363D9060A939}</Project>
-    </ProjectReference>
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

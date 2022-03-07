@@ -235,7 +235,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashableFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeOptick.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSON.h" />

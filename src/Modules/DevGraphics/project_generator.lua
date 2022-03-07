@@ -64,7 +64,6 @@ local GenerateProject = function()
 			"GraphicsBase",
 
 			"CivetWeb",
-			"optick"
 
 			-- Vulkan
 		}

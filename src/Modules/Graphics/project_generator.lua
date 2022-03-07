@@ -33,7 +33,6 @@ function DoMainGraphicsModule()
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
-			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/Resource/include",
@@ -84,7 +83,6 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
-			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/Resource/include",
@@ -136,8 +134,7 @@ function DoGraphicsModule(renderer)
 			"minizip",
 			"zlib-ng",
 			"libpng",
-			"libtiff",
-			"optick"
+			"libtiff"
 		}
 
 		dependson(deps)
@@ -169,7 +166,6 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
-	table.insert(deps, "optick")
 
 	dependson(deps)
 	links(deps)

@@ -28,7 +28,6 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/PhysX/physx/include",
 			base_dir .. "../../Dependencies/PhysX/pxshared/include",
 			base_dir .. "../../Dependencies/rapidjson",
-			base_dir .. "../../Dependencies/optick",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Modules/MainLoop/include",
@@ -60,7 +59,6 @@ local GenerateProject = function()
 		{
 			"Gleam",
 			"mpack",
-			"optick",
 
 			"LowLevel",
 			"LowLevelAABB",
@@ -91,7 +89,6 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Physics")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "mpack")
-	table.insert(deps, "optick")
 
 	table.insert(deps, "LowLevel")
 	table.insert(deps, "LowLevelAABB")

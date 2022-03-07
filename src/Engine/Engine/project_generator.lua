@@ -22,8 +22,7 @@ project "Engine"
 		"../../Dependencies/glm",
 		"../../Dependencies/zlib-ng",
 		"../../Dependencies/libpng",
-		"../../Dependencies/libtiff",
-		"../../Dependencies/optick"
+		"../../Dependencies/libtiff"
 	}
 
 	StaticHeaderGen()

@@ -280,9 +280,6 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFil
     <ProjectReference Include="..\dependencies\libtiff.vcxproj">
       <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\optick.vcxproj">
-      <Project>{CFC2F712-BB64-22E9-A41F-363D9060A939}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

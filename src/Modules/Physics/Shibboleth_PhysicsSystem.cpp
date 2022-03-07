@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsSystem.h"
 #include "Shibboleth_PhysicsManager.h"
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsDebugSystem, Shibboleth::ISystem)
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsSystem, Shibboleth::ISystem)
@@ -40,7 +39,6 @@ bool PhysicsDebugSystem::init(void)
 
 void PhysicsDebugSystem::update(uintptr_t thread_id_int)
 {
-	OPTICK_EVENT();
 	_physics_mgr->updateDebug(thread_id_int);
 }
 
@@ -52,7 +50,6 @@ bool PhysicsSystem::init(void)
 
 void PhysicsSystem::update(uintptr_t thread_id_int)
 {
-	OPTICK_EVENT();
 	_physics_mgr->update(thread_id_int);
 }
 

@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputSystem.h"
 #include "Shibboleth_InputManager.h"
-#include <Gaff_IncludeOptick.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::InputSystem, Shibboleth::ISystem)
 
@@ -39,7 +38,6 @@ bool InputSystem::init(void)
 
 void InputSystem::update(uintptr_t /*thread_id_int*/)
 {
-	OPTICK_EVENT();
 	_input_mgr->update();
 }
 

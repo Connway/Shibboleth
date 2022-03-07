@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <EASTL/algorithm.h>
-#include <Gaff_IncludeOptick.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 
@@ -32,16 +31,11 @@ NS_SHIBBOLETH
 
 intptr_t LogManager::LogThread(void* args)
 {
-	OPTICK_THREAD(EA::Thread::GetThreadName());
-
 	LogManager& lm = *reinterpret_cast<LogManager*>(args);
 	const EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {
 		lm._log_event.Wait(&lm._log_condition_lock);
-
-		OPTICK_CATEGORY("Logging", Optick::Category::IO);
-		OPTICK_EVENT("Processing Log Queue");
 
 		lm._log_queue_lock.Lock();
 
