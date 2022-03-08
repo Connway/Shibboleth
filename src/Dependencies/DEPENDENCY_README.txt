@@ -30,6 +30,22 @@ Libraries Affected:
 		Fixed compilation error on Linux with bitvector.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 
+Libraries included, but not used:
+	acl
+		Technically nothing uses this, but in the future we will use this for animations.
+
+	Capstone
+		This is only included for building TracyServer. It is not used by the engine itself.
+
+	GLFW
+		This is only included for building TracyServer. It is not used by the engine itself.
+
+	sqlite
+		Technically nothing uses this, but in the future might use this.
+
+	zstd
+		This is only included for building TracyServer. It is not used by the engine itself.
+
 
 Linux Library Dependencies:
 In order to get code to compile on Linux, these libraries will need to be installed from your package manager.

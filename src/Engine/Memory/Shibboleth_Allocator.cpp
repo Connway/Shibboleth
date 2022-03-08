@@ -26,6 +26,7 @@ THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////
 
 #include "Shibboleth_Allocator.h"
+#include <Gaff_IncludeTracy.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 #include <EASTL/algorithm.h>
@@ -160,6 +161,7 @@ size_t Allocator::getUsableSize(const void* data) const
 void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line)
 {
 	void* data = mi_malloc_aligned(size_bytes + sizeof(AllocationHeader), alignment);
+	TracyAllocN(data, size_bytes, getPoolName(pool_index));
 
 	if (data) {
 		setHeaderData(
@@ -179,6 +181,7 @@ void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, 
 void* Allocator::alloc(size_t size_bytes, int32_t pool_index, const char* file, int line)
 {
 	void* data = mi_malloc(size_bytes + sizeof(AllocationHeader));
+	TracyAllocN(data, size_bytes, getPoolName(pool_index));
 
 	if (data) {
 		setHeaderData(
@@ -281,6 +284,8 @@ void Allocator::free(void* data)
 	}
 
 	mi_free(header);
+
+	TracyFreeN(header, mem_pool_info.pool_name);
 }
 
 void* Allocator::calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line)
@@ -374,7 +379,7 @@ size_t Allocator::getNumFrees(size_t pool_index) const
 	return _tagged_pools[pool_index].num_frees;
 }
 
-const char* Allocator::getPoolName(size_t pool_index) const
+const char* Allocator::getPoolName(int32_t pool_index) const
 {
 	return _tagged_pools[pool_index].pool_name;
 }

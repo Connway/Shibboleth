@@ -15,7 +15,8 @@ project "Memory"
 		"../Engine/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/mimalloc/include",
-		"../../Dependencies/EASTL/include"
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/tracy"
 	}
 
 	local deps =
@@ -29,6 +30,11 @@ project "Memory"
 	links(deps)
 
 	flags { "FatalWarnings" }
+
+	filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+		defines { "TRACY_ENABLE" }
+		dependson({ "TracyClient" })
+		links({ "TracyClient" })
 
 	filter { "configurations:*Debug* or *Optimized_Debug*" }
 		defines { "CHECK_FOR_DOUBLE_FREE", "CHECK_FOR_LEAKS", "CHECK_FOR_MISALIGNED_POINTER" }

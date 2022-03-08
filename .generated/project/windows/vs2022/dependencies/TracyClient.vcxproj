@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{27069401-93BB-0CF7-1CB0-06CE886403FB}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>TracyClient</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\TracyClient\</IntDir>
+    <TargetName>TracyClient64d</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\TracyClient\</IntDir>
+    <TargetName>TracyClient64</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\TracyClient\</IntDir>
+    <TargetName>TracyClient64p</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\TracyClient\</IntDir>
+    <TargetName>TracyClient64od</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;TRACY_ENABLE;TRACY_CALLSTACK;TRACY_FIBERS;TRACY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\TracyClient64d.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;TRACY_ENABLE;TRACY_CALLSTACK;TRACY_FIBERS;TRACY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\TracyClient64.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;TRACY_ENABLE;TRACY_CALLSTACK;TRACY_FIBERS;TRACY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\TracyClient64p.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;TRACY_ENABLE;TRACY_CALLSTACK;TRACY_FIBERS;TRACY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\TracyClient64od.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\Tracy.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyC.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyD3D12.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyLua.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyOpenCL.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyOpenGL.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\TracyVulkan.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyArmCpuTable.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyCallstack.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyCallstack.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyDebug.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyDxt1.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyFastVector.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyLock.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyProfiler.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyRingBuffer.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyScoped.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyStringHelpers.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracySysTime.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracySysTrace.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyThread.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\tracy_SPSCQueue.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\tracy_concurrentqueue.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\client\tracy_rpmalloc.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlign.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlloc.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyApi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyColor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyForceInline.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyMutex.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyProtocol.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyQueue.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyUwp.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyYield.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyAlloc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyCallstack.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyDxt1.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracyProfiler.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracySysTime.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\TracySysTrace.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\client\tracy_rpmalloc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

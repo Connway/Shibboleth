@@ -1,3 +1,5 @@
+group "Dependencies/Unused By Engine"
+
 project "acl"
 	if _ACTION then
 		location(GetDependenciesLocation())
@@ -15,3 +17,5 @@ project "acl"
 	}
 
 	SetupConfigMap()
+
+group "Dependencies"

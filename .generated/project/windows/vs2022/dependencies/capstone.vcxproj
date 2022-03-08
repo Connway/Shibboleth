@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{42ED9D11-2EBA-F81C-57D3-E6C443FF2DAB}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>capstone</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\capstone\</IntDir>
+    <TargetName>capstone</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\capstone\</IntDir>
+    <TargetName>capstone</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\capstone\</IntDir>
+    <TargetName>capstone</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\capstone\</IntDir>
+    <TargetName>capstone</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;CAPSTONE_X86_ATT_DISABLE_NO;CAPSTONE_DIET_NO;CAPSTONE_X86_REDUCE_NO;CAPSTONE_HAS_ARM;CAPSTONE_HAS_ARM64;CAPSTONE_HAS_M68K;CAPSTONE_HAS_MIPS;CAPSTONE_HAS_POWERPC;CAPSTONE_HAS_SPARC;CAPSTONE_HAS_SYSZ;CAPSTONE_HAS_X86;CAPSTONE_HAS_XCORE;CAPSTONE_USE_SYS_DYN_MEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\capstone\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;CAPSTONE_X86_ATT_DISABLE_NO;CAPSTONE_DIET_NO;CAPSTONE_X86_REDUCE_NO;CAPSTONE_HAS_ARM;CAPSTONE_HAS_ARM64;CAPSTONE_HAS_M68K;CAPSTONE_HAS_MIPS;CAPSTONE_HAS_POWERPC;CAPSTONE_HAS_SPARC;CAPSTONE_HAS_SYSZ;CAPSTONE_HAS_X86;CAPSTONE_HAS_XCORE;CAPSTONE_USE_SYS_DYN_MEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\capstone\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CAPSTONE_X86_ATT_DISABLE_NO;CAPSTONE_DIET_NO;CAPSTONE_X86_REDUCE_NO;CAPSTONE_HAS_ARM;CAPSTONE_HAS_ARM64;CAPSTONE_HAS_M68K;CAPSTONE_HAS_MIPS;CAPSTONE_HAS_POWERPC;CAPSTONE_HAS_SPARC;CAPSTONE_HAS_SYSZ;CAPSTONE_HAS_X86;CAPSTONE_HAS_XCORE;CAPSTONE_USE_SYS_DYN_MEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\capstone\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;CAPSTONE_X86_ATT_DISABLE_NO;CAPSTONE_DIET_NO;CAPSTONE_X86_REDUCE_NO;CAPSTONE_HAS_ARM;CAPSTONE_HAS_ARM64;CAPSTONE_HAS_M68K;CAPSTONE_HAS_MIPS;CAPSTONE_HAS_POWERPC;CAPSTONE_HAS_SPARC;CAPSTONE_HAS_SYSZ;CAPSTONE_HAS_X86;CAPSTONE_HAS_XCORE;CAPSTONE_USE_SYS_DYN_MEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\capstone\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\LEB128.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCFixedLenDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCInst.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCInstrDesc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCRegisterInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MathExtras.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\SStream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64AddressingModes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64BaseInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Disassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64InstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Mapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Module.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMAddressingModes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMBaseInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XDisassemblerInternals.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCPredicates.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\Sparc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZMCTargetDesc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86BaseInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Disassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86DisassemblerDecoder.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86DisassemblerDecoderCommon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86InstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Mapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Module.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\qsort.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreDisassembler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreInstPrinter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreMapping.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreModule.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\cs_priv.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\arm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\arm64.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\capstone.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\evm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\m680x.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\m68k.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\mips.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\mos65xx.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\platform.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\ppc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\sparc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\systemz.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\tms320c64x.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\x86.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\xcore.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\platform.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\windowsce\intrin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\windowsce\stdint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCInst.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCInstrDesc.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCRegisterInfo.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\SStream.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64BaseInfo.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Disassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64InstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Mapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Module.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M68K\M68KModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZMCTargetDesc.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SystemZ\SystemZModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86ATTInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Disassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86DisassemblerDecoder.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86IntelInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Mapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Module.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreDisassembler.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreInstPrinter.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreMapping.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreModule.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\cs.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\utils.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

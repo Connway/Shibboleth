@@ -82,7 +82,7 @@ public:
 	size_t getTotalBytesAllocated(size_t pool_index) const;
 	size_t getNumAllocations(size_t pool_index) const;
 	size_t getNumFrees(size_t pool_index) const;
-	const char* getPoolName(size_t pool_index) const;
+	const char* getPoolName(int32_t pool_index) const;
 
 	void setLogDir(const char8_t* log_dir);
 

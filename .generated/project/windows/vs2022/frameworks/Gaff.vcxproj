@@ -236,6 +236,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeTracy.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_JobPool.h" />

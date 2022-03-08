@@ -1,3 +1,5 @@
+group "Dependencies/Unused By Engine"
+
 project "sqlite"
 	if _ACTION then
 		location(GetDependenciesLocation())
@@ -16,3 +18,5 @@ project "sqlite"
 	-- filter {}
 
 	SetupConfigMap()
+
+group "Dependencies"
