@@ -9,6 +9,7 @@ jobs:
     vmImage: 'windows-2022'
   steps:
   - script: |
+      vcpkg install qt
       cd utils
       premake5 vs2022
   - task: VSBuild@1
