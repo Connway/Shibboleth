@@ -111,7 +111,7 @@ private:
 #endif
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
-	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS, false> _tag_ids;
+	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS + 1, false> _tag_ids;
 
 	char8_t _log_dir[64] = { u8'.', u8'/', u8'l', u8'o', u8'g', u8's', 0 };
 

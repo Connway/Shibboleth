@@ -46,6 +46,7 @@ THE SOFTWARE.
 NS_GLEAM
 	class IRenderOutput;
 	class IKeyboard;
+	union AnyMessage;
 NS_END
 
 NS_SHIBBOLETH
@@ -235,6 +236,7 @@ private:
 	Gaff::Flags<Flag> _flags;
 
 	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
+	static bool HandleMainWindowMessage(const Gleam::AnyMessage& msg);
 	static void RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& instance_data);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 

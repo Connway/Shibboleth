@@ -23,7 +23,9 @@ THE SOFTWARE.
 template <class Allocator>
 JobPool<Allocator>::JobPool(const Allocator& allocator):
 	_job_pools(allocator),
+	_main_queue(JobQueue{ Queue<JobPair, Allocator>(allocator) }),
 	_per_thread_jobs(allocator),
+	_thread_events(allocator),
 	_threads(allocator),
 	_allocator(allocator)
 {
@@ -100,6 +102,7 @@ template <class Allocator>
 void JobPool<Allocator>::pause(void)
 {
 	_thread_data.pause = true;
+	notifyThreads();
 }
 
 template <class Allocator>
@@ -123,9 +126,7 @@ void JobPool<Allocator>::addPool(const HashStringView32<>& name, int32_t max_con
 template <class Allocator>
 void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter** counter, Hash32 pool)
 {
-	if (!jobs || num_jobs == 0) {
-		return;
-	}
+	GAFF_ASSERT(jobs && num_jobs > 0);
 
 	JobQueue* job_queue = nullptr;
 
@@ -159,7 +160,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 
 	job_queue->read_write_lock->Unlock();
 
-	//_num_jobs += num_jobs;
+	_num_jobs += num_jobs;
 
 	notifyThreads();
 }
@@ -197,7 +198,7 @@ void JobPool<Allocator>::addJobsForAllThreads(const JobData* jobs, int32_t num_j
 		job_queue.second.read_write_lock->Unlock();
 	}
 
-	//_num_jobs += num_jobs * static_cast<int32_t>(_per_thread_jobs.size());
+	_num_jobs += num_jobs * static_cast<int32_t>(_threads.size());
 
 	notifyThreads();
 }
@@ -229,6 +230,61 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 {
 	GAFF_ASSERT(counter);
 	GAFF_FREE(counter, _allocator);
+}
+
+template <class Allocator>
+void JobPool<Allocator>::waitForAllJobsToFinish(void)
+{
+	while (_num_jobs > 0) {
+		EA_THREAD_DO_SPIN();
+	}
+
+	//for (;;) {
+	//	bool has_jobs = false;
+
+	//	for (auto& pair : _per_thread_jobs) {
+	//		typename JobPool<Allocator>::JobQueue& job_queue = pair.second;
+
+	//		job_queue.read_write_lock->Lock();
+	//		has_jobs = !job_queue.jobs.empty();
+	//		job_queue.read_write_lock->Unlock();
+
+	//		if (has_jobs) {
+	//			break;
+	//		}
+	//	}
+
+	//	if (!has_jobs) {
+	//		// Start with the other pools first. Presumably they don't lead to pool zero never getting reached.
+	//		for (auto& pair : _job_pools) {
+	//			typename JobPool<Allocator>::JobQueue& job_queue = pair.second;
+
+	//			job_queue.thread_lock->Wait();
+
+	//			job_queue.read_write_lock->Lock();
+	//			has_jobs = !job_queue.jobs.empty();
+	//			job_queue.read_write_lock->Unlock();
+
+	//			job_queue.thread_lock->Post();
+
+	//			if (has_jobs) {
+	//				break;
+	//			}
+	//		}
+	//	}
+
+	//	if (!has_jobs) {
+	//		_main_queue.read_write_lock->Lock();
+	//		has_jobs = !_main_queue.jobs.empty();
+	//		_main_queue.read_write_lock->Unlock();
+	//	}
+
+	//	if (!has_jobs) {
+	//		break;
+	//	}
+
+	//	EA_THREAD_DO_SPIN();
+	//}
 }
 
 template <class Allocator>
@@ -268,9 +324,14 @@ bool JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::mil
 {
 	// Do jobs until we can't do any more.
 
+	bool earlied_out = false;
+
 	// Do per-thread jobs first.
-	JobQueue& per_thread_job_queue = _per_thread_jobs[thread_id];
-	bool earlied_out = ProcessJobQueue(per_thread_job_queue, thread_id, ms);
+	if (thread_id != _main_thread_id) {
+		GAFF_ASSERT(_per_thread_jobs.find(thread_id) != _per_thread_jobs.end());
+		JobQueue& per_thread_job_queue = _per_thread_jobs[thread_id];
+		earlied_out = processJobQueue(per_thread_job_queue, thread_id, ms);
+	}
 
 	if (earlied_out) {
 		return true;
@@ -281,7 +342,7 @@ bool JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::mil
 		typename JobPool<Allocator>::JobQueue& job_queue = pair.second;
 
 		if (job_queue.thread_lock->Wait(EA::Thread::kTimeoutImmediate) >= 0) {
-			earlied_out = ProcessJobQueue(job_queue, thread_id, ms);
+			earlied_out = processJobQueue(job_queue, thread_id, ms);
 			job_queue.thread_lock->Post();
 		}
 
@@ -291,7 +352,7 @@ bool JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::mil
 	}
 
 	// Conversely, hopefully the main pool doesn't constantly get new tasks pushed to it and stop the other pools from being processed.
-	return ProcessJobQueue(_main_queue, thread_id, ms);
+	return processJobQueue(_main_queue, thread_id, ms);
 }
 
 template <class Allocator>
@@ -313,7 +374,9 @@ void JobPool<Allocator>::doAJob(EA::Thread::ThreadId thread_id)
 			} else {
 				JobPair job = job_queue.jobs.front();
 				job_queue.jobs.pop();
+
 				DoJob(thread_id, job);
+				--_num_jobs;
 
 				job_queue.thread_lock->Post();
 				return;
@@ -329,9 +392,10 @@ void JobPool<Allocator>::doAJob(EA::Thread::ThreadId thread_id)
 	} else {
 		JobPair job = _main_queue.jobs.front();
 		_main_queue.jobs.pop();
-
 		_main_queue.read_write_lock->Unlock();
+
 		DoJob(thread_id, job);
+		--_num_jobs;
 	}
 }
 
@@ -372,7 +436,7 @@ void JobPool<Allocator>::notifyThreads(void)
 }
 
 template <class Allocator>
-bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
+bool JobPool<Allocator>::processJobQueue(typename JobPool<Allocator>::JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms)
 {
 	auto start = eastl::chrono::high_resolution_clock::now();
 	JobPair job;
@@ -391,7 +455,9 @@ bool JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 			job_queue.jobs.pop();
 
 			job_queue.read_write_lock->Unlock();
+
 			DoJob(thread_id, job);
+			--_num_jobs;
 		}
 
 		if (ms > eastl::chrono::milliseconds::zero()) {

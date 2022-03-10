@@ -72,6 +72,8 @@ public:
 	void waitForCounter(const Counter& counter);
 	void freeCounter(Counter* counter);
 
+	void waitForAllJobsToFinish(void);
+
 	void helpWhileWaiting(EA::Thread::ThreadId thread_id, const Counter& counter);
 	void helpWhileWaiting(const Counter& counter);
 	void helpAndFreeCounter(EA::Thread::ThreadId thread_id, Counter* counter);
@@ -119,13 +121,13 @@ private:
 	ThreadData _thread_data;
 	EA::Thread::ThreadId _main_thread_id;
 
-	//std::atomic_int32_t _num_jobs = 0;
+	std::atomic_int32_t _num_jobs = 0;
 
 	Allocator _allocator;
 
 	void notifyThreads(void);
 
-	static bool ProcessJobQueue(JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms);
+	bool processJobQueue(JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms);
 	static void DoJob(EA::Thread::ThreadId thread_id, JobPair& job);
 
 	static intptr_t JobThread(void* data);

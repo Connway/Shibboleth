@@ -273,11 +273,11 @@ bool Image::loadPNG(const void* buffer, size_t size)
 		return false;
 	}
 
-	const png_infop info_ptr = png_create_info_struct(png_ptr);
+	png_infop info_ptr = png_create_info_struct(png_ptr);
 
 	if (!info_ptr) {
 		// $TODO: Log error.
-		png_destroy_read_struct(&png_ptr, nullptr, nullptr);
+		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 		return false;
 	}
 
@@ -308,7 +308,7 @@ bool Image::loadPNG(const void* buffer, size_t size)
 
 	if (retval != 1) {
 		// $TODO: Log error
-		png_destroy_read_struct(&png_ptr, nullptr, nullptr);
+		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 		return false;
 	}
 
@@ -329,7 +329,7 @@ bool Image::loadPNG(const void* buffer, size_t size)
 		png_read_row(png_ptr, start + byte_offset, nullptr);
 	}
 
-	png_destroy_read_struct(&png_ptr, nullptr, nullptr);
+	png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
 	_width = static_cast<int32_t>(width);
 	_height = static_cast<int32_t>(height);

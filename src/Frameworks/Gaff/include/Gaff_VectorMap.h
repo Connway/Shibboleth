@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef EASTL_VECTOR_MAP_DEFAULT_NAME
+	#define EASTL_VECTOR_MAP_DEFAULT_NAME "Untagged"
+#endif
+
 #include "Gaff_DefaultAllocator.h"
 #include <EASTL/vector_map.h>
 

@@ -314,6 +314,18 @@ void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character
 	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
 }
 
+bool DebugManager::HandleMainWindowMessage(const Gleam::AnyMessage& msg)
+{
+	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+
+	if (msg.base.type == Gleam::EventType::WindowClosed) {
+		dbg_mgr._main_output = nullptr;
+		return true;
+	}
+
+	return false;
+}
+
 void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& debug_data)
 {
 	GAFF_ASSERT(job_data.type != DebugRenderType::Model || model);
@@ -802,6 +814,11 @@ bool DebugManager::initAllModulesLoaded(void)
 
 	_main_device = devices->front();
 
+	Gleam::IWindow* const main_window = _render_mgr->getWindow("main");
+	GAFF_ASSERT(main_window);
+
+	main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
+
 	ECSQuery camera_query;
 	camera_query.add<Position>(_camera_position);
 	camera_query.add<Rotation>(_camera_rotation);
@@ -815,6 +832,10 @@ bool DebugManager::initAllModulesLoaded(void)
 
 void DebugManager::update(void)
 {
+	if (!_main_output) {
+		return;
+	}
+
 	constexpr Gaff::Hash32 k_debug_menu_toggle = Gaff::FNV1aHash32Const("Debug_Menu_Toggle");
 	constexpr Gaff::Hash32 k_debug_input_mode = Gaff::FNV1aHash32Const("Debug");
 	const float toggle = _input_mgr->getAliasValue(k_debug_menu_toggle, _input_mgr->getKeyboardMousePlayerID());
@@ -915,6 +936,10 @@ void DebugManager::update(void)
 
 void DebugManager::render(uintptr_t thread_id_int)
 {
+	if (!_main_output) {
+		return;
+	}
+
 	renderPostCamera(thread_id_int);
 	renderPreCamera(thread_id_int);
 

@@ -193,7 +193,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 
 	if (it_wnd != g_windows.end())
 	{
-		Window* window = *it_wnd;
+		Window* const window = *it_wnd;
 
 		if (!window->_window_callbacks.empty() || !g_global_message_handlers.empty()) {
 			// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
@@ -203,14 +203,12 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 				helper_func(message, window, w, l);
 				message.base.window = window;
 
-				const int32_t size = static_cast<int32_t>(window->_window_callbacks.size());
-
-				for (int32_t i = 0; i < size; ++i) {
-					handled = window->_window_callbacks[i](message) || handled;
+				for (const auto& handler : window->_window_callbacks) {
+					handled = handler.second(message) || handled;
 				}
 
-				for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
-					handled = it_hnd->second(message) || handled;
+				for (const auto& handler : g_global_message_handlers) {
+					handled = handler.second(message) || handled;
 				}
 
 				if (handled) {

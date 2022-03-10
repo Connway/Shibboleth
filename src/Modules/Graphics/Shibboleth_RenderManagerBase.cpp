@@ -90,6 +90,7 @@ u8R"({
 
 RenderManagerBase::RenderManagerBase(void)
 {
+	// $TODO: This needs to be rejiggered. This is confusing to follow.
 	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays) + g_display_tags.size());
 	
 	const ProxyAllocator allocator("Graphics");
@@ -105,6 +106,21 @@ RenderManagerBase::RenderManagerBase(void)
 
 	for (auto entry : g_display_tags) {
 		_render_device_tags[entry.first] = Vector<Gleam::IRenderDevice*>(allocator);
+	}
+}
+
+RenderManagerBase::~RenderManagerBase(void)
+{
+	for (int32_t i = 0; i < ARRAY_SIZE(_cached_render_commands); ++i) {
+		for (int32_t j = 0; j < ARRAY_SIZE(_cached_render_commands[i]); ++j) {
+			for (auto& pair : _cached_render_commands[i][j]) {
+				for (auto& cmd : pair.second.command_list) {
+					if (!cmd.owns_command) {
+						cmd.cmd_list.release();
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -201,124 +217,124 @@ bool RenderManagerBase::init(void)
 
 		if (windows.isObject()) {
 			windows.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
-				{
-					const int32_t adapter_id = value[u8"adapter_id"].getInt32();
-					const int32_t display_id = value[u8"display_id"].getInt32();
+			{
+				const int32_t adapter_id = value[u8"adapter_id"].getInt32();
+				const int32_t display_id = value[u8"display_id"].getInt32();
 
-					const auto display_modes = getDisplayModes();
+				const auto display_modes = getDisplayModes();
 
-					if (adapter_id >= static_cast<int32_t>(display_modes.size())) {
-						LogErrorGraphics("Invalid 'adapter_id' for window '%s'.", key);
-						return false;
-					}
-
-					const auto& adapter_info = display_modes[adapter_id];
-
-					if (display_id >= static_cast<int32_t>(adapter_info.displays.size())) {
-						LogErrorGraphics("Invalid 'display_id' for window '%s'.", key);
-						return false;
-					}
-
-					const auto& display_info = adapter_info.displays[display_id];
-
-					Gleam::IRenderDevice* rd = nullptr;
-
-					// Check if we've already created this device.
-					for (const auto& render_device : _render_devices) {
-						if (render_device->getAdapterID() == adapter_id) {
-							rd = render_device.get();
-							break;
-						}
-					}
-
-					// Create it if we don't already have it.
-					if (!rd) {
-						rd = createRenderDevice(adapter_id);
-
-						if (!rd) {
-							LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
-							return false;
-						}
-					}
-
-					int32_t x = Gaff::Max(0, value[u8"x"].getInt32(0));
-					int32_t y = Gaff::Max(0, value[u8"y"].getInt32(0));
-					int32_t width = value[u8"width"].getInt32(0);
-					int32_t height = value[u8"height"].getInt32(0);
-					const int32_t refresh_rate = value[u8"refresh_rate"].getInt32(0);
-					const bool vsync = value[u8"vsync"].getBool();
-					Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
-
-					SerializeReader<Gaff::JSON> reader(value[u8"window_mode"], ProxyAllocator("Graphics"));
-
-					// Log the error, but leave default to windowed mode.
-					if (!Refl::Reflection<Gleam::IWindow::WindowMode>::GetInstance().load(reader, window_mode)) {
-						LogWarningDefault("Failed to serialize window mode for window '%s'. Defaulting to 'Windowed' mode.", key);
-					}
-
-					if (width == 0 || height == 0) {
-						width = display_info.curr_width;
-						height = display_info.curr_height;
-					}
-
-					if (window_mode == Gleam::IWindow::WindowMode::Fullscreen) {
-						x = 0;
-						y = 0;
-					}
-
-					x += display_info.curr_x;
-					y += display_info.curr_y;
-
-					Gleam::IWindow* const window = createWindow();
-
-					if (!window->init(key, window_mode, width, height, x, y)) {
-						LogErrorGraphics("Failed to create window '%s'.", key);
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					if (const Gaff::JSON icon = value[u8"icon"]; icon.isString()) {
-						if (!window->setIcon(icon.getString())) {
-							// $TODO: Log warning.
-						}
-					}
-
-					// Add the device to the window tag.
-					const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
-					_render_device_tags[window_hash].emplace_back(rd);
-
-					_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
-
-					// Add render device to tag list if not already present.
-					for (const auto& entry : g_display_tags) {
-						const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
-							{
-								return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
-							});
-
-						if (it == entry.second.end()) {
-							continue;
-						}
-
-						auto& render_devices = _render_device_tags[entry.first];
-
-						if (Gaff::Find(render_devices, rd) == render_devices.end()) {
-							render_devices.emplace_back(rd);
-						}
-					}
-
-					Gleam::IRenderOutput* const output = createRenderOutput();
-
-					if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
-						LogErrorGraphics("Failed to create render output for window '%s'.", key);
-						SHIB_FREET(output, GetAllocator());
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
+				if (adapter_id >= static_cast<int32_t>(display_modes.size())) {
+					LogErrorGraphics("Invalid 'adapter_id' for window '%s'.", key);
 					return false;
-				});
+				}
+
+				const auto& adapter_info = display_modes[adapter_id];
+
+				if (display_id >= static_cast<int32_t>(adapter_info.displays.size())) {
+					LogErrorGraphics("Invalid 'display_id' for window '%s'.", key);
+					return false;
+				}
+
+				const auto& display_info = adapter_info.displays[display_id];
+
+				Gleam::IRenderDevice* rd = nullptr;
+
+				// Check if we've already created this device.
+				for (const auto& render_device : _render_devices) {
+					if (render_device->getAdapterID() == adapter_id) {
+						rd = render_device.get();
+						break;
+					}
+				}
+
+				// Create it if we don't already have it.
+				if (!rd) {
+					rd = createRenderDevice(adapter_id);
+
+					if (!rd) {
+						LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
+						return false;
+					}
+				}
+
+				int32_t x = Gaff::Max(0, value[u8"x"].getInt32(0));
+				int32_t y = Gaff::Max(0, value[u8"y"].getInt32(0));
+				int32_t width = value[u8"width"].getInt32(0);
+				int32_t height = value[u8"height"].getInt32(0);
+				const int32_t refresh_rate = value[u8"refresh_rate"].getInt32(0);
+				const bool vsync = value[u8"vsync"].getBool();
+				Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
+
+				SerializeReader<Gaff::JSON> reader(value[u8"window_mode"], ProxyAllocator("Graphics"));
+
+				// Log the error, but leave default to windowed mode.
+				if (!Refl::Reflection<Gleam::IWindow::WindowMode>::GetInstance().load(reader, window_mode)) {
+					LogWarningDefault("Failed to serialize window mode for window '%s'. Defaulting to 'Windowed' mode.", key);
+				}
+
+				if (width == 0 || height == 0) {
+					width = display_info.curr_width;
+					height = display_info.curr_height;
+				}
+
+				if (window_mode == Gleam::IWindow::WindowMode::Fullscreen) {
+					x = 0;
+					y = 0;
+				}
+
+				x += display_info.curr_x;
+				y += display_info.curr_y;
+
+				Gleam::IWindow* const window = createWindow();
+
+				if (!window->init(key, window_mode, width, height, x, y)) {
+					LogErrorGraphics("Failed to create window '%s'.", key);
+					SHIB_FREET(window, GetAllocator());
+					return false;
+				}
+
+				if (const Gaff::JSON icon = value[u8"icon"]; icon.isString()) {
+					if (!window->setIcon(icon.getString())) {
+						// $TODO: Log warning.
+					}
+				}
+
+				// Add the device to the window tag.
+				const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
+				_render_device_tags[window_hash].emplace_back(rd);
+
+				_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
+
+				// Add render device to tag list if not already present.
+				for (const auto& entry : g_display_tags) {
+					const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
+						{
+							return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
+						});
+
+					if (it == entry.second.end()) {
+						continue;
+					}
+
+					auto& render_devices = _render_device_tags[entry.first];
+
+					if (Gaff::Find(render_devices, rd) == render_devices.end()) {
+						render_devices.emplace_back(rd);
+					}
+				}
+
+				Gleam::IRenderOutput* const output = createRenderOutput();
+
+				if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
+					LogErrorGraphics("Failed to create render output for window '%s'.", key);
+					SHIB_FREET(output, GetAllocator());
+					SHIB_FREET(window, GetAllocator());
+					return false;
+				}
+
+				_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
+				return false;
+			});
 
 		} else {
 			// $TODO: Log error.

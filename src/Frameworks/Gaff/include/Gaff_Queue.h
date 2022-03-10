@@ -22,6 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef EASTL_QUEUE_DEFAULT_NAME
+	#define EASTL_QUEUE_DEFAULT_NAME "Untagged"
+#endif
+
+#ifndef EASTL_DEQUE_DEFAULT_NAME
+	#define EASTL_DEQUE_DEFAULT_NAME "Untagged"
+#endif
+
 #include "Gaff_DefaultAllocator.h"
 #include <EASTL/queue.h>
 

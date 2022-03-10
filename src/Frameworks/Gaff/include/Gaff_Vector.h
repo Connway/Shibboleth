@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef EASTL_VECTOR_DEFAULT_NAME
+	#define EASTL_VECTOR_DEFAULT_NAME "Untagged"
+#endif
+
 #include "Gaff_DefaultAllocator.h"
 #include <EASTL/vector.h>
 #include <EASTL/sort.h>

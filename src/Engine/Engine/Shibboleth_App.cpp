@@ -43,10 +43,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-#ifndef RELEASE
-	static ProxyAllocator g_profiler_allocator("Profiler");
-#endif
-
 App::App(void)
 {
 	Gaff::InitializeCrashHandler();
@@ -169,11 +165,7 @@ void App::run(void)
 
 void App::destroy(void)
 {
-	if (_main_loop) {
-		_main_loop->destroy();
-		SHIB_FREET(_main_loop, GetAllocator());
-		_main_loop = nullptr;
-	}
+	_job_pool.waitForAllJobsToFinish();
 
 	// Let all the managers destroy their thread local data.
 	const Gaff::JobData thread_deinit_job =
@@ -189,16 +181,21 @@ void App::destroy(void)
 		static_cast<App*>(&GetApp())
 	};
 
-	Gaff::Counter counter = 0;
-	_job_pool.addJobsForAllThreads(&thread_deinit_job, 1, counter);
+	_job_pool.addJobsForAllThreads(&thread_deinit_job, 1);
 
 	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
 	for (const auto& entry : _manager_map) {
 		entry.second->destroyThread((uintptr_t)&thread_id);
 	}
 
-	_job_pool.helpWhileWaiting(counter);
+	_job_pool.waitForAllJobsToFinish();
 	_job_pool.destroy();
+
+	if (_main_loop) {
+		_main_loop->destroy();
+		SHIB_FREET(_main_loop, GetAllocator());
+		_main_loop = nullptr;
+	}
 
 	const Gaff::JSON module_unload_order = _configs[u8"module_unload_order"];
 	Vector<Gaff::Hash32> module_hashes;

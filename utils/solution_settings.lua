@@ -86,6 +86,9 @@ filter { "system:windows" }
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
 
+filter { "action:vs*" }
+	buildoptions { "/Zc:__cplusplus" }
+
 filter { "configurations:not *Clang", "action:not vs*" }
 	toolset "gcc"
 

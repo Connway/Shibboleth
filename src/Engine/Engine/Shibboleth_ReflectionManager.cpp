@@ -184,6 +184,8 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 
 	// Add new type bucket to global type bucket list.
 	TypeBucket& global_unbucketed = _type_buckets.find(Gaff::FNV1aHash64Const(u8"**"))->second;
+
+	_type_buckets.insert(eastl::make_pair(name, TypeBucket(ProxyAllocator("Reflection"))));
 	TypeBucket& global_types = _type_buckets[name];
 
 	global_types.set_allocator(ProxyAllocator("Reflection"));

@@ -805,20 +805,20 @@ private:
 		IRefStaticFuncPtr func[k_num_overloads];
 	};
 
-	Shibboleth::VectorMap<Shibboleth::HashString64<>, ptrdiff_t> _base_class_offsets;
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, IVarPtr> _vars;
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, FuncData> _funcs;
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, StaticFuncData> _static_funcs;
-	Shibboleth::VectorMap<Gaff::Hash64, VoidFunc> _factories;
-	Shibboleth::VectorMap<Gaff::Hash64, IRefStaticFuncPtr> _ctors;
-	Shibboleth::VectorMap<Gaff::Hash64, const IReflectionDefinition*> _base_classes;
+	Shibboleth::VectorMap<Shibboleth::HashString64<>, ptrdiff_t> _base_class_offsets{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Shibboleth::HashString32<>, IVarPtr> _vars{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Shibboleth::HashString32<>, FuncData> _funcs{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Shibboleth::HashString32<>, StaticFuncData> _static_funcs{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Gaff::Hash64, VoidFunc> _factories{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Gaff::Hash64, IRefStaticFuncPtr> _ctors{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Gaff::Hash64, const IReflectionDefinition*> _base_classes{ Shibboleth::ProxyAllocator("Reflection") };
 
 	using AttributeList = Shibboleth::Vector<IAttributePtr>;
 
-	Shibboleth::VectorMap<Gaff::Hash32, AttributeList> _var_attrs;
-	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _func_attrs;
-	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _static_func_attrs;
-	AttributeList _class_attrs;
+	Shibboleth::VectorMap<Gaff::Hash32, AttributeList> _var_attrs{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _static_func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
+	AttributeList _class_attrs{ Shibboleth::ProxyAllocator("Reflection") };
 
 	Shibboleth::U8String _friendly_name;
 

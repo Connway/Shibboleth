@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef EASTL_BASIC_STRING_DEFAULT_NAME
+	#define EASTL_BASIC_STRING_DEFAULT_NAME "Untagged"
+#endif
+
 #include "Gaff_DefaultAllocator.h"
 #include <Gaff_Assert.h>
 #include <EASTL/string.h>

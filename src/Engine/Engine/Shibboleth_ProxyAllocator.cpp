@@ -84,13 +84,8 @@ const char* ProxyAllocator::get_name() const
 	return _pool_tag;
 }
 
-void ProxyAllocator::set_name(const char* pName)
+void ProxyAllocator::set_name(const char*)
 {
-	_pool_tag = pName;
-
-	if (_pool_tag) {
-		_pool_index = _allocator.getPoolIndex(_pool_tag);
-	}
 }
 
 void* ProxyAllocator::alloc(size_t size_bytes, size_t alignment, const char* file, int line)

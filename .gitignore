@@ -13,10 +13,11 @@
 **/Gen_ReflectionInit.h
 .generated/build/*
 workingdir/**/*.exe
-workingdir/editor_logs/*
-workingdir/logs/*
 workingdir/bin/*
+workingdir/DevModules/*
+workingdir/logs/*
 workingdir/Modules/*
 workingdir/EditorModules/*
-workingdir/DevModules/*
 workingdir/tests/*
+workingdir/tools/*
+**/.generated/*

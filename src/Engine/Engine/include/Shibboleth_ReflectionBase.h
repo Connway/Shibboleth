@@ -90,7 +90,7 @@ public:
 	void save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save = false);
 
 protected:
-	Shibboleth::Vector< eastl::function<void (void)> > _on_defined_callbacks;
+	Shibboleth::Vector< eastl::function<void (void)> > _on_defined_callbacks{ Shibboleth::ProxyAllocator("Reflection") };
 	RefDefType<T>* _ref_def = nullptr;
 	ReflectionVersion<T> _version;
 	bool _defined = false;

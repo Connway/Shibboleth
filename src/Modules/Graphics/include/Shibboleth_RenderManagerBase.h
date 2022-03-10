@@ -107,6 +107,7 @@ public:
 	};
 
 	RenderManagerBase(void);
+	~RenderManagerBase(void);
 
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;

@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef EASTL_VECTOR_MAP_DEFAULT_NAME
+	#define EASTL_VECTOR_MAP_DEFAULT_NAME "Untagged"
+#endif
+
 #include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_VectorMap.h>
 

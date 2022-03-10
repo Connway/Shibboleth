@@ -74,6 +74,8 @@ Allocator::Allocator(void)
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE - 1);
+
+	_tag_ids.push_back(Gaff::FNV1aHash32Const("Untagged"));
 }
 
 Allocator::~Allocator(void)
@@ -136,7 +138,7 @@ void Allocator::removeOnFreeCallback(OnFreeCallback callback, void* data)
 
 int32_t Allocator::getPoolIndex(const char* pool_name)
 {
-	Gaff::Hash32 alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
+	Gaff::Hash32 alloc_tag = Gaff::FNV1aHash32String(pool_name);
 	auto it = eastl::find(_tag_ids.begin(), _tag_ids.end(), alloc_tag);
 
 	if (it == _tag_ids.end()) {
@@ -145,11 +147,11 @@ int32_t Allocator::getPoolIndex(const char* pool_name)
 		_tag_ids.push_back(alloc_tag);
 		it = _tag_ids.end() - 1;
 
-		strncpy(_tagged_pools[_tag_ids.size()].pool_name, pool_name, POOL_NAME_SIZE - 1);
+		strncpy(_tagged_pools[_tag_ids.size() - 1].pool_name, pool_name, POOL_NAME_SIZE - 1);
 	}
 
 	int32_t index = static_cast<int32_t>(eastl::distance(_tag_ids.begin(), it));
-	return index + 1;
+	return index;
 }
 
 size_t Allocator::getUsableSize(const void* data) const
@@ -386,7 +388,7 @@ const char* Allocator::getPoolName(int32_t pool_index) const
 
 void Allocator::setLogDir(const char8_t* log_dir)
 {
-	const size_t in_len = eastl::CharStrlen(log_dir);
+	const size_t in_len = eastl::CharStrlen(log_dir) + 1;
 	const size_t log_dir_len = ARRAY_SIZE(_log_dir);
 	const size_t len = (log_dir_len < in_len) ? log_dir_len : in_len;
 
@@ -464,7 +466,7 @@ void Allocator::writeAllocationLog(void) const
 		"===========================================================\n\n"
 	);
 
-	for (size_t i = 0; i < _tag_ids.size() + 1; ++i) {
+	for (size_t i = 0; i < _tag_ids.size(); ++i) {
 		const MemoryPoolInfo& mem_pool_info = _tagged_pools[i];
 
 		log.printf("%s:\n", mem_pool_info.pool_name);

@@ -149,8 +149,11 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
 	auto& job_pool = GetApp().getJobPool();
-	job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
-	job_pool.helpWhileWaiting(thread_id, _job_counter);
+
+	if (_job_data_cache.size() > 0) {
+		job_pool.addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
+		job_pool.helpWhileWaiting(thread_id, _job_counter);
+	}
 
 	_cache_index = (_cache_index + 1) % 2;
 	_render_mgr->presentAllOutputs();
@@ -275,8 +278,10 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
-	_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
-	_job_pool->helpWhileWaiting(thread_id, _job_counter);
+	if (_job_data_cache.size() > 0) {
+		_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
+		_job_pool->helpWhileWaiting(thread_id, _job_counter);
+	}
 
 	_cache_index = (_cache_index + 1) % 2;
 }
@@ -827,11 +832,13 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 		}
 	}
 
-	job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
+	if (job_data.job_data_cache.size() > 0) {
+		job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
 
-	// $TODO: If the cache is significantly higher than the current usage, shrink the cache.
+		// $TODO: If the cache is significantly higher than the current usage, shrink the cache.
 
-	job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
+		job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
+	}
 
 	// Clear this for next run.
 	job_data.rcs->_cmd_list_end[job_data.rcs->_cache_index] = 0;
