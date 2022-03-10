@@ -241,9 +241,6 @@ premake5 gen_module_header --module=MainLoop</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\MainLoop\project_generator.lua" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

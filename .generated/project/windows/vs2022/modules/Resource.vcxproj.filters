@@ -35,7 +35,4 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\Resource\project_generator.lua" />
-  </ItemGroup>
 </Project>

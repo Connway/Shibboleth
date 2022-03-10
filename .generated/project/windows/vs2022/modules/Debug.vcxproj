@@ -240,9 +240,6 @@ premake5 gen_module_header --module=Debug</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Debug\Shibboleth_DebugSystem.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\Debug\project_generator.lua" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

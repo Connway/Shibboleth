@@ -17,7 +17,4 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\DevECS\Shibboleth_DevECSModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevECS\Shibboleth_ECSEntityWebHandler.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\DevECS\project_generator.lua" />
-  </ItemGroup>
 </Project>

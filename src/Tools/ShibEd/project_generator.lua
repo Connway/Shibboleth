@@ -1,3 +1,7 @@
+if _OPTIONS["no-editor"] then
+	return
+end
+
 require("premake-qt/qt")
 local qt = premake.extensions.qt
 

@@ -52,7 +52,4 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_Mouse_Web.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\DevWebServer\project_generator.lua" />
-  </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ function DoMainGraphicsModule()
 		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl", base_dir .. "**.lua" }
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
 
 		excludes
 		{

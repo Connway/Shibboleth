@@ -61,3 +61,12 @@ solution "Shibboleth"
 
 	group "Tests"
 	dofile("../src/Tests/project_generator.lua")
+
+	group "Project Files"
+		project "Generators"
+			kind "None"
+			files { "../src/**.lua" }
+
+		project "Utils"
+			kind "None"
+			files { "**.lua" }

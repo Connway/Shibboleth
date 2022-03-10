@@ -334,9 +334,6 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Game_App\Game_Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\src\Engine\Game_App\project_generator.lua" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
     </ProjectReference>

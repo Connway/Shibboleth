@@ -3,16 +3,18 @@ project "Game_App"
 		location(GetEngineLocation())
 	end
 
-	if _OPTIONS["console_app"] then
+	filter { "options:console-app" }
 		kind "ConsoleApp"
-	else
+
+	filter { "options:not console-app" }
 		kind "WindowedApp"
-	end
+
+	filter {}
 
 	debugdir "../../../workingdir"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl", "**.lua" }
+	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
 	{

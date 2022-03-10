@@ -243,9 +243,6 @@ premake5 gen_module_header --module=Resource</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\Resource\project_generator.lua" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

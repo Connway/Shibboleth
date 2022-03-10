@@ -63,7 +63,4 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachineCommonConditions.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_VariableSet.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />
-  </ItemGroup>
 </Project>

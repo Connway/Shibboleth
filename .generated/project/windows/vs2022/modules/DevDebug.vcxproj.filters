@@ -17,7 +17,4 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugDrawWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DevDebugModule.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\DevDebug\project_generator.lua" />
-  </ItemGroup>
 </Project>

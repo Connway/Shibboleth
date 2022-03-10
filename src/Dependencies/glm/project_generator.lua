@@ -1,11 +1,11 @@
 project "glm"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	-- if _ACTION then
+	-- 	location(GetDependenciesLocation())
+	-- end
 
 	kind "None"
-	language "C++"
-	warnings "Extra"
+	-- language "C++"
+	-- warnings "Extra"
 
 	files
 	{

@@ -322,9 +322,6 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Targ
     <ClCompile Include="..\..\..\..\..\src\Tools\j2mp\j2mp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\src\Tools\j2mp\project_generator.lua" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>

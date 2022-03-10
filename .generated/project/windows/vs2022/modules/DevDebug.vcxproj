@@ -235,9 +235,6 @@ premake5 gen_module_header --module=DevDebug</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugDrawWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DevDebugModule.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Modules\DevDebug\project_generator.lua" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

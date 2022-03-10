@@ -328,9 +328,6 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Targ
     <ClCompile Include="..\..\..\..\..\src\Tools\refl_hash_dump\refl_hash_dump.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\src\Tools\refl_hash_dump\project_generator.lua" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\engine\Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
     </ProjectReference>

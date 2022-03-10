@@ -20,7 +20,4 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Memory\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Memory\Shibboleth_Memory.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Engine\Memory\project_generator.lua" />
-  </ItemGroup>
 </Project>

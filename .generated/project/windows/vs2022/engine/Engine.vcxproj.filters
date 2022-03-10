@@ -204,7 +204,4 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_SerializeReaderWrapper.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\src\Engine\Engine\project_generator.lua" />
-  </ItemGroup>
 </Project>

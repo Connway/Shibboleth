@@ -7,7 +7,7 @@ project "refl_hash_dump"
 	debugdir "../../../workingdir/tools"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl", "**.lua" }
+	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
 	{
