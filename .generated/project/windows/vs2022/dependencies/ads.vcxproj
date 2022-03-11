@@ -1,0 +1,404 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DD5C880B-4966-887C-D2E1-9E7C3EEA937C}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ads</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\ads\</IntDir>
+    <TargetName>ads64d</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\ads\</IntDir>
+    <TargetName>ads64</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\ads\</IntDir>
+    <TargetName>ads64p</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\ads\</IntDir>
+    <TargetName>ads64od</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;ADS_SHARED_EXPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\include;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtCore;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtGui;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\ads64d.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;RELEASE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;ADS_SHARED_EXPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\include;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtCore;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtGui;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\ads64.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;ADS_SHARED_EXPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\include;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtCore;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtGui;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\ads64p.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;ADS_SHARED_EXPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\include;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtCore;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtGui;C:\Applications\Qt\6.2.3\msvc2019_64\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Applications\Qt\6.2.3\msvc2019_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ads64od.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\DockComponentsFactory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\DockingStateReader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\IconProvider.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTabBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar_p.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockContainerWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockFocusController.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockOverlay.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockSplitter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidgetTab.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_ElidingLabel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDockContainer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDragPreview.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\qrc_ads.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockComponentsFactory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockContainerWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockFocusController.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockOverlay.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockSplitter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockWidgetTab.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockingStateReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ElidingLabel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\IconProvider.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTabBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTabBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTabBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTabBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTabBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTabBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTabBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTabBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockAreaTabBar.cpp</Outputs>
+      <Message>Moc'ing DockAreaTabBar.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar.cpp</Outputs>
+      <Message>Moc'ing DockAreaTitleBar.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar_p.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar_p.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar_p.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar_p.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar_p.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar_p.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar_p.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaTitleBar_p.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar_p.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockAreaTitleBar_p.cpp</Outputs>
+      <Message>Moc'ing DockAreaTitleBar_p.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaWidget.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockAreaWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockAreaWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockAreaWidget.cpp</Outputs>
+      <Message>Moc'ing DockAreaWidget.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockContainerWidget.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockContainerWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockContainerWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockContainerWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockContainerWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockContainerWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockContainerWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockContainerWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockContainerWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockContainerWidget.cpp</Outputs>
+      <Message>Moc'ing DockContainerWidget.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockFocusController.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockFocusController.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockFocusController.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockFocusController.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockFocusController.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockFocusController.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockFocusController.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockFocusController.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockFocusController.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockFocusController.cpp</Outputs>
+      <Message>Moc'ing DockFocusController.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockManager.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockManager.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockManager.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockManager.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockManager.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockManager.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockManager.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockManager.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockManager.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockManager.cpp</Outputs>
+      <Message>Moc'ing DockManager.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockOverlay.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockOverlay.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockOverlay.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockOverlay.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockOverlay.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockOverlay.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockOverlay.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockOverlay.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockOverlay.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockOverlay.cpp</Outputs>
+      <Message>Moc'ing DockOverlay.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockSplitter.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockSplitter.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockSplitter.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockSplitter.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockSplitter.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockSplitter.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockSplitter.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockSplitter.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockSplitter.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockSplitter.cpp</Outputs>
+      <Message>Moc'ing DockSplitter.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockWidget.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidget.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidget.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockWidget.cpp</Outputs>
+      <Message>Moc'ing DockWidget.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockWidgetTab.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidgetTab.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidgetTab.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidgetTab.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidgetTab.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidgetTab.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidgetTab.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/DockWidgetTab.h" -o "../../../../../src/Dependencies/ads/.generated/moc_DockWidgetTab.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_DockWidgetTab.cpp</Outputs>
+      <Message>Moc'ing DockWidgetTab.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ElidingLabel.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/ElidingLabel.h" -o "../../../../../src/Dependencies/ads/.generated/moc_ElidingLabel.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/ElidingLabel.h" -o "../../../../../src/Dependencies/ads/.generated/moc_ElidingLabel.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/ElidingLabel.h" -o "../../../../../src/Dependencies/ads/.generated/moc_ElidingLabel.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/ElidingLabel.h" -o "../../../../../src/Dependencies/ads/.generated/moc_ElidingLabel.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_ElidingLabel.cpp</Outputs>
+      <Message>Moc'ing ElidingLabel.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDockContainer.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDockContainer.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDockContainer.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDockContainer.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDockContainer.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDockContainer.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDockContainer.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDockContainer.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_FloatingDockContainer.cpp</Outputs>
+      <Message>Moc'ing FloatingDockContainer.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDragPreview.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDragPreview.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDragPreview.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDragPreview.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDragPreview.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDragPreview.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DRELEASE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">"C:\Applications\Qt\6.2.3\msvc2019_64/bin/moc" "../../../../../src/Dependencies/ads/FloatingDragPreview.h" -o "../../../../../src/Dependencies/ads/.generated/moc_FloatingDragPreview.cpp"  -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DGLM_FORCE_SSE42 -DZLIB_COMPAT -D_HAS_ITERATOR_DEBUGGING=0 -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DPROFILE -DWIN32 -D_WINDOWS -DWIN64 -DQT_DISABLE_DEPRECATED_BEFORE=0x060000 -DADS_SHARED_EXPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I"C:/Applications/Qt/6.2.3/msvc2019_64/include" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtCore" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtGui" -I"C:/Applications/Qt/6.2.3/msvc2019_64/include/QtWidgets"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/moc_FloatingDragPreview.cpp</Outputs>
+      <Message>Moc'ing FloatingDragPreview.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ads.qrc">
+      <FileType>Document</FileType>
+      <Command>"C:\Applications\Qt\6.2.3\msvc2019_64/bin/rcc" -name "ads" -no-compress "../../../../../src/Dependencies/ads/ads.qrc" -o "../../../../../src/Dependencies/ads/.generated/qrc_ads.cpp"</Command>
+      <Outputs>../../../../../src/Dependencies/ads/.generated/qrc_ads.cpp</Outputs>
+      <Message>Rcc'ing ads.qrc</Message>
+      <AdditionalInputs>../../../../../src/Dependencies/ads/stylesheets/default.css;../../../../../src/Dependencies/ads/images/close-button.svg;../../../../../src/Dependencies/ads/images/close-button-disabled.svg;../../../../../src/Dependencies/ads/stylesheets/default_linux.css;../../../../../src/Dependencies/ads/images/close-button-focused.svg;../../../../../src/Dependencies/ads/stylesheets/focus_highlighting.css;../../../../../src/Dependencies/ads/stylesheets/focus_highlighting_linux.css;../../../../../src/Dependencies/ads/images/tabs-menu-button.svg;../../../../../src/Dependencies/ads/images/detach-button.svg;../../../../../src/Dependencies/ads/images/detach-button-disabled.svg;../../../../../src/Dependencies/ads/images/maximize-button.svg;../../../../../src/Dependencies/ads/images/maximize-button-focused.svg;../../../../../src/Dependencies/ads/images/restore-button.svg;../../../../../src/Dependencies/ads/images/restore-button-focused.svg</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

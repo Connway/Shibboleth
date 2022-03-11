@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{6C01343A-5864-C3DE-01EA-FB94ED2B8F61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\Catch2">
+      <UniqueIdentifier>{1011A6EA-7C72-83F8-05E0-C9AA7140BAB7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\EASTL">
+      <UniqueIdentifier>{9483AAF7-8067-6B4D-E9C7-65A0D5CA55CF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\PhysX">
+      <UniqueIdentifier>{979987F8-837D-484E-ECDD-42A1D8E032D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\acl">
+      <UniqueIdentifier>{0B470A4E-F73F-29A0-2072-0E250CCA08AC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\ads">
+      <UniqueIdentifier>{33470A4E-1F40-29A0-4872-0E2534CA08AC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\assimp">
+      <UniqueIdentifier>{081BE631-747C-C33F-FDE9-09F2694AFAFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\capstone">
+      <UniqueIdentifier>{58BD7DAC-C429-39A7-8D1D-D104F9485B0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\civetweb">
+      <UniqueIdentifier>{F4605121-60CD-0C1C-29C1-A47995EC2E84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\civetweb\src">
+      <UniqueIdentifier>{0B795C3C-773B-90C6-C0EB-1E532CED68A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\civetweb\src\third_party">
+      <UniqueIdentifier>{846FC1FD-F033-C0ED-B999-F0B7251D5C23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\glfw">
+      <UniqueIdentifier>{AB98560F-17AF-54A5-6026-E0C6CC7B252D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\glm">
+      <UniqueIdentifier>{BB610A4E-A75A-29A0-D08C-0E25BCE408AC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\imgui">
+      <UniqueIdentifier>{D66F4EFA-C253-0F50-2BB4-09A317B7F9D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\libpng">
+      <UniqueIdentifier>{57B0D04A-C311-AE58-4C7F-F40AB8DFE417}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\libtiff">
+      <UniqueIdentifier>{BBD7E8A4-A766-726E-5085-86693CF38214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\lua">
+      <UniqueIdentifier>{1D780A4E-0971-29A0-32A3-0E251EFB08AC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\mimalloc">
+      <UniqueIdentifier>{89519846-F5BD-5341-BEB1-EB9E2ADD75A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\minizip">
+      <UniqueIdentifier>{1B7BB6F2-070A-40BC-B028-54B79C965062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\mpack">
+      <UniqueIdentifier>{275B98FA-133F-5950-7C9F-53A368A243D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\sqlite">
+      <UniqueIdentifier>{8DEFBA5B-F950-9869-82BE-DE1BEE1ECF28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\tracy">
+      <UniqueIdentifier>{7E1F18FB-6A03-D950-D363-D3A3BF66C3D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\zlib-ng">
+      <UniqueIdentifier>{AE720BE2-9A01-95AB-4320-A9A62F8EA551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\zstd">
+      <UniqueIdentifier>{6023610F-CC39-5FA5-15B1-EAC68106302D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Engine">
+      <UniqueIdentifier>{00EE2439-6CAE-A06F-35E9-E9ECA168E54B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Game_App">
+      <UniqueIdentifier>{C4CF9413-305B-02D8-396C-85CCA5765ED8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Memory">
+      <UniqueIdentifier>{E3BA2E4B-4F7B-AA81-18B6-F3FE8435EF5D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frameworks">
+      <UniqueIdentifier>{E6A4BA6F-D25C-FCBC-3B64-D518273B97AD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frameworks\Esprit">
+      <UniqueIdentifier>{4CE04475-B8F6-420B-016E-CE2C6DC31393}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frameworks\Gaff">
+      <UniqueIdentifier>{69BDFEFD-D548-6CC2-DE59-EFB64A64C8C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frameworks\Gleam">
+      <UniqueIdentifier>{3B6EDCBD-2767-FB0F-5099-E0943CF1DA1B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{DE144435-4AF4-C2D0-530C-4EA7BF6A2932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Camera">
+      <UniqueIdentifier>{96C3CFEB-8291-C3F1-6B25-341857929F56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Debug">
+      <UniqueIdentifier>{D4CDADD8-408E-290F-09C9-728C75486EEB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\DevDebug">
+      <UniqueIdentifier>{D3009C51-BFF9-BAA3-E82B-A028D4839AAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\DevECS">
+      <UniqueIdentifier>{67AF71EE-537D-65F4-3C11-D61A287E4159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\DevGraphics">
+      <UniqueIdentifier>{7DFD5CE7-E95E-3AF5-72CC-80A7DE2C71B4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\DevWebServer">
+      <UniqueIdentifier>{A1858F24-8D14-19EE-3633-2DE922A12994}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\ECS">
+      <UniqueIdentifier>{2848FAB0-94FD-72A6-1DF2-6C7D89A669AA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Graphics">
+      <UniqueIdentifier>{DE3638D1-CA2F-5723-F361-3CA8DFB9362F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Input">
+      <UniqueIdentifier>{5D730DD9-C933-890F-926E-D28CFEEDCDEB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Logic">
+      <UniqueIdentifier>{5B2144D9-C7E1-BF0F-901C-098DFC9B04EC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\MainLoop">
+      <UniqueIdentifier>{CCFF9A50-B8F8-B9A2-E12A-9F27CD8299AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Physics">
+      <UniqueIdentifier>{5016B25F-BCA1-1F24-C5B2-A21831BD7B24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Resource">
+      <UniqueIdentifier>{B5504939-A149-688B-CA7B-4D10B6D34797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Script">
+      <UniqueIdentifier>{624D4911-4E1B-3D17-37AF-AD3D231C197C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{5865280E-C479-50BF-8DFB-F31EF9CE4CF0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\ShibEd">
+      <UniqueIdentifier>{54C0792D-4023-09D2-E9A8-4188D5EAD454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\j2mp">
+      <UniqueIdentifier>{DE2F0605-CAE7-4752-33EF-20AE1FC6E242}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\refl_hash_dump">
+      <UniqueIdentifier>{66936553-5222-EF1C-FB40-0318E7AEFFC2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\src\Dependencies\Catch2\project_generator.lua">
+      <Filter>Dependencies\Catch2</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua">
+      <Filter>Dependencies\EASTL</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\fastxml_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\lowlevel_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\lowlevelaabb_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\lowleveldynamics_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physx_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcharacterkinematic_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcommon_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcooking_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxextensions_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxfoundation_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxpvdsdk_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxtask_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\physxvehicle_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\project_generator.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\scenequery_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\PhysX\simulationcontroller_files.lua">
+      <Filter>Dependencies\PhysX</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\acl\project_generator.lua">
+      <Filter>Dependencies\acl</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\ads\project_generator.lua">
+      <Filter>Dependencies\ads</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\assimp\project_generator.lua">
+      <Filter>Dependencies\assimp</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\capstone\project_generator.lua">
+      <Filter>Dependencies\capstone</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\civetweb\project_generator.lua">
+      <Filter>Dependencies\civetweb</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML.lua">
+      <Filter>Dependencies\civetweb\src\third_party</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\glfw\project_generator.lua">
+      <Filter>Dependencies\glfw</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\glm\project_generator.lua">
+      <Filter>Dependencies\glm</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\imgui\project_generator.lua">
+      <Filter>Dependencies\imgui</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\libpng\project_generator.lua">
+      <Filter>Dependencies\libpng</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\libtiff\project_generator.lua">
+      <Filter>Dependencies\libtiff</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\lua\project_generator.lua">
+      <Filter>Dependencies\lua</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\mimalloc\project_generator.lua">
+      <Filter>Dependencies\mimalloc</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\minizip\project_generator.lua">
+      <Filter>Dependencies\minizip</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\mpack\project_generator.lua">
+      <Filter>Dependencies\mpack</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\sqlite\project_generator.lua">
+      <Filter>Dependencies\sqlite</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\tracy\project_generator.lua">
+      <Filter>Dependencies\tracy</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\zlib-ng\project_generator.lua">
+      <Filter>Dependencies\zlib-ng</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\zstd\project_generator.lua">
+      <Filter>Dependencies\zstd</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Engine\Engine\project_generator.lua">
+      <Filter>Engine\Engine</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Engine\Game_App\project_generator.lua">
+      <Filter>Engine\Game_App</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Engine\Memory\project_generator.lua">
+      <Filter>Engine\Memory</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Frameworks\Esprit\project_generator.lua">
+      <Filter>Frameworks\Esprit</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Frameworks\Gaff\project_generator.lua">
+      <Filter>Frameworks\Gaff</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Frameworks\Gleam\project_generator.lua">
+      <Filter>Frameworks\Gleam</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Camera\project_generator.lua">
+      <Filter>Modules\Camera</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Debug\project_generator.lua">
+      <Filter>Modules\Debug</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\DevDebug\project_generator.lua">
+      <Filter>Modules\DevDebug</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\DevECS\project_generator.lua">
+      <Filter>Modules\DevECS</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\DevGraphics\project_generator.lua">
+      <Filter>Modules\DevGraphics</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\DevWebServer\project_generator.lua">
+      <Filter>Modules\DevWebServer</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\ECS\project_generator.lua">
+      <Filter>Modules\ECS</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Graphics\project_generator.lua">
+      <Filter>Modules\Graphics</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Input\project_generator.lua">
+      <Filter>Modules\Input</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Logic\project_generator.lua">
+      <Filter>Modules\Logic</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\MainLoop\project_generator.lua">
+      <Filter>Modules\MainLoop</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Physics\project_generator.lua">
+      <Filter>Modules\Physics</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Resource\project_generator.lua">
+      <Filter>Modules\Resource</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Script\project_generator.lua">
+      <Filter>Modules\Script</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tests\project_generator.lua">
+      <Filter>Tests</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tools\ShibEd\project_generator.lua">
+      <Filter>Tools\ShibEd</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tools\j2mp\project_generator.lua">
+      <Filter>Tools\j2mp</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tools\refl_hash_dump\project_generator.lua">
+      <Filter>Tools\refl_hash_dump</Filter>
+    </None>
+  </ItemGroup>
+</Project>

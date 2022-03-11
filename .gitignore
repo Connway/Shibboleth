@@ -20,4 +20,4 @@ workingdir/Modules/*
 workingdir/EditorModules/*
 workingdir/tests/*
 workingdir/tools/*
-**/.generated/*
+src/**/.generated/*

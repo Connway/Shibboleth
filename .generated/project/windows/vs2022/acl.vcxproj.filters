@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="compression">
+      <UniqueIdentifier>{97010C70-03B7-8465-8CAB-7E3CF85F7B69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compression\impl">
+      <UniqueIdentifier>{F8897D10-E482-9C62-0DB5-81E7F90C7C6E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\impl">
+      <UniqueIdentifier>{0F935DA5-7BFD-111C-C43B-C3C130E5EF70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="decompression">
+      <UniqueIdentifier>{801CC142-ECDC-3C79-B517-86F621978155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="decompression\database">
+      <UniqueIdentifier>{84331306-702D-3C58-599A-D2684533A2C4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="decompression\database\impl">
+      <UniqueIdentifier>{05F881F8-7105-B0DE-FAEB-ABC966F87B95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="decompression\impl">
+      <UniqueIdentifier>{81DEF4A1-6DC2-B5F7-D622-B04AC225A079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{3D785900-2904-880B-92B2-880B7E5D880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{CF809A7C-BBB7-9B0D-64A4-811050BA170F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\compress.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\compression_level.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\compression_settings.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\convert.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\animated_track_utils.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\clip_context.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compact_constant_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.database.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.scalar.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compress.transform.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\compression_settings.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\constant_track_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\convert.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\convert_rotation_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\normalize_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\normalize_track_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\quantize_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\quantize_track_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\sample_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\segment_context.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\segment_streams.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_array.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_bit_rate_database.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_error.impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_list_context.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_range.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_range_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\track_stream.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\transform_bit_rate_permutations.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_compression_stats_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_range_data.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_segment_data.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_stats.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_stream_data.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_sub_track_types.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_track_data_impl.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\impl\write_track_metadata.h">
+      <Filter>compression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\output_stats.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\track.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\track_array.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\track_error.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\transform_error_metrics.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\compression\transform_pose_utils.h">
+      <Filter>compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\additive_utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\algorithm_types.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\ansi_allocator.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\bit_manip_utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\bitset.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\buffer_tag.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\compressed_database.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\compressed_tracks.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\compressed_tracks_version.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\enum_utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\error.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\error_result.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\floating_point_exceptions.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\hash.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\iallocator.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\compiler_utils.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_database.impl.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_headers.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\compressed_tracks.impl.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\debug_track_writer.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\track_desc.impl.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\impl\track_formats.impl.h">
+      <Filter>core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\interpolation_utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\iterator.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\memory_utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\ptr_offset.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\quality_tiers.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\range_reduction_types.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\scope_profiler.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\string.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\track_desc.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\track_formats.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\track_traits.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\track_types.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\track_writer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\unique_ptr.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\core\variable_bit_rates.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\database.h">
+      <Filter>decompression\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\database_settings.h">
+      <Filter>decompression\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\database_streamer.h">
+      <Filter>decompression\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database.impl.h">
+      <Filter>decompression\database\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database_context.h">
+      <Filter>decompression\database\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\database_streamer.impl.h">
+      <Filter>decompression\database\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\impl\debug_database_streamer.h">
+      <Filter>decompression\database\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\database\null_database_streamer.h">
+      <Filter>decompression\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\decompress.h">
+      <Filter>decompression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\decompression_settings.h">
+      <Filter>decompression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompress.impl.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompression_context_selector.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\decompression_version_selector.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\scalar_track_decompression.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\track_cache.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_animated_track_cache.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_constant_track_cache.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_decompression_context.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\transform_track_decompression.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\decompression\impl\universal_track_decompression.h">
+      <Filter>decompression\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\io\clip_reader.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\io\clip_reader_error.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\io\clip_writer.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\math\quat_packing.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\math\quatf.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\math\scalar_packing.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\math\vector4_packing.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\acl\acl\math\vector4f.h">
+      <Filter>math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

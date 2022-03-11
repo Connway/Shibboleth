@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include=".generated">
+      <UniqueIdentifier>{E29E030B-CE56-4558-375E-1EB42335E048}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\ui_Shibboleth_EditorMainWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\.generated\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\Shibboleth_EditorMainWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\..\src\Tools\ShibEd\Shibboleth_EditorMainWindow.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Tools\ShibEd\Shibboleth_EditorMainWindow.ui" />
+  </ItemGroup>
+</Project>

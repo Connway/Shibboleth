@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include=".generated">
+      <UniqueIdentifier>{E29E030B-CE56-4558-375E-1EB42335E048}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\DockComponentsFactory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\DockingStateReader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\IconProvider.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTabBar.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar_p.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaWidget.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockContainerWidget.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockFocusController.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockManager.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockOverlay.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockSplitter.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidget.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidgetTab.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_ElidingLabel.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDockContainer.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDragPreview.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\qrc_ads.cpp">
+      <Filter>.generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockComponentsFactory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockContainerWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockFocusController.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockOverlay.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockSplitter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockWidget.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockWidgetTab.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockingStateReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ElidingLabel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\IconProvider.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar_p.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaWidget.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockContainerWidget.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockFocusController.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockManager.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockOverlay.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockSplitter.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockWidget.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockWidgetTab.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ElidingLabel.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ads.qrc" />
+  </ItemGroup>
+</Project>
