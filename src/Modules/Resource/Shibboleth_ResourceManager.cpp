@@ -361,6 +361,7 @@ void ResourceManager::removeResource(const IResource& resource)
 		auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
 
 		if (it_res != _resources.end() && *it_res == &resource) {
+			SHIB_FREET(*it_res, GetAllocator());
 			_resources.erase(it_res);
 		}
 	}

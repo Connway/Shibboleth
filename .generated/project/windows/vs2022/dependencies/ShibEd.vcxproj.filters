@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\.generated\ui_Shibboleth_EditorMainWindow.h">
+      <Filter>.generated</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\ui_Shibboleth_EditorMainWindow.h" />
   </ItemGroup>
   <ItemGroup>

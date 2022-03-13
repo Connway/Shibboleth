@@ -264,6 +264,7 @@ IF EXIST C:\Applications\Qt\6.2.3\msvc2019_64\bin\Qt6Widgets.dll\ (xcopy /Q /E /
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\.generated\ui_Shibboleth_EditorMainWindow.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\ui_Shibboleth_EditorMainWindow.h" />
   </ItemGroup>
   <ItemGroup>
