@@ -60,6 +60,30 @@ typename Vector<T, Allocator>::iterator LowerBound(Vector<T, Allocator>& vec, co
 }
 
 template <class T, class V, class Allocator, class Predicate>
+typename Vector<T, Allocator>::const_iterator UpperBound(const Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	return eastl::upper_bound(vec.begin(), vec.end(), value, predicate);
+}
+
+template <class T, class V, class Allocator, class Predicate>
+typename Vector<T, Allocator>::iterator UpperBound(Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	return eastl::upper_bound(vec.begin(), vec.end(), value, predicate);
+}
+
+template <class T, class V, class Allocator>
+typename Vector<T, Allocator>::const_iterator UpperBound(const Vector<T, Allocator>& vec, const V& value)
+{
+	return eastl::upper_bound(vec.begin(), vec.end(), value);
+}
+
+template <class T, class V, class Allocator>
+typename Vector<T, Allocator>::iterator UpperBound(Vector<T, Allocator>& vec, const V& value)
+{
+	return eastl::upper_bound(vec.begin(), vec.end(), value);
+}
+
+template <class T, class V, class Allocator, class Predicate>
 typename Vector<T, Allocator>::const_iterator Find(const Vector<T, Allocator>& vec, const V& value, Predicate predicate)
 {
 	return eastl::find(vec.begin(), vec.end(), value, predicate);

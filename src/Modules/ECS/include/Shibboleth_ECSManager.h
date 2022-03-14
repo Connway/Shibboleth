@@ -300,6 +300,10 @@ public:
 
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
 	void addArchetype(ECSArchetype&& archetype);
+
+	// THIS FUNCTION IS EXTREMELY DANGEROUS!
+	// If calling outside of ArchetypeReference, be extremely careful!
+	// Can be bad if there are dangling references to the ArchetypeReference instance!
 	void removeArchetype(Gaff::Hash64 archetype);
 
 	const ECSArchetype& getArchetype(Gaff::Hash64 archetype) const;
@@ -377,10 +381,10 @@ private:
 		int32_t num_entities = 0;
 		int32_t page_size = static_cast<int32_t>(EA_KIBIBYTE(64));
 
-		Vector< UniquePtr<EntityPage> > pages;
-		Vector<EntityID> entity_ids;
-		Vector<int32_t> free_indices;
-		Vector<int32_t> queries;
+		Vector< UniquePtr<EntityPage> > pages{ ProxyAllocator("ECS") };
+		Vector<EntityID> entity_ids{ ProxyAllocator("ECS") };
+		Vector<int32_t> free_indices{ ProxyAllocator("ECS") };
+		Vector<int32_t> queries{ ProxyAllocator("ECS") };
 	};
 
 	struct Entity final
@@ -392,11 +396,11 @@ private:
 
 	mutable EA::Thread::Mutex _entity_page_lock;
 
-	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages;
-	Vector<ECSQuery> _queries;
-	Vector<Entity> _entities;
+	VectorMap< Gaff::Hash64, UniquePtr<EntityData> > _entity_pages{ ProxyAllocator("ECS") };
+	Vector<ECSQuery> _queries{ ProxyAllocator("ECS") };
+	Vector<Entity> _entities{ ProxyAllocator("ECS") };
 
-	Vector<EntityID> _free_ids;
+	Vector<EntityID> _free_ids{ ProxyAllocator("ECS") };
 	EntityID _next_id = 0;
 
 	ECSArchetypeResourcePtr _empty_arch_res;

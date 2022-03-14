@@ -109,6 +109,7 @@ template <class Allocator>
 void JobPool<Allocator>::run(void)
 {
 	_thread_data.pause = false;
+	notifyThreads();
 }
 
 template <class Allocator>
@@ -519,8 +520,13 @@ intptr_t JobPool<Allocator>::JobThread(void* data)
 	while (thread_data.running) {
 		thread_event.event->Wait(thread_event.event_lock.get());
 
-		if (!thread_data.pause) {
-			job_pool->help(thread_id);
+		// Don't stop until we have run out of jobs.
+		while (job_pool->_num_jobs > 0) {
+			if (!thread_data.pause) {
+				job_pool->help(thread_id);
+			}
+
+			EA_THREAD_DO_SPIN();
 		}
 	}
 

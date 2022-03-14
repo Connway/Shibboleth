@@ -408,6 +408,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 	if (_state_machine->finalize()) {
 		succeeded();
+
 	} else {
 		_state_machine.reset(nullptr);
 		// $TODO: Log error.

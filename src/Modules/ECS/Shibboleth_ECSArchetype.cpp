@@ -883,7 +883,6 @@ ArchetypeReference::ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archety
 
 ArchetypeReference::~ArchetypeReference(void)
 {
-	_ecs_mgr.removeArchetype(_archetype);
 }
 
 const ECSArchetype& ArchetypeReference::getArchetype(void) const
@@ -894,6 +893,25 @@ const ECSArchetype& ArchetypeReference::getArchetype(void) const
 Gaff::Hash64 ArchetypeReference::getArchetypeHash(void) const
 {
 	return _archetype;
+}
+
+void ArchetypeReference::addRef(void) const
+{
+	++_count;
+}
+
+void ArchetypeReference::release(void) const
+{
+	const int32_t new_count = --_count;
+
+	if (!new_count) {
+		_ecs_mgr.removeArchetype(_archetype);
+	}
+}
+
+int32_t ArchetypeReference::getRefCount(void) const
+{
+	return _count;
 }
 
 NS_END

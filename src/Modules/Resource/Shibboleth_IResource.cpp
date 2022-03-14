@@ -106,7 +106,7 @@ void IResource::addRef(void) const
 
 void IResource::release(void) const
 {
-	int32_t new_count = --_count;
+	const int32_t new_count = --_count;
 
 	if (!new_count) {
 		_res_mgr->removeResource(*this);

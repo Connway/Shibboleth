@@ -40,12 +40,24 @@ SHIB_REFLECTION_CLASS_DEFINE(ECSManager)
 
 ECSManager::~ECSManager(void)
 {
-	IAllocator& allocator = GetAllocator();
-
 	_curr_scene = nullptr;
 
+	Vector<Gaff::Hash64> entity_hashes(ProxyAllocator("ECS"));
+	entity_hashes.set_capacity(_entity_pages.size());
+
+	//IAllocator& allocator = GetAllocator();
+
+	_queries.clear();
+
 	for (auto& pages : _entity_pages) {
-		SHIB_FREE(pages.second->arch_ref, allocator);
+		entity_hashes.push_back(pages.second->arch_ref->getArchetypeHash());
+		pages.second->queries.clear();
+
+		//SHIB_FREE(pages.second->arch_ref, allocator);
+	}
+
+	for (const Gaff::Hash64 hash : entity_hashes) {
+		removeArchetype(hash);
 	}
 }
 
@@ -103,8 +115,6 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 
 	// Someone is manually calling removeArchetype().
 	if (!it->second->entity_ids.empty()) {
-		SHIB_FREE(it->second->arch_ref, GetAllocator());
-
 		for (EntityID id : it->second->entity_ids) {
 			if (id != -1) {
 				destroyEntityInternal(id, false);
@@ -116,6 +126,7 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 		_queries[query_index].removeArchetype(it->second.get());
 	}
 
+	SHIB_FREE(it->second->arch_ref, GetAllocator());
 	_entity_pages.erase(it);
 }
 

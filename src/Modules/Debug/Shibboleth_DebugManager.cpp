@@ -782,7 +782,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 	} else {
 		DebugRenderInstanceData& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
-		ModelResourcePtr model_ptr;
+		static const ModelResourcePtr model_ptr;
 
 		RenderDebugShape(thread_id_int, job_data, model_ptr, debug_data);
 	}

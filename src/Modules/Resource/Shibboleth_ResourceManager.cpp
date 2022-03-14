@@ -67,6 +67,12 @@ static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
 	res->load();
 }
 
+static bool ResourceHashCompare(const IResource* lhs, Gaff::Hash64 rhs)
+{
+	return lhs->getFilePath().getHash() < rhs;
+}
+
+
 
 ResourceManager::ResourceManager(void)
 {
@@ -125,15 +131,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 
 	const EA::Thread::AutoMutex lock(_res_lock);
 
-	auto it_res = eastl::lower_bound(
-		_resources.begin(),
-		_resources.end(),
-		name.getHash(),
-		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
-		{
-			return lhs->getFilePath().getHash() < rhs;
-		}
-	);
+	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res);
@@ -148,7 +146,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 	}
 
 	void* const data = factory(_allocator);
-	IResource* resource = ref_def.GET_INTERFACE(Shibboleth::IResource, data);
+	IResource* const resource = ref_def.GET_INTERFACE(Shibboleth::IResource, data);
 	resource->_state = ResourceState::Loaded;
 	resource->_file_path = name;
 	resource->_res_mgr = this;
@@ -162,21 +160,13 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 {
 	const EA::Thread::AutoMutex lock(_res_lock);
 
-	auto it_res = eastl::lower_bound(
-		_resources.begin(),
-		_resources.end(),
-		name.getHash(),
-		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
-		{
-			return lhs->getFilePath().getHash() < rhs;
-		}
-	);
+	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res);
 	}
 
-	size_t pos = Gaff::FindLastOf(name.getBuffer(), u8'.');
+	const size_t pos = Gaff::FindLastOf(name.getBuffer(), u8'.');
 
 	if (pos == SIZE_T_FAIL) {
 		// $TODO: Log error
@@ -184,8 +174,8 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	}
 
 	// Search for res_factory that handles this resource file.
-	Gaff::Hash32 res_file_hash = Gaff::FNV1aHash32String(name.getBuffer() + pos);
-	auto it_fact = _resource_factories.find(res_file_hash);
+	const Gaff::Hash32 res_file_hash = Gaff::FNV1aHash32String(name.getBuffer() + pos);
+	const auto it_fact = _resource_factories.find(res_file_hash);
 
 	if (it_fact == _resource_factories.end()) {
 		// $TODO: Log error
@@ -193,17 +183,17 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	}
 
 	// Assume all resources always inherit from IResource first.
-	IResource* res = reinterpret_cast<IResource*>(it_fact->second(_allocator));
-	res->_file_path = name;
-	res->_res_mgr = this;
+	IResource* const resource = reinterpret_cast<IResource*>(it_fact->second(_allocator));
+	resource->_file_path = name;
+	resource->_res_mgr = this;
 
-	_resources.insert(it_res, res);
+	_resources.insert(it_res, resource);
 
 	if (!delay_load) {
-		requestLoad(*res);
+		requestLoad(*resource);
 	}
 
-	return IResourcePtr(res);
+	return IResourcePtr(resource);
 }
 
 IResourcePtr ResourceManager::requestResource(HashStringView64<> name)
@@ -215,15 +205,7 @@ IResourcePtr ResourceManager::getResource(HashStringView64<> name)
 {
 	const EA::Thread::AutoMutex lock(_res_lock);
 
-	auto it_res = eastl::lower_bound(
-		_resources.begin(),
-		_resources.end(),
-		name.getHash(),
-		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
-	{
-		return lhs->getFilePath().getHash() < rhs;
-	}
-	);
+	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res);
@@ -257,6 +239,7 @@ const IFile* ResourceManager::loadFileAndWait(const char8_t* file_path, uintptr_
 
 ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback)
 {
+	GAFF_ASSERT(Gaff::Find(resources, nullptr) == resources.end());
 	bool already_loaded = true;
 
 	for (IResource* res : resources) {
@@ -304,15 +287,32 @@ void ResourceManager::removeCallback(ResourceCallbackID id)
 
 void ResourceManager::checkAndRemoveResources(void)
 {
-	const EA::Thread::AutoMutex lock(_removal_lock);
+	const EA::Thread::AutoMutex pending_lock(_removal_lock);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
+		const IResource* const resource = _pending_removals[i];
+
 		// Don't remove if a thread is still loading it.
-		if (_pending_removals[i]->getState() == ResourceState::Pending) {
+		if (resource->getState() == ResourceState::Pending) {
 			++i;
+
 		} else {
-			SHIB_FREET(_pending_removals[i], GetAllocator());
 			_pending_removals.erase_unsorted(_pending_removals.begin() + i);
+
+			// Resource gained a reference since pending removal.
+			if (resource->getRefCount() > 0) {
+				return;
+			}
+
+			// Remove and free the resource.
+			const EA::Thread::AutoMutex res_lock(_res_lock);
+			const auto it_res = Gaff::LowerBound(_resources, resource->getFilePath().getHash(), ResourceHashCompare);
+
+			if (it_res != _resources.end() && *it_res == resource) {
+				_resources.erase(it_res);
+			}
+
+			SHIB_FREET(resource, GetAllocator());
 		}
 	}
 }
@@ -358,11 +358,11 @@ void ResourceManager::removeResource(const IResource& resource)
 	} else {
 		const EA::Thread::AutoMutex lock(_res_lock);
 
-		auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), &resource);
+		const auto it_res = Gaff::LowerBound(_resources, resource.getFilePath().getHash(), ResourceHashCompare);
 
 		if (it_res != _resources.end() && *it_res == &resource) {
-			SHIB_FREET(*it_res, GetAllocator());
 			_resources.erase(it_res);
+			SHIB_FREET(&resource, GetAllocator());
 		}
 	}
 }

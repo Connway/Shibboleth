@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_ECSEntity.h>
 #include <Gaff_RefPtr.h>
 #include <Gaff_Hash.h>
+#include <atomic>
 
 NS_SHIBBOLETH
 
@@ -261,12 +261,18 @@ public:
 	const ECSArchetype& getArchetype(void) const;
 	Gaff::Hash64 getArchetypeHash(void) const;
 
+	void addRef(void) const;
+	void release(void) const;
+	int32_t getRefCount(void) const;
+
 private:
 	Gaff::Hash64 _archetype;
 	ECSManager& _ecs_mgr;
 
+	mutable std::atomic_int32_t _count = 0;
+
 	GAFF_NO_COPY(ArchetypeReference);
-	SHIB_REF_COUNTED();
+	GAFF_NO_MOVE(ArchetypeReference);
 };
 
 using ArchetypeReferencePtr = Gaff::RefPtr<ArchetypeReference>;
