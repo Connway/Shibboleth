@@ -78,6 +78,10 @@ ResourceManager::ResourceManager(void)
 {
 }
 
+ResourceManager::~ResourceManager(void)
+{
+}
+
 bool ResourceManager::init(void)
 {
 	IApp& app = GetApp();

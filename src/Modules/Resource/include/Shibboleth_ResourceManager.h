@@ -37,6 +37,7 @@ public:
 	using ResourceStateCallback = eastl::function<void (const Vector<IResource*>&)>;
 
 	ResourceManager(void);
+	~ResourceManager(void);
 
 	bool init(void) override;
 

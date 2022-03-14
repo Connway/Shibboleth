@@ -864,6 +864,12 @@ void ECSArchetype::copyDefaultData(const ECSArchetype& old_archetype)
 void ECSArchetype::destroyDefaultData(void)
 {
 	if (_default_data) {
+		for (const RefDefOffset& rdo : _vars_defaults) {
+			if (rdo.ref_def->size() > 0) {
+				rdo.ref_def->destroyInstance(reinterpret_cast<int8_t*>(_default_data) + rdo.offset);
+			}
+		}
+
 		SHIB_FREE(_default_data, GetAllocator());
 		_default_data = nullptr;
 	}
