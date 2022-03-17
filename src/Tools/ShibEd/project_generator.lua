@@ -27,20 +27,22 @@ project "ShibEd"
 
 	includedirs
 	{
-	-- 	"../../Engine/Engine/include",
-	-- 	"../../Engine/Memory/include",
-	-- 	"../../Frameworks/Gaff/include",
-	-- 	"../../Dependencies/rapidjson",
-	-- 	"../../Dependencies/EASTL/include"
+		"../../Engine/Engine/include",
+		"../../Engine/Memory/include",
+		"../../Frameworks/Gaff/include",
+		"../../Dependencies/rapidjson",
+		"../../Dependencies/EASTL/include",
 		"../../Dependencies/ads"
 	}
 
 	local deps =
 	{
-		-- "Engine",
-		-- "Gaff",
-		-- "Gleam",
-		-- "Memory",
+		"Engine",
+		"Gaff",
+		"Gleam",
+		"Memory",
+		"EASTL",
+		"mpack",
 
 		"ads"
 	}
@@ -50,9 +52,15 @@ project "ShibEd"
 
 	flags { "FatalWarnings" }
 
+	filter { "system:windows" }
+		links { "Dbghelp", "iphlpapi", "psapi", "userenv" }
+
+	filter {}
+
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
+		"{COPYDIR} ../../../../../workingdir/bin ../../../../../workingdir/tools",
 		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 

@@ -48,24 +48,24 @@ public:
 
 	// Attributes that are applied to functions need to implement these template functions.
 	template <class T, class Ret, class... Args>
-	void apply(Ret(T::* /*func*/)(Args...) const) {}
+	void apply(Ret (T::* /*func*/)(Args...) const) {}
 	template <class T, class Ret, class... Args>
-	void apply(Ret(T::* /*func*/)(Args...)) {}
+	void apply(Ret (T::* /*func*/)(Args...)) {}
 
 	// Attributes that are applied to static class functions need to implement this template function.
 	template <class T, class Ret, class... Args>
-	void apply(Ret(* /*func*/)(Args...)) {}
+	void apply(Ret (* /*func*/)(Args...)) {}
 
 	// Attributes that are applied to variables need to implement these template functions,
 	// or at least the ones they apply to.
 	template <class T, class Var>
 	void apply(IReflectionVar& /*ref_var*/, Var T::* /*var*/) {}
 	template <class T, class Var, class Ret>
-	void apply(IReflectionVar& /*ref_var*/, Ret(T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
+	void apply(IReflectionVar& /*ref_var*/, Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
 	template <class T, class Var, class Vec_Allocator, size_t size>
 	void apply(IReflectionVar& /*ref_var*/, Gaff::Vector<Var, Vec_Allocator> T::* /*vec*/) {}
 	template <class T, class Var, size_t size>
-	void apply(IReflectionVar& /*ref_var*/, Var(T::* /*arr*/)[size]) {}
+	void apply(IReflectionVar& /*ref_var*/, Var (T::* /*arr*/)[size]) {}
 };
 
 NS_END

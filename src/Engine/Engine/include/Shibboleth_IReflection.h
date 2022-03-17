@@ -313,11 +313,15 @@ public:
 	void setNoSerialize(bool no_serialize) { _flags.set(no_serialize, Flag::NoSerialize); }
 	bool canSerialize(void) const { return !_flags.testAll(Flag::NoSerialize); }
 
+	void setOptional(bool optional) { _flags.set(optional, Flag::Optional); }
+	bool isOptional(void) const { return _flags.testAll(Flag::Optional); }
+
 private:
 	enum class Flag
 	{
 		NoSerialize,
 		ReadOnly,
+		Optional,
 
 		Count
 	};

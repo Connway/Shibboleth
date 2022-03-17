@@ -32,7 +32,6 @@ project "Memory"
 	flags { "FatalWarnings" }
 
 	filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
-		defines { "TRACY_ENABLE" }
 		dependson({ "TracyClient" })
 		links({ "TracyClient" })
 

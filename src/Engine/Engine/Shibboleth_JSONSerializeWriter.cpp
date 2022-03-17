@@ -78,145 +78,175 @@ void JSONSerializeWriter::writeKey(const char8_t* key)
 
 void JSONSerializeWriter::writeInt8(const char8_t* key, int8_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateInt32(value));
 }
 
 void JSONSerializeWriter::writeInt16(const char8_t* key, int16_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateInt32(value));
 }
 
 void JSONSerializeWriter::writeInt32(const char8_t* key, int32_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateInt32(value));
 }
 
 void JSONSerializeWriter::writeInt64(const char8_t* key, int64_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateInt64(value));
 }
 
 void JSONSerializeWriter::writeUInt8(const char8_t* key, uint8_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt16(const char8_t* key, uint16_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt32(const char8_t* key, uint32_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt64(const char8_t* key, uint64_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateUInt64(value));
 }
 
 void JSONSerializeWriter::writeFloat(const char8_t* key, float value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateDouble(value));
 }
 
 void JSONSerializeWriter::writeDouble(const char8_t* key, double value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateDouble(value));
 }
 
 void JSONSerializeWriter::writeBool(const char8_t* key, bool value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateBool(value));
 }
 
 void JSONSerializeWriter::writeString(const char8_t* key, const char8_t* value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	_nodes.back().setObject(key, Gaff::JSON::CreateString(value));
 }
 
 void JSONSerializeWriter::writeInt8(int8_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
-	curr_node.push(Gaff::JSON::CreateInt32(value));
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
+
+	if (curr_node.isArray()) {
+		curr_node.push(Gaff::JSON::CreateInt32(value));
+	}
+	else {
+
+	}
 }
 
 void JSONSerializeWriter::writeInt16(int16_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateInt32(value));
 }
 
 void JSONSerializeWriter::writeInt32(int32_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateInt32(value));
 }
 
 void JSONSerializeWriter::writeInt64(int64_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateInt64(value));
 }
 
 void JSONSerializeWriter::writeUInt8(uint8_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt16(uint16_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt32(uint32_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateUInt32(value));
 }
 
 void JSONSerializeWriter::writeUInt64(uint64_t value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateUInt64(value));
 }
 
 void JSONSerializeWriter::writeFloat(float value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateDouble(value));
 }
 
 void JSONSerializeWriter::writeDouble(double value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateDouble(value));
 }
 
 void JSONSerializeWriter::writeBool(bool value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateBool(value));
 }
 
 void JSONSerializeWriter::writeString(const char8_t* value)
 {
+	GAFF_ASSERT(!_nodes.empty());
 	Gaff::JSON& curr_node = _nodes.back();
-	GAFF_ASSERT(curr_node.isArray());
+	GAFF_ASSERT(curr_node.isArray() || curr_node.isObject());
 	curr_node.push(Gaff::JSON::CreateString(value));
 }
 

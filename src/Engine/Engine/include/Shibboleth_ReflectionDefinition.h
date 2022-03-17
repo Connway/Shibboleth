@@ -218,6 +218,18 @@ public:
 	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
 
+	template <size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::Hash64 T::* ptr, const Attrs&... attributes);
+
+	template <size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Gaff::Hash64 T::* ptr, const Attrs&... attributes);
+
+	template <size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::Hash32 T::* ptr, const Attrs&... attributes);
+
+	template <size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Gaff::Hash32 T::* ptr, const Attrs&... attributes);
+
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
@@ -569,6 +581,46 @@ private:
 	private:
 		Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* _ptr = nullptr;
 	};
+
+	// These are intended for use only when in editor mode.
+	class Hash64Ptr final : public IVar
+	{
+	public:
+		Hash64Ptr(Gaff::Hash64 T::* ptr);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Shibboleth::U8String _string;
+		Gaff::Hash64 T::* _ptr = nullptr;
+	};
+
+	class Hash32Ptr final : public IVar
+	{
+	public:
+		Hash32Ptr(Gaff::Hash32 T::* ptr);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Shibboleth::U8String _string;
+		Gaff::Hash32 T::* _ptr = nullptr;
+	};
+
 
 	using IRefStaticFuncPtr = Shibboleth::UniquePtr<IReflectionStaticFunctionBase>;
 	using IRefFuncPtr = Shibboleth::UniquePtr<IReflectionFunctionBase>;

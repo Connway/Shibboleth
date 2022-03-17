@@ -38,6 +38,12 @@ public:
 	template <class T, class Var, class Ret>
 	void apply(Refl::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }
 
+	template <class T, class Var, class Vec_Allocator, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Gaff::Vector<Var, Vec_Allocator> T::* /*vec*/) { ref_var.setReadOnly(true); }
+
+	template <class T, class Var, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setReadOnly(true); }
+
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
 
@@ -52,9 +58,37 @@ public:
 	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setNoSerialize(true); }
 
 	template <class T, class Var, class Ret>
-	void apply(Refl::IReflectionVar& ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
+	void apply(Refl::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setNoSerialize(true); }
+
+	template <class T, class Var, class Vec_Allocator, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Gaff::Vector<Var, Vec_Allocator> T::* /*vec*/) { ref_var.setNoSerialize(true); }
+
+	template <class T, class Var, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setNoSerialize(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(NoSerializeAttribute);
+};
+
+
+
+class OptionalAttribute final : public Refl::IAttribute
+{
+public:
+	Refl::IAttribute* clone(void) const override;
+
+	template <class T, class Var>
+	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setOptional(true); }
+
+	template <class T, class Var, class Ret>
+	void apply(Refl::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setOptional(true); }
+
+	template <class T, class Var, class Vec_Allocator, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Gaff::Vector<Var, Vec_Allocator> T::* /*vec*/) { ref_var.setOptional(true); }
+
+	template <class T, class Var, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setOptional(true); }
+
+	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
 };
 
 
@@ -91,26 +125,6 @@ private:
 
 
 
-// Gaff::Hash32 and Gaff::Hash64 are just typedefs for uint32_t and uint64_t respectively.
-// Use this attribute on vars using those types to denote that it is a string hash and not a normal integer. 
-class HashStringAttribute final : public Refl::IAttribute
-{
-public:
-	Refl::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(HashStringAttribute);
-};
-
-
-class OptionalAttribute final : public Refl::IAttribute
-{
-public:
-	Refl::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
-};
-
-
 class ScriptFlagsAttribute final : public Refl::IAttribute
 {
 public:
@@ -139,6 +153,9 @@ public:
 	Refl::IAttribute* clone(void) const override;
 
 	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
+	bool isReferenceOnly(void) const { return _flags.testAll(Flag::ReferenceOnly); }
+	bool canRegister(void) const { return !_flags.testAll(Flag::NoRegister); }
+
 	Gaff::Flags<Flag> getFlags(void) const { return _flags; }
 
 private:
@@ -208,10 +225,9 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::NoSerializeAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::OptionalAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::UniqueAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
-SHIB_REFLECTION_DECLARE(Shibboleth::HashStringAttribute)
-SHIB_REFLECTION_DECLARE(Shibboleth::OptionalAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)

@@ -1,10 +1,16 @@
 #include "Shibboleth_EditorMainWindow.h"
+#include <Shibboleth_App.h>
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 
 int main(int argc, char *argv[])
 {
+	//while (true) {
+	//	int i = 0;
+	//	i += 5;
+	//}
+
 	QApplication a(argc, argv);
 	QTranslator translator;
 
@@ -18,8 +24,23 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	Shibboleth::App app;
+
+	Gaff::JSON& configs = app.getConfigs();
+	configs.setObject(u8"working_dir", Gaff::JSON::CreateString(u8".."));
+	configs.setObject(u8"log_dir", Gaff::JSON::CreateString(u8"./tools/logs"));
+	configs.setObject(u8"graphics_no_windows", Gaff::JSON::CreateTrue());
+
+	//if (!_app.init()) {
+	//	qApp->exit(-1);
+	//}
+
 	EditorMainWindow w;
 	w.show();
 
-	return a.exec();
+	const int ret = a.exec();
+
+	//app.destroy();
+
+	return ret;
 }

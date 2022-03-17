@@ -118,5 +118,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
 SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
+	//.serialize()
 	.var("hash", &Gaff::Hash64::getHash, &Gaff::Hash64::setHash)
 SHIB_REFLECTION_DEFINE_END(Gaff::Hash64)

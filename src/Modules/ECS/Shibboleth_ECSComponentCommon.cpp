@@ -28,8 +28,8 @@ SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::PageSize, nullptr, u8"Memory")
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Position, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Rotation, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
 SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Scale, nullptr, u8"Transform", Shibboleth::OptionalAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Scene, nullptr, u8"Scene", Shibboleth::HashStringAttribute())
-SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Layer, nullptr, u8"Scene", Shibboleth::HashStringAttribute())
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Scene, nullptr, u8"Scene")
+SHIB_ECS_SINGLE_ARG_COMPONENT_DEFINE(Shibboleth::Layer, nullptr, u8"Scene")
 
 NS_SHIBBOLETH
 

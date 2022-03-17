@@ -730,7 +730,7 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 
 	const auto* const flags = ref_def.getClassAttr<ScriptFlagsAttribute>();
 
-	if (flags && flags->getFlags().testAll(ScriptFlagsAttribute::Flag::NoRegister)) {
+	if (flags && !flags->canRegister()) {
 		return;
 	}
 

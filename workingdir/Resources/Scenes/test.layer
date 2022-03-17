@@ -2,7 +2,7 @@
 	"name": "test",
 
 	"objects": [
-		/*{
+		{
 			"archetype": "Archetypes/test.archetype",
 
 			"overrides":
@@ -32,7 +32,7 @@
 					}
 				}
 			}
-		},*/
+		},
 		{
 			"archetype": "Archetypes/camera.archetype",
 
@@ -60,7 +60,7 @@
 			}
 		},
 		// test ninja
-		/*{
+		{
 			"archetype": "Archetypes/test.archetype",
 
 			"overrides":
@@ -73,6 +73,6 @@
 					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
-		}*/
+		}
 	]
 }

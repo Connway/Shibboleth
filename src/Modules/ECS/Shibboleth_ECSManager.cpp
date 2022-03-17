@@ -45,15 +45,11 @@ ECSManager::~ECSManager(void)
 	Vector<Gaff::Hash64> entity_hashes(ProxyAllocator("ECS"));
 	entity_hashes.set_capacity(_entity_pages.size());
 
-	//IAllocator& allocator = GetAllocator();
-
 	_queries.clear();
 
 	for (auto& pages : _entity_pages) {
 		entity_hashes.push_back(pages.second->arch_ref->getArchetypeHash());
 		pages.second->queries.clear();
-
-		//SHIB_FREE(pages.second->arch_ref, allocator);
 	}
 
 	for (const Gaff::Hash64 hash : entity_hashes) {
@@ -63,17 +59,11 @@ ECSManager::~ECSManager(void)
 
 bool ECSManager::initAllModulesLoaded(void)
 {
-	//const Vector<const Refl::IReflectionDefinition*>* const ecs_comps = GetApp().getReflectionManager().getAttributeBucket<ECSClassAttribute>();
-
-	//if (ecs_comps) {
-	//	// Cache all components.
-	//}
-
 	// Add empty base archetype.
 	ECSArchetype default_archetype;
 	
 	if (!default_archetype.finalize(true)) {
-		// $TODO: Log error. (somehow failed to initialize an empty archetype?)
+		LogErrorDefault("Failed to initialize empty archetype.");
 		return false;
 	}
 
@@ -83,7 +73,7 @@ bool ECSManager::initAllModulesLoaded(void)
 	const Gaff::JSON starting_scene = GetApp().getConfigs()[u8"starting_scene"];
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
-		// $TODO: Log error
+		LogErrorDefault("No starting scene has been set (or is malformed).");
 		return false;
 
 	} else if (starting_scene.isString()) {
@@ -201,7 +191,7 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 EntityID ECSManager::loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader)
 {
 	if (!reader.isObject()) {
-		// $TODO: Log error
+		LogErrorDefault("Malformed entity. Entity is not an object.");
 		return EntityID_None;
 	}
 

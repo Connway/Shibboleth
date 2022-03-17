@@ -55,7 +55,7 @@ filter { "configurations:*Debug*" }
 	-- defines { "_HAS_STATIC_RTTI=0" }
 
 filter { "configurations:*Debug* or *Optimized_Debug*" }
-	defines { "_DEBUG", "DEBUG" }
+	defines { "_DEBUG", "DEBUG", "PROFILE" }
 
 filter { "configurations:*Release* or *Profile*" }
 	flags { "LinkTimeOptimization" }
@@ -67,6 +67,7 @@ filter { "configurations:*Release* or *Profile*" }
 		"_HAS_ITERATOR_DEBUGGING=0",
 		"_ITERATOR_DEBUG_LEVEL=0",
 		"NDEBUG",
+		"PROFILE"
 	}
 
 filter { "configurations:*Profile*" }

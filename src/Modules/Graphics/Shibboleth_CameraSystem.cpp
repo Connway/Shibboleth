@@ -110,6 +110,7 @@ bool CameraPostRenderSystem::init(void)
 		return false;
 	}
 
+	// $TODO: Turn this into a config property.
 	constexpr const char8_t* const k_camera_material = u8"Materials/CameraToTexture/camera_to_texture.material";
 
 	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();

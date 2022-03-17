@@ -26,4 +26,8 @@ THE SOFTWARE.
 	#define TRACY_IMPORTS
 #endif
 
+#ifdef PROFILE
+	#define TRACY_ENABLE
+#endif
+
 #include <Tracy.hpp>

@@ -28,7 +28,6 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ReadOnlyAttribute, I
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::NoSerializeAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::UniqueAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::RangeAttribute, IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::HashStringAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::OptionalAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ScriptFlagsAttribute, IAttribute)
 
@@ -38,7 +37,6 @@ SHIB_REFLECTION_CLASS_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(NoSerializeAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(UniqueAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(RangeAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(HashStringAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(OptionalAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(ScriptFlagsAttribute)
 
@@ -56,6 +54,14 @@ Refl::IAttribute* NoSerializeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(NoSerializeAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+
+Refl::IAttribute* OptionalAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(OptionalAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 
@@ -92,22 +98,6 @@ Refl::IAttribute* RangeAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(RangeAttribute, allocator.getPoolIndex("Reflection"), allocator, _min, _max);
-}
-
-
-
-Refl::IAttribute* HashStringAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(HashStringAttribute, allocator.getPoolIndex("Reflection"), allocator);
-}
-
-
-
-Refl::IAttribute* OptionalAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(OptionalAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 

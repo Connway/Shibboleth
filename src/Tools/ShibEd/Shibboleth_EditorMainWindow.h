@@ -37,7 +37,19 @@ public:
 	EditorMainWindow(QWidget* parent = nullptr);
 	~EditorMainWindow();
 
+protected:
+	void closeEvent(QCloseEvent* event) override;
+
 private:
 	ads::CDockManager* _dock_manager = nullptr;
 	Ui::EditorMainWindow* _ui = nullptr;
+	QMenu* _windows_menu = nullptr;
+
+	QMap<ads::CDockWidget*, QAction*> _window_focus_action_map;
+
+	void onWindowClosed(void);
+	void onFocusWindow(void);
+	void onExit(void);
+
+	void onTest(void);
 };

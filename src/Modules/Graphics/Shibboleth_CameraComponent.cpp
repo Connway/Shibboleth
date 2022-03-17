@@ -36,12 +36,13 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Camera)
 
 	.staticFunc("Destructor", Shibboleth::Camera::Destructor)
 
-	.var("device_tag", &Shibboleth::Camera::device_tag, Shibboleth::HashStringAttribute())
+	.var("device_tag", &Shibboleth::Camera::device_tag, Shibboleth::OptionalAttribute())
 	.var("v_fov", &Shibboleth::Camera::v_fov, Shibboleth::OptionalAttribute())
 	.var("z_near", &Shibboleth::Camera::z_near, Shibboleth::OptionalAttribute())
 	.var("z_far", &Shibboleth::Camera::z_far, Shibboleth::OptionalAttribute())
 	//.var("focus_distance", &Shibboleth::Camera::focus_distance, Shibboleth::OptionalAttribute())
 	//.var("f_stop", &Shibboleth::Camera::f_stop, Shibboleth::OptionalAttribute())
+
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Camera)
 

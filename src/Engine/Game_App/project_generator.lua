@@ -41,8 +41,7 @@ project "Game_App"
 	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
-		links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-		links { "Dbghelp" }
+		links { "Dbghelp", "iphlpapi", "psapi", "userenv" }
 
 	filter { "system:not windows" }
 		linkoptions { "-Wl,-rpath,./bin" }

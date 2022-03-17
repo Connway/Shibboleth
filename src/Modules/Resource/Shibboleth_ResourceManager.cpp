@@ -80,6 +80,9 @@ ResourceManager::ResourceManager(void)
 
 ResourceManager::~ResourceManager(void)
 {
+	for (const IResource* res : _resources) {
+		LogWarningResource("Resource Leaked: %s", res->getFilePath().getBuffer());
+	}
 }
 
 bool ResourceManager::init(void)
