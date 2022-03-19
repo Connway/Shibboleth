@@ -20,51 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EditorAttributesCommon.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include <QMainWindow>
-#include <DockManager.h>
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::EditorWindowAttribute, IAttribute)
 
-namespace Shibboleth
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(EditorWindowAttribute)
+
+
+EditorWindowAttribute::EditorWindowAttribute(const char8_t* path, bool single_instance):
+	_path(path),
+	_single_instance(single_instance)
 {
-	class EditorWindowAttribute;
 }
 
-namespace Refl
+Refl::IAttribute* EditorWindowAttribute::clone(void) const
 {
-	class IReflectionDefinition;
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(EditorWindowAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
-
-class EditorMainWindow : public QMainWindow
-{
-	Q_OBJECT
-
-public:
-	EditorMainWindow(QWidget* parent = nullptr);
-	~EditorMainWindow();
-
-protected:
-	void closeEvent(QCloseEvent* event) override;
-
-private:
-	ads::CDockManager* _dock_manager = nullptr;
-	QMenu* _windows_menu = nullptr;
-
-	QMap<ads::CDockWidget*, QAction*> _window_focus_action_map;
-
-	void retranslateUi(void);
-
-	void onWindowClosed(void);
-	void onFocusWindow(void);
-	void onExit(void);
-
-	void onTest(void);
-
-	bool isWindowAlreadyOpen(const char8_t* name);
-	void createFloatingWindow(
-		const Refl::IReflectionDefinition& ref_def,
-		const Shibboleth::EditorWindowAttribute& attr,
-		const char8_t* name
-	);
-};
+NS_END

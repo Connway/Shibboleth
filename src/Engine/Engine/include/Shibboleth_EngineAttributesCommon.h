@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Broadcaster.h"
+//#include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_Reflection.h"
 
 NS_SHIBBOLETH
@@ -166,60 +166,60 @@ private:
 
 
 // Template Attributes
-template <class T, class Msg>
-class GlobalMessageAttribute final : public Refl::IAttribute
-{
-public:
-	Refl::IAttribute* clone(void) const override
-	{
-		IAllocator& allocator = GetAllocator();
-		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
-	}
+////template <class T, class Msg>
+////class GlobalMessageAttribute final : public Refl::IAttribute
+////{
+////public:
+////	Refl::IAttribute* clone(void) const override
+////	{
+////		IAllocator& allocator = GetAllocator();
+////		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
+////	}
+////
+////	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override
+////	{
+////		// $TODO: Implement
+////
+////		Broadcaster& broadcaster = GetApp().getBroadcaster();
+////		T* const instance = ref_def.getInterface<T>(object);
+////
+////		const BroadcastID id = 
+////			(_const_func) ?
+////			broadcaster.listen(MemberFunc(instance, _const_func)) :
+////			broadcaster.listen(MemberFunc(instance, _func));
+////
+////		s_removers.emplace(object, BroadcastRemover(id, broadcaster));
+////		GetAllocator().addOnFreeCallback(OnFree, object);
+////	}
+////
+////	void apply(void (T::*func)(const Msg&) const)
+////	{
+////		_const_func = func;
+////	}
+////
+////	void apply(void (T::*func)(const Msg&))
+////	{
+////		_func = func;
+////	}
+////
+////private:
+////	void (T::*_const_func)(const Msg&) const = nullptr;
+////	void (T::*_func)(const Msg&) = nullptr;
+////
+////	static VectorMap<void*, BroadcastRemover> s_removers;
+////
+////	static void OnFree(void* object)
+////	{
+////		s_removers.erase(object);
+////	}
+////
+////	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(GlobalMessageAttribute, T, Msg);
+////};
 
-	void instantiated(void* /*object*/, const Refl::IReflectionDefinition& /*ref_def*/) override
-	{
-		// $TODO: Implement
-
-		//Broadcaster& broadcaster = GetApp().getBroadcaster();
-		//T* const instance = ref_def.getInterface<T>(object);
-
-		//const BroadcastID id = 
-		//	(_const_func) ?
-		//	broadcaster.listen(MemberFunc(instance, _const_func)) :
-		//	broadcaster.listen(MemberFunc(instance, _func));
-
-		//s_removers.emplace(object, BroadcastRemover(id, broadcaster));
-		//GetAllocator().addOnFreeCallback(OnFree, object);
-	}
-
-	void apply(void (T::*func)(const Msg&) const)
-	{
-		_const_func = func;
-	}
-
-	void apply(void (T::*func)(const Msg&))
-	{
-		_func = func;
-	}
-
-private:
-	void (T::*_const_func)(const Msg&) const = nullptr;
-	void (T::*_func)(const Msg&) = nullptr;
-
-	static VectorMap<void*, BroadcastRemover> s_removers;
-
-	static void OnFree(void* object)
-	{
-		s_removers.erase(object);
-	}
-
-	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(GlobalMessageAttribute, T, Msg);
-};
-
-SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(GlobalMessageAttribute, T, Msg)
-
-template <class T, class Msg>
-VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
+//SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(GlobalMessageAttribute, T, Msg)
+//
+//template <class T, class Msg>
+//VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
 
 NS_END
 
@@ -230,8 +230,8 @@ SHIB_REFLECTION_DECLARE(Shibboleth::UniqueAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 
-SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
-
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalMessageAttribute, T, Msg)
-	.BASE(Refl::IAttribute)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::GlobalMessageAttribute, T, Msg)
+//SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
+//
+//SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalMessageAttribute, T, Msg)
+//	.BASE(Refl::IAttribute)
+//SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::GlobalMessageAttribute, T, Msg)

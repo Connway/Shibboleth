@@ -14,7 +14,7 @@ project "ShibEd"
 	qt.enable()
 
 	if _ACTION then
-		location(GetDependenciesLocation())
+		location(GetToolsLocation())
 	end
 
 	kind "ConsoleApp"
@@ -23,10 +23,11 @@ project "ShibEd"
 	debugdir "../../../workingdir/tools"
 
 	files { "**.h", "**.cpp", "**.qrc", "**.ui" }
-	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
+	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000", "SHIB_STATIC" }
 
 	includedirs
 	{
+		".",
 		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
@@ -125,3 +126,4 @@ project "ShibEd"
 	end
 
 	SetupConfigMap()
+	ToolGen("ShibEd", ".generated")

@@ -228,6 +228,9 @@ premake5 gen_module_header --module=Scene</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Gen_ReflectionInit.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

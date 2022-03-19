@@ -237,6 +237,7 @@ premake5 gen_static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EditorAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.inl" />
@@ -292,6 +293,7 @@ premake5 gen_static_header</Command>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Broadcaster.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EditorAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />

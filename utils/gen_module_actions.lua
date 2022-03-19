@@ -304,12 +304,71 @@ namespace Engine
 
 ]]
 
+local ParseFile = function(file, base_folder, file_class_map)
+	local stripped_file = file:sub(base_folder:len() + 2)
+
+	if file == "Gen_ReflectionInit.h" then
+		return
+	end
+
+	local lines = io.readfile(file):explode("\n")
+	-- local last_namespace = ""
+
+	for _, line in next, lines do
+		if line:match("#define") then
+			goto continue
+		end
+
+		if line:match("NS_(.+)") then
+			goto continue
+		end
+
+		-- local match = line:match("NS_(.+)")
+
+		-- if match then
+		-- 	if match:find("END") == nil then
+		-- 		last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
+		-- 	end
+
+		-- 	goto continue
+		-- end
+
+		-- Detect classes
+		match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
+
+		if match then
+			if not file_class_map[stripped_file] then
+				file_class_map[stripped_file] = {}
+			end
+
+			-- table.insert(file_class_map[stripped_file], last_namespace .. match)
+			table.insert(file_class_map[stripped_file], match)
+			goto continue
+		end
+
+		::continue::
+	end
+end
+
 
 newoption
 {
 	trigger = "module",
 	value = "NAME",
 	description = "The name of the module to generate the 'Gen_ReflectionInit.h' file for. ('gen_module_*' only)"
+}
+
+newoption
+{
+	trigger = "tool",
+	value = "NAME",
+	description = "The name of the tool to generate the 'Gen_ReflectionInit.h' file for. ('gen_tool_*' only)"
+}
+
+newoption
+{
+	trigger = "gen-out-dir",
+	description = "(Optiona) Output directory of 'Gen_ReflectionInit.h' file."
 }
 
 newaction
@@ -352,55 +411,6 @@ newaction
 		local source_folder = "../src/Modules/" .. module_name
 		local include_folder = source_folder .. "/include"
 
-		local file_class_map = {}
-
-		function ParseFile(file)
-			local stripped_file = file:sub(include_folder:len() + 2)
-
-			if file == "Gen_ReflectionInit.h" then
-				return
-			end
-
-			local lines = io.readfile(file):explode("\n")
-			-- local last_namespace = ""
-
-			for _, line in next, lines do
-				if line:match("#define") then
-					goto continue
-				end
-
-				if line:match("NS_(.+)") then
-					goto continue
-				end
-
-				-- local match = line:match("NS_(.+)")
-
-				-- if match then
-				-- 	if match:find("END") == nil then
-				-- 		last_namespace = match:sub(1, 1) .. match:sub(2, -2):lower() .. "::"
-				-- 	end
-
-				-- 	goto continue
-				-- end
-
-				-- Detect classes
-				match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
-
-				if match then
-					if not file_class_map[stripped_file] then
-						file_class_map[stripped_file] = {}
-					end
-
-					-- table.insert(file_class_map[stripped_file], last_namespace .. match)
-					table.insert(file_class_map[stripped_file], match)
-					goto continue
-				end
-
-				::continue::
-			end
-		end
-
-
 		if os.isfile(source_folder) then
 			print("Module directory is actually a file!")
 			return
@@ -422,7 +432,11 @@ newaction
 		end
 
 		local headers = os.matchfiles(include_folder .. "/**.h")
-		table.foreachi(headers, ParseFile)
+		local file_class_map = {}
+
+		for _,v in ipairs(headers) do
+			ParseFile(v, include_folder, file_class_map)
+		end
 
 		local include_files = ""
 		local init_funcs = ""
@@ -453,7 +467,94 @@ newaction
 			shutdown_func
 		)
 
-		local file_path = include_folder .. "/Gen_ReflectionInit.h"
+		local out_dir = include_folder
+
+		if _OPTIONS["gen-out-dir"] ~= nil then
+			out_dir = source_folder .. "/" .. _OPTIONS["gen-out-dir"]
+		end
+
+		local file_path = out_dir .. "/Gen_ReflectionInit.h"
+
+		-- Don't write to the file if the generated header is the same as what's already on disk.
+		-- Prevents build systems from re-building a module that hasn't changed.
+		if not os.isfile(file_path) or header_string ~= io.readfile(file_path) then
+			io.writefile(file_path, header_string)
+		end
+	end
+}
+
+newaction
+{
+	trigger = "gen_tool_header",
+	description = "Generates the 'Gen_ReflectionInit.h' file for a tool.",
+	execute = function()
+		local tool_name = _OPTIONS["tool"]
+		local source_folder = "../src/Tools/" .. tool_name
+		local include_folder = source_folder .. "/include"
+
+		if os.isfile(source_folder) then
+			print("Tool directory is actually a file!")
+			return
+		end
+
+		if os.isfile(include_folder) then
+			print("Tool include directory is actually a file!")
+			return
+		end
+
+		if not os.isdir(source_folder) then
+			print("Tool directory does not exist!")
+			return
+		end
+
+		--if not os.isdir(include_folder) then
+		--	print("Tool include directory does not exist!")
+		--	return
+		--end
+
+		local headers = os.matchfiles(source_folder .. "/**.h")
+		local file_class_map = {}
+
+		for _,v in ipairs(headers) do
+			ParseFile(v, source_folder, file_class_map)
+		end
+
+		local include_files = ""
+		local init_funcs = ""
+		local shutdown_func = ""
+
+		for k,v in pairs(file_class_map) do
+			include_files = include_files .. "#include <" .. k .. ">\n"
+
+			for _,c in pairs(v) do
+				init_funcs = init_funcs .. "\t\tInitReflectionT<" .. c .. ">(mode);\n"
+			end
+		end
+
+		--local module_file = source_folder .. "/Shibboleth_" .. tool_name .. "Module.cpp"
+		--local match = io.readfile(module_file):match("ShutdownModule")
+
+		--if match then
+		--	shutdown_func = "void Shutdown(void);"
+		--end
+
+		local header_string = gen_header:format(
+			include_files,
+			tool_name,
+			tool_name,
+			tool_name,
+			init_funcs,
+			tool_name,
+			shutdown_func
+		)
+
+		local out_dir = include_folder
+
+		if _OPTIONS["gen-out-dir"] ~= nil then
+			out_dir = source_folder .. "/" .. _OPTIONS["gen-out-dir"]
+		end
+
+		local file_path = out_dir .. "/Gen_ReflectionInit.h"
 
 		-- Don't write to the file if the generated header is the same as what's already on disk.
 		-- Prevents build systems from re-building a module that hasn't changed.

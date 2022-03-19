@@ -1,12 +1,25 @@
 #include "Shibboleth_EditorMainWindow.h"
+#include <Shibboleth_EditorAttributesCommon.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <QCoreApplication>
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QLabel>
 
+namespace
+{
+	static Shibboleth::ProxyAllocator s_allocator("Editor");
+}
+
 EditorMainWindow::EditorMainWindow(QWidget *parent):
 	QMainWindow(parent)
 {
+	Shibboleth::IApp& app = Shibboleth::GetApp();
+	Shibboleth::ReflectionManager& refl_mgr = app.getReflectionManager();
+
+	refl_mgr.registerAttributeBucket<Shibboleth::EditorWindowAttribute>();
+
 	if (objectName().isEmpty()) {
 		setObjectName(QString::fromUtf8("EditorMainWindow"));
 	}
@@ -44,7 +57,31 @@ EditorMainWindow::EditorMainWindow(QWidget *parent):
 
 	
 	QMenu* const window_menu = menu_bar->addMenu(tr("&Window"));
-	// Add window actions
+
+	const auto* const wnd_bucket = refl_mgr.getAttributeBucket<Shibboleth::EditorWindowAttribute>();
+
+	if (wnd_bucket) {
+		for (const Refl::IReflectionDefinition* ref_def : *wnd_bucket) {
+			const char8_t* name = ref_def->getFriendlyName();
+
+			if (!name || !eastl::CharStrlen(name)) {
+				name = ref_def->getReflectionInstance().getName();
+			}
+
+			const Shibboleth::EditorWindowAttribute* const attr = ref_def->getClassAttr<Shibboleth::EditorWindowAttribute>();
+			GAFF_ASSERT(attr);
+
+			QAction* const create_window_action = new QAction(name, this);
+			window_menu->addAction(create_window_action);
+
+			connect(
+				create_window_action,
+				&QAction::triggered,
+				[this, ref_def, attr, name]() -> void { createFloatingWindow(*ref_def, *attr, name); }
+			);
+		}
+	}
+
 	window_menu->addSeparator();
 	_windows_menu = window_menu->addMenu(tr("&Windows"));
 
@@ -124,6 +161,49 @@ void EditorMainWindow::onTest(void)
 	ads::CDockWidget* const dock_widget = new ads::CDockWidget("Label 1", this);
 	dock_widget->setFeatures(ads::CDockWidget::DefaultDockWidgetFeatures | ads::CDockWidget::DockWidgetAlwaysCloseAndDelete);
 	dock_widget->setWidget(l);
+
+	_dock_manager->addDockWidgetFloating(dock_widget);
+
+	QAction* const focus_action = new QAction(dock_widget->objectName(), this);
+	_windows_menu->addAction(focus_action);
+
+	connect(dock_widget, &ads::CDockWidget::closed, this, &EditorMainWindow::onWindowClosed);
+	connect(focus_action, &QAction::triggered, this, &EditorMainWindow::onFocusWindow);
+
+	_window_focus_action_map[dock_widget] = focus_action;
+}
+
+bool EditorMainWindow::isWindowAlreadyOpen(const char8_t* name)
+{
+	GAFF_REF(name);
+	return false;
+}
+
+void EditorMainWindow::createFloatingWindow(
+	const Refl::IReflectionDefinition& ref_def,
+	const Shibboleth::EditorWindowAttribute& attr,
+	const char8_t* name)
+{
+	if (attr.isSingleInstance() && isWindowAlreadyOpen(name)) {
+		return;
+	}
+
+	QWidget* const widget = ref_def.createT<QWidget, QWidget*>(
+		CLASS_HASH(QWidget),
+		ARG_HASH(QWidget*),
+		s_allocator,
+		this
+	);
+
+	if (!widget) {
+		// $TODO: Log error.
+		return;
+	}
+
+	ads::CDockWidget* const dock_widget = new ads::CDockWidget(name, this);
+	dock_widget->setFeatures(ads::CDockWidget::DefaultDockWidgetFeatures | ads::CDockWidget::DockWidgetAlwaysCloseAndDelete);
+	dock_widget->setWidget(widget);
+	dock_widget->resize(400, 300);
 
 	_dock_manager->addDockWidgetFloating(dock_widget);
 

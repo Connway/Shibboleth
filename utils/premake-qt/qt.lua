@@ -11,12 +11,11 @@ end
 -- define the qt extension
 --
 premake.extensions.qt = {
-
 	--
 	-- these are private, do not touch
 	--
 	enabled = false,
-	defaultpath = os.getenv("QTDIR") or os.getenv("QT_DIR")
+	defaultpath = (function() if os.getenv("QTDIR") ~= nil then return "$(QTDIR)" elseif os.getenv("QT_DIR") ~= nil then return "$(QT_DIR)" end end)()
 }
 
 --

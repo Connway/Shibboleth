@@ -50,9 +50,9 @@ void AddToAttributeReflectionChain(IReflection* reflection)
 	AddToChain(g_attr_head, reflection);
 }
 
-void AddToReflectionChain(IReflection* reflection)
+IReflection* GetAttributeReflectionChainHead(void)
 {
-	AddToChain(g_head, reflection);
+	return g_attr_head;
 }
 
 void AddToEnumReflectionChain(IReflection* reflection)
@@ -60,19 +60,19 @@ void AddToEnumReflectionChain(IReflection* reflection)
 	AddToChain(g_enum_head, reflection);
 }
 
-IReflection* GetAttributeReflectionChainHead(void)
+IReflection* GetEnumReflectionChainHead(void)
 {
-	return g_attr_head;
+	return g_enum_head;
+}
+
+void AddToReflectionChain(IReflection* reflection)
+{
+	AddToChain(g_head, reflection);
 }
 
 IReflection* GetReflectionChainHead(void)
 {
 	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
 }
 
 void InitAttributeReflection(void)

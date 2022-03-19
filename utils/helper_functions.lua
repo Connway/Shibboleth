@@ -78,12 +78,33 @@ function StaticLinks()
 	-- -- 	links("GraphicsVulkan")
 end
 
-function ModuleGen(module_name)
+function ToolGen(tool_name, out_dir)
+	if out_dir ~= nil then
+		out_dir = " --gen-out-dir=" .. out_dir
+	else
+		out_dir = ""
+	end
+
+	prebuildmessage("Generating Gen_ReflectionInit.h for tool " .. tool_name .. "!")
+	prebuildcommands
+	{
+		"cd ../../../../../utils",
+		"premake5 gen_tool_header --tool=" .. tool_name .. out_dir
+	}
+end
+
+function ModuleGen(module_name, out_dir)
+	if out_dir ~= nil then
+		out_dir = " --gen-out-dir=" .. out_dir
+	else
+		out_dir = ""
+	end
+
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
 	prebuildcommands
 	{
 		"cd ../../../../../utils",
-		"premake5 gen_module_header --module=" .. module_name
+		"premake5 gen_module_header --module=" .. module_name .. out_dir
 	}
 end
 

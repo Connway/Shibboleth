@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_TODOWindow.h"
+#include <Shibboleth_EditorAttributesCommon.h>
 #include <Gaff_Utils.h>
 #include <QCoreApplication>
 #include <QGridLayout>
@@ -28,7 +29,19 @@ THE SOFTWARE.
 #include <QPushButton>
 #include <QLineEdit>
 
-TODOWindow::TODOWindow(QWidget* parent):
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ToDoWindow)
+	.classAttrs(Shibboleth::EditorWindowAttribute())
+	.friendlyName(u8"ToDo")
+
+	.BASE(QWidget)
+
+	.CTOR(QWidget*)
+	.ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ToDoWindow)
+
+NS_SHIBBOLETH
+
+ToDoWindow::ToDoWindow(QWidget* parent):
 	QFrame(parent)
 {
 	QPushButton* const search_button = new QPushButton(tr("Search"), this);
@@ -37,13 +50,15 @@ TODOWindow::TODOWindow(QWidget* parent):
 	QListWidget* const list_widget = new QListWidget(this);
 
 	QGridLayout* const grid_layout = new QGridLayout(this);
-	grid_layout->addWidget(line_edit, 0, 0/*, 1, 3*/);
-	grid_layout->addWidget(search_button, 0, 3/*, 1, 1*/);
-	grid_layout->addWidget(list_widget, 1, 0);
+	grid_layout->addWidget(line_edit, 0, 0);
+	grid_layout->addWidget(search_button, 0, 3);
+	grid_layout->addWidget(list_widget, 1, 0, -1, 4);
 
 	setLayout(grid_layout);
 }
 
-TODOWindow::~TODOWindow()
+ToDoWindow::~ToDoWindow()
 {
 }
+
+NS_END

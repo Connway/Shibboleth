@@ -9,6 +9,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\.generated\Gen_ReflectionInit.h">
+      <Filter>.generated</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\ShibEd\.generated\ui_Shibboleth_EditorMainWindow.h">
       <Filter>.generated</Filter>
     </ClInclude>
@@ -17,13 +20,13 @@
     <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\.generated\moc_Shibboleth_EditorMainWindow.cpp">
       <Filter>.generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\.generated\moc_Shibboleth_TODOWindow.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\.generated\moc_Shibboleth_ToDoWindow.cpp">
       <Filter>.generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_EditorMainWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_TODOWindow.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_ToDoWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Tools\ShibEd\main.cpp" />
@@ -32,7 +35,7 @@
     <CustomBuild Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_EditorMainWindow.h">
       <Filter>Windows</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_TODOWindow.h">
+    <CustomBuild Include="..\..\..\..\..\src\Tools\ShibEd\Windows\Shibboleth_ToDoWindow.h">
       <Filter>Windows</Filter>
     </CustomBuild>
   </ItemGroup>

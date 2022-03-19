@@ -22,49 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <QMainWindow>
-#include <DockManager.h>
+#include "Shibboleth_Reflection.h"
 
-namespace Shibboleth
+NS_SHIBBOLETH
+
+class EditorWindowAttribute final : public Refl::IAttribute
 {
-	class EditorWindowAttribute;
-}
-
-namespace Refl
-{
-	class IReflectionDefinition;
-}
-
-
-class EditorMainWindow : public QMainWindow
-{
-	Q_OBJECT
-
 public:
-	EditorMainWindow(QWidget* parent = nullptr);
-	~EditorMainWindow();
+	EditorWindowAttribute(const char8_t* path = nullptr, bool single_instance = true);
 
-protected:
-	void closeEvent(QCloseEvent* event) override;
+	bool isSingleInstance(void) const { return _single_instance; }
+	const char8_t* getPath(void) const { return _path; }
+
+	Refl::IAttribute* clone(void) const override;
 
 private:
-	ads::CDockManager* _dock_manager = nullptr;
-	QMenu* _windows_menu = nullptr;
+	const char8_t* const _path = nullptr;
+	bool _single_instance = true;
 
-	QMap<ads::CDockWidget*, QAction*> _window_focus_action_map;
-
-	void retranslateUi(void);
-
-	void onWindowClosed(void);
-	void onFocusWindow(void);
-	void onExit(void);
-
-	void onTest(void);
-
-	bool isWindowAlreadyOpen(const char8_t* name);
-	void createFloatingWindow(
-		const Refl::IReflectionDefinition& ref_def,
-		const Shibboleth::EditorWindowAttribute& attr,
-		const char8_t* name
-	);
+	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
 };
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::EditorWindowAttribute)

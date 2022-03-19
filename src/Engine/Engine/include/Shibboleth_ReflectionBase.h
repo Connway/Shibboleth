@@ -54,11 +54,11 @@ using RefDefType = typename RefDefTypeHelper<T, std::is_enum<T>::value>::Type;
 void AddToAttributeReflectionChain(IReflection* reflection);
 IReflection* GetAttributeReflectionChainHead(void);
 
-void AddToReflectionChain(IReflection* reflection);
-IReflection* GetReflectionChainHead(void);
-
 void AddToEnumReflectionChain(IReflection* reflection);
 IReflection* GetEnumReflectionChainHead(void);
+
+void AddToReflectionChain(IReflection* reflection);
+IReflection* GetReflectionChainHead(void);
 
 void InitAttributeReflection(void);
 void InitClassReflection(void);

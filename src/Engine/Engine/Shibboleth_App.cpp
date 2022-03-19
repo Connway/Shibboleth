@@ -669,7 +669,7 @@ bool App::loadModules(void)
 		}
 	}
 
-	// Notify all modules that every module has been loaded.
+	// Initialize all non-owned reflection.
 	_dynamic_loader.forEachModule([](const HashString32<>&, DynamicLoader::ModulePtr& module) -> bool
 	{
 		using AllModulesLoadedNonOwnedFunc = void (*)(void);

@@ -32,7 +32,7 @@ enum class VersionValues
 };
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::friendlyName(const char* name)
+ReflectionVersion<T>& ReflectionVersion<T>::friendlyName(const char8_t* name)
 {
 	_hash = Gaff::FNV1aHash64String(name, _hash);
 	return *this;

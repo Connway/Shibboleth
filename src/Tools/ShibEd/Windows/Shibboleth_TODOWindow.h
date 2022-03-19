@@ -22,13 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_Reflection.h>
 #include <QFrame>
 
-class TODOWindow: public QFrame
+NS_SHIBBOLETH
+
+class ToDoWindow : public QFrame
 {
 	Q_OBJECT
 
 public:
-	TODOWindow(QWidget* parent = nullptr);
-	~TODOWindow();
+	ToDoWindow(QWidget* parent = nullptr);
+	~ToDoWindow();
 };
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ToDoWindow)
