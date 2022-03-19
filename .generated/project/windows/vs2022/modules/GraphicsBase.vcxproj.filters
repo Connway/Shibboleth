@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ClearRenderTargetSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfigs.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsLogging.h">
       <Filter>include</Filter>
     </ClInclude>

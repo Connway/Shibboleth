@@ -448,6 +448,9 @@
     <ProjectReference Include="..\modules\Debug.vcxproj">
       <Project>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\Scene.vcxproj">
+      <Project>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\Script.vcxproj">
       <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>

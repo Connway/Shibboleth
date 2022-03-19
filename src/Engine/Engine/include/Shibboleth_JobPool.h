@@ -29,8 +29,4 @@ NS_SHIBBOLETH
 
 using JobPool = Gaff::JobPool<ProxyAllocator>;
 
-constexpr const char8_t* const k_read_file_pool_name = u8"Read File";
-constexpr Gaff::Hash32 k_read_file_pool = Gaff::FNV1aHash32Const(k_read_file_pool_name, eastl::CharStrlen(k_read_file_pool_name));
-constexpr int32_t k_read_file_pool_default_threads = 1;
-
 NS_END

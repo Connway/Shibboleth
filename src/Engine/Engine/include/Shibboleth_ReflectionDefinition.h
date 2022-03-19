@@ -25,14 +25,12 @@ THE SOFTWARE.
 #include "Shibboleth_IReflectionDefinition.h"
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_IReflection.h"
+#include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_SmartPtrs.h"
+#include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
+//#include "Shibboleth_IApp.h"
 #include <Gaff_Ops.h>
-
-NS_SHIBBOLETH
-	class ISerializeWriter;
-	class ISerializeReader;
-NS_END
 
 NS_REFLECTION
 

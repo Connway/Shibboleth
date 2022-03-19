@@ -22,13 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_SerializeInterfaces.h"
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ReflectionMacros.h"
 #include "Shibboleth_ReflectionBase.h"
-#include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
-#include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH
 

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
+#include "Shibboleth_GraphicsConfigs.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SerializeReader.h>
 #include <Shibboleth_IFileSystem.h>
@@ -128,7 +129,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs[u8"graphics_cfg"].getString(u8"cfg/graphics.cfg");
+	const char8_t* const graphics_cfg_path = configs[k_config_graphics_cfg].getString(k_config_graphics_default_cfg);
 
 	IFileSystem& fs = app.getFileSystem();
 	const IFile* const file = fs.openFile(graphics_cfg_path);
@@ -170,7 +171,7 @@ bool RenderManagerBase::init(void)
 {
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs[u8"graphics_cfg"].getString(u8"cfg/graphics.cfg");
+	const char8_t* const graphics_cfg_path = configs[k_config_graphics_cfg].getString(k_config_graphics_default_cfg);
 
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
@@ -192,7 +193,7 @@ bool RenderManagerBase::init(void)
 		return false;
 	}
 
-	if (configs[u8"graphics_no_windows"].getBool(false)) {
+	if (configs[k_config_graphics_no_windows].getBool(false)) {
 		const Gaff::JSON adapters = config[u8"adapters"];
 
 		if (adapters.isArray()) {

@@ -30,6 +30,7 @@ project "ShibEd"
 		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
+		"../../Modules/Graphics/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/ads"

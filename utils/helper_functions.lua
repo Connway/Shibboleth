@@ -21,7 +21,7 @@ function ModuleIncludesAndLinks(module_name, base_name)
 	includedirs
 	{
 		base_dir .. "include",
-		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Frameworks/Gaff/include"
 	}
 
 	local deps = ModuleDependencies(module_name)

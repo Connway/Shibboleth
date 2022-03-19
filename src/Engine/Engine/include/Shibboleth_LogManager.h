@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_Vector.h"
@@ -83,7 +84,7 @@ private:
 
 	EA::Thread::Thread _log_thread;
 
-	U8String _log_dir{ u8"./logs", ProxyAllocator("Log") };
+	U8String _log_dir{ k_config_app_default_log_dir, ProxyAllocator("Log") };
 
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl);

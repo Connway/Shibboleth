@@ -184,6 +184,7 @@
     <None Include="..\..\..\..\src\Modules\MainLoop\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Physics\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Resource\project_generator.lua" />
+    <None Include="..\..\..\..\src\Modules\Scene\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua" />
     <None Include="..\..\..\..\src\Tests\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\ShibEd\project_generator.lua" />

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_App.h"
 #include "Shibboleth_EngineAttributesCommon.h"
 #include "Shibboleth_LooseFileSystem.h"
+#include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_IManager.h"
 #include "Gen_ReflectionInit.h"
@@ -65,7 +66,7 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, const char** argv)
 {
-	const bool application_set_configs = _configs.size() > 0 && _configs[u8"working_dir"].isString();
+	const bool application_set_configs = _configs.size() > 0 && _configs[k_config_app_working_dir].isString();
 
 	// Check if application set working directory.
 	if (application_set_configs && !initApp()) {
@@ -112,7 +113,7 @@ bool App::init(int argc, const char** argv)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(void)
 {
-	const bool application_set_configs = _configs.size() > 0 && _configs[u8"working_dir"].isString();
+	const bool application_set_configs = _configs.size() > 0 && _configs[k_config_app_working_dir].isString();
 
 	// Check if application set working directory.
 	if (application_set_configs && !initApp()) {
@@ -197,7 +198,7 @@ void App::destroy(void)
 		_main_loop = nullptr;
 	}
 
-	const Gaff::JSON module_unload_order = _configs[u8"module_unload_order"];
+	const Gaff::JSON module_unload_order = _configs[k_config_module_unload_order];
 	Vector<Gaff::Hash32> module_hashes;
 
 	// Free managers and shutdown modules in requested to close these first.
@@ -358,7 +359,7 @@ Gaff::JSON& App::getConfigs(void)
 
 U8String App::getProjectDirectory(void) const
 {
-	const Gaff::JSON& wd = _configs[u8"working_dir"];
+	const Gaff::JSON& wd = _configs[k_config_app_working_dir];
 	return (wd.isString()) ? wd.getString() : u8".";
 }
 
@@ -411,7 +412,7 @@ RuntimeVarManager& App::getRuntimeVarManager(void)
 
 bool App::initInternal(void)
 {
-	const char8_t* const log_dir = _configs[u8"log_dir"].getString(u8"./logs");
+	const char8_t* const log_dir = _configs[k_config_app_log_dir].getString(k_config_app_default_log_dir);
 
 	size_t prev_index = 0;
 	size_t index = Gaff::FindFirstOf(log_dir, u8'/');
@@ -463,8 +464,8 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	const Gaff::JSON read_file_threads = _configs[u8"read_file_threads"];
-	_job_pool.addPool(HashStringView32<>(k_read_file_pool_name), read_file_threads.getInt32(k_read_file_pool_default_threads));
+	const Gaff::JSON read_file_threads = _configs[k_config_app_read_file_threads];
+	_job_pool.addPool(HashStringView32<>(k_config_app_read_file_pool_name), read_file_threads.getInt32(k_config_app_default_read_file_threads));
 
 	if (!loadFileSystem()) {
 		return false;
@@ -526,7 +527,7 @@ bool App::initInternal(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
-	const Gaff::JSON& lfs = _configs[u8"file_system"];
+	const Gaff::JSON& lfs = _configs[k_config_app_file_system];
 	U8String fs = u8"";
 
 	if (lfs.isString()) {
@@ -588,7 +589,7 @@ bool App::loadFileSystem(void)
 
 bool App::loadMainLoop(void)
 {
-	if (_configs[u8"no_main_loop"].isTrue()) {
+	if (_configs[k_config_app_no_main_loop].isTrue()) {
 		return true;
 	}
 
@@ -618,13 +619,13 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-	if (_configs[u8"no_load_modules"].isTrue()) {
+	if (_configs[k_config_app_no_load_modules].isTrue()) {
 		_job_pool.run();
 		return true;
 	}
 
-	const Gaff::JSON& module_load_order = _configs[u8"module_load_order"];
-	const Gaff::JSON& module_dirs = _configs[u8"module_directories"];
+	const Gaff::JSON& module_load_order = _configs[k_config_module_load_order];
+	const Gaff::JSON& module_dirs = _configs[k_config_module_directories];
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
 		LogErrorDefault("'module_directories' config option is not an array of strings.");
@@ -681,7 +682,7 @@ bool App::loadModules(void)
 		return false;
 	});
 
-	const bool no_managers = _configs[u8"no_managers"].getBool(false);
+	const bool no_managers = _configs[k_config_app_no_managers].getBool(false);
 
 	// Create manager instances.
 	if (!no_managers) {
@@ -806,7 +807,7 @@ bool App::loadModules(void)
 
 bool App::initApp(void)
 {
-	const Gaff::JSON& wd = _configs[u8"working_dir"];
+	const Gaff::JSON& wd = _configs[k_config_app_working_dir];
 
 	if (wd.isString()) {
 		if (!Gaff::SetWorkingDir(wd.getString())) {
@@ -884,7 +885,7 @@ bool App::loadModule(const char* module_path, InitMode mode)
 		return false;
 	}
 
-	//if (_configs["hot_reload_modules"].isTrue()) {
+	//if (_configs[k_config_app_hot_reload_modules].isTrue()) {
 	//	const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8, module_name.data());
 	//	const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
 
@@ -922,8 +923,8 @@ bool App::loadModule(const char* module_path, InitMode mode)
 
 void App::removeExtraLogs(void)
 {
-	const Gaff::JSON log_dir_holder = _configs[u8"log_dir"]; // Need to hold this otherwise the string gets deallocated.
-	const char8_t* const log_dir = log_dir_holder.getString(u8"./logs");
+	const Gaff::JSON log_dir_holder = _configs[k_config_app_log_dir]; // Need to hold this otherwise the string gets deallocated.
+	const char8_t* const log_dir = log_dir_holder.getString(k_config_app_default_log_dir);
 	int32_t dir_count = 0;
 
 	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {

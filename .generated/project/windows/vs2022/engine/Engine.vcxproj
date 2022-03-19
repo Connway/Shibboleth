@@ -230,6 +230,7 @@ premake5 gen_static_header</Command>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_App.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_AppConfigs.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Broadcaster.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Broadcaster.inl" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Curve.h" />

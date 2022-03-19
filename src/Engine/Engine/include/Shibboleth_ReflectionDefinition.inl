@@ -2787,7 +2787,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
 
-	if (Shibboleth::GetApp().getConfigs()[u8"editor_mode"].getBool(false)) {
+	if (Shibboleth::GetApp().getConfigs()[Shibboleth::k_config_app_editor_mode].getBool(false)) {
 		pair = eastl::make_pair(
 			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(Hash64Ptr, _allocator, ptr))
@@ -2830,7 +2830,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
 
-	if (Shibboleth::GetApp().getConfigs()[u8"editor_mode"].getBool(false)) {
+	if (Shibboleth::GetApp().getConfigs()[Shibboleth::k_config_app_editor_mode].getBool(false)) {
 		pair = eastl::make_pair(
 			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			IVarPtr(SHIB_ALLOCT(Hash32Ptr, _allocator, ptr))

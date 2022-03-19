@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_App.h>
 //#include <Gaff_MessagePack.h>
 //#include <Gaff_String.h>
@@ -31,9 +32,9 @@ int main(int argc, const char** argv)
 {
 	Shibboleth::App app;
 
-	app.getConfigs().setObject(u8"working_dir", Gaff::JSON::CreateString(u8".."));
-	app.getConfigs().setObject(u8"no_main_loop", Gaff::JSON::CreateBool(true));
-	app.getConfigs().setObject(u8"no_managers", Gaff::JSON::CreateBool(true));
+	app.getConfigs().setObject(Shibboleth::k_config_app_working_dir, Gaff::JSON::CreateString(u8".."));
+	app.getConfigs().setObject(Shibboleth::k_config_app_no_main_loop, Gaff::JSON::CreateTrue());
+	app.getConfigs().setObject(Shibboleth::k_config_app_no_managers, Gaff::JSON::CreateTrue());
 
 	if (!app.init(argc, argv)) {
 		app.destroy();

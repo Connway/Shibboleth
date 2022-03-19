@@ -1,4 +1,6 @@
-#include "Shibboleth_EditorMainWindow.h"
+#include "Windows/Shibboleth_EditorMainWindow.h"
+#include <Shibboleth_GraphicsConfigs.h>
+#include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_App.h>
 #include <QApplication>
 #include <QLocale>
@@ -27,9 +29,9 @@ int main(int argc, char *argv[])
 	Shibboleth::App app;
 
 	Gaff::JSON& configs = app.getConfigs();
-	configs.setObject(u8"working_dir", Gaff::JSON::CreateString(u8".."));
-	configs.setObject(u8"log_dir", Gaff::JSON::CreateString(u8"./tools/logs"));
-	configs.setObject(u8"graphics_no_windows", Gaff::JSON::CreateTrue());
+	configs.setObject(Shibboleth::k_config_app_working_dir, Gaff::JSON::CreateString(u8".."));
+	configs.setObject(Shibboleth::k_config_app_log_dir, Gaff::JSON::CreateString(u8"./tools/logs"));
+	configs.setObject(Shibboleth::k_config_graphics_no_windows, Gaff::JSON::CreateTrue());
 
 	//if (!_app.init()) {
 	//	qApp->exit(-1);

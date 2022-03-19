@@ -1,20 +1,37 @@
 #include "Shibboleth_EditorMainWindow.h"
-#include "ui_Shibboleth_EditorMainWindow.h"
+#include <QCoreApplication>
+#include <QStatusBar>
+#include <QMenuBar>
 #include <QLabel>
 
 EditorMainWindow::EditorMainWindow(QWidget *parent):
 	QMainWindow(parent)
 {
-	_ui = new Ui::EditorMainWindow;
-	_ui->setupUi(this);
+	if (objectName().isEmpty()) {
+		setObjectName(QString::fromUtf8("EditorMainWindow"));
+	}
+
+	resize(800, 600);
+
+	QWidget* const central_widget = new QWidget(this);
+	central_widget->setObjectName(QString::fromUtf8("central_widget"));
+	setCentralWidget(central_widget);
+
+	QMenuBar* const menu_bar = new QMenuBar(this);
+	menu_bar->setObjectName(QString::fromUtf8("menu_bar"));
+	setMenuBar(menu_bar);
+
+	QStatusBar* const status_bar = new QStatusBar(this);
+	status_bar->setObjectName(QString::fromUtf8("status_bar"));
+	setStatusBar(status_bar);
+
+	retranslateUi();
+
+	QMetaObject::connectSlotsByName(this);
+
 
 	_dock_manager = new ads::CDockManager(this);
 
-	QStatusBar* const status_bar = new QStatusBar(this);
-	setStatusBar(status_bar);
-
-	QMenuBar* const menu_bar = new QMenuBar(this);
-	setMenuBar(menu_bar);
 
 	QMenu* const file_menu = menu_bar->addMenu(tr("&File"));
 
@@ -41,13 +58,17 @@ EditorMainWindow::EditorMainWindow(QWidget *parent):
 
 EditorMainWindow::~EditorMainWindow()
 {
-	delete _ui;
 }
 
 void EditorMainWindow::closeEvent(QCloseEvent* event)
 {
 	QMainWindow::closeEvent(event);
 	onExit();
+}
+
+void EditorMainWindow::retranslateUi(void)
+{
+	setWindowTitle(QCoreApplication::translate("ShibEd", "ShibEd", nullptr));
 }
 
 void EditorMainWindow::onWindowClosed(void)
@@ -85,7 +106,7 @@ void EditorMainWindow::onFocusWindow(void)
 		return;
 	}
 
-	dock_widget->setFocus();
+	dock_widget->raise();
 }
 
 void EditorMainWindow::onExit(void)

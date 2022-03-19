@@ -70,7 +70,7 @@ bool ECSManager::initAllModulesLoaded(void)
 	_empty_arch_res = GetApp().getManagerTFast<ResourceManager>().createResourceT<ECSArchetypeResource>(k_empty_archetype_res_name);
 	addArchetype(std::move(default_archetype), _empty_arch_res->_archetype_ref);
 
-	const Gaff::JSON starting_scene = GetApp().getConfigs()[u8"starting_scene"];
+	const Gaff::JSON starting_scene = GetApp().getConfigs()[u8"scene_starting_scene"];
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
 		LogErrorDefault("No starting scene has been set (or is malformed).");

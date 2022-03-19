@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachineReflection.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ScriptLogging.h>
+#include <Shibboleth_ScriptConfigs.h>
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LuaHelpers.h>
 #include <Shibboleth_Utilities.h>
@@ -53,7 +54,7 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 
 	lua_State* const state = _lua_mgr->requestState();
 
-	lua_getglobal(state, LuaManager::k_loaded_chunks_name);
+	lua_getglobal(state, k_config_script_loaded_chunks_name);
 
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
@@ -147,7 +148,7 @@ void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::
 
 	lua_State* const state = _lua_mgr->requestState();
 
-	lua_getglobal(state, LuaManager::k_loaded_chunks_name);
+	lua_getglobal(state, k_config_script_loaded_chunks_name);
 	lua_getfield(state, -1, reinterpret_cast<const char*>(_script->getFilePath().getBuffer()));
 
 	// Should never happen, but check anyways.

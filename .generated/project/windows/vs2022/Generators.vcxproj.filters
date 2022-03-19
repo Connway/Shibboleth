@@ -139,6 +139,9 @@
     <Filter Include="Modules\Resource">
       <UniqueIdentifier>{B5504939-A149-688B-CA7B-4D10B6D34797}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules\Scene">
+      <UniqueIdentifier>{7B30BCD9-E7F0-3710-B02B-818D1CAB7CEC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Modules\Script">
       <UniqueIdentifier>{624D4911-4E1B-3D17-37AF-AD3D231C197C}</UniqueIdentifier>
     </Filter>
@@ -326,6 +329,9 @@
     </None>
     <None Include="..\..\..\..\src\Modules\Resource\project_generator.lua">
       <Filter>Modules\Resource</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Scene\project_generator.lua">
+      <Filter>Modules\Scene</Filter>
     </None>
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua">
       <Filter>Modules\Script</Filter>

@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_EnumReflectionDefinition.h"
 #include "Shibboleth_ReflectionDefinition.h"
 #include "Shibboleth_ReflectionVersion.h"
-#include "Shibboleth_IReflection.h"
 
 NS_REFLECTION
 

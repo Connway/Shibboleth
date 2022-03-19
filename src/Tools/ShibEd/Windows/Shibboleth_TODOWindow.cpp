@@ -20,74 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ReflectionBase.h"
+#include "Shibboleth_TODOWindow.h"
+#include <Gaff_Utils.h>
+#include <QCoreApplication>
+#include <QGridLayout>
+#include <QListWidget>
+#include <QPushButton>
+#include <QLineEdit>
 
-namespace
+TODOWindow::TODOWindow(QWidget* parent):
+	QFrame(parent)
 {
-	static Refl::IReflection* g_enum_head = nullptr;
-	static Refl::IReflection* g_attr_head = nullptr;
-	static Refl::IReflection* g_head = nullptr;
+	QPushButton* const search_button = new QPushButton(tr("Search"), this);
+	QLineEdit* const line_edit = new QLineEdit(this);
 
-	static void AddToChain(Refl::IReflection*& head, Refl::IReflection* reflection)
-	{
-		reflection->next = head;
-		head = reflection;
-	}
+	QListWidget* const list_widget = new QListWidget(this);
 
-	static void InitChain(Refl::IReflection* head)
-	{
-		while (head) {
-			head->init();
-			head = head->next;
-		}
-	}
+	QGridLayout* const grid_layout = new QGridLayout(this);
+	grid_layout->addWidget(line_edit, 0, 0/*, 1, 3*/);
+	grid_layout->addWidget(search_button, 0, 3/*, 1, 1*/);
+	grid_layout->addWidget(list_widget, 1, 0);
+
+	setLayout(grid_layout);
 }
 
-NS_REFLECTION
-
-void AddToAttributeReflectionChain(IReflection* reflection)
+TODOWindow::~TODOWindow()
 {
-	AddToChain(g_attr_head, reflection);
 }
-
-void AddToReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_head, reflection);
-}
-
-void AddToEnumReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_enum_head, reflection);
-}
-
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
-}
-
-void InitAttributeReflection(void)
-{
-	InitChain(g_attr_head);
-}
-
-void InitClassReflection(void)
-{
-	InitChain(g_head);
-}
-
-void InitEnumReflection(void)
-{
-	InitChain(g_enum_head);
-}
-
-NS_END

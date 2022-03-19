@@ -22,34 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <QMainWindow>
-#include <DockManager.h>
+#include <Shibboleth_Defines.h>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class EditorMainWindow; }
-QT_END_NAMESPACE
+NS_SHIBBOLETH
 
-class EditorMainWindow : public QMainWindow
-{
-	Q_OBJECT
+// Graphics
+constexpr const char8_t* const k_config_graphics_cfg = u8"graphics_cfg";
+constexpr const char8_t* const k_config_graphics_no_windows = u8"graphics_no_windows";
 
-public:
-	EditorMainWindow(QWidget* parent = nullptr);
-	~EditorMainWindow();
+constexpr const char8_t* const k_config_graphics_default_cfg = u8"cfg/graphics.cfg";
 
-protected:
-	void closeEvent(QCloseEvent* event) override;
 
-private:
-	ads::CDockManager* _dock_manager = nullptr;
-	Ui::EditorMainWindow* _ui = nullptr;
-	QMenu* _windows_menu = nullptr;
-
-	QMap<ads::CDockWidget*, QAction*> _window_focus_action_map;
-
-	void onWindowClosed(void);
-	void onFocusWindow(void);
-	void onExit(void);
-
-	void onTest(void);
-};
+NS_END

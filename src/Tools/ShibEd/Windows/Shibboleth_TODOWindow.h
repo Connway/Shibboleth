@@ -20,74 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ReflectionBase.h"
+#pragma once
 
-namespace
+#include <QFrame>
+
+class TODOWindow: public QFrame
 {
-	static Refl::IReflection* g_enum_head = nullptr;
-	static Refl::IReflection* g_attr_head = nullptr;
-	static Refl::IReflection* g_head = nullptr;
+	Q_OBJECT
 
-	static void AddToChain(Refl::IReflection*& head, Refl::IReflection* reflection)
-	{
-		reflection->next = head;
-		head = reflection;
-	}
-
-	static void InitChain(Refl::IReflection* head)
-	{
-		while (head) {
-			head->init();
-			head = head->next;
-		}
-	}
-}
-
-NS_REFLECTION
-
-void AddToAttributeReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_attr_head, reflection);
-}
-
-void AddToReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_head, reflection);
-}
-
-void AddToEnumReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_enum_head, reflection);
-}
-
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
-}
-
-void InitAttributeReflection(void)
-{
-	InitChain(g_attr_head);
-}
-
-void InitClassReflection(void)
-{
-	InitChain(g_head);
-}
-
-void InitEnumReflection(void)
-{
-	InitChain(g_enum_head);
-}
-
-NS_END
+public:
+	TODOWindow(QWidget* parent = nullptr);
+	~TODOWindow();
+};

@@ -20,74 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ReflectionBase.h"
+#pragma once
 
-namespace
+#include <QMainWindow>
+#include <DockManager.h>
+
+class EditorMainWindow : public QMainWindow
 {
-	static Refl::IReflection* g_enum_head = nullptr;
-	static Refl::IReflection* g_attr_head = nullptr;
-	static Refl::IReflection* g_head = nullptr;
+	Q_OBJECT
 
-	static void AddToChain(Refl::IReflection*& head, Refl::IReflection* reflection)
-	{
-		reflection->next = head;
-		head = reflection;
-	}
+public:
+	EditorMainWindow(QWidget* parent = nullptr);
+	~EditorMainWindow();
 
-	static void InitChain(Refl::IReflection* head)
-	{
-		while (head) {
-			head->init();
-			head = head->next;
-		}
-	}
-}
+protected:
+	void closeEvent(QCloseEvent* event) override;
 
-NS_REFLECTION
+private:
+	ads::CDockManager* _dock_manager = nullptr;
+	QMenu* _windows_menu = nullptr;
 
-void AddToAttributeReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_attr_head, reflection);
-}
+	QMap<ads::CDockWidget*, QAction*> _window_focus_action_map;
 
-void AddToReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_head, reflection);
-}
+	void retranslateUi(void);
 
-void AddToEnumReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_enum_head, reflection);
-}
+	void onWindowClosed(void);
+	void onFocusWindow(void);
+	void onExit(void);
 
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
-}
-
-void InitAttributeReflection(void)
-{
-	InitChain(g_attr_head);
-}
-
-void InitClassReflection(void)
-{
-	InitChain(g_head);
-}
-
-void InitEnumReflection(void)
-{
-	InitChain(g_enum_head);
-}
-
-NS_END
+	void onTest(void);
+};

@@ -24,25 +24,15 @@ THE SOFTWARE.
 
 #ifdef SHIB_STATIC
 
-	#include "Shibboleth_ScriptConfigs.h"
 	#include <Shibboleth_Utilities.h>
-	#include <Shibboleth_JobPool.h>
-	#include <Shibboleth_IApp.h>
-	#include <Gaff_JSON.h>
 
-	namespace Script
+	namespace Scene
 	{
-		static Shibboleth::ProxyAllocator g_script_allocator;
 
 		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 		{
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				Shibboleth::SetApp(app);
-
-				const Gaff::JSON script_threads = app.getConfigs()[Shibboleth::k_config_script_threads];
-				const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
-
-				app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::k_config_script_thread_pool_name), num_threads);
 
 			#ifdef SHIB_RUNTIME_VAR_ENABLED
 				Shibboleth::RegisterRuntimeVars();
@@ -56,10 +46,11 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			Script::Gen::InitReflection(mode);
+			Scene::Gen::InitReflection(mode);
 
 			return true;
 		}
+
 	}
 
 #else
@@ -68,17 +59,17 @@ THE SOFTWARE.
 
 	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
 	{
-		return Script::Initialize(app, mode);
+		return Scene::Initialize(app, mode);
 	}
 
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
-		Script::InitializeNonOwned();
+		Scene::InitializeNonOwned();
 	}
 
 	DYNAMICEXPORT_C bool SupportsHotReloading(void)
 	{
-		return true;
+		return false;
 	}
 
 #endif

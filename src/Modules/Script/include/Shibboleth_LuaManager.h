@@ -33,11 +33,6 @@ NS_SHIBBOLETH
 class LuaManager final : public IManager
 {
 public:
-	static constexpr const char* const k_loaded_chunks_name = "__loaded_chunks";
-	static constexpr const char8_t* k_thread_pool_name = u8"Lua";
-	static constexpr Gaff::Hash32 k_thread_pool = Gaff::FNV1aHash32Const(k_thread_pool_name, eastl::CharStrlen(k_thread_pool_name));
-	static constexpr int32_t k_default_num_threads = 4;
-
 	~LuaManager(void);
 
 	bool initAllModulesLoaded(void) override;

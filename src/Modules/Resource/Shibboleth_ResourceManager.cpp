@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceLogging.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
+#include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_IApp.h>
@@ -41,37 +42,41 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 	.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::getResource))
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceManager)
 
+namespace
+{
+	static constexpr Gaff::Hash32 k_read_file_pool = Gaff::FNV1aHash32StringConst(Shibboleth::k_config_app_read_file_pool_name);
+
+	struct RawJobData final
+	{
+		const char8_t* file_path;
+		const Shibboleth::IFile* out_file;
+	};
+
+	static void ResourceFileLoadRawJob(uintptr_t /*id_int*/, void* data)
+	{
+		RawJobData* const job_data = reinterpret_cast<RawJobData*>(data);
+
+		Shibboleth::U8String final_path(Shibboleth::ProxyAllocator("Resource"));
+		final_path.sprintf(u8"Resources/%s", job_data->file_path);
+
+		job_data->out_file = Shibboleth::GetApp().getFileSystem().openFile(final_path.data());
+	}
+
+	static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
+	{
+		Shibboleth::IResource* res = reinterpret_cast<Shibboleth::IResource*>(data);
+		res->load();
+	}
+
+	static bool ResourceHashCompare(const Shibboleth::IResource* lhs, Gaff::Hash64 rhs)
+	{
+		return lhs->getFilePath().getHash() < rhs;
+	}
+}
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
-
-struct RawJobData final
-{
-	const char8_t* file_path;
-	const IFile* out_file;
-};
-
-static void ResourceFileLoadRawJob(uintptr_t /*id_int*/, void* data)
-{
-	RawJobData* const job_data = reinterpret_cast<RawJobData*>(data);
-
-	U8String final_path(ProxyAllocator("Resource"));
-	final_path.sprintf(u8"Resources/%s", job_data->file_path);
-
-	job_data->out_file = GetApp().getFileSystem().openFile(final_path.data());
-}
-
-static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
-{
-	IResource* res = reinterpret_cast<IResource*>(data);
-	res->load();
-}
-
-static bool ResourceHashCompare(const IResource* lhs, Gaff::Hash64 rhs)
-{
-	return lhs->getFilePath().getHash() < rhs;
-}
-
 
 
 ResourceManager::ResourceManager(void)

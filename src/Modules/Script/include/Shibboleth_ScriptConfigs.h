@@ -20,74 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ReflectionBase.h"
+#pragma once
 
-namespace
-{
-	static Refl::IReflection* g_enum_head = nullptr;
-	static Refl::IReflection* g_attr_head = nullptr;
-	static Refl::IReflection* g_head = nullptr;
+#include <Shibboleth_Defines.h>
 
-	static void AddToChain(Refl::IReflection*& head, Refl::IReflection* reflection)
-	{
-		reflection->next = head;
-		head = reflection;
-	}
+NS_SHIBBOLETH
 
-	static void InitChain(Refl::IReflection* head)
-	{
-		while (head) {
-			head->init();
-			head = head->next;
-		}
-	}
-}
+// Script
+constexpr const char8_t* const k_config_script_threads = u8"script_threads";
 
-NS_REFLECTION
+constexpr const char* const k_config_script_loaded_chunks_name = "__loaded_chunks";
+constexpr const char8_t* const k_config_script_thread_pool_name = u8"Lua";
+static constexpr int32_t k_config_script_default_num_threads = 4;
 
-void AddToAttributeReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_attr_head, reflection);
-}
-
-void AddToReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_head, reflection);
-}
-
-void AddToEnumReflectionChain(IReflection* reflection)
-{
-	AddToChain(g_enum_head, reflection);
-}
-
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
-
-IReflection* GetEnumReflectionChainHead(void)
-{
-	return g_enum_head;
-}
-
-void InitAttributeReflection(void)
-{
-	InitChain(g_attr_head);
-}
-
-void InitClassReflection(void)
-{
-	InitChain(g_head);
-}
-
-void InitEnumReflection(void)
-{
-	InitChain(g_enum_head);
-}
 
 NS_END
