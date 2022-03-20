@@ -152,7 +152,7 @@ bool LooseFileSystem::forEachFile(const char8_t* directory, eastl::function<bool
 			continue;
 		}
 
-		const wchar_t* file_name = dir_entry.path().c_str();
+		const auto* file_name = dir_entry.path().c_str();
 		CONVERT_STRING(char8_t, temp, file_name);
 
 		if (recursive && dir_entry.is_directory()) {

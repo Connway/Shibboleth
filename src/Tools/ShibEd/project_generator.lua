@@ -23,6 +23,7 @@ project "ShibEd"
 	debugdir "../../../workingdir/tools"
 
 	files { "**.h", "**.cpp", "**.qrc", "**.ui" }
+	excludes { "**/moc*.*" }
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000", "SHIB_STATIC" }
 
 	includedirs

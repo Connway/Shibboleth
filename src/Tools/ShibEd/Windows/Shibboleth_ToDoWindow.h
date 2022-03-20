@@ -23,17 +23,56 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
+#include <QThread>
+#include <QMutex>
 #include <QFrame>
+
+class QPushButton;
+class QLineEdit;
 
 NS_SHIBBOLETH
 
-class ToDoWindow : public QFrame
+class SearchThread final : public QThread
+{
+	Q_OBJECT
+
+public:
+	SearchThread(QObject* parent = nullptr);
+	~SearchThread(void);
+
+	bool search(const QString& dir, const QString& filters);
+	void cancel(void);
+
+signals:
+	void resultFound(const QString& file, size_t line, const QString& text);
+
+protected:
+	void run(void) override;
+
+private:
+	QList<QRegularExpression> _filters;
+	QString _directory;
+	QMutex _lock;
+	bool _cancel = false;
+};
+
+
+class ToDoWindow final : public QFrame
 {
 	Q_OBJECT
 
 public:
 	ToDoWindow(QWidget* parent = nullptr);
 	~ToDoWindow();
+
+private:
+	SearchThread _search_thread;
+
+	QPushButton* _search_button = nullptr;
+	QLineEdit* _filters = nullptr;
+
+	void updateResults(const QString& file, size_t line, const QString& text);
+	void performOrCancelSearch(void);
 };
 
 NS_END

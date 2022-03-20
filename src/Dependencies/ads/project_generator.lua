@@ -22,6 +22,7 @@ project "ads"
 	warnings "Extra"
 
 	files { "**.h", "**.cpp", "**.qrc", "**.ui" }
+	excludes { "**/moc*.*" }
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000", "ADS_SHARED_EXPORT" }
 
 	qtgenerateddir ".generated"

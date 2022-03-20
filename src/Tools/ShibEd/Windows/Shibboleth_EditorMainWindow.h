@@ -36,7 +36,7 @@ namespace Refl
 }
 
 
-class EditorMainWindow : public QMainWindow
+class EditorMainWindow final : public QMainWindow
 {
 	Q_OBJECT
 

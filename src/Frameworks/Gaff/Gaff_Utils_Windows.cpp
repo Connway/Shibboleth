@@ -83,6 +83,21 @@ void DebugPrintf(const char* format_string, ...)
 	va_end(vl);
 }
 
+bool GetWorkingDir(char8_t* buffer, size_t size)
+{
+	wchar_t temp_buffer[1024] = { 0 };
+	const DWORD ret = GetCurrentDirectoryW(ARRAY_SIZE(temp_buffer), temp_buffer);
+
+	if (ret > 0) {
+		const wchar_t* temp_start = temp_buffer;
+		eastl::DecodePart(temp_start, temp_start + ret, buffer, buffer + size);
+
+		return true;
+	}
+
+	return false;
+}
+
 bool SetWorkingDir(const char8_t* directory)
 {
 	CONVERT_STRING(wchar_t, temp, directory);

@@ -52,6 +52,7 @@ bool CreateDir(const char8_t* dir_name, unsigned short mode);
 bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char8_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
+bool GetWorkingDir(char8_t* buffer, size_t size);
 bool SetWorkingDir(const char8_t* directory);
 
 void* AlignedMalloc(size_t size, size_t alignment);
