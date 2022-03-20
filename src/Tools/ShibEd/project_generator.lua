@@ -17,7 +17,7 @@ project "ShibEd"
 		location(GetToolsLocation())
 	end
 
-	kind "ConsoleApp"
+	kind "WindowedApp"
 	language "C++"
 	warnings "Extra"
 	debugdir "../../../workingdir/tools"

@@ -68,21 +68,8 @@ bool SearchThread::search(const QString& dir, const QString& filters)
 		return false;
 	}
 
+	_filters = filters.split(';');
 	_directory = dir;
-	_filters.clear();
-
-	const QStringList filter_strings = filters.split(';');
-
-	for (const QString& filter : filter_strings) {
-		const QRegularExpression reg_exp(filter);
-
-		if (!reg_exp.isValid()) {
-			// $TODO: Log error.
-			continue;
-		}
-
-		_filters.emplaceBack(reg_exp);
-	}
 
 	if (_filters.isEmpty()) {
 		// $TODO: Log error.
@@ -117,10 +104,8 @@ void SearchThread::run(void)
 		const QString file_name = dir_it.next();
 		bool passes_filters = false;
 
-		for (const QRegularExpression& filter : _filters) {
-			const QRegularExpressionMatch match = filter.match(file_name);
-
-			if (match.hasMatch()) {
+		for (const QString& filter : _filters) {
+			if (file_name.endsWith(filter)) {
 				passes_filters = true;
 				break;
 			}
@@ -145,10 +130,17 @@ void SearchThread::run(void)
 			++line_num;
 
 			if (line.contains("$TODO")) {
-				emit resultFound(file_name, line_num, line);
+				// Skip the above line.
+				if (file_name.contains("Shibboleth_ToDoWindow.cpp") && line_num == (__LINE__ - 2)) {
+					continue;
+				}
+
+				emit resultFound(QDir(file_name).absolutePath(), line_num, line.trimmed());
 			}
 		}
 	}
+
+	emit finished();
 }
 
 
@@ -157,21 +149,22 @@ ToDoWindow::ToDoWindow(QWidget* parent):
 	QFrame(parent)
 {
 	_search_button = new QPushButton(tr("Find"), this);
-	_filters = new QLineEdit(".*\.h;.*\.cpp;.*\.lua", this);
+	_filters = new QLineEdit(".h;.cpp;.lua", this);
 
-	_filters->setPlaceholderText(tr("Search Filter RegExp, separated by ; (eg. .*\.h;.*\.cpp"));
+	_filters->setPlaceholderText(tr("Search Filter, separated by ; (eg. .h;.cpp"));
 
-	QListWidget* const list_widget = new QListWidget(this);
+	_results = new QListWidget(this);
 
 	QGridLayout* const grid_layout = new QGridLayout(this);
 	grid_layout->addWidget(_filters, 0, 0);
 	grid_layout->addWidget(_search_button, 0, 3);
-	grid_layout->addWidget(list_widget, 1, 0, -1, 4);
+	grid_layout->addWidget(_results, 1, 0, -1, 4);
 
 	setLayout(grid_layout);
 
 	connect(_search_button, &QPushButton::clicked, this, &ToDoWindow::performOrCancelSearch);
 	connect(&_search_thread, &SearchThread::resultFound, this, &ToDoWindow::updateResults);
+	connect(&_search_thread, &SearchThread::finished, this, &ToDoWindow::searchFinished);
 }
 
 ToDoWindow::~ToDoWindow()
@@ -180,32 +173,20 @@ ToDoWindow::~ToDoWindow()
 
 void ToDoWindow::updateResults(const QString& file, size_t line, const QString& text)
 {
-	GAFF_REF(file, line, text);
+	const QByteArray file_utf8 = file.toUtf8();
+	const QByteArray text_utf8 = text.toUtf8();
+
+	const QString item = QString::asprintf("%s(%u): %s", file_utf8.data(), line, text_utf8.data());
+	_results->addItem(item);
 }
 
 void ToDoWindow::performOrCancelSearch(void)
 {
 	if (_search_thread.isRunning()) {
+		_search_button->setEnabled(false);
 		_search_thread.cancel();
-		_search_thread.wait();
-
-		_search_button->setText(tr("Find"));
 		return;
 	}
-
-	//const Gaff::JSON working_dir = GetApp().getConfigs()[k_config_app_working_dir];
-	//QString dir;
-
-	//if (working_dir.isString()) {
-	//	const char8_t* const temp_dir = working_dir.getString();
-	//	dir = temp_dir;
-	//	working_dir.freeString(temp_dir);
-
-	//} else {
-	//	char8_t temp[2048] = { 0 };
-	//	Gaff::GetWorkingDir(temp, ARRAY_SIZE(temp));
-	//	dir = temp;
-	//}
 
 	const QString filter_text = _filters->text();
 
@@ -214,9 +195,16 @@ void ToDoWindow::performOrCancelSearch(void)
 		return;
 	}
 
-	if (_search_thread.search(/*dir*/ "../..", filter_text)) {
+	if (_search_thread.search("../..", filter_text)) {
 		_search_button->setText(tr("Cancel"));
+		_results->clear();
 	}
+}
+
+void ToDoWindow::searchFinished(void)
+{
+	_search_button->setText(tr("Find"));
+	_search_button->setEnabled(true);
 }
 
 NS_END

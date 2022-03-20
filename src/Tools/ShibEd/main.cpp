@@ -7,6 +7,10 @@
 #include <QLocale>
 #include <QTranslator>
 
+#ifdef PLATFORM_WINDOWS
+	#include <shellapi.h>
+#endif
+
 namespace ShibEd
 {
 	bool Initialize(Shibboleth::IApp& /*app*/, Shibboleth::InitMode mode)
@@ -35,8 +39,27 @@ namespace ShibEd
 	}
 }
 
+#ifdef PLATFORM_WINDOWS
+int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
+{
+	int argc = 0;
+	const wchar_t* const* const argv_w = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+	QByteArrayList arg_strings(argc);
+	QList<char*> args(argc);
+
+	// Load any extra configs and add their values to the _configs object.
+	for (int i = 0; i < argc; ++i) {
+		arg_strings[i] = QString::fromWCharArray(argv_w[i]).toUtf8();
+		args[i] = arg_strings[i].data();
+	}
+
+	char** const argv = args.data();
+
+#else
 int main(int argc, char *argv[])
 {
+#endif
 	//while (true) {
 	//	int i = 0;
 	//	i += 5;
