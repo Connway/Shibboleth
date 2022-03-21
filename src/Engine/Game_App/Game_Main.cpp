@@ -23,6 +23,8 @@ THE SOFTWARE.
 #include <Shibboleth_App.h>
 
 #ifdef PLATFORM_WINDOWS
+	#include <shellapi.h>
+
 	// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
 	// https://stackoverflow.com/questions/16823372/forcing-machine-to-use-dedicated-graphics-card/39047129#39047129
 	extern "C"
@@ -33,35 +35,43 @@ THE SOFTWARE.
 
 	int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 	{
-		Shibboleth::App app;
+		int argc = 0;
+		const wchar_t* const* const argv_w = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-		//while (true) {
-		//}
+		Shibboleth::Vector<Shibboleth::U8String> arg_strings(argc);
+		Shibboleth::Vector<const char8_t*> args(argc);
 
-		if (!app.init()) {
-			app.destroy();
-			return -1;
+		// Load any extra configs and add their values to the _configs object.
+		for (int i = 0; i < argc; ++i) {
+			CONVERT_STRING(char8_t, temp, argv_w[i]);
+			arg_strings[i] = temp;
+			args[i] = arg_strings[i].data();
 		}
 
-		app.run();
-		app.destroy();
-
-		return 0;
-	}
+		const char** const argv = reinterpret_cast<const char**>(args.data());
 
 #else
 	int main(int argc, const char** argv)
 	{
+#endif
 		Shibboleth::App app;
+
+		//while (true) {
+		//}
 
 		if (!app.init(argc, argv)) {
 			app.destroy();
 			return -1;
 		}
 
+#ifdef PLATFORM_WINDOWS
+		// Shibboleth::App::init() should not be holding onto references to the command-line args.
+		arg_strings.clear();
+		args.clear();
+#endif
+
 		app.run();
 		app.destroy();
 
 		return 0;
 	}
-#endif

@@ -44,9 +44,6 @@ public:
 	~App(void);
 
 	bool init(int argc, const char** argv);
-#ifdef PLATFORM_WINDOWS
-	bool init(void);
-#endif
 
 	void run(void);
 	void destroy(void);

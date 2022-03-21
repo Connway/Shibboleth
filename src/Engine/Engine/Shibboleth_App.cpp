@@ -34,10 +34,6 @@ THE SOFTWARE.
 #include <EAThread/eathread_thread.h>
 #include <filesystem>
 
-#ifdef PLATFORM_WINDOWS
-	#include <shellapi.h>
-#endif
-
 #ifdef INIT_STACKTRACE_SYSTEM
 	#include <Gaff_StackTrace.h>
 #endif
@@ -108,53 +104,6 @@ bool App::init(int argc, const char** argv)
 
 	return initInternal();
 }
-
-#ifdef PLATFORM_WINDOWS
-// Still single-threaded at this point, so ok that we're not locking.
-bool App::init(void)
-{
-	const bool application_set_configs = _configs.size() > 0 && _configs[k_config_app_working_dir].isString();
-
-	// Check if application set working directory.
-	if (application_set_configs && !initApp()) {
-		return false;
-	}
-
-	Gaff::JSON main_config;
-
-	if (main_config.parseFile(u8"cfg/app.cfg")) {
-		main_config.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
-			_configs.setObject(key, value);
-			return false;
-		});
-	}
-
-	int argc = 0;
-	const wchar_t* const * const argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-
-	// Load any extra configs and add their values to the _configs object.
-	for (int i = 0; i < argc; ++i) {
-		const wchar_t* tmp = argv[i];
-		CONVERT_STRING(char8_t, arg, tmp);
-		Gaff::JSON extra_configs;
-
-		if (!Gaff::EndsWith(arg, u8".cfg") || !extra_configs.parseFile(arg)) {
-			continue;
-		}
-
-		extra_configs.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool {
-			_configs.setObject(key, value);
-			return false;
-		});
-	}
-
-	if (!application_set_configs && !initApp()) {
-		return false;
-	}
-
-	return initInternal();
-}
-#endif
 
 void App::run(void)
 {
