@@ -154,9 +154,6 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\ShibEd">
-      <UniqueIdentifier>{54C0792D-4023-09D2-E9A8-4188D5EAD454}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tools\j2mp">
       <UniqueIdentifier>{DE2F0605-CAE7-4752-33EF-20AE1FC6E242}</UniqueIdentifier>
     </Filter>
@@ -344,9 +341,6 @@
     </None>
     <None Include="..\..\..\..\src\Tests\project_generator.lua">
       <Filter>Tests</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Tools\ShibEd\project_generator.lua">
-      <Filter>Tools\ShibEd</Filter>
     </None>
     <None Include="..\..\..\..\src\Tools\j2mp\project_generator.lua">
       <Filter>Tools\j2mp</Filter>

@@ -27,8 +27,8 @@ THE SOFTWARE.
 #include <QMutex>
 #include <QFrame>
 
+class QTableWidget;
 class QPushButton;
-class QListWidget;
 class QLineEdit;
 
 NS_SHIBBOLETH
@@ -59,8 +59,6 @@ private:
 	};
 
 	QList<Filter> _filters;
-
-	//QStringList _filters;
 	QString _directory;
 	QMutex _lock;
 	bool _cancel = false;
@@ -79,7 +77,7 @@ private:
 	SearchThread _search_thread;
 
 	QPushButton* _search_button = nullptr;
-	QListWidget* _results = nullptr;
+	QTableWidget* _results = nullptr;
 	QLineEdit* _filters = nullptr;
 
 	void updateResults(const QString& file, size_t line, const QString& text);

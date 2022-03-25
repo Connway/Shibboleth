@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <QCoreApplication>
 #include <QDirIterator>
+#include <QTableWidget>
 #include <QGridLayout>
 #include <QListWidget>
 #include <QPushButton>
@@ -177,7 +178,11 @@ ToDoWindow::ToDoWindow(QWidget* parent):
 
 	_filters->setPlaceholderText(tr("Search Filter, separated by ';' (eg. .h;.cpp;Resources/*.lua"));
 
-	_results = new QListWidget(this);
+	_results = new QTableWidget(this);
+
+	const QStringList headers = { tr("File"), tr("Line"), tr("Text") };
+	_results->setColumnCount(3);
+	_results->setHorizontalHeaderLabels(headers);
 
 	QGridLayout* const grid_layout = new QGridLayout(this);
 	grid_layout->addWidget(_filters, 0, 0);
@@ -200,8 +205,20 @@ void ToDoWindow::updateResults(const QString& file, size_t line, const QString& 
 	const QByteArray file_utf8 = file.toUtf8();
 	const QByteArray text_utf8 = text.toUtf8();
 
-	const QString item = QString::asprintf("%s(%u): %s", file_utf8.data(), line, text_utf8.data());
-	_results->addItem(item);
+	QTableWidgetItem* const file_item = new QTableWidgetItem(file);
+	QTableWidgetItem* const line_item = new QTableWidgetItem(QString("%1").arg(line));
+	QTableWidgetItem* const text_item = new QTableWidgetItem(text);
+
+	file_item->setFlags(file_item->flags() & ~Qt::ItemIsEditable);
+	line_item->setFlags(line_item->flags() & ~Qt::ItemIsEditable);
+	text_item->setFlags(text_item->flags() & ~Qt::ItemIsEditable);
+
+	const int32_t num_rows = _results->rowCount();
+	_results->setRowCount(num_rows + 1);
+
+	_results->setItem(num_rows, 0, file_item);
+	_results->setItem(num_rows, 1, line_item);
+	_results->setItem(num_rows, 2, text_item);
 }
 
 void ToDoWindow::performOrCancelSearch(void)
@@ -222,7 +239,7 @@ void ToDoWindow::performOrCancelSearch(void)
 	// .. to get out of bin directory.
 	if (_search_thread.search("..", filter_text)) {
 		_search_button->setText(tr("Cancel"));
-		_results->clear();
+		_results->setRowCount(0);
 	}
 }
 

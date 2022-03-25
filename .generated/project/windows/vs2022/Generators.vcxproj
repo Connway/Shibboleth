@@ -188,7 +188,6 @@
     <None Include="..\..\..\..\src\Modules\Scene\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua" />
     <None Include="..\..\..\..\src\Tests\project_generator.lua" />
-    <None Include="..\..\..\..\src\Tools\ShibEd\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\j2mp\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\refl_hash_dump\project_generator.lua" />
   </ItemGroup>
