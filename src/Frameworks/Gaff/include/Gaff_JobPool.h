@@ -27,12 +27,11 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
-#include <EAThread/eathread_condition.h>
 #include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>
-#include <EAThread/eathread_futex.h>
+#include <EAThread/eathread_mutex.h>
 #include <EASTL/chrono.h>
-#include <atomic>
+#include <EASTL/atomic.h>
 
 NS_GAFF
 
@@ -46,7 +45,7 @@ struct JobData final
 
 using Counter = std::atomic_int32_t;
 using JobPair = eastl::pair<JobData, Counter*>;
-using ThreadInitFunc = void (*)(uintptr_t);
+using ThreadInitOrShutdownFunc = void (*)(uintptr_t);
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -55,7 +54,7 @@ public:
 	JobPool(const Allocator& allocator = Allocator());
 	~JobPool(void);
 
-	bool init(int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
+	bool init(int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitOrShutdownFunc init = nullptr, ThreadInitOrShutdownFunc shutdown = nullptr);
 	void destroy(void);
 
 	void pause(void);
@@ -65,8 +64,6 @@ public:
 
 	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Hash32 pool = Hash32(0));
 	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Hash32 pool = Hash32(0));
-	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter** counter = nullptr);
-	void addJobsForAllThreads(const JobData* jobs, int32_t num_jobs, Counter& counter);
 
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(const Counter& counter);
@@ -79,10 +76,8 @@ public:
 	void helpAndFreeCounter(EA::Thread::ThreadId thread_id, Counter* counter);
 	void helpAndFreeCounter(Counter* counter);
 
-	bool help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
-	bool help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
-	void doAJob(EA::Thread::ThreadId thread_id);
-	void doAJob(void);
+	void help(EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
+	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
 
 	int32_t getNumTotalThreads(void) const;
 	void getThreadIDs(EA::Thread::ThreadId* out) const;
@@ -92,43 +87,36 @@ private:
 	struct JobQueue final
 	{
 		Queue<JobPair, Allocator> jobs;
-		UniquePtr<EA::Thread::Futex, Allocator> read_write_lock;
+		UniquePtr<EA::Thread::Mutex, Allocator> read_write_lock;
 		UniquePtr<EA::Thread::Semaphore, Allocator> thread_lock;
 	};
 
 	struct ThreadData final
 	{
 		JobPool<Allocator>* job_pool = nullptr;
-		ThreadInitFunc init_func = nullptr;
-		bool running : 1;
-		bool pause : 1;
+		ThreadInitOrShutdownFunc init_func = nullptr;
+		ThreadInitOrShutdownFunc shutdown_func = nullptr;
+		eastl::atomic<bool> running = true;
+		eastl::atomic<bool> pause = true;
 	};
-
-	struct ThreadEvent final
-	{
-		UniquePtr<EA::Thread::Mutex, Allocator> event_lock;
-		UniquePtr<EA::Thread::Condition, Allocator> event;
-	};
-
-	static constexpr eastl::chrono::milliseconds k_sleep_time = eastl::chrono::milliseconds(200);
 
 	VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
-	JobQueue _main_queue;
 
-	VectorMap<EA::Thread::ThreadId, JobQueue, Allocator> _per_thread_jobs;
-	VectorMap<EA::Thread::ThreadId, ThreadEvent, Allocator> _thread_events;
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
-	EA::Thread::ThreadId _main_thread_id;
 
-	std::atomic_int32_t _num_jobs = 0;
+	EA::Thread::Semaphore _thread_lock;
+
+	EA::Thread::ThreadId _main_thread_id;
+	eastl::atomic<int32_t> _num_jobs = 0;
 
 	Allocator _allocator;
 
 	void notifyThreads(void);
 
-	bool processJobQueue(JobQueue& job_queue, EA::Thread::ThreadId thread_id, eastl::chrono::milliseconds ms);
-	static void DoJob(EA::Thread::ThreadId thread_id, JobPair& job);
+	bool doJobFromQueue(EA::Thread::ThreadId thread_id, JobQueue& job_queue);
+	void doJob(EA::Thread::ThreadId thread_id, JobPair& job);
+	bool doAJob(EA::Thread::ThreadId thread_id);
 
 	static intptr_t JobThread(void* data);
 

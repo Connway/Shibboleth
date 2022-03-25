@@ -116,30 +116,13 @@ void App::run(void)
 void App::destroy(void)
 {
 	_job_pool.waitForAllJobsToFinish();
-
-	// Let all the managers destroy their thread local data.
-	const Gaff::JobData thread_deinit_job =
-	{
-		[](uintptr_t thread_id, void* data) -> void
-		{
-			App* const app = reinterpret_cast<App*>(data);
-
-			for (const auto& entry : app->_manager_map) {
-				entry.second->destroyThread(thread_id);
-			}
-		},
-		static_cast<App*>(&GetApp())
-	};
-
-	_job_pool.addJobsForAllThreads(&thread_deinit_job, 1);
+	_job_pool.destroy();
 
 	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+
 	for (const auto& entry : _manager_map) {
 		entry.second->destroyThread((uintptr_t)&thread_id);
 	}
-
-	_job_pool.waitForAllJobsToFinish();
-	_job_pool.destroy();
 
 	if (_main_loop) {
 		_main_loop->destroy();
@@ -160,16 +143,8 @@ void App::destroy(void)
 				if (value.isString()) {
 					module_name = value.getString();
 
-				} else if (value.isArray()) {
-					if (!value[0].isString() || !value[1].isArray()) {
-						LogErrorDefault("module_unload_order[%i] malformed config list!", index);
-						return false;
-					}
-
-					module_name = value[0].getString();
-
 				} else {
-					LogErrorDefault("module_unload_order[%i] is not a string or a config list!", index);
+					LogErrorDefault("module_unload_order[%i] is not a string!", index);
 					return false;
 				}
 
@@ -186,42 +161,8 @@ void App::destroy(void)
 					}
 				}
 
-				// Shutdown the module.
-				const auto module_shutdown = [&](const char8_t* name) -> void
-				{
-					DynamicLoader::ModulePtr module = _dynamic_loader.getModule(name);
-
-					if (!module) {
-						LogErrorDefault("module_unload_order[%i] module '%s' was not found!", index, name);
-						return;
-					}
-
-					void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
-
-					if (shutdown_func) {
-						module_hashes.emplace_back(Gaff::FNV1aHash32String(name));
-						shutdown_func();
-					}
-				};
-
 				if (value.isString()) {
-					module_shutdown(module_name);
 					value.freeString(module_name);
-
-				} else if (value.isArray()) {
-					value[1].forEachInArray([module_shutdown, index](int32_t flavor_index, const Gaff::JSON& module_flavor) -> bool
-					{
-						if (!module_flavor.isString()) {
-							LogErrorDefault("module_unload_order[%i][%i] is not a string!", index, flavor_index);
-							return false;
-						}
-
-						const char8_t* const name = module_flavor.getString();
-						module_shutdown(name);
-						module_flavor.freeString(name);
-
-						return false;
-					});
 				}
 
 				return false;
@@ -233,24 +174,6 @@ void App::destroy(void)
 	}
 
 	_manager_map.clear();
-
-	// Shutdown the modules we haven't already shutdown.
-	_dynamic_loader.forEachModule([&](const HashString32<>& module_name, DynamicLoader::ModulePtr module) -> bool
-	{
-		const auto it = Gaff::Find(module_hashes, module_name.getHash());
-
-		if (it != module_hashes.end()) {
-			return false;
-		}
-
-		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
-
-		if (shutdown_func) {
-			shutdown_func();
-		}
-
-		return false;
-	});
 
 #ifdef SHIB_STATIC
 	Engine::Gen::ShutdownModulesStatic();
@@ -408,7 +331,7 @@ bool App::initInternal(void)
 
 	LogInfoDefault("Initializing...");
 
-	if (!_job_pool.init(static_cast<int32_t>(Gaff::GetNumberOfCores()), App::ThreadInit)) {
+	if (!_job_pool.init(static_cast<int32_t>(Gaff::GetNumberOfCores()), App::ThreadInit, App::ThreadShutdown)) {
 		LogErrorDefault("Failed to initialize thread pool.");
 		return false;
 	}
@@ -636,11 +559,6 @@ bool App::loadModules(void)
 				}
 			}
 		}
-
-		// After the first chance to load, all the modules should have registered their job pools.
-		if (mode_count == 0) {
-			_job_pool.run();
-		}
 	}
 
 	// Initialize all non-owned reflection.
@@ -696,27 +614,9 @@ bool App::loadModules(void)
 				return false;
 			}
 		}
-
-		const Gaff::JobData thread_init_job =
-		{
-			[](uintptr_t thread_id, void* data) -> void
-			{
-				App* const app = reinterpret_cast<App*>(data);
-
-				for (const auto& entry : app->_manager_map) {
-					if (!entry.second->initThread(thread_id)) {
-						LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
-						app->quit();
-					}
-				}
-			},
-			this
-		};
-
-		Gaff::Counter counter;
-		_job_pool.addJobsForAllThreads(&thread_init_job, 1, counter);
-		_job_pool.waitForCounter(counter);
 	}
+
+	_job_pool.run();
 
 	// Call initAllModulesLoaded() on all managers.
 	Vector<const Refl::IReflectionDefinition*> already_initialized_managers;
@@ -762,19 +662,6 @@ bool App::loadModules(void)
 			return false;
 		}
 	}
-
-	// Notify all modules that every module has been loaded.
-	_dynamic_loader.forEachModule([](const HashString32<>&, DynamicLoader::ModulePtr& module) -> bool
-	{
-		using AllModulesLoadedFunc = void (*)(void);
-		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
-
-		if (aml_func) {
-			aml_func();
-		}
-
-		return false;
-	});
 
 	return true;
 }
@@ -996,8 +883,27 @@ void App::ModuleChanged(const char8_t* path)
 	});
 }
 
-void App::ThreadInit(uintptr_t /*thread_id*/)
+void App::ThreadInit(uintptr_t thread_id)
 {
+	App& app = static_cast<App&>(GetApp());
+
+	for (const auto& entry : app._manager_map) {
+		if (!entry.second->initThread(thread_id)) {
+			LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
+
+			app.quit();
+			break;
+		}
+	}
+}
+
+void App::ThreadShutdown(uintptr_t thread_id)
+{
+	App& app = static_cast<App&>(GetApp());
+
+	for (const auto& entry : app._manager_map) {
+		entry.second->destroyThread(thread_id);
+	}
 }
 
 NS_END
