@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_ECSEntity.h>
+#include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_RefPtr.h>
 #include <Gaff_Hash.h>
-#include <atomic>
 
 NS_SHIBBOLETH
 
@@ -269,7 +269,7 @@ private:
 	Gaff::Hash64 _archetype;
 	ECSManager& _ecs_mgr;
 
-	mutable std::atomic_int32_t _count = 0;
+	mutable eastl::atomic<int32_t> _count = 0;
 
 	GAFF_NO_COPY(ArchetypeReference);
 	GAFF_NO_MOVE(ArchetypeReference);

@@ -23,14 +23,14 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <atomic>
+#include <Gaff_IncludeEASTLAtomic.h>
 
 namespace Gaff
 {
 	template <class Allocator>
 	class JobPool;
 
-	using Counter = std::atomic_int32_t;
+	using Counter = eastl::atomic<int32_t>;
 }
 
 NS_SHIBBOLETH

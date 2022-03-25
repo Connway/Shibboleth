@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
+#include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_IRefCounted.h>
-#include <atomic>
 
 #define SHIB_REF_COUNTED() \
 public: \
@@ -45,7 +45,7 @@ public: \
 		return _count; \
 	} \
 private: \
-	mutable std::atomic_int32_t _count = 0
+	mutable eastl::atomic<int32_t> _count = 0
 
 NS_SHIBBOLETH
 
@@ -74,7 +74,7 @@ public:
 	}
 
 private:
-	mutable std::atomic_int32_t _count = 0;
+	mutable eastl::atomic<int32_t> _count = 0;
 
 	GAFF_NO_COPY(RefCounted);
 	GAFF_NO_MOVE(RefCounted);

@@ -30,6 +30,10 @@ Libraries Affected:
 		Fixed compilation error on Linux with bitvector.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 
+	premake-qt
+		Fixed unnecessarily adding links libs to StaticLib projects.
+		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
+
 Libraries included, but not used:
 	acl
 		Technically nothing uses this, but in the future we will use this for animations.

@@ -26,9 +26,9 @@ THE SOFTWARE.
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_RefCounted.h>
 #include <Shibboleth_Vector.h>
+#include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_RefPtr.h>
 #include <EASTL/functional.h>
-#include <atomic>
 
 #define RES_FAIL_MSG(cond, msg, ...) \
 	if (cond) { \
@@ -86,7 +86,7 @@ protected:
 	void failed(void);
 
 private:
-	mutable std::atomic_int32_t _count = 0;
+	mutable eastl::atomic<int32_t> _count = 0;
 
 	ResourceState _state = ResourceState::Delayed;
 	HashString64<> _file_path;

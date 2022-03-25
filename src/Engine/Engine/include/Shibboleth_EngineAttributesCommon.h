@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 //#include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_Reflection.h"
+#include <limits>
 
 NS_SHIBBOLETH
 

@@ -27,11 +27,11 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
+#include "Gaff_IncludeEASTLAtomic.h"
 #include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>
 #include <EAThread/eathread_mutex.h>
 #include <EASTL/chrono.h>
-#include <EASTL/atomic.h>
 
 NS_GAFF
 
@@ -43,7 +43,7 @@ struct JobData final
 	void* job_data;
 };
 
-using Counter = std::atomic_int32_t;
+using Counter = eastl::atomic<int32_t>;
 using JobPair = eastl::pair<JobData, Counter*>;
 using ThreadInitOrShutdownFunc = void (*)(uintptr_t);
 

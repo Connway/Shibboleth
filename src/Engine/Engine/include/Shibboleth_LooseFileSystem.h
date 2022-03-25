@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
+#include <Gaff_IncludeEASTLAtomic.h>
 #include <EAThread/eathread_mutex.h>
-#include <atomic>
 
 NS_SHIBBOLETH
 
@@ -97,7 +97,7 @@ private:
 
 		U8String name;
 		IFile* file;
-		std::atomic_int32_t count;
+		eastl::atomic<int32_t> count;
 	};
 
 	Vector<FileData> _files;

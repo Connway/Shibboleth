@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeEASTLAtomic.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeRapidJSON.h">
       <Filter>include</Filter>
     </ClInclude>

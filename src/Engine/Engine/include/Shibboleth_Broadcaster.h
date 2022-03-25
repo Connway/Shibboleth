@@ -24,16 +24,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_Reflection.h"
 #include "Shibboleth_VectorMap.h"
+#include "Shibboleth_JobPool.h"
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Function.h>
-#include <Gaff_JobPool.h>
 #include <EAThread/eathread_mutex.h>
-#include <atomic>
-
-NS_GAFF
-	using Counter = std::atomic_int32_t;
-NS_END
 
 NS_SHIBBOLETH
 
