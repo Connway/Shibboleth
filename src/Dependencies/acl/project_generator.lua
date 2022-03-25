@@ -1,9 +1,9 @@
 group "Dependencies/Unused By Engine"
 
 project "acl"
-	-- if _ACTION then
-	-- 	location(GetDependenciesLocation())
-	-- end
+	if _ACTION then
+		location(GetDependenciesLocation())
+	end
 
 	kind "None"
 	-- language "C++"
