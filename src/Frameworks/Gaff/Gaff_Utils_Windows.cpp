@@ -90,7 +90,7 @@ bool GetWorkingDir(char8_t* buffer, size_t size)
 
 	if (ret > 0) {
 		const wchar_t* temp_start = temp_buffer;
-		eastl::DecodePart(temp_start, temp_start + ret, buffer, buffer + size);
+		eastl::DecodePart(temp_start, temp_start + ret + 1, buffer, buffer + size);
 
 		return true;
 	}

@@ -32,7 +32,7 @@ project "CivetWeb"
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
 
 	filter { "system:windows" }

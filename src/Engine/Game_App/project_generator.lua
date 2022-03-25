@@ -11,7 +11,7 @@ project "Game_App"
 
 	filter {}
 
-	debugdir "../../../workingdir"
+	debugdir "../../../workingdir/bin"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
@@ -43,8 +43,8 @@ project "Game_App"
 	filter { "system:windows" }
 		links { "Dbghelp", "iphlpapi", "psapi", "userenv" }
 
-	filter { "system:not windows" }
-		linkoptions { "-Wl,-rpath,./bin" }
+	--filter { "system:not windows" }
+	--	linkoptions { "-Wl,-rpath,./bin" }
 
 	filter { "configurations:Static_*" }
 		defines { "SHIB_STATIC" }
@@ -57,5 +57,6 @@ project "Game_App"
 
 	postbuildcommands
 	{
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}

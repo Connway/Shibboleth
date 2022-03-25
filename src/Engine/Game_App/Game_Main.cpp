@@ -54,6 +54,10 @@ THE SOFTWARE.
 	int main(int argc, const char** argv)
 	{
 #endif
+
+		// Step out of bin directory into main directory.
+		Gaff::SetWorkingDir(u8"..");
+
 		Shibboleth::App app;
 
 		//while (true) {

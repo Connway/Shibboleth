@@ -175,6 +175,7 @@
     <None Include="..\..\..\..\src\Modules\Debug\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevDebug\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevECS\project_generator.lua" />
+    <None Include="..\..\..\..\src\Modules\DevEditor\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevGraphics\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevWebServer\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\ECS\project_generator.lua" />

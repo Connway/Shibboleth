@@ -64,7 +64,7 @@ project "ShibEd"
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
 		"{COPYDIR} ../../../../../workingdir/bin ../../../../../workingdir/tools",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 
 	qtgenerateddir ".generated"
@@ -112,8 +112,8 @@ project "ShibEd"
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools/platforms",
-		"{COPY} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../workingdir/tools/platforms",
-		"{COPY} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/tools/platforms"
+		"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../workingdir/tools/platforms",
+		"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/tools/platforms"
 	}
 
 	for _, name in ipairs(modules) do
@@ -121,8 +121,8 @@ project "ShibEd"
 
 		postbuildcommands
 		{
-			"{COPY} " .. final_name .. "d" .. extension .. " ../../../../../workingdir/tools",
-			"{COPY} " .. final_name .. extension .." ../../../../../workingdir/tools"
+			"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../workingdir/tools",
+			"{COPYFILE} " .. final_name .. extension .." ../../../../../workingdir/tools"
 		}
 	end
 

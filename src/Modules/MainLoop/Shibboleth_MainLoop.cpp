@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_MainLoop.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_RenderManagerBase.h>
+#include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
@@ -181,6 +182,8 @@ bool MainLoop::init(void)
 		}
 	}
 
+	_update_windows = !app.getConfigs()[k_config_app_editor_mode].getBool(false);
+
 	return true;
 }
 
@@ -191,8 +194,10 @@ void MainLoop::destroy(void)
 
 void MainLoop::update(void)
 {
-	// This has to happen in the main thread.
-	_render_mgr->updateWindows();
+	if (!_update_windows) {
+		// This has to happen in the main thread.
+		_render_mgr->updateWindows();
+	}
 
 	const int32_t num_blocks = static_cast<int32_t>(_blocks.size());
 

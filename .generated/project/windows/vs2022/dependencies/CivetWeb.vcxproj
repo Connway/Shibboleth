@@ -119,7 +119,7 @@
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,7 +150,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (x
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -181,7 +181,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ 
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -212,7 +212,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ 
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

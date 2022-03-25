@@ -68,6 +68,8 @@ private:
 	IRenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
 
+	bool _update_windows = true;
+
 	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
 };
 

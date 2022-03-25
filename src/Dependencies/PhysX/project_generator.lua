@@ -54,7 +54,7 @@ function PhysXProject(proj_name, lib_type)
 		postbuildcommands
 		{
 			"{MKDIR} ../../../../../workingdir/bin",
-			"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 		}
 	end
 
@@ -414,9 +414,9 @@ PhysXProject("PhysX", "StaticLib")
 		postbuildcommands
 		{
 			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
 			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
 			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
 		}
 
@@ -426,9 +426,9 @@ PhysXProject("PhysX", "StaticLib")
 		postbuildcommands
 		{
 			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
 			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPY} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
 			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp"
 		}
 

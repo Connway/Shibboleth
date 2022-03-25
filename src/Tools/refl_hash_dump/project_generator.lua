@@ -46,5 +46,5 @@ project "refl_hash_dump"
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}

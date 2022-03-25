@@ -807,17 +807,16 @@ bool DebugManager::initAllModulesLoaded(void)
 	_input_mgr = &GetApp().getManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
 
-	GAFF_ASSERT(_main_output);
-
 	const auto* const devices = _render_mgr->getDevicesByTag("main");
 	GAFF_ASSERT(devices && devices->size() == 1);
 
 	_main_device = devices->front();
 
 	Gleam::IWindow* const main_window = _render_mgr->getWindow("main");
-	GAFF_ASSERT(main_window);
 
-	main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
+	if (main_window) {
+		main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
+	}
 
 	ECSQuery camera_query;
 	camera_query.add<Position>(_camera_position);
@@ -833,7 +832,20 @@ bool DebugManager::initAllModulesLoaded(void)
 void DebugManager::update(void)
 {
 	if (!_main_output) {
-		return;
+		_main_output = _render_mgr->getOutput("main");
+
+		if (!_main_output) {
+			return;
+		}
+
+		Gleam::IWindow* const main_window = _render_mgr->getWindow("main");
+
+		if (main_window) {
+			main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.ImeWindowHandle = main_window->getPlatformHandle();
+		}
 	}
 
 	constexpr Gaff::Hash32 k_debug_menu_toggle = Gaff::FNV1aHash32Const("Debug_Menu_Toggle");
@@ -1858,12 +1870,11 @@ bool DebugManager::initImGui(void)
 	ImGui::StyleColorsDark();
 
 	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
-	GAFF_ASSERT(window);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
 	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
-	io.ImeWindowHandle = window->getPlatformHandle();
+	io.ImeWindowHandle = window ? window->getPlatformHandle() : nullptr;
 	io.BackendRendererName = "Gleam";
 	io.BackendPlatformName = "Gleam";
 	io.IniFilename = nullptr;

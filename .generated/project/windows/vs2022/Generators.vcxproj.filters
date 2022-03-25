@@ -112,6 +112,9 @@
     <Filter Include="Modules\DevECS">
       <UniqueIdentifier>{67AF71EE-537D-65F4-3C11-D61A287E4159}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules\DevEditor">
+      <UniqueIdentifier>{33FF6287-9F15-611D-E88C-EC3E54E231A5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Modules\DevGraphics">
       <UniqueIdentifier>{7DFD5CE7-E95E-3AF5-72CC-80A7DE2C71B4}</UniqueIdentifier>
     </Filter>
@@ -302,6 +305,9 @@
     </None>
     <None Include="..\..\..\..\src\Modules\DevECS\project_generator.lua">
       <Filter>Modules\DevECS</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\DevEditor\project_generator.lua">
+      <Filter>Modules\DevEditor</Filter>
     </None>
     <None Include="..\..\..\..\src\Modules\DevGraphics\project_generator.lua">
       <Filter>Modules\DevGraphics</Filter>

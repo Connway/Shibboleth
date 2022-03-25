@@ -161,7 +161,7 @@
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -193,7 +193,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (x
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -225,7 +225,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ 
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -257,7 +257,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ 
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
@@ -283,7 +283,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFil
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
@@ -315,7 +315,7 @@ IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(Target
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

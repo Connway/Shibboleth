@@ -551,6 +551,31 @@ bool App::loadMainLoop(void)
 
 	const Refl::IReflectionDefinition* refl = bucket->front();
 
+	if (const Gaff::JSON loop_name = _configs[k_config_app_main_loop]; loop_name.isString()) {
+		const char8_t* const loop_name_beg = loop_name.getString();
+		const char8_t* const loop_name_end = loop_name_beg + loop_name.size();
+		bool found = false;
+
+		for (const Refl::IReflectionDefinition* ref_def : *bucket) {
+			const char8_t* const name_beg = ref_def->getReflectionInstance().getName();
+			const char8_t* const name_end = name_beg + eastl::CharStrlen(name_beg);
+
+			if (!U8String::compare(name_beg, name_end, loop_name_beg, loop_name_end)) {
+				refl = ref_def;
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			LogErrorDefault("Failed to find main loop class '%s'.", loop_name_beg);
+			loop_name.freeString(loop_name_beg);
+			return false;
+		}
+
+		loop_name.freeString(loop_name_beg);
+	}
+
 	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(Shibboleth::IMainLoop), ProxyAllocator::GetGlobal());
 
 	if (!_main_loop) {
@@ -759,15 +784,16 @@ bool App::initApp(void)
 	const Gaff::JSON& wd = _configs[k_config_app_working_dir];
 
 	if (wd.isString()) {
-		if (!Gaff::SetWorkingDir(wd.getString())) {
-			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
+		const char8_t* const working_dir = wd.getString();
+
+		if (!Gaff::SetWorkingDir(working_dir)) {
+			LogErrorDefault("Failed to set working directory to '%s'.", working_dir);
 			return false;
 		}
 
 		// Set DLL auto-load directory.
 #ifdef PLATFORM_WINDOWS
-		const char8_t* working_dir_ptr = wd.getString();
-		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
+		CONVERT_STRING(wchar_t, temp, working_dir);
 
 		if ((temp[wd.size() - 1] == L'/' || temp[wd.size() - 1] == L'\\')) {
 			memcpy(temp + wd.size(), L"bin", sizeof(wchar_t) * 4);
@@ -779,10 +805,14 @@ bool App::initApp(void)
 			LogErrorDefault("Failed to set DLL directory to '%ls'.", temp);
 			return false;
 		}
+#endif
 
+		wd.freeString(working_dir);
+
+#ifdef PLATFORM_WINDOWS
 	} else {
 		if (!SetDllDirectory(L"bin")) {
-			LogErrorDefault("Failed to set DLL directory to '%s/bin'.", wd.getString());
+			LogErrorDefault("Failed to set DLL directory to 'bin'.");
 			return false;
 		}
 #endif

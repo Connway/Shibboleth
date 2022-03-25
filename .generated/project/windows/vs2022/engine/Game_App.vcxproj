@@ -164,7 +164,8 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -199,7 +200,8 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -234,7 +236,8 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -269,7 +272,8 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
@@ -295,7 +299,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
@@ -327,7 +332,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -363,6 +369,12 @@
     </ProjectReference>
     <ProjectReference Include="..\modules\DevECS.vcxproj">
       <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\DevEditor.vcxproj">
+      <Project>{6BA2BC3C-D70C-71B3-204B-22598CF44E08}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\ads.vcxproj">
+      <Project>{DD5C880B-4966-887C-D2E1-9E7C3EEA937C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\DevGraphics.vcxproj">
       <Project>{B54EAC59-2104-254F-AAF8-1E2616AD1B53}</Project>

@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CEBFB46B-3A80-30A2-03BB-791F6F3A757E}</ProjectGuid>
+    <ProjectGuid>{F134741C-5DC0-E1E0-66D1-64D5D2DB3DE1}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>PhysicsModule</RootNamespace>
+    <RootNamespace>DevEditorModule</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,29 +72,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\PhysicsModule\</IntDir>
-    <TargetName>PhysicsModule64d</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\DevEditorModule\</IntDir>
+    <TargetName>DevEditorModule64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\PhysicsModule\</IntDir>
-    <TargetName>PhysicsModule64</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\DevEditorModule\</IntDir>
+    <TargetName>DevEditorModule64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\PhysicsModule\</IntDir>
-    <TargetName>PhysicsModule64p</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\DevEditorModule\</IntDir>
+    <TargetName>DevEditorModule64p</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\PhysicsModule\</IntDir>
-    <TargetName>PhysicsModule64od</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\DevEditorModule\</IntDir>
+    <TargetName>DevEditorModule64od</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -102,8 +102,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Frameworks\Gaff\include;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtGui;$(QT_DIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -116,14 +116,25 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysicsModule64d.lib</ImportLibrary>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\DevEditorModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\DevModules (mkdir ..\..\..\..\..\workingdir\DevModules)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\DevModules
+IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF NOT EXIST ..\..\..\..\..\workingdir\bin\platforms (mkdir ..\..\..\..\..\workingdir\bin\platforms)
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,8 +142,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;RELEASE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;RELEASE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Frameworks\Gaff\include;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtGui;$(QT_DIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -151,14 +162,25 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\PhysicsModule64.lib</ImportLibrary>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\DevEditorModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\Modules</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\DevModules (mkdir ..\..\..\..\..\workingdir\DevModules)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\DevModules
+IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF NOT EXIST ..\..\..\..\..\workingdir\bin\platforms (mkdir ..\..\..\..\..\workingdir\bin\platforms)
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -166,8 +188,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Frameworks\Gaff\include;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtGui;$(QT_DIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -186,14 +208,25 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysicsModule64p.lib</ImportLibrary>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\DevEditorModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\Modules</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\DevModules (mkdir ..\..\..\..\..\workingdir\DevModules)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\DevModules
+IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF NOT EXIST ..\..\..\..\..\workingdir\bin\platforms (mkdir ..\..\..\..\..\workingdir\bin\platforms)
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -201,8 +234,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;QT_DISABLE_DEPRECATED_BEFORE=0x060000;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Frameworks\Gaff\include;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtGui;$(QT_DIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -221,18 +254,29 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysicsModule64od.lib</ImportLibrary>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevEditorModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\Modules (mkdir ..\..\..\..\..\workingdir\Modules)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\Modules</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\DevModules (mkdir ..\..\..\..\..\workingdir\DevModules)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\DevModules
+IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF NOT EXIST ..\..\..\..\..\workingdir\bin\platforms (mkdir ..\..\..\..\..\workingdir\bin\platforms)
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\bin\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\bin
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\Memory.vcxproj">
@@ -247,68 +291,20 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
-    <ProjectReference Include="Physics.vcxproj">
-      <Project>{888B590D-F46A-D8A8-FD82-637F69E13E0A}</Project>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="DevEditor.vcxproj">
+      <Project>{6BA2BC3C-D70C-71B3-204B-22598CF44E08}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\mpack.vcxproj">
-      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevel.vcxproj">
-      <Project>{4F63ED1A-3B30-4826-6449-36CE50757DB4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevelAABB.vcxproj">
-      <Project>{B534A1CE-A197-3073-4A1D-6929365FFCF5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevelDynamics.vcxproj">
-      <Project>{87D47AF5-73CD-9947-9CFF-7ECC88577953}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCharacterKinematic.vcxproj">
-      <Project>{83304542-EF67-8DD9-F871-F1FC6428B4D2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXFoundation.vcxproj">
-      <Project>{584C81A5-C4D7-EE69-CDE8-715E39F34A6A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXExtensions.vcxproj">
-      <Project>{311D5C31-9DA8-C9F5-A6B9-4CEA12C425F6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXVehicle.vcxproj">
-      <Project>{A1CA1E15-8D2D-AEB9-36B3-E66F22F5793C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCooking.vcxproj">
-      <Project>{ABBC5F76-971F-EF1A-40A5-27D12CE7BA9D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCommon.vcxproj">
-      <Project>{4A347687-B6E9-EE7C-3FDE-E853AB92E580}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXPvdSDK.vcxproj">
-      <Project>{4D8C42A6-B941-BB9B-4236-B572AEEAB19F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXTask.vcxproj">
-      <Project>{F475AEC8-60E0-623F-A91E-14E515C84094}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysX.vcxproj">
-      <Project>{C1C1E10D-2DD6-09BF-F657-AD1E622B06F0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\SceneQuery.vcxproj">
-      <Project>{89654ECC-751D-9019-DE24-6975CAFB2A0A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\SimulationController.vcxproj">
-      <Project>{AEFD6AD8-9A8C-F4A1-43AB-089D2F190548}</Project>
-    </ProjectReference>
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
-    <ProjectReference Include="Resource.vcxproj">
-      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Debug.vcxproj">
-      <Project>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    <ProjectReference Include="..\dependencies\ads.vcxproj">
+      <Project>{DD5C880B-4966-887C-D2E1-9E7C3EEA937C}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

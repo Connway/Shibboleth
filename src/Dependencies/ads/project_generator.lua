@@ -55,7 +55,7 @@ project "ads"
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 
 	SetupConfigMap()

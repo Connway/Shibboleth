@@ -32,5 +32,5 @@ project "j2mp"
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}

@@ -128,16 +128,16 @@ premake5 gen_tool_header --tool=ShibEd --gen-out-dir=.generated</Command>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
 xcopy /Q /E /Y /I ..\..\..\..\..\workingdir\bin ..\..\..\..\..\workingdir\tools
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools
 IF NOT EXIST ..\..\..\..\..\workingdir\tools\platforms (mkdir ..\..\..\..\..\workingdir\tools\platforms)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindowsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindows.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Cored.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Core.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Guid.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Gui.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgetsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgets.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -177,16 +177,16 @@ premake5 gen_tool_header --tool=ShibEd --gen-out-dir=.generated</Command>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
 xcopy /Q /E /Y /I ..\..\..\..\..\workingdir\bin ..\..\..\..\..\workingdir\tools
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools
 IF NOT EXIST ..\..\..\..\..\workingdir\tools\platforms (mkdir ..\..\..\..\..\workingdir\tools\platforms)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindowsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindows.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Cored.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Core.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Guid.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Gui.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgetsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgets.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -226,16 +226,16 @@ premake5 gen_tool_header --tool=ShibEd --gen-out-dir=.generated</Command>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
 xcopy /Q /E /Y /I ..\..\..\..\..\workingdir\bin ..\..\..\..\..\workingdir\tools
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools
 IF NOT EXIST ..\..\..\..\..\workingdir\tools\platforms (mkdir ..\..\..\..\..\workingdir\tools\platforms)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindowsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindows.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Cored.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Core.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Guid.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Gui.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgetsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgets.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -275,16 +275,16 @@ premake5 gen_tool_header --tool=ShibEd --gen-out-dir=.generated</Command>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
 xcopy /Q /E /Y /I ..\..\..\..\..\workingdir\bin ..\..\..\..\..\workingdir\tools
-IF EXIST ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools &gt; nul)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools
 IF NOT EXIST ..\..\..\..\..\workingdir\tools\platforms (mkdir ..\..\..\..\..\workingdir\tools\platforms)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindowsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\plugins\platforms\qwindows.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Cored.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Core.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Guid.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Gui.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgetsd.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools &gt; nul)
-IF EXIST $(QT_DIR)\bin\Qt6Widgets.dll\ (xcopy /Q /E /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul) ELSE (xcopy /Q /Y /I $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools &gt; nul)</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll ..\..\..\..\..\workingdir\tools\platforms
+copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Core.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll ..\..\..\..\..\workingdir\tools
+copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

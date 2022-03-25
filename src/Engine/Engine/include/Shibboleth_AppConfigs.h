@@ -37,6 +37,7 @@ constexpr const char8_t* const k_config_app_file_system = u8"app_file_system";
 constexpr const char8_t* const k_config_app_no_load_modules = u8"app_no_load_modules";
 constexpr const char8_t* const k_config_app_no_managers = u8"app_no_managers";
 constexpr const char8_t* const k_config_app_no_main_loop = u8"app_no_main_loop";
+constexpr const char8_t* const k_config_app_main_loop = u8"app_main_loop";
 
 constexpr const char8_t* const k_config_app_default_log_dir = u8"./logs";
 constexpr const char8_t* const k_config_app_read_file_pool_name = u8"Read File";

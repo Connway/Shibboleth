@@ -60,7 +60,15 @@ u8R"({
 	{
 		"icon": { "type": "string" },
 
-		"adapters": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+		"adapters":
+		{
+			"type": "object",
+			"additionalProperties":
+			{
+				"type": "array",
+				"items": { "type": "integer", "minimum": 0 }
+			},
+		},
 
 		"windows":
 		{
@@ -196,21 +204,45 @@ bool RenderManagerBase::init(void)
 	if (configs[k_config_graphics_no_windows].getBool(false)) {
 		const Gaff::JSON adapters = config[u8"adapters"];
 
-		if (adapters.isArray()) {
-			adapters.forEachInArray([&](int32_t /*index*/, const Gaff::JSON& value) -> bool
+		if (adapters.isObject() && adapters.size() > 0) {
+			adapters.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
 			{
-				const int32_t adapter_id = value.getInt32();
-				const Gleam::IRenderDevice* const rd = createRenderDevice(adapter_id);
+				value.forEachInArray([&](int32_t /*index*/, const Gaff::JSON& adapter_id) -> bool
+				{
+					const int32_t aid = adapter_id.getInt32();
+					Gleam::IRenderDevice* const rd = createRenderDevice(aid);
 
-				if (!rd) {
-					LogErrorGraphics("Failed to create render device with adapter id '%i'.", adapter_id);
+					if (!rd) {
+						LogErrorGraphics("Failed to create render device with adapter id '%i'.", aid);
+						return false;
+					}
+
+					// Nothing left to do, the render device is already part of the _render_device list.
+					const Gaff::Hash32 tag_hash = Gaff::FNV1aHash32String(key);
+					_render_device_tags[tag_hash].emplace_back(rd);
+
+					_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
+
 					return false;
-				}
-
-				// Nothing left to do, the render device is already part of the _render_device list.
+				});
 
 				return false;
 			});
+
+		// Always attempt to create a render device at adapter ID 0.
+		} else {
+			Gleam::IRenderDevice* const rd = createRenderDevice(0);
+
+			if (!rd) {
+				LogErrorGraphics("Failed to create render device with adapter id '0'.");
+				return false;
+			}
+
+			// Nothing left to do, the render device is already part of the _render_device list.
+			const Gaff::Hash32 tag_hash = Gaff::FNV1aHash32String(u8"main");
+			_render_device_tags[tag_hash].emplace_back(rd);
+
+			_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
 		}
 
 	} else {
