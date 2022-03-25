@@ -253,10 +253,10 @@ void MainLoop::update(void)
 	}
 
 	// Help out a little before the next iteration.
-	_job_pool->doAJob(_job_pool->getMainThreadID());
+	//_job_pool->help(_job_pool->getMainThreadID());
 
 	// Give some time to other threads.
-	EA_THREAD_DO_SPIN();
+	EA::Thread::ThreadSleep();
 }
 
 NS_END

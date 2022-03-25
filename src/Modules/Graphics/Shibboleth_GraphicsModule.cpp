@@ -79,11 +79,6 @@ THE SOFTWARE.
 
 			return true;
 		}
-
-		void Shutdown(void)
-		{
-			Gleam::Window::Cleanup();
-		}
 	}
 
 #else
@@ -98,11 +93,6 @@ THE SOFTWARE.
 	DYNAMICEXPORT_C void InitModuleNonOwned(void)
 	{
 		Graphics::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C void ShutdownModule()
-	{
-		Graphics::Shutdown();
 	}
 
 	DYNAMICEXPORT_C bool SupportsHotReloading(void)

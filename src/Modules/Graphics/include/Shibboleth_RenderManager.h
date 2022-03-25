@@ -33,6 +33,7 @@ class RenderManager final : public RenderManagerBase
 {
 public:
 	RenderManager(void);
+	~RenderManager(void);
 
 	Gleam::RendererType getRendererType(void) const override;
 

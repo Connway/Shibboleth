@@ -351,8 +351,8 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 
 		for (auto& pair : _scenes) {
 			while (!pair.second->fetchResults()) {
-				_job_pool->doAJob(thread_id);
-				EA_THREAD_DO_SPIN();
+				_job_pool->help(thread_id);
+				EA::Thread::ThreadSleep();
 			}
 		}
 	}

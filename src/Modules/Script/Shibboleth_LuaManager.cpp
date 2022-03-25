@@ -214,7 +214,7 @@ lua_State* LuaManager::requestState(void)
 		}
 
 		if (!state) {
-			EA_THREAD_DO_SPIN();
+			EA::Thread::ThreadSleep();
 		}
 	}
 

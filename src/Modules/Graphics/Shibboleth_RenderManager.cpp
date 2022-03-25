@@ -69,6 +69,11 @@ RenderManager::RenderManager(void)
 	Gleam::Window::AddGlobalMessageHandler(std::move(func));
 }
 
+RenderManager::~RenderManager(void)
+{
+	Gleam::Window::Cleanup();
+}
+
 Gleam::RendererType RenderManager::getRendererType(void) const
 {
 	return GetRendererType();

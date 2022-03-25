@@ -132,6 +132,7 @@ private:
 
 	static void ModuleChanged(const char8_t* path);
 	static void ThreadInit(uintptr_t thread_id);
+	static void ThreadShutdown(uintptr_t thread_id);
 
 	GAFF_NO_COPY(App);
 	GAFF_NO_MOVE(App);

@@ -94,7 +94,7 @@ bool StateMachine::Load(const ISerializeReader& reader, StateMachine& out)
 
 	while (out.resource->getState() == ResourceState::Pending) {
 		// $TODO: Help out?
-		EA_THREAD_DO_SPIN();
+		EA::Thread::ThreadSleep();
 	}
 
 	if (out.resource->hasFailed()) {

@@ -1,0 +1,2 @@
+cd bin
+Game_App64d.exe "cfg\editor.cfg"

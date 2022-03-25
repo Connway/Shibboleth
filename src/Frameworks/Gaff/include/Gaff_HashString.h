@@ -102,7 +102,7 @@ public:
 
 private:
 	const T* _string = nullptr;
-	HashType _hash_value;
+	HashType _hash_value = HashType(0);
 };
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>

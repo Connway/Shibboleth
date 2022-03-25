@@ -158,11 +158,11 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	}
 
 	// Update rotation.
-	rotation.value += _angular_speed * Gleam::Vec3{
+	rotation.value += _angular_speed * Gleam::Vec3(
 		_input_mgr->getAliasValue(_pitch_index, player_owner.value),
 		_input_mgr->getAliasValue(_yaw_index, player_owner.value),
 		0.0f
-	};
+	);
 
 	// Update position.
 	const Gleam::Mat3x3 rot = glm::mat3_cast(Gleam::Quat(rotation.value * Gaff::TurnsToRad));
