@@ -28,17 +28,9 @@ THE SOFTWARE.
 #include "Gaff_IncludeWindows.h"
 #include <EASTL/algorithm.h>
 
-// Silence MS warnings
-#if _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable: 4091)
-#endif
-
+MSVC_DISABLE_WARNING_PUSH(4091)
 #include <DbgHelp.h>
-
-#if _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()
 
 #include <Psapi.h>
 

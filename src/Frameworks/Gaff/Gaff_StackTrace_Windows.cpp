@@ -27,16 +27,9 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_IncludeWindows.h"
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable: 4091)
-#endif
-
+MSVC_DISABLE_WARNING_PUSH(4091)
 #include <DbgHelp.h>
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()
 
 NS_GAFF
 

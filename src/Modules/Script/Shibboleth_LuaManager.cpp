@@ -28,9 +28,15 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Math.h>
+#include <Gaff_IncludeTracy.h>
 #include <Gaff_Function.h>
 #include <Gaff_JSON.h>
 #include <lua.hpp>
+
+MSVC_DISABLE_WARNING_PUSH(4100 4244)
+#include <TracyLua.hpp>
+MSVC_DISABLE_WARNING_POP()
+
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaManager)
 	.base<Shibboleth::IManager>()
@@ -103,6 +109,10 @@ bool LuaManager::initAllModulesLoaded(void)
 
 		RegisterBuiltIns(state);
 
+	#ifdef TRACY_ENABLE
+		tracy::LuaRegister(state);
+	#endif
+
 		for (const Refl::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
 			RegisterEnum(state, *enum_ref_def);
 		}
@@ -124,6 +134,8 @@ bool LuaManager::initAllModulesLoaded(void)
 
 bool LuaManager::loadBuffer(const char* buffer, size_t size, const char8_t* name)
 {
+	ZoneScoped;
+
 	if (!name) {
 		// $TODO: Log error.
 		return false;
@@ -182,6 +194,8 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char8_t* name
 
 void LuaManager::unloadBuffer(const char8_t* name)
 {
+	ZoneScoped;
+
 	if (!name) {
 		// $TODO: Log error.
 		return;
@@ -201,6 +215,8 @@ void LuaManager::unloadBuffer(const char8_t* name)
 
 lua_State* LuaManager::requestState(void)
 {
+	ZoneScoped;
+
 	lua_State* state = nullptr;
 
 	while (!state) {

@@ -24,16 +24,11 @@ THE SOFTWARE.
 
 #include "Gleam_Vec4.h"
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable : 4127)
-#endif
+MSVC_DISABLE_WARNING_PUSH(4127)
 
 #include <gtc/matrix_transform.hpp>
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()
 
 NS_GLEAM
 	using Mat4x4SIMD = glm::mat<4, 4, float, glm::aligned>;

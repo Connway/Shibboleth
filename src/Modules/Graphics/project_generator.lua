@@ -169,9 +169,7 @@ local LinkDependencies = function()
 
 	dependson(deps)
 	links(deps)
-end
 
-local FilterDependencies = function()
 	filter { "configurations:Static_*_D3D11*" }
 		dependson("GraphicsDirect3D11")
 		links { "GraphicsDirect3D11", "d3d11", "D3dcompiler", "dxgi", "dxguid" }
@@ -190,4 +188,4 @@ local FilterDependencies = function()
 	filter {}
 end
 
-return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies, FilterDependencies = FilterDependencies }
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

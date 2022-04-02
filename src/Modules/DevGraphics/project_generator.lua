@@ -90,9 +90,7 @@ local LinkDependencies = function()
 
 	dependson(deps)
 	links(deps)
-end
 
-local FilterDependencies = function()
 	filter { "system:windows" }
 		links { "d3d11", "dxgi" }
 		--table.insert(deps, "D3dcompiler")
@@ -101,4 +99,4 @@ local FilterDependencies = function()
 	filter{}
 end
 
-return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies, FilterDependencies = FilterDependencies }
+return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

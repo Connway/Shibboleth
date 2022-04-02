@@ -238,7 +238,7 @@ static tracy_force_inline void UpdateLockRange( LockMap& lockmap, const LockEven
 }
 
 template<size_t U>
-static void ReadHwSampleVec( FileRead& f, SortedVector<Int48, Int48Sort>& vec, Slab<U>& slab )
+static uint64_t ReadHwSampleVec( FileRead& f, SortedVector<Int48, Int48Sort>& vec, Slab<U>& slab )
 {
     uint64_t sz;
     f.Read( sz );
@@ -251,6 +251,20 @@ static void ReadHwSampleVec( FileRead& f, SortedVector<Int48, Int48Sort>& vec, S
             vec[i] = ReadTimeOffset( f, refTime );
         }
     }
+    return sz;
+}
+
+// Should be just a simple comparison. Do this when protocol version changes.
+static bool IsQueryPrio( ServerQuery type )
+{
+    return
+        type == ServerQuery::ServerQueryString ||
+        type == ServerQuery::ServerQueryThreadString ||
+        type == ServerQuery::ServerQuerySourceLocation ||
+        type == ServerQuery::ServerQueryPlotName ||
+        type == ServerQuery::ServerQueryFrameName ||
+        type == ServerQuery::ServerQueryParameter ||
+        type == ServerQuery::ServerQueryFiberName;
 }
 
 
@@ -1902,7 +1916,7 @@ Worker::Worker( FileRead& f, EventType::Type eventMask, bool bgTasks )
             ReadHwSampleVec( f, data.retired, m_slab );
             ReadHwSampleVec( f, data.cacheRef, m_slab );
             ReadHwSampleVec( f, data.cacheMiss, m_slab );
-            ReadHwSampleVec( f, data.branchRetired, m_slab );
+            if( ReadHwSampleVec( f, data.branchRetired, m_slab ) != 0 ) m_data.hasBranchRetirement = true;
             ReadHwSampleVec( f, data.branchMiss, m_slab );
         }
     }
@@ -3222,7 +3236,21 @@ void Worker::Exec()
                 m_netWriteCv.notify_one();
             }
 
-            if( !m_serverQueryQueue.empty() && m_serverQuerySpaceLeft > 0 )
+            if( m_serverQuerySpaceLeft > 0 && !m_serverQueryQueuePrio.empty() )
+            {
+                const auto toSend = std::min( m_serverQuerySpaceLeft, m_serverQueryQueuePrio.size() );
+                m_sock.Send( m_serverQueryQueuePrio.data(), toSend * ServerQueryPacketSize );
+                m_serverQuerySpaceLeft -= toSend;
+                if( toSend == m_serverQueryQueuePrio.size() )
+                {
+                    m_serverQueryQueuePrio.clear();
+                }
+                else
+                {
+                    m_serverQueryQueuePrio.erase( m_serverQueryQueuePrio.begin(), m_serverQueryQueuePrio.begin() + toSend );
+                }
+            }
+            if( m_serverQuerySpaceLeft > 0 && !m_serverQueryQueue.empty() )
             {
                 const auto toSend = std::min( m_serverQuerySpaceLeft, m_serverQueryQueue.size() );
                 m_sock.Send( m_serverQueryQueue.data(), toSend * ServerQueryPacketSize );
@@ -3252,7 +3280,7 @@ void Worker::Exec()
             if( m_pendingStrings != 0 || m_pendingThreads != 0 || m_pendingSourceLocation != 0 || m_pendingCallstackFrames != 0 ||
                 m_data.plots.IsPending() || m_pendingCallstackId != 0 || m_pendingExternalNames != 0 ||
                 m_pendingCallstackSubframes != 0 || m_pendingFrameImageData.image != nullptr || !m_pendingSymbols.empty() ||
-                m_pendingSymbolCode != 0 || m_pendingCodeInformation != 0 || !m_serverQueryQueue.empty() ||
+                m_pendingSymbolCode != 0 || m_pendingCodeInformation != 0 || !m_serverQueryQueue.empty() || !m_serverQueryQueuePrio.empty() ||
                 m_pendingSourceLocationPayload != 0 || m_pendingSingleString.ptr != nullptr || m_pendingSecondString.ptr != nullptr ||
                 !m_sourceCodeQuery.empty() || m_pendingFibers != 0 )
             {
@@ -3295,7 +3323,7 @@ void Worker::UpdateMbps( int64_t td )
         m_mbpsData.mbps.emplace_back( bytes / ( td * 125.f ) );
     }
     m_mbpsData.compRatio = decBytes == 0 ? 1 : float( bytes ) / decBytes;
-    m_mbpsData.queue = m_serverQueryQueue.size();
+    m_mbpsData.queue = m_serverQueryQueue.size() + m_serverQueryQueuePrio.size();
     m_mbpsData.transferred += bytes;
 }
 
@@ -3350,7 +3378,21 @@ void Worker::HandleFailure( const char* ptr, const char* end )
             m_netWriteCv.notify_one();
         }
 
-        if( !m_serverQueryQueue.empty() && m_serverQuerySpaceLeft > 0 )
+        if( m_serverQuerySpaceLeft > 0 && !m_serverQueryQueuePrio.empty() )
+        {
+            const auto toSend = std::min( m_serverQuerySpaceLeft, m_serverQueryQueuePrio.size() );
+            m_sock.Send( m_serverQueryQueuePrio.data(), toSend * ServerQueryPacketSize );
+            m_serverQuerySpaceLeft -= toSend;
+            if( toSend == m_serverQueryQueuePrio.size() )
+            {
+                m_serverQueryQueuePrio.clear();
+            }
+            else
+            {
+                m_serverQueryQueuePrio.erase( m_serverQueryQueuePrio.begin(), m_serverQueryQueuePrio.begin() + toSend );
+            }
+        }
+        if( m_serverQuerySpaceLeft > 0 && !m_serverQueryQueue.empty() )
         {
             const auto toSend = std::min( m_serverQuerySpaceLeft, m_serverQueryQueue.size() );
             m_sock.Send( m_serverQueryQueue.data(), toSend * ServerQueryPacketSize );
@@ -3479,10 +3521,14 @@ void Worker::DispatchFailure( const QueueItem& ev, const char*& ptr )
 void Worker::Query( ServerQuery type, uint64_t data, uint32_t extra )
 {
     ServerQueryPacket query { type, data, extra };
-    if( m_serverQueryQueue.empty() && m_serverQuerySpaceLeft > 0 )
+    if( m_serverQuerySpaceLeft > 0 && m_serverQueryQueuePrio.empty() && m_serverQueryQueue.empty() )
     {
         m_serverQuerySpaceLeft--;
         m_sock.Send( &query, ServerQueryPacketSize );
+    }
+    else if( IsQueryPrio( type ) )
+    {
+        m_serverQueryQueuePrio.push_back( query );
     }
     else
     {
@@ -5438,7 +5484,7 @@ void Worker::ProcessZoneText()
     auto td = RetrieveThread( m_threadCtx );
     if( !td )
     {
-        ZoneTextFailure( td->id, m_pendingSingleString.ptr );
+        ZoneTextFailure( m_threadCtx, m_pendingSingleString.ptr );
         return;
     }
     if( td->fiber ) td = td->fiber;
@@ -5485,7 +5531,7 @@ void Worker::ProcessZoneName()
     auto td = RetrieveThread( m_threadCtx );
     if( !td )
     {
-        ZoneNameFailure( td->id );
+        ZoneNameFailure( m_threadCtx );
         return;
     }
     if( td->fiber ) td = td->fiber;
@@ -5507,7 +5553,7 @@ void Worker::ProcessZoneColor( const QueueZoneColor& ev )
     auto td = RetrieveThread( m_threadCtx );
     if( !td )
     {
-        ZoneColorFailure( td->id );
+        ZoneColorFailure( m_threadCtx );
         return;
     }
     if( td->fiber ) td = td->fiber;
@@ -5533,7 +5579,7 @@ void Worker::ProcessZoneValue( const QueueZoneValue& ev )
     auto td = RetrieveThread( m_threadCtx );
     if( !td )
     {
-        ZoneValueFailure( td->id, ev.value );
+        ZoneValueFailure( m_threadCtx, ev.value );
         return;
     }
     if( td->fiber ) td = td->fiber;
@@ -7084,6 +7130,7 @@ void Worker::ProcessHwSampleBranchRetired( const QueueHwSample& ev )
     auto it = m_data.hwSamples.find( ev.ip );
     if( it == m_data.hwSamples.end() ) it = m_data.hwSamples.emplace( ev.ip, HwSampleData {} ).first;
     it->second.branchRetired.push_back( time );
+    m_data.hasBranchRetirement = true;
 }
 
 void Worker::ProcessHwSampleBranchMiss( const QueueHwSample& ev )
@@ -8705,20 +8752,25 @@ void Worker::CacheSource( const StringRef& str )
     const auto execTime = GetExecutableTime();
     if( SourceFileValid( file, execTime != 0 ? execTime : GetCaptureTime() ) )
     {
-        FILE* f = fopen( file, "rb" );
-        fseek( f, 0, SEEK_END );
-        const auto sz = ftell( f );
-        fseek( f, 0, SEEK_SET );
-        auto src = (char*)m_slab.AllocBig( sz );
-        fread( src, 1, sz, f );
-        fclose( f );
-        m_data.sourceFileCache.emplace( file, MemoryBlock{ src, uint32_t( sz ) } );
+        CacheSourceFromFile( file );
     }
     else if( execTime != 0 )
     {
         m_sourceCodeQuery.emplace_back( file );
         QuerySourceFile( file );
     }
+}
+
+void Worker::CacheSourceFromFile( const char* fn )
+{
+    FILE* f = fopen( fn, "rb" );
+    fseek( f, 0, SEEK_END );
+    const auto sz = ftell( f );
+    fseek( f, 0, SEEK_SET );
+    auto src = (char*)m_slab.AllocBig( sz );
+    fread( src, 1, sz, f );
+    fclose( f );
+    m_data.sourceFileCache.emplace( fn, MemoryBlock{ src, uint32_t( sz ) } );
 }
 
 uint64_t Worker::GetSourceFileCacheSize() const
@@ -8758,6 +8810,38 @@ uint64_t Worker::GetHwSampleCount() const
         cnt += v.second.branchMiss.size();
     }
     return cnt;
+}
+
+void Worker::CacheSourceFiles()
+{
+    const auto execTime = GetExecutableTime();
+
+    for( auto& sl : m_data.sourceLocationPayload )
+    {
+        const char* file = GetString( sl->file );
+        if( m_data.sourceFileCache.find( file ) == m_data.sourceFileCache.end() )
+        {
+            if( SourceFileValid( file, execTime != 0 ? execTime : GetCaptureTime() ) ) CacheSourceFromFile( file );
+        }
+    }
+
+    for( auto& sl : m_data.sourceLocation )
+    {
+        const char* file = GetString( sl.second.file );
+        if( m_data.sourceFileCache.find( file ) == m_data.sourceFileCache.end() )
+        {
+            if( SourceFileValid( file, execTime != 0 ? execTime : GetCaptureTime() ) ) CacheSourceFromFile( file );
+        }
+    }
+
+    for( auto& sym : m_data.symbolMap )
+    {
+        const char* file = GetString( sym.second.file );
+        if( m_data.sourceFileCache.find( file ) == m_data.sourceFileCache.end() )
+        {
+            if( SourceFileValid( file, execTime != 0 ? execTime : GetCaptureTime() ) ) CacheSourceFromFile( file );
+        }
+    }
 }
 
 }

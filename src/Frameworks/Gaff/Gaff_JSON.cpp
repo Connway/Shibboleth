@@ -24,20 +24,13 @@ THE SOFTWARE.
 #include "Gaff_String.h"
 #include "Gaff_File.h"
 
-#ifdef _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable : 4127)
-#endif
-
+MSVC_DISABLE_WARNING_PUSH(4127)
 #include <rapidjson/filewritestream.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/schema.h>
-
-#ifdef _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()
 
 NS_GAFF
 

@@ -391,6 +391,7 @@ private:
         unordered_flat_map<const char*, MemoryBlock, charutil::Hasher, charutil::Comparator> sourceFileCache;
 
         unordered_flat_map<uint64_t, HwSampleData> hwSamples;
+        bool hasBranchRetirement = false;
 
         unordered_flat_map<uint64_t, uint64_t> fiberToThreadMap;
     };
@@ -489,6 +490,7 @@ public:
     uint64_t GetStringsCount() const { return m_data.strings.size() + m_data.stringData.size(); }
     uint64_t GetHwSampleCountAddress() const { return m_data.hwSamples.size(); }
     uint64_t GetHwSampleCount() const;
+    bool HasHwBranchRetirement() const { return m_data.hasBranchRetirement; }
 #ifndef TRACY_NO_STATISTICS
     uint64_t GetChildSamplesCountSyms() const { return m_data.childSamples.size(); }
     uint64_t GetChildSamplesCountFull() const;
@@ -657,6 +659,8 @@ public:
     void DoPostponedInlineSymbols();
     void DoPostponedWork();
     void DoPostponedWorkAll();
+
+    void CacheSourceFiles();
 
 private:
     void Network();
@@ -883,6 +887,7 @@ private:
     const ContextSwitch* const GetContextSwitchDataImpl( uint64_t thread );
 
     void CacheSource( const StringRef& str );
+    void CacheSourceFromFile( const char* fn );
 
     tracy_force_inline Vector<short_ptr<ZoneEvent>>& GetZoneChildrenMutable( int32_t idx ) { return m_data.zoneChildren[idx]; }
     tracy_force_inline Vector<short_ptr<GpuEvent>>& GetGpuChildrenMutable( int32_t idx ) { return m_data.gpuChildren[idx]; }
@@ -1016,7 +1021,7 @@ private:
 
     PlotData* m_sysTimePlot = nullptr;
 
-    Vector<ServerQueryPacket> m_serverQueryQueue;
+    Vector<ServerQueryPacket> m_serverQueryQueue, m_serverQueryQueuePrio;
     size_t m_serverQuerySpaceLeft, m_serverQuerySpaceBase;
 
     unordered_flat_map<uint64_t, int32_t> m_frameImageStaging;

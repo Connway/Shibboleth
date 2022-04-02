@@ -346,6 +346,18 @@ void View::DrawHelpMarker( const char* desc ) const
     }
 }
 
+void View::AddAnnotation( int64_t start, int64_t end )
+{
+    auto ann = std::make_unique<Annotation>();
+    ann->range.active = true;
+    ann->range.min = start;
+    ann->range.max = end;
+    ann->color = 0x888888;
+    m_selectedAnnotation = ann.get();
+    m_annotations.emplace_back( std::move( ann ) );
+    pdqsort_branchless( m_annotations.begin(), m_annotations.end(), []( const auto& lhs, const auto& rhs ) { return lhs->range.min < rhs->range.min; } );
+}
+
 static const char* CompressionName[] = {
     "LZ4",
     "LZ4 HC",
@@ -932,11 +944,7 @@ bool View::DrawImpl()
         {
             m_showCpuDataWindow = true;
         }
-        const auto anncnt = m_annotations.size();
-        if( ButtonDisablable( ICON_FA_STICKY_NOTE " Annotations", anncnt == 0 ) )
-        {
-            m_showAnnotationList = true;
-        }
+        ToggleButton( ICON_FA_STICKY_NOTE " Annotations", m_showAnnotationList );
         ToggleButton( ICON_FA_RULER " Limits", m_showRanges );
         const auto cscnt = m_worker.GetContextSwitchSampleCount();
         if( ButtonDisablable( ICON_FA_HOURGLASS_HALF " Wait stacks", cscnt == 0 ) )
@@ -1163,14 +1171,7 @@ bool View::DrawImpl()
         ImGui::Separator();
         if( ImGui::Selectable( ICON_FA_STICKY_NOTE " Add annotation" ) )
         {
-            auto ann = std::make_unique<Annotation>();
-            ann->range.active = true;
-            ann->range.min = s;
-            ann->range.max = e;
-            ann->color = 0x888888;
-            m_selectedAnnotation = ann.get();
-            m_annotations.emplace_back( std::move( ann ) );
-            pdqsort_branchless( m_annotations.begin(), m_annotations.end(), []( const auto& lhs, const auto& rhs ) { return lhs->range.min < rhs->range.min; } );
+            AddAnnotation( s, e );
         }
         ImGui::EndPopup();
     }
@@ -9847,6 +9848,10 @@ void View::DrawFindZone()
         ImGui::SetKeyboardFocusHere();
         m_shortcut = ShortcutAction::None;
     }
+    else if( ImGui::IsWindowAppearing() )
+    {
+        ImGui::SetKeyboardFocusHere();
+    }
     findClicked |= ImGui::InputTextWithHint( "###findzone", "Enter zone name to search for", m_findZone.pattern, 1024, ImGuiInputTextFlags_EnterReturnsTrue );
     ImGui::PopItemWidth();
 
@@ -14263,7 +14268,7 @@ void View::DrawCallstackTable( uint32_t callstack, bool globalEntriesButton )
                         TextDisabledUnformatted( LocationToString( txt, frame.line ) );
                         if( ImGui::IsItemClicked() )
                         {
-                            ImGui::SetClipboardText( txt );
+                            ImGui::SetClipboardText( LocationToString( txt, frame.line ) );
                         }
                         break;
                     case 1:
@@ -16111,7 +16116,7 @@ void View::DrawSelectedAnnotation()
             char buf[1024];
             buf[descsz] = '\0';
             memcpy( buf, desc, descsz );
-            if( ImGui::InputTextWithHint( "", "Describe annotation", buf, 256 ) )
+            if( ImGui::InputTextWithHint( "##anndesc", "Describe annotation", buf, 256 ) )
             {
                 m_selectedAnnotation->text.assign( buf );
             }
@@ -16134,9 +16139,20 @@ void View::DrawAnnotationList()
     ImGui::SetNextWindowSize( ImVec2( 600 * scale, 300 * scale ), ImGuiCond_FirstUseEver );
     ImGui::Begin( "Annotation list", &m_showAnnotationList );
     if( ImGui::GetCurrentWindowRead()->SkipItems ) { ImGui::End(); return; }
+
+    if( ImGui::Button( ICON_FA_PLUS " Add annotation" ) )
+    {
+        AddAnnotation( m_vd.zvStart, m_vd.zvEnd );
+    }
+
+    ImGui::SameLine();
+    ImGui::SeparatorEx( ImGuiSeparatorFlags_Vertical );
+    ImGui::SameLine();
+
     if( m_annotations.empty() )
     {
         ImGui::TextWrapped( "No annotations." );
+        ImGui::Separator();
         ImGui::End();
         return;
     }
@@ -16168,6 +16184,12 @@ void View::DrawAnnotationList()
         ImGui::SameLine();
         ImGui::ColorButton( "c", ImGui::ColorConvertU32ToFloat4( ann->color ), ImGuiColorEditFlags_NoTooltip );
         ImGui::SameLine();
+        if( m_selectedAnnotation == ann.get() )
+        {
+            bool t = true;
+            ImGui::Selectable( "##annSelectable", &t );
+            ImGui::SameLine( 0, 0 );
+        }
         if( ann->text.empty() )
         {
             TextDisabledUnformatted( "Empty annotation" );
@@ -19257,7 +19279,7 @@ uint64_t View::GetZoneThread( const GpuEvent& zone ) const
     {
         for( const auto& ctx : m_worker.GetGpuData() )
         {
-            assert( ctx->threadData.size() == 1 );
+            if ( ctx->threadData.size() != 1 ) continue;
             const Vector<short_ptr<GpuEvent>>* timeline = &ctx->threadData.begin()->second.timeline;
             if( timeline->empty() ) continue;
             for(;;)

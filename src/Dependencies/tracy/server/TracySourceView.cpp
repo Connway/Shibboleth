@@ -1291,7 +1291,15 @@ void SourceView::RenderSymbolView( Worker& worker, View& view )
                 int idx = 0;
                 for( auto& v : s_CostName )
                 {
-                    if( ImGui::Selectable( v, idx == (int)m_cost ) ) m_cost = (CostType)idx;
+                    if( ImGui::Selectable( v, idx == (int)m_cost ) )
+                    {
+                        m_cost = (CostType)idx;
+
+                        if( m_cost == CostType::SlowBranches && !worker.HasHwBranchRetirement() )
+                        {
+                            m_cost = CostType::BranchMiss;
+                        }
+                    }
                     if( (CostType)idx == s_costSeparateAfter ) ImGui::Separator();
                     idx++;
                 }
@@ -4416,6 +4424,7 @@ void SourceView::GatherIpHwStats( AddrStatData& as, Worker& worker, const View& 
 
 void SourceView::CountHwStats( AddrStatData& as, Worker& worker, const View& view )
 {
+    const auto hasBranchRetirement = worker.HasHwBranchRetirement();
     auto filename = m_source.filename();
     for( auto& v : m_asm )
     {
@@ -4426,12 +4435,26 @@ void SourceView::CountHwStats( AddrStatData& as, Worker& worker, const View& vie
         uint64_t branch, cache;
         if( view.m_statRange.active )
         {
-            branch = sqrt( CountHwSamples( hw->branchMiss, view.m_statRange ) * CountHwSamples( hw->branchRetired, view.m_statRange ) );
+            if( hasBranchRetirement )
+            {
+                branch = sqrt( CountHwSamples( hw->branchMiss, view.m_statRange ) * CountHwSamples( hw->branchRetired, view.m_statRange ) );
+            }
+            else
+            {
+                branch = CountHwSamples( hw->branchMiss, view.m_statRange );
+            }
             cache = sqrt( CountHwSamples( hw->cacheMiss, view.m_statRange ) * CountHwSamples( hw->cacheRef, view.m_statRange ) );
         }
         else
         {
-            branch = sqrt( hw->branchMiss.size() *  hw->branchRetired.size() );
+            if( hasBranchRetirement )
+            {
+                branch = sqrt( hw->branchMiss.size() *  hw->branchRetired.size() );
+            }
+            else
+            {
+                branch = hw->branchMiss.size();
+            }
             cache = sqrt( hw->cacheMiss.size() * hw->cacheRef.size() );
         }
         assert( as.hwCountAsm.find( addr ) == as.hwCountAsm.end() );

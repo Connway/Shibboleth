@@ -24,10 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 
-#if _MSC_VER
-	#pragma warning(push)
-	#pragma warning(disable: 4309)
-#endif
+MSVC_DISABLE_WARNING_PUSH(4309)
 
 NS_GLEAM
 
@@ -70,6 +67,4 @@ public:
 
 NS_END
 
-#if _MSC_VER
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()

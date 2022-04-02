@@ -49,8 +49,6 @@ function StaticHeaderGen()
 end
 
 function StaticLinks()
-	local filter_deps = {}
-
 	local ProcessModule = function(dir)
 		if not os.isfile(dir .. "/project_generator.lua") then
 			return
@@ -58,24 +56,10 @@ function StaticLinks()
 
 		local funcs = dofile(dir .. "/project_generator.lua")
 		funcs.LinkDependencies()
-
-		if funcs.FilterDependencies then
-			table.insert(filter_deps, funcs.FilterDependencies)
-		end
 	end
 
 	local module_generators = os.matchdirs("../../Modules/*")
 	table.foreachi(module_generators, ProcessModule)
-
-	table.foreachi(filter_deps, function(func) func() end)
-
-	-- filter { "configurations:Static_*_D3D11" }
-	-- 	dependson("GraphicsDirect3D11")
-	-- 	links("GraphicsDirect3D11")
-
-	-- -- filter { "configurations:Static_*_Vulkan" }
-	-- -- 	dependson("GraphicsVulkan")
-	-- -- 	links("GraphicsVulkan")
 end
 
 function ToolGen(tool_name, out_dir)

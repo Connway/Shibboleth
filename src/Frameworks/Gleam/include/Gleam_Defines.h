@@ -41,8 +41,6 @@ THE SOFTWARE.
 
 #ifdef _MSC_VER
 	#pragma warning(disable : 4201)
-#else
-	#define __stdcall
 #endif
 
 

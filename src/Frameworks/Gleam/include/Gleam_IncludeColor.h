@@ -24,13 +24,8 @@ THE SOFTWARE.
 
 #include <Gaff_Platform.h>
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable : 4127)
-#endif
+MSVC_DISABLE_WARNING_PUSH(4127)
 
 #include <gtx/color_space.hpp>
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
+MSVC_DISABLE_WARNING_POP()

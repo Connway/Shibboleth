@@ -34,6 +34,9 @@ Libraries Affected:
 		Fixed unnecessarily adding links libs to StaticLib projects.
 		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
 
+	tracy
+		Fixing compilation errors with macros in Tracy.hpp incorrectly constexpr'ing a variable into a non-constexpr constructor.
+
 Libraries included, but not used:
 	acl
 		Technically nothing uses this, but in the future we will use this for animations.

@@ -41,7 +41,7 @@ project "Memory"
 	filter { "configurations:*Release* or *Profile*" }
 		defines { "CHECK_FOR_LEAKS" }
 
-	filter { "system:windows"--[[, "options:symbols"--]] }
+	filter { "system:windows" }
 		links { "Dbghelp" }
 
 	-- filter { "system:windows" }

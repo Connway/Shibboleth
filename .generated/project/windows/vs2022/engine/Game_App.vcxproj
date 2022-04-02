@@ -157,7 +157,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\mpack.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\DevWebServer.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\CivetWeb64d.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\assimp.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Input.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Logic.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Esprit.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\GraphicsBase.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\zlib-ng.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\minizip.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\libpng.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\libtiff.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Physics.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\LowLevel.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\LowLevelAABB.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\LowLevelDynamics.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXCharacterKinematic.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXFoundation.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXExtensions.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXVehicle.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXCooking.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXCommon.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXPvdSDK.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysXTask.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysX.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\SceneQuery.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\SimulationController.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Debug.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Scene.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory64d.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\TracyClient64d.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -193,7 +193,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\DevWebServer.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\CivetWeb64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\assimp.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Input.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Logic.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Esprit.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\GraphicsBase.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\zlib-ng.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\minizip.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\libpng.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\libtiff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Physics.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevel.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelAABB.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelDynamics.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCharacterKinematic.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXFoundation.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXExtensions.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXVehicle.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCooking.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCommon.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXPvdSDK.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXTask.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysX.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SceneQuery.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SimulationController.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Debug.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Scene.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -229,7 +229,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\mpack.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\DevWebServer.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\CivetWeb64p.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\assimp.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Input.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Logic.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Esprit.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\GraphicsBase.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\zlib-ng.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\minizip.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\libpng.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\libtiff.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Physics.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\LowLevel.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\LowLevelAABB.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\LowLevelDynamics.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXCharacterKinematic.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXFoundation.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXExtensions.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXVehicle.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXCooking.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXCommon.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXPvdSDK.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysXTask.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysX.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\SceneQuery.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\SimulationController.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Debug.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Scene.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory64p.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\TracyClient64p.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -265,7 +265,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\mpack.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevWebServer.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CivetWeb64od.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\assimp.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Input.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Logic.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Esprit.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\GraphicsBase.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\zlib-ng.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\minizip.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\libpng.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\libtiff.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Physics.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LowLevel.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LowLevelAABB.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LowLevelDynamics.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXCharacterKinematic.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXFoundation.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXExtensions.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXVehicle.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXCooking.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXCommon.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXPvdSDK.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysXTask.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysX.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\SceneQuery.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\SimulationController.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Debug.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Scene.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory64od.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\TracyClient64od.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -328,9 +328,12 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\$(Targ
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Camera.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\imgui.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevEditor.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ads64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevGraphics.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevWebServer.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\CivetWeb64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\assimp.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\GraphicsDirect3D11.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Input.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Logic.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Esprit.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\GraphicsBase.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\zlib-ng.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\minizip.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\libpng.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\libtiff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Physics.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevel.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelAABB.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelDynamics.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCharacterKinematic.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXFoundation.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXExtensions.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXVehicle.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCooking.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCommon.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXPvdSDK.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXTask.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysX.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SceneQuery.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SimulationController.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Debug.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Scene.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;d3d11.lib;D3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
 copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
@@ -340,45 +343,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Ta
     <ClCompile Include="..\..\..\..\..\src\Engine\Game_App\Game_Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Engine.vcxproj">
-      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
-      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
-      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\mpack.vcxproj">
-      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Camera.vcxproj">
-      <Project>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\imgui.vcxproj">
-      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\DevDebug.vcxproj">
-      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\DevECS.vcxproj">
-      <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\DevEditor.vcxproj">
-      <Project>{6BA2BC3C-D70C-71B3-204B-22598CF44E08}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\ads.vcxproj">
-      <Project>{DD5C880B-4966-887C-D2E1-9E7C3EEA937C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\DevGraphics.vcxproj">
-      <Project>{B54EAC59-2104-254F-AAF8-1E2616AD1B53}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\modules\DevWebServer.vcxproj">
       <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
     </ProjectReference>
@@ -463,6 +427,21 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Ta
     <ProjectReference Include="..\modules\Scene.vcxproj">
       <Project>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</Project>
     </ProjectReference>
+    <ProjectReference Include="Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Engine.vcxproj">
+      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
+      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
+      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\Script.vcxproj">
       <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>
@@ -477,6 +456,33 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Ta
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Lua.vcxproj">
       <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\TracyClient.vcxproj">
+      <Project>{27069401-93BB-0CF7-1CB0-06CE886403FB}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\Camera.vcxproj">
+      <Project>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\imgui.vcxproj">
+      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\DevDebug.vcxproj">
+      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\DevECS.vcxproj">
+      <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\DevEditor.vcxproj">
+      <Project>{6BA2BC3C-D70C-71B3-204B-22598CF44E08}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\ads.vcxproj">
+      <Project>{DD5C880B-4966-887C-D2E1-9E7C3EEA937C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\modules\DevGraphics.vcxproj">
+      <Project>{B54EAC59-2104-254F-AAF8-1E2616AD1B53}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\GraphicsDirect3D11.vcxproj">
       <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>

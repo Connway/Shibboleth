@@ -26,6 +26,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/lua",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/tracy",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Esprit/include",
 			base_dir .. "../../Modules/MainLoop/include",
@@ -66,6 +67,12 @@ local GenerateProject = function()
 
 		dependson(deps)
 		links(deps)
+
+		filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+			dependson({ "TracyClient" })
+			links({ "TracyClient" })
+
+		filter {}
 end
 
 local LinkDependencies = function()
@@ -79,6 +86,12 @@ local LinkDependencies = function()
 
 	dependson(deps)
 	links(deps)
+
+	filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+		dependson({ "TracyClient" })
+		links({ "TracyClient" })
+
+	filter {}
 end
 
 return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }
