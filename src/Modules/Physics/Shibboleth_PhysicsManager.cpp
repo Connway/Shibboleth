@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
+#include <Gaff_IncludeTracy.h>
 #include <Gaff_Math.h>
 #include <PxPhysicsAPI.h>
 
@@ -213,6 +214,8 @@ bool PhysicsManager::init(void)
 
 void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 {
+	ZoneScoped;
+
 	// Update all rigid body debug draws.
 	if (_debug_flags.testAll(DebugFlag::DrawRigidBodies)) {
 		int32_t handle_indices[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] = { 0 };
@@ -334,6 +337,8 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 
 void PhysicsManager::update(uintptr_t thread_id_int)
 {
+	ZoneScoped;
+
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	// $TODO: Add to a config file.
 	constexpr float k_frame_step = 1.0f / 60.0f;
