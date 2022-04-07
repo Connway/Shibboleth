@@ -169,10 +169,10 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 		if (loadOverrides(reader, ecs_mgr, arch_res->getArchetype(), layer_name, scene_name, archetype)) {
 			const auto comps_guard = reader.enterElementGuard(u8"components");
 
-			if (reader.isNull()) {
-				ecs_mgr.createEntity(archetype);
-			} else {
-				ecs_mgr.loadEntity(archetype, reader);
+			const EntityID id = (reader.isNull()) ? ecs_mgr.createEntity(archetype) : ecs_mgr.loadEntity(archetype, reader);
+
+			if (id == EntityID_None) {
+				LogErrorResource("ECSLayerResource - Failed to create entity for object at index %i.", index);
 			}
 
 		} else {

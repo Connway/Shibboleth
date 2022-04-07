@@ -131,7 +131,7 @@ public:
 
 	bool finalize(const ISerializeReader& reader, const ECSArchetype& base_archetype, bool read_default_overrides = true);
 	bool finalize(const ISerializeReader& reader);
-	bool finalize(const ECSArchetype& base_archetype);
+	bool finalize(const ECSArchetype& base_archetype, bool is_base = false);
 	bool finalize(bool is_base = false);
 
 	bool add(const Vector<const Refl::IReflectionDefinition*>& ref_defs, bool has_default_values = false);

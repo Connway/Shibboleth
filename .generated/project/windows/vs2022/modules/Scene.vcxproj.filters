@@ -9,8 +9,23 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Archetype.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_LayerResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_LayerResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneResource.cpp" />
   </ItemGroup>
 </Project>

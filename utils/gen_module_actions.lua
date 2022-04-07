@@ -337,13 +337,18 @@ local ParseFile = function(file, base_folder, file_class_map)
 		match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
 
 		if match then
-			if not file_class_map[stripped_file] then
-				file_class_map[stripped_file] = {}
-			end
+			local decl_start, decl_end = line:find("SHIB_REFLECTION_DECLARE")
+			local comment_start, comment_end = line:find("//")
 
-			-- table.insert(file_class_map[stripped_file], last_namespace .. match)
-			table.insert(file_class_map[stripped_file], match)
-			goto continue
+			if comment_start == nil or comment_start > decl_start then
+				if not file_class_map[stripped_file] then
+					file_class_map[stripped_file] = {}
+				end
+
+				-- table.insert(file_class_map[stripped_file], last_namespace .. match)
+				table.insert(file_class_map[stripped_file], match)
+				goto continue
+			end
 		end
 
 		::continue::
@@ -677,13 +682,18 @@ newaction
 				match = line:match("SHIB_REFLECTION_DECLARE%((.+)%)")
 
 				if match then
-					if not file_class_map[stripped_file] then
-						file_class_map[stripped_file] = {}
-					end
+					local decl_start, decl_end = line:find("SHIB_REFLECTION_DECLARE")
+					local comment_start, comment_end = line:find("//")
 
-					-- table.insert(file_class_map[stripped_file], last_namespace .. match)
-					table.insert(file_class_map[stripped_file], match)
-					goto continue
+					if comment_start == nil or comment_start > decl_start then
+						if not file_class_map[stripped_file] then
+							file_class_map[stripped_file] = {}
+						end
+
+						-- table.insert(file_class_map[stripped_file], last_namespace .. match)
+						table.insert(file_class_map[stripped_file], match)
+						goto continue
+					end
 				end
 
 				::continue::

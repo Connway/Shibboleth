@@ -124,6 +124,9 @@
     <Filter Include="Modules\ECS">
       <UniqueIdentifier>{2848FAB0-94FD-72A6-1DF2-6C7D89A669AA}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules\Entity">
+      <UniqueIdentifier>{6A3B69F1-5609-5DF7-3F9D-CD1D2B0A395C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Modules\Graphics">
       <UniqueIdentifier>{DE3638D1-CA2F-5723-F361-3CA8DFB9362F}</UniqueIdentifier>
     </Filter>
@@ -314,6 +317,9 @@
     </None>
     <None Include="..\..\..\..\src\Modules\ECS\project_generator.lua">
       <Filter>Modules\ECS</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Modules\Entity\project_generator.lua">
+      <Filter>Modules\Entity</Filter>
     </None>
     <None Include="..\..\..\..\src\Modules\Graphics\project_generator.lua">
       <Filter>Modules\Graphics</Filter>

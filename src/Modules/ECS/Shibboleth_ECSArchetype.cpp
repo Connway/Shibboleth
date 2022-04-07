@@ -126,7 +126,7 @@ bool ECSArchetype::finalize(const ISerializeReader& reader)
 	return success;
 }
 
-bool ECSArchetype::finalize(const ECSArchetype& base_archetype)
+bool ECSArchetype::finalize(const ECSArchetype& base_archetype, bool is_base)
 {
 	destroyDefaultData();
 	destroySharedData();
@@ -136,7 +136,7 @@ bool ECSArchetype::finalize(const ECSArchetype& base_archetype)
 	copyDefaultData(base_archetype);
 	calculateHash();
 
-	_is_base = false;
+	_is_base = is_base;
 
 	return true;
 }
@@ -639,6 +639,7 @@ bool ECSArchetype::finalize(const ISerializeReader& reader, const ECSArchetype* 
 			read_data = false;
 			success = false;
 		}
+
 	} else {
 		// Nothing to read.
 		read_data = false;
