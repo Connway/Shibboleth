@@ -117,7 +117,7 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=Camera</Command>
       <Message>Generating Gen_ReflectionInit.h for module Camera!</Message>
     </PreBuildEvent>
@@ -152,7 +152,7 @@ premake5 gen_module_header --module=Camera</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=Camera</Command>
       <Message>Generating Gen_ReflectionInit.h for module Camera!</Message>
     </PreBuildEvent>
@@ -187,7 +187,7 @@ premake5 gen_module_header --module=Camera</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=Camera</Command>
       <Message>Generating Gen_ReflectionInit.h for module Camera!</Message>
     </PreBuildEvent>
@@ -222,7 +222,7 @@ premake5 gen_module_header --module=Camera</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=Camera</Command>
       <Message>Generating Gen_ReflectionInit.h for module Camera!</Message>
     </PreBuildEvent>

@@ -35,14 +35,14 @@ function StaticHeaderGen()
 	filter { "system:windows" }
 		prebuildcommands
 		{
-			"cd ../../../../../utils",
+			"{CHDIR} ../../../../../utils",
 			"premake5 gen_static_header"
 		}
 
 	filter { "system:not windows" }
 		prebuildcommands
 		{
-			"cd ../../../../../utils && ./premake5 gen_static_header"
+			"{CHDIR} ../../../../../utils && ./premake5 gen_static_header"
 		}
 
 	filter {}
@@ -72,7 +72,7 @@ function ToolGen(tool_name, out_dir)
 	prebuildmessage("Generating Gen_ReflectionInit.h for tool " .. tool_name .. "!")
 	prebuildcommands
 	{
-		"cd ../../../../../utils",
+		"{CHDIR} ../../../../../utils",
 		"premake5 gen_tool_header --tool=" .. tool_name .. out_dir
 	}
 end
@@ -87,7 +87,7 @@ function ModuleGen(module_name, out_dir)
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
 	prebuildcommands
 	{
-		"cd ../../../../../utils",
+		"{CHDIR} ../../../../../utils",
 		"premake5 gen_module_header --module=" .. module_name .. out_dir
 	}
 end
@@ -213,7 +213,8 @@ function IncludeWxWidgets(is_not_module)
 end
 
 function SetupConfigMap()
-	configmap {
+	configmap
+	{
 		["Static_Debug_D3D11"] = "Debug",
 		["Static_Release_D3D11"] = "Release"
 	}

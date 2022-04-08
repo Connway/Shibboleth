@@ -7,6 +7,7 @@ local unsupported_actions =
 	"vs2013",
 	"vs2015",
 	"vs2017",
+	"vs2019",
 	"codelite",
 }
 

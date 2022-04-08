@@ -118,7 +118,7 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -154,7 +154,7 @@ premake5 gen_module_header --module=DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -190,7 +190,7 @@ premake5 gen_module_header --module=DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -226,7 +226,7 @@ premake5 gen_module_header --module=DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../utils
+      <Command>chdir ..\..\..\..\..\utils
 premake5 gen_module_header --module=DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>

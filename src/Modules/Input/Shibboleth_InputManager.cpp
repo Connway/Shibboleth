@@ -422,6 +422,7 @@ int32_t InputManager::addPlayer(void)
 	const int32_t player_id_validate = _alias_values.emplace();
 
 	GAFF_ASSERT(player_id == player_id_validate);
+	GAFF_REF(player_id_validate);
 
 	_binding_instances[player_id].resize(_bindings.size());
 	_alias_values[player_id] = _default_alias_values;
