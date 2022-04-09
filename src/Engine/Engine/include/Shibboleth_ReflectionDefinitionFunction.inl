@@ -264,7 +264,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 			str = reinterpret_cast<char*>(entry.value.vp);
 
 		// It's a U8String.
-		} else if (Gaff::FindFirstOf(entry.ref_def->getReflectionInstance().getName(), u8"U8String") != SIZE_T_FAIL) {
+		} else if (Gaff::Find(entry.ref_def->getReflectionInstance().getName(), u8"U8String") != SIZE_T_FAIL) {
 			// I think this *SHOULD* be safe, since the string data is stored in the first part. So even if the allocator is a different size,
 			// the memory for the actual string should be in the same offset.
 			str_u8 = reinterpret_cast<Shibboleth::U8String*>(entry.value.vp)->data();

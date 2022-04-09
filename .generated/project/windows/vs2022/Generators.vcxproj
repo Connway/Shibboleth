@@ -102,27 +102,27 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64sd</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
-    <NMakeOutput>$(OutDir)Generators</NMakeOutput>
+    <NMakeOutput>$(OutDir)Generators64s</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -189,8 +189,9 @@
     <None Include="..\..\..\..\src\Modules\Scene\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua" />
     <None Include="..\..\..\..\src\Tests\project_generator.lua" />
-    <None Include="..\..\..\..\src\Tools\j2mp\project_generator.lua" />
-    <None Include="..\..\..\..\src\Tools\refl_hash_dump\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tools\CodeGenerator\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tools\JSONToMessagePack\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tools\ReflectionHashDump\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

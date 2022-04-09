@@ -35,17 +35,19 @@ function StaticHeaderGen()
 	filter { "system:windows" }
 		prebuildcommands
 		{
-			"{CHDIR} ../../../../../utils",
-			"premake5 gen_static_header"
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
 		}
 
 	filter { "system:not windows" }
 		prebuildcommands
 		{
-			"{CHDIR} ../../../../../utils && ./premake5 gen_static_header"
+			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header"
 		}
 
 	filter {}
+
+	dependson { "CodeGenerator" }
 end
 
 function StaticLinks()
@@ -62,34 +64,46 @@ function StaticLinks()
 	table.foreachi(module_generators, ProcessModule)
 end
 
-function ToolGen(tool_name, out_dir)
-	if out_dir ~= nil then
-		out_dir = " --gen-out-dir=" .. out_dir
-	else
-		out_dir = ""
-	end
-
+function ToolGen(tool_name)
 	prebuildmessage("Generating Gen_ReflectionInit.h for tool " .. tool_name .. "!")
-	prebuildcommands
-	{
-		"{CHDIR} ../../../../../utils",
-		"premake5 gen_tool_header --tool=" .. tool_name .. out_dir
-	}
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
+		}
+
+	filter {}
+
+	dependson { "CodeGenerator" }
 end
 
-function ModuleGen(module_name, out_dir)
-	if out_dir ~= nil then
-		out_dir = " --gen-out-dir=" .. out_dir
-	else
-		out_dir = ""
-	end
-
+function ModuleGen(module_name)
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
-	prebuildcommands
-	{
-		"{CHDIR} ../../../../../utils",
-		"premake5 gen_module_header --module=" .. module_name .. out_dir
-	}
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
+		}
+
+	filter {}
+
+	dependson { "CodeGenerator" }
 end
 
 function ModuleCopy(dir)
@@ -112,33 +126,17 @@ function NewDeleteLinkFix()
 	filter { "system:windows" }
 		ignoredefaultlibraries { "msvcrt.lib", "msvcrtd.lib" }
 
-	filter { "system:windows", "configurations:Debug*", "platforms:x64" }
+	filter { "system:windows" }
 		links
 		{
-			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
-			"msvcrtd.lib"
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/%{cfg.platform}/%{cfg.buildcfg}/Engine%{cfg.buildtarget.suffix}.lib",
 		}
 
-	filter { "system:windows", "configurations:Release*", "platforms:x64" }
-		links
-		{
-			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
-			"msvcrt.lib"
-		}
+	filter { "system:windows", "configurations:*Debug*" }
+		links { "msvcrtd.lib" }
 
-	filter { "system:windows", "configurations:Optimized_Debug*", "platforms:x64" }
-		links
-		{
-			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
-			"msvcrtd.lib"
-		}
-
-	filter { "system:windows", "configurations:Profile*", "platforms:x64" }
-		links
-		{
-			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
-			"msvcrt.lib"
-		}
+	filter { "system:windows", "configurations:not *Debug*" }
+		links { "msvcrt.lib" }
 
 	filter {}
 end
@@ -185,31 +183,6 @@ end
 
 function RunFile(file)
 	dofile(file)
-end
-
-function IncludeWxWidgets(is_not_module)
-	local base_dir = "../src/"
-
-	if is_not_module then
-		base_dir = "../../"
-	end
-
-	includedirs { base_dir .. "Dependencies/wxWidgets/include" }
-	defines
-	{
-		"NOPCH",
-		-- "WXBUILDING",
-		"wxUSE_ZLIB_H_IN_PATH",
-		-- "wxUSE_GUI=1",
-		-- "wxUSE_BASE=1",
-		"WXUSINGDLL"
-	}
-
-	filter { "system:windows" }
-		includedirs { base_dir .. "Dependencies/wxWidgets/include/msvc" }
-		defines { "__WXMSW__" }
-
-	filter {}
 end
 
 function SetupConfigMap()

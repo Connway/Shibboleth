@@ -45,7 +45,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			Physics::Gen::InitReflection(mode);
+			Gen::Physics::InitReflection(mode);
 
 			return true;
 		}

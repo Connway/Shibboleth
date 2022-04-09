@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_IManager.h"
-#include "Gen_ReflectionInit.h"
+#include "Gen_StaticReflectionInit.h"
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
@@ -34,9 +34,33 @@ THE SOFTWARE.
 #include <EAThread/eathread_thread.h>
 #include <filesystem>
 
+#ifndef SHIB_STATIC
+	#define SHIB_STATIC
+	#include "Gen_ReflectionInit.h"
+	#undef SHIB_STATIC
+#else
+	#include "Gen_ReflectionInit.h"
+#endif
+
 #ifdef INIT_STACKTRACE_SYSTEM
 	#include <Gaff_StackTrace.h>
 #endif
+
+namespace Engine
+{
+	bool Initialize(Shibboleth::IApp& /*app*/, Shibboleth::InitMode mode)
+	{
+		if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
+		#ifdef SHIB_RUNTIME_VAR_ENABLED
+			Shibboleth::RegisterRuntimeVars();
+		#endif
+		}
+
+		Gen::Engine::InitReflection(mode);
+
+		return true;
+	}
+}
 
 NS_SHIBBOLETH
 
@@ -174,11 +198,6 @@ void App::destroy(void)
 	}
 
 	_manager_map.clear();
-
-#ifdef SHIB_STATIC
-	Engine::Gen::ShutdownModulesStatic();
-#endif
-
 	_reflection_mgr.destroy();
 	_dynamic_loader.clear();
 
@@ -287,13 +306,13 @@ bool App::initInternal(void)
 	const char8_t* const log_dir = _configs[k_config_app_log_dir].getString(k_config_app_default_log_dir);
 
 	size_t prev_index = 0;
-	size_t index = Gaff::FindFirstOf(log_dir, u8'/');
+	size_t index = Gaff::Find(log_dir, u8'/');
 
 	if (log_dir[0] == '.' && index == 1) {
-		index = Gaff::FindFirstOf(log_dir + 2, u8'/') + 2;
+		index = Gaff::Find(log_dir + 2, u8'/') + 2;
 	}
 
-	while (index != U8String::npos) {
+	while (index != SIZE_T_FAIL) {
 		index += prev_index;
 
 		const U8String dir(log_dir, log_dir + prev_index + index - prev_index);
@@ -303,7 +322,7 @@ bool App::initInternal(void)
 		}
 
 		prev_index = index + 1;
-		index = Gaff::FindFirstOf(log_dir + prev_index, u8'/');
+		index = Gaff::Find(log_dir + prev_index, u8'/');
 	}
 
 	if (!Gaff::CreateDir(log_dir, 0777)) {
@@ -350,7 +369,7 @@ bool App::initInternal(void)
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
 
-		if (!Engine::Initialize(mode)) {
+		if (!Engine::Initialize(*this, mode)) {
 			LogErrorDefault("Failed to initialize engine reflection.");
 			return false;
 		}
@@ -360,7 +379,7 @@ bool App::initInternal(void)
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
 
-		if (!Engine::Gen::LoadModulesStatic(mode);) {
+		if (!Gen::Engine::LoadModulesStatic(mode);) {
 			return false;
 		}
 	}
@@ -715,11 +734,11 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	CONVERT_STRING(char8_t, temp, name);
 
 	U8String module_name(temp);
-	size_t pos = module_name.find_first_of('\\');
+	size_t pos = module_name.find('\\');
 
 	while (pos != U8String::npos) {
 		module_name[pos] = '/';
-		pos = module_name.find_first_of('\\');
+		pos = module_name.find('\\');
 	}
 
 	pos = module_name.find_last_of('/');
@@ -766,13 +785,13 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	//		CONVERT_STRING(char, temp_path, file_name);
 
 	//		if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8)) {
-	//			temp_path[Gaff::FindLastOf(temp_path, '\\')] = 0;
+	//			temp_path[Gaff::ReverseFind(temp_path, '\\')] = 0;
 
-	//			size_t index = Gaff::FindFirstOf(temp_path, '\\');
+	//			size_t index = Gaff::Find(temp_path, '\\');
 	//			
 	//			while (index != U8String::npos) {
 	//				temp_path[index] = '/';
-	//				index = Gaff::FindFirstOf(temp_path, '\\');
+	//				index = Gaff::Find(temp_path, '\\');
 	//			}
 
 	//			if (_file_watcher_mgr.addWatch(temp_path, flags, ModuleChanged)) {
@@ -869,7 +888,7 @@ void App::ModuleChanged(const char8_t* path)
 
 	static_cast<App&>(GetApp())._dynamic_loader.forEachModule([&](const HashString32<>& name, const DynamicLoader::ModulePtr& module_ptr) -> bool
 	{
-		if (Gaff::FindFirstOf(path, name.getBuffer()) == U8String::npos) {
+		if (Gaff::Find(path, name.getBuffer()) == SIZE_T_FAIL) {
 			return false;
 		}
 

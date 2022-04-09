@@ -75,7 +75,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			Graphics::Gen::InitReflection(mode);
+			Gen::Graphics::InitReflection(mode);
 
 			return true;
 		}

@@ -46,7 +46,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			DevDebug::Gen::InitReflection(mode);
+			Gen::DevDebug::InitReflection(mode);
 
 			return true;
 		}

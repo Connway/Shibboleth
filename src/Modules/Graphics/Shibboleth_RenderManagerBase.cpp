@@ -164,6 +164,12 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 		ResourceManager& res_mgr = app.getManagerTFast<ResourceManager>();
 
 		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
+
+		if (!_default_sampler) {
+			// $TODO: Log error.
+			return false;
+		}
+
 		res_mgr.waitForResource(*_default_sampler);
 
 		if (_default_sampler->hasFailed()) {

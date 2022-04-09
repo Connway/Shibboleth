@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\Engine\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Engine64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\Engine\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Engine64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\Engine\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Engine64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\Engine\</IntDir>
-    <TargetName>Engine</TargetName>
+    <TargetName>Engine64od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,8 +117,8 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_static_header</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64d static_header</Command>
       <Message>Generating Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -152,8 +152,8 @@ premake5 gen_static_header</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_static_header</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64 static_header</Command>
       <Message>Generating Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -187,8 +187,8 @@ premake5 gen_static_header</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_static_header</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64p static_header</Command>
       <Message>Generating Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -222,13 +222,14 @@ premake5 gen_static_header</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_static_header</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64od static_header</Command>
       <Message>Generating Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Gen_StaticReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_App.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_AppConfigs.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Broadcaster.h" />

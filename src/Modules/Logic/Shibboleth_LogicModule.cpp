@@ -52,7 +52,7 @@ THE SOFTWARE.
 				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
 			}
 
-			Logic::Gen::InitReflection(mode);
+			Gen::Logic::InitReflection(mode);
 
 			return true;
 		}

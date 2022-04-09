@@ -43,7 +43,7 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	// Generate dump file name
 	TCHAR process_name[MAX_PATH] = { 0 };
 	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
-	size_t name_begin = FindLastOf(process_name, MAX_PATH - 1, L'\\') + 1;
+	size_t name_begin = ReverseFind(process_name, MAX_PATH - 1, L'\\') + 1;
 
 
 	TCHAR dump_format[128] = { 0 };

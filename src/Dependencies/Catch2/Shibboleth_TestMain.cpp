@@ -20,7 +20,7 @@ int RunTests(int argc, const char** argv)
 {
 	Shibboleth::App app;
 
-	const size_t index = Gaff::FindLastOf(argv[0], '\\');
+	const size_t index = Gaff::ReverseFind(argv[0], '\\');
 	Gaff::JSON& configs = app.getConfigs();
 
 	if (index != Shibboleth::U8String::npos) {

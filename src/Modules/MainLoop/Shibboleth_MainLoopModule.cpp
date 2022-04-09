@@ -48,7 +48,7 @@ THE SOFTWARE.
 				app.getReflectionManager().registerTypeBucket<Shibboleth::ISystem>();
 			}
 
-			Gen::InitReflection(mode);
+			Gen::MainLoop::InitReflection(mode);
 
 			return true;
 		}

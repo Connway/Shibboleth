@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\ECS\</IntDir>
-    <TargetName>ECS</TargetName>
+    <TargetName>ECS64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\ECS\</IntDir>
-    <TargetName>ECS</TargetName>
+    <TargetName>ECS64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\ECS\</IntDir>
-    <TargetName>ECS</TargetName>
+    <TargetName>ECS64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\ECS\</IntDir>
-    <TargetName>ECS</TargetName>
+    <TargetName>ECS64od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,8 +117,8 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=ECS</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64d module_header --module ECS</Command>
       <Message>Generating Gen_ReflectionInit.h for module ECS!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -152,8 +152,8 @@ premake5 gen_module_header --module=ECS</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=ECS</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64 module_header --module ECS</Command>
       <Message>Generating Gen_ReflectionInit.h for module ECS!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -187,8 +187,8 @@ premake5 gen_module_header --module=ECS</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=ECS</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64p module_header --module ECS</Command>
       <Message>Generating Gen_ReflectionInit.h for module ECS!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -222,8 +222,8 @@ premake5 gen_module_header --module=ECS</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=ECS</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64od module_header --module ECS</Command>
       <Message>Generating Gen_ReflectionInit.h for module ECS!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>

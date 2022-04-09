@@ -667,7 +667,7 @@ void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_
 	const U8String name = enum_ref_def.getReflectionInstance().getName();
 
 	size_t prev_index = 0;
-	size_t curr_index = name.find_first_of(':');
+	size_t curr_index = name.find(':');
 
 	int32_t table_count = 0;
 
@@ -698,7 +698,7 @@ void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_
 		}
 
 		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
-		curr_index = name.find_first_of(':', prev_index);
+		curr_index = name.find(':', prev_index);
 
 		++table_count;
 	} while (prev_index != SIZE_T_FAIL);
@@ -754,12 +754,12 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 		const HashStringView32<> name = ref_def.getStaticFuncName(i);
 
 		// Is not an operator function.
-		if (Gaff::FindFirstOf(name.getBuffer(), u8"__") != 0) {
+		if (Gaff::Find(name.getBuffer(), u8"__") != 0) {
 			continue;
 		}
 
 		// Is the tostring function.
-		if (Gaff::FindFirstOf(name.getBuffer(), OP_TO_STRING_NAME) == 0) {
+		if (Gaff::Find(name.getBuffer(), OP_TO_STRING_NAME) == 0) {
 			mt.emplace_back(luaL_Reg{ "__tostring", UserTypeToString });
 			continue;
 		}
@@ -786,7 +786,7 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 
 	// Library Table.
 	size_t prev_index = 0;
-	size_t curr_index = friendly_name.find_first_of(':');
+	size_t curr_index = friendly_name.find(':');
 
 	int32_t table_count = 0;
 
@@ -816,7 +816,7 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 		}
 
 		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
-		curr_index = friendly_name.find_first_of(':', prev_index);
+		curr_index = friendly_name.find(':', prev_index);
 
 		++table_count;
 	} while (prev_index != SIZE_T_FAIL);

@@ -157,11 +157,14 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\j2mp">
-      <UniqueIdentifier>{DE2F0605-CAE7-4752-33EF-20AE1FC6E242}</UniqueIdentifier>
+    <Filter Include="Tools\CodeGenerator">
+      <UniqueIdentifier>{47A842BF-B309-20CD-3C77-667FA8D7568C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools\refl_hash_dump">
-      <UniqueIdentifier>{66936553-5222-EF1C-FB40-0318E7AEFFC2}</UniqueIdentifier>
+    <Filter Include="Tools\JSONToMessagePack">
+      <UniqueIdentifier>{E6FD6473-5235-AD0A-5B3F-112EC7F5D303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\ReflectionHashDump">
+      <UniqueIdentifier>{2A9FE98B-16C4-380C-3F0F-1E9C2B93372A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -348,11 +351,14 @@
     <None Include="..\..\..\..\src\Tests\project_generator.lua">
       <Filter>Tests</Filter>
     </None>
-    <None Include="..\..\..\..\src\Tools\j2mp\project_generator.lua">
-      <Filter>Tools\j2mp</Filter>
+    <None Include="..\..\..\..\src\Tools\CodeGenerator\project_generator.lua">
+      <Filter>Tools\CodeGenerator</Filter>
     </None>
-    <None Include="..\..\..\..\src\Tools\refl_hash_dump\project_generator.lua">
-      <Filter>Tools\refl_hash_dump</Filter>
+    <None Include="..\..\..\..\src\Tools\JSONToMessagePack\project_generator.lua">
+      <Filter>Tools\JSONToMessagePack</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tools\ReflectionHashDump\project_generator.lua">
+      <Filter>Tools\ReflectionHashDump</Filter>
     </None>
   </ItemGroup>
 </Project>

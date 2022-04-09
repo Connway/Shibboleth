@@ -178,7 +178,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 		return IResourcePtr(*it_res);
 	}
 
-	const size_t pos = Gaff::FindLastOf(name.getBuffer(), u8'.');
+	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
 
 	if (pos == SIZE_T_FAIL) {
 		// $TODO: Log error

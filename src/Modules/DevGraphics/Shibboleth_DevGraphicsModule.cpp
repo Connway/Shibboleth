@@ -47,7 +47,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			DevGraphics::Gen::InitReflection(mode);
+			Gen::DevGraphics::InitReflection(mode);
 
 			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
 				return Shibboleth::InitNVENC();

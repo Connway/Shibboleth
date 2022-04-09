@@ -25,5 +25,11 @@ project "Engine"
 		"../../Dependencies/libtiff"
 	}
 
+	filter { "configurations:*Static*" }
+		defines { "SHIB_STATIC" }
+
+	filter {}
+
+
 	StaticHeaderGen()
 	SetupConfigMap()

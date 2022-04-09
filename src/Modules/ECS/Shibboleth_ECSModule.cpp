@@ -48,7 +48,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			ECS::Gen::InitReflection(mode);
+			Gen::ECS::InitReflection(mode);
 
 			return true;
 		}

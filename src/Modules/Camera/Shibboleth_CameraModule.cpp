@@ -45,7 +45,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			Camera::Gen::InitReflection(mode);
+			Gen::Camera::InitReflection(mode);
 
 			return true;
 		}

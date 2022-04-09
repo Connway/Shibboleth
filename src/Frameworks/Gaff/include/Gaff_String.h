@@ -52,99 +52,80 @@ using U8StringView = eastl::u8string_view;
 using U16StringView = eastl::u16string_view;
 using U32StringView = eastl::u32string_view;
 
-// Helper Functions
 template <class T>
-size_t FindFirstOf(const T* string, size_t str_size, const T* substr, size_t substr_size)
+size_t ReverseFind(const T* string, size_t string_size, const T* substring, size_t substring_size)
 {
-	if (str_size < substr_size) {
-		return SIZE_T_FAIL;
-	}
-
-	size_t num_iterations = str_size - substr_size + 1;
-
-	for (size_t i = 0; i < num_iterations; ++i) {
-		if (!memcmp(string + i, substr, sizeof(T) * substr_size)) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	const T* const pos = eastl::CharTypeStringRSearch(string, string + string_size, substring, substring + substring_size);
+	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
 }
 
 template <class T>
-size_t FindFirstOf(const T* string, size_t str_size, const T* substr)
+size_t ReverseFind(const T* string, size_t string_size, const T* substring)
 {
-	return FindFirstOf(string, str_size, substr, eastl::CharStrlen(substr));
+	return ReverseFind(string, string_size, substring, eastl::CharStrlen(substring));
 }
 
 template <class T>
-size_t FindFirstOf(const T* string, const T* substr)
+size_t ReverseFind(const T* string, const T* substring, size_t substring_size)
 {
-	return FindFirstOf(string, eastl::CharStrlen(string), substr, eastl::CharStrlen(substr));
+	return ReverseFind(string, eastl::CharStrlen(string), substring, substring_size);
 }
 
 template <class T>
-size_t FindFirstOf(const T* string, size_t size, T character)
+size_t ReverseFind(const T* string, const T* substring)
 {
-	for (size_t i = 0; i < size; ++i) {
-		if (string[i] == character) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return ReverseFind(string, eastl::CharStrlen(string), substring, eastl::CharStrlen(substring));
 }
 
 template <class T>
-size_t FindFirstOf(const T* string, T character)
+size_t ReverseFind(const T* string, size_t string_size, T character)
 {
-	return FindFirstOf(string, eastl::CharStrlen(string), character);
+	const T* const pos = eastl::CharTypeStringRFind(string + string_size, string, character);
+	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos - 1);
 }
 
 template <class T>
-size_t FindLastOf(const T* string, size_t str_size, const T* substr, size_t substr_size)
+size_t ReverseFind(const T* string, T character)
 {
-	if (str_size < substr_size) {
-		return SIZE_T_FAIL;
-	}
-
-	for (int i = static_cast<int>(str_size) - static_cast<int>(substr_size); i > -1; --i) {
-		if (!memcmp(string + i, substr, sizeof(T) * substr_size)) {
-			return static_cast<size_t>(i);
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return ReverseFind(string, eastl::CharStrlen(string), character);
 }
 
 template <class T>
-size_t FindLastOf(const T* string, size_t str_size, const T* substr)
+size_t Find(const T* string, size_t string_size, const T* substring, size_t substring_size)
 {
-	return FindLastOf(string, str_size, substr, eastl::CharStrlen(substr));
+	const T* const pos = eastl::search(string, string + string_size, substring, substring + substring_size);
+	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
 }
 
 template <class T>
-size_t FindLastOf(const T* string, const T* substr)
+size_t Find(const T* string, size_t string_size, const T* substring)
 {
-	return FindLastOf(string, eastl::CharStrlen(string), substr, eastl::CharStrlen(substr));
+	return Find(string, string_size, substring, eastl::CharStrlen(substring));
 }
 
 template <class T>
-size_t FindLastOf(const T* string, size_t size, T character)
+size_t Find(const T* string, const T* substring, size_t substring_size)
 {
-	for (int i = static_cast<int>(size) - 1; i > -1; --i) {
-		if (string[i] == character) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return Find(string, eastl::CharStrlen(string), substring, substring_size);
 }
 
 template <class T>
-size_t FindLastOf(const T* string, T character)
+size_t Find(const T* string, const T* substring)
 {
-	return FindLastOf(string, eastl::CharStrlen(string), character);
+	return Find(string, eastl::CharStrlen(string), substring, eastl::CharStrlen(substring));
+}
+
+template <class T>
+size_t Find(const T* string, size_t string_size, T character)
+{
+	const T* const pos = eastl::find(string, string + string_size, character);
+	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
+}
+
+template <class T>
+size_t Find(const T* string, T character)
+{
+	return Find(string, eastl::CharStrlen(string), character);
 }
 
 template <class T>
@@ -182,11 +163,11 @@ bool EndsWith(const T* string, const T* end_string)
 template <class T, class Allocator>
 void EraseAllOccurences(String<T, Allocator>& string, const T* substring, size_t size)
 {
-	size_t index = string.find_first_of(substring, 0, size);
+	size_t index = string.find(substring, 0, size);
 
 	while (index != String<T>::npos) {
 		string.erase(index, size);
-		index = string.find_first_of(substring, index, size);
+		index = string.find(substring, index, size);
 	}
 }
 
@@ -199,11 +180,11 @@ void EraseAllOccurences(String<T, Allocator>& string, const T* substring)
 template <class T, class Allocator>
 void EraseAllOccurences(String<T, Allocator>& string, T character)
 {
-	size_t index = string.find_first_of(character);
+	size_t index = string.find(character);
 
 	while (index != String<T>::npos) {
 		string.erase(index, 1);
-		index = string.find_first_of(character);
+		index = string.find(character);
 	}
 }
 

@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\Catch2\</IntDir>
-    <TargetName>Catch2</TargetName>
+    <TargetName>Catch264d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\Catch2\</IntDir>
-    <TargetName>Catch2</TargetName>
+    <TargetName>Catch264</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\Catch2\</IntDir>
-    <TargetName>Catch2</TargetName>
+    <TargetName>Catch264p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\Catch2\</IntDir>
-    <TargetName>Catch2</TargetName>
+    <TargetName>Catch264od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

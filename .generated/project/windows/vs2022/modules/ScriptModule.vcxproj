@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine64d.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\ScriptModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -151,7 +151,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Lua.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ECS64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Lua64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\ScriptModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -189,7 +189,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine64p.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\ScriptModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -224,7 +224,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine64od.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ScriptModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>

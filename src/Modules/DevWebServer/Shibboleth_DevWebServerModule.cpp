@@ -46,7 +46,7 @@ THE SOFTWARE.
 				Refl::InitAttributeReflection();
 			}
 
-			DevWebServer::Gen::InitReflection(mode);
+			Gen::DevWebServer::InitReflection(mode);
 
 			return true;
 		}

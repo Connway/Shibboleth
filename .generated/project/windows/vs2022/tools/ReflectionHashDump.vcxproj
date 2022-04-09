@@ -27,10 +27,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6636EF68-5204-E36E-3B98-53952705BFD3}</ProjectGuid>
+    <ProjectGuid>{2AC28CC3-16A6-4D19-7F06-486C6B09389B}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>refl_hash_dump</RootNamespace>
+    <RootNamespace>ReflectionHashDump</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -99,43 +99,43 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64d</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64p</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64od</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64od</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Debug_D3D11\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64sd</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Debug_D3D11\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64sd</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Release_D3D11\refl_hash_dump\</IntDir>
-    <TargetName>refl_hash_dump64s</TargetName>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Release_D3D11\ReflectionHashDump\</IntDir>
+    <TargetName>ReflectionHashDump64s</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -325,7 +325,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\$(Ta
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Tools\refl_hash_dump\refl_hash_dump.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ReflectionHashDump\ReflectionHashDump.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\Engine.vcxproj">

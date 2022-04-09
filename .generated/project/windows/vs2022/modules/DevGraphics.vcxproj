@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\DevGraphics\</IntDir>
-    <TargetName>DevGraphics</TargetName>
+    <TargetName>DevGraphics64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\DevGraphics\</IntDir>
-    <TargetName>DevGraphics</TargetName>
+    <TargetName>DevGraphics64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\DevGraphics\</IntDir>
-    <TargetName>DevGraphics</TargetName>
+    <TargetName>DevGraphics64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\DevGraphics\</IntDir>
-    <TargetName>DevGraphics</TargetName>
+    <TargetName>DevGraphics64od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,8 +117,8 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=DevGraphics</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64d module_header --module DevGraphics</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevGraphics!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -152,8 +152,8 @@ premake5 gen_module_header --module=DevGraphics</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=DevGraphics</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64 module_header --module DevGraphics</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevGraphics!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -187,8 +187,8 @@ premake5 gen_module_header --module=DevGraphics</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=DevGraphics</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64p module_header --module DevGraphics</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevGraphics!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -222,8 +222,8 @@ premake5 gen_module_header --module=DevGraphics</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=DevGraphics</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64od module_header --module DevGraphics</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevGraphics!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>

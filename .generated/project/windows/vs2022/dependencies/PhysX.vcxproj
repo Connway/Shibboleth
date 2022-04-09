@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\PhysX\</IntDir>
-    <TargetName>PhysX</TargetName>
+    <TargetName>PhysX64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\PhysX\</IntDir>
-    <TargetName>PhysX</TargetName>
+    <TargetName>PhysX64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\PhysX\</IntDir>
-    <TargetName>PhysX</TargetName>
+    <TargetName>PhysX64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\PhysX\</IntDir>
-    <TargetName>PhysX</TargetName>
+    <TargetName>PhysX64od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

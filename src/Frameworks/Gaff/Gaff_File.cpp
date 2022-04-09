@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gaff_File.h"
 #include "Gaff_String.h"
+#include <sys/stat.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <io.h>
@@ -36,12 +37,12 @@ THE SOFTWARE.
 NS_GAFF
 
 #ifdef PLATFORM_WINDOWS
-	static const wchar_t* gOpenModesW[] = {
+	static const wchar_t* k_open_modes_w[] = {
 		L"r", L"w", L"a", L"r+", L"w+", L"a+",
 		L"rb", L"wb", L"ab", L"rb+", L"wb+", L"ab+"
 	};
 #else
-	static const char* gOpenModes[] = {
+	static const char* k_open_modes[] = {
 		"r", "w", "a", "r+", "w+", "a+",
 		"rb", "wb", "ab", "rb+", "wb+", "ab+"
 	};
@@ -151,9 +152,9 @@ bool File::open(const char* file_name, OpenMode mode)
 
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
-	_wfopen_s(&_file, temp, gOpenModesW[static_cast<int32_t>(mode)]);
+	_wfopen_s(&_file, temp, k_open_modes_w[static_cast<int32_t>(mode)]);
 #else
-	_file = fopen(file_name, gOpenModes[static_cast<int32_t>(mode)]);
+	_file = fopen(file_name, k_open_modes[static_cast<int32_t>(mode)]);
 #endif
 
 	return _file != NULL;
@@ -175,9 +176,9 @@ bool File::redirect(FILE* file, const char* file_name, OpenMode mode)
 
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
-	_wfreopen_s(&_file, temp, gOpenModesW[static_cast<int32_t>(mode)], file);
+	_wfreopen_s(&_file, temp, k_open_modes_w[static_cast<int32_t>(mode)], file);
 #else
-	_file = freopen(file_name, gOpenModes[static_cast<int32_t>(mode)], file);
+	_file = freopen(file_name, k_open_modes[static_cast<int32_t>(mode)], file);
 #endif
 
 	return _file && _file == file;
@@ -190,9 +191,9 @@ bool File::redirect(const char* file_name, OpenMode mode)
 #ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	FILE* out = nullptr;
-	_wfreopen_s(&out, temp, gOpenModesW[static_cast<int32_t>(mode)], _file);
+	_wfreopen_s(&out, temp, k_open_modes_w[static_cast<int32_t>(mode)], _file);
 #else
-	FILE* out = freopen(file_name, gOpenModes[static_cast<int32_t>(mode)], _file);
+	FILE* out = freopen(file_name, k_open_modes[static_cast<int32_t>(mode)], _file);
 #endif
 
 	return out && out == _file;
@@ -347,7 +348,7 @@ bool File::readString(char8_t* buffer, int32_t max_byte_count)
 bool File::readString(char* buffer, int32_t max_byte_count)
 {
 	GAFF_ASSERT(_file && buffer && max_byte_count > -1);
-	char* tmp = fgets(buffer, max_byte_count, _file);
+	char* const tmp = fgets(buffer, max_byte_count, _file);
 	return tmp != nullptr;
 }
 
@@ -379,16 +380,16 @@ bool File::openTempFile(void)
 int32_t File::getFileSize(void)
 {
 	GAFF_ASSERT(_file);
-	long size;
 
-	if (fseek(_file, 0, static_cast<int>(SeekOrigin::End))) {
-		return -1;
-	}
+	struct stat st;
 
-	size = ftell(_file);
-	::rewind(_file);
+#ifdef PLATFORM_WINDOWS
+	fstat(_fileno(_file), &st);
+#else
+	fstat(fileno(_file), &st);
+#endif
 
-	return static_cast<int32_t>(size);
+	return static_cast<int32_t>(st.st_size);
 }
 
 bool File::readEntireFile(char8_t* buffer)
@@ -406,11 +407,14 @@ bool File::readEntireFile(char* buffer)
 		size_t this_read = fread(buffer, sizeof(char), size, _file);
 		bytes_read += this_read;
 
-		// something went wrong
-		if ((this_read == 0 && bytes_read < size) ||
-			(bytes_read < size && feof(_file))) {
+		const bool text_read = _mode == OpenMode::Read || _mode == OpenMode::ReadExt;
 
-				return false;
+		// Something went wrong.
+		if ((this_read == 0 && bytes_read < size) ||
+			(text_read && bytes_read < size && !feof(_file)) || // Text mode can hit end of file without reading the reported filesize. This is because Windows converts CRLF (\r\n) into LF (\n) on text mode reads.
+			(!text_read && bytes_read < size && feof(_file))) {
+
+			return false;
 		}
 	}
 

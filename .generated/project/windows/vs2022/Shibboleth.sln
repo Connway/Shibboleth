@@ -57,6 +57,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_App", "engine\Game_App
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "engine\Engine.vcxproj", "{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Memory", "engine\Memory.vcxproj", "{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -168,6 +171,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{65CB7E83-D18B-FAB9-9AC6-433706463F96}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Camera", "modules\Camera.vcxproj", "{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraModule", "modules\CameraModule.vcxproj", "{94C2DD79-8025-6D1E-29AB-A5D415ED38A1}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -186,6 +192,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraModule", "modules\Cam
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Debug", "modules\Debug.vcxproj", "{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebugModule", "modules\DebugModule.vcxproj", "{52DC4B36-BE91-C42B-4786-BE02B33ABB2F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -208,6 +217,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebugModule", "modules\Debu
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevDebug", "modules\DevDebug.vcxproj", "{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevDebugModule", "modules\DevDebugModule.vcxproj", "{912703F5-7DF5-F6FA-6689-672152F6D25F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -223,6 +235,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevDebugModule", "modules\D
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevECS", "modules\DevECS.vcxproj", "{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevECSModule", "modules\DevECSModule.vcxproj", "{25874FBF-11EA-DE63-BA6F-171AA6B1AAE6}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -241,6 +256,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevECSModule", "modules\Dev
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevEditor", "modules\DevEditor.vcxproj", "{6BA2BC3C-D70C-71B3-204B-22598CF44E08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevEditorModule", "modules\DevEditorModule.vcxproj", "{F134741C-5DC0-E1E0-66D1-64D5D2DB3DE1}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -256,6 +274,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevEditorModule", "modules\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevGraphics", "modules\DevGraphics.vcxproj", "{B54EAC59-2104-254F-AAF8-1E2616AD1B53}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevGraphicsModule", "modules\DevGraphicsModule.vcxproj", "{BB70CA51-2787-C8E7-70FE-5309DC53996F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -273,6 +294,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevGraphicsModule", "module
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevWebServer", "modules\DevWebServer.vcxproj", "{D9FDC8E0-C560-5885-6EE6-903B5A282408}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevWebServerModule", "modules\DevWebServerModule.vcxproj", "{DFEA9EA0-CBCE-5FF6-342F-5A4920324A78}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -289,6 +313,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevWebServerModule", "modul
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECS", "modules\ECS.vcxproj", "{60E1870B-CCEA-877C-5566-9E7CC16E937C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECSModule", "modules\ECSModule.vcxproj", "{A617B2DD-1282-6654-5BC0-17FAC76944A9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -304,6 +331,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECSModule", "modules\ECSMod
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Entity", "modules\Entity.vcxproj", "{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EntityModule", "modules\EntityModule.vcxproj", "{68C9AE9F-542C-3E44-FDB1-76FAE9F309C7}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -316,6 +346,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EntityModule", "modules\Ent
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsBase", "modules\GraphicsBase.vcxproj", "{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsDirect3D11", "modules\GraphicsDirect3D11.vcxproj", "{EA402CAF-D624-ED04-3F85-E7572B88D786}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -343,6 +376,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsDirect3D11Module", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Input", "modules\Input.vcxproj", "{953A660D-014F-8EBE-CAD0-311E36A48AEF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InputModule", "modules\InputModule.vcxproj", "{9BC4FD3C-077A-7632-906E-7009FC226D36}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -358,6 +394,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InputModule", "modules\Inpu
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logic", "modules\Logic.vcxproj", "{93E89C0D-FFFC-C4BE-C87E-681E3452C1EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogicModule", "modules\LogicModule.vcxproj", "{19790A89-852E-837E-0E23-7D557AD77982}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -377,6 +416,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogicModule", "modules\Logi
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainLoop", "modules\MainLoop.vcxproj", "{041C31B3-F0E8-8BBE-1902-7A66052EC14C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainLoopModule", "modules\MainLoopModule.vcxproj", "{4ABD2DE2-368B-21E8-1F1F-920E0B8CFD4C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -398,6 +440,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainLoopModule", "modules\M
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "modules\Physics.vcxproj", "{888B590D-F46A-D8A8-FD82-637F69E13E0A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsModule", "modules\PhysicsModule.vcxproj", "{CEBFB46B-3A80-30A2-03BB-791F6F3A757E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -430,6 +475,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsModule", "modules\Ph
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resource", "modules\Resource.vcxproj", "{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceModule", "modules\ResourceModule.vcxproj", "{F3581958-DF26-0D5E-C8BA-7D84B427E9C2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -443,6 +491,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceModule", "modules\R
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Scene", "modules\Scene.vcxproj", "{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneModule", "modules\SceneModule.vcxproj", "{3960594C-A515-D241-2E0A-CC189ABEC845}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -455,6 +506,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneModule", "modules\Scen
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Script", "modules\Script.vcxproj", "{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScriptModule", "modules\ScriptModule.vcxproj", "{60750258-4CD8-91FC-F55D-CAB2E19F5D7F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -515,14 +569,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectionTest", "tests\Ref
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{DD376B17-49ED-E30C-D2E1-DDE33E96DA10}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "j2mp", "tools\j2mp.vcxproj", "{DE12987C-CA49-990D-7336-7F105F4C150F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CodeGenerator", "tools\CodeGenerator.vcxproj", "{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{99A8857C-85DF-860D-2ECC-6C101AE2020F} = {99A8857C-85DF-860D-2ECC-6C101AE2020F}
+		{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF} = {BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSONToMessagePack", "tools\JSONToMessagePack.vcxproj", "{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{99A8857C-85DF-860D-2ECC-6C101AE2020F} = {99A8857C-85DF-860D-2ECC-6C101AE2020F}
 		{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF} = {BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}
 		{5183F20F-BD97-1AC1-8619-BE20F2EC16F2} = {5183F20F-BD97-1AC1-8619-BE20F2EC16F2}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "refl_hash_dump", "tools\refl_hash_dump.vcxproj", "{6636EF68-5204-E36E-3B98-53952705BFD3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectionHashDump", "tools\ReflectionHashDump.vcxproj", "{2AC28CC3-16A6-4D19-7F06-486C6B09389B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DBC7D3B0-C769-FE86-B024-12DB9C6585D7} = {DBC7D3B0-C769-FE86-B024-12DB9C6585D7}
 		{99A8857C-85DF-860D-2ECC-6C101AE2020F} = {99A8857C-85DF-860D-2ECC-6C101AE2020F}
@@ -1504,30 +1564,42 @@ Global
 		{D023306B-BCF1-2371-A585-949791F2FFD5}.Static_Debug_D3D11|x64.Build.0 = Debug|x64
 		{D023306B-BCF1-2371-A585-949791F2FFD5}.Static_Release_D3D11|x64.ActiveCfg = Release|x64
 		{D023306B-BCF1-2371-A585-949791F2FFD5}.Static_Release_D3D11|x64.Build.0 = Release|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Debug|x64.ActiveCfg = Debug|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Debug|x64.Build.0 = Debug|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Profile|x64.ActiveCfg = Profile|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Profile|x64.Build.0 = Profile|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Release|x64.ActiveCfg = Release|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Release|x64.Build.0 = Release|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Static_Debug_D3D11|x64.ActiveCfg = Static_Debug_D3D11|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Static_Debug_D3D11|x64.Build.0 = Static_Debug_D3D11|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Static_Release_D3D11|x64.ActiveCfg = Static_Release_D3D11|x64
-		{DE12987C-CA49-990D-7336-7F105F4C150F}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Debug|x64.ActiveCfg = Debug|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Debug|x64.Build.0 = Debug|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Profile|x64.ActiveCfg = Profile|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Profile|x64.Build.0 = Profile|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Release|x64.ActiveCfg = Release|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Release|x64.Build.0 = Release|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Static_Debug_D3D11|x64.ActiveCfg = Static_Debug_D3D11|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Static_Debug_D3D11|x64.Build.0 = Static_Debug_D3D11|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Static_Release_D3D11|x64.ActiveCfg = Static_Release_D3D11|x64
-		{6636EF68-5204-E36E-3B98-53952705BFD3}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Debug|x64.ActiveCfg = Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Debug|x64.Build.0 = Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Profile|x64.ActiveCfg = Profile|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Profile|x64.Build.0 = Profile|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Release|x64.ActiveCfg = Release|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Release|x64.Build.0 = Release|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Static_Debug_D3D11|x64.ActiveCfg = Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Static_Debug_D3D11|x64.Build.0 = Debug|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Static_Release_D3D11|x64.ActiveCfg = Release|x64
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}.Static_Release_D3D11|x64.Build.0 = Release|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Debug|x64.ActiveCfg = Debug|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Debug|x64.Build.0 = Debug|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Profile|x64.ActiveCfg = Profile|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Profile|x64.Build.0 = Profile|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Release|x64.ActiveCfg = Release|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Release|x64.Build.0 = Release|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Static_Debug_D3D11|x64.ActiveCfg = Static_Debug_D3D11|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Static_Debug_D3D11|x64.Build.0 = Static_Debug_D3D11|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Static_Release_D3D11|x64.ActiveCfg = Static_Release_D3D11|x64
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Debug|x64.ActiveCfg = Debug|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Debug|x64.Build.0 = Debug|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Optimized_Debug|x64.ActiveCfg = Optimized_Debug|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Optimized_Debug|x64.Build.0 = Optimized_Debug|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Profile|x64.ActiveCfg = Profile|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Profile|x64.Build.0 = Profile|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Release|x64.ActiveCfg = Release|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Release|x64.Build.0 = Release|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Static_Debug_D3D11|x64.ActiveCfg = Static_Debug_D3D11|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Static_Debug_D3D11|x64.Build.0 = Static_Debug_D3D11|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Static_Release_D3D11|x64.ActiveCfg = Static_Release_D3D11|x64
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B}.Static_Release_D3D11|x64.Build.0 = Static_Release_D3D11|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1617,7 +1689,8 @@ Global
 		{A6C019BC-1281-95F2-DBBB-DE6F473BDACE} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
 		{205E8965-8C3D-0801-9555-93D701B46E62} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
 		{D023306B-BCF1-2371-A585-949791F2FFD5} = {1FCE6517-8B83-DE0C-1478-D8E3802CD510}
-		{DE12987C-CA49-990D-7336-7F105F4C150F} = {DD376B17-49ED-E30C-D2E1-DDE33E96DA10}
-		{6636EF68-5204-E36E-3B98-53952705BFD3} = {DD376B17-49ED-E30C-D2E1-DDE33E96DA10}
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {DD376B17-49ED-E30C-D2E1-DDE33E96DA10}
+		{E6C0AFE1-52D7-AD77-9B4E-399907A47EFF} = {DD376B17-49ED-E30C-D2E1-DDE33E96DA10}
+		{2AC28CC3-16A6-4D19-7F06-486C6B09389B} = {DD376B17-49ED-E30C-D2E1-DDE33E96DA10}
 	EndGlobalSection
 EndGlobal

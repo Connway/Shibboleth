@@ -1146,7 +1146,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 			prev_index = index;
 			root = &(*it);
 
-			index = path.find_first_of(u8"/", index + 1);
+			index = path.find(u8"/", index + 1);
 		}
 
 		menu_entry.name = entry.first;
@@ -1201,7 +1201,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 			prev_index = index;
 			root = &(*it);
 
-			index = path.find_first_of(u8"/", index + 1);
+			index = path.find(u8"/", index + 1);
 		}
 
 		menu_entry.name = entry.first;
@@ -1257,7 +1257,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 	//		prev_index = index;
 	//		root = &(*it);
 
-	//		index = path.find_first_of("/", index + 1);
+	//		index = path.find("/", index + 1);
 	//	}
 
 	//	menu_entry.name = entry.first;
@@ -1322,7 +1322,7 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Refl::IReflectio
 			}
 
 			prev_index = index;
-			index = path.find_first_of(u8"/", index + 1);
+			index = path.find(u8"/", index + 1);
 
 			entries.emplace_back(it);
 		}

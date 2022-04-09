@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\Entity\</IntDir>
-    <TargetName>Entity</TargetName>
+    <TargetName>Entity64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\Entity\</IntDir>
-    <TargetName>Entity</TargetName>
+    <TargetName>Entity64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\Entity\</IntDir>
-    <TargetName>Entity</TargetName>
+    <TargetName>Entity64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\Entity\</IntDir>
-    <TargetName>Entity</TargetName>
+    <TargetName>Entity64od</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,8 +117,8 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=Entity</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64d module_header --module Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -152,8 +152,8 @@ premake5 gen_module_header --module=Entity</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=Entity</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64 module_header --module Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -187,8 +187,8 @@ premake5 gen_module_header --module=Entity</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=Entity</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64p module_header --module Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -222,8 +222,8 @@ premake5 gen_module_header --module=Entity</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>chdir ..\..\..\..\..\utils
-premake5 gen_module_header --module=Entity</Command>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64od module_header --module Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
