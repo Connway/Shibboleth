@@ -10,12 +10,11 @@ newoption
 newoption
 {
 	trigger = "project",
-	description = "The project to build. (Defaults to VS2019/gmake depending on platform) ('build' only)",
+	description = "The project to build. (Defaults to VS2022/gmake depending on platform) ('build' only)",
 	allowed =
 	{
-		{ "vs2019", "Visual Studio 2019" },
-		{ "gmake2", "GNU Make" },
-		{ "gmake", "GNU Make" }
+		{ "vs2022", "Visual Studio 2022" },
+		{ "gmake2", "GNU Make" }
 	}
 }
 
@@ -42,8 +41,8 @@ newaction
 	trigger = "build",
 	description = "Builds everything. Defaults to Debug builds with the platform default compiler.",
 	execute = function()
-		function VS2019(config, target)
-			local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2019/Shibboleth.sln"
+		function VS2022(config, target)
+			local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2022/Shibboleth.sln"
 			local msbuild = "msbuild \"" .. solution .. "\" /p:Configuration=" .. config
 			local vcvars = "vcvarsall.bat amd64"
 
@@ -75,17 +74,9 @@ newaction
 			os.execute(vcvars .. " && " .. msbuild)
 		end
 
-		function Make(config, target, is_gmake2)
-			local make_dir = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/gmake"
-			local make_cmd = "make "
-
-			if os.ishost("windows") then
-				make_cmd = "mingw32-make "
-			end
-
-			if is_gmake2 then
-				make_dir = make_dir .. "2"
-			end
+		function Make(config, target)
+			local make_dir = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/gmake2"
+			local make_cmd = "gmake "
 
 			if not target then
 				target = "all"
@@ -113,7 +104,7 @@ newaction
 
 		if not project then
 			if os.ishost("windows") then
-				project = "vs2019"
+				project = "vs2022"
 			elseif os.ishost("linux") then
 				project = "gmake"
 			else
@@ -130,12 +121,10 @@ newaction
 		local cwd = os.getcwd()
 
 		if os.ishost("windows") then
-			if project == "vs2019" then
-				VS2019(config, target)
-			elseif project == "gmake" then
-				Make(config, target, false)
+			if project == "vs2022" then
+				VS2022(config, target)
 			elseif project == "gmake2" then
-				Make(config, target, true)
+				Make(config, target)
 			else
 				print("Building project '" .. project .. "' not supported on Windows!")
 			end

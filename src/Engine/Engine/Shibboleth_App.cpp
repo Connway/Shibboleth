@@ -172,8 +172,11 @@ void App::destroy(void)
 					return false;
 				}
 
+				const Gaff::Hash64 module_name_hash = Gaff::FNV1aHash64String(module_name);
+				value.freeString(module_name);
+
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), module_name_hash);
 
 				if (manager_refls) {
 					for (const Refl::IReflectionDefinition* ref_def : *manager_refls) {
@@ -185,8 +188,10 @@ void App::destroy(void)
 					}
 				}
 
-				if (value.isString()) {
-					value.freeString(module_name);
+				const auto module_ptr_it = _module_map.find(module_name_hash);
+
+				if (module_ptr_it != _module_map.end()) {
+					module_ptr_it->second->shutdown();
 				}
 
 				return false;
@@ -198,6 +203,7 @@ void App::destroy(void)
 	}
 
 	_manager_map.clear();
+	_module_map.clear();
 	_reflection_mgr.destroy();
 	_dynamic_loader.clear();
 
@@ -393,24 +399,6 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	//const Gaff::JobData thread_init_job =
-	//{
-	//	[](uintptr_t thread_id, void* data) -> void
-	//	{
-	//		App* const app = reinterpret_cast<App*>(data);
-
-	//		for (const auto& entry : app->_manager_map) {
-	//			if (!entry.second->initThread(thread_id)) {
-	//				LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
-	//				app->quit();
-	//			}
-	//		}
-	//	},
-	//	static_cast<App*>(&GetApp())
-	//};
-
-	//_job_pool.addJobsForAllThreads(&thread_init_job, 1);
-
 	LogInfoDefault("Game Successfully Initialized.");
 	return true;
 }
@@ -422,7 +410,7 @@ bool App::loadFileSystem(void)
 	U8String fs = u8"";
 
 	if (lfs.isString()) {
-		fs.append_sprintf(u8"%s%s", lfs.getString(), BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8);
+		fs.append_sprintf(u8"%s%s", lfs.getString(), TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8);
 
 		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), u8"FileSystem");
 
@@ -553,13 +541,14 @@ bool App::loadModules(void)
 		return false;
 	}
 
+
+
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		const InitMode mode = static_cast<InitMode>(mode_count);
 
 		if (module_dirs.isArray()) {
 			const int32_t size = module_dirs.size();
 
-			// Load the rest.
 			for (int32_t i = 0; i < size; ++i) {
 				const Gaff::JSON& dir = module_dirs[i];
 				GAFF_ASSERT(dir.isString());
@@ -734,15 +723,15 @@ bool App::loadModule(const char* module_path, InitMode mode)
 	CONVERT_STRING(char8_t, temp, name);
 
 	U8String module_name(temp);
-	size_t pos = module_name.find('\\');
+	size_t pos = module_name.find(u8'\\');
 
 	while (pos != U8String::npos) {
-		module_name[pos] = '/';
-		pos = module_name.find('\\');
+		module_name[pos] = u8'/';
+		pos = module_name.find(u8'\\');
 	}
 
-	pos = module_name.find_last_of('/');
-	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen("Module" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8) - (pos + 1));
+	pos = module_name.rfind(u8'/');
+	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen(u8"Module" TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8) - (pos + 1));
 
 	DynamicLoader::ModulePtr module = _dynamic_loader.getModule(module_name.data());
 
@@ -753,11 +742,38 @@ bool App::loadModule(const char* module_path, InitMode mode)
 			LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name.data());
 			return false;
 		}
+
+	#ifdef INIT_STACKTRACE_SYSTEM
+		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+	#endif
 	}
 
-#ifdef INIT_STACKTRACE_SYSTEM
-	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
+	auto module_ptr_it = _module_map.find(Gaff::FNV1aHash64String(module_name.data()));
+	CreateModuleFunc create_func = module->getFunc<CreateModuleFunc>("CreateModule");
+
+	if (create_func) {
+		if (module_ptr_it == _module_map.end()) {
+			module_ptr_it = _module_map.insert(Gaff::FNV1aHash64String(module_name.data())).first;
+			module_ptr_it->second.reset(create_func());
+		}
+
+		if (module_ptr_it != _module_map.end()) {
+			if (mode == InitMode::EnumsAndFirstInits) {
+				module_ptr_it->second->preInit(*this);
+				module_ptr_it->second->initReflectionEnums();
+			} else if (mode == InitMode::Attributes) {
+				module_ptr_it->second->initReflectionAttributes();
+			} else {
+				module_ptr_it->second->initReflectionClasses();
+				module_ptr_it->second->postInit();
+			}
+
+			return true;
+
+		} else if (create_func) {
+
+		}
+	}
 
 	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
@@ -769,39 +785,6 @@ bool App::loadModule(const char* module_path, InitMode mode)
 		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name.data());
 		return false;
 	}
-
-	//if (_configs[k_config_app_hot_reload_modules].isTrue()) {
-	//	const U8String module_file_name(U8String::CtorSprintf(), "%sModule" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8, module_name.data());
-	//	const Gaff::Flags<Gaff::FileWatcher::NotifyChangeFlag> flags(Gaff::FileWatcher::NotifyChangeFlag::LastWrite);
-
-
-	//	for (const auto& dir_entry : std::filesystem::recursive_directory_iterator("../.generated/build/" PLATFORM_NAME)) {
-	//		if (!dir_entry.is_regular_file()) {
-	//			continue;
-	//		}
-
-	//		const auto abs_file_path = std::filesystem::absolute(dir_entry.path());
-	//		const wchar_t* file_name = abs_file_path.c_str();
-	//		CONVERT_STRING(char, temp_path, file_name);
-
-	//		if (Gaff::EndsWith(temp_path, "Module" BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8)) {
-	//			temp_path[Gaff::ReverseFind(temp_path, '\\')] = 0;
-
-	//			size_t index = Gaff::Find(temp_path, '\\');
-	//			
-	//			while (index != U8String::npos) {
-	//				temp_path[index] = '/';
-	//				index = Gaff::Find(temp_path, '\\');
-	//			}
-
-	//			if (_file_watcher_mgr.addWatch(temp_path, flags, ModuleChanged)) {
-	//				break;
-	//			} else {
-	//				// $TODO: Log warning.
-	//			}
-	//		}
-	//	}
-	//}
 
 	return true;
 }
@@ -882,7 +865,7 @@ bool App::hasManager(Gaff::Hash64 name) const
 
 void App::ModuleChanged(const char8_t* path)
 {
-	if (!Gaff::EndsWith(path, BIT_EXTENSION_U8 DYNAMIC_EXTENSION_U8)) {
+	if (!Gaff::EndsWith(path, TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8)) {
 		return;
 	}
 

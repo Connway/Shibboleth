@@ -36,10 +36,10 @@ const NV_ENCODE_API_FUNCTION_LIST& GetNVENCFuncs(void)
 
 bool InitNVENC(void)
 {
-	DynamicLoader::ModulePtr nvenc_module = GetApp().getDynamicLoader().loadModule(u8"nvEncodeAPI" DYNAMIC_EXTENSION_U8, u8"nvenc");
+	DynamicLoader::ModulePtr nvenc_module = GetApp().getDynamicLoader().loadModule(u8"nvEncodeAPI" DYNAMIC_MODULE_EXTENSION_U8, u8"nvenc");
 
 	if (!nvenc_module) {
-		nvenc_module = GetApp().getDynamicLoader().loadModule(u8"nvEncodeAPI64" DYNAMIC_EXTENSION_U8, u8"nvenc");
+		nvenc_module = GetApp().getDynamicLoader().loadModule(u8"nvEncodeAPI64" DYNAMIC_MODULE_EXTENSION_U8, u8"nvenc");
 
 		if (!nvenc_module) {
 			return false;

@@ -36,9 +36,6 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EditorAttributesCommon.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -73,6 +70,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IModule.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflection.h">
@@ -196,7 +196,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Broadcaster.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EditorAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />

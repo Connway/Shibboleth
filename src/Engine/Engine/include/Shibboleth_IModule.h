@@ -22,24 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-
-#ifdef DEBUG
-	#define SHIB_RUNTIME_VAR_ENABLED
-#endif
-
-#ifdef SHIB_RUNTIME_VAR_ENABLED
+#include "Shibboleth_Utilities.h"
 
 NS_SHIBBOLETH
 
-class RuntimeVarManager;
-class IRuntimeVar;
+class IModule
+{
+public:
+	virtual ~IModule(void) {}
 
-template <class T>
-class RuntimeVar;
-
-void RegisterRuntimeVars(void);
+	virtual bool preInit(IApp& app) { SetApp(app); return true; }
+	virtual bool initReflectionEnums(void) { return true; }
+	virtual bool initReflectionAttributes(void) { return true; }
+	virtual bool initReflectionClasses(void) { return true; }
+	virtual bool postInit(void) {}
+	virtual void shutdown(void) {}
+};
 
 NS_END
-
-#endif

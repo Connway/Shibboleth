@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_JobPool.h"
+#include "Shibboleth_IModule.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_JSON.h>
 
@@ -75,6 +76,7 @@ public:
 private:
 	using InitFileSystemModuleFunc = bool (*)(IApp&);
 	using InitModuleFunc = bool (*)(IApp&, InitMode);
+	using CreateModuleFunc = IModule* (*)(void);
 
 	struct FileSystemData
 	{
@@ -110,6 +112,7 @@ private:
 	FileSystemData _fs;
 
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
+	VectorMap< Gaff::Hash64, UniquePtr<IModule> > _module_map{ ProxyAllocator("Reflection") };
 	Gaff::JSON _configs;
 
 	ThreadAllocator _thread_allocator;

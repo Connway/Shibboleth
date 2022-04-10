@@ -31,11 +31,11 @@ project "Memory"
 
 	flags { "FatalWarnings" }
 
-	filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+	filter { "configurations:*Debug* or *Profile*" }
 		dependson({ "TracyClient" })
 		links({ "TracyClient" })
 
-	filter { "configurations:*Debug* or *Optimized_Debug*" }
+	filter { "configurations:*Debug*" }
 		defines { "CHECK_FOR_DOUBLE_FREE", "CHECK_FOR_LEAKS", "CHECK_FOR_MISALIGNED_POINTER" }
 
 	filter { "configurations:*Release* or *Profile*" }

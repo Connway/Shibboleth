@@ -379,7 +379,7 @@ TEST_CASE("shibboleth_factory")
 //TEST_CASE("shibboleth_reflection_module")
 //{
 //	Gaff::DynamicModule module;
-//	bool ret = module.load("ResourceModule" BIT_EXTENSION);
+//	bool ret = module.load("ResourceModule" TARGET_SUFFIX);
 //
 //	REQUIRE(ret);
 //

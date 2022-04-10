@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
 #include "CodeGen_IncludeArgParse.h"
+#include "CodeGen_Utils.h"
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
@@ -173,29 +174,6 @@ static void ProcessLine(std::vector<std::u8string>& file_classes, std::u8string_
 	}
 
 	file_classes.emplace_back(class_name);
-}
-
-static void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program)
-{
-	if (program.is_used("--license_file")) {
-		const std::string license_file_path = program.get("--license_file");
-		Gaff::File license_file(license_file_path.data());
-
-		if (license_file.isOpen()) {
-			char8_t buffer[2048] = { 0 };
-
-			gen_file.writeString(u8"/************************************************************************************\n");
-
-			while (license_file.readString(buffer, ARRAY_SIZE(buffer))) {
-				gen_file.writeString(buffer);
-			}
-
-			gen_file.writeString(u8"************************************************************************************/\n\n");
-
-		} else {
-			std::cerr << "Failed to open license file '" << license_file_path.data() << "'." << std::endl;
-		}
-	}
 }
 
 static int WriteFile(

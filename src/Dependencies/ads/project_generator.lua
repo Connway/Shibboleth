@@ -21,34 +21,12 @@ project "ads"
 	language "C++"
 	warnings "Extra"
 
-	files { "**.h", "**.cpp", "**.qrc", "**.ui" }
-	excludes { "**/moc*.*" }
-	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000", "ADS_SHARED_EXPORT" }
+	QtSettings({ "core", "gui", "widgets" })
 
-	qtgenerateddir ".generated"
-	qtmodules { "core", "gui", "widgets" }
-	qtprefix "Qt6"
+	defines { "ADS_SHARED_EXPORT" }
 
 	filter { "system:windows" }
 		removefiles { "linux/*.*" }
-
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Debug*", "platforms:x64" }
-		qtsuffix "d"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Release*", "platforms:x64" }
-	-- 	qtsuffix "64"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Profile*", "platforms:x64" }
-	-- 	qtsuffix "64p"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Optimized_Debug*", "platforms:x64" }
-	-- 	qtsuffix "64od"
-
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Static_Debug*", "platforms:x64" }
-		qtsuffix "d"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Static_Release*", "platforms:x64" }
-	-- 	qtsuffix "64s"
 
 	filter {}
 

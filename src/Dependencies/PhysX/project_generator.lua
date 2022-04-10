@@ -23,7 +23,7 @@ function PhysXProject(proj_name, lib_type)
 		"PX_PHYSX_STATIC_LIB"
 	}
 
-	filter { "configurations:Debug*" }
+	filter { "configurations:*Debug*" }
 		defines
 		{
 			"PX_DEBUG=1",
@@ -33,7 +33,7 @@ function PhysXProject(proj_name, lib_type)
 			-- "PX_BUILD_NUMBER=0"
 		}
 
-	filter { "configurations:Release*" }
+	filter { "configurations:*Release*" }
 		defines
 		{
 			-- "PX_BUILD_NUMBER=0"
@@ -408,7 +408,7 @@ PhysXProject("PhysXFoundation", "StaticLib")
 
 
 PhysXProject("PhysX", "StaticLib")
-	filter { "system:windows", "configurations:Debug*" }
+	filter { "system:windows", "configurations:*Debug*" }
 		defines { "PX_PHYSX_GPU_SHARED_LIB_NAME=PhysXGpu_64d.dll" }
 
 		postbuildcommands
@@ -420,7 +420,7 @@ PhysXProject("PhysX", "StaticLib")
 			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
 		}
 
-	filter { "system:windows", "configurations:Release*" }
+	filter { "system:windows", "configurations:*Release* or *Optimized_Debug* or *Profile*" }
 		defines { "PX_PHYSX_GPU_SHARED_LIB_NAME=PhysXGpu_64.dll" }
 
 		postbuildcommands

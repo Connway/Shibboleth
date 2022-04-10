@@ -1,13 +1,11 @@
 function SetIntermediateAndTargetDirs(configuration)
-	if _ACTION then
-		filter { "configurations:" .. configuration, "platforms:x86" }
-			objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
-			targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x86/" .. configuration)
+	filter { "configurations:" .. configuration, "platforms:x86" }
+		objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
+		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x86/" .. configuration)
 
-		filter { "configurations:" .. configuration, "platforms:x64" }
-			objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
-			targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
-	end
+	filter { "configurations:" .. configuration, "platforms:x64" }
+		objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
+		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
 end
 
 startproject "Game_App"
@@ -41,8 +39,10 @@ filter { "platforms:x64" }
 
 filter {}
 
-for _,v in ipairs(configs) do
-	 SetIntermediateAndTargetDirs(v)
+if _ACTION then
+	for _,v in ipairs(configs) do
+		 SetIntermediateAndTargetDirs(v)
+	end
 end
 
 dofile("module_suffix.lua")
@@ -51,35 +51,23 @@ filter { "configurations:*Debug*" }
 	optimize "Debug"
 	runtime "Debug"
 
--- filter { "toolset:clang"--[[, "rtti:off"--]] }
-	-- defines { "_HAS_STATIC_RTTI=0" }
-
-filter { "configurations:*Debug* or *Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG", "PROFILE" }
 
-filter { "configurations:*Release* or *Profile*" }
+filter { "configurations:*Optimized_Debug* or *Release* or *Profile*" }
 	flags { "LinkTimeOptimization" }
 	optimize "Speed"
 	runtime "Release"
 
+filter { "configurations:*Release* or *Profile*" }
 	defines
 	{
 		"_HAS_ITERATOR_DEBUGGING=0",
 		"_ITERATOR_DEBUG_LEVEL=0",
-		"NDEBUG",
-		"PROFILE"
+		"NDEBUG"
 	}
 
 filter { "configurations:*Profile*" }
 	defines { "PROFILE" }
-
-filter { "configurations:*Release*" }
-	defines { "RELEASE" }
-
-filter { "configurations:*Optimized_Debug*" }
-	flags { "LinkTimeOptimization" }
-	optimize "Speed"
-	runtime "Release"
 
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
@@ -88,15 +76,6 @@ filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
 
 filter { "action:vs*" }
-	buildoptions { "/Zc:__cplusplus" }
-
-filter { "configurations:not *Clang", "action:not vs*" }
-	toolset "gcc"
-
-filter { "configurations:*Clang" }
-	toolset "clang"
-
-filter { "action:vs2022" }
-	buildoptions { "/permissive-", "/Zc:static_assert-" }
+	buildoptions { "/Zc:__cplusplus", "/permissive-", "/Zc:static_assert-" }
 
 filter {}

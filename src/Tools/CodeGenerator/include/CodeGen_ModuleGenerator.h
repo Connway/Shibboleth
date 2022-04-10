@@ -22,24 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+namespace argparse
+{
+	class ArgumentParser;
+}
 
-#ifdef DEBUG
-	#define SHIB_RUNTIME_VAR_ENABLED
-#endif
-
-#ifdef SHIB_RUNTIME_VAR_ENABLED
-
-NS_SHIBBOLETH
-
-class RuntimeVarManager;
-class IRuntimeVar;
-
-template <class T>
-class RuntimeVar;
-
-void RegisterRuntimeVars(void);
-
-NS_END
-
-#endif
+void ModuleGenerator_AddArguments(argparse::ArgumentParser& program);
+int ModuleGenerator_Run(const argparse::ArgumentParser& program);

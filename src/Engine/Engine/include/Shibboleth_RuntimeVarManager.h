@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#if defined(PROFILE) || defined(RELEASE)
-	#define RuntimeVariable(VarType) static const VarType
-#else
+#ifdef DEBUG
 	#define RuntimeVariable(VarType) static Shibboleth::RuntimeVar<VarType>
 	#define SHIB_RUNTIME_VAR_ENABLED
+#else
+	#define RuntimeVariable(VarType) static const VarType
 #endif
 
 #ifdef SHIB_RUNTIME_VAR_ENABLED

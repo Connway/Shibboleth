@@ -27,6 +27,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
     <LocalDebuggerWorkingDirectory>..\..\..\..\..\workingdir\bin</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>"cfg\dev.cfg"</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

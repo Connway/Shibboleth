@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -127,7 +127,7 @@ CodeGenerator64d module_header --module Input</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;RELEASE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -162,7 +162,7 @@ CodeGenerator64 module_header --module Input</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -197,7 +197,7 @@ CodeGenerator64p module_header --module Input</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>

@@ -22,24 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-
-#ifdef DEBUG
-	#define SHIB_RUNTIME_VAR_ENABLED
-#endif
-
-#ifdef SHIB_RUNTIME_VAR_ENABLED
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
-class RuntimeVarManager;
-class IRuntimeVar;
+class EditorWindowAttribute final : public Refl::IAttribute
+{
+public:
+	EditorWindowAttribute(const char8_t* path = nullptr, bool single_instance = true);
 
-template <class T>
-class RuntimeVar;
+	bool isSingleInstance(void) const { return _single_instance; }
+	const char8_t* getPath(void) const { return _path; }
 
-void RegisterRuntimeVars(void);
+	Refl::IAttribute* clone(void) const override;
+
+private:
+	const char8_t* const _path = nullptr;
+	bool _single_instance = true;
+
+	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
+};
 
 NS_END
 
-#endif
+SHIB_REFLECTION_DECLARE(Shibboleth::EditorWindowAttribute)

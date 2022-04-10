@@ -22,27 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Reflection.h"
-
-NS_SHIBBOLETH
-
-class EditorWindowAttribute final : public Refl::IAttribute
+namespace argparse
 {
-public:
-	EditorWindowAttribute(const char8_t* path = nullptr, bool single_instance = true);
+	class ArgumentParser;
+}
 
-	bool isSingleInstance(void) const { return _single_instance; }
-	const char8_t* getPath(void) const { return _path; }
+namespace Gaff
+{
+	class File;
+}
 
-	Refl::IAttribute* clone(void) const override;
-
-private:
-	const char8_t* const _path = nullptr;
-	bool _single_instance = true;
-
-	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
-};
-
-NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::EditorWindowAttribute)
+void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program);

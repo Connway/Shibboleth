@@ -25,7 +25,7 @@ project "mimalloc"
 	-- 	"MI_MALLOC_OVERRIDE"
 	-- }
 
-	filter { "configurations:*Debug* or *Optimized_Debug*" }
+	filter { "configurations:*Debug*" }
 		defines { "MI_DEBUG=3" }
 
 	filter {}

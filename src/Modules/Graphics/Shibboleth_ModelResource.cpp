@@ -250,7 +250,7 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 									GetIgnoreFlag<aiComponent_TEXCOORDS>("ignore_uvs", reader);
 
 
-	const size_t index = model_file_path.find_last_of(u8'.');
+	const size_t index = model_file_path.rfind(u8'.');
 	
 	Assimp::Importer importer;
 	

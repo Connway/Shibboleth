@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_IncludeArgParse.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ModuleGenerator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ReflectionHeaderGenerator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ModuleGenerator.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ReflectionHeaderGenerator.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_Utils.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGenerator.cpp" />
+  </ItemGroup>
+</Project>

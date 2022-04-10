@@ -67,7 +67,7 @@ local GenerateProject = function()
 		dependson(deps)
 		links(deps)
 
-		filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+		filter { "configurations:*Debug* or *Profile*" }
 			dependson({ "TracyClient" })
 			links({ "TracyClient" })
 
@@ -87,7 +87,7 @@ local LinkDependencies = function()
 	dependson(deps)
 	links(deps)
 
-	filter { "configurations:*Debug* or *Optimized_Debug* or *Profile*" }
+	filter { "configurations:*Debug* or *Profile*" }
 		dependson({ "TracyClient" })
 		links({ "TracyClient" })
 

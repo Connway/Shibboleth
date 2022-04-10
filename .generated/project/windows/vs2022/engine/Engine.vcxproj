@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -127,7 +127,7 @@ CodeGenerator64d static_header</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;RELEASE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -162,7 +162,7 @@ CodeGenerator64 static_header</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -197,7 +197,7 @@ CodeGenerator64p static_header</Command>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -238,7 +238,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EditorAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflectionDefinition.inl" />
@@ -251,6 +250,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IMainLoop.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IModule.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_IReflectionFunction.h" />
@@ -294,7 +294,6 @@ CodeGenerator64od static_header</Command>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Broadcaster.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EditorAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />

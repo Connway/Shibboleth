@@ -192,3 +192,41 @@ function SetupConfigMap()
 		["Static_Release_D3D11"] = "Release"
 	}
 end
+
+function QtSettings(modules, base_dir, is_module)
+	if base_dir == nil then
+		base_dir = ""
+	end
+
+	if is_module ~= true then
+		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.qrc", base_dir .. "**.ui" }
+		excludes { "**/moc*.*" }
+	end
+
+	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
+
+	qtgenerateddir(base_dir .. ".generated")
+	qtprefix "Qt6"
+
+	qtmodules(modules)
+
+	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Debug", "platforms:x64" }
+		qtsuffix "d"
+
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Release", "platforms:x64" }
+	-- 	qtsuffix "64"
+
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Profile", "platforms:x64" }
+	-- 	qtsuffix "64p"
+
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Optimized_Debug", "platforms:x64" }
+	-- 	qtsuffix "64od"
+
+	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Debug*", "platforms:x64" }
+		qtsuffix "d"
+
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Release*", "platforms:x64" }
+	-- 	qtsuffix "64s"
+
+	filter {}
+end

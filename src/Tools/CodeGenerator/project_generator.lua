@@ -11,6 +11,7 @@ project "CodeGenerator"
 
 	includedirs
 	{
+		"include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/EASTL/include",

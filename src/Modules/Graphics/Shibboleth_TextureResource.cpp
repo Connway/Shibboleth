@@ -247,7 +247,7 @@ void TextureResource::loadTextureImage(const IFile* file, const char8_t* device_
 		return;
 	}
 
-	const size_t index = image_path.find_last_of('.');
+	const size_t index = image_path.rfind('.');
 	Image image;
 
 	if (!image.load(file->getBuffer(), file->size(), image_path.data() + index)) {

@@ -20,26 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "CodeGen_Utils.h"
+#include "CodeGen_IncludeArgParse.h"
+#include <Gaff_File.h>
 
-#include "Shibboleth_Defines.h"
+void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program)
+{
+	if (program.is_used("--license_file")) {
+		const std::string license_file_path = program.get("--license_file");
+		Gaff::File license_file(license_file_path.data());
 
-#ifdef DEBUG
-	#define SHIB_RUNTIME_VAR_ENABLED
-#endif
+		if (license_file.isOpen()) {
+			char8_t buffer[2048] = { 0 };
 
-#ifdef SHIB_RUNTIME_VAR_ENABLED
+			gen_file.writeString(u8"/************************************************************************************\n");
 
-NS_SHIBBOLETH
+			while (license_file.readString(buffer, ARRAY_SIZE(buffer))) {
+				gen_file.writeString(buffer);
+			}
 
-class RuntimeVarManager;
-class IRuntimeVar;
+			gen_file.writeString(u8"************************************************************************************/\n\n");
 
-template <class T>
-class RuntimeVar;
-
-void RegisterRuntimeVars(void);
-
-NS_END
-
-#endif
+		} else {
+			std::cerr << "Failed to open license file '" << license_file_path.data() << "'." << std::endl;
+		}
+	}
+}

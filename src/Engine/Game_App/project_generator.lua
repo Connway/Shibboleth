@@ -46,11 +46,11 @@ project "Game_App"
 	--filter { "system:not windows" }
 	--	linkoptions { "-Wl,-rpath,./bin" }
 
-	filter { "configurations:Static_*" }
+	filter { "configurations:*Static*" }
 		defines { "SHIB_STATIC" }
 		StaticLinks()
 
-	filter { "configurations:not Release*" }
+	filter { "configurations:not *Release*" }
 		debugargs { "\"cfg\\dev.cfg\"" }
 
 	filter {}

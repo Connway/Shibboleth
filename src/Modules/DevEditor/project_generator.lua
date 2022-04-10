@@ -5,41 +5,12 @@ end
 require("premake-qt/qt")
 local qt = premake.extensions.qt
 
-local QtModules =
+local qt_modules =
 {
 	"core",
 	"gui",
 	"widgets"
 }
-
-local QtSettings = function(base_dir)
-	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
-
-	qtgenerateddir(base_dir .. ".generated")
-	qtprefix "Qt6"
-
-	qtmodules(QtModules)
-
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Debug*", "platforms:x64" }
-		qtsuffix "d"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Release*", "platforms:x64" }
-	-- 	qtsuffix "64"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Profile*", "platforms:x64" }
-	-- 	qtsuffix "64p"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Optimized_Debug*", "platforms:x64" }
-	-- 	qtsuffix "64od"
-
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Static_Debug*", "platforms:x64" }
-		qtsuffix "d"
-
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:*Static_Release*", "platforms:x64" }
-	-- 	qtsuffix "64s"
-
-	filter {}
-end
 
 local GenerateProject = function()
 	-- If defaultpath is nil, then we are generating a header. Do nothing.
@@ -59,8 +30,6 @@ local GenerateProject = function()
 		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.qrc", base_dir .. "**.ui" }
-		excludes { base_dir .. "**/moc*.*" }
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
@@ -81,7 +50,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/ads"
 		}
 
-		QtSettings(base_dir)
+		QtSettings(qt_modules, base_dir)
 
 	project "DevEditorModule"
 		qt.enable()
@@ -119,7 +88,7 @@ local GenerateProject = function()
 
 		filter {}
 
-		QtSettings(base_dir)
+		QtSettings(qt_modules, base_dir, true)
 
 		local plugin_path = qt.defaultpath .. "/plugins"
 		local bin_path = qt.defaultpath .. "/bin"
@@ -139,7 +108,7 @@ local GenerateProject = function()
 			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/bin/platforms"
 		}
 
-		for _, name in ipairs(QtModules) do
+		for _, name in ipairs(qt_modules) do
 			local final_name = bin_path .. "/Qt6" .. qt.modules[name].name
 
 			postbuildcommands

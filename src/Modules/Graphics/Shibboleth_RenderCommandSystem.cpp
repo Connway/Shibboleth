@@ -633,7 +633,7 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 
 
 		for (; start_index < num_pages; ++start_index) {
-			const size_t colon_index = instance_data.instance_data->buffer_string.find_last_of(':');
+			const size_t colon_index = instance_data.instance_data->buffer_string.rfind(':');
 
 			instance_data.instance_data->buffer_string.erase(colon_index + 1);
 			instance_data.instance_data->buffer_string.append_sprintf(u8"%i", start_index);
