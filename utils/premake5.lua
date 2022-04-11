@@ -1,4 +1,4 @@
-local unsupported_actions =
+local unsupported_project_actions =
 {
 	"vs2005",
 	"vs2008",
@@ -9,65 +9,84 @@ local unsupported_actions =
 	"vs2017",
 	"vs2019",
 	"codelite",
+	"gmake"
 }
 
-for _,v in pairs(unsupported_actions) do
+local supported_project_actions =
+{
+	"vs2022",
+	"gmake2",
+	"xcode4"
+}
+
+for _,v in pairs(unsupported_project_actions) do
 	if _ACTION == v then
 		print("We do not support generating/building on project platform " .. _ACTION)
 		return
 	end
 end
 
-dofile("solution_configs.lua")
 dofile("helper_functions.lua")
 dofile("options.lua")
 
 local actions = os.matchfiles("../**/*actions.lua")
 table.foreachi(actions, RunFile)
 
-function GenerateModules(file)
-	local funcs = dofile(file)
-	funcs.GenerateProject()
+local is_project_action = false
+for _,v in pairs(supported_project_actions) do
+	if _ACTION == v then
+		is_project_action = true
+		break
+	end
 end
 
-solution "Shibboleth"
-	if _ACTION then
-		location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
+if is_project_action == true then
+	dofile("solution_configs.lua")
+
+	function GenerateModules(file)
+		local funcs = dofile(file)
+		funcs.GenerateProject()
 	end
 
-	configurations(configs)
+	workspace "Shibboleth"
+		if _ACTION then
+			location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
+		end
 
-	dofile("solution_settings.lua")
+		configurations(configs)
 
-	local dependency_generators = os.matchfiles("../src/Dependencies/**/project_generator.lua")
-	local framework_generators = os.matchfiles("../src/Frameworks/**/project_generator.lua")
-	local module_generators = os.matchfiles("../src/Modules/**/project_generator.lua")
-	local engine_generators = os.matchfiles("../src/Engine/**/project_generator.lua")
-	local tools_generators = os.matchfiles("../src/Tools/**/project_generator.lua")
+		dofile("solution_settings.lua")
 
-	group "Dependencies"
-	table.foreachi(dependency_generators, RunFile)
+		local dependency_generators = os.matchfiles("../src/Dependencies/**/project_generator.lua")
+		local framework_generators = os.matchfiles("../src/Frameworks/**/project_generator.lua")
+		local module_generators = os.matchfiles("../src/Modules/**/project_generator.lua")
+		local engine_generators = os.matchfiles("../src/Engine/**/project_generator.lua")
+		local tools_generators = os.matchfiles("../src/Tools/**/project_generator.lua")
 
-	group "Frameworks"
-	table.foreachi(framework_generators, RunFile)
+		group "Dependencies"
+		table.foreachi(dependency_generators, RunFile)
 
-	group "Core"
-	table.foreachi(engine_generators, RunFile)
+		group "Frameworks"
+		table.foreachi(framework_generators, RunFile)
 
-	group "Modules"
-	table.foreachi(module_generators, GenerateModules)
+		group "Core"
+		table.foreachi(engine_generators, RunFile)
 
-	group "Tools"
-	table.foreachi(tools_generators, RunFile)
+		group "Modules"
+		table.foreachi(module_generators, GenerateModules)
 
-	group "Tests"
-	dofile("../src/Tests/project_generator.lua")
+		group "Tools"
+		table.foreachi(tools_generators, RunFile)
 
-	group "Project Files"
-		project "Generators"
-			kind "None"
-			files { "../src/**.lua" }
+		group "Tests"
+		dofile("../src/Tests/project_generator.lua")
 
-		project "Utils"
-			kind "None"
-			files { "**.lua" }
+		group "Project Files"
+			project "Generators"
+				kind "None"
+				files { "../src/**.lua" }
+
+			project "Utils"
+				kind "None"
+				files { "**.lua" }
+end

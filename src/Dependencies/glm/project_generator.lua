@@ -1,7 +1,5 @@
 project "glm"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	kind "None"
 	-- language "C++"

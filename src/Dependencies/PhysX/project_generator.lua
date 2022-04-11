@@ -1,9 +1,7 @@
 function PhysXProject(proj_name, lib_type)
 	project(proj_name)
 
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	cppdialect "C++17" -- C++20 breaks this library.
 	kind(lib_type)

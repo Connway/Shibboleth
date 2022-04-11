@@ -109,9 +109,8 @@ newaction
 				project = "gmake"
 			else
 				print("You must specify a project to build with '--project=[PROJ]'")
+				return
 			end
-
-			return
 		end
 
 		if not config then
@@ -123,10 +122,15 @@ newaction
 		if os.ishost("windows") then
 			if project == "vs2022" then
 				VS2022(config, target)
-			elseif project == "gmake2" then
-				Make(config, target)
 			else
 				print("Building project '" .. project .. "' not supported on Windows!")
+			end
+
+		elseif os.ishost("linux") then
+			if project == "gmake2" then
+				Make(config, target)
+			else
+				print("Building project '" .. project .. "' not supported on Linux!")
 			end
 
 		else

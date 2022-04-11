@@ -2,9 +2,7 @@ local GenerateProject = function()
 	local base_dir = GetModulesDirectory("Physics")
 
 	project "Physics"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -38,9 +36,7 @@ local GenerateProject = function()
 		}
 
 	project "PhysicsModule"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "SharedLib"
 		language "C++"

@@ -1,7 +1,5 @@
 project "TracyClient"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	local build_files_in_dir = function(dir)
 		files
@@ -45,9 +43,7 @@ project "TracyClient"
 	SetupConfigMap()
 
 project "TracyProfiler"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	local build_files_in_dir = function(dir)
 		files

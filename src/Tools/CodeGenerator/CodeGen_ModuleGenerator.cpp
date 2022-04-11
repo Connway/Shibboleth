@@ -23,17 +23,199 @@ THE SOFTWARE.
 #include "CodeGen_ModuleGenerator.h"
 #include "CodeGen_ReflectionHeaderGenerator.h"
 #include "CodeGen_IncludeArgParse.h"
+#include "CodeGen_Utils.h"
 #include <Gaff_Utils.h>
+#include <Gaff_File.h>
 #include <filesystem>
 
-static int CreateProjectFiles(const std::string& /*path*/, const std::string& /*name*/, const argparse::ArgumentParser& /*program*/)
+static constexpr const char8_t* k_gen_module_code =
+u8R"(#include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace {}
+{{
+	class Module final : public Shibboleth::IModule
+	{{
+	public:
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	}};
+}}
+
+#ifdef SHIB_STATIC
+
+	namespace {}
+	{{
+		void Module::initReflectionEnums(void)
+		{{
+			// Should NOT add other code here.
+			Gen::{}::InitReflection(InitMode::Enums);
+		}}
+
+		void Module::initReflectionAttributes(void)
+		{{
+			// Should NOT add other code here.
+			Gen::{}::InitReflection(InitMode::Attributes);
+		}}
+
+		void Module::initReflectionClasses(void)
+		{{
+			// Should NOT add other code here.
+			Gen::{}::InitReflection(InitMode::Classes);
+		}}
+
+		Shibboleth::IModule* CreateModule(void)
+		{{
+			return SHIB_ALLOCT({}::Module, Shibboleth::ProxyAllocator("Input"));
+		}}
+	}}
+
+#else
+
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
+	{{
+		return {}::CreateModule();
+	}}
+
+#endif
+)";
+
+static constexpr const char8_t* k_gen_module_project =
+u8R"(local GenerateProject = function()
+	local base_dir = GetModulesDirectory("{}")
+
+	project "{}"
+		location(GetModulesLocation())
+
+		kind "StaticLib"
+		language "C++"
+
+		files {{ base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }}
+		defines {{ "SHIB_STATIC" }}
+
+		ModuleGen("{}")
+		SetupConfigMap()
+
+		flags {{ "FatalWarnings" }}
+
+		includedirs
+		{{
+			base_dir .. "include",
+			base_dir .. "../../Engine/Memory/include",
+			base_dir .. "../../Engine/Engine/include",
+			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glm",
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Frameworks/Gaff/include"
+		}}
+
+	project "{}Module"
+		location(GetModulesLocation())
+
+		kind "SharedLib"
+		language "C++"
+
+		files {{ base_dir .. "Shibboleth_{}Module.cpp" }}
+
+		ModuleCopy()
+
+		flags {{ "FatalWarnings" }}
+
+		ModuleIncludesAndLinks("{}")
+		NewDeleteLinkFix()
+		SetupConfigMap()
+
+		local deps =
+		{{
+		}}
+
+		dependson(deps)
+		links(deps)
+end
+
+local LinkDependencies = function()
+	local deps = ModuleDependencies("{}")
+
+	dependson(deps)
+	links(deps)
+end
+
+return {{ GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }}
+)";
+
+static int CreateProjectFiles(const std::string& path, const std::string& name, const argparse::ArgumentParser& program)
 {
+	std::string prefix = "";
+
+	if (program.is_used(k_arg_prefix)) {
+		prefix = program.get(k_arg_prefix) + "_";
+	}
+
+	const std::string final_module_text = std::format(
+		reinterpret_cast<const char* const>(k_gen_module_code),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data()
+	);
+
+	std::string gen_file_path = path + "/" + prefix + name + "Module.cpp";
+	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Write);
+
+	if (!gen_file.isOpen()) {
+		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
+		return -6;
+	}
+
+	WriteLicense(gen_file, program);
+
+	if (!gen_file.writeString(final_module_text.data())) {
+		std::cerr << "Failed to write to output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
+		return -7;
+	}
+
+	gen_file.close();
+
+	gen_file_path = path + "/project_generator.lua";
+	
+	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Write)) {
+		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
+		return -6;
+	}
+
+	const std::string final_project_text = std::format(
+		reinterpret_cast<const char* const>(k_gen_module_project),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data(),
+		name.data()
+	);
+
+	if (!gen_file.writeString(final_project_text.data())) {
+		std::cerr << "Failed to write to output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
+		return -7;
+	}
+
 	return 0;
 }
 
-void ModuleGenerator_AddArguments(argparse::ArgumentParser& /*program*/)
+void ModuleGenerator_AddArguments(argparse::ArgumentParser& program)
 {
-	// No arguments to add.
+	program.add_argument(k_arg_force_module_overwrite, k_arg_force_module_overwrite_short)
+		.help("Force overwrites already existing modules.")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument(k_arg_prefix, k_arg_prefix_short)
+		.help("Prefix for generated module file.");
 }
 
 int ModuleGenerator_Run(const argparse::ArgumentParser& program)
@@ -65,12 +247,17 @@ int ModuleGenerator_Run(const argparse::ArgumentParser& program)
 		return -3;
 	}
 
-	if (std::filesystem::exists(path) && !std::filesystem::is_directory(path)) {
-		std::cerr << "'" << path << "' is not a directory." << std::endl;
+	if (std::filesystem::exists(path) && !program.get<bool>(k_arg_force_module_overwrite)) {
+		std::cerr << "'" << path << "' already exists." << std::endl;
 		return -4;
 	}
 
 	if (const auto out_dir = std::filesystem::absolute(path).u8string(); !Gaff::CreateDir(out_dir.data(), 0777)) {
+		std::cerr << "Failed to create output directory '" << reinterpret_cast<const char*>(out_dir.data()) << "'." << std::endl;
+		return -5;
+	}
+
+	if (const auto out_dir = std::filesystem::absolute(path).u8string() + u8"/include"; !Gaff::CreateDir(out_dir.data(), 0777)) {
 		std::cerr << "Failed to create output directory '" << reinterpret_cast<const char*>(out_dir.data()) << "'." << std::endl;
 		return -5;
 	}

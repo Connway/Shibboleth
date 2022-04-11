@@ -65,6 +65,7 @@ namespace Graphics
 
 		bool Module::preInit(Shibboleth::IApp& app)
 		{
+			// $TODO: Fix crash in shutdown due to static destruction order.
 			static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
 
 			IModule::preInit(app);

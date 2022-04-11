@@ -245,7 +245,12 @@ static int WriteFile(
 
 	WriteLicense(gen_file, program);
 
-	return gen_file.writeString(final_text.data()) ? 0 : -7;
+	if (!gen_file.writeString(final_text.data())) {
+		std::cerr << "Failed to write to output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
+		return -7;
+	}
+
+	return 0;
 }
 
 static int GenerateStaticReflectionHeader(

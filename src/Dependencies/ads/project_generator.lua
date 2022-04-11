@@ -6,16 +6,9 @@ require("premake-qt/qt")
 local qt = premake.extensions.qt
 
 project "ads"
-	-- If defaultpath is nil, then we are generating a header. Do nothing.
-	if qt.defaultpath == nil then
-		return
-	end
-
 	qt.enable()
 
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	kind "SharedLib"
 	language "C++"

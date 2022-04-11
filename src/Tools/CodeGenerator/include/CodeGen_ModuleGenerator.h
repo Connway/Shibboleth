@@ -27,5 +27,10 @@ namespace argparse
 	class ArgumentParser;
 }
 
+constexpr const char* const k_arg_force_module_overwrite_short = "-fmo";
+constexpr const char* const k_arg_force_module_overwrite = "--force_module_overwrite";
+constexpr const char* const k_arg_prefix_short = "-p";
+constexpr const char* const k_arg_prefix = "--prefix";
+
 void ModuleGenerator_AddArguments(argparse::ArgumentParser& program);
 int ModuleGenerator_Run(const argparse::ArgumentParser& program);

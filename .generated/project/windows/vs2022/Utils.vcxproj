@@ -129,7 +129,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\..\..\utils\build_actions.lua" />
-    <None Include="..\..\..\..\utils\gen_module_actions.lua" />
     <None Include="..\..\..\..\utils\helper_functions.lua" />
     <None Include="..\..\..\..\utils\module_suffix.lua" />
     <None Include="..\..\..\..\utils\options.lua" />

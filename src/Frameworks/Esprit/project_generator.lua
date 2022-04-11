@@ -1,7 +1,5 @@
 project "Esprit"
-	if _ACTION then
-		location(GetFrameworkLocation())
-	end
+	location(GetFrameworkLocation())
 
 	kind "StaticLib"
 	language "C++"

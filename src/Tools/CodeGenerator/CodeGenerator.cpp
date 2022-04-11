@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
+#include "CodeGen_ModuleGenerator.h"
 #include "CodeGen_IncludeArgParse.h"
 #include <Gaff_Utils.h>
 
@@ -40,6 +41,7 @@ int main(int argc, const char** argv)
 
 
 	ReflectionHeaderGenerator_AddArguments(program);
+	ModuleGenerator_AddArguments(program);
 
 
 	try {
@@ -51,11 +53,6 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	if (program.is_used("--license_file")) {
-		const std::string license_file = program.get<std::string>("--license_file");
-		std::cout << license_file.c_str();
-	}
-
 	const std::string working_dir = program.get("--root_path");
 	CONVERT_STRING(char8_t, temp, working_dir.c_str());
 	Gaff::SetWorkingDir(temp);
@@ -64,6 +61,8 @@ int main(int argc, const char** argv)
 
 	if (action == "module_header" || action == "tool_header" || action == "static_header") {
 		return ReflectionHeaderGenerator_Run(program);
+	} else if (action == "create_module" || action == "create_tool") {
+		return ModuleGenerator_Run(program);
 	}
 
 	return 0;

@@ -39,10 +39,8 @@ filter { "platforms:x64" }
 
 filter {}
 
-if _ACTION then
-	for _,v in ipairs(configs) do
-		 SetIntermediateAndTargetDirs(v)
-	end
+for _,v in ipairs(configs) do
+	SetIntermediateAndTargetDirs(v)
 end
 
 dofile("module_suffix.lua")

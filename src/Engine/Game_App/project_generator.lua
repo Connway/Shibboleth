@@ -1,7 +1,5 @@
 project "Game_App"
-	if _ACTION then
-		location(GetEngineLocation())
-	end
+	location(GetEngineLocation())
 
 	filter { "options:console-app" }
 		kind "ConsoleApp"

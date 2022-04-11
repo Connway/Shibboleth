@@ -1,7 +1,5 @@
 project "Engine"
-	if _ACTION then
-		location(GetEngineLocation())
-	end
+	location(GetEngineLocation())
 
 	kind "StaticLib"
 	language "C++"

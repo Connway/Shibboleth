@@ -1,7 +1,5 @@
 project "JSONToMessagePack"
-	if _ACTION then
-		location(GetToolsLocation())
-	end
+	location(GetToolsLocation())
 
 	kind "ConsoleApp"
 	debugdir "../../../workingdir/tools"

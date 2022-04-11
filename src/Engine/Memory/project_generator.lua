@@ -1,7 +1,5 @@
 project "Memory"
-	if _ACTION then
-		location(GetEngineLocation())
-	end
+	location(GetEngineLocation())
 
 	kind "SharedLib"
 	language "C++"

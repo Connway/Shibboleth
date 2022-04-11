@@ -2,9 +2,7 @@ local GenerateProject = function()
 	local base_dir = GetModulesDirectory("DevDebug")
 
 	project "DevDebug"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -35,9 +33,7 @@ local GenerateProject = function()
 		}
 
 	project "DevDebugModule"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "SharedLib"
 		language "C++"

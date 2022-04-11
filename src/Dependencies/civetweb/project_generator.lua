@@ -1,7 +1,5 @@
 project "CivetWeb"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	kind "SharedLib"
 	language "C++"

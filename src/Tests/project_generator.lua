@@ -116,9 +116,7 @@ local tests = {
 
 function GenTest(settings)
 	project(settings.name)
-		if _ACTION then
-			location(GetTestsLocation())
-		end
+		location(GetTestsLocation())
 
 		kind(settings.kind or "ConsoleApp")
 		debugdir "../../workingdir/tests"

@@ -2,9 +2,7 @@ function DoMainGraphicsModule()
 	local base_dir = GetModulesDirectory("Graphics")
 
 	project("GraphicsBase")
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -46,9 +44,7 @@ function DoGraphicsModule(renderer)
 	local base_dir = GetModulesDirectory("Graphics")
 
 	project(project_name)
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -99,9 +95,7 @@ function DoGraphicsModule(renderer)
 
 
 	project(project_name .. "Module")
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "SharedLib"
 		language "C++"

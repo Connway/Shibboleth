@@ -1,9 +1,7 @@
 group "Dependencies/Unused By Engine"
 
 project "capstone"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	kind "StaticLib"
 	language "C"

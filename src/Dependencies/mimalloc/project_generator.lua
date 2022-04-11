@@ -1,7 +1,5 @@
 project "mimalloc"
-	if _ACTION then
-		location(GetDependenciesLocation())
-	end
+	location(GetDependenciesLocation())
 
 	kind "StaticLib"
 	-- kind "SharedLib"

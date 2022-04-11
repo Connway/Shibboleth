@@ -122,10 +122,6 @@ function ModuleCopy(dir)
 end
 
 function NewDeleteLinkFix()
-	if _ACTION == nil then
-		return
-	end
-
 	filter { "system:windows" }
 		ignoredefaultlibraries { "msvcrt.lib", "msvcrtd.lib" }
 
@@ -145,11 +141,7 @@ function NewDeleteLinkFix()
 end
 
 function GetActionLocation()
-	if _ACTION then
-		return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
-	else
-		return ""
-	end
+	return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
 end
 
 function GetDependenciesLocation()
@@ -173,11 +165,7 @@ function GetToolsLocation()
 end
 
 function GetTestsLocation()
-	if _ACTION then
-		return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
-	else
-		return ""
-	end
+	return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
 end
 
 function GetModulesDirectory(module_name)

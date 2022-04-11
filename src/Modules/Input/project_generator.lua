@@ -2,9 +2,7 @@ local GenerateProject = function()
 	local base_dir = GetModulesDirectory("Input")
 
 	project "Input"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -32,9 +30,7 @@ local GenerateProject = function()
 		}
 
 	project "InputModule"
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "SharedLib"
 		language "C++"

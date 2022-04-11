@@ -13,19 +13,12 @@ local qt_modules =
 }
 
 local GenerateProject = function()
-	-- If defaultpath is nil, then we are generating a header. Do nothing.
-	if qt.defaultpath == nil then
-		return
-	end
-
 	local base_dir = GetModulesDirectory("DevEditor")
 
 	project "DevEditor"
 		qt.enable()
 
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "StaticLib"
 		language "C++"
@@ -55,9 +48,7 @@ local GenerateProject = function()
 	project "DevEditorModule"
 		qt.enable()
 
-		if _ACTION then
-			location(GetModulesLocation())
-		end
+		location(GetModulesLocation())
 
 		kind "SharedLib"
 		language "C++"

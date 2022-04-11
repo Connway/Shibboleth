@@ -567,6 +567,8 @@ bool App::loadModules(void)
 	}
 #endif
 
+	_module_map.shrink_to_fit();
+
 	for (auto& entry : _module_map) {
 		if (!entry.second->preInit(*this)) {
 			//LogErrorDefault("Module::preInit() failed for module '%s'.", entry.first.getBuffer());
@@ -644,6 +646,8 @@ bool App::loadModules(void)
 			}
 		}
 	}
+
+	_manager_map.shrink_to_fit();
 
 	_job_pool.run();
 
