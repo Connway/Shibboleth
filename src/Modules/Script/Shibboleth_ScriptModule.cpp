@@ -21,64 +21,66 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace Script
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		bool preInit(Shibboleth::IApp& app) override;
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
 	#include "Shibboleth_ScriptConfigs.h"
-	#include <Shibboleth_Utilities.h>
 	#include <Shibboleth_JobPool.h>
-	#include <Shibboleth_IApp.h>
 	#include <Gaff_JSON.h>
 
 	namespace Script
 	{
-		static Shibboleth::ProxyAllocator g_script_allocator;
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
+			IModule::preInit(app);
 
-				const Gaff::JSON script_threads = app.getConfigs()[Shibboleth::k_config_script_threads];
-				const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
+			const Gaff::JSON script_threads = app.getConfigs()[Shibboleth::k_config_script_threads];
+			const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
 
-				app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::k_config_script_thread_pool_name), num_threads);
-
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
-
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::Script::InitReflection(mode);
+			app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::k_config_script_thread_pool_name), num_threads);
 
 			return true;
+		}
+
+		void Module::initReflectionEnums(void)
+		{
+			Gen::Script::InitReflection(InitMode::Enums);
+		}
+
+		void Module::initReflectionAttributes(void)
+		{
+			Gen::Script::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			Gen::Script::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(Script::Module, Shibboleth::ProxyAllocator("Script"));
 		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return Script::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Script::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return true;
+		return Script::CreateModule();
 	}
 
 #endif

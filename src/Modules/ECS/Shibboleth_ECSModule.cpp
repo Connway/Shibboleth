@@ -21,57 +21,59 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace ECS
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+		bool postInit(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_ECSAttributes.h>
-
 	namespace ECS
 	{
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		void Module::initReflectionEnums(void)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
+			// Should NOT add other code here.
+			Gen::ECS::InitReflection(InitMode::Enums);
+		}
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::ECS::InitReflection(InitMode::Attributes);
+		}
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				app.getReflectionManager().registerAttributeBucket(Refl::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::ECS::InitReflection(InitMode::Classes);
+		}
 
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::ECS::InitReflection(mode);
-
+		bool Module::postInit(void)
+		{
+			Shibboleth::GetApp().getReflectionManager().registerAttributeBucket<Shibboleth::ECSClassAttribute>();
 			return true;
 		}
 
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(ECS::Module, Shibboleth::ProxyAllocator("ECS"));
+		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return ECS::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		ECS::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return ECS::CreateModule();
 	}
 
 #endif

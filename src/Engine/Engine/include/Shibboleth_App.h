@@ -34,6 +34,13 @@ THE SOFTWARE.
 #include "Shibboleth_IApp.h"
 #include <Gaff_JSON.h>
 
+#ifdef SHIB_STATIC
+namespace Gen::Engine
+{
+	static bool LoadModulesStatic(Shibboleth::App& app);
+}
+#endif
+
 NS_SHIBBOLETH
 
 class IMainLoop;
@@ -75,7 +82,6 @@ public:
 
 private:
 	using InitFileSystemModuleFunc = bool (*)(IApp&);
-	using InitModuleFunc = bool (*)(IApp&, InitMode);
 	using CreateModuleFunc = IModule* (*)(void);
 
 	struct FileSystemData
@@ -123,12 +129,12 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
-	bool loadModule(const char* module_name, InitMode mode);
-
 	void removeExtraLogs(void);
 
 	bool createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers);
 	bool hasManager(Gaff::Hash64 name) const;
+
+	bool createModule(CreateModuleFunc create_func, const char8_t* module_name);
 
 	static void ModuleChanged(const char8_t* path);
 	static void ThreadInit(uintptr_t thread_id);
@@ -136,6 +142,10 @@ private:
 
 	GAFF_NO_COPY(App);
 	GAFF_NO_MOVE(App);
+
+#ifdef SHIB_STATIC
+	friend bool Gen::Engine::LoadModulesStatic(Shibboleth::App& app);
+#endif
 };
 
 NS_END

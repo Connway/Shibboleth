@@ -88,7 +88,7 @@ local GenerateProject = function()
 
 		filter {}
 
-		QtSettings(qt_modules, base_dir, true)
+		QtSettingsModule(qt_modules, base_dir)
 
 		local plugin_path = qt.defaultpath .. "/plugins"
 		local bin_path = qt.defaultpath .. "/bin"

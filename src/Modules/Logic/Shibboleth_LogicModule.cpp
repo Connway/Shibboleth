@@ -21,60 +21,67 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace Logic
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		bool preInit(Shibboleth::IApp& app) override;
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-	#include <Esprit_Global.h>
-
 	namespace Logic
 	{
-		static Shibboleth::ProxyAllocator g_logic_allocator;
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-				Esprit::SetAllocator(&g_logic_allocator);
+			static Shibboleth::ProxyAllocator g_logic_allocator("Logic");
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+			IModule::preInit(app);
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
+			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
+			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
 
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-
-				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
-				app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
-			}
-
-			Gen::Logic::InitReflection(mode);
+			Esprit::SetAllocator(&g_logic_allocator);
 
 			return true;
+		}
+
+		void Module::initReflectionEnums(void)
+		{
+			// Should NOT add other code here.
+			Gen::Logic::InitReflection(InitMode::Enums);
+		}
+
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::Logic::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::Logic::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(Logic::Module, Shibboleth::ProxyAllocator("Logic"));
 		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return Logic::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Logic::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return Logic::CreateModule();
 	}
 
 #endif

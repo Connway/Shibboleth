@@ -21,57 +21,60 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace MainLoop
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		bool preInit(Shibboleth::IApp& app) override;
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-
 	namespace MainLoop
 	{
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
-
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-
-				app.getReflectionManager().registerTypeBucket<Shibboleth::ISystem>();
-			}
-
-			Gen::MainLoop::InitReflection(mode);
-
+			IModule::preInit(app);
+			app.getReflectionManager().registerTypeBucket<Shibboleth::ISystem>();
 			return true;
 		}
 
+		void Module::initReflectionEnums(void)
+		{
+			// Should NOT add other code here.
+			Gen::MainLoop::InitReflection(InitMode::Enums);
+		}
+
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::MainLoop::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::MainLoop::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(MainLoop::Module, Shibboleth::ProxyAllocator("MainLoop"));
+		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return MainLoop::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		MainLoop::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return MainLoop::CreateModule();
 	}
 
 #endif

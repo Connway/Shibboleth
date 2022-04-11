@@ -46,22 +46,6 @@ THE SOFTWARE.
 	#include <Gaff_StackTrace.h>
 #endif
 
-namespace Engine
-{
-	bool Initialize(Shibboleth::IApp& /*app*/, Shibboleth::InitMode mode)
-	{
-		if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-		#ifdef SHIB_RUNTIME_VAR_ENABLED
-			Shibboleth::RegisterRuntimeVars();
-		#endif
-		}
-
-		Gen::Engine::InitReflection(mode);
-
-		return true;
-	}
-}
-
 NS_SHIBBOLETH
 
 App::App(void)
@@ -139,6 +123,10 @@ void App::run(void)
 
 void App::destroy(void)
 {
+	if (_job_pool.isPaused()) {
+		_job_pool.run();
+	}
+
 	_job_pool.waitForAllJobsToFinish();
 	_job_pool.destroy();
 
@@ -368,32 +356,18 @@ bool App::initInternal(void)
 		return false;
 	}
 
+	_reflection_mgr.registerTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const(u8"Shibboleth::IMainLoop"));
 	_reflection_mgr.registerTypeBucket<IManager>();
 
+	// Init engine reflection.
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
-		const InitMode mode = static_cast<InitMode>(mode_count);
-
-		if (!Engine::Initialize(*this, mode)) {
-			LogErrorDefault("Failed to initialize engine reflection.");
-			return false;
-		}
+		Gen::Engine::InitReflection(static_cast<InitMode>(mode_count));
 	}
 
-#ifdef SHIB_STATIC
-	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
-		const InitMode mode = static_cast<InitMode>(mode_count);
-
-		if (!Gen::Engine::LoadModulesStatic(mode);) {
-			return false;
-		}
-	}
-#else
 	if (!loadModules()) {
 		return false;
 	}
-#endif
 
 	if (!loadMainLoop()) {
 		return false;
@@ -528,7 +502,12 @@ bool App::loadModules(void)
 		return true;
 	}
 
-	const Gaff::JSON& module_load_order = _configs[k_config_module_load_order];
+#ifdef SHIB_STATIC
+	if (!Gen::Engine::LoadModulesStatic()) {
+		return false;
+	}
+
+#else
 	const Gaff::JSON& module_dirs = _configs[k_config_module_directories];
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
@@ -536,53 +515,95 @@ bool App::loadModules(void)
 		return false;
 	}
 
+	if (module_dirs.isArray()) {
+		const char8_t separator = Gaff::ConvertChar<char8_t>(std::filesystem::path::preferred_separator);
+
+		for (int32_t i = 0; i < module_dirs.size(); ++i) {
+			const Gaff::JSON dir = module_dirs[i];
+
+			for (const auto& dir_entry : std::filesystem::directory_iterator(dir.getString())) {
+				if (!dir_entry.is_regular_file()) {
+					continue;
+				}
+
+				const auto abs_path = std::filesystem::absolute(dir_entry.path());
+				const wchar_t* name = abs_path.c_str();
+				CONVERT_STRING(char8_t, temp, name);
+
+				U8String module_name(temp);
+				const size_t pos = module_name.rfind(separator);
+
+				GAFF_ASSERT(pos != U8String::npos);
+
+				module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen(u8"Module" TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8) - (pos + 1));
+
+				DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(temp, module_name.data());
+
+				if (!module) {
+					LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name.data());
+					return false;
+
+				#ifdef INIT_STACKTRACE_SYSTEM
+					Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+				#endif
+				}
+
+				CreateModuleFunc create_func = module->getFunc<CreateModuleFunc>("CreateModule");
+
+				if (create_func) {
+					if (!createModule(create_func, module_name.data())) {
+						return false;
+					}
+
+				} else {
+					LogErrorDefault("Failed to find function 'CreateModule' in dynamic module '%s'.", module_name.data());
+				}
+			}
+		}
+
+	} else {
+		LogErrorDefault("Malformed configuration. '%s' is not an array of strings.", k_config_module_directories);
+		return false;
+	}
+#endif
+
+	for (auto& entry : _module_map) {
+		if (!entry.second->preInit(*this)) {
+			//LogErrorDefault("Module::preInit() failed for module '%s'.", entry.first.getBuffer());
+			return false;
+		}
+	}
+
+	for (auto& entry : _module_map) {
+		entry.second->initReflectionEnums();
+	}
+
+	for (auto& entry : _module_map) {
+		entry.second->initReflectionAttributes();
+	}
+
+	for (auto& entry : _module_map) {
+		entry.second->initReflectionClasses();
+	}
+
+	for (auto& entry : _module_map) {
+		entry.second->initNonOwned();
+	}
+
+	for (auto& entry : _module_map) {
+		if (!entry.second->postInit()) {
+			//LogErrorDefault("Module::preInit() failed for module '%s'.", entry.first.getBuffer());
+			return false;
+		}
+	}
+
+	const Gaff::JSON& module_load_order = _configs[k_config_module_load_order];
+	const bool no_managers = _configs[k_config_app_no_managers].getBool(false);
+
 	if (!module_load_order.isNull() && !module_load_order.isArray()) {
 		LogErrorDefault("'module_load_order' config option is not an array.");
 		return false;
 	}
-
-
-
-	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
-		const InitMode mode = static_cast<InitMode>(mode_count);
-
-		if (module_dirs.isArray()) {
-			const int32_t size = module_dirs.size();
-
-			for (int32_t i = 0; i < size; ++i) {
-				const Gaff::JSON& dir = module_dirs[i];
-				GAFF_ASSERT(dir.isString());
-
-				for (const auto& dir_entry : std::filesystem::directory_iterator(dir.getString())) {
-					if (!dir_entry.is_regular_file()) {
-						continue;
-					}
-
-					const wchar_t* name = dir_entry.path().c_str();
-					CONVERT_STRING(char, temp, name);
-
-					if (!loadModule(temp, mode)) {
-						return false;
-					}
-				}
-			}
-		}
-	}
-
-	// Initialize all non-owned reflection.
-	_dynamic_loader.forEachModule([](const HashString32<>&, DynamicLoader::ModulePtr& module) -> bool
-	{
-		using AllModulesLoadedNonOwnedFunc = void (*)(void);
-		AllModulesLoadedNonOwnedFunc non_owned_func = module->getFunc<AllModulesLoadedNonOwnedFunc>("InitModuleNonOwned");
-
-		if (non_owned_func) {
-			non_owned_func();
-		}
-
-		return false;
-	});
-
-	const bool no_managers = _configs[k_config_app_no_managers].getBool(false);
 
 	// Create manager instances.
 	if (!no_managers) {
@@ -613,7 +634,7 @@ bool App::loadModules(void)
 			}
 		}
 
-		// Create the reast of the managers.
+		// Create the rest of the managers.
 		const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash());
 
 		if (manager_bucket) {
@@ -716,79 +737,6 @@ bool App::initApp(void)
 	return true;
 }
 
-bool App::loadModule(const char* module_path, InitMode mode)
-{
-	const auto abs_path = std::filesystem::absolute(module_path);
-	const wchar_t* name = abs_path.c_str();
-	CONVERT_STRING(char8_t, temp, name);
-
-	U8String module_name(temp);
-	size_t pos = module_name.find(u8'\\');
-
-	while (pos != U8String::npos) {
-		module_name[pos] = u8'/';
-		pos = module_name.find(u8'\\');
-	}
-
-	pos = module_name.rfind(u8'/');
-	module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen(u8"Module" TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8) - (pos + 1));
-
-	DynamicLoader::ModulePtr module = _dynamic_loader.getModule(module_name.data());
-
-	if (!module) {
-		module = _dynamic_loader.loadModule(temp, module_name.data());
-
-		if (!module) {
-			LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name.data());
-			return false;
-		}
-
-	#ifdef INIT_STACKTRACE_SYSTEM
-		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-	#endif
-	}
-
-	auto module_ptr_it = _module_map.find(Gaff::FNV1aHash64String(module_name.data()));
-	CreateModuleFunc create_func = module->getFunc<CreateModuleFunc>("CreateModule");
-
-	if (create_func) {
-		if (module_ptr_it == _module_map.end()) {
-			module_ptr_it = _module_map.insert(Gaff::FNV1aHash64String(module_name.data())).first;
-			module_ptr_it->second.reset(create_func());
-		}
-
-		if (module_ptr_it != _module_map.end()) {
-			if (mode == InitMode::EnumsAndFirstInits) {
-				module_ptr_it->second->preInit(*this);
-				module_ptr_it->second->initReflectionEnums();
-			} else if (mode == InitMode::Attributes) {
-				module_ptr_it->second->initReflectionAttributes();
-			} else {
-				module_ptr_it->second->initReflectionClasses();
-				module_ptr_it->second->postInit();
-			}
-
-			return true;
-
-		} else if (create_func) {
-
-		}
-	}
-
-	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
-
-	if (!init_func) {
-		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_name.data());
-		return false;
-
-	} else if (!init_func(*this, mode)) {
-		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_name.data());
-		return false;
-	}
-
-	return true;
-}
-
 void App::removeExtraLogs(void)
 {
 	const Gaff::JSON log_dir_holder = _configs[k_config_app_log_dir]; // Need to hold this otherwise the string gets deallocated.
@@ -861,6 +809,19 @@ bool App::hasManager(Gaff::Hash64 name) const
 {
 	auto it = _manager_map.find(name);
 	return it != _manager_map.end();
+}
+
+bool App::createModule(CreateModuleFunc create_func, const char8_t* module_name)
+{
+	auto module_ptr_it = _module_map.insert(Gaff::FNV1aHash64String(module_name)).first;
+	module_ptr_it->second.reset(create_func());
+
+	if (!module_ptr_it->second) {
+		LogWarningDefault("Failed to allocate IModule for module '%s'.", module_name);
+		return false;
+	}
+
+	return true;
 }
 
 void App::ModuleChanged(const char8_t* path)

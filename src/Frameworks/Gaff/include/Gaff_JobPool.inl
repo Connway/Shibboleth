@@ -89,6 +89,18 @@ void JobPool<Allocator>::destroy(void)
 }
 
 template <class Allocator>
+bool JobPool<Allocator>::isRunning(void) const
+{
+	return !_thread_data.pause;
+}
+
+template <class Allocator>
+bool JobPool<Allocator>::isPaused(void) const
+{
+	return _thread_data.pause;
+}
+
+template <class Allocator>
 void JobPool<Allocator>::pause(void)
 {
 	_thread_data.pause = true;

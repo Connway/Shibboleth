@@ -21,55 +21,52 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace DevDebug
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-
 	namespace DevDebug
 	{
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		void Module::initReflectionEnums(void)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
-
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::DevDebug::InitReflection(mode);
-
-			return true;
+			// Should NOT add other code here.
+			Gen::DevDebug::InitReflection(InitMode::Enums);
 		}
 
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::DevDebug::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::DevDebug::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(DevDebug::Module, Shibboleth::ProxyAllocator("DevDebug"));
+		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return DevDebug::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		DevDebug::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return DevDebug::CreateModule();
 	}
 
 #endif

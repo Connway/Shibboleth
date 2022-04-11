@@ -21,7 +21,10 @@ function ModuleIncludesAndLinks(module_name, base_name)
 	includedirs
 	{
 		base_dir .. "include",
-		base_dir .. "../../Frameworks/Gaff/include"
+		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Engine/Memory/include",
+		base_dir .. "../../Engine/Engine/include",
+		base_dir .. "../../Dependencies/EASTL/include"
 	}
 
 	local deps = ModuleDependencies(module_name)
@@ -193,16 +196,7 @@ function SetupConfigMap()
 	}
 end
 
-function QtSettings(modules, base_dir, is_module)
-	if base_dir == nil then
-		base_dir = ""
-	end
-
-	if is_module ~= true then
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.qrc", base_dir .. "**.ui" }
-		excludes { "**/moc*.*" }
-	end
-
+function QtSettingsModule(modules, base_dir)
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
 	qtgenerateddir(base_dir .. ".generated")
@@ -229,4 +223,15 @@ function QtSettings(modules, base_dir, is_module)
 	-- 	qtsuffix "64s"
 
 	filter {}
+end
+
+function QtSettings(modules, base_dir)
+	if base_dir == nil then
+		base_dir = ""
+	end
+
+	files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.qrc", base_dir .. "**.ui" }
+	excludes { "**/moc*.*" }
+
+	QtSettingsModule(modules, base_dir)
 end

@@ -38,6 +38,18 @@ u8R"(// This file is generated! Any modifications will be lost in subsequent bui
 
 namespace
 {{
+	enum class InitMode : int8_t
+	{{
+		Enums,
+		Attributes,
+		Classes,
+
+		Count
+	}};
+}}
+
+namespace Gen::{}
+{{
 	template <class T>
 	void RegisterOwningModule(void)
 	{{
@@ -49,68 +61,41 @@ namespace
 	}}
 
 	template <class T>
-	void InitReflectionT(Shibboleth::InitMode mode)
+	void InitReflectionT(InitMode mode)
 	{{
 		if constexpr (std::is_enum<T>::value) {{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {{
+			if (mode == InitMode::Enums) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}} else if constexpr (std::is_base_of<Refl::IAttribute, T>::value) {{
-			if (mode == Shibboleth::InitMode::Attributes) {{
+			if (mode == InitMode::Attributes) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}} else {{
-			if (mode == Shibboleth::InitMode::Regular) {{
+			if (mode == InitMode::Classes) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}}
 	}}
-}}
 
-namespace Gen::{}
-{{
-	static void InitNonOwnedReflection(void)
-	{{
-		// Initialize Enums.
-		Refl::InitEnumReflection();
-
-		// Initialize Attributes.
-		Refl::InitAttributeReflection();
-
-		// Initialize regular classes.
-		Refl::InitClassReflection();
-	}}
-
-	static void InitReflection(Shibboleth::InitMode mode)
+	static void InitReflection(InitMode mode)
 	{{
 {}
 	}}
 }}
-
-#else
-	#include <Gaff_Defines.h>
-
-	namespace Shibboleth
-	{{
-		enum class InitMode : int8_t;
-		class IApp;
-	}}
 #endif
+
+namespace Shibboleth
+{{
+	class IModule;
+}}
 
 namespace {}
 {{
-	bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode);
-	void InitializeNonOwned(void);
-
-#ifdef SHIB_STATIC
-	void InitializeNonOwned(void)
-	{{
-		Gen::{}::InitNonOwnedReflection();
-	}}
-#endif
+	Shibboleth::IModule* CreateModule(void);
 }}
 )";
 
@@ -126,10 +111,8 @@ u8R"(// This file is generated! Any modifications will be lost in subsequent bui
 
 namespace Gen::Engine
 {{
-	static bool LoadModulesStatic(Shibboleth::InitMode mode)
+	static bool LoadModulesStatic(Shibboleth::App& app)
 	{{
-		Shibboleth::IApp& app = Shibboleth::GetApp();
-
 {}
 		return true;
 	}}
@@ -187,18 +170,31 @@ static int WriteFile(
 	size_t init_count = 0;
 	size_t count = 0;
 
+	const char8_t separator = Gaff::ConvertChar<char8_t>(std::filesystem::path::preferred_separator);
+
 	for (const auto& entry : file_class_map) {
 		++count;
 
-		size_t index = entry.first.rfind(u8'/');
-		index = (index == std::u8string::npos) ? entry.first.rfind(u8'\\') : index;
+		const std::u8string abs_path_u8 = abs_path.u8string();
+		const size_t index = entry.first.rfind(abs_path.u8string());
 
 		if (index == std::u8string::npos) {
 			std::cerr << "Failed to find directory for file '" << reinterpret_cast<const char*>(entry.first.data()) << "'." << std::endl;
 			continue;
 		}
 
-		include_files += u8"#include \"" + std::u8string(entry.first.data() + index + 1) + u8'"';
+		std::u8string file_name(entry.first.data() + index + 1 + abs_path_u8.size());
+
+		if (separator == u8'\\') {
+			size_t dir_sep = file_name.find(separator);
+
+			while (dir_sep != std::u8string::npos) {
+				file_name[dir_sep] = u8'/';
+				dir_sep = file_name.find(separator);
+			}
+		}
+
+		include_files += u8"#include \"" + file_name + u8'"';
 
 		if (count != file_class_map.size()) {
 			include_files += u8'\n';
@@ -235,6 +231,7 @@ static int WriteFile(
 		module_name.data(),
 		reinterpret_cast<const char*>(init_func.data()),
 		module_name.data(),
+		module_name.data(),
 		module_name.data()
 	);
 
@@ -255,6 +252,7 @@ static int GenerateStaticReflectionHeader(
 	const std::filesystem::path& abs_module_path,
 	const argparse::ArgumentParser& program)
 {
+	const char8_t separator = Gaff::ConvertChar<char8_t>(std::filesystem::path::preferred_separator);
 	std::vector<std::u8string> modules;
 
 	// $TODO: Thread this.
@@ -271,16 +269,14 @@ static int GenerateStaticReflectionHeader(
 			continue;
 		}
 
-		size_t end_index = abs_path_u8.rfind(u8'/');
-		end_index = (end_index == std::u8string::npos) ? abs_path_u8.rfind(u8'\\') : end_index;
+		const size_t end_index = abs_path_u8.rfind(separator);
 
 		if (end_index == std::u8string::npos) {
 			std::cerr << "Failed to find directory for file '" << abs_path.string().data() << "'." << std::endl;
 			continue;
 		}
 
-		size_t start_index = abs_path_u8.rfind(u8'/', end_index - 1);
-		start_index = (start_index == std::u8string::npos) ? abs_path_u8.rfind(u8'\\', end_index - 1) : start_index;
+		const size_t start_index = abs_path_u8.rfind(separator, end_index - 1);
 
 		if (start_index == std::u8string::npos) {
 			std::cerr << "Failed to find directory for file '" << abs_path.string().data() << "'." << std::endl;
@@ -324,8 +320,9 @@ static int GenerateStaticReflectionHeader(
 	for (const auto& module_name : init_order) {
 		++count;
 
+		// $TODO: Make use of std::filesystem::path::relative
 		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>";
-		inits += u8"\t\tGAFF_FAIL_RETURN(" + module_name + u8"::Initialize(app, mode), false)\n";
+		inits += u8"\t\tGAFF_FAIL_RETURN(app.createModule(" + module_name + u8"::CreateModule, u8\"" + module_name + u8"\"), false)\n";
 
 		if (count != init_count) {
 			includes += u8'\n';
@@ -339,8 +336,9 @@ static int GenerateStaticReflectionHeader(
 
 		++count;
 
+		// $TODO: Make use of std::filesystem::path::relative
 		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>";
-		inits += u8"\t\tGAFF_FAIL_RETURN(" + module_name + u8"::Initialize(app, mode), false)\n";
+		inits += u8"\t\tGAFF_FAIL_RETURN(app.createModule(" + module_name + u8"::CreateModule, u8\"" + module_name + u8"\"), false)\n";
 
 		if (count != init_count) {
 			includes += u8'\n';

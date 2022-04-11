@@ -21,53 +21,52 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace Input
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-
 	namespace Input
 	{
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		void Module::initReflectionEnums(void)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
+			// Should NOT add other code here.
+			Gen::Input::InitReflection(InitMode::Enums);
+		}
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::Input::InitReflection(InitMode::Attributes);
+		}
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::Input::InitReflection(InitMode::Classes);
+		}
 
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::Input::InitReflection(mode);
-
-			return true;
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(Input::Module, Shibboleth::ProxyAllocator("Input"));
 		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return Input::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Input::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return true;
+		return Input::CreateModule();
 	}
 
 #endif

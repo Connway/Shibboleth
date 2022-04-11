@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_RuntimeVarManager.h"
+#include "Shibboleth_ReflectionBase.h"
 #include "Shibboleth_Utilities.h"
 
 NS_SHIBBOLETH
@@ -31,12 +33,42 @@ class IModule
 public:
 	virtual ~IModule(void) {}
 
-	virtual bool preInit(IApp& app) { SetApp(app); return true; }
-	virtual bool initReflectionEnums(void) { return true; }
-	virtual bool initReflectionAttributes(void) { return true; }
-	virtual bool initReflectionClasses(void) { return true; }
-	virtual bool postInit(void) {}
+	virtual void initReflectionEnums(void) = 0;
+	virtual void initReflectionAttributes(void) = 0;
+	virtual void initReflectionClasses(void) = 0;
+
+	virtual bool preInit(IApp& app)
+	{
+		SetApp(app);
+
+	#ifdef SHIB_RUNTIME_VAR_ENABLED
+		RegisterRuntimeVars();
+	#endif
+
+		return true;
+	}
+
+	virtual bool postInit(void) { return true; }
+
 	virtual void shutdown(void) {}
+
+protected:
+	// This function is marked virtual so that it runs inside the context
+	// of the loaded DLL and not inside Game_App.
+	// It is not intended for the user to actually override it.
+	virtual void initNonOwned(void)
+	{
+		// Initialize Enums.
+		Refl::InitEnumReflection();
+
+		// Initialize Attributes.
+		Refl::InitAttributeReflection();
+
+		// Initialize Classes.
+		Refl::InitClassReflection();
+	}
+
+	friend class App;
 };
 
 NS_END

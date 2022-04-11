@@ -44,15 +44,6 @@ class IFileSystem;
 class LogManager;
 class IManager;
 
-enum class InitMode : int8_t
-{
-	EnumsAndFirstInits,
-	Attributes,
-	Regular,
-
-	Count
-};
-
 class IApp
 {
 public:

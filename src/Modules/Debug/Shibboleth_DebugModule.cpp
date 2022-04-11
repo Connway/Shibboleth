@@ -21,55 +21,52 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace Debug
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_Utilities.h>
-
 	namespace Debug
 	{
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		void Module::initReflectionEnums(void)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
-
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::Debug::InitReflection(mode);
-
-			return true;
+			// Should NOT add other code here.
+			Gen::Debug::InitReflection(InitMode::Enums);
 		}
 
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::Debug::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::Debug::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(Debug::Module, Shibboleth::ProxyAllocator("Debug"));
+		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return Debug::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Debug::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return Debug::CreateModule();
 	}
 
 #endif

@@ -188,6 +188,22 @@ void EraseAllOccurences(String<T, Allocator>& string, T character)
 	}
 }
 
+template <class To, class From>
+/*constexpr*/ To ConvertChar(From character)
+{
+	To converted_character[7] = { 0 };
+
+	const From* from_start = &character;
+	To* start = converted_character;
+
+	eastl::DecodePart(from_start, from_start + 1, start, start + ARRAY_SIZE(converted_character));
+
+	GAFF_ASSERT(converted_character[1] == 0);
+
+	// This is obviously not going to work for converting from characters that are more than 1 of sizeof(To) bytes.
+	return converted_character[0];
+}
+
 NS_END
 
 #define STRING_CONVERSION_BUFFER_SIZE 256

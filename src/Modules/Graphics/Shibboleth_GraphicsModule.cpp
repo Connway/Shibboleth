@@ -21,20 +21,27 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace Graphics
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		bool preInit(Shibboleth::IApp& app) override;
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
 
-	#include <Shibboleth_ProxyAllocator.h>
 	#include <Shibboleth_LogManager.h>
-	#include <Shibboleth_Utilities.h>
-	#include <Gleam_Window.h>
 	#include <Gleam_Global.h>
 
 	namespace Graphics
 	{
-
-		static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
-
 		//static void* GraphicsAlloc(size_t size)
 		//{
 		//	return SHIB_ALLOC(size, g_graphics_allocator);
@@ -56,48 +63,47 @@ THE SOFTWARE.
 			Shibboleth::GetApp().getLogManager().logMessage(msg_type, Shibboleth::k_log_channel_default, msg);
 		}
 
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-				Gleam::SetAllocator(&g_graphics_allocator);
-				Gleam::SetLogFunc(GraphicsLog);
+			static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
 
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
+			IModule::preInit(app);
 
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::Graphics::InitReflection(mode);
+			Gleam::SetAllocator(&g_graphics_allocator);
+			Gleam::SetLogFunc(GraphicsLog);
 
 			return true;
+		}
+
+		void Module::initReflectionEnums(void)
+		{
+			// Should NOT add other code here.
+			Gen::Graphics::InitReflection(InitMode::Enums);
+		}
+
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::Graphics::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::Graphics::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(Graphics::Module, Shibboleth::ProxyAllocator("Graphics"));
 		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return Graphics::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		Graphics::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return Graphics::CreateModule();
 	}
 
 #endif

@@ -20,22 +20,20 @@
 
 namespace Gen::Engine
 {
-	static bool LoadModulesStatic(Shibboleth::InitMode mode)
+	static bool LoadModulesStatic(Shibboleth::App& app)
 	{
-		Shibboleth::IApp& app = Shibboleth::GetApp();
-
-		GAFF_FAIL_RETURN(Graphics::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Input::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Debug::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Script::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Camera::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(ECS::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Entity::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Logic::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(MainLoop::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Physics::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Resource::Initialize(app, mode), false)
-		GAFF_FAIL_RETURN(Scene::Initialize(app, mode), false)
+		GAFF_FAIL_RETURN(app.createModule(Graphics::CreateModule, u8"Graphics"), false)
+		GAFF_FAIL_RETURN(app.createModule(Input::CreateModule, u8"Input"), false)
+		GAFF_FAIL_RETURN(app.createModule(Debug::CreateModule, u8"Debug"), false)
+		GAFF_FAIL_RETURN(app.createModule(Script::CreateModule, u8"Script"), false)
+		GAFF_FAIL_RETURN(app.createModule(Camera::CreateModule, u8"Camera"), false)
+		GAFF_FAIL_RETURN(app.createModule(ECS::CreateModule, u8"ECS"), false)
+		GAFF_FAIL_RETURN(app.createModule(Entity::CreateModule, u8"Entity"), false)
+		GAFF_FAIL_RETURN(app.createModule(Logic::CreateModule, u8"Logic"), false)
+		GAFF_FAIL_RETURN(app.createModule(MainLoop::CreateModule, u8"MainLoop"), false)
+		GAFF_FAIL_RETURN(app.createModule(Physics::CreateModule, u8"Physics"), false)
+		GAFF_FAIL_RETURN(app.createModule(Resource::CreateModule, u8"Resource"), false)
+		GAFF_FAIL_RETURN(app.createModule(Scene::CreateModule, u8"Scene"), false)
 
 		return true;
 	}

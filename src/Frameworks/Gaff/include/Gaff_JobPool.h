@@ -57,6 +57,9 @@ public:
 	bool init(int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitOrShutdownFunc init = nullptr, ThreadInitOrShutdownFunc shutdown = nullptr);
 	void destroy(void);
 
+	bool isRunning(void) const;
+	bool isPaused(void) const;
+
 	void pause(void);
 	void run(void);
 

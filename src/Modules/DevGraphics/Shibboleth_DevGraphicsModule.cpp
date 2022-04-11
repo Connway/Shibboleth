@@ -21,60 +21,60 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_IModule.h>
+
+namespace DevGraphics
+{
+	class Module final : public Shibboleth::IModule
+	{
+	public:
+		bool preInit(Shibboleth::IApp& app) override;
+		void initReflectionEnums(void) override;
+		void initReflectionAttributes(void) override;
+		void initReflectionClasses(void) override;
+	};
+}
 
 #ifdef SHIB_STATIC
-
 	#include "Shibboleth_NVENCHelpers.h"
-	#include <Shibboleth_Utilities.h>
 
 	namespace DevGraphics
 	{
-
-		bool Initialize(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				Shibboleth::SetApp(app);
-
-			#ifdef SHIB_RUNTIME_VAR_ENABLED
-				Shibboleth::RegisterRuntimeVars();
-			#endif
-
-			} else if (mode == Shibboleth::InitMode::Regular) {
-				// Initialize Enums.
-				Refl::InitEnumReflection();
-
-				// Initialize Attributes.
-				Refl::InitAttributeReflection();
-			}
-
-			Gen::DevGraphics::InitReflection(mode);
-
-			if (mode == Shibboleth::InitMode::EnumsAndFirstInits) {
-				return Shibboleth::InitNVENC();
-			}
-
-			return true;
+			IModule::preInit(app);
+			return Shibboleth::InitNVENC();
 		}
 
+		void Module::initReflectionEnums(void)
+		{
+			// Should NOT add other code here.
+			Gen::DevGraphics::InitReflection(InitMode::Enums);
+		}
+
+		void Module::initReflectionAttributes(void)
+		{
+			// Should NOT add other code here.
+			Gen::DevGraphics::InitReflection(InitMode::Attributes);
+		}
+
+		void Module::initReflectionClasses(void)
+		{
+			// Should NOT add other code here.
+			Gen::DevGraphics::InitReflection(InitMode::Classes);
+		}
+
+		Shibboleth::IModule* CreateModule(void)
+		{
+			return SHIB_ALLOCT(DevGraphics::Module, Shibboleth::ProxyAllocator("DevGraphics"));
+		}
 	}
 
 #else
 
-	#include <Gaff_Defines.h>
-
-	DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app, Shibboleth::InitMode mode)
+	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
-		return DevGraphics::Initialize(app, mode);
-	}
-
-	DYNAMICEXPORT_C void InitModuleNonOwned(void)
-	{
-		DevGraphics::InitializeNonOwned();
-	}
-
-	DYNAMICEXPORT_C bool SupportsHotReloading(void)
-	{
-		return false;
+		return DevGraphics::CreateModule();
 	}
 
 #endif
