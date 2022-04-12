@@ -32,14 +32,13 @@ NS_SHIBBOLETH
 intptr_t LogManager::LogThread(void* args)
 {
 	LogManager& lm = *reinterpret_cast<LogManager*>(args);
-	const EA::Thread::AutoMutex condition_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {
-		lm._log_event.Wait(&lm._log_condition_lock);
+		lm._log_lock.Wait();
 
 		lm._log_queue_lock.Lock();
 
-		while (!lm._logs.empty()) {
+		if (!lm._logs.empty()) {
 			LogTask task = std::move(lm._logs.front());
 			lm._logs.pop();
 
@@ -53,10 +52,9 @@ intptr_t LogManager::LogThread(void* args)
 
 			lm.notifyLogCallbacks(task.message.data(), task.type);
 
-			lm._log_queue_lock.Lock();
+		} else {
+			lm._log_queue_lock.Unlock();
 		}
-
-		lm._log_queue_lock.Unlock();
 	}
 
 	return 0;
@@ -95,7 +93,7 @@ void LogManager::destroy(void)
 	_shutdown = true;
 
 	if (_log_thread.GetId() != EA::Thread::kThreadIdInvalid) {
-		_log_event.Signal(true);
+		_log_lock.Post();
 		_log_thread.WaitForEnd();
 	}
 
@@ -201,7 +199,7 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 		_logs.emplace(LogTask{ it->second.getFile(), U8String(time_string) + message, type});
 	}
 
-	_log_event.Signal(true);
+	_log_lock.Post();
 
 	const U8String debug_msg(U8String::CtorSprintf(), u8"[%s] %s\n", it->first.getBuffer(), message.data());
 	Gaff::DebugPrintf(debug_msg.data());

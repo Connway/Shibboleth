@@ -88,5 +88,5 @@ if is_project_action == true then
 
 			project "Utils"
 				kind "None"
-				files { "**.lua" }
+				files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
 end

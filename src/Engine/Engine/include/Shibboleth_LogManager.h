@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Queue.h"
 #include <Gaff_File.h>
-#include <EAThread/eathread_condition.h>
+#include <EAThread/eathread_semaphore.h>
 #include <EAThread/eathread_thread.h>
 #include <EAThread/eathread_mutex.h>
 #include <EASTL/functional.h>
@@ -70,7 +70,7 @@ private:
 	};
 
 	bool _shutdown;
-	EA::Thread::Condition _log_event;
+	EA::Thread::Semaphore _log_lock;
 
 	VectorMap<HashString32<>, Gaff::File> _channels{ ProxyAllocator("Log") };
 	VectorMap<int32_t, LogCallback> _log_callbacks{ ProxyAllocator("Log") };
@@ -78,7 +78,6 @@ private:
 
 	int32_t _next_id = 0;
 
-	EA::Thread::Mutex _log_condition_lock;
 	EA::Thread::Mutex _log_callback_lock;
 	EA::Thread::Mutex _log_queue_lock;
 

@@ -10,7 +10,7 @@ jobs:
   steps:
   - script: |
       cd utils
-      premake5 vs2022 --no-editor
+      premake5 vs2022
   - task: VSBuild@1
     inputs:
       solution: '.generated\project\windows\vs2022\Shibboleth.sln'
@@ -18,17 +18,17 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
-- job: build_debug_linux
-  displayName: 'Build Debug - Linux'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: |
-      cd utils
-      ./premake5 gmake2 --no-editor
-      cd ../.generated/project/gmake2
-      gmake clean
-      gmake config=debug_x64 Gaff Gleam Esprit Engine FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp Catch2 CivetWeb EASTL imgui libpng libtiff Lua mimalloc minizip mpack optick sqlite zlib-ng
+#- job: build_debug_linux
+#  displayName: 'Build Debug - Linux'
+#  pool:
+#    vmImage: 'ubuntu-latest'
+#  steps:
+#  - script: |
+#      cd utils
+#      ./premake5 gmake2
+#      cd ../.generated/project/gmake2
+#      gmake clean
+#      gmake config=debug_x64 Gaff Gleam Esprit Engine FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp Catch2 CivetWeb EASTL imgui libpng libtiff Lua mimalloc minizip mpack optick sqlite zlib-ng
 
 # - script: |
 #     echo Add other tasks to build, test, and deploy your project.

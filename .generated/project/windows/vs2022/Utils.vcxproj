@@ -128,6 +128,8 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\.gitignore" />
+    <None Include="..\..\..\..\azure-pipelines.yml" />
     <None Include="..\..\..\..\utils\build_actions.lua" />
     <None Include="..\..\..\..\utils\helper_functions.lua" />
     <None Include="..\..\..\..\utils\module_suffix.lua" />
