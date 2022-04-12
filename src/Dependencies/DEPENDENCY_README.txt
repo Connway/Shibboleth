@@ -8,8 +8,8 @@ Libraries Affected:
 	assimp
 		Fixing RAPIDJSON_HAS_STDSTRING not being defined before inclusion of rapidjson.
 
-	minizip
-		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level.
+	minizip-ng
+		unzip.h and zip.h added #include <zlib.h>
 
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.
@@ -51,7 +51,7 @@ Libraries included, but not used:
 		Technically nothing uses this, but in the future might use this.
 
 	zstd
-		This is only included for building TracyServer. It is not used by the engine itself.
+		This is only included for building TracyServer and unused APIs in minizip-ng. It is not used by the engine itself.
 
 
 Linux Library Dependencies:

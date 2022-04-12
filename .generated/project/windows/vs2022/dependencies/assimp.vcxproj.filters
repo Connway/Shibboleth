@@ -190,9 +190,6 @@
     <Filter Include="contrib">
       <UniqueIdentifier>{16D079D3-82AF-F86E-8BC7-8345F7255FD0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="contrib\clipper">
-      <UniqueIdentifier>{349F6F83-A02A-DD47-A93B-603C15463948}</UniqueIdentifier>
-    </Filter>
     <Filter Include="contrib\openddlparser">
       <UniqueIdentifier>{38226264-A48E-1D5F-6D82-B5BCD9AD3FC7}</UniqueIdentifier>
     </Filter>
@@ -234,12 +231,6 @@
     </Filter>
     <Filter Include="contrib\utf8cpp\source\utf8">
       <UniqueIdentifier>{A54C7232-115A-A018-9A40-9C03064D6CCF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="contrib\zip">
-      <UniqueIdentifier>{D8C58B9D-447B-0493-CD6F-FE693924FB96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="contrib\zip\src">
-      <UniqueIdentifier>{EFAF4667-5B3B-B42B-644C-3720D056102C}</UniqueIdentifier>
     </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
@@ -906,9 +897,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\revision.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\clipper\clipper.hpp">
-      <Filter>contrib\clipper</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include\openddlparser\DDLNode.h">
       <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
@@ -977,12 +965,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\utf8cpp\source\utf8\unchecked.h">
       <Filter>contrib\utf8cpp\source\utf8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\zip\src\miniz.h">
-      <Filter>contrib\zip\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\zip\src\zip.h">
-      <Filter>contrib\zip\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\BaseImporter.h">
       <Filter>include\assimp</Filter>
@@ -1877,9 +1859,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\ValidateDataStructure.cpp">
       <Filter>code\PostProcessing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\clipper\clipper.cpp">
-      <Filter>contrib\clipper</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\code\DDLNode.cpp">
       <Filter>contrib\openddlparser\code</Filter>
     </ClCompile>
@@ -1915,9 +1894,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src\pugixml.cpp">
       <Filter>contrib\pugixml\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\zip\src\zip.c">
-      <Filter>contrib\zip\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

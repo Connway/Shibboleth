@@ -55,7 +55,7 @@ local GenerateProject = function()
 			"Gleam",
 			"Assimp",
 			"zlib-ng",
-			"minizip",
+			"minizip-ng",
 			"libpng",
 			"libtiff"
 		}
@@ -74,7 +74,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Gleam")
 	table.insert(deps, "Assimp")
 	table.insert(deps, "zlib-ng")
-	table.insert(deps, "minizip")
+	table.insert(deps, "minizip-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
 

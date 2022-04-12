@@ -125,7 +125,7 @@ function DoGraphicsModule(renderer)
 			"ECS",
 			"assimp",
 			"mpack",
-			"minizip",
+			"minizip-ng",
 			"zlib-ng",
 			"libpng",
 			"libtiff"
@@ -156,7 +156,7 @@ local LinkDependencies = function()
 	table.insert(deps, "ECS")
 	table.insert(deps, "assimp")
 	table.insert(deps, "mpack")
-	table.insert(deps, "minizip")
+	table.insert(deps, "minizip-ng")
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")

@@ -55,8 +55,8 @@
     <Filter Include="Dependencies\mimalloc">
       <UniqueIdentifier>{89519846-F5BD-5341-BEB1-EB9E2ADD75A9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Dependencies\minizip">
-      <UniqueIdentifier>{1B7BB6F2-070A-40BC-B028-54B79C965062}</UniqueIdentifier>
+    <Filter Include="Dependencies\minizip-ng">
+      <UniqueIdentifier>{3D3778C2-A96E-C059-B278-247D1E2FE752}</UniqueIdentifier>
     </Filter>
     <Filter Include="Dependencies\mpack">
       <UniqueIdentifier>{275B98FA-133F-5950-7C9F-53A368A243D2}</UniqueIdentifier>
@@ -261,8 +261,8 @@
     <None Include="..\..\..\..\src\Dependencies\mimalloc\project_generator.lua">
       <Filter>Dependencies\mimalloc</Filter>
     </None>
-    <None Include="..\..\..\..\src\Dependencies\minizip\project_generator.lua">
-      <Filter>Dependencies\minizip</Filter>
+    <None Include="..\..\..\..\src\Dependencies\minizip-ng\project_generator.lua">
+      <Filter>Dependencies\minizip-ng</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\mpack\project_generator.lua">
       <Filter>Dependencies\mpack</Filter>

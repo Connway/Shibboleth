@@ -271,8 +271,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\minizip.vcxproj">
-      <Project>{C5553BC7-3135-BA62-3A4D-4539A6AB20C4}</Project>
+    <ProjectReference Include="..\dependencies\minizip-ng.vcxproj">
+      <Project>{A70964F0-93C1-A53D-FCC8-7E99E89F402E}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\libpng.vcxproj">
       <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>

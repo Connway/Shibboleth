@@ -54,7 +54,7 @@ local GenerateProject = function()
 		{
 			"Assimp",
 			"imgui",
-			"minizip",
+			"minizip-ng",
 			"zlib-ng",
 
 			"Gleam",
@@ -73,7 +73,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Debug")
 	table.insert(deps, "Assimp")
 	table.insert(deps, "imgui")
-	table.insert(deps, "minizip")
+	table.insert(deps, "minizip-ng")
 	table.insert(deps, "zlib-ng")
 
 	table.insert(deps, "Gleam")
