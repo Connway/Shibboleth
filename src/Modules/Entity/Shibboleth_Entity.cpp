@@ -40,23 +40,23 @@ void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_
 
 void Entity::addComponent(const Refl::IReflectionDefinition& ref_def)
 {
-	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::IEntityComponent)));
+	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::EntityComponent)));
 	GAFF_ASSERT(ref_def.getFactory<>());
 
 	static ProxyAllocator s_allocator("Entity");
-	IEntityComponent* const comp = ref_def.createT<IEntityComponent>(CLASS_HASH(Shibboleth::IEntityComponent), s_allocator);
+	EntityComponent* const comp = ref_def.createT<EntityComponent>(CLASS_HASH(Shibboleth::EntityComponent), s_allocator);
 
 	addComponent(*comp);
 }
 
-void Entity::addComponent(const Vector<IEntityComponent*>& components)
+void Entity::addComponent(const Vector<EntityComponent*>& components)
 {
-	for (IEntityComponent* comp : components) {
+	for (EntityComponent* comp : components) {
 		addComponent(*comp);
 	}
 }
 
-void Entity::addComponent(IEntityComponent& component)
+void Entity::addComponent(EntityComponent& component)
 {
 	_components.emplace_back(&component);
 	component._owner = this;
@@ -126,9 +126,9 @@ int32_t Entity::removeComponents(const Refl::IReflectionDefinition& ref_def)
 	return count;
 }
 
-Vector<const IEntityComponent*> Entity::getComponents(const Refl::IReflectionDefinition& ref_def) const
+Vector<const EntityComponent*> Entity::getComponents(const Refl::IReflectionDefinition& ref_def) const
 {
-	Vector<const IEntityComponent*> comps;
+	Vector<const EntityComponent*> comps;
 
 	for (const auto& comp : _components) {
 		if (&comp->getReflectionDefinition() == &ref_def) {
@@ -140,9 +140,9 @@ Vector<const IEntityComponent*> Entity::getComponents(const Refl::IReflectionDef
 	return comps;
 }
 
-Vector<IEntityComponent*> Entity::getComponents(const Refl::IReflectionDefinition& ref_def)
+Vector<EntityComponent*> Entity::getComponents(const Refl::IReflectionDefinition& ref_def)
 {
-	Vector<IEntityComponent*> comps;
+	Vector<EntityComponent*> comps;
 
 	for (const auto& comp : _components) {
 		if (&comp->getReflectionDefinition() == &ref_def) {
@@ -154,12 +154,12 @@ Vector<IEntityComponent*> Entity::getComponents(const Refl::IReflectionDefinitio
 	return comps;
 }
 
-const IEntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_def) const
+const EntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_def) const
 {
 	return const_cast<Entity*>(this)->getComponent(ref_def);
 }
 
-IEntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_def)
+EntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_def)
 {
 	for (const auto& comp : _components) {
 		if (&comp->getReflectionDefinition() == &ref_def) {
@@ -170,12 +170,12 @@ IEntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_de
 	return nullptr;
 }
 
-const IEntityComponent& Entity::getComponent(int32_t index) const
+const EntityComponent& Entity::getComponent(int32_t index) const
 {
 	return const_cast<Entity*>(this)->getComponent(index);
 }
 
-IEntityComponent& Entity::getComponent(int32_t index)
+EntityComponent& Entity::getComponent(int32_t index)
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
 	return *_components[index];

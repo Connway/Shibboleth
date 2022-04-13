@@ -33,6 +33,7 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
+      maximumCpuCount: true
     displayName: 'Building with VS2022'
 #- job: build_debug_linux
 #  displayName: 'Build Debug - Linux'

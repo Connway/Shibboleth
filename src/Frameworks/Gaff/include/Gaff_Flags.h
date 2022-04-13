@@ -89,6 +89,7 @@ public:
 	template <class... Enum2>
 	constexpr static StorageType GetBits(Enum flag, Enum2... rest);
 	constexpr static StorageType GetBit(Enum flag);
+	constexpr static StorageType GetBitsRange(Enum start, Enum end, StorageType bits = 0);
 
 	template <class... Enum2>
 	bool testAll(Enum flag, Enum2... rest) const;

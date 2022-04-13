@@ -22,33 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include "Shibboleth_EntityComponent.h"
 //#include <Shibboleth_ECSEntity.h>
 //#include <Gaff_IncludeEASTLAtomic.h>
 //#include <Gaff_RefPtr.h>
 //#include <Gaff_Hash.h>
 
 NS_SHIBBOLETH
-
-class Entity;
-
-class IEntityComponent : public Refl::IReflectionObject
-{
-	GAFF_NO_COPY(IEntityComponent);
-
-public:
-	virtual ~IEntityComponent(void) {}
-
-	virtual void init(void) {}
-	virtual void destroy(void) {}
-
-	Entity* getOwner(void) const { return _owner; }
-
-private:
-	Entity* _owner = nullptr;
-
-	friend class Entity;
-};
 
 class Entity : public Refl::IReflectionObject
 {
@@ -58,44 +38,44 @@ public:
 	template <class T>
 	bool removeComponents(void)
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		return removeComponents(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	bool removeComponent(void)
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		return removeComponent(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	void addComponent(void)
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		addComponent(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	bool hasComponent(void) const
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		return has(Refl::Reflection<T>::GetReflectionDefinition());
 	}
 
 	template <class T>
 	Vector<const T*> getComponents(void) const
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		return const_cast<Entity*>(this)->getComponents<T>();
 	}
 
 	template <class T>
 	Vector<T*> getComponents(void)
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 
-		Vector<IEntityComponent*> comps = getComponents(Refl::Reflection<T>::GetReflectionDefinition());
+		Vector<EntityComponent*> comps = getComponents(Refl::Reflection<T>::GetReflectionDefinition());
 		Vector<T*> cast_comps(comps.size());
 
 		for (int32_t i = 0; i < static_cast<int32_t>(comps.size()); ++i) {
@@ -108,16 +88,16 @@ public:
 	template <class T>
 	const T* getComponent(void) const
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 		return const_cast<Entity*>(this)->getComponent<T>();
 	}
 
 	template <class T>
 	T* getComponent(void)
 	{
-		static_assert(std::is_base_of<IEntityComponent, T>::value, "T must be derived from IEntityComponent.");
+		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
 
-		IEntityComponent* const comp = getComponent(Refl::Reflection<T>::GetReflectionDefinition());
+		EntityComponent* const comp = getComponent(Refl::Reflection<T>::GetReflectionDefinition());
 		return (comp) ? static_cast<T*>(comp) : nullptr;
 	}
 
@@ -126,8 +106,8 @@ public:
 
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	void addComponent(const Refl::IReflectionDefinition& ref_def);
-	void addComponent(const Vector<IEntityComponent*>& components);
-	void addComponent(IEntityComponent& component);
+	void addComponent(const Vector<EntityComponent*>& components);
+	void addComponent(EntityComponent& component);
 
 	int32_t removeComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	bool removeComponent(const Refl::IReflectionDefinition& ref_def);
@@ -136,20 +116,20 @@ public:
 	int32_t removeComponents(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	int32_t removeComponents(const Refl::IReflectionDefinition& ref_def);
 
-	Vector<const IEntityComponent*> getComponents(const Refl::IReflectionDefinition& ref_def) const;
-	Vector<IEntityComponent*> getComponents(const Refl::IReflectionDefinition& ref_def);
+	Vector<const EntityComponent*> getComponents(const Refl::IReflectionDefinition& ref_def) const;
+	Vector<EntityComponent*> getComponents(const Refl::IReflectionDefinition& ref_def);
 
-	const IEntityComponent* getComponent(const Refl::IReflectionDefinition& ref_def) const;
-	IEntityComponent* getComponent(const Refl::IReflectionDefinition& ref_def);
-	const IEntityComponent& getComponent(int32_t index) const;
-	IEntityComponent& getComponent(int32_t index);
+	const EntityComponent* getComponent(const Refl::IReflectionDefinition& ref_def) const;
+	EntityComponent* getComponent(const Refl::IReflectionDefinition& ref_def);
+	const EntityComponent& getComponent(int32_t index) const;
+	EntityComponent& getComponent(int32_t index);
 
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
 
 	int32_t getNumComponents(void) const;
 
 private:
-	Vector< UniquePtr<IEntityComponent> > _components;
+	Vector< UniquePtr<EntityComponent> > _components;
 
 	SHIB_REFLECTION_CLASS_DECLARE(Entity);
 };
