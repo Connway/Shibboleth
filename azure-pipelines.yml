@@ -19,8 +19,11 @@ jobs:
       mkdir qt
       cd qt
       python -m aqt install-qt 6.3.0 windows desktop win64_msvc2019_64 -m qtcore qtgui qtwidgets qtcharts qtdatavis
+      setx QT_DIR %cd%\6.3.0\win64_msvc2019_64
     displayName: 'Installing Qt 6.3.0'
   - script: |
+      echo %QT_DIR%
+      dir /w %QT_DIR%
       cd utils
       premake5 vs2022 --no-editor
     displayName: 'Generating Visual Studio Project Files'
