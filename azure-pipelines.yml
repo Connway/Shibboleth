@@ -18,7 +18,7 @@ jobs:
   - script: |
       mkdir qt
       cd qt
-      python -m aqt install-qt 6.3.0 windows desktop win64_msvc2019_64 -m qtcore qtgui qtwidgets qtcharts qtdatavis
+      python -m aqt install-qt windows desktop 6.3.0 win64_msvc2019_64 -m qtcore qtgui qtwidgets qtcharts qtdatavis
       setx QT_DIR %cd%\6.3.0\win64_msvc2019_64
     displayName: 'Installing Qt 6.3.0'
   - script: |
