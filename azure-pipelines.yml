@@ -8,9 +8,22 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+  - script: |
+      python -m pip install aqtinstall
+    displayName: 'Installing aqtinstall'
+  - script: |
+      mkdir qt
+      cd qt
+      python -m aqt install-qt 6.3.0 windows desktop win64_msvc2019_64 -m qtcore qtgui qtwidgets qtcharts qtdatavis
+    displayName: 'Installing Qt 6.3.0'
   - script: |
       cd utils
       premake5 vs2022 --no-editor
+    displayName: 'Generating Visual Studio Project Files'
   - task: VSBuild@1
     inputs:
       solution: '.generated\project\windows\vs2022\Shibboleth.sln'
@@ -18,6 +31,7 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
+    displayName: 'Building with VS2022'
 #- job: build_debug_linux
 #  displayName: 'Build Debug - Linux'
 #  pool:
