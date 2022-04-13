@@ -12,13 +12,14 @@ jobs:
     inputs:
       versionSpec: '3.x'
       addToPath: true
+    displayName: 'Setting up Python 3.x'
   - script: |
       python -m pip install aqtinstall
     displayName: 'Installing aqtinstall'
   - script: |
       mkdir qt
       cd qt
-      python -m aqt install-qt windows desktop 6.3.0 win64_msvc2019_64 -m qtcore qtgui qtwidgets qtcharts qtdatavis
+      python -m aqt install-qt windows desktop 6.3.0 win64_msvc2019_64 -m qtcharts qtdatavis3d qtpositioning
       setx QT_DIR %cd%\6.3.0\win64_msvc2019_64
     displayName: 'Installing Qt 6.3.0'
   - script: |
