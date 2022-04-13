@@ -1,5 +1,5 @@
 if _OPTIONS["no-editor"] then
-	return
+	return { GenerateProject = function() end, LinkDependencies = function() end }
 end
 
 require("premake-qt/qt")
