@@ -12,8 +12,6 @@ local qt_modules =
 	"widgets"
 }
 
-print("Qt Default Path: " .. qt.defaultpath)
-
 local GenerateProject = function()
 	local base_dir = GetModulesDirectory("DevEditor")
 
