@@ -21,7 +21,6 @@ jobs:
       cd qt
       python -m aqt install-qt windows desktop 6.3.0 win64_msvc2019_64 -m qtcharts qtdatavis3d qtpositioning
       echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\win64_msvc2019_64"
-      #setx QT_DIR $(Build.SourcesDirectory)\qt\6.3.0\win64_msvc2019_64
     displayName: 'Installing Qt 6.3.0'
   - script: |
       cd utils
