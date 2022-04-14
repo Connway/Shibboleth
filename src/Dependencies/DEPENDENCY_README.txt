@@ -10,6 +10,7 @@ Libraries Affected:
 
 	minizip-ng
 		unzip.h and zip.h added #include <zlib.h>
+		Fixing compilation error with CLOCK_MONOTONIC not being defined.
 
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.
@@ -29,6 +30,7 @@ Libraries Affected:
 	EASTL
 		Fixed compilation error on Linux with bitvector.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
+		Fixed compilation error with char8_t when using C++20 standard.
 
 	premake-qt
 		Fixed unnecessarily adding links libs to StaticLib projects.
@@ -36,6 +38,10 @@ Libraries Affected:
 
 	tracy
 		Fixing compilation errors with macros in Tracy.hpp incorrectly constexpr'ing a variable into a non-constexpr constructor.
+		Fixing compilation errors with Clang on Linux.
+
+	argparse
+		Commented out unused variables to fix compilation issues.
 
 Libraries included, but not used:
 	acl
@@ -46,6 +52,7 @@ Libraries included, but not used:
 
 	GLFW
 		This is only included for building TracyServer. It is not used by the engine itself.
+		Fixing compilation error with CLOCK_REALTIME and CLOCK_MONOTONIC not being defined.
 
 	sqlite
 		Technically nothing uses this, but in the future might use this.
@@ -64,3 +71,6 @@ the codebase won't run.
 	* libxi-dev
 	* libgl1-mesa-dev (will be removed when Vulkan is implemented)
 	* libglx-dev (will be removed when Vulkan is implemented)
+	* libxcurser-dev (for GLFW)
+	* libxinerama-dev (for GLFW)
+	* libgtk-3-dev (for TracyProfiler)

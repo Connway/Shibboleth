@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Function.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 

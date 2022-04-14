@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\..\..\src\Dependencies\Catch2\project_generator.lua" />
+    <None Include="..\..\..\..\src\Dependencies\DEPENDENCY_README.txt" />
     <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\PhysX\fastxml_files.lua" />
     <None Include="..\..\..\..\src\Dependencies\PhysX\lowlevel_files.lua" />

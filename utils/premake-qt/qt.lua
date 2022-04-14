@@ -54,7 +54,8 @@ function premake.extensions.qt.getPaths(cfg)
 	-- return the paths
 	return cfg.qtincludepath or (qtpath and qtpath .. "/include"),
 		   cfg.qtlibpath or (qtpath and qtpath .. "/lib"),
-		   cfg.qtbinpath or (qtpath and qtpath .. "/bin")
+		   cfg.qtbinpath or (qtpath and qtpath .. "/bin"),
+		   cfg.qtlibexecpath or (qtpath and qtpath .. "/libexec")
 end
 
 --
@@ -168,8 +169,8 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 	end
 
 	-- get the needed pathes
-	local qtinclude, qtlib, qtbin = qt.getPaths(config)
-	if qtinclude == nil or qtlib == nil or qtbin == nil then
+	local qtinclude, qtlib, qtbin, qtlibexec = qt.getPaths(config)
+	if qtinclude == nil or qtlib == nil or (qtbin == nil and qtlibexec == nil) then
 		error(
 			"Some Qt paths were not found. Ensure that you set the Qt path using\n" ..
 			"either 'qtpath' in your project configuration or using the QTDIR or\n" ..
@@ -183,6 +184,7 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 	config.qtincludepath	= qtinclude
 	config.qtlibpath		= qtlib
 	config.qtbinpath		= qtbin
+	config.qtlibexecpath	= qtlibexec
 
 	-- add the includes and libraries directories
 	table.insert(config.includedirs, qtinclude)
@@ -597,7 +599,27 @@ function premake.extensions.qt.addMOCCustomBuildRule(fcfg, cfg)
 	local output = qt.getGeneratedDir(cfg) .. "/moc_" .. fcfg.basename .. ".cpp"
 
 	-- create the moc command
-	local command = "\"" .. fcfg.config.qtbinpath .. "/moc\" \"" .. fcfg.relpath .. "\""
+	local moc_path = fcfg.config.qtbinpath .. "/moc"
+
+	if os.target() == "linux" or os.target() == "macosx" then
+		local bin_path = fcfg.config.qtbinpath
+
+		if bin_path:sub(1, 1) == "$" then
+			local closing_paren_index = bin_path:findlast(")", true)
+			bin_path = bin_path:sub(3, closing_paren_index - 1)
+			bin_path = os.getenv(bin_path) .. fcfg.config.qtbinpath:sub(closing_paren_index + 1)
+
+			if not os.isfile(bin_path .. "/moc") then
+				moc_path = fcfg.config.qtlibexecpath .. "/moc"
+			end
+		end
+
+		if not os.isfile(moc_path) then
+			moc_path = fcfg.config.qtlibexecpath .. "/moc"
+		end
+	end
+
+	local command = "\"" .. moc_path .. "\" \"" .. fcfg.relpath .. "\""
 	command = command .. " -o \"" .. path.getrelative(projectloc, output) .. "\""
 
 	-- if we have a precompiled header, prepend it

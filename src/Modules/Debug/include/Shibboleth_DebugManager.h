@@ -41,7 +41,7 @@ THE SOFTWARE.
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
 #include <Gaff_Flags.h>
-#include <EAThread/eathread_spinlock.h>
+#include <eathread/eathread_spinlock.h>
 
 NS_GLEAM
 	class IRenderOutput;

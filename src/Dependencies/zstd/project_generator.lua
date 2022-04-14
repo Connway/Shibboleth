@@ -7,7 +7,7 @@ project "zstd"
 	language "C"
 	warnings "Extra"
 
-	files { "**.h", "**.c" }
+	files { "**.h", "**.c", "**.S" }
 
 	defines { "ZSTD_MULTITHREAD=1" }
 

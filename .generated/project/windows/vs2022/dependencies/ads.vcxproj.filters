@@ -4,6 +4,9 @@
     <Filter Include=".generated">
       <UniqueIdentifier>{E29E030B-CE56-4558-375E-1EB42335E048}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".generated\windows">
+      <UniqueIdentifier>{3CA3F226-2887-B37C-91E7-ADCF7DEA9DFE}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\DockComponentsFactory.h" />
@@ -12,50 +15,50 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTabBar.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockAreaTabBar.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockAreaTitleBar.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaTitleBar_p.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockAreaTitleBar_p.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockAreaWidget.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockAreaWidget.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockContainerWidget.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockContainerWidget.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockFocusController.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockFocusController.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockManager.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockManager.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockOverlay.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockOverlay.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockSplitter.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockSplitter.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidget.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockWidget.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_DockWidgetTab.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockWidgetTab.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_ElidingLabel.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_ElidingLabel.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDockContainer.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_FloatingDockContainer.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\moc_FloatingDragPreview.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_FloatingDragPreview.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\qrc_ads.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\qrc_ads.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.cpp" />

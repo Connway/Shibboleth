@@ -8,6 +8,10 @@
    See the accompanying LICENSE file for the full text of the license.
 */
 
+#ifndef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 199309L
+#endif
+
 #include "mz.h"
 #include "mz_strm.h"
 #include "mz_os.h"
@@ -24,6 +28,7 @@
 #ifndef _WIN32
 #  include <utime.h>
 #  include <unistd.h>
+#  include <time.h>
 #endif
 #if defined(__APPLE__)
 #  include <mach/clock.h>

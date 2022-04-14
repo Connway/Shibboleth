@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_StateMachineComponent.h"
 #include <Shibboleth_ResourceManager.h>
-#include <EAThread/eathread_sync.h>
+#include <eathread/eathread_sync.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachine)
 	.classAttrs(

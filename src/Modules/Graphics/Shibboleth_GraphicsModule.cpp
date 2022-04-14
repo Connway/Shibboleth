@@ -21,27 +21,24 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace Graphics
-{
-	class Module final : public Shibboleth::IModule
-	{
-	public:
-		bool preInit(Shibboleth::IApp& app) override;
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-	};
-}
 
 #ifdef SHIB_STATIC
 
 	#include <Shibboleth_LogManager.h>
+	#include <Shibboleth_IModule.h>
 	#include <Gleam_Global.h>
 
 	namespace Graphics
 	{
+		class Module final : public Shibboleth::IModule
+		{
+		public:
+			bool preInit(Shibboleth::IApp& app) override;
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+		};
+
 		//static void* GraphicsAlloc(size_t size)
 		//{
 		//	return SHIB_ALLOC(size, g_graphics_allocator);
@@ -101,6 +98,8 @@ namespace Graphics
 	}
 
 #else
+
+	#include <Gaff_Defines.h>
 
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{

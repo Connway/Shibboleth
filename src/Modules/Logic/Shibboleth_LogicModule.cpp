@@ -21,24 +21,22 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace Logic
-{
-	class Module final : public Shibboleth::IModule
-	{
-	public:
-		bool preInit(Shibboleth::IApp& app) override;
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-	};
-}
 
 #ifdef SHIB_STATIC
 
+	#include <Shibboleth_IModule.h>
+
 	namespace Logic
 	{
+		class Module final : public Shibboleth::IModule
+		{
+		public:
+			bool preInit(Shibboleth::IApp& app) override;
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+		};
+
 		bool Module::preInit(Shibboleth::IApp& app)
 		{
 			static Shibboleth::ProxyAllocator g_logic_allocator("Logic");
@@ -78,6 +76,8 @@ namespace Logic
 	}
 
 #else
+
+	#include <Gaff_Defines.h>
 
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{

@@ -21,15 +21,16 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
-#include "CodeGen_IncludeArgParse.h"
 #include "CodeGen_Utils.h"
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
+#include <argparse.hpp>
+#include <fmt/core.h>
 #include <filesystem>
 
-static constexpr const char8_t* const k_gen_header =
-u8R"(// This file is generated! Any modifications will be lost in subsequent builds!
+static constexpr const char/*8_t*/* const k_gen_header =
+/*u8*/R"(// This file is generated! Any modifications will be lost in subsequent builds!
 
 #pragma once
 
@@ -99,8 +100,8 @@ namespace {}
 }}
 )";
 
-static constexpr const char8_t* const k_gen_static_header =
-u8R"(// This file is generated! Any modifications will be lost in subsequent builds!
+static constexpr const char/*8_t*/* const k_gen_static_header =
+/*u8*/R"(// This file is generated! Any modifications will be lost in subsequent builds!
 
 #pragma once
 
@@ -223,8 +224,8 @@ static int WriteFile(
 		program.get(k_arg_module) :
 		"Engine";
 
-	const std::string final_text = std::format(
-		reinterpret_cast<const char* const>(k_gen_header),
+	const std::string final_text = fmt::format(
+		k_gen_header,
 		reinterpret_cast<const char*>(include_files.data()),
 		module_name.data(),
 		module_name.data(),
@@ -350,8 +351,8 @@ static int GenerateStaticReflectionHeader(
 		}
 	}
 
-	const std::string final_text = std::format(
-		reinterpret_cast<const char* const>(k_gen_static_header),
+	const std::string final_text = fmt::format(
+		k_gen_static_header,
 		reinterpret_cast<const char*>(includes.data()),
 		reinterpret_cast<const char*>(inits.data())
 	);

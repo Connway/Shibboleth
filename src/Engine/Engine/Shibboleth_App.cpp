@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
-#include <EAThread/eathread_thread.h>
+#include <eathread/eathread_thread.h>
 #include <filesystem>
 
 #ifndef SHIB_STATIC
@@ -527,7 +527,7 @@ bool App::loadModules(void)
 				}
 
 				const auto abs_path = std::filesystem::absolute(dir_entry.path());
-				const wchar_t* name = abs_path.c_str();
+				const auto* name = abs_path.c_str();
 				CONVERT_STRING(char8_t, temp, name);
 
 				U8String module_name(temp);

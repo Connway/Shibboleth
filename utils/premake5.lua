@@ -81,12 +81,14 @@ if is_project_action == true then
 		group "Tests"
 		dofile("../src/Tests/project_generator.lua")
 
-		group "Project Files"
-			project "Generators"
-				kind "None"
-				files { "../src/**.lua" }
+		if _ACTION ~= "gmake2" then
+			group "Project Files"
+				project "Generators"
+					kind "None"
+					files { "../src/**.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
 
-			project "Utils"
-				kind "None"
-				files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
+				project "Utils"
+					kind "None"
+					files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
+		end
 end

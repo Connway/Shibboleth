@@ -21,28 +21,25 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace Script
-{
-	class Module final : public Shibboleth::IModule
-	{
-	public:
-		bool preInit(Shibboleth::IApp& app) override;
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-	};
-}
 
 #ifdef SHIB_STATIC
 
 	#include "Shibboleth_ScriptConfigs.h"
 	#include <Shibboleth_JobPool.h>
+	#include <Shibboleth_IModule.h>
 	#include <Gaff_JSON.h>
 
 	namespace Script
 	{
+		class Module final : public Shibboleth::IModule
+		{
+		public:
+			bool preInit(Shibboleth::IApp& app) override;
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+		};
+
 		bool Module::preInit(Shibboleth::IApp& app)
 		{
 			IModule::preInit(app);
@@ -77,6 +74,8 @@ namespace Script
 	}
 
 #else
+
+	#include <Gaff_Defines.h>
 
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{

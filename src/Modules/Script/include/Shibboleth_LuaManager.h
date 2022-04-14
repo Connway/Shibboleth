@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
-#include <EAThread/eathread_futex.h>
+#include <eathread/eathread_futex.h>
 
 struct lua_State;
 

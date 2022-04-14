@@ -13,6 +13,7 @@ project "CodeGenerator"
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/fmt/include",
 		"../../Dependencies/argparse"
 	}
 
@@ -24,6 +25,8 @@ project "CodeGenerator"
 
 	dependson(deps)
 	links(deps)
+
+	defines { "FMT_HEADER_ONLY" }
 
 	flags { "FatalWarnings" }
 

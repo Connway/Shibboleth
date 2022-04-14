@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IDevWebHandler.h>
 #include <Shibboleth_Reflection.h>
 #include <Gaff_Flags.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 

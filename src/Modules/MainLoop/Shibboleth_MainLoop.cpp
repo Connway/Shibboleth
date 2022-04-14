@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_IApp.h>
-#include <EAThread/eathread.h>
+#include <eathread/eathread.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
 	.BASE(Shibboleth::IMainLoop)

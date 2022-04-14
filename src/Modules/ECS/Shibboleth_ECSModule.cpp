@@ -21,24 +21,22 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace ECS
-{
-	class Module final : public Shibboleth::IModule
-	{
-	public:
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-		bool postInit(void) override;
-	};
-}
 
 #ifdef SHIB_STATIC
 
+	#include <Shibboleth_IModule.h>
+
 	namespace ECS
 	{
+		class Module final : public Shibboleth::IModule
+		{
+		public:
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+			bool postInit(void) override;
+		};
+
 		void Module::initReflectionEnums(void)
 		{
 			// Should NOT add other code here.
@@ -70,6 +68,8 @@ namespace ECS
 	}
 
 #else
+
+	#include <Gaff_Defines.h>
 
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{

@@ -4,6 +4,9 @@
     <Filter Include=".generated">
       <UniqueIdentifier>{E29E030B-CE56-4558-375E-1EB42335E048}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".generated\windows">
+      <UniqueIdentifier>{3CA3F226-2887-B37C-91E7-ADCF7DEA9DFE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
@@ -20,11 +23,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\moc_Shibboleth_EditorMainWindow.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\windows\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\moc_Shibboleth_ToDoWindow.cpp">
-      <Filter>.generated</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\windows\moc_Shibboleth_ToDoWindow.cpp">
+      <Filter>.generated\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorAttributesCommon.cpp" />

@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_IncludeArgParse.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ModuleGenerator.h">
       <Filter>include</Filter>
     </ClInclude>

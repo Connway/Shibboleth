@@ -250,6 +250,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\compress\zstd_opt.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\compress\zstdmt_compress.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\decompress\huf_decompress.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\decompress\huf_decompress_amd64.S" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\decompress\zstd_ddict.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\decompress\zstd_decompress.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\decompress\zstd_decompress_block.c" />

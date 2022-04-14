@@ -171,6 +171,9 @@
     <None Include="..\..\..\..\src\Dependencies\Catch2\project_generator.lua">
       <Filter>Dependencies\Catch2</Filter>
     </None>
+    <None Include="..\..\..\..\src\Dependencies\DEPENDENCY_README.txt">
+      <Filter>Dependencies</Filter>
+    </None>
     <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua">
       <Filter>Dependencies\EASTL</Filter>
     </None>

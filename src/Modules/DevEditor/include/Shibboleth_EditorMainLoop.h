@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IMainLoop.h>
 #include <Shibboleth_MainLoop.h>
-#include <EAThread/eathread.h>
+#include <eathread/eathread.h>
 
 NS_SHIBBOLETH
 

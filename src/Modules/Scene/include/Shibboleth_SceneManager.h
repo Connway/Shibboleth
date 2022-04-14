@@ -27,7 +27,7 @@ THE SOFTWARE.
 //#include "Shibboleth_ECSEntity.h"
 //#include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_IManager.h>
-//#include <EAThread/eathread_mutex.h>
+//#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 

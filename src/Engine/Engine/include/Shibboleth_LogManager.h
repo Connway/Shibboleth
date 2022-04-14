@@ -29,9 +29,9 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Queue.h"
 #include <Gaff_File.h>
-#include <EAThread/eathread_semaphore.h>
-#include <EAThread/eathread_thread.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_semaphore.h>
+#include <eathread/eathread_thread.h>
+#include <eathread/eathread_mutex.h>
 #include <EASTL/functional.h>
 
 NS_SHIBBOLETH

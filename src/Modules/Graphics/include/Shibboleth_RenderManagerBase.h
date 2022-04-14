@@ -39,8 +39,8 @@ THE SOFTWARE.
 #include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_Hash.h>
-#include <EAThread/eathread_spinlock.h>
-#include <EAThread/eathread.h>
+#include <eathread/eathread_spinlock.h>
+#include <eathread/eathread.h>
 
 NS_SHIBBOLETH
 

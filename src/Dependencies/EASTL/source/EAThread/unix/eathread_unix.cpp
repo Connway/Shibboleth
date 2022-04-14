@@ -418,7 +418,7 @@
 					// on older kernels), and hence distinguish which thread might be responsible for the high 
 					// CPU load or similar problems.
 					char8_t nameBuf[16]; // Limited to 16 bytes, null terminated if < 16 bytes
-					strncpy(nameBuf, pName, sizeof(nameBuf));
+					strncpy(reinterpret_cast<char*>(&nameBuf[0]), reinterpret_cast<const char*>(pName), sizeof(nameBuf));
 					nameBuf[15] = 0;
 					prctl(PR_SET_NAME, (unsigned long)nameBuf, 0, 0, 0);
 
@@ -465,7 +465,7 @@
 				// only if the currently executing thread is the one that is associated with
 				// this class object.
 				if(GetId(pTDD) == EA::Thread::GetThreadId())
-					SetCurrentThreadName(pTDD->mName);
+					SetCurrentThreadName(reinterpret_cast<const char8_t*>(&pTDD->mName[0]));
 
 			#elif defined(EA_PLATFORM_BSD) 
 				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 1);

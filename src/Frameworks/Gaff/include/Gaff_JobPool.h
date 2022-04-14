@@ -28,9 +28,9 @@ THE SOFTWARE.
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
 #include "Gaff_IncludeEASTLAtomic.h"
-#include <EAThread/eathread_semaphore.h>
-#include <EAThread/eathread_thread.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_semaphore.h>
+#include <eathread/eathread_thread.h>
+#include <eathread/eathread_mutex.h>
 #include <EASTL/chrono.h>
 
 NS_GAFF

@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "CodeGen_Utils.h"
-#include "CodeGen_IncludeArgParse.h"
 #include <Gaff_File.h>
+#include <argparse.hpp>
 
 void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program)
 {

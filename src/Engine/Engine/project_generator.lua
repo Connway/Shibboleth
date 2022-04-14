@@ -10,6 +10,7 @@ project "Engine"
 
 	includedirs
 	{
+		".",
 		"include",
 		"../Memory/include",
 		"../../Dependencies/rapidjson",

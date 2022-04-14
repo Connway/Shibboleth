@@ -35,6 +35,15 @@ project "TracyClient"
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
 
+	filter { "system:not windows" }
+		build_files_in_dir("libbacktrace")
+
+	filter { "system:not macosx"}
+		removefiles { "libbacktrace/macho.cpp" }
+
+	filter { "system:not linux" }
+		removefiles { "libbacktrace/elf.cpp" }
+
 	filter { "system:windows" }
 		links { "ws2_32", "Dbghelp" }
 
@@ -96,12 +105,27 @@ project "TracyProfiler"
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 
+	filter { "system:linux", "options:not wayland" }
+		defines { "DISPLAY_SERVER_X11" }
+		buildoptions { "`pkg-config --cflags gtk+-3.0`" }
+		linkoptions { "`pkg-config --libs gtk+-3.0`" }
+
+	filter { "system:linux", "options:not wayland", "architecture:x64" }
+		includedirs { "/usr/lib/x86_64-linux-gnu/glib-2.0/include" }
+
+	filter { "system:linux", "options:wayland" }
+		defines { "DISPLAY_SERVER_WAYLAND" }
+
+	filter { "system:not linux" }
+		removefiles { "nfd/nfd_gtk.c" }
 
 	filter { "system:not windows" }
 		removefiles { "nfd/nfd_win.cpp" }
 
+	filter { "system:macosx" }
+		files { "nfd/nfd_cocoa.m" }
+
 	filter { "system:windows" }
-		removefiles { "nfd/nfd_gtk.c" }
 
 		defines
 		{

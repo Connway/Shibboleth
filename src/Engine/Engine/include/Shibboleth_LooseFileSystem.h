@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
 #include <Gaff_IncludeEASTLAtomic.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 

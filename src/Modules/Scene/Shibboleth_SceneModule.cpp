@@ -21,23 +21,21 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace Scene
-{
-	class Module final : public Shibboleth::IModule
-	{
-	public:
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-	};
-}
 
 #ifdef SHIB_STATIC
 
+	#include <Shibboleth_IModule.h>
+
 	namespace Scene
 	{
+		class Module final : public Shibboleth::IModule
+		{
+		public:
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+		};
+
 		void Module::initReflectionEnums(void)
 		{
 			// Should NOT add other code here.
@@ -63,6 +61,8 @@ namespace Scene
 	}
 
 #else
+
+	#include <Gaff_Defines.h>
 
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{

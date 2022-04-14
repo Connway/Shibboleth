@@ -1,3 +1,7 @@
+if _ACTION == "gmake2" then
+	return
+end
+
 project "glm"
 	location(GetDependenciesLocation())
 

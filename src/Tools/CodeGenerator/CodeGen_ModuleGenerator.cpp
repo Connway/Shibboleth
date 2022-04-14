@@ -22,31 +22,30 @@ THE SOFTWARE.
 
 #include "CodeGen_ModuleGenerator.h"
 #include "CodeGen_ReflectionHeaderGenerator.h"
-#include "CodeGen_IncludeArgParse.h"
 #include "CodeGen_Utils.h"
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
+#include <argparse.hpp>
+#include <fmt/core.h>
 #include <filesystem>
 
-static constexpr const char8_t* k_gen_module_code =
-u8R"(#include "Gen_ReflectionInit.h"
-#include <Shibboleth_IModule.h>
-
-namespace {}
-{{
-	class Module final : public Shibboleth::IModule
-	{{
-	public:
-		void initReflectionEnums(void) override;
-		void initReflectionAttributes(void) override;
-		void initReflectionClasses(void) override;
-	}};
-}}
+static constexpr const char/*8_t*/* k_gen_module_code =
+/*u8*/R"(#include "Gen_ReflectionInit.h"
 
 #ifdef SHIB_STATIC
 
+	#include <Shibboleth_IModule.h>
+
 	namespace {}
 	{{
+		class Module final : public Shibboleth::IModule
+		{{
+		public:
+			void initReflectionEnums(void) override;
+			void initReflectionAttributes(void) override;
+			void initReflectionClasses(void) override;
+		}};
+
 		void Module::initReflectionEnums(void)
 		{{
 			// Should NOT add other code here.
@@ -73,6 +72,8 @@ namespace {}
 
 #else
 
+	#include <Gaff_Defines.h>
+
 	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
 	{{
 		return {}::CreateModule();
@@ -81,8 +82,8 @@ namespace {}
 #endif
 )";
 
-static constexpr const char8_t* k_gen_module_project =
-u8R"(local GenerateProject = function()
+static constexpr const char/*8_t*/* k_gen_module_project =
+/*u8*/R"(local GenerateProject = function()
 	local base_dir = GetModulesDirectory("{}")
 
 	project "{}"
@@ -153,9 +154,8 @@ static int CreateProjectFiles(const std::string& path, const std::string& name, 
 		prefix = program.get(k_arg_prefix) + "_";
 	}
 
-	const std::string final_module_text = std::format(
-		reinterpret_cast<const char* const>(k_gen_module_code),
-		name.data(),
+	const std::string final_module_text = fmt::format(
+		k_gen_module_code,
 		name.data(),
 		name.data(),
 		name.data(),
@@ -188,8 +188,8 @@ static int CreateProjectFiles(const std::string& path, const std::string& name, 
 		return -6;
 	}
 
-	const std::string final_project_text = std::format(
-		reinterpret_cast<const char* const>(k_gen_module_project),
+	const std::string final_project_text = fmt::format(
+		k_gen_module_project,
 		name.data(),
 		name.data(),
 		name.data(),

@@ -30,7 +30,7 @@ THE SOFTWARE.
 #define REQUIRES_HEADER_LIST CHECK_FOR_DOUBLE_FREE || CHECK_FOR_LEAKS || CHECK_FOR_MISALIGNED_POINTER
 
 #if REQUIRES_HEADER_LIST
-	#include <EAThread/eathread_spinlock.h>
+	#include <eathread/eathread_spinlock.h>
 #endif
 
 

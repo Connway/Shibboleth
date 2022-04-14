@@ -21,8 +21,8 @@ project "minizip-ng"
 	filter { "system:not windows" }
 		excludes { "**win32.*"  }
 
-	filter { "system:not linux and not macosx" }
-		excludes { "**posix.*",  }
+	filter { "system:not linux", "system:not macosx" }
+		excludes { "**posix.*" }
 
 	filter {}
 

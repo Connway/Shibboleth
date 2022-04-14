@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
 #include "CodeGen_ModuleGenerator.h"
-#include "CodeGen_IncludeArgParse.h"
 #include <Gaff_Utils.h>
+#include <argparse.hpp>
 
 int main(int argc, const char** argv)
 {

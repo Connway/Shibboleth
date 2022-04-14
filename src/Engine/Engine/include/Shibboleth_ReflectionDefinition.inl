@@ -1564,10 +1564,10 @@ void ReflectionDefinition<T>::Hash64Ptr::save(Shibboleth::ISerializeWriter& writ
 
 	writer.writeUInt64(u8"version", Reflection<Gaff::Hash64>::GetInstance().getVersion().getHash());
 
-	writer.writeKey("string");
+	writer.writeKey(u8"string");
 	Reflection<Shibboleth::U8String>::GetInstance().save(writer, _string);
 
-	writer.writeKey("hash");
+	writer.writeKey(u8"hash");
 	Reflection<Gaff::Hash64Storage>::GetInstance().save(writer, (object.*_ptr).getHash());
 
 	writer.endObject();

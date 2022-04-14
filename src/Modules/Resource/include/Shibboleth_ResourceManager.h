@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
-#include <EAThread/eathread_mutex.h>
+#include <eathread/eathread_mutex.h>
 #include <EASTL/functional.h>
 
 NS_SHIBBOLETH

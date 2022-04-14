@@ -45,7 +45,7 @@ function StaticHeaderGen()
 	filter { "system:not windows" }
 		prebuildcommands
 		{
-			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header"
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header\""
 		}
 
 	filter {}
@@ -187,7 +187,7 @@ end
 function QtSettingsModule(modules, base_dir)
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
-	qtgenerateddir(base_dir .. ".generated")
+	qtgenerateddir(base_dir .. ".generated/" .. os.target())
 	qtprefix "Qt6"
 
 	qtmodules(modules)

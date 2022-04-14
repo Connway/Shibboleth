@@ -10,6 +10,7 @@
 *.VC.db
 *.opendb
 **/.vs/*
+**/Gen_StaticReflectionInit.h
 **/Gen_ReflectionInit.h
 .generated/build/*
 workingdir/**/*.exe

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Entity.h"
 #include <Shibboleth_IManager.h>
-//#include <EAThread/eathread_mutex.h>
+//#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 

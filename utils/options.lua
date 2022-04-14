@@ -6,12 +6,12 @@ newoption
 
 newoption
 {
-	trigger = "gen-clang",
-	description = "Generate Clang configurations for Visual Studio projects."
+	trigger = "no-editor",
+	description = "Do not generate projects related to ShibEd."
 }
 
 newoption
 {
-	trigger = "no-editor",
-	description = "Do not generate projects related to ShibEd."
+	trigger = "wayland",
+	description = "On Linux, use Wayland instead of X11 window system."
 }

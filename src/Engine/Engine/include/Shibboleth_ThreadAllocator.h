@@ -2,7 +2,7 @@
 
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
-#include <EAThread/eathread.h>
+#include <eathread/eathread.h>
 
 NS_SHIBBOLETH
 
