@@ -100,8 +100,8 @@ public:
 	IReflectionFunctionBase(void) {}
 	virtual ~IReflectionFunctionBase(void) {}
 
-	virtual bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
-	virtual bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
+	virtual bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
+	virtual bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
 
 	virtual int32_t numArgs(void) const = 0;
 	virtual bool isConst(void) const = 0;
@@ -124,7 +124,7 @@ class IReflectionStaticFunctionBase
 public:
 	using VoidFunc = void (*)(void);
 
-	explicit IReflectionStaticFunctionBase(VoidFunc func) :
+	explicit IReflectionStaticFunctionBase(VoidFunc func):
 		_func(func)
 	{
 	}
@@ -133,7 +133,7 @@ public:
 
 	VoidFunc getFunc(void) const { return _func; }
 
-	virtual bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
+	virtual bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
 
 	virtual int32_t numArgs(void) const = 0;
 	virtual IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const = 0;
@@ -148,7 +148,7 @@ class IReflectionStaticFunction : public IReflectionStaticFunctionBase
 public:
 	using Func = Ret (*)(Args...);
 
-	explicit IReflectionStaticFunction(Func func) :
+	explicit IReflectionStaticFunction(Func func):
 		IReflectionStaticFunctionBase(reinterpret_cast<VoidFunc>(func))
 	{
 	}

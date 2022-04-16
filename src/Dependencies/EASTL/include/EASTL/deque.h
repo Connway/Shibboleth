@@ -164,6 +164,8 @@ namespace eastl
 		DequeIterator();
 		DequeIterator(const iterator& x);
 
+		DequeIterator& operator=(const iterator& rhs);
+
 		pointer   operator->() const;
 		reference operator*() const;
 
@@ -922,6 +924,17 @@ namespace eastl
 		: mpCurrent(x.mpCurrent), mpBegin(x.mpBegin), mpEnd(x.mpEnd), mpCurrentArrayPtr(x.mpCurrentArrayPtr)
 	{
 		operator--();
+	}
+
+
+	template <typename T, typename Pointer, typename Reference, unsigned kDequeSubarraySize>
+	DequeIterator<T, Pointer, Reference, kDequeSubarraySize>& DequeIterator<T, Pointer, Reference, kDequeSubarraySize>::operator=(const iterator& rhs)
+	{
+		mpCurrent = rhs.mpCurrent;
+		mpBegin = rhs.mpBegin;
+		mpEnd = rhs.mpEnd;
+		mpCurrentArrayPtr = rhs.mpCurrentArrayPtr;
+		return *this;
 	}
 
 

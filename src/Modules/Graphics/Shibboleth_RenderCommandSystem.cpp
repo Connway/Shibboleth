@@ -122,7 +122,7 @@ static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& 
 //RenderCommandSubmissionSystem
 bool RenderCommandSubmissionSystem::init(void)
 {
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	return true;
 }
 
@@ -216,9 +216,9 @@ bool RenderCommandSystem::init(void)
 
 	object_query.addArchetypeCallbacks(std::move(object_add_func), std::move(object_remove_func));
 
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_res_mgr = &GetManagerTFast<ResourceManager>();
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_job_pool = &GetApp().getJobPool();
 
 	_ecs_mgr->registerQuery(std::move(object_query));

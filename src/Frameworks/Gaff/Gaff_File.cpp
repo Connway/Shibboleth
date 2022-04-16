@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gaff_File.h"
 #include "Gaff_String.h"
 #include <sys/stat.h>
+#include <cstdarg>
 
 #ifdef PLATFORM_WINDOWS
 	#include <io.h>
@@ -31,8 +32,6 @@ THE SOFTWARE.
 #elif defined(PLATFORM_MAC)
 	#include <sys/uio.h>
 #endif
-
-#include <cstdarg>
 
 NS_GAFF
 

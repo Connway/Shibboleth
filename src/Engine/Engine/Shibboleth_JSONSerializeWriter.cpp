@@ -41,7 +41,7 @@ void JSONSerializeWriter::startArray(uint32_t)
 	} else {
 		Gaff::JSON& curr_node = _nodes.back();
 		curr_node.setObject(_key, Gaff::JSON::CreateArray());
-		_nodes.push_back(curr_node[_key]);
+		_nodes.push_back(curr_node.getObject(_key));
 	}
 }
 
@@ -60,7 +60,7 @@ void JSONSerializeWriter::startObject(uint32_t)
 	else {
 		Gaff::JSON& curr_node = _nodes.back();
 		curr_node.setObject(_key, Gaff::JSON::CreateObject());
-		_nodes.push_back(curr_node[_key]);
+		_nodes.push_back(curr_node.getObject(_key));
 	}
 }
 

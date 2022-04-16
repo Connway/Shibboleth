@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
 	.classAttrs(
@@ -45,13 +46,13 @@ SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
 
 LuaResource::~LuaResource(void)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
 	lua_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
 void LuaResource::loadScript(IFile* file, uintptr_t /*thread_id_int*/)
 {
-	LuaManager& lua_mgr = GetApp().getManagerTFast<LuaManager>();
+	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
 
 	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
 		succeeded();

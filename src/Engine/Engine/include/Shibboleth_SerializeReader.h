@@ -94,8 +94,8 @@ public:
 	void freeString(const char8_t* str) const override { if (isString()) _stack.back().freeString(str); }
 	int32_t size(void) const override { return _stack.back().size(); }
 
-	bool exists(const char8_t* key) const override { return !_stack.back()[key].isNull(); };
-	bool exists(const char* key) const override { return !_stack.back()[key].isNull(); };
+	bool exists(const char8_t* key) const override { return !_stack.back().getObject(key).isNull(); };
+	bool exists(const char* key) const override { return !_stack.back().getObject(key).isNull(); };
 
 	const char8_t* readString(char8_t* buffer, size_t buf_size, const char8_t* default_value) const override { return _stack.back().getString(buffer, buf_size, default_value); }
 	const char8_t* readString(const char8_t* default_value) const override { return _stack.back().getString(default_value); }

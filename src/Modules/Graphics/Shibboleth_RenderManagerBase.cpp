@@ -137,7 +137,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs[k_config_graphics_cfg].getString(k_config_graphics_default_cfg);
+	const char8_t* const graphics_cfg_path = configs.getObject(k_config_graphics_cfg).getString(k_config_graphics_default_cfg);
 
 	IFileSystem& fs = app.getFileSystem();
 	const IFile* const file = fs.openFile(graphics_cfg_path);
@@ -158,10 +158,10 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 	fs.closeFile(file);
 
-	const Gaff::JSON sampler = config[u8"texture_filtering"];
+	const Gaff::JSON sampler = config.getObject(u8"texture_filtering");
 
 	if (sampler.isString()) {
-		ResourceManager& res_mgr = app.getManagerTFast<ResourceManager>();
+		ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
 		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
 
@@ -185,7 +185,7 @@ bool RenderManagerBase::init(void)
 {
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs[k_config_graphics_cfg].getString(k_config_graphics_default_cfg);
+	const char8_t* const graphics_cfg_path = configs.getObject(k_config_graphics_cfg).getString(k_config_graphics_default_cfg);
 
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
@@ -207,8 +207,8 @@ bool RenderManagerBase::init(void)
 		return false;
 	}
 
-	if (configs[k_config_graphics_no_windows].getBool(false)) {
-		const Gaff::JSON adapters = config[u8"adapters"];
+	if (configs.getObject(k_config_graphics_no_windows).getBool(false)) {
+		const Gaff::JSON adapters = config.getObject(u8"adapters");
 
 		if (adapters.isObject() && adapters.size() > 0) {
 			adapters.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
@@ -252,13 +252,13 @@ bool RenderManagerBase::init(void)
 		}
 
 	} else {
-		const Gaff::JSON windows = config[u8"windows"];
+		const Gaff::JSON windows = config.getObject(u8"windows");
 
 		if (windows.isObject()) {
 			windows.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
 			{
-				const int32_t adapter_id = value[u8"adapter_id"].getInt32();
-				const int32_t display_id = value[u8"display_id"].getInt32();
+				const int32_t adapter_id = value.getObject(u8"adapter_id").getInt32();
+				const int32_t display_id = value.getObject(u8"display_id").getInt32();
 
 				const auto display_modes = getDisplayModes();
 
@@ -296,15 +296,15 @@ bool RenderManagerBase::init(void)
 					}
 				}
 
-				int32_t x = Gaff::Max(0, value[u8"x"].getInt32(0));
-				int32_t y = Gaff::Max(0, value[u8"y"].getInt32(0));
-				int32_t width = value[u8"width"].getInt32(0);
-				int32_t height = value[u8"height"].getInt32(0);
-				const int32_t refresh_rate = value[u8"refresh_rate"].getInt32(0);
-				const bool vsync = value[u8"vsync"].getBool();
+				int32_t x = Gaff::Max(0, value.getObject(u8"x").getInt32(0));
+				int32_t y = Gaff::Max(0, value.getObject(u8"y").getInt32(0));
+				int32_t width = value.getObject(u8"width").getInt32(0);
+				int32_t height = value.getObject(u8"height").getInt32(0);
+				const int32_t refresh_rate = value.getObject(u8"refresh_rate").getInt32(0);
+				const bool vsync = value.getObject(u8"vsync").getBool();
 				Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
 
-				SerializeReader<Gaff::JSON> reader(value[u8"window_mode"], ProxyAllocator("Graphics"));
+				SerializeReader<Gaff::JSON> reader(value.getObject(u8"window_mode"), ProxyAllocator("Graphics"));
 
 				// Log the error, but leave default to windowed mode.
 				if (!Refl::Reflection<Gleam::IWindow::WindowMode>::GetInstance().load(reader, window_mode)) {
@@ -332,7 +332,7 @@ bool RenderManagerBase::init(void)
 					return false;
 				}
 
-				if (const Gaff::JSON icon = value[u8"icon"]; icon.isString()) {
+				if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
 					if (!window->setIcon(icon.getString())) {
 						// $TODO: Log warning.
 					}

@@ -29,6 +29,22 @@ SerializeReaderWrapper::SerializeReaderWrapper(const ProxyAllocator& allocator):
 {
 }
 
+SerializeReaderWrapper::SerializeReaderWrapper(SerializeReaderWrapper&& reader):
+	_allocator(reader._allocator),
+	_reader(nullptr),
+	_mpack_reader(std::move(reader._mpack_reader)),
+	_error_text(reader._error_text),
+	_is_mpack(reader._is_mpack)
+{
+	if (_is_mpack) {
+		_mpack = std::move(reader._mpack);
+		_reader = &_mpack;
+	} else {
+		_json = std::move(reader._json);
+		_reader = &_json;
+	}
+}
+
 SerializeReaderWrapper::~SerializeReaderWrapper(void)
 {
 	if (_reader) {

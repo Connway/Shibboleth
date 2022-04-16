@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ProgramBuffersResource)
 	.classAttrs(Shibboleth::CreatableAttribute())
@@ -61,7 +62,7 @@ bool ProgramBuffersResource::createProgramBuffers(const Vector<Gleam::IRenderDev
 
 bool ProgramBuffersResource::createProgramBuffers(Gleam::IRenderDevice& device)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgramBuffers* const program_buffers = render_mgr.createProgramBuffers();
 
 	if (!program_buffers) {

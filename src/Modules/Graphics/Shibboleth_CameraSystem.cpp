@@ -46,8 +46,8 @@ bool CameraPreRenderSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
 	return true;
@@ -98,8 +98,8 @@ bool CameraPostRenderSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
 	_cmd_lists[0].reset(_render_mgr->createCommandList());
@@ -113,7 +113,7 @@ bool CameraPostRenderSystem::init(void)
 	// $TODO: Turn this into a config property.
 	constexpr const char8_t* const k_camera_material = u8"Materials/CameraToTexture/camera_to_texture.material";
 
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	_camera_material = res_mgr.requestResourceT<MaterialResource>(k_camera_material);
 
 	res_mgr.waitForResource(*_camera_material);

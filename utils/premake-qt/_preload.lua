@@ -166,6 +166,11 @@ premake.api.register {
 	kind = "boolean"
 }
 
+newoption
+{
+	trigger = "qt-force-libexec",
+	description = "When building Linux target, force using libexec directory instead of bin."
+}
 
 --
 -- Always load

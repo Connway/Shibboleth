@@ -67,7 +67,7 @@ Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
 
 bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
 	if (!scene.HasMeshes()) {
 		LogErrorResource("Failed to load mesh '%s'. Assimp scene has no meshes.", getFilePath().getBuffer());
@@ -188,8 +188,8 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	const IFile* model_file = nullptr;

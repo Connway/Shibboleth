@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsSystem.h"
 #include "Shibboleth_PhysicsManager.h"
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsDebugSystem, Shibboleth::ISystem)
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsSystem, Shibboleth::ISystem)
@@ -33,7 +34,7 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
 
 bool PhysicsDebugSystem::init(void)
 {
-	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
+	_physics_mgr = &GetManagerTFast<PhysicsManager>();
 	return true;
 }
 
@@ -44,7 +45,7 @@ void PhysicsDebugSystem::update(uintptr_t thread_id_int)
 
 bool PhysicsSystem::init(void)
 {
-	_physics_mgr = &GetApp().getManagerTFast<PhysicsManager>();
+	_physics_mgr = &GetManagerTFast<PhysicsManager>();
 	return true;
 }
 

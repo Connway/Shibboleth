@@ -55,7 +55,7 @@ ECSSceneResource::~ECSSceneResource(void)
 
 void ECSSceneResource::load(const ISerializeReader& reader)
 {
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
 	reader.forEachInArray([&](int32_t) -> bool
 	{

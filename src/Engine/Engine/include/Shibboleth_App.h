@@ -29,8 +29,9 @@ THE SOFTWARE.
 //#include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
-#include "Shibboleth_JobPool.h"
+#include "Shibboleth_IManager.h"
 #include "Shibboleth_IModule.h"
+#include "Shibboleth_JobPool.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_JSON.h>
 

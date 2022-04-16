@@ -194,9 +194,6 @@ public:
 
 	bool operator==(const JSON& rhs) const;
 	bool operator!=(const JSON& rhs) const;
-	JSON operator[](const char8_t* key) const;
-	JSON operator[](const char* key) const;
-	JSON operator[](int32_t index) const;
 
 private:
 	class JSONAllocator;

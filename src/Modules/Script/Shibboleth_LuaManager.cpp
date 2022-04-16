@@ -61,7 +61,7 @@ bool LuaManager::initAllModulesLoaded(void)
 	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_script));
 
-	const Gaff::JSON script_threads = app.getConfigs()[k_config_script_threads];
+	const Gaff::JSON script_threads = app.getConfigs().getObject(k_config_script_threads);
 	const int32_t num_threads = script_threads.getInt32(k_config_script_default_num_threads);
 
 	_states.resize(static_cast<size_t>(num_threads));

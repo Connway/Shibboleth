@@ -112,7 +112,7 @@ bool MaterialResource::createProgram(
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	if (vert) {
@@ -177,7 +177,7 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
@@ -222,8 +222,8 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;

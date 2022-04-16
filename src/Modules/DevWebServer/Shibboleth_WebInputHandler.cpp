@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_DevWebUtils.h>
 #include <Shibboleth_InputReflection.h>
 #include <Shibboleth_InputManager.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gaff_Math.h>
 #include <Gaff_JSON.h>
 #include <EAStdC/EAString.h>
@@ -43,7 +44,7 @@ SHIB_REFLECTION_CLASS_DEFINE(WebInputHandler)
 static ProxyAllocator g_allocator("DevWeb");
 
 WebInputHandler::WebInputHandler(void):
-	_input_mgr(&GetApp().getManagerTFast<InputManager>())
+	_input_mgr(&GetManagerTFast<InputManager>())
 {
 }
 
@@ -114,39 +115,39 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const Gaff::JSON inputs = req_data[u8"inputs"];
+	const Gaff::JSON inputs = req_data.getObject(u8"inputs");
 
 	if (!inputs.isArray()) {
 		// $TODO: Log error.
 		return true;
 	}
 
-	const int32_t player_id = req_data[u8"player_id"].getInt32(-1);
+	const int32_t player_id = req_data.getObject(u8"player_id").getInt32(-1);
 
 	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 	{
-		const Gaff::JSON mouse_pos_state = value[u8"mouse_pos_state"];
-		const Gaff::JSON mouse_code = value[u8"mouse_code"];
-		const Gaff::JSON char_code = value[u8"char_code"];
-		const Gaff::JSON key_code = value[u8"key_code"];
+		const Gaff::JSON mouse_pos_state = value.getObject(u8"mouse_pos_state");
+		const Gaff::JSON mouse_code = value.getObject(u8"mouse_code");
+		const Gaff::JSON char_code = value.getObject(u8"char_code");
+		const Gaff::JSON key_code = value.getObject(u8"key_code");
 
 		InputEntry entry;
 		entry.message.base.window = nullptr;
 		entry.player_id = player_id;
 
 		// Parse each input and put into input queue.
-		const float input_value = value[u8"value"].getFloat(0.0f);
+		const float input_value = value.getObject(u8"value").getFloat(0.0f);
 
 		char8_t buffer[64] = { 0 };
 
 		if (mouse_pos_state.isObject()) {
 			entry.message.base.type = Gleam::EventType::InputMouseMove;
-			entry.message.mouse_move.abs_x = mouse_pos_state[u8"abs_x"].getInt32(0);
-			entry.message.mouse_move.abs_y = mouse_pos_state[u8"abs_y"].getInt32(0);
-			entry.message.mouse_move.rel_x = mouse_pos_state[u8"rel_x"].getInt32(0);
-			entry.message.mouse_move.rel_y = mouse_pos_state[u8"rel_y"].getInt32(0);
-			entry.message.mouse_move.dx = mouse_pos_state[u8"dx"].getInt32(0);
-			entry.message.mouse_move.dy = mouse_pos_state[u8"dy"].getInt32(0);
+			entry.message.mouse_move.abs_x = mouse_pos_state.getObject(u8"abs_x").getInt32(0);
+			entry.message.mouse_move.abs_y = mouse_pos_state.getObject(u8"abs_y").getInt32(0);
+			entry.message.mouse_move.rel_x = mouse_pos_state.getObject(u8"rel_x").getInt32(0);
+			entry.message.mouse_move.rel_y = mouse_pos_state.getObject(u8"rel_y").getInt32(0);
+			entry.message.mouse_move.dx = mouse_pos_state.getObject(u8"dx").getInt32(0);
+			entry.message.mouse_move.dy = mouse_pos_state.getObject(u8"dy").getInt32(0);
 
 		} else if (mouse_code.isString()) {
 			const char8_t* const code_name = mouse_code.getString(buffer, sizeof(buffer));
@@ -231,11 +232,11 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const bool create_keyboard = req_data[u8"create_keyboard"].getBool(false);
-	const bool create_mouse = req_data[u8"create_mouse"].getBool(false);
+	const bool create_keyboard = req_data.getObject(u8"create_keyboard").getBool(false);
+	const bool create_mouse = req_data.getObject(u8"create_mouse").getBool(false);
 
 	NewDeviceEntry entry;
-	entry.player_id = req_data[u8"player_id"].getInt32(-1);
+	entry.player_id = req_data.getObject(u8"player_id").getInt32(-1);
 
 	Gaff::JSON response = Gaff::JSON::CreateObject();
 
@@ -300,7 +301,7 @@ bool WebInputHandler::handleDelete(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	int32_t player_id = req_data[u8"player_id"].getInt32(-1);
+	int32_t player_id = req_data.getObject(u8"player_id").getInt32(-1);
 
 	const EA::Thread::AutoMutex lock(_input_mgr_lock);
 	_input_mgr->removePlayer(player_id);
@@ -323,7 +324,7 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 		return true;
 	}
 
-	const Gaff::JSON req_type = req_data[u8"request_type"];
+	const Gaff::JSON req_type = req_data.getObject(u8"request_type");
 
 	char8_t req_type_buffer[32] = { 0 };
 	req_type.getString(req_type_buffer, sizeof(req_type_buffer));

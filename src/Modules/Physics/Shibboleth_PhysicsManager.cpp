@@ -148,7 +148,7 @@ PhysicsManager::~PhysicsManager(void)
 
 bool PhysicsManager::initAllModulesLoaded(void)
 {
-	_game_time = &GetApp().getManagerTFast<GameTimeManager>().getGameTime();
+	_game_time = &GetManagerTFast<GameTimeManager>().getGameTime();
 	return true;
 }
 
@@ -205,8 +205,8 @@ bool PhysicsManager::init(void)
 	rb_query.add<Rotation>(_rotations);
 	rb_query.add<Scale>(_scales);
 
-	_debug_mgr = &GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_debug_mgr = &GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(rb_query));
 
 	return true;

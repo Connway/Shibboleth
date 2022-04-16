@@ -63,7 +63,7 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& 
 
 bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IShader* const shader = render_mgr.createShader();
 
 	if (!shader->initSource(device, shader_source, shader_type)) {

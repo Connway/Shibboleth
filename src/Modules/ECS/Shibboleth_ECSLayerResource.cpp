@@ -52,7 +52,7 @@ ECSLayerResource::ECSLayerResource(void):
 ECSLayerResource::~ECSLayerResource(void)
 {
 	if (_callback_id.cb_id > -1) {
-		ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+		ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 		res_mgr.removeCallback(_callback_id);
 	}
 }
@@ -155,7 +155,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 	}
 
 	const auto objects_guard = reader.enterElementGuard(u8"objects");
-	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
+	ECSManager& ecs_mgr = GetManagerTFast<ECSManager>();
 
 	for (const auto& arch_res : _archetypes) {
 		if (!arch_res->isLoaded()) {
@@ -194,7 +194,7 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 		return;
 	}
 
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	const auto& reader = *_reader_wrapper.getReader();
 
 	char8_t name[256] = { 0 };

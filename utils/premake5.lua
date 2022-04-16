@@ -29,6 +29,8 @@ end
 dofile("helper_functions.lua")
 dofile("options.lua")
 
+require("premake-qt/qt")
+
 local actions = os.matchfiles("../**/*actions.lua")
 table.foreachi(actions, RunFile)
 

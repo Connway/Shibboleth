@@ -62,8 +62,8 @@ SHIB_REFLECTION_DEFINE_END(Base)
 SHIB_REFLECTION_DECLARE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE(Derived);
 SHIB_REFLECTION_DEFINE_BEGIN(Derived)
-	.base<Base>()
-	.BASE(Base2)
+	.template base<Base>()
+	./*template*/ BASE(Base2)
 
 	.var("c", &Derived::c)
 	//.var("cFunc", &Derived::getC, &Derived::setC)
@@ -132,8 +132,13 @@ TEST_CASE("shibboleth_reflection_class")
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
 
-	Gaff::Hash64 hash = Refl::Reflection<Derived>::GetInstance().getVersion();
+	const Gaff::Hash64 hash = Refl::Reflection<Derived>::GetInstance().getVersion();
+
+#ifdef __clang__
+	printf("Version Hash: %lu\n", hash.getHash());
+#else
 	printf("Version Hash: %llu\n", hash.getHash());
+#endif
 
 	int test_get_func_ref = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
 	//int test_get_func = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
@@ -358,8 +363,8 @@ public:
 SHIB_REFLECTION_DECLARE(CtorTest);
 SHIB_REFLECTION_CLASS_DEFINE(CtorTest);
 SHIB_REFLECTION_DEFINE_BEGIN(CtorTest)
-	.ctor<>()
-	.ctor<int>()
+	.template ctor<>()
+	.template ctor<int>()
 	.var("a", &CtorTest::a)
 SHIB_REFLECTION_DEFINE_END(CtorTest)
 
@@ -425,8 +430,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(AttrTest)
 		TestAttr()
 	)
 
-	.ctor<>()
-	.ctor<int>()
+	.template ctor<>()
+	.template ctor<int>()
 	.var("a", &AttrTest::a, TestAttr(), TestAttr())
 SHIB_REFLECTION_DEFINE_END(AttrTest)
 
@@ -455,7 +460,7 @@ SHIB_REFLECTION_DECLARE(FuncTest);
 SHIB_REFLECTION_CLASS_DEFINE(FuncTest);
 
 SHIB_REFLECTION_DEFINE_BEGIN(FuncTest)
-	.ctor<>()
+	.template ctor<>()
 	.func("getMyInt", &FuncTest::getMyInt)
 	.func("setMyInt", &FuncTest::setMyInt)
 	.func("myInt", &FuncTest::getMyInt)

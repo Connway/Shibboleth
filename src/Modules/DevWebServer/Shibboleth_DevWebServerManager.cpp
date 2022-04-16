@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_DevWebServerManager.h"
 #include "Shibboleth_DevWebAttributes.h"
+#include <Shibboleth_AppUtils.h>
 #include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DevWebServerManager)
@@ -105,7 +106,7 @@ void DevWebServerManager::update(void)
 
 void DevWebServerManager::ConnectionClosed(const mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 
 	for (const auto& handlers : web_mgr._handlers) {
 		handlers->handleConnectionClosed(conn);

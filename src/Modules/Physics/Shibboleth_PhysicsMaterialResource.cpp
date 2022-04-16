@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceLogging.h>
+#include <Shibboleth_AppUtils.h>
 #include <PxPhysicsAPI.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsMaterialResource)
@@ -81,7 +82,7 @@ void PhysicsMaterialResource::loadMaterial(IFile* file, uintptr_t /*thread_id_in
 	const float restitution = reader.readFloat(u8"restitution", 0.5f);
 
 	// Do we need to lock here?
-	PhysicsManager& phys_mgr = GetApp().getManagerTFast<PhysicsManager>();
+	PhysicsManager& phys_mgr = GetManagerTFast<PhysicsManager>();
 	_material = phys_mgr.getPhysics()->createMaterial(static_friction, dynamic_friction, restitution);
 
 	if (_material) {

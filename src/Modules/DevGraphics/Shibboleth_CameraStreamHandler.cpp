@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_DevWebAttributes.h>
 #include <Shibboleth_DevWebUtils.h>
+#include <Shibboleth_AppUtils.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <Gleam_RenderOutput_Direct3D11.h>
@@ -136,7 +137,7 @@ bool CameraStreamHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t& out_id, bool create_input_buffer)
 {
 	// Should do this per-video we are encoding.
-	auto& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	auto& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const auto* const devices = render_mgr.getDevicesByTag("main");
 
 	if (!devices) {

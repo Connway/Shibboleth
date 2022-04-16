@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gleam_Window.h>
 #include <Gaff_JSON.h>
 #include <Gaff_Math.h>
@@ -65,7 +66,7 @@ u8R"({
 
 bool InputManager::initAllModulesLoaded(void)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 
 	_keyboard.reset(render_mgr.createKeyboard());
 	_mouse.reset(render_mgr.createMouse());
@@ -104,7 +105,7 @@ bool InputManager::initAllModulesLoaded(void)
 	{
 		GAFF_ASSERT(value.isObject());
 
-		const Gaff::JSON alias = value[u8"Alias"];
+		const Gaff::JSON alias = value.getObject(u8"Alias");
 		GAFF_ASSERT(alias.isString());
 
 		const char8_t* const alias_string = alias.getString();
@@ -122,12 +123,12 @@ bool InputManager::initAllModulesLoaded(void)
 	{
 		GAFF_ASSERT(value.isObject());
 
-		const Gaff::JSON tap_interval = value[u8"Tap Interval"];
-		const Gaff::JSON binding = value[u8"Binding"];
-		const Gaff::JSON modes = value[u8"Modes"];
-		const Gaff::JSON scale = value[u8"Scale"];
-		const Gaff::JSON alias = value[u8"Alias"];
-		const Gaff::JSON taps = value[u8"Taps"];
+		const Gaff::JSON tap_interval = value.getObject(u8"Tap Interval");
+		const Gaff::JSON binding = value.getObject(u8"Binding");
+		const Gaff::JSON modes = value.getObject(u8"Modes");
+		const Gaff::JSON scale = value.getObject(u8"Scale");
+		const Gaff::JSON alias = value.getObject(u8"Alias");
+		const Gaff::JSON taps = value.getObject(u8"Taps");
 
 		GAFF_ASSERT(tap_interval.isFloat() || tap_interval.isNull());
 		GAFF_ASSERT(binding.isString() || binding.isArray());

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceLogging.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSArchetypeResource)
 	.classAttrs(
@@ -76,7 +77,7 @@ void ECSArchetypeResource::loadArchetype(IFile* file, uintptr_t /*thread_id_int*
 		return;
 	}
 
-	GetApp().getManagerTFast<ECSManager>().addArchetype(std::move(archetype), _archetype_ref);
+	GetManagerTFast<ECSManager>().addArchetype(std::move(archetype), _archetype_ref);
 
 	succeeded();
 }

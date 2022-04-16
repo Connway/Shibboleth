@@ -44,22 +44,6 @@ bool MessagePackNode::operator!=(const MessagePackNode& rhs) const
 	return _node.data != rhs._node.data || _node.tree != rhs._node.tree;
 }
 
-MessagePackNode MessagePackNode::operator[](const char8_t* key) const
-{
-	return getObject(key);
-}
-
-MessagePackNode MessagePackNode::operator[](const char* key) const
-{
-	return getObject(key);
-}
-
-MessagePackNode MessagePackNode::operator[](int32_t index) const
-{
-	GAFF_ASSERT(isArray() && index < size());
-	return MessagePackNode(mpack_node_array_at(_node, static_cast<size_t>(index)));
-}
-
 bool MessagePackNode::isObject(void) const
 {
 	return _node.data->type == mpack_type_map;

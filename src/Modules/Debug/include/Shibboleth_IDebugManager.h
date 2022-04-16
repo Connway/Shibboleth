@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_IApp.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Color.h>
 #include <Gaff_RefPtr.h>
@@ -78,7 +78,7 @@ public:
 		~DebugRenderHandle(void)
 		{
 			if (_instance) {
-				GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager).removeDebugRender(*this);
+				GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager).removeDebugRender(*this);
 			}
 		}
 

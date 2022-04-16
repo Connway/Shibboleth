@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_GameTimeSystem.h"
 #include "Shibboleth_GameTime.h"
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeSystem)
 	.BASE(Shibboleth::ISystem)
@@ -34,7 +35,7 @@ SHIB_REFLECTION_CLASS_DEFINE(GameTimeSystem)
 
 bool GameTimeSystem::init(void)
 {
-	_manager = &GetApp().getManagerTFast<GameTimeManager>();
+	_manager = &GetManagerTFast<GameTimeManager>();
 	_manager->reset();
 	return true;
 }

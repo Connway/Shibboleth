@@ -18,7 +18,7 @@ project "Catch2"
 
 	defines
 	{
-		"DO_NOT_GENERATE_MAIN"
+		"CATCH_AMALGAMATED_CUSTOM_MAIN"
 	}
 
 	links

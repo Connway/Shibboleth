@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IReflection.h"
 #include "Shibboleth_EnumReflectionDefinition.h"
 #include "Shibboleth_ReflectionDefinition.h"
 #include "Shibboleth_ReflectionVersion.h"

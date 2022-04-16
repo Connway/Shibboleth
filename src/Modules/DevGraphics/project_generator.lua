@@ -72,7 +72,7 @@ local GenerateProject = function()
 			--table.insert(deps, "D3dcompiler")
 			--table.insert(deps, "dxguid")
 
-		filter{}
+		filter {}
 end
 
 local LinkDependencies = function()
@@ -92,7 +92,7 @@ local LinkDependencies = function()
 		--table.insert(deps, "D3dcompiler")
 		--table.insert(deps, "dxguid")
 
-	filter{}
+	filter {}
 end
 
 return { GenerateProject = GenerateProject, LinkDependencies = LinkDependencies }

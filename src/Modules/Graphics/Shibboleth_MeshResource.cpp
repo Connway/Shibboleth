@@ -57,8 +57,8 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
 	_meshes.reserve(devices.size());
 

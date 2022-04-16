@@ -42,7 +42,7 @@ SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
 
 bool DebugRenderSystem::init(void)
 {
-	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+	_debug_mgr = &GetManagerTFast<DebugManager>();
 	return true;
 }
 
@@ -54,7 +54,7 @@ void DebugRenderSystem::update(uintptr_t thread_id_int)
 
 bool DebugSystem::init(void)
 {
-	_debug_mgr = &GetApp().getManagerTFast<DebugManager>();
+	_debug_mgr = &GetManagerTFast<DebugManager>();
 	return true;
 }
 

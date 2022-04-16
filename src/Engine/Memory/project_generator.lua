@@ -40,10 +40,8 @@ project "Memory"
 		defines { "CHECK_FOR_LEAKS" }
 
 	filter { "system:windows" }
-		links { "Dbghelp" }
-
-	-- filter { "system:windows" }
 	-- 	links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
+		links { "Dbghelp" }
 
 	filter {}
 

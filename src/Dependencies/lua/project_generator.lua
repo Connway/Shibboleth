@@ -8,4 +8,9 @@ project "Lua"
 	files { "**.c", "**.h" }
 	excludes { "luac.c" }
 
+	filter { "system:linux" }
+		buildoptions { "-fPIC" }
+
+	filter {}
+
 	SetupConfigMap()

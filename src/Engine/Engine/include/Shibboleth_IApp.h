@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_DynamicLoaderFwd.h"
 #include "Shibboleth_ReflectionUtils.h"
 #include "Shibboleth_JobPoolFwd.h"
-#include "Shibboleth_Reflection.h"
+#include "Shibboleth_String.h"
 
 NS_GAFF
 	class JSON;
@@ -47,50 +47,6 @@ class IManager;
 class IApp
 {
 public:
-	template <class T>
-	const T& getManagerTFast(void) const
-	{
-		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		return *static_cast<T*>(getManager(Refl::Reflection<T>::GetHash()));
-	}
-
-	template <class T>
-	T& getManagerTFast(void)
-	{
-		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		return *static_cast<T*>(getManager(Refl::Reflection<T>::GetHash()));
-	}
-
-	template <class T>
-	const T& getManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name) const
-	{
-		const IManager* const manager = getManager(manager_name);
-		return *Refl::InterfaceCast<T>(*manager, interface_name);
-	}
-
-	template <class T>
-	T& getManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
-	{
-		IManager* const manager = getManager(manager_name);
-		return *Refl::InterfaceCast<T>(*manager, interface_name);
-	}
-
-	template <class T>
-	const T& getManagerT(void) const
-	{
-		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		const IManager* const manager = getManager(Refl::Reflection<T>::GetHash());
-		return *Refl::ReflectionCast<T>(*manager);
-	}
-
-	template <class T>
-	T& getManagerT(void)
-	{
-		static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-		IManager* const manager = getManager(Refl::Reflection<T>::GetHash());
-		return *Refl::ReflectionCast<T>(*manager);
-	}
-
 	IApp(void) {}
 	virtual ~IApp(void) {}
 
@@ -119,5 +75,3 @@ public:
 };
 
 NS_END
-
-#define GETMANAGERT(base_mgr_class, mgr_class) getManagerT<base_mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(#base_mgr_class))

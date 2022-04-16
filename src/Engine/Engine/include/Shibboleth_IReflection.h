@@ -60,6 +60,20 @@ class Reflection final : public IReflection
 public:
 	static constexpr bool HasReflection = false;
 
+	static const IReflectionDefinition& GetReflectionDefinition(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const IReflectionDefinition* const ref_def = nullptr;
+		return *ref_def;
+	}
+
+	static const Reflection<T>& GetInstance(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		const Reflection<T>* const instance = nullptr;
+		return *instance;
+	}
+
 	Reflection(void)
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
@@ -68,6 +82,12 @@ public:
 	void init(void) override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+
+	bool isDefined(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return false;
 	}
 
 	bool isEnum(void) const override
@@ -100,18 +120,17 @@ public:
 		return 0;
 	}
 
-	static const IReflectionDefinition& GetReflectionDefinition(void)
+	const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		const IReflectionDefinition* const ref_def = nullptr;
+		const IEnumReflectionDefinition* const ref_def = nullptr;
 		return *ref_def;
 	}
 
-	static const Reflection<T>& GetInstance(void)
+	const IReflectionDefinition& getReflectionDefinition(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
-		const Reflection<T>* const instance = nullptr;
-		return *instance;
+		return GetReflectionDefinition();
 	}
 };
 

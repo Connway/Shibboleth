@@ -20,36 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SceneManager.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
+#include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
-
-SceneManager::~SceneManager(void)
+template <class T>
+static T& GetManagerTFast(void)
 {
-	//_curr_scene = nullptr;
+	static_assert(std::is_base_of<Shibboleth::IManager, T>::value, "Type T does not derive from IManager.");
+	return *static_cast<T*>(Shibboleth::GetApp().getManager(Refl::Reflection<T>::GetHash()));
 }
 
-bool SceneManager::initAllModulesLoaded(void)
+template <class T>
+static T& GetManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
 {
-	//const Gaff::JSON starting_scene = GetApp().getConfigs().getObject(u8"scene_starting_scene");
+	IManager* const manager = Shibboleth::GetApp().getManager(manager_name);
+	return *Refl::InterfaceCast<T>(*manager, interface_name);
+}
 
-	//if (!starting_scene.isNull() && !starting_scene.isString()) {
-	//	LogErrorDefault("No starting scene has been set (or is malformed).");
-	//	return false;
-
-	//} else if (starting_scene.isString()) {
-	//	const char8_t* const scene = starting_scene.getString();
-	//	_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
-	//}
-
-	return true;
+template <class T>
+static T& GetManagerT(void)
+{
+	static_assert(std::is_base_of<Shibboleth::IManager, T>::value, "Type T does not derive from IManager.");
+	IManager* const manager = Shibboleth::GetApp().getManager(Refl::Reflection<T>::GetHash());
+	return *Refl::ReflectionCast<T>(*manager);
 }
 
 NS_END
+
+#define GETMANAGERT(base_mgr_class, mgr_class) GetManagerT<base_mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(#base_mgr_class))

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LogManager.h"
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+#include "Shibboleth_IApp.h"
 #include <EASTL/algorithm.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>

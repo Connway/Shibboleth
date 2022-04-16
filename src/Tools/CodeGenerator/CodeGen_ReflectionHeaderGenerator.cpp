@@ -304,7 +304,7 @@ static int GenerateStaticReflectionHeader(
 		return -1;
 	}
 
-	const Gaff::JSON module_load_order = config[u8"module_load_order"];
+	const Gaff::JSON module_load_order = config.getObject(u8"module_load_order");
 	std::vector<std::u8string> init_order;
 
 	if (module_load_order.isArray()) {

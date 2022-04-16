@@ -109,7 +109,7 @@ bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices
 
 bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, bool make_linear)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::ITexture* const texture = render_mgr.createTexture();
 	const Gleam::ITexture::Format format = GetTextureFormat(image);
 
@@ -190,7 +190,7 @@ void TextureResource::loadTextureJSON(const IFile* file, uintptr_t thread_id_int
 		return;
 	}
 
-	ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	const ISerializeReader& reader = *readerWrapper.getReader();
 	const bool make_linear = reader.readBool(u8"make_linear", false);
 	U8String device_tag;
@@ -238,7 +238,7 @@ void TextureResource::loadTextureJSON(const IFile* file, uintptr_t thread_id_int
 
 void TextureResource::loadTextureImage(const IFile* file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
 {
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const Vector<Gleam::IRenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
 
 	if (!devices || devices->empty()) {

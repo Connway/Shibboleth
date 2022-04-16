@@ -70,7 +70,7 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, const char** argv)
 {
-	const bool application_set_configs = _configs.size() > 0 && _configs[k_config_app_working_dir].isString();
+	const bool application_set_configs = _configs.size() > 0 && _configs.getObject(k_config_app_working_dir).isString();
 
 	// Check if application set working directory.
 	if (application_set_configs && !initApp()) {
@@ -142,7 +142,7 @@ void App::destroy(void)
 		_main_loop = nullptr;
 	}
 
-	const Gaff::JSON module_unload_order = _configs[k_config_module_unload_order];
+	const Gaff::JSON module_unload_order = _configs.getObject(k_config_module_unload_order);
 	Vector<Gaff::Hash32> module_hashes;
 
 	// Free managers and shutdown modules in requested to close these first.
@@ -244,7 +244,7 @@ Gaff::JSON& App::getConfigs(void)
 
 U8String App::getProjectDirectory(void) const
 {
-	const Gaff::JSON& wd = _configs[k_config_app_working_dir];
+	const Gaff::JSON& wd = _configs.getObject(k_config_app_working_dir);
 	return (wd.isString()) ? wd.getString() : u8".";
 }
 
@@ -297,7 +297,7 @@ RuntimeVarManager& App::getRuntimeVarManager(void)
 
 bool App::initInternal(void)
 {
-	const char8_t* const log_dir = _configs[k_config_app_log_dir].getString(k_config_app_default_log_dir);
+	const char8_t* const log_dir = _configs.getObject(k_config_app_log_dir).getString(k_config_app_default_log_dir);
 
 	size_t prev_index = 0;
 	size_t index = Gaff::Find(log_dir, u8'/');
@@ -349,7 +349,7 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	const Gaff::JSON read_file_threads = _configs[k_config_app_read_file_threads];
+	const Gaff::JSON read_file_threads = _configs.getObject(k_config_app_read_file_threads);
 	_job_pool.addPool(HashStringView32<>(k_config_app_read_file_pool_name), read_file_threads.getInt32(k_config_app_default_read_file_threads));
 
 	if (!loadFileSystem()) {
@@ -380,7 +380,7 @@ bool App::initInternal(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
-	const Gaff::JSON& lfs = _configs[k_config_app_file_system];
+	const Gaff::JSON& lfs = _configs.getObject(k_config_app_file_system);
 	U8String fs = u8"";
 
 	if (lfs.isString()) {
@@ -442,7 +442,7 @@ bool App::loadFileSystem(void)
 
 bool App::loadMainLoop(void)
 {
-	if (_configs[k_config_app_no_main_loop].isTrue()) {
+	if (_configs.getObject(k_config_app_no_main_loop).isTrue()) {
 		return true;
 	}
 
@@ -455,7 +455,7 @@ bool App::loadMainLoop(void)
 
 	const Refl::IReflectionDefinition* refl = bucket->front();
 
-	if (const Gaff::JSON loop_name = _configs[k_config_app_main_loop]; loop_name.isString()) {
+	if (const Gaff::JSON loop_name = _configs.getObject(k_config_app_main_loop); loop_name.isString()) {
 		const char8_t* const loop_name_beg = loop_name.getString();
 		const char8_t* const loop_name_end = loop_name_beg + loop_name.size();
 		bool found = false;
@@ -497,7 +497,7 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-	if (_configs[k_config_app_no_load_modules].isTrue()) {
+	if (_configs.getObject(k_config_app_no_load_modules).isTrue()) {
 		_job_pool.run();
 		return true;
 	}
@@ -508,7 +508,7 @@ bool App::loadModules(void)
 	}
 
 #else
-	const Gaff::JSON& module_dirs = _configs[k_config_module_directories];
+	const Gaff::JSON& module_dirs = _configs.getObject(k_config_module_directories);
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
 		LogErrorDefault("'module_directories' config option is not an array of strings.");
@@ -519,7 +519,7 @@ bool App::loadModules(void)
 		const char8_t separator = Gaff::ConvertChar<char8_t>(std::filesystem::path::preferred_separator);
 
 		for (int32_t i = 0; i < module_dirs.size(); ++i) {
-			const Gaff::JSON dir = module_dirs[i];
+			const Gaff::JSON dir = module_dirs.getObject(i);
 
 			for (const auto& dir_entry : std::filesystem::directory_iterator(dir.getString())) {
 				if (!dir_entry.is_regular_file()) {
@@ -599,8 +599,8 @@ bool App::loadModules(void)
 		}
 	}
 
-	const Gaff::JSON& module_load_order = _configs[k_config_module_load_order];
-	const bool no_managers = _configs[k_config_app_no_managers].getBool(false);
+	const Gaff::JSON& module_load_order = _configs.getObject(k_config_module_load_order);
+	const bool no_managers = _configs.getObject(k_config_app_no_managers).getBool(false);
 
 	if (!module_load_order.isNull() && !module_load_order.isArray()) {
 		LogErrorDefault("'module_load_order' config option is not an array.");
@@ -614,7 +614,7 @@ bool App::loadModules(void)
 			const int32_t size = module_load_order.size();
 
 			for (int32_t i = 0; i < size; ++i) {
-				const Gaff::JSON& module_row = module_load_order[i];
+				const Gaff::JSON& module_row = module_load_order.getObject(i);
 
 				if (!module_row.isString()) {
 					LogErrorDefault("module_load_order[%i] is not a string.", i);
@@ -659,7 +659,7 @@ bool App::loadModules(void)
 		const int32_t size = module_load_order.size();
 
 		for (int32_t i = 0; i < size; ++i) {
-			const Gaff::JSON& module_row = module_load_order[i];
+			const Gaff::JSON& module_row = module_load_order.getObject(i);
 
 			if (!module_row.isString()) {
 				LogErrorDefault("module_load_order[%i] is not a string.", i);
@@ -701,7 +701,7 @@ bool App::loadModules(void)
 
 bool App::initApp(void)
 {
-	const Gaff::JSON& wd = _configs[k_config_app_working_dir];
+	const Gaff::JSON& wd = _configs.getObject(k_config_app_working_dir);
 
 	if (wd.isString()) {
 		const char8_t* const working_dir = wd.getString();
@@ -743,7 +743,7 @@ bool App::initApp(void)
 
 void App::removeExtraLogs(void)
 {
-	const Gaff::JSON log_dir_holder = _configs[k_config_app_log_dir]; // Need to hold this otherwise the string gets deallocated.
+	const Gaff::JSON log_dir_holder = _configs.getObject(k_config_app_log_dir); // Need to hold this otherwise the string gets deallocated.
 	const char8_t* const log_dir = log_dir_holder.getString(k_config_app_default_log_dir);
 	int32_t dir_count = 0;
 

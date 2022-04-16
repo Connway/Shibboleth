@@ -71,7 +71,7 @@ bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*
 
 bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
 
 	if (!sampler_state->init(device, sampler_state_settings)) {
@@ -106,7 +106,7 @@ void SamplerStateResource::loadSamplerState(IFile* file, uintptr_t /*thread_id_i
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;

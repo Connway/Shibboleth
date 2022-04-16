@@ -32,7 +32,7 @@ class SerializeReaderWrapper final
 {
 public:
 	SerializeReaderWrapper(const ProxyAllocator& allocator = ProxyAllocator());
-	SerializeReaderWrapper(SerializeReaderWrapper&&) = default;
+	SerializeReaderWrapper(SerializeReaderWrapper&&);
 	~SerializeReaderWrapper(void);
 
 	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&);

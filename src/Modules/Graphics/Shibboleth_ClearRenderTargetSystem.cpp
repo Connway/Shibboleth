@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ECSManager.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ClearRenderTargetSystem)
 	.BASE(Shibboleth::ISystem)
@@ -39,8 +40,8 @@ bool ClearRenderTargetSystem::init(void)
 	ECSQuery camera_query;
 	camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 
 	_ecs_mgr->registerQuery(std::move(camera_query));
 

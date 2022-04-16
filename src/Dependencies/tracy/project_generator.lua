@@ -110,9 +110,6 @@ project "TracyProfiler"
 		buildoptions { "`pkg-config --cflags gtk+-3.0`" }
 		linkoptions { "`pkg-config --libs gtk+-3.0`" }
 
-	filter { "system:linux", "options:not wayland", "architecture:x64" }
-		includedirs { "/usr/lib/x86_64-linux-gnu/glib-2.0/include" }
-
 	filter { "system:linux", "options:wayland" }
 		defines { "DISPLAY_SERVER_WAYLAND" }
 
@@ -126,7 +123,6 @@ project "TracyProfiler"
 		files { "nfd/nfd_cocoa.m" }
 
 	filter { "system:windows" }
-
 		defines
 		{
 			"WIN32_LEAN_AND_MEAN",
@@ -136,8 +132,6 @@ project "TracyProfiler"
 		}
 
 		links { "ws2_32", "Dbghelp" }
-
-	filter { "action:vs*" }
 		buildoptions { "/bigobj" }
 
 	filter {}

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gleam_MeshGeneration.h>
 #include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
@@ -310,13 +311,13 @@ static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float va
 
 void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
 {
-	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	DebugManager& dbg_mgr = GetManagerTFast<DebugManager>();
 	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
 }
 
 bool DebugManager::HandleMainWindowMessage(const Gleam::AnyMessage& msg)
 {
-	DebugManager& dbg_mgr = GetApp().getManagerTFast<DebugManager>();
+	DebugManager& dbg_mgr = GetManagerTFast<DebugManager>();
 
 	if (msg.base.type == Gleam::EventType::WindowClosed) {
 		dbg_mgr._main_output = nullptr;
@@ -791,7 +792,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 void DebugManager::SetupModuleToUseImGui(void)
 {
 	// Go through IDebugManager so that we get DebugModule's ImGui context.
-	const IDebugManager& dbg_mgr = GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
+	const IDebugManager& dbg_mgr = GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 	ImGui::SetCurrentContext(dbg_mgr.getImGuiContext());
 }
 
@@ -802,9 +803,9 @@ DebugManager::~DebugManager(void)
 
 bool DebugManager::initAllModulesLoaded(void)
 {
-	_time = &GetApp().getManagerTFast<GameTimeManager>().getRealTime();
-	_render_mgr = &GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	_input_mgr = &GetApp().getManagerTFast<InputManager>();
+	_time = &GetManagerTFast<GameTimeManager>().getRealTime();
+	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_input_mgr = &GetManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
 
 	const auto* const devices = _render_mgr->getDevicesByTag("main");
@@ -823,7 +824,7 @@ bool DebugManager::initAllModulesLoaded(void)
 	camera_query.add<Rotation>(_camera_rotation);
 	camera_query.add<Camera>(_camera);
 
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
 
 	return initDebugRender() && initImGui();
@@ -1902,7 +1903,7 @@ bool DebugManager::initImGui(void)
 	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::Y);
 	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::Z);
 
-	InputManager& input = GetApp().getManagerTFast<InputManager>();
+	InputManager& input = GetManagerTFast<InputManager>();
 	input.getKeyboard()->addCharacterHandler(Gaff::Func(HandleKeyboardCharacter));
 	input.getKeyboard()->addInputHandler(Gaff::Func(HandleKeyboardInput));
 	input.getMouse()->addInputHandler(Gaff::Func(HandleMouseInput));

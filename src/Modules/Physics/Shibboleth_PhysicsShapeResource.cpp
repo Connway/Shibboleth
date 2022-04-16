@@ -98,7 +98,7 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 		}
 	}
 
-	PhysicsManager& phys_mgr = GetApp().getManagerTFast<PhysicsManager>();
+	PhysicsManager& phys_mgr = GetManagerTFast<PhysicsManager>();
 
 	using LoadPtr = PhysicsShapeResource::LoadResult (PhysicsShapeResource::*)(const ISerializeReader&, PhysicsManager& phys_mgr);
 
@@ -138,7 +138,7 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const ISerial
 		return LoadResult::Error;
 	}
 
-	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+	GetManagerTFast<ResourceManager>().waitForResource(*_material);
 
 	if (_material->hasFailed()) {
 		// $TODO: Log error.
@@ -170,7 +170,7 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const ISeriali
 		return LoadResult::Error;
 	}
 
-	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+	GetManagerTFast<ResourceManager>().waitForResource(*_material);
 
 	if (_material->hasFailed()) {
 		// $TODO: Log error.
@@ -201,7 +201,7 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const ISerializ
 		return LoadResult::Error;
 	}
 
-	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+	GetManagerTFast<ResourceManager>().waitForResource(*_material);
 
 	if (_material->hasFailed()) {
 		// $TODO: Log error.
@@ -230,7 +230,7 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const ISerializeR
 		return LoadResult::Error;
 	}
 
-	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_material);
+	GetManagerTFast<ResourceManager>().waitForResource(*_material);
 
 	if (_material->hasFailed()) {
 		// $TODO: Log error.

@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+#include <Shibboleth_AppUtils.h>
 
 NS_SHIBBOLETH
 
@@ -39,7 +39,7 @@ ECSLayer::~ECSLayer(void)
 
 void ECSLayer::load(const ISerializeReader& reader)
 {
-	ECSManager& ecs_mgr = GetApp().getManagerTFast<ECSManager>();
+	ECSManager& ecs_mgr = GetManagerTFast<ECSManager>();
 	GAFF_REF(ecs_mgr);
 
 	char8_t name[256] = { 0 };

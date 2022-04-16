@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LuaHelpers.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
 #include <lua.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaProcess)
@@ -45,8 +44,8 @@ SHIB_REFLECTION_CLASS_DEFINE(LuaProcess)
 
 bool LuaProcess::init(const Esprit::StateMachine& owner)
 {
-	_lua_mgr = &GetApp().getManagerTFast<LuaManager>();
-	GetApp().getManagerTFast<ResourceManager>().waitForResource(*_script);
+	_lua_mgr = &GetManagerTFast<LuaManager>();
+	GetManagerTFast<ResourceManager>().waitForResource(*_script);
 
 	if (!_script->isLoaded()) {
 		return false;

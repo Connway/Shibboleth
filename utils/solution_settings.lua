@@ -11,6 +11,7 @@ end
 startproject "Game_App"
 defaultplatform "x64"
 
+vectorextensions "SSE4.2"
 exceptionhandling "SEH"
 characterset "Unicode"
 systemversion "latest"
@@ -26,11 +27,10 @@ defines
 {
 	"UNICODE", "_UNICODE",
 	"EA_COMPILER_NO_RTTI",
-	"GLM_FORCE_SSE42",
+	--"GLM_FORCE_SSE42",
+	"GLM_FORCE_INTRINSICS",
 	"ZLIB_COMPAT"
 }
-
--- vectorextensions "SSE4.2"
 
 platforms { "x64" }
 

@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachineComponent.h"
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineSystem)
 	.BASE(Shibboleth::ISystem)
@@ -37,7 +37,7 @@ SHIB_REFLECTION_CLASS_DEFINE(StateMachineSystem)
 
 bool StateMachineSystem::init(void)
 {
-	_ecs_mgr = &GetApp().getManagerTFast<ECSManager>();
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 
 	ECSQuery query;
 	query.add<StateMachine>(_state_machines);

@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_AppUtils.h>
 #include <eathread/eathread_mutex.h>
 #include <EASTL/functional.h>
 
@@ -170,7 +171,7 @@ static bool LoadRefPtr(const ISerializeReader& reader, Gaff::RefPtr<T>& out)
 	}
 
 	const char8_t* const res_path = reader.readString();
-	out = GetApp().getManagerTFast<ResourceManager>().requestResourceT<T>(res_path);
+	out = GetManagerTFast<ResourceManager>().requestResourceT<T>(res_path);
 	reader.freeString(res_path);
 
 	return out;

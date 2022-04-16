@@ -71,7 +71,7 @@ bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>&
 
 bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings)
 {
-	const IRenderManager& render_mgr = GetApp().GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
 
 	if (!raster_state->init(device, raster_state_settings)) {
@@ -106,7 +106,7 @@ void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int
 		return;
 	}
 
-	const RenderManagerBase& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;

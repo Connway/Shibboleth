@@ -44,7 +44,7 @@ THE SOFTWARE.
 		{
 			IModule::preInit(app);
 
-			const Gaff::JSON script_threads = app.getConfigs()[Shibboleth::k_config_script_threads];
+			const Gaff::JSON script_threads = app.getConfigs().getObject(Shibboleth::k_config_script_threads);
 			const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
 
 			app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::k_config_script_thread_pool_name), num_threads);

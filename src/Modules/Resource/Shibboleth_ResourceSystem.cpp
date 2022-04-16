@@ -31,7 +31,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ResourceSystem)
 
 bool ResourceSystem::init(void)
 {
-	_res_mgr = &GetApp().getManagerTFast<ResourceManager>();
+	_res_mgr = &GetManagerTFast<ResourceManager>();
 	return true;
 }
 

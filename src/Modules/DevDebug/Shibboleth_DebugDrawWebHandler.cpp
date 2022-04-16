@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_DebugDrawWebHandler.h"
 #include <Shibboleth_DevWebAttributes.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gaff_JSON.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugDrawWebHandler)
@@ -44,7 +45,7 @@ static void ReturnError(mg_connection* conn)
 }
 
 DebugDrawWebHandler::DebugDrawWebHandler(void):
-	_debug_mgr(GetApp().GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager))
+	_debug_mgr(GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager))
 {
 }
 

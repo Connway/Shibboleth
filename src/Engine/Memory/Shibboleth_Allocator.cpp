@@ -412,7 +412,7 @@ void Allocator::setHeaderData(
 	// Set the header data.
 	header->alloc_size = size_bytes;
 	header->pool_index = pool_index;
-	strncpy_s(header->file, file, ARRAY_SIZE(header->file) - 1);
+	strncpy(header->file, file, ARRAY_SIZE(header->file) - 1);
 	header->pool_index = pool_index;
 	header->line = line;
 	memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));

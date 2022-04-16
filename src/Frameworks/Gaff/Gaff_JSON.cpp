@@ -1080,19 +1080,4 @@ bool JSON::operator!=(const JSON& rhs) const
 	return getValue() != rhs.getValue();
 }
 
-JSON JSON::operator[](const char8_t* key) const
-{
-	return getObject(key);
-}
-
-JSON JSON::operator[](const char* key) const
-{
-	return getObject(key);
-}
-
-JSON JSON::operator[](int32_t index) const
-{
-	return getObject(index);
-}
-
 NS_END

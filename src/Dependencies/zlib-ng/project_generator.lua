@@ -12,8 +12,11 @@ project "zlib-ng"
 
 	defines { "WITH_GZFILEOP", "_LARGEFILE64_SOURCE", "_LFS64_LARGEFILE" }
 
-	filter { "action:vs*" }
+	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
+
+	filter { "system:linux" }
+		buildoptions { "-fPIC" }
 
 	filter {}
 

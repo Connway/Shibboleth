@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
+#include <Shibboleth_AppUtils.h>
 #include <Esprit_StateMachine.h>
 #include <Gleam_Quaternion.h>
 #include <Gleam_Matrix3x3.h>
@@ -54,11 +55,9 @@ bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 		return false;
 	}
 
-	IApp& app = GetApp();
-
-	_time_mgr = &app.getManagerTFast<GameTimeManager>();
-	_input_mgr = &app.getManagerTFast<InputManager>();
-	_ecs_mgr = &app.getManagerTFast<ECSManager>();
+	_time_mgr = &GetManagerTFast<GameTimeManager>();
+	_input_mgr = &GetManagerTFast<InputManager>();
+	_ecs_mgr = &GetManagerTFast<ECSManager>();
 
 	_camera_vert_alias_index = _input_mgr->getAliasIndex("Camera_Vertical");
 	_horiz_alias_index = _input_mgr->getAliasIndex("Horizontal");

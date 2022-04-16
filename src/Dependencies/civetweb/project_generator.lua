@@ -36,6 +36,9 @@ project "CivetWeb"
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
 
+	filter { "system:linux" }
+		cdialect "gnu11"
+
 	filter {}
 
 	local deps =

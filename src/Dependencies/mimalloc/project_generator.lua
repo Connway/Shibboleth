@@ -26,6 +26,9 @@ project "mimalloc"
 	filter { "configurations:*Debug*" }
 		defines { "MI_DEBUG=3" }
 
+	filter { "system:linux" }
+		buildoptions { "-fPIC" }
+
 	filter {}
 
 	SetupConfigMap()

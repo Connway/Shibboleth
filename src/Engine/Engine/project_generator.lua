@@ -27,6 +27,9 @@ project "Engine"
 	filter { "configurations:*Static*" }
 		defines { "SHIB_STATIC" }
 
+	filter { "system:linux" }
+		buildoptions { "-fPIC" }
+
 	filter {}
 
 

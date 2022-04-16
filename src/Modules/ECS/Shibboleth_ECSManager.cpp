@@ -67,10 +67,10 @@ bool ECSManager::initAllModulesLoaded(void)
 		return false;
 	}
 
-	_empty_arch_res = GetApp().getManagerTFast<ResourceManager>().createResourceT<ECSArchetypeResource>(k_empty_archetype_res_name);
+	_empty_arch_res = GetManagerTFast<ResourceManager>().createResourceT<ECSArchetypeResource>(k_empty_archetype_res_name);
 	addArchetype(std::move(default_archetype), _empty_arch_res->_archetype_ref);
 
-	const Gaff::JSON starting_scene = GetApp().getConfigs()[u8"scene_starting_scene"];
+	const Gaff::JSON starting_scene = GetApp().getConfigs().getObject(u8"scene_starting_scene");
 
 	if (!starting_scene.isNull() && !starting_scene.isString()) {
 		LogErrorDefault("No starting scene has been set (or is malformed).");
@@ -78,7 +78,7 @@ bool ECSManager::initAllModulesLoaded(void)
 
 	} else if (starting_scene.isString()) {
 		const char8_t* const scene = starting_scene.getString();
-		_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
+		_curr_scene = GetManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
 	}
 
 	return true;

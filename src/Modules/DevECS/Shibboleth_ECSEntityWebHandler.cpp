@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSEntityWebHandler.h"
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_DevWebAttributes.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSEntityWebHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/entity"))
@@ -36,7 +37,7 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
 
 ECSEntityWebHandler::ECSEntityWebHandler(void):
-	_ecs_mgr(GetApp().getManagerTFast<ECSManager>())
+	_ecs_mgr(GetManagerTFast<ECSManager>())
 {
 }
 

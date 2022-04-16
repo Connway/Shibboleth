@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_DevWebSystem.h"
 #include "Shibboleth_DevWebServerManager.h"
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::DevWebSystem, Shibboleth::ISystem)
 
@@ -31,7 +32,7 @@ SHIB_REFLECTION_CLASS_DEFINE(DevWebSystem)
 
 bool DevWebSystem::init(void)
 {
-	_dev_web_mgr = &GetApp().getManagerTFast<DevWebServerManager>();
+	_dev_web_mgr = &GetManagerTFast<DevWebServerManager>();
 	return true;
 }
 

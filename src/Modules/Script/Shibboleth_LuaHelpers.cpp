@@ -893,7 +893,7 @@ int UserTypeFunctionCall(lua_State* state)
 			}
 
 			if (is_static) {
-				if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+				if (!static_func->callStack(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 					continue;
 				}
 
@@ -901,7 +901,7 @@ int UserTypeFunctionCall(lua_State* state)
 				// First element on the stack is our object instance.
 				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
 
-				if (!func->call(object->getData(), args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+				if (!func->callStack(object->getData(), args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 					continue;
 				}
 			}
@@ -1175,7 +1175,7 @@ int UserTypeIndex(lua_State* state)
 						FillArgumentStack(state, args);
 					}
 
-					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+					if (!static_func->callStack(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 						continue;
 					}
 
@@ -1207,7 +1207,7 @@ int UserTypeIndex(lua_State* state)
 						FillArgumentStack(state, args);
 					}
 
-					if (!static_func->call(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
+					if (!static_func->callStack(args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 						continue;
 					}
 
@@ -1255,7 +1255,7 @@ int UserTypeNew(lua_State* state)
 
 		if (ctor->numArgs() == num_args) {
 			// Should be safe to use type instance allocator, as constructors do not return anything.
-			if (ctor->call(arg_stack.data(), num_args, ret, allocator)) {
+			if (ctor->callStack(arg_stack.data(), num_args, ret, allocator)) {
 				break;
 			}
 		}

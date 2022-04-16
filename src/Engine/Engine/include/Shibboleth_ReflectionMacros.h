@@ -110,15 +110,15 @@ NS_END
 			} \
 			GAFF_ASSERT(!g_instance._ref_def); \
 			BuildReflection(g_instance._version); \
-			const typename RefDefInterface<type>* ref_def_interface = nullptr; \
+			const RefDefInterface<type>* ref_def_interface = nullptr; \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
 			if constexpr (std::is_enum<type>::value) { \
-				ref_def_interface = reinterpret_cast<const typename RefDefInterface<type>*>(app.getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 			} else { \
-				ref_def_interface = reinterpret_cast<const typename RefDefInterface<type>*>(app.getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 			} \
-			g_instance._ref_def = static_cast<typename RefDefType<type>*>( \
-				const_cast<typename RefDefInterface<type>*>(ref_def_interface) \
+			g_instance._ref_def = static_cast<RefDefType<type>*>( \
+				const_cast<RefDefInterface<type>*>(ref_def_interface) \
 			); \
 			if (g_instance._ref_def) { \
 				GAFF_ASSERT_MSG( \
@@ -128,7 +128,7 @@ NS_END
 				); \
 			} else { \
 				Shibboleth::ProxyAllocator allocator("Reflection"); \
-				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(typename RefDefType<type>), allocator); \
+				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(RefDefType<type>), allocator); \
 				g_instance._ref_def->setAllocator(allocator); \
 				BuildReflection(*g_instance._ref_def); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \

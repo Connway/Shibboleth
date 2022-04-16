@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
-//#include "Shibboleth_IApp.h"
+#include <Gaff_JSON.h>
 #include <Gaff_Ops.h>
 
 NS_REFLECTION
@@ -649,13 +649,13 @@ private:
 			_func = func;
 		}
 
-		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-			return call(const_cast<void*>(object), args, num_args, ret, allocator);
+			return callStack(const_cast<void*>(object), args, num_args, ret, allocator);
 		}
 
-		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
 				// $TODO: Log error.
@@ -696,14 +696,14 @@ private:
 		{
 		}
 
-		bool call(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
-			return _func->call(object, args, num_args, ret, allocator);
+			return _func->callStack(object, args, num_args, ret, allocator);
 		}
 
-		bool call(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
-			return _func->call(object, args, num_args, ret, allocator);
+			return _func->callStack(object, args, num_args, ret, allocator);
 		}
 
 		int32_t numArgs(void) const override { return _func->numArgs(); }
@@ -768,7 +768,7 @@ private:
 			return SHIB_ALLOCT(Type, allocator, getFunc());
 		}
 
-		bool call(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
 		{
 			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
 				// $TODO: Log error.

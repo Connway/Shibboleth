@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_IDevWebHandler.h"
 #include "Shibboleth_DevWebServerManager.h"
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
+#include <Shibboleth_AppUtils.h>
 
 NS_SHIBBOLETH
 
@@ -38,43 +38,43 @@ void IDevWebHandler::handleConnectionClosed(const mg_connection* /*conn*/)
 
 bool IDevWebHandler::handleGet(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleGet(server, conn);
 }
 
 bool IDevWebHandler::handlePost(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePost(server, conn);
 }
 
 bool IDevWebHandler::handleHead(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleHead(server, conn);
 }
 
 bool IDevWebHandler::handlePut(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePut(server, conn);
 }
 
 bool IDevWebHandler::handleDelete(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleDelete(server, conn);
 }
 
 bool IDevWebHandler::handleOptions(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handleOptions(server, conn);
 }
 
 bool IDevWebHandler::handlePatch(CivetServer* server, mg_connection* conn)
 {
-	DevWebServerManager& web_mgr = GetApp().getManagerTFast<DevWebServerManager>();
+	DevWebServerManager& web_mgr = GetManagerTFast<DevWebServerManager>();
 	return web_mgr._default_handler.handlePatch(server, conn);
 }
 

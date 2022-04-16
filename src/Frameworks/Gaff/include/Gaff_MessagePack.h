@@ -80,10 +80,6 @@ public:
 	bool operator==(const MessagePackNode& rhs) const;
 	bool operator!=(const MessagePackNode& rhs) const;
 
-	MessagePackNode operator[](const char8_t* key) const;
-	MessagePackNode operator[](const char* key) const;
-	MessagePackNode operator[](int32_t index) const;
-
 	bool isObject(void) const;
 	bool isArray(void) const;
 	bool isString(void) const;

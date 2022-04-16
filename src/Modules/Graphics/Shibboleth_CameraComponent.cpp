@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManagerBase.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
+#include <Shibboleth_AppUtils.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Camera)
@@ -87,7 +88,7 @@ Camera Camera::GetInternal(const void* component, int32_t page_index)
 
 void Camera::Destructor(EntityID id, void*, int32_t)
 {
-	auto& render_mgr = GetApp().GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	auto& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	render_mgr.removeGBuffer(id);
 }
 

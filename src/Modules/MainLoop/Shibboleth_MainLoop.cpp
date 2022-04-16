@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
-#include <Shibboleth_IApp.h>
+#include <Shibboleth_AppUtils.h>
 #include <eathread/eathread.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
@@ -49,7 +49,7 @@ bool MainLoop::init(void)
 {
 	IApp& app = GetApp();
 
-	_render_mgr = &app.GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	_render_mgr = &GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	_job_pool = &app.getJobPool();
 
 	const auto* const systems = app.getReflectionManager().template getTypeBucket<ISystem>();
@@ -182,7 +182,7 @@ bool MainLoop::init(void)
 		}
 	}
 
-	_update_windows = !app.getConfigs()[k_config_app_editor_mode].getBool(false);
+	_update_windows = !app.getConfigs().getObject(k_config_app_editor_mode).getBool(false);
 
 	return true;
 }

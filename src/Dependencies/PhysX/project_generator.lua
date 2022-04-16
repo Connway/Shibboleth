@@ -38,7 +38,7 @@ function PhysXProject(proj_name, lib_type)
 			"PX_SUPPORT_PVD=0"
 		}
 
-	filter { "action:vs*" }
+	filter { "system:windows" }
 		defines
 		{
 			"_CRT_SECURE_NO_DEPRECATE",

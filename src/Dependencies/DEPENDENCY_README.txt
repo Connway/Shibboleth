@@ -21,7 +21,6 @@ Libraries Affected:
 		Fixed ImGui::DestroyContext() not checking for null.
 
 	Catch2
-		Wrapped main function definitions into a DO_NOT_GENERATE_MAIN block to optionally compile them out.
 		Added my own main function that lives next to Catch2 code.
 
 	zlib-ng
@@ -29,6 +28,7 @@ Libraries Affected:
 
 	EASTL
 		Fixed compilation error on Linux with bitvector.
+		Fixed compilation error on Linux with deque.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 		Fixed compilation error with char8_t when using C++20 standard.
 

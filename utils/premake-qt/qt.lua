@@ -417,6 +417,40 @@ function premake.extensions.qt.isUI(filename)
 end
 
 --
+-- Gets the tool path for the given tool.
+--
+-- @param tool_name
+--		The tool name to find.
+-- @return
+--		The path where the tool lives.
+--
+function premake.extensions.qt.findTool(tool_name, fcfg)
+	local tool_path = fcfg.config.qtbinpath .. "/" .. tool_name
+
+	if _OPTIONS["qt-force-libexec"] then
+		tool_path = fcfg.config.qtlibexecpath .. "/" .. tool_name
+
+	elseif os.target() == "linux" or os.target() == "macosx" then
+		local bin_path = fcfg.config.qtbinpath
+
+		if bin_path:sub(1, 1) == "$" then
+			local closing_paren_index = bin_path:findlast(")", true)
+			bin_path = bin_path:sub(3, closing_paren_index - 1)
+			bin_path = os.getenv(bin_path) .. fcfg.config.qtbinpath:sub(closing_paren_index + 1)
+
+			if not os.isfile(bin_path .. "/" .. tool_name) then
+				tool_path = fcfg.config.qtlibexecpath .. "/" .. tool_name
+			end
+
+		elseif not os.isfile(tool_path) then
+			tool_path = fcfg.config.qtlibexecpath .. "/" .. tool_name
+		end
+	end
+
+	return tool_path
+end
+
+--
 -- Adds the custom build for ui files.
 --
 -- @param fcfg
@@ -432,7 +466,8 @@ function premake.extensions.qt.addUICustomBuildRule(fcfg, cfg)
 	local output = qt.getGeneratedDir(cfg) .. "/ui_" .. fcfg.basename .. ".h"
 
 	-- build the command
-	local command = "\"" .. fcfg.config.qtbinpath .. "/uic\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\" \"" .. fcfg.relpath.. "\""
+	local uic_path = qt.findTool("uic", fcfg)
+	local command = "\"" .. uic_path .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\" \"" .. fcfg.relpath.. "\""
 
 	-- if we have custom commands, add them
 	if fcfg.config.qtuicargs then
@@ -477,7 +512,8 @@ function premake.extensions.qt.addQRCCustomBuildRule(fcfg, cfg)
 	local output = qt.getGeneratedDir(cfg) .. "/qrc_" .. fcfg.basename .. ".cpp"
 
 	-- build the command
-	local command = "\"" .. fcfg.config.qtbinpath .. "/rcc\" -name \"" .. fcfg.basename .. "\" -no-compress \"" .. fcfg.relpath .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\""
+	local rcc_path = qt.findTool("rcc", fcfg)
+	local command = "\"" .. rcc_path .. "\" -name \"" .. fcfg.basename .. "\" -no-compress \"" .. fcfg.relpath .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\""
 
 	-- if we have custom commands, add them
 	if fcfg.config.qtrccargs then
@@ -599,26 +635,7 @@ function premake.extensions.qt.addMOCCustomBuildRule(fcfg, cfg)
 	local output = qt.getGeneratedDir(cfg) .. "/moc_" .. fcfg.basename .. ".cpp"
 
 	-- create the moc command
-	local moc_path = fcfg.config.qtbinpath .. "/moc"
-
-	if os.target() == "linux" or os.target() == "macosx" then
-		local bin_path = fcfg.config.qtbinpath
-
-		if bin_path:sub(1, 1) == "$" then
-			local closing_paren_index = bin_path:findlast(")", true)
-			bin_path = bin_path:sub(3, closing_paren_index - 1)
-			bin_path = os.getenv(bin_path) .. fcfg.config.qtbinpath:sub(closing_paren_index + 1)
-
-			if not os.isfile(bin_path .. "/moc") then
-				moc_path = fcfg.config.qtlibexecpath .. "/moc"
-			end
-		end
-
-		if not os.isfile(moc_path) then
-			moc_path = fcfg.config.qtlibexecpath .. "/moc"
-		end
-	end
-
+	local moc_path = qt.findTool("moc", fcfg)
 	local command = "\"" .. moc_path .. "\" \"" .. fcfg.relpath .. "\""
 	command = command .. " -o \"" .. path.getrelative(projectloc, output) .. "\""
 
