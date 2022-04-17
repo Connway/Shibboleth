@@ -21,13 +21,4 @@ project "Catch2"
 		"CATCH_AMALGAMATED_CUSTOM_MAIN"
 	}
 
-	links
-	{
-		"Gaff",
-		"Engine",
-		"Memory",
-
-		"EASTL"
-	}
-
 	SetupConfigMap()

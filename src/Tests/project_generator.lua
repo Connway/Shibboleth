@@ -14,6 +14,7 @@ local tests = {
 		links =
 		{
 			"Gaff",
+			"Gleam",
 			"Memory",
 			"EASTL",
 			"Engine",
@@ -111,6 +112,21 @@ function GenTest(settings)
 
 		flags { "FatalWarnings" }
 
+		includedirs
+		{
+			"../Dependencies/Catch2"
+		}
+
+		links
+		{
+			"Catch2"
+		}
+
+		SetupConfigMap()
+
+		ModuleCopy("tests")
+
+
 		if settings.files then
 			files(settings.files)
 		else
@@ -133,20 +149,6 @@ function GenTest(settings)
 
 		includedirs(settings.includedirs)
 		links(settings.links)
-
-		includedirs
-		{
-			"../Dependencies/Catch2"
-		}
-
-		links
-		{
-			"Catch2"
-		}
-
-		SetupConfigMap()
-
-		ModuleCopy("tests")
 end
 
 table.foreachi(tests, GenTest)

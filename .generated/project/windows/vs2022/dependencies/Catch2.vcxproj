@@ -198,20 +198,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\Catch2\Shibboleth_TestMain.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\Catch2\catch_amalgamated.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\engine\Engine.vcxproj">
-      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\engine\Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="EASTL.vcxproj">
-      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
