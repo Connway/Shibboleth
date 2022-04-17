@@ -234,5 +234,5 @@ SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 //SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 //
 //SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalMessageAttribute, T, Msg)
-//	.BASE(Refl::IAttribute)
+//	.template BASE(Refl::IAttribute)
 //SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::GlobalMessageAttribute, T, Msg)

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_Entity.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	.BASE(Refl::IReflectionObject)
+	.template BASE(Refl::IReflectionObject)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 

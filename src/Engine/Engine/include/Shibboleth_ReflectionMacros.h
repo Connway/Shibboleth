@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(GAFF_STR_U8(class_type))
 #define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char8_t*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR_U8, __VA_ARGS__) })
-#define BASE(type) template base<type>(GAFF_STR_U8(type))
+#define BASE(type) base<type>(GAFF_STR_U8(type))
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(class_type, data) getInterface<class_type>(CLASS_HASH(class_type), data)
 
@@ -156,13 +156,13 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.BASE(base_class) \
+		.template BASE(base_class) \
 		.ctor<>() \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.BASE(base_class) \
+		.template BASE(base_class) \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(type, base_class) \
@@ -172,7 +172,7 @@ NS_END
 	SHIB_REFLECTION_DEFINE_END(type)
 
 
-#define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) SHIB_REFLECTION_CLASS_DECLARE(type<__VA_ARGS__>)
+#define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) SHIB_REFLECTION_CLASS_DECLARE(type<GAFF_SINGLE_ARG(__VA_ARGS__)>)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 	const Refl::IReflectionDefinition& type<__VA_ARGS__>::getReflectionDefinition(void) const \
@@ -186,7 +186,7 @@ NS_END
 	NS_END \
 	NS_REFLECTION \
 		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
-		SHIB_REFLECTION_DECLARE_COMMON(type<__VA_ARGS__>)
+		SHIB_REFLECTION_DECLARE_COMMON(type<GAFF_SINGLE_ARG(__VA_ARGS__)>)
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 	NS_REFLECTION \
@@ -230,4 +230,4 @@ NS_END
 		{ \
 			builder
 
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) SHIB_REFLECTION_DEFINE_END(type<__VA_ARGS__>)
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) SHIB_REFLECTION_DEFINE_END(type<GAFF_SINGLE_ARG(__VA_ARGS__)>)

@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::FlyCameraProcess)
-	.BASE(Esprit::IProcess)
+	.template BASE(Esprit::IProcess)
 	.ctor<>()
 
 	.var("angular_speed", &Shibboleth::FlyCameraProcess::_angular_speed)

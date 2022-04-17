@@ -29,13 +29,13 @@ THE SOFTWARE.
 #include <gtx/euler_angles.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderCommandSubmissionSystem)
-	.BASE(Shibboleth::ISystem)
-	.ctor<>()
+	.template BASE(Shibboleth::ISystem)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderCommandSubmissionSystem)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderCommandSystem)
-	.BASE(Shibboleth::ISystem)
-	.ctor<>()
+	.template BASE(Shibboleth::ISystem)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderCommandSystem)
 
 NS_SHIBBOLETH

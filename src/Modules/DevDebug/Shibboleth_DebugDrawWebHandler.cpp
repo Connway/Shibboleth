@@ -28,7 +28,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugDrawWebHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/debug_draw"))
 
-	.BASE(Shibboleth::IDevWebHandler)
+	.template BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugDrawWebHandler)
 

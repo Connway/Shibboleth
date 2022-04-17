@@ -33,7 +33,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::WebInputHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/input"))
 
-	.BASE(Shibboleth::IDevWebHandler)
+	.template BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::WebInputHandler)
 

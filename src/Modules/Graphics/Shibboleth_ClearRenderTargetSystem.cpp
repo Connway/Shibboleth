@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ClearRenderTargetSystem)
-	.BASE(Shibboleth::ISystem)
+	.template BASE(Shibboleth::ISystem)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ClearRenderTargetSystem)
 

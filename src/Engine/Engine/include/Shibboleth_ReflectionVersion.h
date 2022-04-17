@@ -39,7 +39,31 @@ NS_REFLECTION
 struct FunctionStackEntry;
 
 template <class T>
-class ReflectionVersion final
+class ReflectionVersionEnum final
+{
+public:
+	template <class... Attrs>
+	ReflectionVersionEnum& enumAttrs(const Attrs&... attributes);
+
+	template <size_t size, class... Attrs>
+	ReflectionVersionEnum& entry(const char8_t (&name)[size], T value);
+
+	template <size_t size, class... Attrs>
+	ReflectionVersionEnum& entry(const char (&name)[size], T value);
+
+	void finish(void);
+
+	Gaff::Hash64 getHash(void) const;
+
+private:
+	Gaff::Hash64 _hash = Gaff::k_init_hash64;
+
+	template <class First, class... Rest>
+	Gaff::Hash64 getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const;
+};
+
+template <class T>
+class ReflectionVersionClass final
 {
 public:
 	using LoadFunc = bool (*)(const Shibboleth::ISerializeReader&, T&);
@@ -47,141 +71,137 @@ public:
 	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
 	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
 
-	ReflectionVersion& friendlyName(const char8_t* name);
+	ReflectionVersionClass& friendlyName(const char8_t* name);
 
 	template <class Base>
-	ReflectionVersion& base(const char8_t* name);
+	ReflectionVersionClass& base(const char8_t* name);
 
 	template <class Base>
-	ReflectionVersion& base(void);
+	ReflectionVersionClass& base(void);
 
-	ReflectionVersion& stackCtor(StackCtorFunc func);
-
-	template <class... Args>
-	ReflectionVersion& ctor(Gaff::Hash64 factory_hash);
+	ReflectionVersionClass& stackCtor(StackCtorFunc func);
 
 	template <class... Args>
-	ReflectionVersion& ctor(void);
+	ReflectionVersionClass& ctor(Gaff::Hash64 factory_hash);
+
+	template <class... Args>
+	ReflectionVersionClass& ctor(void);
 
 	template <class Var, size_t size, class... Attrs>
-	ReflectionVersion& var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes);
+	ReflectionVersionClass& var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes);
 
 	template <class Var, size_t size, class... Attrs>
-	ReflectionVersion& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
+	ReflectionVersionClass& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t size, class... Attrs>
-	ReflectionVersion& var(const char8_t (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
+	ReflectionVersionClass& var(const char8_t (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t size, class... Attrs>
-	ReflectionVersion& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
+	ReflectionVersionClass& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionVersion& var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+	ReflectionVersionClass& var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
 
 	template <class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionVersion& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
+	ReflectionVersionClass& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
+	ReflectionVersionClass& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
+	ReflectionVersionClass& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+	ReflectionVersionClass& func(const char8_t (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
+	ReflectionVersionClass& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& staticFunc(const char8_t (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
+	ReflectionVersionClass& staticFunc(const char8_t (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <size_t size, class Ret, class... Args, class... Attrs>
-	ReflectionVersion& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
+	ReflectionVersionClass& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <class Other>
-	ReflectionVersion& opAdd(void);
+	ReflectionVersionClass& opAdd(void);
 	template <class Other>
-	ReflectionVersion& opSub(void);
+	ReflectionVersionClass& opSub(void);
 	template <class Other>
-	ReflectionVersion& opMul(void);
+	ReflectionVersionClass& opMul(void);
 	template <class Other>
-	ReflectionVersion& opDiv(void);
+	ReflectionVersionClass& opDiv(void);
 	template <class Other>
-	ReflectionVersion& opMod(void);
+	ReflectionVersionClass& opMod(void);
 
 	template <class Other>
-	ReflectionVersion& opBitAnd(void);
+	ReflectionVersionClass& opBitAnd(void);
 	template <class Other>
-	ReflectionVersion& opBitOr(void);
+	ReflectionVersionClass& opBitOr(void);
 	template <class Other>
-	ReflectionVersion& opBitXor(void);
+	ReflectionVersionClass& opBitXor(void);
 	template <class Other>
-	ReflectionVersion& opBitShiftLeft(void);
+	ReflectionVersionClass& opBitShiftLeft(void);
 	template <class Other>
-	ReflectionVersion& opBitShiftRight(void);
+	ReflectionVersionClass& opBitShiftRight(void);
 
 	template <class Other>
-	ReflectionVersion& opAnd(void);
+	ReflectionVersionClass& opAnd(void);
 	template <class Other>
-	ReflectionVersion& opOr(void);
+	ReflectionVersionClass& opOr(void);
 
 	template <class Other>
-	ReflectionVersion& opEqual(void);
+	ReflectionVersionClass& opEqual(void);
 	template <class Other>
-	ReflectionVersion& opLessThan(void);
+	ReflectionVersionClass& opLessThan(void);
 	template <class Other>
-	ReflectionVersion& opGreaterThan(void);
+	ReflectionVersionClass& opGreaterThan(void);
 	template <class Other>
-	ReflectionVersion& opLessThanOrEqual(void);
+	ReflectionVersionClass& opLessThanOrEqual(void);
 	template <class Other>
-	ReflectionVersion& opGreaterThanOrEqual(void);
+	ReflectionVersionClass& opGreaterThanOrEqual(void);
 
 	template <class... Args>
-	ReflectionVersion& opCall(void);
+	ReflectionVersionClass& opCall(void);
 
 	template <class Other>
-	ReflectionVersion& opIndex(void);
+	ReflectionVersionClass& opIndex(void);
 
-	ReflectionVersion& opAdd(void);
-	ReflectionVersion& opSub(void);
-	ReflectionVersion& opMul(void);
-	ReflectionVersion& opDiv(void);
-	ReflectionVersion& opMod(void);
+	ReflectionVersionClass& opAdd(void);
+	ReflectionVersionClass& opSub(void);
+	ReflectionVersionClass& opMul(void);
+	ReflectionVersionClass& opDiv(void);
+	ReflectionVersionClass& opMod(void);
 
-	ReflectionVersion& opBitAnd(void);
-	ReflectionVersion& opBitOr(void);
-	ReflectionVersion& opBitXor(void);
-	ReflectionVersion& opBitNot(void);
-	ReflectionVersion& opBitShiftLeft(void);
-	ReflectionVersion& opBitShiftRight(void);
+	ReflectionVersionClass& opBitAnd(void);
+	ReflectionVersionClass& opBitOr(void);
+	ReflectionVersionClass& opBitXor(void);
+	ReflectionVersionClass& opBitNot(void);
+	ReflectionVersionClass& opBitShiftLeft(void);
+	ReflectionVersionClass& opBitShiftRight(void);
 
-	ReflectionVersion& opAnd(void);
-	ReflectionVersion& opOr(void);
+	ReflectionVersionClass& opAnd(void);
+	ReflectionVersionClass& opOr(void);
 
-	ReflectionVersion& opEqual(void);
-	ReflectionVersion& opLessThan(void);
-	ReflectionVersion& opGreaterThan(void);
-	ReflectionVersion& opLessThanOrEqual(void);
-	ReflectionVersion& opGreaterThanOrEqual(void);
+	ReflectionVersionClass& opEqual(void);
+	ReflectionVersionClass& opLessThan(void);
+	ReflectionVersionClass& opGreaterThan(void);
+	ReflectionVersionClass& opLessThanOrEqual(void);
+	ReflectionVersionClass& opGreaterThanOrEqual(void);
 
-	ReflectionVersion& opMinus(void);
-	ReflectionVersion& opPlus(void);
+	ReflectionVersionClass& opMinus(void);
+	ReflectionVersionClass& opPlus(void);
 
 	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-	ReflectionVersion& opToString(void);
+	ReflectionVersionClass& opToString(void);
 
 	template <class... Attrs>
-	ReflectionVersion& classAttrs(const Attrs&...);
+	ReflectionVersionClass& classAttrs(const Attrs&... attributes);
 
-	ReflectionVersion& version(uint32_t version);
+	ReflectionVersionClass& version(uint32_t version);
 
-	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
-	ReflectionVersion& setInstanceHash(InstanceHashFunc hash_func);
-
-	// Enum
-	template <size_t size, class... Attrs>
-	ReflectionVersion& entry(const char(&name)[size], T value);
+	ReflectionVersionClass& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
+	ReflectionVersionClass& setInstanceHash(InstanceHashFunc hash_func);
 
 	Gaff::Hash64 getHash(void) const;
 
@@ -194,9 +214,27 @@ private:
 	Gaff::Hash64 getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const;
 };
 
+template <class T, bool is_enum>
+struct ReflectionVersionHelper;
+
+template <class T>
+struct ReflectionVersionHelper<T, true> final
+{
+	using Type = ReflectionVersionEnum<T>;
+};
+
+template <class T>
+struct ReflectionVersionHelper<T, false> final
+{
+	using Type = ReflectionVersionClass<T>;
+};
+
+template <class T>
+using ReflectionVersion = typename ReflectionVersionHelper<T, std::is_enum<T>::value>::Type;
+
 #define REF_VER_BUILTIN(type) \
 	template <> \
-	class ReflectionVersion<type> final \
+	class ReflectionVersionClass<type> final \
 	{ \
 	public: \
 		Gaff::Hash64 getHash(void) const { return Gaff::FNV1aHash64Const(#type); } \

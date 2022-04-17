@@ -934,7 +934,7 @@ template <class T>
 template <class Var, size_t array_size>
 const void* ReflectionDefinition<T>::ArrayPtr<Var, array_size>::getElement(const void* object, int32_t index) const
 {
-	GAFF_ASSERT(index < array_size);
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
 	GAFF_ASSERT(object);
 	const T* const obj = reinterpret_cast<const T*>(object);
 	return &(obj->*_ptr)[index];
@@ -944,7 +944,7 @@ template <class T>
 template <class Var, size_t array_size>
 void* ReflectionDefinition<T>::ArrayPtr<Var, array_size>::getElement(void* object, int32_t index)
 {
-	GAFF_ASSERT(index < array_size);
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
 	GAFF_ASSERT(object);
 	T* const obj = reinterpret_cast<T*>(object);
 	return &(obj->*_ptr)[index];
@@ -954,7 +954,7 @@ template <class T>
 template <class Var, size_t array_size>
 void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::setElement(void* object, int32_t index, const void* data)
 {
-	GAFF_ASSERT(index < array_size);
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
@@ -971,7 +971,7 @@ template <class T>
 template <class Var, size_t array_size>
 void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::setElementMove(void* object, int32_t index, void* data)
 {
-	GAFF_ASSERT(index < array_size);
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
@@ -988,8 +988,8 @@ template <class T>
 template <class Var, size_t array_size>
 void ReflectionDefinition<T>::ArrayPtr<Var, array_size>::swap(void* object, int32_t index_a, int32_t index_b)
 {
-	GAFF_ASSERT(index_a < array_size);
-	GAFF_ASSERT(index_b < array_size);
+	GAFF_ASSERT(index_a < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(index_b < static_cast<int32_t>(array_size));
 	GAFF_ASSERT(object);
 
 	if (IReflectionVar::isReadOnly()) {

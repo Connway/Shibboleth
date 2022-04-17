@@ -14,7 +14,6 @@ local tests = {
 		links =
 		{
 			"Gaff",
-			"Gleam",
 			"Memory",
 			"EASTL",
 			"Engine",
@@ -23,11 +22,7 @@ local tests = {
 
 		extra = function ()
 			filter { "system:windows" }
-				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 				links { "DbgHelp" }
-
-			-- filter { "action:vs*" }
-			-- 	buildoptions { "/bigobj" }
 
 			filter {}
 		end
@@ -58,11 +53,7 @@ local tests = {
 
 		extra = function ()
 			filter { "system:windows" }
-				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 				links { "DbgHelp" }
-
-			-- filter { "action:vs*" }
-			-- 	buildoptions { "/bigobj" }
 
 			filter {}
 		end
@@ -103,11 +94,7 @@ local tests = {
 
 		extra = function ()
 			filter { "system:windows" }
-				-- links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 				links { "DbgHelp" }
-
-			-- filter { "action:vs*" }
-			-- 	buildoptions { "/bigobj" }
 
 			filter {}
 		end

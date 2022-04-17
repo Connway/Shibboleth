@@ -39,6 +39,10 @@ public:
 
 class Base2
 {
+public:
+	int getB(void) const { return b; }
+
+private:
 	int b = 2;
 };
 
@@ -63,7 +67,7 @@ SHIB_REFLECTION_DECLARE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE(Derived);
 SHIB_REFLECTION_DEFINE_BEGIN(Derived)
 	.template base<Base>()
-	./*template*/ BASE(Base2)
+	.template BASE(Base2)
 
 	.var("c", &Derived::c)
 	//.var("cFunc", &Derived::getC, &Derived::setC)
@@ -410,7 +414,7 @@ public:
 class TestAttr final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
+	Refl::IAttribute* clone(void) const override { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
 };

@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeSystem)
-	.BASE(Shibboleth::ISystem)
-	.ctor<>()
+	.template BASE(Shibboleth::ISystem)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeSystem)
 
 NS_SHIBBOLETH

@@ -245,7 +245,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager::DebugFlag)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager::DebugFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
-	.BASE(Shibboleth::IDebugManager)
+	.template BASE(Shibboleth::IDebugManager)
 	.base<Shibboleth::IManager>()
 	.ctor<>()
 

@@ -35,7 +35,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraStreamHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/camera"))
 
-	.BASE(Shibboleth::IDevWebHandler)
+	.template BASE(Shibboleth::IDevWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraStreamHandler)
 

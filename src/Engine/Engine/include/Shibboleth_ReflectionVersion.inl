@@ -24,6 +24,61 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+template <class T>
+template <class... Attrs>
+ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::enumAttrs(const Attrs&... attributes)
+{
+	static_assert(sizeof...(Attrs) > 0, "enumAttrs() called with no arguments.");
+	_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
+	_hash = getAttributeHashes(_hash, attributes...);
+	return *this;
+}
+
+template <class T>
+template <size_t size, class... Attrs>
+ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char8_t (&name)[size], T value)
+{
+	const char8_t* const temp_name = name;
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64T(value, _hash);
+
+	return *this;
+}
+
+template <class T>
+template <size_t size, class... Attrs>
+ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char (&name)[size], T value)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return entry(temp_name, value);
+}
+
+template <class T>
+template <class First, class... Rest>
+Gaff::Hash64 ReflectionVersionEnum<T>::getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const
+{
+	hash = first.applyVersioning(hash);
+
+	if constexpr (sizeof...(Rest) > 0) {
+		return getAttributeHashes(hash, rest...);
+	} else {
+		return hash;
+	}
+}
+
+template <class T>
+void ReflectionVersionEnum<T>::finish(void)
+{
+}
+
+template <class T>
+Gaff::Hash64 ReflectionVersionEnum<T>::getHash(void) const
+{
+	return _hash;
+}
+
+
+
 enum class VersionValues
 {
 	HasStackCtor,
@@ -32,7 +87,7 @@ enum class VersionValues
 };
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::friendlyName(const char8_t* name)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::friendlyName(const char8_t* name)
 {
 	_hash = Gaff::FNV1aHash64String(name, _hash);
 	return *this;
@@ -40,7 +95,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::friendlyName(const char8_t* name)
 
 template <class T>
 template <class Base>
-ReflectionVersion<T>& ReflectionVersion<T>::base(const char8_t* name)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(const char8_t* name)
 {
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	_hash = Gaff::FNV1aHash64String(name, _hash);
@@ -50,7 +105,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(const char8_t* name)
 
 template <class T>
 template <class Base>
-ReflectionVersion<T>& ReflectionVersion<T>::base(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 {
 	const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
@@ -63,7 +118,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::stackCtor(StackCtorFunc /*func*/)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::stackCtor(StackCtorFunc /*func*/)
 {
 	_hash = Gaff::FNV1aHash64T(VersionValues::HasStackCtor, _hash);
 	return *this;
@@ -71,7 +126,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::stackCtor(StackCtorFunc /*func*/)
 
 template <class T>
 template <class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::ctor(Gaff::Hash64 factory_hash)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::ctor(Gaff::Hash64 factory_hash)
 {
 	_hash = Gaff::FNV1aHash64T(factory_hash, _hash);
 	return *this;
@@ -79,7 +134,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::ctor(Gaff::Hash64 factory_hash)
 
 template <class T>
 template <class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::ctor(void)
 {
 	_hash = Gaff::CalcTemplateHash<Args...>(_hash);
 	return *this;
@@ -87,7 +142,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 
 template <class T>
 template <class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -103,7 +158,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Var
 
 template <class T>
 template <class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, ptr, attributes...);
@@ -111,7 +166,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T:
 
 template <class T>
 template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Ret (T::*/*getter*/)(void) const, void (T::*/*setter*/)(Var), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Ret (T::*/*getter*/)(void) const, void (T::*/*setter*/)(Var), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -127,7 +182,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Ret
 
 template <class T>
 template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, getter, setter, attributes...);
@@ -135,7 +190,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T
 
 template <class T>
 template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Ret (*/*getter*/)(const T&), void (*/*setter*/)(T&, Var), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Ret (*/*getter*/)(const T&), void (*/*setter*/)(T&, Var), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -151,7 +206,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char8_t (&name)[size], Ret
 
 template <class T>
 template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, getter, setter, attributes...);
@@ -159,7 +214,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (*
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...) const, const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...) const, const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -175,7 +230,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char8_t (&name)[size], Re
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
@@ -183,7 +238,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -199,7 +254,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char8_t (&name)[size], Re
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
@@ -207,7 +262,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char8_t (&name)[size], Ret (*/*func*/)(Args...), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char8_t (&name)[size], Ret (*/*func*/)(Args...), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
 	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
@@ -223,7 +278,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char8_t (&name)[siz
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return staticFunc(temp_name, func, attributes...);
@@ -231,7 +286,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size],
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opAdd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAdd(void)
 {
 	staticFunc(OP_ADD_NAME, Gaff::Add<T, Other>);
 	return staticFunc(OP_ADD_NAME, Gaff::Add<Other, T>);
@@ -239,7 +294,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opAdd(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opSub(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSub(void)
 {
 	staticFunc(OP_SUB_NAME, Gaff::Sub<T, Other>);
 	return staticFunc(OP_SUB_NAME, Gaff::Sub<Other, T>);
@@ -247,7 +302,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opSub(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opMul(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMul(void)
 {
 	staticFunc(OP_MUL_NAME, Gaff::Mul<T, Other>);
 	return staticFunc(OP_MUL_NAME, Gaff::Mul<Other, T>);
@@ -255,7 +310,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opMul(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opDiv(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDiv(void)
 {
 	staticFunc(OP_DIV_NAME, Gaff::Div<T, Other>);
 	return staticFunc(OP_DIV_NAME, Gaff::Div<Other, T>);
@@ -263,7 +318,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opDiv(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opMod(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMod(void)
 {
 	staticFunc(OP_MOD_NAME, Gaff::Mod<T, Other>);
 	return staticFunc(OP_MOD_NAME, Gaff::Mod<Other, T>);
@@ -271,7 +326,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opMod(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitAnd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAnd(void)
 {
 	staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, Other>);
 	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<Other, T>);
@@ -279,7 +334,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opBitAnd(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitOr(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOr(void)
 {
 	staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, Other>);
 	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<Other, T>);
@@ -287,7 +342,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opBitOr(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitXor(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXor(void)
 {
 	staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, Other>);
 	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<Other, T>);
@@ -295,7 +350,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opBitXor(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftLeft(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeft(void)
 {
 	staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, Other>);
 	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<Other, T>);
@@ -303,7 +358,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftLeft(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftRight(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRight(void)
 {
 	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, Other>);
 	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<Other, T>);
@@ -311,7 +366,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftRight(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opAnd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAnd(void)
 {
 	staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, Other>);
 	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<Other, T>);
@@ -319,7 +374,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opAnd(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opOr(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opOr(void)
 {
 	staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, Other>);
 	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<Other, T>);
@@ -327,7 +382,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opOr(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opEqual(void)
 {
 	staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, Other>);
 	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<Other, T>);
@@ -335,7 +390,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opEqual(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opLessThan(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThan(void)
 {
 	staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, Other>);
 	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<Other, T>);
@@ -343,7 +398,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opLessThan(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThan(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThan(void)
 {
 	staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, Other>);
 	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<Other, T>);
@@ -351,7 +406,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThan(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opLessThanOrEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThanOrEqual(void)
 {
 	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, Other>);
 	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<Other, T>);
@@ -359,7 +414,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::opLessThanOrEqual(void)
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThanOrEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(void)
 {
 	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, Other>);
 	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<Other, T>);
@@ -367,141 +422,141 @@ ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThanOrEqual(void)
 
 template <class T>
 template <class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::opCall(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opCall(void)
 {
 	return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>);
 }
 
 template <class T>
 template <class Other>
-ReflectionVersion<T>& ReflectionVersion<T>::opIndex(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opIndex(void)
 {
 	return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opAdd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAdd(void)
 {
 	return staticFunc(OP_ADD_NAME, Gaff::Add<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opSub(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSub(void)
 {
 	return staticFunc(OP_SUB_NAME, Gaff::Sub<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opMul(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMul(void)
 {
 	return staticFunc(OP_MUL_NAME, Gaff::Mul<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opDiv(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDiv(void)
 {
 	return staticFunc(OP_DIV_NAME, Gaff::Div<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opMod(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMod(void)
 {
 	return staticFunc(OP_MOD_NAME, Gaff::Mod<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitAnd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAnd(void)
 {
 	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitOr(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOr(void)
 {
 	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitXor(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXor(void)
 {
 	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitNot(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitNot(void)
 {
 	return staticFunc(OP_BIT_NOT_NAME, Gaff::BitNot<T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftLeft(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeft(void)
 {
 	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opBitShiftRight(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRight(void)
 {
 	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opAnd(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAnd(void)
 {
 	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opOr(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opOr(void)
 {
 	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opEqual(void)
 {
 	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opLessThan(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThan(void)
 {
 	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThan(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThan(void)
 {
 	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opLessThanOrEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThanOrEqual(void)
 {
 	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opGreaterThanOrEqual(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(void)
 {
 	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opMinus(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMinus(void)
 {
 	return staticFunc(OP_MINUS_NAME, Gaff::Minus<T>);
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::opPlus(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPlus(void)
 {
 	return staticFunc(OP_PLUS_NAME, Gaff::Plus<T>);
 }
 
 template <class T>
 template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-ReflectionVersion<T>& ReflectionVersion<T>::opToString(void)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opToString(void)
 {
 	staticFunc(OP_TO_STRING_NAME, Gaff::ToStringHelper<T, to_string_func>);
 	return staticFunc(OP_TO_STRING_NAME, to_string_func);
@@ -509,17 +564,16 @@ ReflectionVersion<T>& ReflectionVersion<T>::opToString(void)
 
 template <class T>
 template <class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::classAttrs(const Attrs&... attributes)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::classAttrs(const Attrs&... attributes)
 {
 	static_assert(sizeof...(Attrs) > 0, "classAttrs() called with no arguments.");
-	_hash = Gaff::FNV1aHash64String("class", _hash);
 	_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
 	_hash = getAttributeHashes(_hash, attributes...);
 	return *this;
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::version(uint32_t version)
 {
 	GAFF_ASSERT(_hash == Gaff::k_init_hash64);
 	_hash = Gaff::FNV1aHash64T(version, _hash);
@@ -527,43 +581,33 @@ ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc /*serialize_load*/, SaveFunc /*serialize_save*/)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::serialize(LoadFunc /*serialize_load*/, SaveFunc /*serialize_save*/)
 {
 	_hash = Gaff::FNV1aHash64T(VersionValues::HasSerializeFuncs, _hash);
 	return *this;
 }
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::setInstanceHash(InstanceHashFunc /*hash_func*/)
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::setInstanceHash(InstanceHashFunc /*hash_func*/)
 {
 	_hash = Gaff::FNV1aHash64T(VersionValues::HasInstanceFunc, _hash);
 	return *this;
 }
 
 template <class T>
-template <size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::entry(const char(&name)[size], T value)
-{
-	_hash = Gaff::FNV1aHash64(name, size - 1, _hash);
-	_hash = Gaff::FNV1aHash64T(value, _hash);
-
-	return *this;
-}
-
-template <class T>
-Gaff::Hash64 ReflectionVersion<T>::getHash(void) const
+Gaff::Hash64 ReflectionVersionClass<T>::getHash(void) const
 {
 	return _hash;
 }
 
 template <class T>
-void ReflectionVersion<T>::finish(void)
+void ReflectionVersionClass<T>::finish(void)
 {
 }
 
 template <class T>
 template <class First, class... Rest>
-Gaff::Hash64 ReflectionVersion<T>::getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const
+Gaff::Hash64 ReflectionVersionClass<T>::getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const
 {
 	hash = first.applyVersioning(hash);
 

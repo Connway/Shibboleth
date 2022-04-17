@@ -95,6 +95,6 @@ NS_END
 SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::LoadFileCallbackAttribute, T)
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::LoadFileCallbackAttribute, T)
-	.BASE(Shibboleth::ILoadFileCallbackAttribute)
-	.BASE(Refl::IAttribute)
+	.template BASE(Shibboleth::ILoadFileCallbackAttribute)
+	.template BASE(Refl::IAttribute)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::LoadFileCallbackAttribute, T)

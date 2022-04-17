@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPreRenderSystem)
-	.BASE(Shibboleth::ISystem)
+	.template BASE(Shibboleth::ISystem)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPreRenderSystem)
 

@@ -31,8 +31,8 @@ THE SOFTWARE.
 #include <eathread/eathread.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
-	.BASE(Shibboleth::IMainLoop)
-	.ctor<>()
+	.template BASE(Shibboleth::IMainLoop)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MainLoop)
 
 NS_SHIBBOLETH

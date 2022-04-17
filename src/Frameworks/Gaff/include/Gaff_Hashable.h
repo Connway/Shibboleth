@@ -90,9 +90,9 @@ THE SOFTWARE.
 	}; \
 	GAFF_CLASS_HASHABLE_NO_REF(type)
 
-#define GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, ref_type, ...) \
+#define GAFF_TEMPLATE_CLASS_HASHABLE(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
-	struct ClassHashable< type<__VA_ARGS__>##ref_type > final \
+	struct ClassHashable< type<__VA_ARGS__>& > final \
 	{ \
 	private: \
 		template <class First, class... Rest> \
@@ -114,20 +114,49 @@ THE SOFTWARE.
 			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
 			const auto name = Gaff::MakeArrayString(GAFF_STR_U8(type)); \
 			const auto lb = Gaff::MakeArrayString(u8"<"); \
-			const auto rb = Gaff::MakeArrayString(u8">" GAFF_STR_U8(ref_type)); \
+			const auto rb = Gaff::MakeArrayString(u8">&"); \
 			const auto final_str = name + lb + rest_names + rb; \
 			return final_str; \
 		} \
 		static constexpr Gaff::Hash64 GetHash(void) \
 		{ \
 			const auto name = GetName(); \
-			return Gaff::FNV1aHash64Const(GAFF_STR_U8(ref_type), Gaff::FNV1aHash64StringConst(name.data.data())); \
+			return Gaff::FNV1aHash64Const(u8"&", Gaff::FNV1aHash64StringConst(name.data.data())); \
 		} \
-	}
-
-#define GAFF_TEMPLATE_CLASS_HASHABLE(type, ...) \
-	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, &, __VA_ARGS__); \
-	GAFF_TEMPLATE_CLASS_HASHABLE_REFERENCE(type, *, __VA_ARGS__); \
+	}; \
+	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
+	struct ClassHashable< type<__VA_ARGS__>* > final \
+	{ \
+	private: \
+		template <class First, class... Rest> \
+		static constexpr auto GetNameHelper(void) \
+		{ \
+			if constexpr (sizeof...(Rest) > 0) { \
+				const auto name = GetNameHelper<First>(); \
+				const auto rest_name = GetNameHelper<Rest...>(); \
+				const auto comma = Gaff::MakeArrayString(u8", "); \
+				const auto final_str = name + comma + rest_name; \
+				return final_str; \
+			} else { \
+				return ClassHashable<First>::GetName(); \
+			} \
+		} \
+	public: \
+		static constexpr auto GetName(void) \
+		{ \
+			const auto rest_names = GetNameHelper<__VA_ARGS__>(); \
+			const auto name = Gaff::MakeArrayString(GAFF_STR_U8(type)); \
+			const auto lb = Gaff::MakeArrayString(u8"<"); \
+			const auto rb = Gaff::MakeArrayString(u8">*"); \
+			const auto final_str = name + lb + rest_names + rb; \
+			return final_str; \
+		} \
+		static constexpr Gaff::Hash64 GetHash(void) \
+		{ \
+			const auto name = GetName(); \
+			return Gaff::FNV1aHash64Const(u8"*", Gaff::FNV1aHash64StringConst(name.data.data())); \
+		} \
+	}; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 	struct ClassHashable< type<__VA_ARGS__> > final \
 	{ \

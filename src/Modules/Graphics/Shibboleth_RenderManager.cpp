@@ -40,10 +40,10 @@ THE SOFTWARE.
 #include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
-	.BASE(Shibboleth::RenderManagerBase)
-	.BASE(Shibboleth::IRenderManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template BASE(Shibboleth::RenderManagerBase)
+	.template BASE(Shibboleth::IRenderManager)
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
 
 NS_SHIBBOLETH
