@@ -36,8 +36,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSLayerResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSLayerResource::loadLayer)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSLayerResource)
 
 NS_SHIBBOLETH
@@ -214,7 +214,7 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 		const auto guard = reader.enterElementGuard(u8"objects");
 
 		if (!reader.isArray()) {
-			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : u8"<invalid_name>");
+			LogErrorDefault("Failed to load layer '%s'.", (name[0]) ? name : u8"<invalid_name>");
 			return;
 		}
 

@@ -30,8 +30,8 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSManager)
 
 NS_SHIBBOLETH
@@ -89,9 +89,9 @@ void ECSManager::addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& o
 	out_ref = addArchetypeInternal(std::move(archetype));
 }
 
-void ECSManager::addArchetype(ECSArchetype&& archetype)
+ArchetypeReference* ECSManager::addArchetype(ECSArchetype&& archetype)
 {
-	addArchetypeInternal(std::move(archetype));
+	return addArchetypeInternal(std::move(archetype));
 }
 
 void ECSManager::removeArchetype(Gaff::Hash64 archetype)

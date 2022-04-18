@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <string>
+
 namespace argparse
 {
 	class ArgumentParser;
@@ -32,4 +34,4 @@ namespace Gaff
 	class File;
 }
 
-void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program);
+std::string GetLicenseText(const argparse::ArgumentParser& program);

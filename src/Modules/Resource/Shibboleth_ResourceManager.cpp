@@ -33,8 +33,8 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 
 	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, bool)>(&Shibboleth::ResourceManager::requestResource))
 	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::requestResource))

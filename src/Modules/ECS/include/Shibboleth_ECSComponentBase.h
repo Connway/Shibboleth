@@ -92,16 +92,6 @@ class ECSComponentBaseBoth : public ECSComponentBase<T, GetT, ECSComponentType::
 {
 };
 
-template <class T>
-class ECSComponentWithSingleArg
-{
-public:
-	ECSComponentWithSingleArg(const T& val): value(val) {}
-	ECSComponentWithSingleArg(void) = default;
-
-	T value;
-};
-
 // Only supports single argument components.
 template <class T>
 class ECSComponentDestructable
@@ -126,18 +116,18 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentDestructable, T)
 		.classAttrs( \
 			Shibboleth::ECSClassAttribute(name, category) \
 		) \
-		.ctor<>() \
+		.template ctor<>() \
 		.staticFunc("IsNonShared", &type::IsNonShared) \
 		.staticFunc("IsShared", &type::IsShared); \
 		if constexpr (type::IsNonShared() && type::IsShared()) { \
 			builder \
-				.base< Shibboleth::ECSComponentBaseBoth<type> >(); \
+				.template base< Shibboleth::ECSComponentBaseBoth<type> >(); \
 		} else if constexpr (type::IsNonShared()) { \
 			builder \
-				.base< Shibboleth::ECSComponentBaseNonShared<type> >(); \
+				.template base< Shibboleth::ECSComponentBaseNonShared<type> >(); \
 		} else if constexpr (type::IsShared()) { \
 			builder \
-				.base< Shibboleth::ECSComponentBaseShared<type> >(); \
+				.template base< Shibboleth::ECSComponentBaseShared<type> >(); \
 		} \
 		builder
 
@@ -145,19 +135,21 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentDestructable, T)
 	SHIB_ECS_COMPONENT_REFLECTION(type, name, category) \
 	SHIB_REFLECTION_DEFINE_END(type)
 
-#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(name, type, base, default_val) \
-	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
+#define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN_WITH_DEFAULT(name, type, base, default_value) \
+	class name final : public base<name> \
 	{ \
 	public: \
-		name(const type& val): ECSComponentWithSingleArg(val) {} \
-		name(void): ECSComponentWithSingleArg(default_val) {}
+		name(const type& val): value(val) {} \
+		name(void) = default; \
+		type value = default_value;
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_BEGIN(name, type, base) \
-	class name final : public ECSComponentWithSingleArg<type>, public base<name> \
+	class name final : public base<name> \
 	{ \
 	public: \
-		name(const type& val): ECSComponentWithSingleArg(val) {} \
-		name(void) = default;
+		name(const type& val): value(val) {} \
+		name(void) = default; \
+		type value;
 
 #define SHIB_ECS_SINGLE_ARG_COMPONENT_DECLARE_END(name) \
 	}; \

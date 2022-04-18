@@ -35,8 +35,8 @@ public:
 	ECSSceneResource(void);
 	~ECSSceneResource(void);
 
-	void load(const ISerializeReader& reader);
-	void save(ISerializeWriter& writer);
+	void loadScene(const ISerializeReader& reader);
+	void saveScene(ISerializeWriter& writer);
 
 private:
 	struct LayerData final

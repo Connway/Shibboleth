@@ -154,7 +154,7 @@ static int CreateProjectFiles(const std::string& path, const std::string& name, 
 		prefix = program.get(k_arg_prefix) + "_";
 	}
 
-	const std::string final_module_text = fmt::format(
+	const std::string final_module_text = GetLicenseText(program) + fmt::format(
 		k_gen_module_code,
 		name.data(),
 		name.data(),
@@ -171,8 +171,6 @@ static int CreateProjectFiles(const std::string& path, const std::string& name, 
 		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
 		return -6;
 	}
-
-	WriteLicense(gen_file, program);
 
 	if (!gen_file.writeString(final_module_text.data())) {
 		std::cerr << "Failed to write to output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;

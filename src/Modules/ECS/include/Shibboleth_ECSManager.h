@@ -88,25 +88,25 @@ public:
 	};
 
 	template <class T>
-	const typename T* getComponentShared(Gaff::Hash64 archetype) const
+	const T* getComponentShared(Gaff::Hash64 archetype) const
 	{
 		return reinterpret_cast<T*>(getComponentShared(archetype, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	const typename T* getComponentShared(EntityID id) const
+	const T* getComponentShared(EntityID id) const
 	{
 		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	typename T* getComponentShared(Gaff::Hash64 archetype)
+	T* getComponentShared(Gaff::Hash64 archetype)
 	{
 		return reinterpret_cast<T*>(getComponentShared(archetype, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	typename T* getComponentShared(EntityID id)
+	T* getComponentShared(EntityID id)
 	{
 		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
@@ -299,7 +299,7 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 	void addArchetype(ECSArchetype&& archetype, ArchetypeReferencePtr& out_ref);
-	void addArchetype(ECSArchetype&& archetype);
+	ArchetypeReference* addArchetype(ECSArchetype&& archetype);
 
 	// THIS FUNCTION IS EXTREMELY DANGEROUS!
 	// If calling outside of ArchetypeReference, be extremely careful!

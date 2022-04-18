@@ -17,6 +17,7 @@ local GenerateProject = function()
 
 		includedirs
 		{
+			base_dir,
 			base_dir .. "include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Engine/Memory/include",

@@ -80,7 +80,7 @@ function ToolGen(tool_name)
 	filter { "system:not windows" }
 		prebuildcommands
 		{
-			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name .. "\""
 		}
 
 	filter {}
@@ -101,7 +101,7 @@ function ModuleGen(module_name)
 	filter { "system:not windows" }
 		prebuildcommands
 		{
-			"{CHDIR} ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name .. "\""
 		}
 
 	filter {}

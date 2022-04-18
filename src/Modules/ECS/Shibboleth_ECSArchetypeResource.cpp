@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include <Shibboleth_ECSArchetypeResource.h>
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
@@ -38,8 +36,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSArchetypeResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSArchetypeResource::loadArchetype)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSArchetypeResource)
 
 NS_SHIBBOLETH

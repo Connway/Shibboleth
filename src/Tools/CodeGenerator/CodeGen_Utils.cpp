@@ -24,25 +24,26 @@ THE SOFTWARE.
 #include <Gaff_File.h>
 #include <argparse.hpp>
 
-void WriteLicense(Gaff::File& gen_file, const argparse::ArgumentParser& program)
+std::string GetLicenseText(const argparse::ArgumentParser& program)
 {
+	std::string out;
+
 	if (program.is_used("--license_file")) {
 		const std::string license_file_path = program.get("--license_file");
 		Gaff::File license_file(license_file_path.data());
 
 		if (license_file.isOpen()) {
-			char8_t buffer[2048] = { 0 };
+			out.resize(license_file.getFileSize() + 1);
+			license_file.readEntireFile(out.data());
 
-			gen_file.writeString(u8"/************************************************************************************\n");
-
-			while (license_file.readString(buffer, ARRAY_SIZE(buffer))) {
-				gen_file.writeString(buffer);
-			}
-
-			gen_file.writeString(u8"************************************************************************************/\n\n");
+			out = "/************************************************************************************\n" +
+				out +
+				"************************************************************************************/\n\n";
 
 		} else {
 			std::cerr << "Failed to open license file '" << license_file_path.data() << "'." << std::endl;
 		}
 	}
+
+	return out;
 }

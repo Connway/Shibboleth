@@ -13,11 +13,11 @@ local tests = {
 
 		links =
 		{
+			"Engine",
+			"EASTL",
+			"Memory",
 			"Gaff",
 			"Gleam",
-			"Memory",
-			"EASTL",
-			"Engine",
 			"mpack"
 		},
 
@@ -44,11 +44,11 @@ local tests = {
 
 		links =
 		{
+			"Engine",
+			"EASTL",
+			"Memory",
 			"Gaff",
 			"Gleam",
-			"Memory",
-			"EASTL",
-			"Engine",
 			"mpack"
 		},
 
@@ -80,17 +80,16 @@ local tests = {
 
 		links =
 		{
+			"Engine",
+			"EASTL",
+			"Memory",
 			"Gaff",
 			"Gleam",
-			"Memory",
-			"Engine",
+			"mpack",
 
 			"ECS",
 			"Resource",
-			"MainLoop",
-
-			"EASTL",
-			"mpack"
+			"MainLoop"
 		},
 
 		extra = function ()

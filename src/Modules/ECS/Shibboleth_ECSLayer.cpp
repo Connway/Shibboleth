@@ -56,7 +56,7 @@ void ECSLayer::load(const ISerializeReader& reader)
 		const auto guard = reader.enterElementGuard(u8"objects");
 
 		if (!reader.isArray()) {
-			LogErrorDefault("Failed to load layer '%s'.", (name) ? name : u8"<invalid_name>");
+			LogErrorDefault("Failed to load layer '%s'.", (name[0]) ? name : u8"<invalid_name>");
 			return;
 		}
 

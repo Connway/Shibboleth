@@ -87,7 +87,7 @@ static constexpr bool IsPointer(void)
 		return IsPointerHelper<decltype(&Callback::operator())>::template IsPtr<index>();
 	} else if constexpr (std::is_member_function_pointer<Callback>::value || std::is_function<Callback>::value) {
 		return IsPointerHelper<Callback>::template IsPtr<index>();
-	} else if constexpr (std::is_pointer<Callback>::value && std::is_function<std::remove_pointer<Callback>::type>::value) {
+	} else if constexpr (std::is_pointer<Callback>::value && std::is_function<typename std::remove_pointer<Callback>::type>::value) {
 		return IsPointerHelper<Callback>::template IsPtr<index>();
 	} else {
 		return false;
@@ -232,7 +232,7 @@ void ECSManager::iterateInternalHelper(
 	const ECSQueryResult* (&query_results)[array_size],
 	ComponentsPrev&&... prev_comps)
 {
-	using GetType = typename std::remove_reference<ComponentFirst::GetType>::type;
+	using GetType = typename std::remove_reference<typename ComponentFirst::GetType>::type;
 	constexpr bool is_pointer = IsPointer<Callback, index>();
 
 	const ECSQueryResult& qr = *query_results[index];

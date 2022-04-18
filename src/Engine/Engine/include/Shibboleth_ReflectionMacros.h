@@ -157,7 +157,7 @@ NS_END
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
 		.template BASE(base_class) \
-		.ctor<>() \
+		.template ctor<>() \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(type, base_class) \
@@ -167,8 +167,8 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.base<base_class>() \
-		.ctor<>() \
+		.template base<base_class>() \
+		.template ctor<>() \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 

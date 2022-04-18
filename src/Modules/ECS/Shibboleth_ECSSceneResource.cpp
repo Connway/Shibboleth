@@ -37,8 +37,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSSceneResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSSceneResource::loadScene)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSSceneResource)
 
 NS_SHIBBOLETH
@@ -53,7 +53,7 @@ ECSSceneResource::~ECSSceneResource(void)
 {
 }
 
-void ECSSceneResource::load(const ISerializeReader& reader)
+void ECSSceneResource::loadScene(const ISerializeReader& reader)
 {
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
@@ -98,7 +98,7 @@ void ECSSceneResource::load(const ISerializeReader& reader)
 	res_mgr.registerCallback(resources, callback);
 }
 
-void ECSSceneResource::save(ISerializeWriter& writer)
+void ECSSceneResource::saveScene(ISerializeWriter& writer)
 {
 	GAFF_REF(writer);
 	// $TODO: Implement.
@@ -120,7 +120,7 @@ void ECSSceneResource::loadScene(IFile* file, uintptr_t /*thread_id_int*/)
 		return;
 	}
 
-	load(*readerWrapper.getReader());
+	loadScene(*readerWrapper.getReader());
 }
 
 NS_END

@@ -112,8 +112,6 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
-	virtual Gleam::IRenderDevice* createRenderDevice(void) const = 0;
-
 	Gleam::IKeyboard* createKeyboard(void) const override;
 	Gleam::IMouse* createMouse(void) const override;
 
@@ -200,7 +198,7 @@ private:
 
 	SamplerStateResourcePtr _default_sampler;
 
-	Gleam::IRenderDevice* createRenderDevice(int32_t adapter_id);
+	Gleam::IRenderDevice* createRenderDeviceFromAdapter(int32_t adapter_id);
 };
 
 NS_END

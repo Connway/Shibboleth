@@ -216,7 +216,7 @@ bool RenderManagerBase::init(void)
 				value.forEachInArray([&](int32_t /*index*/, const Gaff::JSON& adapter_id) -> bool
 				{
 					const int32_t aid = adapter_id.getInt32();
-					Gleam::IRenderDevice* const rd = createRenderDevice(aid);
+					Gleam::IRenderDevice* const rd = createRenderDeviceFromAdapter(aid);
 
 					if (!rd) {
 						LogErrorGraphics("Failed to create render device with adapter id '%i'.", aid);
@@ -237,7 +237,7 @@ bool RenderManagerBase::init(void)
 
 		// Always attempt to create a render device at adapter ID 0.
 		} else {
-			Gleam::IRenderDevice* const rd = createRenderDevice(0);
+			Gleam::IRenderDevice* const rd = createRenderDeviceFromAdapter(0);
 
 			if (!rd) {
 				LogErrorGraphics("Failed to create render device with adapter id '0'.");
@@ -288,7 +288,7 @@ bool RenderManagerBase::init(void)
 
 				// Create it if we don't already have it.
 				if (!rd) {
-					rd = createRenderDevice(adapter_id);
+					rd = createRenderDeviceFromAdapter(adapter_id);
 
 					if (!rd) {
 						LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
@@ -702,7 +702,7 @@ Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderD
 	return thread_it->second.get();
 }
 
-Gleam::IRenderDevice* RenderManagerBase::createRenderDevice(int32_t adapter_id)
+Gleam::IRenderDevice* RenderManagerBase::createRenderDeviceFromAdapter(int32_t adapter_id)
 {
 	Gleam::IRenderDevice* const rd = createRenderDevice();
 

@@ -27,8 +27,8 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 
 	.var("game_time_scale", &Shibboleth::GameTimeManager::_game_time_scale)
 	.var("real_time", &Shibboleth::GameTimeManager::_real_time)

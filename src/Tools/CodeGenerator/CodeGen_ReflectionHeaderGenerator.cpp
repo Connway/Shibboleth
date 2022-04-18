@@ -224,7 +224,7 @@ static int WriteFile(
 		program.get(k_arg_module) :
 		"Engine";
 
-	const std::string final_text = fmt::format(
+	const std::string final_text = GetLicenseText(program) + fmt::format(
 		k_gen_header,
 		reinterpret_cast<const char*>(include_files.data()),
 		module_name.data(),
@@ -237,14 +237,24 @@ static int WriteFile(
 	);
 
 	const std::u8string gen_file_path = abs_path.u8string() + u8"/include/Gen_ReflectionInit.h";
-	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Write);
+	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Read);
 
-	if (!gen_file.isOpen()) {
+	if (gen_file.isOpen()) {
+		std::string current_gen_file_text(gen_file.getFileSize() + 1, 0);
+
+		gen_file.readEntireFile(current_gen_file_text.data());
+		gen_file.close();
+
+		// Strings are equal, no need to write data to file.
+		if (!strcmp(current_gen_file_text.data(), final_text.data())) {
+			return 0;
+		}
+	}
+
+	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Write)) {
 		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
 		return -6;
 	}
-
-	WriteLicense(gen_file, program);
 
 	if (!gen_file.writeString(final_text.data())) {
 		std::cerr << "Failed to write to output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
@@ -351,21 +361,31 @@ static int GenerateStaticReflectionHeader(
 		}
 	}
 
-	const std::string final_text = fmt::format(
+	const std::string final_text = GetLicenseText(program) + fmt::format(
 		k_gen_static_header,
 		reinterpret_cast<const char*>(includes.data()),
 		reinterpret_cast<const char*>(inits.data())
 	);
 
 	const std::u8string gen_file_path = abs_module_path.u8string() + u8"/include/Gen_StaticReflectionInit.h";
-	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Write);
+	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Read);
 
-	if (!gen_file.isOpen()) {
+	if (gen_file.isOpen()) {
+		std::string current_gen_file_text(gen_file.getFileSize() + 1, 0);
+
+		gen_file.readEntireFile(current_gen_file_text.data());
+		gen_file.close();
+
+		// Strings are equal, no need to write data to file.
+		if (!strcmp(current_gen_file_text.data(), final_text.data())) {
+			return 0;
+		}
+	}
+
+	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Read)) {
 		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
 		return -6;
 	}
-
-	WriteLicense(gen_file, program);
 
 	return gen_file.writeString(final_text.data()) ? 0 : -7;
 }
@@ -406,7 +426,7 @@ static int GenerateReflectionHeader(
 			continue;
 		}
 
-		std::u8string text(file.getFileSize(), 0);
+		std::u8string text(file.getFileSize() + 1, 0);
 
 		if (!file.readEntireFile(text.data())) {
 			std::cout << reinterpret_cast<const char*>(text.data()) << std::endl;

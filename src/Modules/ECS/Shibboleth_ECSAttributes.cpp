@@ -33,7 +33,8 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(ECSClassAttribute)
 
 ECSClassAttribute::ECSClassAttribute(const char8_t* name, const char8_t* category):
-	_name(name), _category(category)
+	_category(category),
+	_name(name)
 {
 }
 

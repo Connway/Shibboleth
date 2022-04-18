@@ -91,5 +91,5 @@ jobs:
   - script: |
       cd .generated/project/linux/gmake2
       gmake clean
-      gmake config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler Engine Memory Catch2 CivetWeb JSONToMessagePack ReflectionHashDump
+      gmake config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler Engine Memory Catch2 CivetWeb JSONToMessagePack ReflectionHashDump ECS Resource AllocatorTest ReflectionTest ECSTest
     displayName: 'Building with Clang'

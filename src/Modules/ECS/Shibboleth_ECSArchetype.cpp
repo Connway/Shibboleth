@@ -883,8 +883,8 @@ bool ECSArchetype::SearchPredicate(const RefDefOffset& lhs, Gaff::Hash64 rhs)
 
 
 ArchetypeReference::ArchetypeReference(ECSManager& ecs_mgr, Gaff::Hash64 archetype):
-	_ecs_mgr(ecs_mgr),
-	_archetype(archetype)
+	_archetype(archetype),
+	_ecs_mgr(ecs_mgr)
 {
 }
 
