@@ -86,7 +86,7 @@ jobs:
 #    displayName: 'Installing Qt 6.3.0'
   - script: |
       cd utils
-      sudo chown root:root ./premake5
+      chmod +xr ./premake5
       ./premake5 gmake2 --no-editor
     displayName: 'Generating GMake Project Files'
   - script: |
