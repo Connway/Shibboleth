@@ -20,7 +20,7 @@ jobs:
       mkdir qt
       cd qt
       python -m aqt install-qt windows desktop 6.3.0 win64_msvc2019_64 -m qtcharts qtdatavis3d qtpositioning
-      echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\msvc2019_64
+      echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\msvc2019_64"
     displayName: 'Installing Qt 6.3.0'
   - script: |
       cd utils
@@ -53,16 +53,17 @@ jobs:
 #      mkdir qt
 #      cd qt
 #      python -m aqt install-qt linux desktop 6.3.0 gcc_64 -m qtcharts qtdatavis3d qtpositioning
-#      echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\gcc_64
+#      echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\gcc_64"
 #    displayName: 'Installing Qt 6.3.0'
 #  - script: |
 #      cd utils
-#      ./premake5 gmake2
+#      chmod +xr ./premake5
+#      ./premake5 gmake2 --qt-force-libexec
 #    displayName: 'Generating GMake Project Files'
 #  - script: |
 #      cd .generated/project/linux/gmake2
-#      gmake clean
-#      gmake config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler
+#      make clean
+#      make config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler Engine Memory Catch2 CivetWeb JSONToMessagePack ReflectionHashDump ECS Resource AllocatorTest ReflectionTest ECSTest ads
 #    displayName: 'Building with GCC'
 
 - job: build_debug_linux_clang
@@ -87,7 +88,7 @@ jobs:
   - script: |
       cd utils
       chmod +xr ./premake5
-      ./premake5 gmake2 --no-editor
+      ./premake5 gmake2 --cc=clang --qt-force-libexec
     displayName: 'Generating GMake Project Files'
   - script: |
       cd .generated/project/linux/gmake2
