@@ -23,7 +23,9 @@ jobs:
       echo "##vso[task.setvariable variable=QT_DIR]$(Build.SourcesDirectory)\qt\6.3.0\msvc2019_64"
     displayName: 'Installing Qt 6.3.0'
   - script: |
+      echo %QT_DIR%
       cat ./.generated/project/windows/vs2022/dependencies/ads.vcxproj
+      cat ./.generated/project/windows/vs2022/modules/DevEditor.vcxproj
     displayName: 'Debugging Stuffs'
   - script: |
       cd utils
