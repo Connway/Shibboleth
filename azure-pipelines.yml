@@ -24,6 +24,7 @@ jobs:
     displayName: 'Installing Qt 6.3.0'
   - script: |
       echo %QT_DIR%
+      %QT_DIR%/bin/moc --help
       cat ./.generated/project/windows/vs2022/dependencies/ads.vcxproj
       cat ./.generated/project/windows/vs2022/modules/DevEditor.vcxproj
     displayName: 'Debugging Stuffs'
