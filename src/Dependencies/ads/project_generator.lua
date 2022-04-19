@@ -25,6 +25,10 @@ project "ads"
 			version_number = os.getenv(version_number:sub(3, version_number:len() - 1))
 		end
 
+		if os.host() == "windows" then
+			version_number = path.translate(version_number, "/")
+		end
+
 		local last_separator = version_number:findlast("/", true)
 		version_number = version_number:sub(1, last_separator - 1)
 
