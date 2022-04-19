@@ -38,6 +38,7 @@ function StaticHeaderGen()
 	filter { "system:windows" }
 		prebuildcommands
 		{
+			"dir /w",
 			"cd ../../../../../workingdir/tools",
 			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
 		}
