@@ -71,6 +71,6 @@ the codebase won't run.
 	* libxi-dev
 	* libgl1-mesa-dev (will be removed when Vulkan is implemented)
 	* libglx-dev (will be removed when Vulkan is implemented)
-	* libxcurser-dev (for GLFW)
+	* libxcursor-dev (for GLFW)
 	* libxinerama-dev (for GLFW)
 	* libgtk-3-dev (for TracyProfiler)
