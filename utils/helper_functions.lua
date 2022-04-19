@@ -38,8 +38,7 @@ function StaticHeaderGen()
 	filter { "system:windows" }
 		prebuildcommands
 		{
-			"dir /w",
-			"cd ../../../../../workingdir/tools",
+			"{CHDIR} ../../../../../workingdir/tools",
 			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
 		}
 
@@ -74,7 +73,7 @@ function ToolGen(tool_name)
 	filter { "system:windows" }
 		prebuildcommands
 		{
-			"cd ../../../../../workingdir/tools",
+			"{CHDIR} ../../../../../workingdir/tools",
 			"CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
 		}
 
@@ -95,7 +94,7 @@ function ModuleGen(module_name)
 	filter { "system:windows" }
 		prebuildcommands
 		{
-			"cd ../../../../../workingdir/tools",
+			"{CHDIR} ../../../../../workingdir/tools",
 			"CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
 		}
 

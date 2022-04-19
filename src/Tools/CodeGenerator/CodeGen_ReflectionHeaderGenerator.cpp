@@ -382,7 +382,7 @@ static int GenerateStaticReflectionHeader(
 		}
 	}
 
-	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Read)) {
+	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Write)) {
 		std::cerr << "Failed to open output file '" << reinterpret_cast<const char*>(gen_file_path.data()) << "'." << std::endl;
 		return -6;
 	}
