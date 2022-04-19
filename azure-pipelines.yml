@@ -33,7 +33,7 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
-      maximumCpuCount: false
+      maximumCpuCount: true
     displayName: 'Building with VS2022'
 
 #- job: build_debug_linux_gcc
@@ -96,5 +96,5 @@ jobs:
   - script: |
       cd .generated/project/linux/gmake2
       make clean
-      make config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler Engine Memory Catch2 CivetWeb JSONToMessagePack ReflectionHashDump ECS Resource AllocatorTest ReflectionTest ECSTest ads
+      make config=debug_x64 Gaff Gleam Esprit EASTL CodeGenerator FastXml LowLevel LowLevelAABB LowLevelDynamics PhysX PhysXCharacterKinematic PhysXCommon PhysXCooking PhysXExtensions PhysXFoundation PhysXPvdSDK PhysXTask PhysXVehicle SceneQuery SimulationController assimp imgui libpng libtiff Lua mimalloc minizip-ng mpack sqlite zlib-ng capstone GLFW zstd TracyClient TracyProfiler Engine Memory Catch2 CivetWeb JSONToMessagePack ReflectionHashDump ECS Resource AllocatorTest ReflectionTest ECSTest
     displayName: 'Building with Clang'
