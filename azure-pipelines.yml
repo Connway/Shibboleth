@@ -33,7 +33,7 @@ jobs:
       configuration: 'Debug'
       clean: true
       vsVersion: 'latest'
-      maximumCpuCount: true
+      maximumCpuCount: false
     displayName: 'Building with VS2022'
 
 #- job: build_debug_linux_gcc
@@ -88,10 +88,6 @@ jobs:
   - script: |
       sudo apt-get install libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglx-dev libxcursor-dev libxinerama-dev libgtk-3-dev
     displayName: 'Installing Dependency Packages'
-  - script: |
-      echo $QT_DIR
-      $QT_DIR/libexec/moc --help
-    displayName: 'Debugging Stuffs'
   - script: |
       cd utils
       chmod +xr ./premake5
