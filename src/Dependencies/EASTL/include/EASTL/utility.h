@@ -50,9 +50,13 @@ namespace eastl
 	template <typename T> 
 	inline void swap(T& a, T& b) EA_NOEXCEPT_IF(eastl::is_nothrow_move_constructible<T>::value && eastl::is_nothrow_move_assignable<T>::value)
 	{
+		EA_DISABLE_GCC_WARNING(-Wmaybe-uninitialized)
+
 		T temp(EASTL_MOVE(a));  // EASTL_MOVE uses EASTL::move when available, else is a no-op.
 		a = EASTL_MOVE(b);
 		b = EASTL_MOVE(temp);
+
+		EA_RESTORE_GCC_WARNING()
 	}
 
 

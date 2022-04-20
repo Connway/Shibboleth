@@ -107,15 +107,18 @@ int32_t StackTrace::captureStack(const char* app_name, uint32_t frames_to_captur
 			continue;
 		}
 
-		fgets(_file_name_cache[i], NAME_SIZE, stream);
+		char* const result = fgets(_file_name_cache[i], NAME_SIZE, stream);
 		pclose(stream);
+
 		_file_name_cache[i][NAME_SIZE - 1] = 0;
 
-		for (int32_t j = NAME_SIZE - 2; j > -1; --j) {
-			if (_file_name_cache[i][j] == ':') {
-				_file_name_size[i] = j;
-				_file_name_cache[i][j] = 0;
-				break;
+		if (result) {
+			for (int32_t j = NAME_SIZE - 2; j > -1; --j) {
+				if (_file_name_cache[i][j] == ':') {
+					_file_name_size[i] = j;
+					_file_name_cache[i][j] = 0;
+					break;
+				}
 			}
 		}
 	}

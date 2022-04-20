@@ -120,11 +120,11 @@ bool IsDebuggerAttached(void)
 	}
 
 	int pid = 0;
-	fscanf(file, "TracerPid: %d", &pid);
+	const int result = fscanf(file, "TracerPid: %d", &pid);
 
 	fclose(file);
 
-	return pid != 0;
+	return result != EOF && pid != 0;
 }
 
 NS_END

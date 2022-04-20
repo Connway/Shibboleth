@@ -447,7 +447,7 @@ void Allocator::writeAllocationLog(void) const
 		return;
 	}
 
-	char log_file_name[64] = { 0 };
+	char log_file_name[512] = { 0 };
 	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;
@@ -510,7 +510,7 @@ void Allocator::writeLeakLog(void) const
 		return;
 	}
 
-	char log_file_name[64] = { 0 };
+	char log_file_name[512] = { 0 };
 	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;

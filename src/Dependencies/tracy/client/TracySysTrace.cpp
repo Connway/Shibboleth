@@ -636,14 +636,11 @@ void SysTraceGetExternalName( uint64_t thread, const char*& threadName, const ch
 #    include <sys/mman.h>
 #    include <sys/ioctl.h>
 #    include <sys/syscall.h>
+#    include <cpuid.h> // For __get_cpuid
 
 #    include "TracyProfiler.hpp"
 #    include "TracyRingBuffer.hpp"
 #    include "TracyThread.hpp"
-
-#ifdef __clang__
-#    include <cpuid.h> // For __get_cpuid
-#endif
 
 namespace tracy
 {

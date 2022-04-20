@@ -33,7 +33,7 @@ function ModuleIncludesAndLinks(module_name, base_name)
 end
 
 function StaticHeaderGen()
-	prebuildmessage("Generating Gen_ReflectionInit.h for static build!")
+	prebuildmessage("Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!")
 
 	filter { "system:windows" }
 		prebuildcommands

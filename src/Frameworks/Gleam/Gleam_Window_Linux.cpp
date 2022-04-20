@@ -471,6 +471,7 @@ bool Window::init(
 		// On Linux, FULLSCREEN and BORDERLESS_WINDOWED are basically the same thing
 		case WindowMode::Fullscreen:
 			XRRSetScreenConfigAndRate(_display, config, root, final_size, _original_rotation, /*rates[final_rate]*/_refresh_rate, CurrentTime);
+			[[fallthrough]];
 
 		case WindowMode::BorderlessWindowed: {
 			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
@@ -671,7 +672,7 @@ bool Window::setWindowMode(WindowMode window_mode)
 				_original_rotation, _refresh_rate, CurrentTime
 			);
 			XRRFreeScreenConfigInfo(config);
-		}
+		} [[fallthrough]];
 
 		// Fullscreen will drop down to here and run this code as well
 		case WindowMode::BorderlessWindowed: {

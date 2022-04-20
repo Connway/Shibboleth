@@ -34,6 +34,25 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+template <bool is_const, class T, class Ret, class... Args>
+struct MemFuncTypeHelper;
+
+template <class T, class Ret, class... Args>
+struct MemFuncTypeHelper<true, T, Ret, Args...> final
+{
+	using Type = Ret (T::*)(Args...) const;
+};
+
+template <class T, class Ret, class... Args>
+struct MemFuncTypeHelper<false, T, Ret, Args...> final
+{
+	using Type = Ret (T::*)(Args...);
+};
+
+template <bool is_const, class T, class Ret, class... Args>
+using MemFuncType = typename MemFuncTypeHelper<is_const, T, Ret, Args...>::Type;
+
+
 template <class T>
 class ReflectionDefinition final : public IReflectionDefinition
 {
@@ -627,24 +646,7 @@ private:
 	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
 	{
 	public:
-		template <bool is_func_const>
-		struct MemFuncTypeHelper;
-
-		template <>
-		struct MemFuncTypeHelper<true> final
-		{
-			using Type = Ret (T::*)(Args...) const;
-		};
-
-		template <>
-		struct MemFuncTypeHelper<false> final
-		{
-			using Type = Ret (T::*)(Args...);
-		};
-
-		using MemFuncType = typename MemFuncTypeHelper<is_const>::Type;
-
-		ReflectionFunction(MemFuncType func)
+		ReflectionFunction(MemFuncType<is_const, T, Ret, Args...> func)
 		{
 			_func = func;
 		}
@@ -685,7 +687,7 @@ private:
 		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
 
 	private:
-		MemFuncType _func;
+		MemFuncType<is_const, T, Ret, Args...> _func;
 	};
 
 	class ReflectionBaseFunction final : public IReflectionFunctionBase

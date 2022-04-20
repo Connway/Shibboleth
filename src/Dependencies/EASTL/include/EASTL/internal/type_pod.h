@@ -1720,8 +1720,12 @@ namespace eastl
 
 		template <typename>
 		eastl::false_type destructible_test_function(...);
-		
+
+	#if defined(EA_COMPILER_GNUC)
+		template <typename T, typename U = decltype(eastl::declval<eastl::destructible_test_helper<T> >().~destructible_test_helper())>
+	#else
 		template <typename T, typename U = decltype(eastl::declval<eastl::destructible_test_helper<T> >().~destructible_test_helper<T>())>
+	#endif
 		eastl::true_type destructible_test_function(int);
 
 		template <typename T, bool = eastl::is_array_of_unknown_bounds<T>::value || // Exclude these types from being considered destructible.

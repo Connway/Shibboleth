@@ -72,13 +72,15 @@ class RuntimeVar final : public IRuntimeVar
 {
 public:
 	RuntimeVar(Gaff::Hash64 name, const T& initial_value):
-		RuntimeVar(name), _value(initial_value)
+		RuntimeVar(name)
 	{
+		_value = initial_value;
 	}
 
 	RuntimeVar(Gaff::Hash64 name, T&& initial_value):
-		RuntimeVar(name), _value(std::move(initial_value))
+		RuntimeVar(name)
 	{
+		_value = std::move(initial_value);
 	}
 
 	RuntimeVar(Gaff::Hash64 name):

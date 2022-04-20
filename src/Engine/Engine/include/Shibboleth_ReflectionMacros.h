@@ -142,11 +142,13 @@ NS_END
 		template <class ReflectionBuilder> \
 		void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 		{ \
+			GCC_DISABLE_WARNING_PUSH("-Wunused-value") \
 			builder
 
 #define SHIB_REFLECTION_DEFINE_END(type) \
 			; \
 			builder.finish(); \
+			GCC_DISABLE_WARNING_POP() \
 		} \
 	NS_END
 

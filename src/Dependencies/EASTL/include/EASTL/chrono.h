@@ -694,6 +694,7 @@ namespace chrono
 	///////////////////////////////////////////////////////////////////////////////
 	#if EASTL_USER_LITERALS_ENABLED && EASTL_INLINE_NAMESPACES_ENABLED
 		EA_DISABLE_VC_WARNING(4455) // disable warning C4455: literal suffix identifiers that do not start with an underscore are reserved
+		EA_DISABLE_GCC_WARNING(-Wliteral-suffix)
 		inline namespace literals
 		{
 			inline namespace chrono_literals
@@ -727,6 +728,7 @@ namespace chrono
 			} // namespace chrono_literals
 		}// namespace literals
 		EA_RESTORE_VC_WARNING() // warning: 4455
+		EA_RESTORE_GCC_WARNING()
 	#endif
 
 } // namespace eastl
