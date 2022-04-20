@@ -37,7 +37,7 @@ project "ReflectionHashDump"
 		links { "Dbghelp" }
 
 	filter { "system:linux" }
-		linkoptions { "-ldl", "-lpthread" }
+		links { "dl", "pthread" }
 
 	filter {}
 

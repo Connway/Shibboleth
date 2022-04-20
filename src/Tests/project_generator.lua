@@ -59,6 +59,9 @@ local tests = {
 			filter { "system:windows" }
 				links { "DbgHelp" }
 
+			filter { "system:linux" }
+				links { "pthread", "dl" }
+
 			filter {}
 		end
 	},
@@ -98,6 +101,9 @@ local tests = {
 		extra = function ()
 			filter { "system:windows" }
 				links { "DbgHelp" }
+
+			filter { "system:linux" }
+				links { "pthread", "dl" }
 
 			filter {}
 		end
