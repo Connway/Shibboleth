@@ -108,7 +108,7 @@ project "TracyProfiler"
 	filter { "system:linux", "options:not wayland" }
 		defines { "DISPLAY_SERVER_X11" }
 		buildoptions { "`pkg-config --cflags-only-I gtk+-3.0`" }
-		linkoptions { "`pkg-config --libs gtk+-3.0`", "-lpthread" }
+		linkoptions { "`pkg-config --libs gtk+-3.0`", "-lpthread", "-ldl" }
 
 	filter { "system:linux", "options:wayland" }
 		defines { "DISPLAY_SERVER_WAYLAND" }
