@@ -4,7 +4,7 @@ trigger:
 
 jobs:
 - job: build_debug_windows_vs2022
-  displayName: 'Build Debug - VS2022'
+  displayName: 'Build Debug - Windows (VS2022)'
   pool:
     vmImage: 'windows-2022'
   steps:

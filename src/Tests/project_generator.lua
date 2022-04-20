@@ -25,6 +25,9 @@ local tests = {
 			filter { "system:windows" }
 				links { "DbgHelp" }
 
+			filter { "system:linux" }
+				links { "pthread", "dl" }
+
 			filter {}
 		end
 	},
