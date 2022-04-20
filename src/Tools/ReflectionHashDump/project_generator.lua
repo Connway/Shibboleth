@@ -36,8 +36,8 @@ project "ReflectionHashDump"
 		-- links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 		links { "Dbghelp" }
 
-	--filter { "system:not windows" }
-	--	linkoptions { "-Wl,-rpath,../bin" }
+	filter { "system:linux" }
+		linkoptions { "-ldl", "-lpthread" }
 
 	filter {}
 
