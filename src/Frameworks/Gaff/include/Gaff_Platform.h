@@ -24,6 +24,16 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifdef _MSC_VER
+	#define PLATFORM_COMPILER_MSVC
+#elif defined(__clang__)
+	#define PLATFORM_COMPILER_CLANG
+#elif defined(__GNUC__) || defined(__GNUG__)
+	#define PLATFORM_COMPILER_GCC
+#else
+	#error "Unsupported compiler."
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 	#define PLATFORM_WINDOWS
 	#define PLATFORM_NAME "windows"
@@ -41,12 +51,12 @@ THE SOFTWARE.
 	#error "Unsupported platform."
 #endif
 
-#ifdef _MSC_VER
+#ifdef PLATFORM_COMPILER_MSVC
 	// Add endian detection for Microsoft compiler here.
 	// Assuming little endian for now
 	#define PLATFORM_LITTLE_ENDIAN
 
-#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__) || defined(__MINGW32__) || defined(__MINGW64__)
+#elif defined(PLATFORM_COMPILER_GCC) || defined(PLATFORM_COMPILER_CLANG)
 	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
 		#define PLATFORM_LITTLE_ENDIAN
 	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
@@ -78,7 +88,7 @@ THE SOFTWARE.
 	#error "Cannot deduce platform bit-age."
 #endif
 
-#ifdef _MSC_VER
+#ifdef PLATFORM_COMPILER_MSVC
 	#define MSVC_DISABLE_WARNING_PUSH(warnings) \
 		__pragma(warning(push)) \
 		__pragma(warning(disable : warnings))
@@ -90,7 +100,7 @@ THE SOFTWARE.
 	#define MSVC_DISABLE_WARNING_POP()
 #endif
 
-#if defined(__GNUC__) && !defined(__clang__)
+#ifdef PLATFORM_COMPILER_GCC
 	#define GCC_PRAGMA(x) _Pragma(#x)
 	#define GCC_DISABLE_WARNING_PUSH(warnings) \
 		_Pragma("GCC diagnostic push") \

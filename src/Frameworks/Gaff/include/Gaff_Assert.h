@@ -42,9 +42,9 @@ NS_GAFF
 			} \
 		}*/
 
-	#ifdef _MSC_VER
+	#ifdef PLATFORM_COMPILER_MSVC
 		#define GAFF_ASSERT_MSG(expr, msg, ...) { (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr); }
-	#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__) || defined(__MINGW32__) || defined(__MINGW64__)
+	#elif defined(PLATFORM_COMPILER_GCC) || defined(PLATFORM_COMPILER_CLANG)
 		#define GAFF_ASSERT_MSG(expr, msg, ...) { (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0)); assert(expr); }
 	#endif
 
@@ -53,7 +53,7 @@ NS_GAFF
 	#define GAFF_ASSERT_MSG(expr, msg, ...)
 #endif
 
-#ifdef _MSC_VER
+#ifdef PLATFORM_COMPILER_MSVC
 	// If we're on the MS compiler, just static_assert.
 	#define GAFF_TEMPLATE_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
 #else

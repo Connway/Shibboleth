@@ -138,7 +138,7 @@ TEST_CASE("shibboleth_reflection_class")
 
 	const Gaff::Hash64 hash = Refl::Reflection<Derived>::GetInstance().getVersion();
 
-#if defined(__GNUC__) || defined(__clang__)
+#if defined(PLATFORM_COMPILER_GCC) || defined(PLATFORM_COMPILER_CLANG)
 	printf("Version Hash: %lu\n", hash.getHash());
 #else
 	printf("Version Hash: %llu\n", hash.getHash());

@@ -39,7 +39,7 @@ THE SOFTWARE.
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#ifdef _MSC_VER
+#ifdef PLATFORM_COMPILER_MSVC
 	#pragma warning(disable : 4201)
 #endif
 
