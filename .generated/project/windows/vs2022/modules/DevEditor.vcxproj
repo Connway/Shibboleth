@@ -118,7 +118,7 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../workingdir/tools
+      <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64d module_header --module DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -154,7 +154,7 @@ CodeGenerator64d module_header --module DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../workingdir/tools
+      <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64 module_header --module DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -190,7 +190,7 @@ CodeGenerator64 module_header --module DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../workingdir/tools
+      <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64p module_header --module DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
@@ -226,7 +226,7 @@ CodeGenerator64p module_header --module DevEditor</Command>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
     <PreBuildEvent>
-      <Command>cd ../../../../../workingdir/tools
+      <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64od module_header --module DevEditor</Command>
       <Message>Generating Gen_ReflectionInit.h for module DevEditor!</Message>
     </PreBuildEvent>
