@@ -90,7 +90,7 @@ THE SOFTWARE.
 	#define MSVC_DISABLE_WARNING_POP()
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 	#define GCC_PRAGMA(x) _Pragma(#x)
 	#define GCC_DISABLE_WARNING_PUSH(warnings) \
 		_Pragma("GCC diagnostic push") \
