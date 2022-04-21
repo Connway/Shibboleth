@@ -13,7 +13,7 @@ project "Gleam"
 		"include",
 		"../Gaff/include",
 		"../../Dependencies/EASTL/include",
-		"../../Dependencies/vulkan",
+		"../../Dependencies/glfw/include",
 		"../../Dependencies/glm"
 	}
 

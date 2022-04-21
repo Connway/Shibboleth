@@ -253,6 +253,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ProjectReference Include="Entity.vcxproj">
       <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
     </ProjectReference>
+    <ProjectReference Include="MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

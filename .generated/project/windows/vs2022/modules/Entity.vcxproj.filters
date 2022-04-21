@@ -18,11 +18,15 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntitySystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_Entity.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp" />
   </ItemGroup>
 </Project>

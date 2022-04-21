@@ -22,10 +22,107 @@ THE SOFTWARE.
 
 #pragma once
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include "Gleam_Window_Windows.h"
-#elif defined(__linux__)
-	#include "Gleam_Window_Linux.h"
-#else
-	#error Platform not supported
-#endif
+#include "Gleam_Defines.h"
+
+struct GLFWmonitor;
+
+NS_GLEAM
+
+class Window
+{
+public:
+	static bool GlobalInit(void);
+	static void GlobalShutdown(void);
+
+	//static int32_t AddGlobalMessageHandler(const MessageHandler& callback);
+	//static int32_t AddGlobalMessageHandler(MessageHandler&& callback);
+	//static bool RemoveGlobalMessageHandler(int32_t id);
+
+	//static void HandleWindowMessages(void);
+	//static void Cleanup(void);
+
+	//Window(void);
+	//~Window(void);
+
+	bool init(
+		const char8_t* window_name,
+		const GLFWmonitor* monitor,
+		int32_t width = 0,
+		int32_t height = 0);
+
+	bool init(
+		const char8_t* window_name,
+		int32_t display_id = -1,
+		int32_t video_mode_id = -1,
+		int32_t width = 0,
+		int32_t height = 0);
+
+	//bool init(
+	//	const char8_t* window_name,
+	//	WindowMode window_mode = WindowMode::Fullscreen,
+	//	int32_t width = 0,
+	//	int32_t height = 0,
+	//	int32_t pos_x = 0,
+	//	int32_t pos_y = 0,
+	//	const char* compat = nullptr) override;
+	//void destroy(void) override;
+
+	//int32_t addWindowMessageHandler(const MessageHandler& callback) override;
+	//int32_t addWindowMessageHandler(MessageHandler&& callback) override;
+	//bool removeWindowMessageHandler(int32_t id) override;
+
+	//void showCursor(bool show) override;
+	//void containCursor(bool contain) override;
+
+	//bool isCursorVisible(void) const override;
+	//bool isCursorContained(void) const override;
+
+	//bool setWindowMode(WindowMode window_mode) override;
+	//WindowMode getWindowMode(void) const override;
+
+	//const IVec2& getPos(void) const override;
+	//const IVec2& getSize(void) const override;
+	//void setPos(const IVec2& pos) override;
+	//void setSize(const IVec2& size) override;
+
+	//bool isFullScreen(void) const override;
+
+	//bool setIcon(const char8_t* icon) override;
+	//bool setIcon(const char* icon) override;
+
+	//void* getPlatformHandle(void) const override;
+
+	//HINSTANCE getHInstance(void) const;
+	//HWND getHWnd(void) const;
+
+private:
+	//IVec2 _pos{ 0, 0 };
+	//IVec2 _size{ 1, 1 };
+
+	//WindowMode _window_mode = WindowMode::Fullscreen;
+	//bool _cursor_visible = true;
+	//bool _contain = false;
+
+	//U8String _window_name;
+	//HINSTANCE _hinstance = nullptr;
+	//HWND _hwnd = nullptr;
+	//bool _owns_window = true;
+
+	//VectorMap<int32_t, MessageHandler> _window_callbacks;
+
+	//static VectorMap<uint16_t, KeyCode> g_right_keys;
+	//static VectorMap<uint16_t, KeyCode> g_left_keys;
+
+	//static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
+
+	//friend void WindowMoved(AnyMessage&, Window*, WPARAM, LPARAM);
+	//friend void WindowResized(AnyMessage&, Window*, WPARAM, LPARAM);
+	//friend void WindowInput(AnyMessage&, Window*, WPARAM, LPARAM);
+	//friend void WindowSetFocus(AnyMessage&, Window*, WPARAM, LPARAM);
+	//friend void WindowKillFocus(AnyMessage&, Window*, WPARAM, LPARAM);
+
+	//GAFF_NO_COPY(Window);
+	//GAFF_NO_MOVE(Window);
+};
+
+NS_END

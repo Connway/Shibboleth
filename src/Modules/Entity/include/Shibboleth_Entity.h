@@ -35,6 +35,13 @@ class Entity : public Refl::IReflectionObject
 	GAFF_NO_COPY(Entity);
 
 public:
+	enum class UpdatePhase
+	{
+		PrePhysics,
+		DuringPhysics,
+		PostPhysics
+	};
+
 	template <class T>
 	bool removeComponents(void)
 	{

@@ -119,7 +119,7 @@
     <PreBuildEvent>
       <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64d static_header</Command>
-      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,7 +154,7 @@ CodeGenerator64d static_header</Command>
     <PreBuildEvent>
       <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64 static_header</Command>
-      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -189,7 +189,7 @@ CodeGenerator64 static_header</Command>
     <PreBuildEvent>
       <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64p static_header</Command>
-      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -224,7 +224,7 @@ CodeGenerator64p static_header</Command>
     <PreBuildEvent>
       <Command>chdir ..\..\..\..\..\workingdir\tools
 CodeGenerator64od static_header</Command>
-      <Message>Generating Gen_ReflectionInit.h for static build!</Message>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
