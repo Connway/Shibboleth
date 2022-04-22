@@ -22,54 +22,130 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_VectorMap.h"
+#include "Gleam_Vec2.h"
+#include <EASTL/functional.h>
 
 struct GLFWmonitor;
+struct GLFWvidmode;
+struct GLFWwindow;
+struct GLFWimage;
 
 NS_GLEAM
 
 class Window
 {
 public:
+	using VecCallback = eastl::function<void (Window&, const IVec2&)>;
+	using BoolCallback = eastl::function<void (Window&, bool)>;
+	using WindowCallback = eastl::function<void (Window&)>;
+
+	template <class T>
+	T* getUserPointer(void) const
+	{
+		return reinterpret_cast<T*>(getUserPointer());
+	}
+
 	static bool GlobalInit(void);
 	static void GlobalShutdown(void);
+
+	static void WaitEvents(double timeout_seconds = -1.0f);
+	static void PollEvents(void);
+	static void PostEmptyEvent(void);
 
 	//static int32_t AddGlobalMessageHandler(const MessageHandler& callback);
 	//static int32_t AddGlobalMessageHandler(MessageHandler&& callback);
 	//static bool RemoveGlobalMessageHandler(int32_t id);
 
-	//static void HandleWindowMessages(void);
-	//static void Cleanup(void);
+	Window(void) = default;
+	~Window(void);
 
-	//Window(void);
-	//~Window(void);
-
-	bool init(
+	bool initFullscreen(
 		const char8_t* window_name,
-		const GLFWmonitor* monitor,
-		int32_t width = 0,
-		int32_t height = 0);
+		GLFWmonitor& monitor,
+		const GLFWvidmode& video_mode);
 
-	bool init(
+	bool initFullscreen(
 		const char8_t* window_name,
-		int32_t display_id = -1,
-		int32_t video_mode_id = -1,
-		int32_t width = 0,
-		int32_t height = 0);
+		int32_t display_id,
+		int32_t video_mode_id);
 
-	//bool init(
-	//	const char8_t* window_name,
-	//	WindowMode window_mode = WindowMode::Fullscreen,
-	//	int32_t width = 0,
-	//	int32_t height = 0,
-	//	int32_t pos_x = 0,
-	//	int32_t pos_y = 0,
-	//	const char* compat = nullptr) override;
-	//void destroy(void) override;
+	bool initFullscreen(
+		const char8_t* window_name,
+		GLFWmonitor& monitor,
+		const IVec2& size,
+		int32_t refresh_rate = -1);
 
-	//int32_t addWindowMessageHandler(const MessageHandler& callback) override;
-	//int32_t addWindowMessageHandler(MessageHandler&& callback) override;
-	//bool removeWindowMessageHandler(int32_t id) override;
+	bool initWindowed(
+		const char8_t* window_name,
+		const IVec2& size);
+
+	void destroy(void);
+
+	GLFWwindow* getGLFWWindow(void) const;
+
+	void setFullscreen(const GLFWvidmode& video_mode, GLFWmonitor* monitor = nullptr);
+	void setFullscreen(const IVec2& size, int32_t refresh_rate = -1, GLFWmonitor* monitor = nullptr);
+	void setWindowed(const IVec2& size, const IVec2& pos = IVec2(0, 0));
+
+	bool isFullscreen(void) const;
+	bool isWindowed(void) const;
+
+	void setSize(const IVec2& size);
+	IVec2 getSize(void) const;
+
+	void setPos(const IVec2& pos);
+	IVec2 getPos(void) const;
+
+	void setTitle(const char8_t* title);
+
+	void setIcon(const GLFWimage* icons, int32_t count);
+
+	void setVisible(bool visible);
+	bool isVisible(void) const;
+
+	bool isFocused(void) const;
+	void focus(void);
+
+	void notify(void);
+
+	void setOpacity(float opacity);
+	float getOpacity(void) const;
+
+	bool isMaximized(void) const;
+	void toggleMaximize(void);
+	void maximize(void);
+	void restore(void);
+
+	void setAlwaysOnTop(bool always_on_top);
+	bool isAlwaysOnTop(void) const;
+
+	void setResizable(bool resizable);
+	bool isResizable(void) const;
+
+	void setHasDecorations(bool has_decorations);
+	bool hasDecorations(void) const;
+
+	void* getUserPointer(void) const;
+	void setUserPointer(void* ptr);
+
+	bool shouldClose(void) const;
+	void forceClose(void);
+
+	int32_t addSizeChangeCallback(const VecCallback& callback);
+	int32_t addSizeChangeCallback(VecCallback&& callback);
+
+	int32_t addPosChangeCallback(const VecCallback& callback);
+	int32_t addPosChangeCallback(VecCallback&& callback);
+
+	int32_t addCloseCallback(const WindowCallback& callback);
+	int32_t addCloseCallback(WindowCallback&& callback);
+
+	int32_t addMaximizeCallback(const BoolCallback& callback);
+	int32_t addMaximizeCallback(BoolCallback&& callback);
+
+	int32_t addFocusCallback(const BoolCallback& callback);
+	int32_t addFocusCallback(BoolCallback&& callback);
 
 	//void showCursor(bool show) override;
 	//void containCursor(bool contain) override;
@@ -77,36 +153,14 @@ public:
 	//bool isCursorVisible(void) const override;
 	//bool isCursorContained(void) const override;
 
-	//bool setWindowMode(WindowMode window_mode) override;
-	//WindowMode getWindowMode(void) const override;
-
-	//const IVec2& getPos(void) const override;
-	//const IVec2& getSize(void) const override;
-	//void setPos(const IVec2& pos) override;
-	//void setSize(const IVec2& size) override;
-
-	//bool isFullScreen(void) const override;
-
-	//bool setIcon(const char8_t* icon) override;
-	//bool setIcon(const char* icon) override;
-
 	//void* getPlatformHandle(void) const override;
 
 	//HINSTANCE getHInstance(void) const;
 	//HWND getHWnd(void) const;
 
 private:
-	//IVec2 _pos{ 0, 0 };
-	//IVec2 _size{ 1, 1 };
-
-	//WindowMode _window_mode = WindowMode::Fullscreen;
 	//bool _cursor_visible = true;
 	//bool _contain = false;
-
-	//U8String _window_name;
-	//HINSTANCE _hinstance = nullptr;
-	//HWND _hwnd = nullptr;
-	//bool _owns_window = true;
 
 	//VectorMap<int32_t, MessageHandler> _window_callbacks;
 
@@ -121,8 +175,17 @@ private:
 	//friend void WindowSetFocus(AnyMessage&, Window*, WPARAM, LPARAM);
 	//friend void WindowKillFocus(AnyMessage&, Window*, WPARAM, LPARAM);
 
-	//GAFF_NO_COPY(Window);
-	//GAFF_NO_MOVE(Window);
+	VectorMap<int32_t, VecCallback> _size_callbacks;
+	VectorMap<int32_t, VecCallback> _pos_callbacks;
+	VectorMap<int32_t, WindowCallback> _close_callbacks;
+	VectorMap<int32_t, BoolCallback> _maximize_callbacks;
+	VectorMap<int32_t, BoolCallback> _focus_callbacks;
+
+	GLFWwindow* _window = nullptr;
+	bool _fullscreen = false;
+
+	GAFF_NO_COPY(Window);
+	GAFF_NO_MOVE(Window);
 };
 
 NS_END

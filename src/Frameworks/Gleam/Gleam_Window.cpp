@@ -30,6 +30,24 @@ namespace
 	{
 		// $TODO: Log error.
 	}
+
+	static int32_t g_next_id = 0;
+
+	template <class T>
+	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
+	{
+		const int32_t id = g_next_id++;
+		_size_callbacks.emplace(id, cb);
+		return id;
+	}
+
+	template <class T>
+	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
+	{
+		const int32_t id = g_next_id++;
+		_size_callbacks.emplace(id, std::move(cb));
+		return id;
+	}
 }
 
 NS_GLEAM
@@ -48,6 +66,25 @@ bool Window::GlobalInit(void)
 void Window::GlobalShutdown(void)
 {
 	glfwTerminate();
+}
+
+void Window::WaitEvents(double timeout_seconds)
+{
+	if (timeout_seconds < 0.0f) {
+		glfwWaitEventsTimeout(timeout_seconds);
+	} else {
+		glfwWaitEvents();
+	}
+}
+
+void Window::PollEvents(void)
+{
+	glfwPollEvents();
+}
+
+void Window::PostEmptyEvent(void)
+{
+	glfwPostEmptyEvent();
 }
 
 //using WindowProcHelper = void (*)(AnyMessage&, Window*, WPARAM, LPARAM);
@@ -241,30 +278,44 @@ void Window::GlobalShutdown(void)
 //
 //	return DefWindowProc(hwnd, msg, w, l);
 //}
-//
-//Window::Window(void)
-//{
-//}
-//
-//Window::~Window(void)
-//{
-//	destroy();
-//}
 
-bool Window::init(
-	const char8_t* window_name,
-	const GLFWmonitor* monitor,
-	const GLFWvidmode* video_mode)
+Window::~Window(void)
 {
+	destroy();
 }
 
-bool Window::init(
+bool Window::initFullscreen(
+	const char8_t* window_name,
+	GLFWmonitor& monitor,
+	const GLFWvidmode& video_mode)
+{
+	glfwWindowHint(GLFW_RED_BITS, video_mode.redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, video_mode.greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, video_mode.blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, video_mode.refreshRate);
+
+	_window = glfwCreateWindow(
+		video_mode.width,
+		video_mode.height,
+		reinterpret_cast<const char*>(window_name),
+		&monitor,
+		nullptr);
+
+	if (_window != nullptr) {
+		_fullscreen = true;
+		return true;
+	}
+
+	return false;
+}
+
+bool Window::initFullscreen(
 	const char8_t* window_name,
 	int32_t display_id,
 	int32_t video_mode_id)
 {
 	const GLFWvidmode* video_mode = nullptr;
-	const GLFWmonitor* monitor = nullptr;
+	GLFWmonitor* monitor = nullptr;
 
 	if (display_id > -1) {
 		int count = 0;
@@ -278,150 +329,355 @@ bool Window::init(
 		monitor = monitors[display_id];
 	}
 
-	if (monitor) {
-		if (video_mode_id > -1) {
-			int count = 0;
-			video_mode = glfwGetVideoModes(const_cast<GLFWmonitor*>(monitor), &count);
+	if (video_mode_id > -1) {
+		int count = 0;
+		video_mode = glfwGetVideoModes(monitor, &count);
 
-			if (count <= video_mode_id) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			video_mode += video_mode_id;
-
-		} else {
-			video_mode = glfwGetVideoMode(const_cast<GLFWmonitor*>(monitor));
+		if (count <= video_mode_id) {
+			// $TODO: Log error.
+			return false;
 		}
+
+		video_mode += video_mode_id;
+
+	} else {
+		video_mode = glfwGetVideoMode(monitor);
 	}
 
-	return init(window_name, monitor, width, height);
+	return initFullscreen(window_name, *monitor, *video_mode);
 }
-//bool Window::init(
-//	const char8_t* window_name,
-//	WindowMode window_mode,
-//	int32_t width,
-//	int32_t height,
-//	int32_t pos_x,
-//	int32_t pos_y,
-//	const char* /*compat*/)
-//{
-//	GAFF_ASSERT(window_name);
-//
-//	_hinstance = GetModuleHandle(NULL);
-//
-//	if (!_hinstance) {
-//		return false;
-//	}
-//
-//	DoFirstInit(WindowProc, _hinstance, g_left_keys, g_right_keys);
-//
-//	_window_name = window_name;
-//	_window_mode = window_mode;
-//
-//	CONVERT_STRING(wchar_t, temp, window_name);
-//
-//	DWORD flags = 0;
-//
-//	switch (window_mode) {
-//		case WindowMode::BorderlessWindowed:
-//		case WindowMode::Fullscreen:
-//			flags = WS_POPUP;
-//			break;
-//
-//		case WindowMode::Windowed:
-//			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
-//			break;
-//	}
-//
-//	_pos.x = pos_x;
-//	_pos.y = pos_y;
-//	_size.x = width;
-//	_size.y = height;
-//
-//	if (window_mode == WindowMode::Fullscreen) {
-//		// If full screen set the screen to maximum size of the users desktop and 32-bit.
-//		DEVMODE dm_screen_settings;
-//		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
-//		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-//		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(width);
-//		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(height);
-//		dm_screen_settings.dmBitsPerPel = 32;
-//		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-//
-//		ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
-//	}
-//
-//	// Adjust window to make the drawable area to be the desired resolution.
-//	RECT window_rect = { _pos.x, _pos.y, _pos.x + _size.x, _pos.y + _size.y };
-//
-//	if (window_mode == WindowMode::Windowed) {
-//		AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);
-//
-//		if (_pos.x == 0 && _pos.y == 0) {
-//			window_rect.right += -window_rect.left;
-//			window_rect.left = 0;
-//
-//			window_rect.bottom += -window_rect.top;
-//			window_rect.top = 0;
-//		}
-//	}
-//
-//	_hwnd = CreateWindowEx(
-//		WS_EX_APPWINDOW, g_window_class_name, temp,
-//		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
-//		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
-//		NULL, NULL, _hinstance, NULL
-//	);
-//
-//	if (!_hwnd) {
-//		return false;
-//	}
-//
-//	// Bring the window up on the screen and set it as main focus.
-//	ShowWindow(_hwnd, (window_mode == WindowMode::Fullscreen) ? SW_MAXIMIZE : SW_SHOW);
-//	SetForegroundWindow(_hwnd);
-//	SetFocus(_hwnd);
-//
-//	ZeroMemory(&g_msg, sizeof(MSG));
-//	g_windows.emplace_back(this);
-//
-//	return true;
-//}
-//
-//void Window::destroy(void)
-//{
-//	if (!_owns_window) {
-//		_hwnd = nullptr;
-//		return;
-//	}
-//
-//	auto it = Gaff::Find(g_windows, this);
-//	GAFF_ASSERT(it != g_windows.end());
-//	g_windows.erase_unsorted(it);
-//
-//	containCursor(false);
-//	showCursor(true);
-//
-//	if (_window_mode == WindowMode::Fullscreen) {
-//		ChangeDisplaySettings(NULL, 0);
-//	}
-//
-//	if (_hwnd) {
-//		DestroyWindow(_hwnd);
-//		_hwnd = nullptr;
-//	}
-//
-//	if (_hinstance) {
-//		const char8_t* window_name = _window_name.data();
-//		CONVERT_STRING(wchar_t, temp, window_name);
-//		UnregisterClass(temp, _hinstance);
-//
-//		_window_name.clear();
-//		_hinstance = nullptr;
-//	}
-//}
-//
+
+bool Window::initFullscreen(
+	const char8_t* window_name,
+	GLFWmonitor& monitor,
+	const IVec2& size,
+	int32_t refresh_rate)
+{
+	const GLFWvidmode* const video_mode = glfwGetVideoMode(&monitor);
+
+	glfwWindowHint(GLFW_RED_BITS, video_mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, video_mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, video_mode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, refresh_rate);
+
+	_window = glfwCreateWindow(
+		size.x,
+		size.y,
+		reinterpret_cast<const char*>(window_name),
+		&monitor,
+		nullptr);
+
+	if (_window != nullptr) {
+		_fullscreen = true;
+		return true;
+	}
+
+	return false;
+}
+
+bool Window::initWindowed(
+	const char8_t* window_name,
+	const IVec2& size)
+{
+	_window = glfwCreateWindow(
+		size.x,
+		size.y,
+		reinterpret_cast<const char*>(window_name),
+		nullptr,
+		nullptr);
+
+	return _window != nullptr;
+}
+
+void Window::destroy(void)
+{
+	if (_window) {
+		glfwDestroyWindow(_window);
+		_window = nullptr;
+	}
+}
+
+GLFWwindow* Window::getGLFWWindow(void) const
+{
+	return _window;
+}
+
+void Window::setFullscreen(const GLFWvidmode& video_mode, GLFWmonitor* monitor)
+{
+	GAFF_ASSERT(_window);
+
+	if (!monitor) {
+		monitor = glfwGetWindowMonitor(_window);
+	}
+
+	GAFF_ASSERT(monitor);
+
+	glfwSetWindowMonitor(_window, monitor, 0, 0, video_mode.width, video_mode.height, video_mode.refreshRate);
+	_fullscreen = true;
+}
+
+void Window::setFullscreen(const IVec2& size, int32_t refresh_rate, GLFWmonitor* monitor)
+{
+	GAFF_ASSERT(_window);
+
+	if (!monitor) {
+		monitor = glfwGetWindowMonitor(_window);
+	}
+
+	GAFF_ASSERT(monitor);
+
+	glfwSetWindowMonitor(_window, monitor, 0, 0, size.x, size.y, refresh_rate);
+	_fullscreen = true;
+}
+
+void Window::setWindowed(const IVec2& size, const IVec2& pos)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowMonitor(_window, nullptr, pos.x, pos.y, size.x, size.y, GLFW_DONT_CARE);
+	_fullscreen = false;
+}
+
+bool Window::isFullscreen(void) const
+{
+	return _fullscreen;
+}
+
+bool Window::isWindowed(void) const
+{
+	return !_fullscreen;
+}
+
+void Window::setSize(const IVec2& size)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowSize(_window, size.x, size.y);
+}
+
+IVec2 Window::getSize(void) const
+{
+	GAFF_ASSERT(_window);
+
+	IVec2 size;
+	glfwGetWindowSize(_window, &size.x, &size.y);
+
+	return size;
+}
+
+void Window::setPos(const IVec2& pos)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowPos(_window, pos.x, pos.y);
+}
+
+IVec2 Window::getPos(void) const
+{
+	GAFF_ASSERT(_window);
+
+	IVec2 pos;
+	glfwGetWindowPos(_window, &pos.x, &pos.y);
+
+	return pos;
+}
+
+void Window::setTitle(const char8_t* title)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowTitle(_window, reinterpret_cast<const char*>(title));
+}
+
+void Window::setIcon(const GLFWimage* icons, int32_t count)
+{
+	GAFF_ASSERT(_window);
+	GAFF_ASSERT(count == 0 || (icons && count >= 0))
+	glfwSetWindowIcon(_window, count, icons);
+}
+
+void Window::setVisible(bool visible)
+{
+	GAFF_ASSERT(_window);
+
+	if (visible) {
+		glfwShowWindow(_window);
+	} else {
+		glfwHideWindow(_window);
+	}
+}
+
+bool Window::isVisible(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_VISIBLE) == GLFW_TRUE;
+}
+
+bool Window::isFocused(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_FOCUSED) == GLFW_TRUE;
+}
+
+void Window::focus(void)
+{
+	GAFF_ASSERT(_window);
+	glfwFocusWindow(_window);
+}
+
+void Window::notify(void)
+{
+	GAFF_ASSERT(_window);
+	glfwRequestWindowAttention(_window);
+}
+
+void Window::setOpacity(float opacity)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowOpacity(_window, opacity);
+}
+
+float Window::getOpacity(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowOpacity(_window);
+}
+
+bool Window::isMaximized(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_MAXIMIZED) == GLFW_TRUE;
+}
+
+void Window::toggleMaximize(void)
+{
+	GAFF_ASSERT(_window);
+
+	if (isMaximized()) {
+		restore();
+	} else {
+		maximize();
+	}
+}
+
+void Window::maximize(void)
+{
+	GAFF_ASSERT(_window);
+	glfwMaximizeWindow(_window);
+}
+
+void Window::restore(void)
+{
+	GAFF_ASSERT(_window);
+	glfwRestoreWindow(_window);
+}
+
+void Window::setAlwaysOnTop(bool always_on_top)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowAttrib(_window, GLFW_FLOATING, (always_on_top) ? GLFW_TRUE : GLFW_FALSE);
+}
+
+bool Window::isAlwaysOnTop(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_FLOATING) == GLFW_TRUE;
+}
+
+void Window::setResizable(bool resizable)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowAttrib(_window, GLFW_RESIZABLE, (resizable) ? GLFW_TRUE : GLFW_FALSE);
+}
+
+bool Window::isResizable(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_RESIZABLE) == GLFW_TRUE;
+}
+
+void Window::setHasDecorations(bool has_decorations)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowAttrib(_window, GLFW_DECORATED, (has_decorations) ? GLFW_TRUE : GLFW_FALSE);
+}
+
+bool Window::hasDecorations(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowAttrib(_window, GLFW_DECORATED) == GLFW_TRUE;
+}
+
+void* Window::getUserPointer(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowUserPointer(_window);
+}
+
+void Window::setUserPointer(void* ptr)
+{
+	GAFF_ASSERT(_window);
+	glfwSetWindowUserPointer(_window, ptr);
+}
+
+bool Window::shouldClose(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwWindowShouldClose(_window);
+}
+
+void Window::forceClose(void)
+{
+	GAFF_ASSERT(_window);
+	return glfwSetWindowShouldClose(_window, GLFW_TRUE);
+}
+
+int32_t Window::addSizeChangeCallback(const VecCallback& callback)
+{
+	return AddCallback(_size_callbacks, callback);
+}
+
+int32_t Window::addSizeChangeCallback(VecCallback&& callback)
+{
+	return AddCallback(_size_callbacks, std::move(callback));
+}
+
+int32_t Window::addPosChangeCallback(const VecCallback& callback)
+{
+	return AddCallback(_pos_callbacks, callback);
+}
+
+int32_t Window::addPosChangeCallback(VecCallback&& callback)
+{
+	return AddCallback(_pos_callbacks, std::move(callback));
+}
+
+int32_t Window::addCloseCallback(const WindowCallback& callback)
+{
+	return AddCallback(_close_callbacks, callback);
+}
+
+int32_t Window::addCloseCallback(WindowCallback&& callback)
+{
+	return AddCallback(_close_callbacks, std::move(callback));
+}
+
+int32_t Window::addMaximizeCallback(const BoolCallback& callback)
+{
+	return AddCallback(_maximize_callbacks, callback);
+}
+
+int32_t Window::addMaximizeCallback(BoolCallback&& callback)
+{
+	return AddCallback(_maximize_callbacks, std::move(callback));
+}
+
+int32_t Window::addFocusCallback(const BoolCallback& callback)
+{
+	return AddCallback(_focus_callbacks, callback);
+}
+
+int32_t Window::addFocusCallback(BoolCallback&& callback)
+{
+	return AddCallback(_focus_callbacks, std::move(callback));
+}
+
 //int32_t Window::addWindowMessageHandler(const MessageHandler& callback)
 //{
 //	const int32_t id = g_global_next_id++;
