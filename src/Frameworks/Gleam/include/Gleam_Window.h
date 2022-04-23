@@ -147,11 +147,20 @@ public:
 	int32_t addFocusCallback(const BoolCallback& callback);
 	int32_t addFocusCallback(BoolCallback&& callback);
 
-	//void showCursor(bool show) override;
-	//void containCursor(bool contain) override;
+	bool isCursorDisabled(void) const;
+	void disableCursor(void);
 
-	//bool isCursorVisible(void) const override;
-	//bool isCursorContained(void) const override;
+	bool isCursorHidden(void) const;
+	void hideCursor(void);
+
+	bool isCursorVisible(void) const;
+	void showCursor(void);
+
+	void setCursorPos(const IVec2 & pos);
+	IVec2 getCursorPos(void) const;
+
+	bool isUsingRawMouseMotion(void) const;
+	void useRawMouseMotion(bool enabled);
 
 	//void* getPlatformHandle(void) const override;
 

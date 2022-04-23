@@ -28,6 +28,7 @@ namespace
 {
 	static void OnError(int error, const char* description)
 	{
+		GAFF_REF(error, description);
 		// $TODO: Log error.
 	}
 
@@ -37,7 +38,7 @@ namespace
 	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
 	{
 		const int32_t id = g_next_id++;
-		_size_callbacks.emplace(id, cb);
+		callbacks.emplace(id, cb);
 		return id;
 	}
 
@@ -45,7 +46,7 @@ namespace
 	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
 	{
 		const int32_t id = g_next_id++;
-		_size_callbacks.emplace(id, std::move(cb));
+		callbacks.emplace(id, std::move(cb));
 		return id;
 	}
 }
@@ -61,6 +62,7 @@ bool Window::GlobalInit(void)
 	}
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	return true;
 }
 
 void Window::GlobalShutdown(void)
@@ -237,46 +239,6 @@ void Window::PostEmptyEvent(void)
 //	g_right_keys.shrink_to_fit();
 //	g_left_keys.shrink_to_fit();
 //	g_windows.shrink_to_fit();
-//}
-//
-//LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
-//{
-//	bool handled = false;
-//	AnyMessage message;
-//
-//	auto it_wnd = Gaff::Find(g_windows, hwnd, [](const Window* lhs, const HWND rhs) -> bool
-//	{
-//		return lhs->getHWnd() == rhs;
-//	});
-//
-//	if (it_wnd != g_windows.end())
-//	{
-//		Window* const window = *it_wnd;
-//
-//		if (!window->_window_callbacks.empty() || !g_global_message_handlers.empty()) {
-//			// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
-//			WindowProcHelper helper_func = g_window_helpers[msg];
-//
-//			if (helper_func) {
-//				helper_func(message, window, w, l);
-//				message.base.window = window;
-//
-//				for (const auto& handler : window->_window_callbacks) {
-//					handled = handler.second(message) || handled;
-//				}
-//
-//				for (const auto& handler : g_global_message_handlers) {
-//					handled = handler.second(message) || handled;
-//				}
-//
-//				if (handled) {
-//					return 0;
-//				}
-//			}
-//		}
-//	}
-//
-//	return DefWindowProc(hwnd, msg, w, l);
 //}
 
 Window::~Window(void)
@@ -676,6 +638,70 @@ int32_t Window::addFocusCallback(const BoolCallback& callback)
 int32_t Window::addFocusCallback(BoolCallback&& callback)
 {
 	return AddCallback(_focus_callbacks, std::move(callback));
+}
+
+bool Window::isCursorDisabled(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetInputMode(_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+}
+
+void Window::disableCursor(void)
+{
+	GAFF_ASSERT(_window);
+	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+bool Window::isCursorHidden(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetInputMode(_window, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN;
+}
+
+void Window::hideCursor(void)
+{
+	GAFF_ASSERT(_window);
+	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+}
+
+bool Window::isCursorVisible(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetInputMode(_window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+}
+
+void Window::showCursor(void)
+{
+	GAFF_ASSERT(_window);
+	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::setCursorPos(const IVec2& pos)
+{
+	GAFF_ASSERT(_window);
+	glfwSetCursorPos(_window, pos.x, pos.y);
+}
+
+IVec2 Window::getCursorPos(void) const
+{
+	GAFF_ASSERT(_window);
+
+	double x, y;
+	glfwGetCursorPos(_window, &x, &y);
+
+	return IVec2(static_cast<int32_t>(x), static_cast<int32_t>(y));
+}
+
+bool Window::isUsingRawMouseMotion(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetInputMode(_window, GLFW_RAW_MOUSE_MOTION) == GLFW_TRUE;
+}
+
+void Window::useRawMouseMotion(bool enabled)
+{
+	GAFF_ASSERT(_window);
+	glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 }
 
 //int32_t Window::addWindowMessageHandler(const MessageHandler& callback)
