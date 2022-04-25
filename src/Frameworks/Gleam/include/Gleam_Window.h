@@ -22,29 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_Window_Defines.h"
 #include "Gleam_VectorMap.h"
 #include "Gleam_Vec2.h"
+#include <Gaff_Flags.h>
 #include <EASTL/functional.h>
 
 struct GLFWmonitor;
 struct GLFWvidmode;
 struct GLFWwindow;
+struct GLFWcursor;
 struct GLFWimage;
 
 NS_GLEAM
 
+enum class MouseButton : uint8_t;
+enum class KeyCode : uint16_t;
+enum class Modifier : uint8_t;
+
 class Window
 {
 public:
-	using VecCallback = eastl::function<void (Window&, const IVec2&)>;
+	using KeyCallback = eastl::function<void (Window&, KeyCode, bool, Gaff::Flags<Modifier>)>;
+	using MouseButtonCallback = eastl::function<void (Window&, MouseButton, bool, Gaff::Flags<Modifier>)>;
+	using CharCallback = eastl::function<void (Window&, unsigned int)>;
+	using IVecCallback = eastl::function<void (Window&, const IVec2&)>;
+	using VecCallback = eastl::function<void (Window&, const Vec2&)>;
 	using BoolCallback = eastl::function<void (Window&, bool)>;
 	using WindowCallback = eastl::function<void (Window&)>;
-
-	template <class T>
-	T* getUserPointer(void) const
-	{
-		return reinterpret_cast<T*>(getUserPointer());
-	}
+	using MouseCallback = eastl::function<void (Window&, MouseCode, float)>;
 
 	static bool GlobalInit(void);
 	static void GlobalShutdown(void);
@@ -53,9 +59,43 @@ public:
 	static void PollEvents(void);
 	static void PostEmptyEvent(void);
 
-	//static int32_t AddGlobalMessageHandler(const MessageHandler& callback);
-	//static int32_t AddGlobalMessageHandler(MessageHandler&& callback);
-	//static bool RemoveGlobalMessageHandler(int32_t id);
+	static int32_t AddGlobalSizeChangeCallback(const IVecCallback& callback);
+	static int32_t AddGlobalSizeChangeCallback(IVecCallback&& callback);
+
+	static int32_t AddGlobalPosChangeCallback(const IVecCallback& callback);
+	static int32_t AddGlobalPosChangeCallback(IVecCallback&& callback);
+
+	static int32_t AddGlobalCloseCallback(const WindowCallback& callback);
+	static int32_t AddGlobalCloseCallback(WindowCallback&& callback);
+
+	static int32_t AddGlobalMaximizeCallback(const BoolCallback& callback);
+	static int32_t AddGlobalMaximizeCallback(BoolCallback&& callback);
+
+	static int32_t AddGlobalFocusCallback(const BoolCallback& callback);
+	static int32_t AddGlobalFocusCallback(BoolCallback&& callback);
+
+	static int32_t AddGlobalMouseEnterLeaveCallback(const BoolCallback& callback);
+	static int32_t AddGlobalMouseEnterLeaveCallback(BoolCallback&& callback);
+
+	static int32_t AddGlobalMousePosCallback(const VecCallback& callback);
+	static int32_t AddGlobalMousePosCallback(VecCallback&& callback);
+
+	static int32_t AddGlobalMouseButtonCallback(const MouseButtonCallback& callback);
+	static int32_t AddGlobalMouseButtonCallback(MouseButtonCallback&& callback);
+
+	static int32_t AddGlobalMouseWheelCallback(const VecCallback& callback);
+	static int32_t AddGlobalMouseWheelCallback(VecCallback&& callback);
+
+	static int32_t AddGlobalCharacterCallback(const CharCallback& callback);
+	static int32_t AddGlobalCharacterCallback(CharCallback&& callback);
+
+	static int32_t AddGlobalKeyCallback(const KeyCallback& callback);
+	static int32_t AddGlobalKeyCallback(KeyCallback&& callback);
+
+	static int32_t AddGlobalMouseCallback(const MouseCallback& callback);
+	static int32_t AddGlobalMouseCallback(MouseCallback&& callback);
+
+
 
 	Window(void) = default;
 	~Window(void);
@@ -67,7 +107,7 @@ public:
 
 	bool initFullscreen(
 		const char8_t* window_name,
-		int32_t display_id,
+		int32_t monitor_id,
 		int32_t video_mode_id);
 
 	bool initFullscreen(
@@ -126,26 +166,8 @@ public:
 	void setHasDecorations(bool has_decorations);
 	bool hasDecorations(void) const;
 
-	void* getUserPointer(void) const;
-	void setUserPointer(void* ptr);
-
 	bool shouldClose(void) const;
 	void forceClose(void);
-
-	int32_t addSizeChangeCallback(const VecCallback& callback);
-	int32_t addSizeChangeCallback(VecCallback&& callback);
-
-	int32_t addPosChangeCallback(const VecCallback& callback);
-	int32_t addPosChangeCallback(VecCallback&& callback);
-
-	int32_t addCloseCallback(const WindowCallback& callback);
-	int32_t addCloseCallback(WindowCallback&& callback);
-
-	int32_t addMaximizeCallback(const BoolCallback& callback);
-	int32_t addMaximizeCallback(BoolCallback&& callback);
-
-	int32_t addFocusCallback(const BoolCallback& callback);
-	int32_t addFocusCallback(BoolCallback&& callback);
 
 	bool isCursorDisabled(void) const;
 	void disableCursor(void);
@@ -156,42 +178,92 @@ public:
 	bool isCursorVisible(void) const;
 	void showCursor(void);
 
-	void setCursorPos(const IVec2 & pos);
-	IVec2 getCursorPos(void) const;
+	void setMousePos(const Vec2& pos);
+	Vec2 getMousePos(void) const;
+
+	void setCursor(GLFWcursor* cursor);
 
 	bool isUsingRawMouseMotion(void) const;
 	void useRawMouseMotion(bool enabled);
 
-	//void* getPlatformHandle(void) const override;
+	int32_t addSizeChangeCallback(const IVecCallback& callback);
+	int32_t addSizeChangeCallback(IVecCallback&& callback);
 
-	//HINSTANCE getHInstance(void) const;
-	//HWND getHWnd(void) const;
+	int32_t addPosChangeCallback(const IVecCallback& callback);
+	int32_t addPosChangeCallback(IVecCallback&& callback);
+
+	int32_t addCloseCallback(const WindowCallback & callback);
+	int32_t addCloseCallback(WindowCallback&& callback);
+
+	int32_t addMaximizeCallback(const BoolCallback& callback);
+	int32_t addMaximizeCallback(BoolCallback&& callback);
+
+	int32_t addFocusCallback(const BoolCallback& callback);
+	int32_t addFocusCallback(BoolCallback&& callback);
+
+	int32_t addMouseEnterLeaveCallback(const BoolCallback& callback);
+	int32_t addMouseEnterLeaveCallback(BoolCallback&& callback);
+
+	int32_t addMousePosCallback(const VecCallback& callback);
+	int32_t addMousePosCallback(VecCallback&& callback);
+
+	int32_t addMouseButtonCallback(const MouseButtonCallback& callback);
+	int32_t addMouseButtonCallback(MouseButtonCallback&& callback);
+
+	int32_t addMouseWheelCallback(const VecCallback& callback);
+	int32_t addMouseWheelCallback(VecCallback&& callback);
+
+	int32_t addCharacterCallback(const CharCallback& callback);
+	int32_t addCharacterCallback(CharCallback&& callback);
+
+	int32_t addKeyCallback(const KeyCallback& callback);
+	int32_t addKeyCallback(KeyCallback&& callback);
+
+	int32_t addMouseCallback(const MouseCallback& callback);
+	int32_t addMouseCallback(MouseCallback&& callback);
+
+#ifdef PLATFORM_WINDOWS
+	void* getHWnd(void) const;
+#endif
 
 private:
-	//bool _cursor_visible = true;
-	//bool _contain = false;
-
-	//VectorMap<int32_t, MessageHandler> _window_callbacks;
-
-	//static VectorMap<uint16_t, KeyCode> g_right_keys;
-	//static VectorMap<uint16_t, KeyCode> g_left_keys;
-
-	//static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
-
-	//friend void WindowMoved(AnyMessage&, Window*, WPARAM, LPARAM);
-	//friend void WindowResized(AnyMessage&, Window*, WPARAM, LPARAM);
-	//friend void WindowInput(AnyMessage&, Window*, WPARAM, LPARAM);
-	//friend void WindowSetFocus(AnyMessage&, Window*, WPARAM, LPARAM);
-	//friend void WindowKillFocus(AnyMessage&, Window*, WPARAM, LPARAM);
-
-	VectorMap<int32_t, VecCallback> _size_callbacks;
-	VectorMap<int32_t, VecCallback> _pos_callbacks;
+	VectorMap<int32_t, IVecCallback> _size_callbacks;
+	VectorMap<int32_t, IVecCallback> _pos_callbacks;
 	VectorMap<int32_t, WindowCallback> _close_callbacks;
 	VectorMap<int32_t, BoolCallback> _maximize_callbacks;
 	VectorMap<int32_t, BoolCallback> _focus_callbacks;
 
+	VectorMap<int32_t, BoolCallback> _mouse_enter_leave_callbacks;
+	VectorMap<int32_t, VecCallback> _mouse_pos_callbacks;
+	VectorMap<int32_t, MouseButtonCallback> _mouse_button_callbacks;
+	VectorMap<int32_t, VecCallback> _mouse_wheel_callbacks;
+
+	VectorMap<int32_t, CharCallback> _char_callbacks;
+	VectorMap<int32_t, KeyCallback> _key_callbacks;
+
+	VectorMap<int32_t, MouseCallback> _mouse_callbacks;
+
+	// $TODO: Add joystick and gamepad support.
+
+	Vec2 _prev_pos{ 0.0f, 0.0f };
 	GLFWwindow* _window = nullptr;
 	bool _fullscreen = false;
+
+	static void OnWindowSize(GLFWwindow* glfw_window, int width, int height);
+	static void OnWindowPos(GLFWwindow* glfw_window, int width, int height);
+	static void OnWindowClose(GLFWwindow* glfw_window);
+	static void OnWindowMaximize(GLFWwindow* glfw_window, int maximized);
+	static void OnWindowFocus(GLFWwindow* glfw_window, int maximized);
+
+	static void OnMouseEnterLeave(GLFWwindow* glfw_window, int entered);
+	static void OnMousePos(GLFWwindow* glfw_window, double x, double y);
+	static void OnMouseButton(GLFWwindow* glfw_window, int button, int action, int mods);
+	static void OnMouseWheel(GLFWwindow* glfw_window, double x, double y);
+
+	static void OnCharacter(GLFWwindow* glfw_window, unsigned int character);
+	static void OnKey(GLFWwindow* glfw_window, int key, int scan_code, int action, int mods);
+
+	void setWindowCallbacks(void);
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);

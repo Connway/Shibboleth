@@ -23,36 +23,43 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include <GLFW/glfw3.h>
 
 NS_GLEAM
 
-class IWindow;
-
-enum class EventType : uint8_t
+enum class Modifier : uint8_t
 {
-	WindowClosed = 0,
-	WindowDestroyed,
-	WindowMoved,
-	WindowResized,
-	WindowLostFocus,
-	WindowGainedFocus,
-	InputKeyDown,
-	InputKeyUp,
-	InputCharacter,
-	InputMouseMove,
-	InputMouseDown,
-	InputMouseUp,
-	InputMouseWheelHorizontal,
-	InputMouseWheelVertical
+	Shift = 0,
+	Control,
+	Alt,
+	Super,
+	CapsLock,
+	NumLock,
+
+	Count
 };
 
-enum class MouseCode : uint8_t
+enum class MouseButton : uint8_t
 {
 	Left = 0,
 	Right,
 	Middle,
 	Back,
 	Forward,
+	Button5,
+	Button6,
+	Button7,
+
+	Count,
+};
+
+enum class MouseCode : uint8_t
+{
+	LeftButton = 0,
+	RightButton,
+	MiddleButton,
+	BackButton,
+	ForwardButton,
 	Button5,
 	Button6,
 	Button7,
@@ -64,366 +71,136 @@ enum class MouseCode : uint8_t
 	PosY,
 
 	WheelVertical,
-	WheelUp,
-	WheelDown,
-
 	WheelHorizontal,
-	WheelLeft,
-	WheelRight
+
+	Count
 };
 
-#ifdef PLATFORM_WINDOWS
-enum class KeyCode
-{
-	// Cancel = 0x03,
-	Backspace = 0x08,
-	Tab,
-	// Clear = 0x0C,
-	Enter = 0x0D,
-	Pause = 0x12,
-	CapsLock,
-	Escape = 0x1B,
-	Space = 0x20,
-	PageUp,
-	PageDown,
-	End,
-	Home,
-	Left,
-	Up,
-	Right,
-	Down,
-	// Select,
-	// Print,
-	// Execute,
-	PrintScreen = 0x2C,
-	Insert,
-	Delete,
-	// Help,
-	Num0 = 0x30,
-	Num1,
-	Num2,
-	Num3,
-	Num4,
-	Num5,
-	Num6,
-	Num7,
-	Num8,
-	Num9,
-	A = 0x41,
-	B,
-	C,
-	D,
-	E,
-	F,
-	G,
-	H,
-	I,
-	J,
-	K,
-	L,
-	M,
-	N,
-	O,
-	P,
-	Q,
-	R,
-	S,
-	T,
-	U,
-	V,
-	W,
-	X,
-	Y,
-	Z,
-	LeftSuper,
-	RightSuper,
-	Numpad0 = 0x60,
-	Numpad1,
-	Numpad2,
-	Numpad3,
-	Numpad4,
-	Numpad5,
-	Numpad6,
-	Numpad7,
-	Numpad8,
-	Numpad9,
-	Multiply,
-	Add,
-	Separator,
-	Subtract,
-	Decimal,
-	Divide,
-	F1,
-	F2,
-	F3,
-	F4,
-	F5,
-	F6,
-	F7,
-	F8,
-	F9,
-	F10,
-	F11,
-	F12,
-	// F13,
-	// F14,
-	// F15,
-	// F16,
-	// F17,
-	// F18,
-	// F19,
-	// F20,
-	// F21,
-	// F22,
-	// F23,
-	// F24,
-	NumLock = 0x90,
-	ScrollLock,
-	LeftShift = 0xA0,
-	RightShift,
-	LeftControl,
-	RightControl,
-	LeftAlt,
-	RightAlt,
-	Semicolon = 0xBA,
-	Equals,
-	Comma,
-	Minus,
-	Period,
-	ForwardSlash,
-	Tilde,
-	LeftSquareBracket = 0xDB,
-	Backslash,
-	RightSquareBracket,
-	Apostrophe,
-	NumpadEnter = 0x0D
-};
-
-enum class CursorType
-{
-	None = -1,
-
-	Arrow = 32512,
-	IBeam = 32513,
-	Wait = 32514,
-	Cross = 32515,
-	UpArrow = 32516,
-	Size = 32640,
-	Icon = 32641,
-	SizeNWSE = 32642,
-	SizeNESW = 32643,
-	SizeWE = 32644,
-	SizeNS = 32645,
-	SizeAll = 32646,
-	No = 32648,
-	Hand = 32649,
-	AppStarting = 32650,
-	Help = 32651,
-	Pin = 32671,
-	Person = 32672
-};
-
-#elif defined(PLATFORM_LINUX)
-enum class KeyCode
+enum class KeyCode : uint16_t
 {
 	// Cancel = 0xff69,
-	Backspace = 22,
-	Tab = 23,
+	Backspace = GLFW_KEY_BACKSPACE,
+	Tab = GLFW_KEY_TAB,
 	// Clear = 0xff0b,
-	Enter = 36,
-	Pause = 127,
-	CapsLock = 66,
-	Escape = 9,
-	Space = 65,
-	PageUp = 112,
-	PageDown = 117,
-	End = 115,
-	Home = 110,
-	Left = 113,
-	Up = 111,
-	Right = 114,
-	Down = 116,
+	Enter = GLFW_KEY_ENTER,
+	Pause = GLFW_KEY_PAUSE,
+	CapsLock = GLFW_KEY_CAPS_LOCK,
+	Escape = GLFW_KEY_ESCAPE,
+	Space = GLFW_KEY_SPACE,
+	PageUp = GLFW_KEY_PAGE_UP,
+	PageDown = GLFW_KEY_PAGE_DOWN,
+	End = GLFW_KEY_END,
+	Home = GLFW_KEY_HOME,
+	Left = GLFW_KEY_LEFT,
+	Up = GLFW_KEY_UP,
+	Right = GLFW_KEY_RIGHT,
+	Down = GLFW_KEY_DOWN,
 	// Select = 0xff60,
 	// Print,
 	// Execute,
-	PrintScreen = 107,
-	Insert = 118,
-	Delete = 119,
+	PrintScreen = GLFW_KEY_PRINT_SCREEN,
+	Insert = GLFW_KEY_INSERT,
+	Delete = GLFW_KEY_DELETE,
 	// Help = 0xff6a,
-	Num0 = 19,
-	Num1 = 10,
-	Num2 = 11,
-	Num3 = 12,
-	Num4 = 13,
-	Num5 = 14,
-	Num6 = 15,
-	Num7 = 16,
-	Num8 = 17,
-	Num9 = 18,
-	A = 38,
-	B = 56,
-	C = 54,
-	D = 40,
-	E = 26,
-	F = 41,
-	G = 42,
-	H = 43,
-	I = 31,
-	J = 44,
-	K = 45,
-	L = 46,
-	M = 58,
-	N = 57,
-	O = 32,
-	P = 33,
-	Q = 24,
-	R = 27,
-	S = 39,
-	T = 28,
-	U = 30,
-	V = 55,
-	W = 25,
-	X = 53,
-	Y = 29,
-	Z = 52,
-	LeftSuper = 133,
-	RightSuper = 134,
-	Numpad0 = 90,
-	Numpad1 = 86,
-	Numpad2 = 87,
-	Numpad3 = 88,
-	Numpad4 = 83,
-	Numpad5 = 84,
-	Numpad6 = 85,
-	Numpad7 = 79,
-	Numpad8 = 80,
-	Numpad9 = 81,
-	Multiply = 63,
-	Add = 86,
-	Separator,
-	Subtract = 82,
-	Decimal = 91,
-	Divide = 106,
-	F1 = 67,
-	F2 = 68,
-	F3 = 69,
-	F4 = 70,
-	F5 = 71,
-	F6 = 72,
-	F7 = 73,
-	F8 = 74,
-	F9 = 75,
-	F10 = 76,
-	F11 = 95,
-	F12 = 96,
-	// These are guesses and are almost positively wrong!
-	// F13 = 97,
-	// F14 = 98,
-	// F15 = 99,
-	// F16 = 100,
-	// F17 = 101,
-	// F18 = 102,
-	// F19 = 103,
-	// F20 = 104,
-	// F21 = 105,
-	// F22 = 106,
-	// F23 = 107,
-	// F24 = 108,
-	NumLock = 77,
-	ScrollLock = 78,
-	LeftShift = 50,
-	RightShift = 62,
-	LeftControl = 37,
-	RightControl = 105,
-	LeftAlt = 64,
-	RightAlt = 108,
-	Semicolon = 46,
-	Equals = 21,
-	Comma = 59,
-	Minus = 20,
-	Period = 60,
-	ForwardSlash = 61,
-	Tilde = 49,
-	LeftSquareBracket = 34,
-	Backslash = 51,
-	RightSquareBracket = 35,
-	Apostrophe = 48,
-	NumpadEnter = 104
-};
-
-enum class CursorType
-{
-	None = -1,
-
-	Arrow = 32512,
-	IBeam = 32513,
-	Wait = 32514,
-	Cross = 32515,
-	UpArrow = 32516,
-	Size = 32640,
-	Icon = 32641,
-	SizeNWSE = 32642,
-	SizeNESW = 32643,
-	SizeWE = 32644,
-	SizeNS = 32645,
-	SizeAll = 32646,
-	No = 32648,
-	Hand = 32649,
-	AppStarting = 32650,
-	Help = 32651,
-	Pin = 32671,
-	Person = 32672
-};
-#endif
-
-struct MessageBase final
-{
-	EventType type;
-	IWindow* window;
-};
-
-struct MouseMoveMessage final
-{
-	EventType type;
-	IWindow* window;
-	int32_t abs_x;
-	int32_t abs_y;
-	int32_t rel_x;
-	int32_t rel_y;
-	int32_t dx;
-	int32_t dy;
-};
-
-struct MouseStateMessage final
-{
-	EventType type;
-	IWindow* window;
-
-	union
-	{
-		MouseCode button;
-		int16_t wheel;
-	};
-};
-
-struct KeyCharMessage final
-{
-	EventType type;
-	IWindow* window;
-
-	union
-	{
-		KeyCode key;
-		uint32_t character;
-	};
-};
-
-union AnyMessage final
-{
-	MessageBase base;
-	MouseMoveMessage mouse_move;
-	MouseStateMessage mouse_state;
-	KeyCharMessage key_char;
+	Num0 = GLFW_KEY_0,
+	Num1 = GLFW_KEY_1,
+	Num2 = GLFW_KEY_2,
+	Num3 = GLFW_KEY_3,
+	Num4 = GLFW_KEY_4,
+	Num5 = GLFW_KEY_5,
+	Num6 = GLFW_KEY_6,
+	Num7 = GLFW_KEY_7,
+	Num8 = GLFW_KEY_8,
+	Num9 = GLFW_KEY_9,
+	A = GLFW_KEY_A,
+	B = GLFW_KEY_B,
+	C = GLFW_KEY_C,
+	D = GLFW_KEY_D,
+	E = GLFW_KEY_E,
+	F = GLFW_KEY_F,
+	G = GLFW_KEY_G,
+	H = GLFW_KEY_H,
+	I = GLFW_KEY_I,
+	J = GLFW_KEY_J,
+	K = GLFW_KEY_K,
+	L = GLFW_KEY_L,
+	M = GLFW_KEY_M,
+	N = GLFW_KEY_N,
+	O = GLFW_KEY_O,
+	P = GLFW_KEY_P,
+	Q = GLFW_KEY_Q,
+	R = GLFW_KEY_R,
+	S = GLFW_KEY_S,
+	T = GLFW_KEY_T,
+	U = GLFW_KEY_U,
+	V = GLFW_KEY_V,
+	W = GLFW_KEY_W,
+	X = GLFW_KEY_X,
+	Y = GLFW_KEY_Y,
+	Z = GLFW_KEY_Z,
+	LeftSuper = GLFW_KEY_LEFT_SUPER,
+	RightSuper = GLFW_KEY_RIGHT_SUPER,
+	Numpad0 = GLFW_KEY_KP_0,
+	Numpad1 = GLFW_KEY_KP_1,
+	Numpad2 = GLFW_KEY_KP_2,
+	Numpad3 = GLFW_KEY_KP_3,
+	Numpad4 = GLFW_KEY_KP_4,
+	Numpad5 = GLFW_KEY_KP_5,
+	Numpad6 = GLFW_KEY_KP_6,
+	Numpad7 = GLFW_KEY_KP_7,
+	Numpad8 = GLFW_KEY_KP_8,
+	Numpad9 = GLFW_KEY_KP_9,
+	Multiply = GLFW_KEY_KP_MULTIPLY,
+	Add = GLFW_KEY_KP_ADD,
+	//Separator = GLFW_KEY_,
+	Subtract = GLFW_KEY_KP_SUBTRACT,
+	Decimal = GLFW_KEY_KP_DECIMAL,
+	Divide = GLFW_KEY_KP_DIVIDE,
+	F1 = GLFW_KEY_F1,
+	F2 = GLFW_KEY_F2,
+	F3 = GLFW_KEY_F3,
+	F4 = GLFW_KEY_F4,
+	F5 = GLFW_KEY_F5,
+	F6 = GLFW_KEY_F6,
+	F7 = GLFW_KEY_F7,
+	F8 = GLFW_KEY_F8,
+	F9 = GLFW_KEY_F9,
+	F10 = GLFW_KEY_F10,
+	F11 = GLFW_KEY_F11,
+	F12 = GLFW_KEY_F12,
+	F13 = GLFW_KEY_F13,
+	F14 = GLFW_KEY_F14,
+	F15 = GLFW_KEY_F15,
+	F16 = GLFW_KEY_F16,
+	F17 = GLFW_KEY_F17,
+	F18 = GLFW_KEY_F18,
+	F19 = GLFW_KEY_F19,
+	F20 = GLFW_KEY_F20,
+	F21 = GLFW_KEY_F21,
+	F22 = GLFW_KEY_F22,
+	F23 = GLFW_KEY_F23,
+	F24 = GLFW_KEY_F24,
+	F25 = GLFW_KEY_F25,
+	NumLock = GLFW_KEY_NUM_LOCK,
+	ScrollLock = GLFW_KEY_SCROLL_LOCK,
+	LeftShift = GLFW_KEY_LEFT_SHIFT,
+	RightShift = GLFW_KEY_RIGHT_SHIFT,
+	LeftControl = GLFW_KEY_LEFT_CONTROL,
+	RightControl = GLFW_KEY_RIGHT_CONTROL,
+	LeftAlt = GLFW_KEY_LEFT_ALT,
+	RightAlt = GLFW_KEY_RIGHT_ALT,
+	Semicolon = GLFW_KEY_SEMICOLON,
+	Equals = GLFW_KEY_EQUAL,
+	Comma = GLFW_KEY_COMMA,
+	Minus = GLFW_KEY_MINUS,
+	Period = GLFW_KEY_PERIOD,
+	ForwardSlash = GLFW_KEY_SLASH,
+	Grave = GLFW_KEY_GRAVE_ACCENT,
+	LeftBracket = GLFW_KEY_LEFT_BRACKET,
+	Backslash = GLFW_KEY_BACKSLASH,
+	RightBracket = GLFW_KEY_RIGHT_BRACKET,
+	Apostrophe = GLFW_KEY_APOSTROPHE,
+	NumpadEnter = GLFW_KEY_KP_ENTER
 };
 
 NS_END

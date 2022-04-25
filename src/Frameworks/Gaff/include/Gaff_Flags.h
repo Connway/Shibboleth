@@ -81,11 +81,11 @@ using ClosestSizeFlagType = typename ClosestSizeFlagTypeHelper<size_bytes>::Type
 template <class Enum>
 class Flags final
 {
+public:
 	static_assert(std::is_enum<Enum>::value, "Flags must be given an enum template argument.");
 	using StorageType = ClosestSizeFlagType<ClosestIntegerSize(static_cast<size_t>(Enum::Count))>;
 	using BitsetType = eastl::bitset<static_cast<size_t>(Enum::Count), StorageType>;
 
-public:
 	template <class... Enum2>
 	constexpr static StorageType GetBits(Enum flag, Enum2... rest);
 	constexpr static StorageType GetBit(Enum flag);

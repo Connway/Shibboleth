@@ -30,15 +30,17 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
+#include <Shibboleth_Image.h>
 #include <Shibboleth_IApp.h>
-#include <Gleam_Keyboard_MessagePump.h>
-#include <Gleam_Mouse_MessagePump.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gaff_Function.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
 #include <Gaff_Math.h>
 #include <gtx/quaternion.hpp>
+#include <GLFW/glfw3.h>
+#include <Gleam_IncludeGLFWNative.h>
 
 NS_SHIBBOLETH
 
@@ -78,19 +80,16 @@ u8R"({
 				"type": "object",
 				"properties":
 				{
-					"x": { "type": "number" },
-					"y": { "type": "number" },
 					"width": { "type": "number" },
 					"height": { "type": "number" },
-					"refresh_rate": { "type": "number" },
-					"window_mode": { "type": "string" /*, "enum": ["windowed", "fullscreen", "borderless_windowed"]*/ },
-					"adapter_id": { "type": "number" },
-					"display_id": { "type": "number" },
+					"monitor_id": { "type": "number" },
+					"video_mode_id": { "type": "number" },
+					"windowed": { "type": "boolean" },
 					"vsync": { "type": "boolean" },
 					"icon": { "type": "string" }
 				},
 
-				"required": ["width", "height", "refresh_rate", "window_mode", "adapter_id", "display_id", "vsync"],
+				"required": ["monitor_id"],
 				"additionalProperties": false
 			}
 		},
@@ -131,6 +130,8 @@ RenderManagerBase::~RenderManagerBase(void)
 			}
 		}
 	}
+
+	Gleam::Window::GlobalShutdown();
 }
 
 bool RenderManagerBase::initAllModulesLoaded(void)
@@ -183,6 +184,11 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 bool RenderManagerBase::init(void)
 {
+	if (!Gleam::Window::GlobalInit()) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
 	const char8_t* const graphics_cfg_path = configs.getObject(k_config_graphics_cfg).getString(k_config_graphics_default_cfg);
@@ -207,7 +213,10 @@ bool RenderManagerBase::init(void)
 		return false;
 	}
 
+	fs.closeFile(file);
+
 	if (configs.getObject(k_config_graphics_no_windows).getBool(false)) {
+		// $TODO: Add support to this section to use adapter names or monitor IDs.
 		const Gaff::JSON adapters = config.getObject(u8"adapters");
 
 		if (adapters.isObject() && adapters.size() > 0) {
@@ -255,26 +264,89 @@ bool RenderManagerBase::init(void)
 		const Gaff::JSON windows = config.getObject(u8"windows");
 
 		if (windows.isObject()) {
+			const auto& adapters = getDisplayModes();
+
+			// Find default adapter and display IDs.
+			int32_t default_adapter_id = 0;
+			int32_t default_display_id = 0;
+
+			for (const auto& adpt : adapters) {
+				for (const auto& display : adpt.displays) {
+					if (display.is_primary) {
+						default_adapter_id = adpt.id;
+						default_display_id = display.id;
+						break;
+					}
+				}
+			}
+
 			windows.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
 			{
-				const int32_t adapter_id = value.getObject(u8"adapter_id").getInt32();
-				const int32_t display_id = value.getObject(u8"display_id").getInt32();
+				int32_t video_mode_id = value.getObject(u8"video_mode_id").getInt32(-1);
+				const int32_t monitor_id = value.getObject(u8"monitor_id").getInt32(-1);
+				const bool windowed = value.getObject(u8"windowed").getBool(true);
 
-				const auto display_modes = getDisplayModes();
+				int32_t adapter_id = -1;
+				int32_t display_id = -1;
 
-				if (adapter_id >= static_cast<int32_t>(display_modes.size())) {
-					LogErrorGraphics("Invalid 'adapter_id' for window '%s'.", key);
-					return false;
+				int32_t count = 0;
+
+				if (monitor_id > -1) {
+					for (const auto& adpt : adapters) {
+						const int32_t start_count = count;
+						count += static_cast<int32_t>(adpt.displays.size());
+
+						if (monitor_id < count) {
+							adapter_id = adpt.id;
+							display_id = monitor_id - start_count;
+							break;
+						}
+					}
 				}
 
-				const auto& adapter_info = display_modes[adapter_id];
+				if (adapter_id == -1) {
+					// Windowed mode will potentially not have an adapter_id at this point.
+					if (!windowed) {
+						// $TODO: Log error.
 
-				if (display_id >= static_cast<int32_t>(adapter_info.displays.size())) {
-					LogErrorGraphics("Invalid 'display_id' for window '%s'.", key);
-					return false;
+						// If we are anything but the main window, skip over creating the window.
+						if (strcmp(reinterpret_cast<const char*>(key), "main")) {
+							return false;
+						}
+					}
+
+					// Default to primary display and the adapter it is attached to.
+					adapter_id = default_adapter_id;
+					display_id = default_display_id;
+
+					// $TODO: We should overwrite the config file in scenarios like this.
+					//if (!windowed) {
+					//}
 				}
 
-				const auto& display_info = adapter_info.displays[display_id];
+				// Incorrect video mode id.
+				// Default to video mode that matches the current display settings.
+				if (!windowed &&
+					(video_mode_id < 0 ||
+					video_mode_id >= static_cast<int32_t>(adapters[adapter_id].displays[display_id].display_modes.size()))) {
+
+					// $TODO: Log error.
+
+					const auto& display = adapters[adapter_id].displays[display_id];
+					video_mode_id = -1;
+
+					for (const auto& display_mode : display.display_modes) {
+						// Display mode matches current display settings,
+						// but pick highest refresh rate.
+						if (display_mode.width == display.curr_width &&
+							display_mode.height == display.curr_height &&
+							(video_mode_id == -1 ||
+							display_mode.refresh_rate > display.display_modes[video_mode_id].refresh_rate)) {
+
+							video_mode_id = display_mode.id;
+						}
+					}
+				}
 
 				Gleam::IRenderDevice* rd = nullptr;
 
@@ -296,45 +368,125 @@ bool RenderManagerBase::init(void)
 					}
 				}
 
-				int32_t x = Gaff::Max(0, value.getObject(u8"x").getInt32(0));
-				int32_t y = Gaff::Max(0, value.getObject(u8"y").getInt32(0));
-				int32_t width = value.getObject(u8"width").getInt32(0);
-				int32_t height = value.getObject(u8"height").getInt32(0);
-				const int32_t refresh_rate = value.getObject(u8"refresh_rate").getInt32(0);
-				const bool vsync = value.getObject(u8"vsync").getBool();
-				Gleam::IWindow::WindowMode window_mode = Gleam::IWindow::WindowMode::Windowed;
+				int32_t width = value.getObject(u8"width").getInt32(-1);
+				int32_t height = value.getObject(u8"height").getInt32(-1);
+				const bool vsync = value.getObject(u8"vsync").getBool(false);
+				int32_t refresh_rate = -1; // Only used when in fullscreen mode.
 
-				SerializeReader<Gaff::JSON> reader(value.getObject(u8"window_mode"), ProxyAllocator("Graphics"));
+				Gleam::Window* const window = createWindow();
+				window->addCloseCallback(Gaff::MemberFunc(this, &RenderManagerBase::handleWindowClosed));
 
-				// Log the error, but leave default to windowed mode.
-				if (!Refl::Reflection<Gleam::IWindow::WindowMode>::GetInstance().load(reader, window_mode)) {
-					LogWarningDefault("Failed to serialize window mode for window '%s'. Defaulting to 'Windowed' mode.", key);
-				}
+				if (windowed) {
+					if (width < 0 || height < 0) {
+						// $TODO: Log error.
+						width = 1024;
+						height = 768;
+					}
 
-				if (width == 0 || height == 0) {
-					width = display_info.curr_width;
-					height = display_info.curr_height;
-				}
+					if (!window->initWindowed(key, Gleam::IVec2(width, height))) {
+						LogErrorGraphics("Failed to create window '%s'.", key);
+						SHIB_FREET(window, GetAllocator());
+						return false;
+					}
 
-				if (window_mode == Gleam::IWindow::WindowMode::Fullscreen) {
-					x = 0;
-					y = 0;
-				}
+					// Create the window centered on the display.
+					const auto& display = adapters[adapter_id].displays[display_id];
+					const Gleam::IVec2 pos(
+						display.curr_x + display.curr_width / 2 - width / 2,
+						display.curr_y + display.curr_height / 2 - height / 2
+					);
 
-				x += display_info.curr_x;
-				y += display_info.curr_y;
+					window->setPos(pos);
 
-				Gleam::IWindow* const window = createWindow();
+				} else {
+					int32_t glfw_monitor_id = -1;
 
-				if (!window->init(key, window_mode, width, height, x, y)) {
-					LogErrorGraphics("Failed to create window '%s'.", key);
-					SHIB_FREET(window, GetAllocator());
-					return false;
+					int monitor_count = 0;
+					GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
+
+					for (int32_t i = 0; i < monitor_count; ++i) {
+						const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
+						const char* const display_name = glfwGetWin32Monitor(monitors[i]);
+
+						if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
+							!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
+
+							glfw_monitor_id = i;
+							break;
+						}
+					}
+
+					if (glfw_monitor_id < 0) {
+						// $TODO: Log error.
+						SHIB_FREET(window, GetAllocator());
+						return false;
+					}
+
+					int32_t glfw_video_mode_id = -1;
+
+					int video_mode_count = 0;
+					const GLFWvidmode* const video_modes = glfwGetVideoModes(monitors[glfw_monitor_id], &video_mode_count);
+
+					const auto& display_mode = adapters[adapter_id].displays[display_id].display_modes[video_mode_id];
+
+					for (int32_t i = 0; i < video_mode_count; ++i) {
+						if (video_modes[i].width == display_mode.width &&
+							video_modes[i].height == display_mode.height &&
+							video_modes[i].refreshRate == display_mode.refresh_rate) {
+
+							glfw_video_mode_id = i;
+							break;
+						}
+					}
+
+					if (glfw_video_mode_id < 0) {
+						// $TODO: Log error.
+						SHIB_FREET(window, GetAllocator());
+						return false;
+					}
+
+					if (!window->initFullscreen(key, glfw_monitor_id, glfw_video_mode_id)) {
+						LogErrorGraphics("Failed to create window '%s'.", key);
+						SHIB_FREET(window, GetAllocator());
+						return false;
+					}
+
+					refresh_rate = display_mode.refresh_rate;
 				}
 
 				if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
-					if (!window->setIcon(icon.getString())) {
-						// $TODO: Log warning.
+					const char8_t* const icon_path = icon.getString();
+					Gaff::File icon_file(icon_path, Gaff::File::OpenMode::ReadBinary);
+					icon.freeString(icon_path);
+
+					if (icon_file.isOpen()) {
+						Vector<uint8_t> icon_data;
+						icon_data.resize(icon_file.getFileSize());
+
+						if (icon_file.readEntireFile(reinterpret_cast<char*>(icon_data.data()))) {
+							const size_t index = Gaff::ReverseFind(icon_path, u8'.');
+
+							if (index != SIZE_T_FAIL) {
+								Image image;
+
+								if (image.load(icon_data.data(), icon_data.size(), reinterpret_cast<const char*>(icon_path + index))) {
+									const GLFWimage icon_image { image.getWidth(), image.getHeight(), image.getBuffer() };
+									window->setIcon(&icon_image, 1);
+
+								} else {
+									// $TODO: Log error.
+								}
+
+							} else {
+								// $TODO: Log error.
+							}
+
+						} else {
+							// $TODO: Log error.
+						}
+
+					} else {
+						// $TODO: Log error.
 					}
 				}
 
@@ -381,8 +533,6 @@ bool RenderManagerBase::init(void)
 		}
 	}
 
-	fs.closeFile(file);
-
 	const auto& job_pool = app.getJobPool();
 	Vector<EA::Thread::ThreadId> thread_ids(job_pool.getNumTotalThreads(), ProxyAllocator("Graphics"));
 
@@ -408,17 +558,6 @@ bool RenderManagerBase::init(void)
 	}
 
 	return true;
-}
-
-
-Gleam::IKeyboard* RenderManagerBase::createKeyboard(void) const
-{
-	return SHIB_ALLOCT(Gleam::KeyboardMP, g_allocator);
-}
-
-Gleam::IMouse* RenderManagerBase::createMouse(void) const
-{
-	return SHIB_ALLOCT(Gleam::MouseMP, g_allocator);
 }
 
 void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
@@ -479,13 +618,25 @@ Gleam::IRenderOutput* RenderManagerBase::getOutput(Gaff::Hash32 tag) const
 	return (it == _window_outputs.end()) ? nullptr : it->second.second.get();
 }
 
-Gleam::IWindow* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
+Gleam::IRenderOutput* RenderManagerBase::getOutput(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
+	return _window_outputs.data()[index].second.second.get();
+}
+
+Gleam::Window* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
-void RenderManagerBase::removeWindow(const Gleam::IWindow& window)
+Gleam::Window* RenderManagerBase::getWindow(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
+	return _window_outputs.data()[index].second.first.get();
+}
+
+void RenderManagerBase::removeWindow(const Gleam::Window& window)
 {
 	for (auto it = _window_outputs.begin(); it != _window_outputs.end(); ++it) {
 		if (it->second.first.get() == &window) {
@@ -737,6 +888,15 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDeviceFromAdapter(int32_t a
 	_to_screen_samplers[rd].reset(sampler_state);
 
 	return rd;
+}
+
+void RenderManagerBase::handleWindowClosed(Gleam::Window& window)
+{
+	removeWindow(window);
+
+	if (!getNumWindows()) {
+		GetApp().quit();
+	}
 }
 
 NS_END

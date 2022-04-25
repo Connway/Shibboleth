@@ -42,10 +42,7 @@ NS_GLEAM
 	class IModel;
 	class IMesh;
 
-	class IWindow;
-
-	class IKeyboard;
-	class IMouse;
+	class Window;
 NS_END
 
 NS_SHIBBOLETH
@@ -76,10 +73,11 @@ public:
 	virtual Gleam::IMesh* createMesh(void) const = 0;
 
 	virtual Gleam::IRenderDevice::AdapterList getDisplayModes(void) const = 0;
-	virtual Gleam::IWindow* createWindow(void) const = 0;
+	virtual Gleam::Window* createWindow(void) const = 0;
 
-	virtual Gleam::IKeyboard* createKeyboard(void) const = 0;
-	virtual Gleam::IMouse* createMouse(void) const = 0;
+	virtual Gleam::IRenderOutput* getOutput(int32_t index) const = 0;
+	virtual Gleam::Window* getWindow(int32_t index) const = 0;
+	virtual int32_t getNumWindows(void) const = 0;
 
 	virtual void updateWindows(void) = 0;
 };

@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include <Gleam_Transform.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_ITexture.h>
-#include <Gleam_IWindow.h>
+#include <Gleam_Window.h>
 #include <Gaff_Hash.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread.h>
@@ -48,7 +48,7 @@ class RenderManagerBase : public IRenderManager
 {
 public:
 	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
-	using WindowPtr = UniquePtr<Gleam::IWindow>;
+	using WindowPtr = UniquePtr<Gleam::Window>;
 	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
 
 	using ProgramBuffersPtr = UniquePtr<Gleam::IProgramBuffers>;
@@ -112,9 +112,6 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
-	Gleam::IKeyboard* createKeyboard(void) const override;
-	Gleam::IMouse* createMouse(void) const override;
-
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);
 
@@ -129,15 +126,17 @@ public:
 		return getOutput(Gaff::FNV1aHash32String(tag));
 	}
 
-	Gleam::IWindow* getWindow(const char* tag) const
+	Gleam::Window* getWindow(const char* tag) const
 	{
 		return getWindow(Gaff::FNV1aHash32String(tag));
 	}
 
 	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
-	Gleam::IWindow* getWindow(Gaff::Hash32 tag) const;
-	void removeWindow(const Gleam::IWindow& window);
-	int32_t getNumWindows(void) const;
+	Gleam::IRenderOutput* getOutput(int32_t index) const override;
+	Gleam::Window* getWindow(Gaff::Hash32 tag) const;
+	Gleam::Window* getWindow(int32_t index) const override;
+	void removeWindow(const Gleam::Window& window);
+	int32_t getNumWindows(void) const override;
 
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
@@ -199,6 +198,7 @@ private:
 	SamplerStateResourcePtr _default_sampler;
 
 	Gleam::IRenderDevice* createRenderDeviceFromAdapter(int32_t adapter_id);
+	void handleWindowClosed(Gleam::Window& window);
 };
 
 NS_END

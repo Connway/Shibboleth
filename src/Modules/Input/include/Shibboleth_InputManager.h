@@ -27,8 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_IManager.h>
-#include <Gleam_IKeyboard.h>
-#include <Gleam_IMouse.h>
+#include <Gleam_Window.h>
 #include <EASTL/chrono.h>
 
 NS_SHIBBOLETH
@@ -69,21 +68,14 @@ public:
 	void setModeToPrevious(void);
 	void setModeToDefault(void);
 
-	const Gleam::IKeyboard* getKeyboard(void) const;
-	const Gleam::IMouse* getMouse(void) const;
-	Gleam::IKeyboard* getKeyboard(void);
-	Gleam::IMouse* getMouse(void);
-
-	void getInputDevices(int32_t player_id, Vector<const Gleam::IInputDevice*>& out_devices) const;
-	void getInputDevices(int32_t player_id, Vector<Gleam::IInputDevice*>& out_devices);
-
 	int32_t addPlayer(void);
 	bool removePlayer(int32_t player_id);
 	bool isValidPlayerID(int32_t player_id) const;
 	void getPlayerIDs(Vector<int32_t>& out_player_ids) const;
 
-	void addInputDevice(Gleam::IInputDevice* device, int32_t player_id);
-	bool removeInputDevice(Gleam::IInputDevice& device);
+	bool inputDevicePresent(int32_t device_id) const;
+	void addInputDevice(int32_t device_id, int32_t player_id);
+	bool removeInputDevice(int32_t device_id);
 
 private:
 	struct Binding final
@@ -111,12 +103,6 @@ private:
 		float value = 0.0f;
 	};
 
-	struct DeviceMapEntry final
-	{
-		int32_t handler_id;
-		int32_t player_id;
-	};
-
 	VectorMap<Gaff::Hash32, Alias> _default_alias_values{ ProxyAllocator("Input") };
 
 	SparseStack< VectorMap<Gaff::Hash32, Alias> > _alias_values{ ProxyAllocator("Input") };
@@ -124,10 +110,7 @@ private:
 
 	Vector<Binding> _bindings{ ProxyAllocator("Input") };
 
-	VectorMap<Gleam::IInputDevice*, DeviceMapEntry> _device_player_map{ ProxyAllocator("Input") };
-
-	UniquePtr<Gleam::IKeyboard> _keyboard;
-	UniquePtr<Gleam::IMouse> _mouse;
+	VectorMap<int32_t, int32_t> _device_player_map{ ProxyAllocator("Input") };
 
 	// Maintaining our own timer to avoid dependencies, as we are using real-time and don't need
 	// anything from GameTime.
@@ -138,9 +121,8 @@ private:
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
 
-	void handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value);
-	void handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value);
-	//void handleGamepadInput(Gleam::IInputDevice* device, int32_t gamepad_code, float value);
+	void handleKeyboardInput(Gleam::Window& window, Gleam::KeyCode key_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers);
+	void handleMouseInput(Gleam::Window& window, Gleam::MouseCode mouse_code, float value);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };

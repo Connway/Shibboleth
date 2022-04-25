@@ -14,7 +14,8 @@ project "Gleam"
 		"../Gaff/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glfw/include",
-		"../../Dependencies/glm"
+		"../../Dependencies/glm",
+		"../../Dependencies/vulkan"
 	}
 
 	filter { "system:not windows" }

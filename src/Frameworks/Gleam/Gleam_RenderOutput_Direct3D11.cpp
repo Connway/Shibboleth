@@ -28,10 +28,10 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t display_id, int32_t refresh_rate, bool vsync)
+bool RenderOutputD3D11::init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RendererType::Direct3D11);
-	_vsync = vsync && window.getWindowMode() != IWindow::WindowMode::Fullscreen;
+	_vsync = vsync && !window.isFullscreen();
 
 	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
 	const Window& wnd = static_cast<const Window&>(window);
@@ -76,24 +76,24 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-	if (wnd.getWindowMode() != IWindow::WindowMode::Fullscreen) {
-		_present_flags |= DXGI_PRESENT_ALLOW_TEARING;
-	}
+	const HWND hwnd = reinterpret_cast<HWND>(wnd.getHWnd());
 
-	if (wnd.getWindowMode() == IWindow::WindowMode::Fullscreen) {
+	if (wnd.isFullscreen()) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		swap_chain_fullscreen_desc.Windowed = wnd.isFullScreen() ? FALSE : TRUE;
+		swap_chain_fullscreen_desc.Windowed = FALSE;
 
 		swap_chain_fullscreen_desc.RefreshRate.Numerator = refresh_rate;
 		swap_chain_fullscreen_desc.RefreshRate.Denominator = 1;
 
-		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
+
+		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), hwnd, &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
 		_present_flags |= DXGI_PRESENT_RESTRICT_TO_OUTPUT;
 
 	} else {
-		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, NULL, NULL, &swap_chain);
+		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), hwnd, &swap_chain_desc, NULL, NULL, &swap_chain);
+		_present_flags |= DXGI_PRESENT_ALLOW_TEARING;
 	}
 
 	factory->Release();
@@ -109,7 +109,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	swap_chain->Release();
 
-	if (wnd.getWindowMode() == IWindow::WindowMode::Fullscreen) {
+	if (wnd.isFullscreen()) {
 		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
 	} else {
 		result = final_swap_chain->SetFullscreenState(FALSE, NULL);

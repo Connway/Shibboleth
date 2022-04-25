@@ -55,12 +55,9 @@ public:
 	Gleam::IMesh* createMesh(void) const override;
 
 	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const override;
-	Gleam::IWindow* createWindow(void) const override;
+	Gleam::Window* createWindow(void) const override;
 
 	void updateWindows(void) override;
-
-private:
-	bool handleWindowClosed(const Gleam::AnyMessage& message);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 };

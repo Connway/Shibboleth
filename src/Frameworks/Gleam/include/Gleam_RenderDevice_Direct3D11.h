@@ -56,13 +56,15 @@ public:
 	IDXGIAdapter4* getAdapter(void);
 
 private:
-	struct OutputInfo
+	struct OutputInfo final
 	{
 		Vector<DXGI_MODE_DESC1> display_mode_list;
 		RECT curr_rect;
+		bool is_primary;
+		wchar_t display_name[128];
 	};
 
-	struct AdapterInfo
+	struct AdapterInfo final
 	{
 		wchar_t adapter_name[128];
 		Vector<OutputInfo> output_info;

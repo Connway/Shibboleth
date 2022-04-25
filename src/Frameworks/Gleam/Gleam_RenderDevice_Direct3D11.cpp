@@ -26,8 +26,8 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_Direct3D11.h"
 #include "Gleam_CommandList_Direct3D11.h"
 #include "Gleam_RenderOutput_Direct3D11.h"
-#include "Gleam_Window_Windows.h"
 #include "Gleam_Global.h"
+#include <EASTL/string.h>
 
 NS_GLEAM
 
@@ -119,11 +119,13 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 			result = temp->GetDesc1(&out_desc);
 
 			if (SUCCEEDED(result)) {
-				MONITORINFO monitor_info;
-				monitor_info.cbSize = sizeof(MONITORINFO);
+				MONITORINFOEX monitor_info;
+				monitor_info.cbSize = sizeof(MONITORINFOEX);
 
 				if (GetMonitorInfo(out_desc.Monitor, &monitor_info) == TRUE) {
 					out_info.curr_rect = monitor_info.rcMonitor;
+					out_info.is_primary = (monitor_info.dwFlags & MONITORINFOF_PRIMARY) != 0;
+					wcsncpy_s(out_info.display_name, ARRAY_SIZE(out_info.display_name), monitor_info.szDevice, ARRAY_SIZE(monitor_info.szDevice));
 				}
 			}
 
@@ -145,7 +147,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		const wchar_t*  src_begin = adpt_info.adapter_name;
 		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name);
 		char* dest_begin = adpt.adapter_name;
-		char* dest_end = adpt.adapter_name + ARRAY_SIZE(adpt.adapter_name);
+		char* dest_end = dest_begin + ARRAY_SIZE(adpt.adapter_name);
 
 		eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
 
@@ -163,6 +165,14 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 			display.curr_y = out_info.curr_rect.top;
 			display.curr_width = out_info.curr_rect.right - out_info.curr_rect.left;
 			display.curr_height = out_info.curr_rect.bottom - out_info.curr_rect.top;
+			display.is_primary = out_info.is_primary;
+
+			src_begin = out_info.display_name;
+			src_end = src_begin + eastl::CharStrlen(out_info.display_name);
+			dest_begin = display.display_name;
+			dest_end = dest_begin + ARRAY_SIZE(display.display_name);
+
+			eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
 
 			for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size()); ++k) {
 				const DXGI_MODE_DESC1& mode_desc = out_info.display_mode_list[k];

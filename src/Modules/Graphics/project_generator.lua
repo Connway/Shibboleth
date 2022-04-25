@@ -28,6 +28,7 @@ function DoMainGraphicsModule()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/assimp/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -76,6 +77,7 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -128,7 +130,8 @@ function DoGraphicsModule(renderer)
 			"minizip-ng",
 			"zlib-ng",
 			"libpng",
-			"libtiff"
+			"libtiff",
+			"GLFW"
 		}
 
 		dependson(deps)
@@ -160,6 +163,7 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
+	table.insert(deps, "GLFW")
 
 	dependson(deps)
 	links(deps)

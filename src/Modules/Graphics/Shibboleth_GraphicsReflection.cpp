@@ -51,12 +51,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IShader::Type)
 	.entry("Compute", Gleam::IShader::Type::Compute)
 SHIB_REFLECTION_DEFINE_END(Gleam::IShader::Type)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IWindow::WindowMode)
-	.entry("Fullscreen", Gleam::IWindow::WindowMode::Fullscreen)
-	.entry("Windowed", Gleam::IWindow::WindowMode::Windowed)
-	.entry("Borderless Windowed", Gleam::IWindow::WindowMode::BorderlessWindowed)
-SHIB_REFLECTION_DEFINE_END(Gleam::IWindow::WindowMode)
-
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::ComparisonFunc)
 	.entry("Never", Gleam::ComparisonFunc::Never)
 	.entry("Less", Gleam::ComparisonFunc::Less)

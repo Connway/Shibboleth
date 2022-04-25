@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
-#include <Gleam_Window.h>
+#include <Gaff_Function.h>
 #include <Gaff_JSON.h>
 #include <Gaff_Math.h>
 #include <EASTL/sort.h>
@@ -39,6 +39,9 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 
 NS_SHIBBOLETH
+
+static constexpr int32_t k_keyboard_device = GLFW_JOYSTICK_LAST + 1;
+static constexpr int32_t k_mouse_device = GLFW_JOYSTICK_LAST + 2;
 
 SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 
@@ -66,24 +69,6 @@ u8R"({
 
 bool InputManager::initAllModulesLoaded(void)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-
-	_keyboard.reset(render_mgr.createKeyboard());
-	_mouse.reset(render_mgr.createMouse());
-
-	if (!_keyboard || !_keyboard->init()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	if (!_mouse || !_mouse->init()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_keyboard->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
-	_mouse->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
-
 	// Load bindings.
 	IFile* const input_file = GetApp().getFileSystem().openFile(u8"cfg/input_bindings.cfg");
 
@@ -242,18 +227,25 @@ bool InputManager::initAllModulesLoaded(void)
 	// Always have a player 0.
 	_km_player_id = addPlayer();
 
-	addInputDevice(_keyboard.get(), _km_player_id);
-	addInputDevice(_mouse.get(), _km_player_id);
+	_device_player_map[k_keyboard_device] = _km_player_id;
+	_device_player_map[k_mouse_device] = _km_player_id;
+
+	// Register for all the input callbacks.
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+
+	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
+		Gleam::Window* const window = render_mgr.getWindow(i);
+
+		window->addKeyCallback(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
+		window->addMouseCallback(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
+		//window->addGamepadCallback();
+	}
 
 	return true;
 }
 
 void InputManager::update(void)
 {
-	for (auto& pair : _device_player_map) {
-		pair.first->update();
-	}
-
 	using DoubleSeconds = eastl::chrono::duration<double>;
 	_end = eastl::chrono::high_resolution_clock::now();
 
@@ -379,44 +371,6 @@ void InputManager::setModeToDefault(void)
 	setMode(Gaff::FNV1aHash32Const("Default"));
 }
 
-const Gleam::IKeyboard* InputManager::getKeyboard(void) const
-{
-	return _keyboard.get();
-}
-
-const Gleam::IMouse* InputManager::getMouse(void) const
-{
-	return _mouse.get();
-}
-
-Gleam::IKeyboard* InputManager::getKeyboard(void)
-{
-	return _keyboard.get();
-}
-
-Gleam::IMouse* InputManager::getMouse(void)
-{
-	return _mouse.get();
-}
-
-void InputManager::getInputDevices(int32_t player_id, Vector<const Gleam::IInputDevice*>& out_devices) const
-{
-	for (const auto& entry : _device_player_map) {
-		if (entry.second.player_id == player_id) {
-			out_devices.emplace_back(entry.first);
-		}
-	}
-}
-
-void InputManager::getInputDevices(int32_t player_id, Vector<Gleam::IInputDevice*>& out_devices)
-{
-	for (const auto& entry : _device_player_map) {
-		if (entry.second.player_id == player_id) {
-			out_devices.emplace_back(entry.first);
-		}
-	}
-}
-
 int32_t InputManager::addPlayer(void)
 {
 	const int32_t player_id = _binding_instances.emplace();
@@ -443,7 +397,7 @@ bool InputManager::removePlayer(int32_t player_id)
 	for (int32_t i = 0; i < static_cast<int32_t>(_device_player_map.size()); ++i) {
 		const auto it = _device_player_map.begin() + i;
 
-		if (it->second.player_id == player_id) {
+		if (it->second == player_id) {
 			_device_player_map.erase(it);
 		}
 	}
@@ -456,56 +410,47 @@ bool InputManager::isValidPlayerID(int32_t player_id) const
 	return _binding_instances.validIndex(player_id);
 }
 
-void InputManager::addInputDevice(Gleam::IInputDevice* device, int32_t player_id)
-{
-	DeviceMapEntry entry;
-	entry.player_id = player_id;
-
-	if (device->isKeyboard()) {
-		entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
-	} else if (device->isMouse()) {
-		entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
-	//} else if (device->isGamepad()) {
-	//	entry.handler_id = device->addInputHandler(Gaff::MemberFunc(this, &InputManager::handleGamepadInput));
-	}
-
-	_device_player_map[device] = entry;
-}
-
 void InputManager::getPlayerIDs(Vector<int32_t>& out_player_ids) const
 {
 	for (const auto& entry : _device_player_map) {
-		if (Gaff::Find(out_player_ids, entry.second.player_id) == out_player_ids.end()) {
-			out_player_ids.emplace_back(entry.second.player_id);
+		if (Gaff::Find(out_player_ids, entry.second) == out_player_ids.end()) {
+			out_player_ids.emplace_back(entry.second);
 		}
 	}
 
 	Gaff::Sort(out_player_ids);
 }
 
-bool InputManager::removeInputDevice(Gleam::IInputDevice& device)
+bool InputManager::inputDevicePresent(int32_t device_id) const
 {
-	if (_device_player_map.find(&device) == _device_player_map.end()) {
-		return false;
-	}
-
-	const DeviceMapEntry entry = _device_player_map[&device];
-	_device_player_map.erase(&device);
-
-	device.removeInputHandler(entry.handler_id);
-	return true;
+	return _device_player_map.find(device_id) != _device_player_map.end();
 }
 
-void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_code, float value)
+void InputManager::addInputDevice(int32_t device_id, int32_t player_id)
 {
-	const auto dpm_it = _device_player_map.find(device);
+	GAFF_ASSERT(!inputDevicePresent(device_id));
+	_device_player_map[device_id] = player_id;
+}
+
+bool InputManager::removeInputDevice(int32_t device_id)
+{
+	return _device_player_map.erase(device_id) == 1;
+}
+
+void InputManager::handleKeyboardInput(
+	Gleam::Window& /*window*/,
+	Gleam::KeyCode key_code,
+	bool pressed,
+	Gaff::Flags<Gleam::Modifier> /*modifiers*/)
+{
+	const auto dpm_it = _device_player_map.find(k_keyboard_device);
 
 	GAFF_ASSERT(dpm_it != _device_player_map.end());
-	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second.player_id));
+	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second));
 
 	const Gleam::KeyCode code = static_cast<Gleam::KeyCode>(key_code);
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
-	const int32_t player_id = dpm_it->second.player_id;
+	const int32_t player_id = dpm_it->second;
 
 	auto& input_instance = _binding_instances[player_id];
 	auto& alias_values = _alias_values[player_id];
@@ -522,7 +467,7 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_
 		const auto it = Gaff::Find(binding.key_codes, code);
 
 		if (it != binding.key_codes.end()) {
-			if (value > 0.0f) {
+			if (pressed) {
 				++binding_instance.count;
 
 				// All the bindings have been pressed.
@@ -562,17 +507,17 @@ void InputManager::handleKeyboardInput(Gleam::IInputDevice* device, int32_t key_
 	}
 }
 
-void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_code, float value)
+void InputManager::handleMouseInput(Gleam::Window& /*window*/, Gleam::MouseCode mouse_code, float value)
 {
-	const auto dpm_it = _device_player_map.find(device);
+	const auto dpm_it = _device_player_map.find(k_mouse_device);
 
 	GAFF_ASSERT(dpm_it != _device_player_map.end());
-	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second.player_id));
+	GAFF_ASSERT(_alias_values.validIndex(dpm_it->second));
 
-	const bool is_button = mouse_code < static_cast<int32_t>(Gleam::MouseCode::ButtonCount);
+	const bool is_button = static_cast<int32_t>(mouse_code) < static_cast<int32_t>(Gleam::MouseCode::ButtonCount);
 	const Gleam::MouseCode code = static_cast<Gleam::MouseCode>(mouse_code);
 	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
-	const int32_t player_id = dpm_it->second.player_id;
+	const int32_t player_id = dpm_it->second;
 
 	auto& input_instance = _binding_instances[player_id];
 	auto& alias_values = _alias_values[player_id];
@@ -633,9 +578,5 @@ void InputManager::handleMouseInput(Gleam::IInputDevice* device, int32_t mouse_c
 		}
 	}
 }
-
-//void InputManager::handleGamepadInput(Gleam::IInputDevice* device, int32_t gamepad_code, float value)
-//{
-//}
 
 NS_END

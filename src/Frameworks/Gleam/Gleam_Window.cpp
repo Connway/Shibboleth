@@ -21,11 +21,31 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Window.h"
+#include "Gleam_Window_Defines.h"
+#include "Gleam_IncludeGLFWNative.h"
 #include <Gaff_Assert.h>
-#include <GLFW/glfw3.h>
 
 namespace
 {
+	static Gleam::ProxyAllocator s_allocator;
+
+	static void* Allocate(size_t size, void* /*user*/)
+	{
+		return GAFF_ALLOC(size, s_allocator);
+	}
+
+	static void* Reallocate(void* block, size_t size, void* /*user*/)
+	{
+		// Very naive Reallocate.
+		GAFF_FREE(block, s_allocator);
+		return GAFF_ALLOC(size, s_allocator);
+	}
+
+	static void Deallocate(void* block, void* /*user*/)
+	{
+		GAFF_FREE(block, s_allocator);
+	}
+
 	static void OnError(int error, const char* description)
 	{
 		GAFF_REF(error, description);
@@ -35,7 +55,7 @@ namespace
 	static int32_t g_next_id = 0;
 
 	template <class T>
-	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
+	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
 	{
 		const int32_t id = g_next_id++;
 		callbacks.emplace(id, cb);
@@ -43,19 +63,42 @@ namespace
 	}
 
 	template <class T>
-	int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
+	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
 	{
 		const int32_t id = g_next_id++;
 		callbacks.emplace(id, std::move(cb));
 		return id;
 	}
+
+
+	static Gleam::VectorMap<int32_t, Gleam::Window::IVecCallback> g_size_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::IVecCallback> g_pos_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::WindowCallback> g_close_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::BoolCallback> g_maximize_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::BoolCallback> g_focus_callbacks;
+
+	static Gleam::VectorMap<int32_t, Gleam::Window::BoolCallback> g_mouse_enter_leave_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::VecCallback> g_mouse_pos_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::MouseButtonCallback> g_mouse_button_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::VecCallback> g_mouse_wheel_callbacks;
+
+	static Gleam::VectorMap<int32_t, Gleam::Window::CharCallback> g_char_callbacks;
+	static Gleam::VectorMap<int32_t, Gleam::Window::KeyCallback> g_key_callbacks;
+
+	static Gleam::VectorMap<int32_t, Gleam::Window::MouseCallback> g_mouse_callbacks;
 }
 
 NS_GLEAM
 
 bool Window::GlobalInit(void)
 {
+	const GLFWallocator allocator_data =
+	{
+		Allocate, Reallocate, Deallocate, nullptr
+	};
+
 	glfwSetErrorCallback(OnError);
+	glfwInitAllocator(&allocator_data);
 	
 	if (!glfwInit()) {
 		return false;
@@ -67,6 +110,24 @@ bool Window::GlobalInit(void)
 
 void Window::GlobalShutdown(void)
 {
+	// Clear global message handlers.
+	g_size_callbacks.clear();
+	g_pos_callbacks.clear();
+	g_close_callbacks.clear();
+	g_maximize_callbacks.clear();
+	g_focus_callbacks.clear();
+
+	g_mouse_enter_leave_callbacks.clear();
+	g_mouse_pos_callbacks.clear();
+	g_mouse_button_callbacks.clear();
+	g_mouse_wheel_callbacks.clear();
+
+	g_char_callbacks.clear();
+	g_key_callbacks.clear();
+
+	g_mouse_callbacks.clear();
+
+
 	glfwTerminate();
 }
 
@@ -89,157 +150,127 @@ void Window::PostEmptyEvent(void)
 	glfwPostEmptyEvent();
 }
 
-//using WindowProcHelper = void (*)(AnyMessage&, Window*, WPARAM, LPARAM);
-//
-//static const wchar_t* g_window_class_name = L"Gleam_Window_Class";
-//
-//static VectorMap<UINT, WindowProcHelper> g_window_helpers;
-//static Vector<Window*> g_windows;
-//static bool g_first_init = true;
-//static MSG g_msg;
-//
-//static VectorMap<int32_t, MessageHandler> g_global_message_handlers;
-//static int32_t g_global_next_id = 0;
-//
-//VectorMap<uint16_t, KeyCode> Window::g_right_keys;
-//VectorMap<uint16_t, KeyCode> Window::g_left_keys;
-//
-//void SetCursor(CursorType cursor)
-//{
-//	::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(static_cast<int32_t>(cursor))));
-//}
-//
-////CursorType GetCursor(void)
-////{
-////	//const HCURSOR cursor = ::GetCursor();
-////
-////	//if (cursor == IDC_ARROW) {
-////	//	return Cursor::Arrow;
-////	//} else {
-////	//}
-////
-////	return Cursor::None;
-////}
-//
-//static void InitWindowProcHelpers(void)
-//{
-//	//WindowMode::MOUSELEAVE
-//	//WindowMode::GETMINMAXINFO
-//	//WindowMode::ENTERSIZEMOVE
-//	//WindowMode::EXITSIZEMOVE
-//	g_window_helpers.emplace(WM_CLOSE, WindowClosed);
-//	g_window_helpers.emplace(WM_DESTROY, WindowDestroyed);
-//	g_window_helpers.emplace(WM_MOVE, WindowMoved);
-//	g_window_helpers.emplace(WM_SIZE, WindowResized);
-//	g_window_helpers.emplace(WM_CHAR, WindowCharacter);
-//	g_window_helpers.emplace(WM_INPUT, WindowInput);
-//	g_window_helpers.emplace(WM_LBUTTONDOWN, WindowLeftButtonDown);
-//	g_window_helpers.emplace(WM_RBUTTONDOWN, WindowRightButtonDown);
-//	g_window_helpers.emplace(WM_MBUTTONDOWN, WindowMiddleButtonDown);
-//	g_window_helpers.emplace(WM_XBUTTONDOWN, WindowXButtonDown);
-//	g_window_helpers.emplace(WM_LBUTTONUP, WindowLeftButtonUp);
-//	g_window_helpers.emplace(WM_RBUTTONUP, WindowRightButtonUp);
-//	g_window_helpers.emplace(WM_MBUTTONUP, WindowMiddleButtonUp);
-//	g_window_helpers.emplace(WM_XBUTTONUP, WindowXButtonUp);
-//	g_window_helpers.emplace(WM_MOUSEHWHEEL, WindowMouseWheelHorizontal);
-//	g_window_helpers.emplace(WM_MOUSEWHEEL, WindowMouseWheel);
-//	g_window_helpers.emplace(WM_SETFOCUS, WindowSetFocus);
-//	//g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
-//}
-//
-//static bool DoFirstInit(
-//	WNDPROC window_proc,
-//	HINSTANCE hinstance,
-//	VectorMap<uint16_t, KeyCode>& left_keys,
-//	VectorMap<uint16_t, KeyCode>& right_keys)
-//{
-//	if (g_first_init) {
-//		left_keys[VK_CONTROL] = KeyCode::LeftControl;
-//		left_keys[VK_MENU] = KeyCode::LeftAlt;
-//		left_keys[VK_SHIFT] = KeyCode::LeftShift;
-//
-//		right_keys[VK_CONTROL] = KeyCode::RightControl;
-//		right_keys[VK_MENU] = KeyCode::RightAlt;
-//		right_keys[VK_SHIFT] = KeyCode::RightShift;
-//
-//		WNDCLASSEX wc;
-//		wc.style = CS_HREDRAW | CS_VREDRAW;
-//		wc.lpfnWndProc = window_proc;
-//		wc.cbClsExtra = 0;
-//		wc.cbWndExtra = 0;
-//		wc.hInstance = hinstance;
-//		wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-//		wc.hIconSm = wc.hIcon;
-//		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-//		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-//		wc.lpszMenuName = NULL;
-//		wc.lpszClassName = g_window_class_name;
-//		wc.cbSize = sizeof(WNDCLASSEX);
-//
-//		if (!RegisterClassEx(&wc)) {
-//			return false;
-//		}
-//
-//		InitWindowProcHelpers();
-//
-//		g_first_init = false;
-//	}
-//
-//	return true;
-//}
-//
-//static bool RemoveMessageHandler(VectorMap<int32_t, MessageHandler>& handlers, int32_t id)
-//{
-//	const auto it = handlers.find(id);
-//
-//	if (it != handlers.end()) {
-//		handlers.erase(it);
-//		return true;
-//	}
-//
-//	return false;
-//}
-//
-//int32_t Window::AddGlobalMessageHandler(const MessageHandler& callback)
-//{
-//	const int32_t id = g_global_next_id++;
-//	g_global_message_handlers.emplace(id, callback);
-//	return id;
-//}
-//
-//int32_t Window::AddGlobalMessageHandler(MessageHandler&& callback)
-//{
-//	const int32_t id = g_global_next_id++;
-//	g_global_message_handlers.emplace(id, std::move(callback));
-//	return id;
-//}
-//
-//bool Window::RemoveGlobalMessageHandler(int32_t id)
-//{
-//	return RemoveMessageHandler(g_global_message_handlers, id);
-//}
-//
-//void Window::HandleWindowMessages(void)
-//{
-//	// Handle the windows messages.
-//	while (PeekMessage(&g_msg, NULL, 0, 0, PM_REMOVE)) {
-//		TranslateMessage(&g_msg);
-//		DispatchMessage(&g_msg);
-//	}
-//}
-//
-//void Window::Cleanup(void)
-//{
-//	g_window_helpers.clear();
-//	g_right_keys.clear();
-//	g_left_keys.clear();
-//	g_windows.clear();
-//
-//	g_window_helpers.shrink_to_fit();
-//	g_right_keys.shrink_to_fit();
-//	g_left_keys.shrink_to_fit();
-//	g_windows.shrink_to_fit();
-//}
+int32_t Window::AddGlobalSizeChangeCallback(const IVecCallback& callback)
+{
+	return AddCallback(g_size_callbacks, callback);
+}
+
+int32_t Window::AddGlobalSizeChangeCallback(IVecCallback&& callback)
+{
+	return AddCallback(g_size_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalPosChangeCallback(const IVecCallback& callback)
+{
+	return AddCallback(g_pos_callbacks, callback);
+}
+
+int32_t Window::AddGlobalPosChangeCallback(IVecCallback&& callback)
+{
+	return AddCallback(g_pos_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalCloseCallback(const WindowCallback& callback)
+{
+	return AddCallback(g_close_callbacks, callback);
+}
+
+int32_t Window::AddGlobalCloseCallback(WindowCallback&& callback)
+{
+	return AddCallback(g_close_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMaximizeCallback(const BoolCallback& callback)
+{
+	return AddCallback(g_maximize_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMaximizeCallback(BoolCallback&& callback)
+{
+	return AddCallback(g_maximize_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalFocusCallback(const BoolCallback& callback)
+{
+	return AddCallback(g_focus_callbacks, callback);
+}
+
+int32_t Window::AddGlobalFocusCallback(BoolCallback&& callback)
+{
+	return AddCallback(g_focus_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMouseEnterLeaveCallback(const BoolCallback& callback)
+{
+	return AddCallback(g_mouse_enter_leave_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMouseEnterLeaveCallback(BoolCallback&& callback)
+{
+	return AddCallback(g_mouse_enter_leave_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMousePosCallback(const VecCallback& callback)
+{
+	return AddCallback(g_mouse_pos_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMousePosCallback(VecCallback&& callback)
+{
+	return AddCallback(g_mouse_pos_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMouseButtonCallback(const MouseButtonCallback& callback)
+{
+	return AddCallback(g_mouse_button_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMouseButtonCallback(MouseButtonCallback&& callback)
+{
+	return AddCallback(g_mouse_button_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMouseWheelCallback(const VecCallback& callback)
+{
+	return AddCallback(g_mouse_wheel_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMouseWheelCallback(VecCallback&& callback)
+{
+	return AddCallback(g_mouse_wheel_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalCharacterCallback(const CharCallback& callback)
+{
+	return AddCallback(g_char_callbacks, callback);
+}
+
+int32_t Window::AddGlobalCharacterCallback(CharCallback&& callback)
+{
+	return AddCallback(g_char_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalKeyCallback(const KeyCallback& callback)
+{
+	return AddCallback(g_key_callbacks, callback);
+}
+
+int32_t Window::AddGlobalKeyCallback(KeyCallback&& callback)
+{
+	return AddCallback(g_key_callbacks, std::move(callback));
+}
+
+int32_t Window::AddGlobalMouseCallback(const MouseCallback& callback)
+{
+	return AddCallback(g_mouse_callbacks, callback);
+}
+
+int32_t Window::AddGlobalMouseCallback(MouseCallback&& callback)
+{
+	return AddCallback(g_mouse_callbacks, std::move(callback));
+}
+
+
 
 Window::~Window(void)
 {
@@ -263,32 +294,40 @@ bool Window::initFullscreen(
 		&monitor,
 		nullptr);
 
-	if (_window != nullptr) {
-		_fullscreen = true;
-		return true;
+	if (!_window) {
+		return false;
 	}
 
-	return false;
+	double x, y;
+	glfwGetCursorPos(_window, &x, &y);
+
+	_prev_pos.x = static_cast<float>(x);
+	_prev_pos.y = static_cast<float>(y);
+
+	setWindowCallbacks();
+
+	_fullscreen = true;
+	return true;
 }
 
 bool Window::initFullscreen(
 	const char8_t* window_name,
-	int32_t display_id,
+	int32_t monitor_id,
 	int32_t video_mode_id)
 {
 	const GLFWvidmode* video_mode = nullptr;
 	GLFWmonitor* monitor = nullptr;
 
-	if (display_id > -1) {
+	if (monitor_id > -1) {
 		int count = 0;
 		GLFWmonitor* const* const monitors = glfwGetMonitors(&count);
 
-		if (count <= display_id) {
+		if (count <= monitor_id) {
 			// $TODO: Log error.
 			return false;
 		}
 
-		monitor = monitors[display_id];
+		monitor = monitors[monitor_id];
 	}
 
 	if (video_mode_id > -1) {
@@ -329,12 +368,20 @@ bool Window::initFullscreen(
 		&monitor,
 		nullptr);
 
-	if (_window != nullptr) {
-		_fullscreen = true;
-		return true;
+	if (!_window) {
+		return false;
 	}
 
-	return false;
+	double x, y;
+	glfwGetCursorPos(_window, &x, &y);
+
+	_prev_pos.x = static_cast<float>(x);
+	_prev_pos.y = static_cast<float>(y);
+
+	setWindowCallbacks();
+
+	_fullscreen = true;
+	return true;
 }
 
 bool Window::initWindowed(
@@ -348,7 +395,18 @@ bool Window::initWindowed(
 		nullptr,
 		nullptr);
 
-	return _window != nullptr;
+	if (!_window) {
+		return false;
+	}
+
+	double x, y;
+	glfwGetCursorPos(_window, &x, &y);
+
+	_prev_pos.x = static_cast<float>(x);
+	_prev_pos.y = static_cast<float>(y);
+
+	setWindowCallbacks();
+	return true;
 }
 
 void Window::destroy(void)
@@ -566,18 +624,6 @@ bool Window::hasDecorations(void) const
 	return glfwGetWindowAttrib(_window, GLFW_DECORATED) == GLFW_TRUE;
 }
 
-void* Window::getUserPointer(void) const
-{
-	GAFF_ASSERT(_window);
-	return glfwGetWindowUserPointer(_window);
-}
-
-void Window::setUserPointer(void* ptr)
-{
-	GAFF_ASSERT(_window);
-	glfwSetWindowUserPointer(_window, ptr);
-}
-
 bool Window::shouldClose(void) const
 {
 	GAFF_ASSERT(_window);
@@ -588,56 +634,6 @@ void Window::forceClose(void)
 {
 	GAFF_ASSERT(_window);
 	return glfwSetWindowShouldClose(_window, GLFW_TRUE);
-}
-
-int32_t Window::addSizeChangeCallback(const VecCallback& callback)
-{
-	return AddCallback(_size_callbacks, callback);
-}
-
-int32_t Window::addSizeChangeCallback(VecCallback&& callback)
-{
-	return AddCallback(_size_callbacks, std::move(callback));
-}
-
-int32_t Window::addPosChangeCallback(const VecCallback& callback)
-{
-	return AddCallback(_pos_callbacks, callback);
-}
-
-int32_t Window::addPosChangeCallback(VecCallback&& callback)
-{
-	return AddCallback(_pos_callbacks, std::move(callback));
-}
-
-int32_t Window::addCloseCallback(const WindowCallback& callback)
-{
-	return AddCallback(_close_callbacks, callback);
-}
-
-int32_t Window::addCloseCallback(WindowCallback&& callback)
-{
-	return AddCallback(_close_callbacks, std::move(callback));
-}
-
-int32_t Window::addMaximizeCallback(const BoolCallback& callback)
-{
-	return AddCallback(_maximize_callbacks, callback);
-}
-
-int32_t Window::addMaximizeCallback(BoolCallback&& callback)
-{
-	return AddCallback(_maximize_callbacks, std::move(callback));
-}
-
-int32_t Window::addFocusCallback(const BoolCallback& callback)
-{
-	return AddCallback(_focus_callbacks, callback);
-}
-
-int32_t Window::addFocusCallback(BoolCallback&& callback)
-{
-	return AddCallback(_focus_callbacks, std::move(callback));
 }
 
 bool Window::isCursorDisabled(void) const
@@ -676,20 +672,26 @@ void Window::showCursor(void)
 	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-void Window::setCursorPos(const IVec2& pos)
+void Window::setMousePos(const Vec2& pos)
 {
 	GAFF_ASSERT(_window);
 	glfwSetCursorPos(_window, pos.x, pos.y);
 }
 
-IVec2 Window::getCursorPos(void) const
+Vec2 Window::getMousePos(void) const
 {
 	GAFF_ASSERT(_window);
 
 	double x, y;
 	glfwGetCursorPos(_window, &x, &y);
 
-	return IVec2(static_cast<int32_t>(x), static_cast<int32_t>(y));
+	return Vec2(static_cast<float>(x), static_cast<float>(y));
+}
+
+void Window::setCursor(GLFWcursor* cursor)
+{
+	GAFF_ASSERT(_window);
+	glfwSetCursor(_window, cursor);
 }
 
 bool Window::isUsingRawMouseMotion(void) const
@@ -701,208 +703,355 @@ bool Window::isUsingRawMouseMotion(void) const
 void Window::useRawMouseMotion(bool enabled)
 {
 	GAFF_ASSERT(_window);
-	glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, (enabled) ? GLFW_TRUE : GLFW_FALSE);
 }
 
-//int32_t Window::addWindowMessageHandler(const MessageHandler& callback)
-//{
-//	const int32_t id = g_global_next_id++;
-//	_window_callbacks.emplace(id, callback);
-//	return id;
-//}
-//
-//int32_t Window::addWindowMessageHandler(MessageHandler&& callback)
-//{
-//	const int32_t id = g_global_next_id++;
-//	_window_callbacks.emplace(id, std::move(callback));
-//	return id;
-//}
-//
-//bool Window::removeWindowMessageHandler(int32_t id)
-//{
-//	return RemoveMessageHandler(_window_callbacks, id);
-//}
-//
-//void Window::showCursor(bool show)
-//{
-//	_cursor_visible = show;
-//
-//	if (show) {
-//		ShowCursor(show);
-//
-//	} else {
-//		while (ShowCursor(show) > 0) {
-//		}
-//	}
-//}
-//
-//void Window::containCursor(bool contain)
-//{
-//	_contain = contain;
-//
-//	if (contain) {
-//		RECT rect = {
-//			_pos.x,
-//			_pos.y,
-//			_pos.x + _size.x,
-//			_pos.y + _size.y
-//		};
-//
-//		ClipCursor(&rect);
-//
-//	} else {
-//		ClipCursor(nullptr);
-//	}
-//}
-//
-//bool Window::isCursorVisible(void) const
-//{
-//	return _cursor_visible;
-//}
-//
-//bool Window::isCursorContained(void) const
-//{
-//	return _contain;
-//}
-//
-//bool Window::setWindowMode(WindowMode window_mode)
-//{
-//	if (_window_mode == window_mode) {
-//		return true;
-//	}
-//
-//
-//	_window_mode = window_mode;
-//	DWORD flags = 0;
-//
-//	switch (window_mode) {
-//		case WindowMode::BorderlessWindowed:
-//			_pos.x = _pos.y = 0;
-//			_size.x = GetSystemMetrics(SM_CXSCREEN);
-//			_size.y = GetSystemMetrics(SM_CYSCREEN);
-//			break;
-//
-//		case WindowMode::Fullscreen:
-//			_pos.x = _pos.y = 0;
-//			flags = WS_POPUP;
-//			break;
-//
-//		case WindowMode::Windowed:
-//			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
-//			break;
-//	}
-//
-//	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-//	if (window_mode == WindowMode::Fullscreen) {
-//		DEVMODE dm_screen_settings;
-//		// If full screen set the screen to maximum size of the users desktop and 32bit.
-//		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
-//		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-//		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(_size.x);
-//		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_size.y);
-//		dm_screen_settings.dmBitsPerPel = 32;
-//		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-//
-//		// Change the display settings to full screen.
-//		if (ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN) == DISP_CHANGE_BADMODE) {
-//			// If we try to change to a bad mode, default to desktop resolution
-//			_size.x = GetSystemMetrics(SM_CXSCREEN);
-//			_size.y = GetSystemMetrics(SM_CYSCREEN);
-//			dm_screen_settings.dmPelsWidth = static_cast<DWORD>(_size.x);
-//			dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_size.y);
-//
-//			// try one last time using desktop resolution
-//			if (ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
-//				return false;
-//			}
-//		}
-//	} else {
-//		if (ChangeDisplaySettings(NULL, 0) != DISP_CHANGE_SUCCESSFUL) {
-//			return false;
-//		}
-//	}
-//
-//	SetWindowLongPtr(_hwnd, GWL_STYLE, WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags);
-//	return SetWindowPos(_hwnd, HWND_TOP, _pos.x, _pos.y, _size.x, _size.y, SWP_SHOWWINDOW | SWP_DRAWFRAME) != FALSE;
-//}
-//
-//Window::WindowMode Window::getWindowMode(void) const
-//{
-//	return _window_mode;
-//}
-//
-//const IVec2& Window::getPos(void) const
-//{
-//	return _pos;
-//}
-//
-//const IVec2& Window::getSize(void) const
-//{
-//	return _size;
-//}
-//
-//void Window::setPos(const IVec2& pos)
-//{
-//	_pos = pos;
-//
-//	if (_owns_window) {
-//		MoveWindow(_hwnd, _pos.x, _pos.y, _size.x, _size.y, false);
-//	}
-//}
-//
-//void Window::setSize(const IVec2& size)
-//{
-//	_size = size;
-//
-//	if (_owns_window) {
-//		MoveWindow(_hwnd, _pos.x, _pos.y, _size.x, _size.y, false);
-//	}
-//}
-//
-//bool Window::isFullScreen(void) const
-//{
-//	return _window_mode == WindowMode::Fullscreen;
-//}
-//
-//bool Window::setIcon(const char8_t* icon)
-//{
-//	CONVERT_STRING(wchar_t, temp, icon);
-//	HANDLE hIcon = LoadImageW(_hinstance, temp, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
-//
-//	if (!hIcon) {
-//		return false;
-//	}
-//
-//	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
-//	return true;
-//}
-//
-//bool Window::setIcon(const char* icon)
-//{
-//	CONVERT_STRING(wchar_t, temp, icon);
-//	HANDLE hIcon = LoadImageW(_hinstance, temp, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
-//
-//	if (!hIcon) {
-//		return false;
-//	}
-//
-//	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
-//	return true;
-//}
-//
-//void* Window::getPlatformHandle(void) const
-//{
-//	return _hwnd;
-//}
-//
-//HINSTANCE Window::getHInstance(void) const
-//{
-//	return _hinstance;
-//}
-//
-//HWND Window::getHWnd(void) const
-//{
-//	return _hwnd;
-//}
+int32_t Window::addSizeChangeCallback(const IVecCallback& callback)
+{
+	return AddCallback(_size_callbacks, callback);
+}
+
+int32_t Window::addSizeChangeCallback(IVecCallback&& callback)
+{
+	return AddCallback(_size_callbacks, std::move(callback));
+}
+
+int32_t Window::addPosChangeCallback(const IVecCallback& callback)
+{
+	return AddCallback(_pos_callbacks, callback);
+}
+
+int32_t Window::addPosChangeCallback(IVecCallback&& callback)
+{
+	return AddCallback(_pos_callbacks, std::move(callback));
+}
+
+int32_t Window::addCloseCallback(const WindowCallback& callback)
+{
+	return AddCallback(_close_callbacks, callback);
+}
+
+int32_t Window::addCloseCallback(WindowCallback&& callback)
+{
+	return AddCallback(_close_callbacks, std::move(callback));
+}
+
+int32_t Window::addMaximizeCallback(const BoolCallback& callback)
+{
+	return AddCallback(_maximize_callbacks, callback);
+}
+
+int32_t Window::addMaximizeCallback(BoolCallback&& callback)
+{
+	return AddCallback(_maximize_callbacks, std::move(callback));
+}
+
+int32_t Window::addFocusCallback(const BoolCallback& callback)
+{
+	return AddCallback(_focus_callbacks, callback);
+}
+
+int32_t Window::addFocusCallback(BoolCallback&& callback)
+{
+	return AddCallback(_focus_callbacks, std::move(callback));
+}
+
+int32_t Window::addMouseEnterLeaveCallback(const BoolCallback& callback)
+{
+	return AddCallback(_mouse_enter_leave_callbacks, callback);
+}
+
+int32_t Window::addMouseEnterLeaveCallback(BoolCallback&& callback)
+{
+	return AddCallback(_mouse_enter_leave_callbacks, std::move(callback));
+}
+
+int32_t Window::addMousePosCallback(const VecCallback& callback)
+{
+	return AddCallback(_mouse_pos_callbacks, callback);
+}
+
+int32_t Window::addMousePosCallback(VecCallback&& callback)
+{
+	return AddCallback(_mouse_pos_callbacks, std::move(callback));
+}
+
+int32_t Window::addMouseButtonCallback(const MouseButtonCallback& callback)
+{
+	return AddCallback(_mouse_button_callbacks, callback);
+}
+
+int32_t Window::addMouseButtonCallback(MouseButtonCallback&& callback)
+{
+	return AddCallback(_mouse_button_callbacks, std::move(callback));
+}
+
+int32_t Window::addMouseWheelCallback(const VecCallback& callback)
+{
+	return AddCallback(_mouse_wheel_callbacks, callback);
+}
+
+int32_t Window::addMouseWheelCallback(VecCallback&& callback)
+{
+	return AddCallback(_mouse_wheel_callbacks, std::move(callback));
+}
+
+int32_t Window::addCharacterCallback(const CharCallback& callback)
+{
+	return AddCallback(_char_callbacks, callback);
+}
+
+int32_t Window::addCharacterCallback(CharCallback&& callback)
+{
+	return AddCallback(_char_callbacks, std::move(callback));
+}
+
+int32_t Window::addKeyCallback(const KeyCallback& callback)
+{
+	return AddCallback(_key_callbacks, callback);
+}
+
+int32_t Window::addKeyCallback(KeyCallback&& callback)
+{
+	return AddCallback(_key_callbacks, std::move(callback));
+}
+
+int32_t Window::addMouseCallback(const MouseCallback& callback)
+{
+	return AddCallback(_mouse_callbacks, callback);
+}
+
+int32_t Window::addMouseCallback(MouseCallback&& callback)
+{
+	return AddCallback(_mouse_callbacks, std::move(callback));
+}
+
+#ifdef PLATFORM_WINDOWS
+void* Window::getHWnd(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWin32Window(_window);
+}
+#endif
+
+void Window::OnWindowSize(GLFWwindow* glfw_window, int width, int height)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+	const IVec2 size(width, height);
+
+	for (const auto& cb : window->_size_callbacks) {
+		cb.second(*window, size);
+	}
+
+	for (const auto& cb : g_size_callbacks) {
+		cb.second(*window, size);
+	}
+}
+
+void Window::OnWindowPos(GLFWwindow* glfw_window, int x, int y)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+	const IVec2 pos(x, y);
+
+	for (const auto& cb : window->_size_callbacks) {
+		cb.second(*window, pos);
+	}
+
+	for (const auto& cb : g_size_callbacks) {
+		cb.second(*window, pos);
+	}
+}
+
+void Window::OnWindowClose(GLFWwindow* glfw_window)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	for (const auto& cb : window->_close_callbacks) {
+		cb.second(*window);
+	}
+
+	for (const auto& cb : g_close_callbacks) {
+		cb.second(*window);
+	}
+}
+
+void Window::OnWindowMaximize(GLFWwindow* glfw_window, int maximized)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	for (const auto& cb : window->_maximize_callbacks) {
+		cb.second(*window, maximized == GLFW_TRUE);
+	}
+
+	for (const auto& cb : g_maximize_callbacks) {
+		cb.second(*window, maximized == GLFW_TRUE);
+	}
+}
+
+void Window::OnWindowFocus(GLFWwindow* glfw_window, int maximized)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	for (const auto& cb : window->_focus_callbacks) {
+		cb.second(*window, maximized == GLFW_TRUE);
+	}
+
+	for (const auto& cb : g_focus_callbacks) {
+		cb.second(*window, maximized == GLFW_TRUE);
+	}
+}
+
+void Window::OnMouseEnterLeave(GLFWwindow* glfw_window, int entered)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	for (const auto& cb : window->_mouse_enter_leave_callbacks) {
+		cb.second(*window, entered == GLFW_TRUE);
+	}
+
+	for (const auto& cb : g_mouse_enter_leave_callbacks) {
+		cb.second(*window, entered == GLFW_TRUE);
+	}
+}
+
+void Window::OnMousePos(GLFWwindow* glfw_window, double x, double y)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+	const Vec2 pos(static_cast<float>(x), static_cast<float>(y));
+	const Vec2 delta = pos - window->_prev_pos;
+
+	for (const auto& cb : window->_mouse_pos_callbacks) {
+		cb.second(*window, pos);
+	}
+
+	for (const auto& cb : window->_mouse_callbacks) {
+		cb.second(*window, MouseCode::DeltaX, delta.x);
+		cb.second(*window, MouseCode::DeltaY, delta.y);
+		cb.second(*window, MouseCode::PosX, pos.x);
+		cb.second(*window, MouseCode::PosY, pos.y);
+	}
+
+	for (const auto& cb : g_mouse_pos_callbacks) {
+		cb.second(*window, pos);
+	}
+
+	for (const auto& cb : g_mouse_callbacks) {
+		cb.second(*window, MouseCode::DeltaX, delta.x);
+		cb.second(*window, MouseCode::DeltaY, delta.y);
+		cb.second(*window, MouseCode::PosX, pos.x);
+		cb.second(*window, MouseCode::PosY, pos.y);
+	}
+
+	window->_prev_pos = pos;
+}
+
+void Window::OnMouseButton(GLFWwindow* glfw_window, int button, int action, int mods)
+{
+	// We don't process mouse button repeats.
+	if (action == GLFW_REPEAT) {
+		return;
+	}
+
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	// No flags on the negative bit, this should be fine.
+	const Gaff::Flags<Modifier> modifiers(static_cast<Gaff::Flags<Modifier>::StorageType>(mods));
+	
+	for (const auto& cb : window->_mouse_button_callbacks) {
+		cb.second(*window, static_cast<MouseButton>(button), action == GLFW_PRESS, modifiers);
+	}
+
+	for (const auto& cb : window->_mouse_callbacks) {
+		cb.second(*window, static_cast<MouseCode>(button), (action) == GLFW_PRESS ? 1.0f : 0.0f);
+	}
+
+	for (const auto& cb : g_mouse_button_callbacks) {
+		cb.second(*window, static_cast<MouseButton>(button), action == GLFW_PRESS, modifiers);
+	}
+
+	for (const auto& cb : g_mouse_callbacks) {
+		cb.second(*window, static_cast<MouseCode>(button), (action) == GLFW_PRESS ? 1.0f : 0.0f);
+	}
+}
+
+void Window::OnMouseWheel(GLFWwindow* glfw_window, double x, double y)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+	const Vec2 wheel(static_cast<float>(x), static_cast<float>(y));
+
+	for (const auto& cb : window->_mouse_wheel_callbacks) {
+		cb.second(*window, wheel);
+	}
+
+	for (const auto& cb : window->_mouse_callbacks) {
+		cb.second(*window, MouseCode::WheelHorizontal, wheel.x);
+		cb.second(*window, MouseCode::WheelVertical, wheel.y);
+	}
+
+	for (const auto& cb : g_mouse_wheel_callbacks) {
+		cb.second(*window, wheel);
+	}
+
+	for (const auto& cb : g_mouse_callbacks) {
+		cb.second(*window, MouseCode::WheelHorizontal, wheel.x);
+		cb.second(*window, MouseCode::WheelVertical, wheel.y);
+	}
+}
+
+void Window::OnCharacter(GLFWwindow* glfw_window, unsigned int character)
+{
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	for (const auto& cb : window->_char_callbacks) {
+		cb.second(*window, character);
+	}
+
+	for (const auto& cb : g_char_callbacks) {
+		cb.second(*window, character);
+	}
+}
+
+void Window::OnKey(GLFWwindow* glfw_window, int key, int /*scan_code*/, int action, int mods)
+{
+	// We don't process key repeats.
+	// We don't process unknown keys.
+	if (action == GLFW_REPEAT || key == GLFW_KEY_UNKNOWN) {
+		return;
+	}
+
+	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+
+	// No flags on the negative bit, this should be fine.
+	const Gaff::Flags<Modifier> modifiers(static_cast<Gaff::Flags<Modifier>::StorageType>(mods));
+
+	for (const auto& cb : window->_key_callbacks) {
+		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers);
+	}
+
+	for (const auto& cb : g_key_callbacks) {
+		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers);
+	}
+}
+
+void Window::setWindowCallbacks(void)
+{
+	glfwSetWindowUserPointer(_window, this);
+
+	glfwSetWindowSizeCallback(_window, &Window::OnWindowSize);
+	glfwSetWindowPosCallback(_window, &Window::OnWindowPos);
+	glfwSetWindowCloseCallback(_window, &Window::OnWindowClose);
+	glfwSetWindowMaximizeCallback(_window, &Window::OnWindowMaximize);
+	glfwSetWindowFocusCallback(_window, &Window::OnWindowFocus);
+
+	glfwSetCursorEnterCallback(_window, &Window::OnMouseEnterLeave);
+	glfwSetCursorPosCallback(_window, &Window::OnMousePos);
+	glfwSetMouseButtonCallback(_window, &Window::OnMouseButton);
+	glfwSetScrollCallback(_window, &Window::OnMouseWheel);
+
+	glfwSetCharCallback(_window, &Window::OnCharacter);
+	glfwSetKeyCallback(_window, &Window::OnKey);
+
+	//glfwSetJoystickCallback(_window, &Window::OnJoystickConnectedOrDisconnected);
+}
 
 NS_END

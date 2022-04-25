@@ -20,27 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#pragma once
 
-#include "Gleam_RawInputRegisterFunction.h"
-#include "Gleam_Window_Windows.h"
-#include <Gaff_Assert.h>
+#include <Gaff_Platform.h>
 
-NS_GLEAM
+#ifdef PLATFORM_WINDOWS
+	#define GLFW_EXPOSE_NATIVE_WIN32
 
-bool RegisterForRawInput(uint16_t device, const IWindow* window)
-{
-	GAFF_ASSERT(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
+#elif defined(PLATFORM_LINUX)
+	#ifdef USE_WAYLAND
+		#define GLFW_EXPOSE_NATIVE_WAYLAND
+	#else
+		#define GLFW_EXPOSE_NATIVE_X11
+	#endif
 
-	RAWINPUTDEVICE rid;
-	rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
-	rid.usUsage = device;
-	rid.dwFlags = 0;
-	rid.hwndTarget = (window) ? static_cast<const Window*>(window)->getHWnd() : NULL;
+#elif defined(PLATFORM_MAC)
+//	#define GLFW_EXPOSE_NATIVE_COCOA
 
-	return RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)) == TRUE;
-}
-
-NS_END
-
+#else
+	#error "Unsupported platform."
 #endif
+
+#include <GLFW/glfw3native.h>

@@ -52,7 +52,7 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderManager)
 
 static ProxyAllocator g_allocator("Graphics");
 
-static constexpr Gleam::RendererType GetRendererType(void)
+static consteval Gleam::RendererType GetRendererType(void)
 {
 #ifdef USE_D3D11
 	return Gleam::RendererType::Direct3D11;
@@ -65,13 +65,10 @@ static constexpr Gleam::RendererType GetRendererType(void)
 
 RenderManager::RenderManager(void)
 {
-	Gleam::MessageHandler func = Gaff::MemberFunc(this, &RenderManager::handleWindowClosed);
-	Gleam::Window::AddGlobalMessageHandler(std::move(func));
 }
 
 RenderManager::~RenderManager(void)
 {
-	Gleam::Window::Cleanup();
 }
 
 Gleam::RendererType RenderManager::getRendererType(void) const
@@ -164,29 +161,14 @@ Gleam::IRenderDevice::AdapterList RenderManager::getDisplayModes(void) const
 	return Gleam::GetDisplayModes<GetRendererType()>();
 }
 
-Gleam::IWindow* RenderManager::createWindow(void) const
+Gleam::Window* RenderManager::createWindow(void) const
 {
 	return SHIB_ALLOCT(Gleam::Window, g_allocator);
 }
 
 void RenderManager::updateWindows(void)
 {
-	Gleam::Window::HandleWindowMessages();
-}
-
-bool RenderManager::handleWindowClosed(const Gleam::AnyMessage& message)
-{
-	if (message.base.type == Gleam::EventType::WindowClosed) {
-		removeWindow(*message.base.window);
-
-		if (!getNumWindows()) {
-			GetApp().quit();
-		}
-
-		return true;
-	}
-
-	return false;
+	Gleam::Window::PollEvents();
 }
 
 NS_END

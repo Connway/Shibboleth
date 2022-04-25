@@ -72,7 +72,7 @@ void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 						size = camera.size;
 
 					} else {
-						if (const Gleam::IWindow* const window = _render_mgr->getWindow(camera.device_tag)) {
+						if (const Gleam::Window* const window = _render_mgr->getWindow(camera.device_tag)) {
 							size = window->getSize();
 						} else {
 							// $TODO: Log Error

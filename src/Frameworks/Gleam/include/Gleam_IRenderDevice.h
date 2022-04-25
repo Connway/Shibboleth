@@ -36,7 +36,7 @@ class ICommandList;
 class IRenderDevice
 {
 public:
-	struct DisplayMode
+	struct DisplayMode final
 	{
 		int32_t refresh_rate;
 		int32_t width;
@@ -44,8 +44,9 @@ public:
 		int32_t id;
 	};
 	
-	struct Display
+	struct Display final
 	{
+		char display_name[128];
 		Vector<DisplayMode> display_modes;
 		int32_t id;
 
@@ -53,9 +54,11 @@ public:
 		int32_t curr_y;
 		int32_t curr_width;
 		int32_t curr_height;
+
+		bool is_primary;
 	};
 
-	struct Adapter
+	struct Adapter final
 	{
 		char adapter_name[128];
 		Vector<Display> displays;
@@ -106,7 +109,18 @@ IRenderDevice::AdapterList GetDisplayModes(void)
 	return IRenderDevice::AdapterList();
 }
 
+template <RendererType type>
+IRenderDevice::AdapterList GetAdapters(void)
+{
+	GAFF_ASSERT_MSG(false, "Unrecognized RendererType!");
+	return IRenderDevice::AdapterList();
+}
+
+
 template <>
 IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void);
+
+template <>
+IRenderDevice::AdapterList GetAdapters<RendererType::Direct3D11>(void);
 
 NS_END
