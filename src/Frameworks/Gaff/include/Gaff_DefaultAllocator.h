@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IAllocator.h"
+#include "Gaff_Utils.h"
 #include <cstdlib>
 
 NS_GAFF
@@ -38,6 +39,46 @@ public:
 	bool operator==(const DefaultAllocator& rhs) const
 	{
 		return _name == rhs._name;
+	}
+
+	void* alloc(size_t size_bytes, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void free(void* data) override
+	{
+		::free(data);
+	}
+
+	void* realloc(void* old_ptr, size_t new_size, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return ::realloc(old_ptr, new_size);
+	}
+
+	void* realloc(void* old_ptr, size_t new_size, const char* /*file*/, int /*line*/) override
+	{
+		return ::realloc(old_ptr, new_size);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return ::calloc(num_members, member_size);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, const char* /*file*/, int /*line*/) override
+	{
+		return ::calloc(num_members, member_size);
+	}
+
+	size_t getUsableSize(const void* data) const override
+	{
+		return GetUsableSize(const_cast<void*>(data));
 	}
 
 	// For EASTL support.
@@ -66,21 +107,6 @@ public:
 	void set_name(const char* pName) override
 	{
 		_name = pName;
-	}
-
-	void* alloc(size_t size_bytes, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
-	{
-		return allocate(size_bytes);
-	}
-
-	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/) override
-	{
-		return allocate(size_bytes);
-	}
-
-	void free(void* data) override
-	{
-		::free(data);
 	}
 
 private:

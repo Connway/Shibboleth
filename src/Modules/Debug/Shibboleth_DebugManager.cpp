@@ -498,6 +498,7 @@ void DebugManager::HandleMouseWheelInput(Gleam::Window& /*window*/, const Gleam:
 void DebugManager::HandleMousePosInput(Gleam::Window& /*window*/, const Gleam::Vec2& pos)
 {
 	ImGuiIO& io = ImGui::GetIO();
+	reinterpret_cast<DebugManager*>(io.BackendPlatformUserData)->_last_mouse_pos = pos;
 	io.AddMousePosEvent(pos.x, pos.y);
 }
 
@@ -505,17 +506,17 @@ void DebugManager::HandleMouseEnterLeave(Gleam::Window& window, bool entered)
 {
 	GAFF_REF(window, entered);
 
-	//ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
+	DebugManager& debug_mgr = *reinterpret_cast<DebugManager*>(io.BackendPlatformUserData);
 
-	//if (entered) {
-	//	bd->MouseWindow = window;
-	//	io.AddMousePosEvent(bd->LastValidMousePos.x, bd->LastValidMousePos.y);
+	if (entered) {
+		io.AddMousePosEvent(debug_mgr._last_mouse_pos.x, debug_mgr._last_mouse_pos.y);
 
-	//} else if (!entered && bd->MouseWindow == window) {
-	//	bd->LastValidMousePos = io.MousePos;
-	//	bd->MouseWindow = NULL;
-	//	io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
-	//}
+	} else if (!entered && debug_mgr._main_window == &window) {
+		debug_mgr._last_mouse_pos.x = io.MousePos.x;
+		debug_mgr._last_mouse_pos.y = io.MousePos.y;
+		io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+	}
 }
 
 void DebugManager::HandleMainWindowClosed(Gleam::Window& /*window*/)
@@ -1113,6 +1114,11 @@ void DebugManager::update(void)
 			}
 		}
 	}
+
+	if (io.WantSetMousePos) {
+		_main_window->setMousePos(Gleam::Vec2(io.MousePos.x, io.MousePos.y));
+	}
+
 
 	//const int32_t char_buf_index = _char_buffer_cache_index;
 	//_char_buffer_cache_index = (_char_buffer_cache_index + 1) % 2;

@@ -26,12 +26,12 @@ THE SOFTWARE.
 #include <Gaff_IAllocator.h>
 
 #define SHIB_ALLOC_ARRAYT_ALIGNED_POOL(type, alignment, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(alignment, pool_index, ##__VA_ARGS__)
-#define SHIB_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_ALIGNED GAFF_ALLOC_ARRAYT_ALIGNED
 #define SHIB_ALLOC_ARRAYT_POOL(type, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
-#define SHIB_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT GAFF_ALLOC_ARRAYT
 
 #define SHIB_ALLOCT_ALIGNED_POOL(type, alignment, pool_index, allocator, ...) (allocator).template allocT<type>(alignment, pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
-#define SHIB_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOCT_ALIGNED GAFF_ALLOCT_ALIGNED
 #define SHIB_ALLOCT_POOL(type, pool_index, allocator, ...) (allocator).template allocT<type>(pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
 #define SHIB_ALLOCT GAFF_ALLOCT
 
@@ -41,23 +41,23 @@ THE SOFTWARE.
 #define SHIB_ALLOC GAFF_ALLOC
 
 #define SHIB_CALLOC_ALIGNED_POOL(num, size, alignment, pool_index, allocator) (allocator).calloc(num, size, alignment, pool_index, __FILE__, __LINE__)
-#define SHIB_CALLOC_ALIGNED(num, size, alignment, allocator) (allocator).calloc(num, size, alignment, __FILE__, __LINE__)
+#define SHIB_CALLOC_ALIGNED GAFF_CALLOC_ALIGNED
 #define SHIB_CALLOC_POOL(num, size, pool_index, allocator) (allocator).calloc(num, size, pool_index, __FILE__, __LINE__)
-#define SHIB_CALLOC(num, size, allocator) (allocator).calloc(num, size, __FILE__, __LINE__)
+#define SHIB_CALLOC GAFF_CALLOC
 
 #define SHIB_REALLOC_ALIGNED_POOL(old_ptr, new_size, alignment, pool_index, allocator) (allocator).realloc(old_ptr, new_size, alignment, pool_index, __FILE__, __LINE__)
-#define SHIB_REALLOC_ALIGNED(old_ptr, new_size, alignment, allocator) (allocator).realloc(old_ptr, new_size, alignment, __FILE__, __LINE__)
+#define SHIB_REALLOC_ALIGNED GAFF_REALLOC_ALIGNED
 #define SHIB_REALLOC_POOL(old_ptr, new_size, pool_index, allocator) (allocator).realloc(old_ptr, new_size, pool_index, __FILE__, __LINE__)
-#define SHIB_REALLOC(old_ptr, new_size, allocator) (allocator).realloc(old_ptr, new_size, __FILE__, __LINE__)
+#define SHIB_REALLOC GAFF_REALLOC
 
 #define SHIB_FREE_ARRAYT GAFF_FREE_ARRAYT
 #define SHIB_FREET GAFF_FREET
 #define SHIB_FREE GAFF_FREE
 
 #define SHIB_ALLOC_CAST_ALIGNED_POOL(type, size, alignment, pool_index, allocator) reinterpret_cast<type>(SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, allocator))
-#define SHIB_ALLOC_CAST_ALIGNED(type, size, alignment, allocator) reinterpret_cast<type>(SHIB_ALLOC_ALIGNED(size, alignment, allocator))
+#define SHIB_ALLOC_CAST_ALIGNED GAFF_ALLOC_CAST_ALIGNED
 #define SHIB_ALLOC_CAST_POOL(type, size, pool_index, allocator) reinterpret_cast<type>(SHIB_ALLOC_POOL(size, pool_index, allocator))
-#define SHIB_ALLOC_CAST(type, size, allocator) reinterpret_cast<type>(SHIB_ALLOC(size, allocator))
+#define SHIB_ALLOC_CAST GAFF_ALLOC_CAST
 
 NS_SHIBBOLETH
 
@@ -168,27 +168,29 @@ public:
 	virtual void removeOnFreeCallback(OnFreeCallback callback, void* data) = 0;
 
 	virtual int32_t getPoolIndex(const char* pool_name) = 0;
-	virtual size_t getUsableSize(const void* data) const = 0;
 
 	virtual void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) = 0;
 
+	virtual void* calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
+	virtual void* calloc(size_t num_members, size_t member_size, int32_t pool_index, const char* file, int line) = 0;
+
+	virtual void* realloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
+	virtual void* realloc(void* old_ptr, size_t new_size, int32_t pool_index, const char* file, int line) = 0;
+
+	// Gaff::IAllocator stuff.
 	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
 	virtual void free(void* data) = 0;
 
-	virtual void* calloc(size_t num_members, size_t member_size, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
-	virtual void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) = 0;
-	virtual void* calloc(size_t num_members, size_t member_size, int32_t pool_index, const char* file, int line) = 0;
-	virtual void* calloc(size_t num_members, size_t member_size, const char* file, int line) = 0;
-
-	virtual void* realloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
 	virtual void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line) = 0;
-
-	virtual void* realloc(void* old_ptr, size_t new_size, int32_t pool_index, const char* file, int line) = 0;
 	virtual void* realloc(void* old_ptr, size_t new_size, const char* file, int line) = 0;
 
-	// Gaff::IAllocator stuff.
+	virtual void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) = 0;
+	virtual void* calloc(size_t num_members, size_t member_size, const char* file, int line) = 0;
+
+	virtual size_t getUsableSize(const void* data) const = 0;
+
 	// For EASTL support.
 	virtual void* allocate(size_t n, int flags = 0) = 0;
 	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;

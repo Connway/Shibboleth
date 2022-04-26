@@ -21,6 +21,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
@@ -60,6 +61,10 @@ local GenerateProject = function()
 			"GraphicsBase",
 
 			"CivetWeb",
+			"GLFW",
+			"libpng",
+			"libtiff",
+			"zlib-ng"
 
 			-- Vulkan
 		}
@@ -83,6 +88,10 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "CivetWeb")
+	table.insert(deps, "GLFW")
+	table.insert(deps, "libpng")
+	table.insert(deps, "libtiff")
+	table.insert(deps, "zlib-ng")
 
 	dependson(deps)
 	links(deps)

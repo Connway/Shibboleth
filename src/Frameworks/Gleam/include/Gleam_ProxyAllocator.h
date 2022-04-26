@@ -59,6 +59,31 @@ public:
 		GetAllocator()->free(data);
 	}
 
+	void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line) override
+	{
+		return GetAllocator()->realloc(old_ptr, new_size, alignment, file, line);
+	}
+
+	void* realloc(void* old_ptr, size_t new_size, const char* file, int line) override
+	{
+		return GetAllocator()->realloc(old_ptr, new_size, file, line);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) override
+	{
+		return GetAllocator()->calloc(num_members, member_size, alignment, file, line);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, const char* file, int line) override
+	{
+		return GetAllocator()->calloc(num_members, member_size, file, line);
+	}
+
+	size_t getUsableSize(const void* data) const override
+	{
+		return GetAllocator()->getUsableSize(data);
+	}
+
 	// For EASTL support.
 	void* allocate(size_t n, int flags = 0) override
 	{

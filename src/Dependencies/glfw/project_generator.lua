@@ -1,5 +1,3 @@
-group "Dependencies/Unused By Engine"
-
 project "GLFW"
 	location(GetDependenciesLocation())
 
@@ -38,5 +36,3 @@ project "GLFW"
 	filter {}
 
 	SetupConfigMap()
-
-group "Dependencies"

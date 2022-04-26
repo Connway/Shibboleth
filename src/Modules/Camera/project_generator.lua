@@ -21,6 +21,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -56,7 +57,8 @@ local GenerateProject = function()
 			"MainLoop",
 			"Resource",
 			"Input",
-			"ECS"
+			"ECS",
+			"GLFW"
 		}
 
 		dependson(deps)
@@ -71,6 +73,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
 	table.insert(deps, "ECS")
+	table.insert(deps, "GLFW")
 
 	dependson(deps)
 	links(deps)

@@ -21,6 +21,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
@@ -55,7 +56,8 @@ local GenerateProject = function()
 			"DevWebServer",
 			--"Debug",
 
-			"CivetWeb"
+			"CivetWeb",
+			"GLFW"
 		}
 
 		dependson(deps)
@@ -70,6 +72,7 @@ local LinkDependencies = function()
 	--table.insert(deps, "Resource")
 	--table.insert(deps, "Debug")
 	table.insert(deps, "CivetWeb")
+	table.insert(deps, "GLFW")
 
 	dependson(deps)
 	links(deps)

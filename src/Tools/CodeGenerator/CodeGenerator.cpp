@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
 #include "CodeGen_ModuleGenerator.h"
+#include <Gaff_String.h>
 #include <Gaff_Utils.h>
 #include <argparse.hpp>
 

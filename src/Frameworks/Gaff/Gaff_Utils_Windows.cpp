@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
-
 #include "Gaff_Utils.h"
+
+#ifdef PLATFORM_WINDOWS
 #include "Gaff_Assert.h"
 #include "Gaff_String.h"
 #include "Gaff_IncludeWindows.h"
@@ -112,6 +112,27 @@ void* AlignedMalloc(size_t size, size_t alignment)
 void AlignedFree(void* data)
 {
 	_aligned_free(data);
+}
+
+void* AlignedRealloc(void* data, size_t size, size_t alignment)
+{
+	return _aligned_realloc(data, size, alignment);
+}
+
+void* AlignedCalloc(size_t num_members, size_t member_size, size_t alignment)
+{
+	void* const ptr = AlignedMalloc(num_members * member_size, alignment);
+
+	if (ptr) {
+		memset(ptr, 0, num_members * member_size);
+	}
+
+	return ptr;
+}
+
+size_t GetUsableSize(void* ptr)
+{
+	return _msize(ptr);
 }
 
 bool IsDebuggerAttached(void)

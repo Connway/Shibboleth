@@ -20,6 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#pragma once
+
+NS_GAFF
+
 template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void)
 {
@@ -75,3 +79,5 @@ constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const char (&lhs)[Si
 	result[outIndex] = 0;
 	return result;
 }
+
+NS_END

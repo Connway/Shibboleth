@@ -22,6 +22,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/CivetWeb/include",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			-- base_dir .. "../../Dependencies/mpack",
@@ -50,6 +51,7 @@ local GenerateProject = function()
 		local deps =
 		{
 			"CivetWeb",
+			"GLFW",
 
 			"Gleam",
 
@@ -64,6 +66,7 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("DevWebServer")
 	table.insert(deps, "CivetWeb")
+	table.insert(deps, "GLFW")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Input")

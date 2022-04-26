@@ -25,8 +25,6 @@ THE SOFTWARE.
 #include "Gaff_Defines.h"
 #include <new>
 
-#define GAFF_ALLOC_CAST(Type, size, allocator) reinterpret_cast<Type>(GAFF_ALLOC(size, allocator))
-
 #define GAFF_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, ##__VA_ARGS__)
 #define GAFF_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
 #define GAFF_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
@@ -36,6 +34,13 @@ THE SOFTWARE.
 #define GAFF_FREE_ARRAYT(ptr, size, allocator) (allocator).freeArrayT(ptr, size)
 #define GAFF_FREET(ptr, allocator) (allocator).freeT(ptr)
 #define GAFF_FREE(ptr, allocator) (allocator).free(ptr)
+#define GAFF_CALLOC_ALIGNED(num, size, alignment, allocator) (allocator).calloc(num, size, alignment, __FILE__, __LINE__)
+#define GAFF_CALLOC(num, size, allocator) (allocator).calloc(num, size, __FILE__, __LINE__)
+#define GAFF_REALLOC_ALIGNED(old_ptr, new_size, alignment, allocator) (allocator).realloc(old_ptr, new_size, alignment, __FILE__, __LINE__)
+#define GAFF_REALLOC(old_ptr, new_size, allocator) (allocator).realloc(old_ptr, new_size, __FILE__, __LINE__)
+
+#define GAFF_ALLOC_CAST_ALIGNED(type, size, alignment, allocator) reinterpret_cast<type>(GAFF_ALLOC_ALIGNED(size, alignment, allocator))
+#define GAFF_ALLOC_CAST(type, size, allocator) reinterpret_cast<type>(GAFF_ALLOC(size, allocator))
 
 NS_GAFF
 
@@ -66,20 +71,6 @@ void Deconstruct(T* data)
 class IAllocator
 {
 public:
-	virtual ~IAllocator(void) {}
-
-	// For EASTL support.
-	virtual void* allocate(size_t n, int flags = 0) = 0;
-	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;
-	virtual void deallocate(void* p, size_t n) = 0;
-
-	virtual const char* get_name() const = 0;
-	virtual void set_name(const char* pName) = 0;
-
-	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
-	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
-	virtual void free(void* data) = 0;
-
 	template <class T, class... Args>
 	T* allocArrayT(size_t alignment, size_t count, const char* file, int line, Args&&... args)
 	{
@@ -134,6 +125,28 @@ public:
 		Deconstruct(data);
 		free((void*)(data));
 	}
+
+	virtual ~IAllocator(void) {}
+
+	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
+	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
+	virtual void free(void* data) = 0;
+
+	virtual void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line) = 0;
+	virtual void* realloc(void* old_ptr, size_t new_size, const char* file, int line) = 0;
+
+	virtual void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) = 0;
+	virtual void* calloc(size_t num_members, size_t member_size, const char* file, int line) = 0;
+
+	virtual size_t getUsableSize(const void* data) const = 0;
+
+	// For EASTL support.
+	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;
+	virtual void* allocate(size_t n, int flags = 0) = 0;
+	virtual void deallocate(void* p, size_t n) = 0;
+
+	virtual const char* get_name() const = 0;
+	virtual void set_name(const char* pName) = 0;
 };
 
 NS_END

@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(__linux__) || defined(__APPLE__)
-
 #include "Gaff_Utils.h"
+
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 #include "Gaff_Assert.h"
 #include <EASTL/allocator_malloc.h>
 #include <sys/stat.h>
@@ -88,6 +88,37 @@ void* AlignedMalloc(size_t size, size_t alignment)
 void AlignedFree(void* data)
 {
 	free(data);
+}
+
+void* AlignedRealloc(void* data, size_t size, size_t alignment)
+{
+	const size_t old_size = GetUsableSize(data);
+
+	if (old_size >= size) {
+		return data;
+	}
+
+	void* const new_ptr = AlignedMalloc(size, alignment);
+	memcpy(new_ptr, data, std::min(old_size, size));
+	AlignedFree(data);
+
+	return new_ptr;
+}
+
+void* AlignedCalloc(size_t num_members, size_t member_size, size_t alignment)
+{
+	void* const ptr = AlignedMalloc(num_members * member_size, alignment);
+
+	if (ptr) {
+		memset(ptr, 0, num_members * member_size);
+	}
+
+	return ptr;
+}
+
+size_t GetUsableSize(void* ptr)
+{
+	return malloc_usable_size(ptr);
 }
 
 void DebugBreak(void)

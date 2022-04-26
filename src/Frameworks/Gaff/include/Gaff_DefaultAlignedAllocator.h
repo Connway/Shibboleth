@@ -41,37 +41,9 @@ public:
 		return _name == rhs._name;
 	}
 
-	// For EASTL support.
-	void* allocate(size_t n, int flags = 0) override
+	void* alloc(size_t size_bytes, size_t align, const char* /*file*/, int /*line*/) override
 	{
-		GAFF_REF(flags);
-		return AlignedMalloc(n, alignment);
-	}
-
-	void* allocate(size_t n, size_t align, size_t, int flags = 0) override
-	{
-		GAFF_REF(flags);
-		return AlignedMalloc(n, align);
-	}
-
-	void deallocate(void* p, size_t) override
-	{
-		free(p);
-	}
-
-	const char* get_name() const override
-	{
-		return _name;
-	}
-
-	void set_name(const char* pName) override
-	{
-		_name = pName;
-	}
-
-	void* alloc(size_t size_bytes, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
-	{
-		return allocate(size_bytes);
+		return allocate(size_bytes, align, 0, 0);
 	}
 
 	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/) override
@@ -84,6 +56,60 @@ public:
 		AlignedFree(data);
 	}
 
+	void* realloc(void* old_ptr, size_t new_size, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return AlignedRealloc(old_ptr, new_size, alignment);
+	}
+
+	void* realloc(void* old_ptr, size_t new_size, const char* /*file*/, int /*line*/) override
+	{
+		return AlignedRealloc(old_ptr, new_size, alignment);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return AlignedCalloc(num_members, member_size, alignment);
+	}
+
+	void* calloc(size_t num_members, size_t member_size, const char* /*file*/, int /*line*/) override
+	{
+		return AlignedCalloc(num_members, member_size, alignment);
+	}
+
+	size_t getUsableSize(const void* data) const override
+	{
+		return GetUsableSize(const_cast<void*>(data));
+	}
+
+	// For EASTL support.
+	void* allocate(size_t n, size_t align, size_t, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return AlignedMalloc(n, align);
+	}
+
+	void* allocate(size_t n, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return AlignedMalloc(n, alignment);
+	}
+
+	void deallocate(void* p, size_t) override
+	{
+		AlignedFree(p);
+	}
+
+	const char* get_name() const override
+	{
+		return _name;
+	}
+
+	void set_name(const char* pName) override
+	{
+		_name = pName;
+	}
+
+private:
 	const char* _name = nullptr;
 };
 

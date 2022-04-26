@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gaff_CrashHandler.h"
 
 #ifdef PLATFORM_WINDOWS
-
+#include "Gaff_String.h"
 #include "Gaff_Utils.h"
 #include "Gaff_IncludeWindows.h"
 #include <EASTL/algorithm.h>

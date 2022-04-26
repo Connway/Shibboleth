@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_HashString.h"
+#include "Gaff_Defines.h"
 #include <EASTL/array.h>
-
 #include <cstring>
 #include <ctime>
 
@@ -57,6 +56,9 @@ bool SetWorkingDir(const char8_t* directory);
 
 void* AlignedMalloc(size_t size, size_t alignment);
 void AlignedFree(void* data);
+void* AlignedRealloc(void* data, size_t size, size_t alignment);
+void* AlignedCalloc(size_t num_members, size_t member_size, size_t alignment);
+size_t GetUsableSize(void* ptr);
 
 bool IsDebuggerAttached(void);
 void DebugBreak(void);
@@ -81,6 +83,6 @@ constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const eastl::array<c
 template <size_t SizeA, size_t SizeB>
 constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const char(&lhs)[SizeA], const char(&rhs)[SizeB]);
 
-#include "Gaff_Utils_Common.inl"
-
 NS_END
+
+#include "Gaff_Utils_Common.inl"

@@ -58,6 +58,8 @@ local GenerateProject = function()
 			"minizip-ng",
 			"zlib-ng",
 			"GLFW",
+			"libpng",
+			"libtiff",
 
 			"Gleam",
 			"GraphicsBase",
@@ -78,6 +80,8 @@ local LinkDependencies = function()
 	table.insert(deps, "minizip-ng")
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "GLFW")
+	table.insert(deps, "libpng")
+	table.insert(deps, "libtiff")
 
 	table.insert(deps, "Gleam")
 	table.insert(deps, "GraphicsBase")

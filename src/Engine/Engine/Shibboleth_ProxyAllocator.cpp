@@ -51,6 +51,21 @@ bool ProxyAllocator::operator==(const ProxyAllocator& rhs) const
 	return _pool_index == rhs._pool_index;
 }
 
+void* ProxyAllocator::alloc(size_t size_bytes, size_t alignment, const char* file, int line)
+{
+	return _allocator.alloc(size_bytes, alignment, _pool_index, file, line);
+}
+
+void* ProxyAllocator::alloc(size_t size_bytes, const char* file, int line)
+{
+	return _allocator.alloc(size_bytes, _pool_index, file, line);
+}
+
+void ProxyAllocator::free(void* data)
+{
+	_allocator.free(data);
+}
+
 void* ProxyAllocator::realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line)
 {
 	return _allocator.realloc(old_ptr, new_size, alignment, _pool_index, file, line);
@@ -59,6 +74,21 @@ void* ProxyAllocator::realloc(void* old_ptr, size_t new_size, size_t alignment, 
 void* ProxyAllocator::realloc(void* old_ptr, size_t new_size, const char* file, int line)
 {
 	return _allocator.realloc(old_ptr, new_size, _pool_index, file, line);
+}
+
+void* ProxyAllocator::calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line)
+{
+	return _allocator.calloc(num_members, member_size, alignment, file, line);
+}
+
+void* ProxyAllocator::calloc(size_t num_members, size_t member_size, const char* file, int line)
+{
+	return _allocator.calloc(num_members, member_size, file, line);
+}
+
+size_t ProxyAllocator::getUsableSize(const void* data) const
+{
+	return _allocator.getUsableSize(data);
 }
 
 // For EASTL support.
@@ -86,21 +116,6 @@ const char* ProxyAllocator::get_name() const
 
 void ProxyAllocator::set_name(const char*)
 {
-}
-
-void* ProxyAllocator::alloc(size_t size_bytes, size_t alignment, const char* file, int line)
-{
-	return _allocator.alloc(size_bytes, alignment, _pool_index, file, line);
-}
-
-void* ProxyAllocator::alloc(size_t size_bytes, const char* file, int line)
-{
-	return _allocator.alloc(size_bytes, _pool_index, file, line);
-}
-
-void ProxyAllocator::free(void* data)
-{
-	_allocator.free(data);
 }
 
 NS_END

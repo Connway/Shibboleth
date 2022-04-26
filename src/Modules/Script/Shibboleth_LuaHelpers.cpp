@@ -50,6 +50,65 @@ namespace
 		{
 		}
 
+		void* alloc(size_t, size_t, const char*, int) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void* alloc(size_t size_bytes, const char* file, int line) override
+		{
+			return g_allocator.alloc(size_bytes, file, line);
+		}
+
+		void* alloc(const Refl::IReflectionDefinition& ref_def) override
+		{
+			Shibboleth::UserData* const value = Shibboleth::PushUserType(_state, ref_def);
+			return value->getData();
+		}
+
+		void free(void*) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+		}
+
+		void* realloc(void*, size_t, size_t, const char*, int) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void* realloc(void*, size_t, const char*, int) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void* calloc(size_t, size_t, size_t, const char*, int) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		void* calloc(size_t, size_t, const char*, int) override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return nullptr;
+		}
+
+		size_t getUsableSize(const void*) const override
+		{
+			// Should never happen.
+			GAFF_ASSERT(false);
+			return 0;
+		}
+
 		// For EASTL support.
 		void* allocate(size_t, size_t, size_t, int flags = 0) override
 		{
@@ -83,30 +142,6 @@ namespace
 		}
 
 		void set_name(const char*) override
-		{
-			// Should never happen.
-			GAFF_ASSERT(false);
-		}
-
-		void* alloc(size_t, size_t, const char*, int) override
-		{
-			// Should never happen.
-			GAFF_ASSERT(false);
-			return nullptr;
-		}
-
-		void* alloc(size_t size_bytes, const char* file, int line) override
-		{
-			return g_allocator.alloc(size_bytes, file, line);
-		}
-
-		void* alloc(const Refl::IReflectionDefinition& ref_def) override
-		{
-			Shibboleth::UserData* const value = Shibboleth::PushUserType(_state, ref_def);
-			return value->getData();
-		}
-
-		void free(void*) override
 		{
 			// Should never happen.
 			GAFF_ASSERT(false);

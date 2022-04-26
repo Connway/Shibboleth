@@ -51,53 +51,53 @@ WebInputHandler::WebInputHandler(void):
 void WebInputHandler::update(void)
 {
 	// Add new input devices.
-	{
-		const EA::Thread::AutoMutex queue_lock(_new_device_queue_lock);
-		const EA::Thread::AutoMutex mgr_lock(_input_mgr_lock);
+	//{
+	//	const EA::Thread::AutoMutex queue_lock(_new_device_queue_lock);
+	//	const EA::Thread::AutoMutex mgr_lock(_input_mgr_lock);
 
-		for (const NewDeviceEntry& entry : _new_device_queue) {
-			int32_t player_id = entry.player_id;
+	//	for (const NewDeviceEntry& entry : _new_device_queue) {
+	//		int32_t player_id = entry.player_id;
 
-			if (entry.player_id == -1) {
-				player_id = _input_mgr->addPlayer();
-			}
+	//		if (entry.player_id == -1) {
+	//			player_id = _input_mgr->addPlayer();
+	//		}
 
-			for (Gleam::IInputDevice* const device : entry.devices) {
-				_input_mgr->addInputDevice(device, player_id);
-			}
-		}
+	//		for (Gleam::IInputDevice* const device : entry.devices) {
+	//			_input_mgr->addInputDevice(device, player_id);
+	//		}
+	//	}
 
-		_new_device_queue.clear();
-	}
+	//	_new_device_queue.clear();
+	//}
 
 	// Process input queue and do input message pumps.
-	{
-		const EA::Thread::AutoMutex lock(_input_queue_lock);
+	//{
+	//	const EA::Thread::AutoMutex lock(_input_queue_lock);
 
-		for (const InputEntry& entry : _input_queue) {
-			const auto keyboard_it = _keyboards.find(entry.player_id);
-			const auto mouse_it = _mice.find(entry.player_id);
+	//	for (const InputEntry& entry : _input_queue) {
+	//		const auto keyboard_it = _keyboards.find(entry.player_id);
+	//		const auto mouse_it = _mice.find(entry.player_id);
 
-			if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputKeyDown, Gleam::EventType::InputCharacter)) {
-				if (keyboard_it != _keyboards.end()) {
-					keyboard_it->second->handleMessage(entry.message);
+	//		if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputKeyDown, Gleam::EventType::InputCharacter)) {
+	//			if (keyboard_it != _keyboards.end()) {
+	//				keyboard_it->second->handleMessage(entry.message);
 
-				} else {
-					// $TODO: Log error.
-				}
+	//			} else {
+	//				// $TODO: Log error.
+	//			}
 
-			} else if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputMouseMove, Gleam::EventType::InputMouseWheelVertical)) {
-				if (mouse_it != _mice.end()) {
-					mouse_it->second->handleMessage(entry.message);
+	//		} else if (Gaff::Between(entry.message.base.type, Gleam::EventType::InputMouseMove, Gleam::EventType::InputMouseWheelVertical)) {
+	//			if (mouse_it != _mice.end()) {
+	//				mouse_it->second->handleMessage(entry.message);
 
-				} else {
-					// $TODO: Log error.
-				}
-			}
-		}
+	//			} else {
+	//				// $TODO: Log error.
+	//			}
+	//		}
+	//	}
 
-		_input_queue.clear();
-	}
+	//	_input_queue.clear();
+	//}
 }
 
 bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
@@ -115,104 +115,104 @@ bool WebInputHandler::handlePost(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const Gaff::JSON inputs = req_data.getObject(u8"inputs");
+	//const Gaff::JSON inputs = req_data.getObject(u8"inputs");
 
-	if (!inputs.isArray()) {
-		// $TODO: Log error.
-		return true;
-	}
+	//if (!inputs.isArray()) {
+	//	// $TODO: Log error.
+	//	return true;
+	//}
 
-	const int32_t player_id = req_data.getObject(u8"player_id").getInt32(-1);
+	//const int32_t player_id = req_data.getObject(u8"player_id").getInt32(-1);
 
-	inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
-	{
-		const Gaff::JSON mouse_pos_state = value.getObject(u8"mouse_pos_state");
-		const Gaff::JSON mouse_code = value.getObject(u8"mouse_code");
-		const Gaff::JSON char_code = value.getObject(u8"char_code");
-		const Gaff::JSON key_code = value.getObject(u8"key_code");
+	//inputs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	//{
+	//	const Gaff::JSON mouse_pos_state = value.getObject(u8"mouse_pos_state");
+	//	const Gaff::JSON mouse_code = value.getObject(u8"mouse_code");
+	//	const Gaff::JSON char_code = value.getObject(u8"char_code");
+	//	const Gaff::JSON key_code = value.getObject(u8"key_code");
 
-		InputEntry entry;
-		entry.message.base.window = nullptr;
-		entry.player_id = player_id;
+	//	InputEntry entry;
+	//	entry.message.base.window = nullptr;
+	//	entry.player_id = player_id;
 
-		// Parse each input and put into input queue.
-		const float input_value = value.getObject(u8"value").getFloat(0.0f);
+	//	// Parse each input and put into input queue.
+	//	const float input_value = value.getObject(u8"value").getFloat(0.0f);
 
-		char8_t buffer[64] = { 0 };
+	//	char8_t buffer[64] = { 0 };
 
-		if (mouse_pos_state.isObject()) {
-			entry.message.base.type = Gleam::EventType::InputMouseMove;
-			entry.message.mouse_move.abs_x = mouse_pos_state.getObject(u8"abs_x").getInt32(0);
-			entry.message.mouse_move.abs_y = mouse_pos_state.getObject(u8"abs_y").getInt32(0);
-			entry.message.mouse_move.rel_x = mouse_pos_state.getObject(u8"rel_x").getInt32(0);
-			entry.message.mouse_move.rel_y = mouse_pos_state.getObject(u8"rel_y").getInt32(0);
-			entry.message.mouse_move.dx = mouse_pos_state.getObject(u8"dx").getInt32(0);
-			entry.message.mouse_move.dy = mouse_pos_state.getObject(u8"dy").getInt32(0);
+	//	if (mouse_pos_state.isObject()) {
+	//		entry.message.base.type = Gleam::EventType::InputMouseMove;
+	//		entry.message.mouse_move.abs_x = mouse_pos_state.getObject(u8"abs_x").getInt32(0);
+	//		entry.message.mouse_move.abs_y = mouse_pos_state.getObject(u8"abs_y").getInt32(0);
+	//		entry.message.mouse_move.rel_x = mouse_pos_state.getObject(u8"rel_x").getInt32(0);
+	//		entry.message.mouse_move.rel_y = mouse_pos_state.getObject(u8"rel_y").getInt32(0);
+	//		entry.message.mouse_move.dx = mouse_pos_state.getObject(u8"dx").getInt32(0);
+	//		entry.message.mouse_move.dy = mouse_pos_state.getObject(u8"dy").getInt32(0);
 
-		} else if (mouse_code.isString()) {
-			const char8_t* const code_name = mouse_code.getString(buffer, sizeof(buffer));
-			const auto& ref_def = Refl::Reflection<Gleam::MouseCode>::GetReflectionDefinition();
+	//	} else if (mouse_code.isString()) {
+	//		const char8_t* const code_name = mouse_code.getString(buffer, sizeof(buffer));
+	//		const auto& ref_def = Refl::Reflection<Gleam::MouseCode>::GetReflectionDefinition();
 
-			if (!ref_def.entryExists(code_name)) {
-				// $TODO: Log error.
-				return false;
-			}
+	//		if (!ref_def.entryExists(code_name)) {
+	//			// $TODO: Log error.
+	//			return false;
+	//		}
 
-			const Gleam::MouseCode gleam_mouse_code = ref_def.getEntry(code_name);
+	//		const Gleam::MouseCode gleam_mouse_code = ref_def.getEntry(code_name);
 
-			if (gleam_mouse_code < Gleam::MouseCode::ButtonCount) {
-				entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputMouseDown : Gleam::EventType::InputMouseUp;
-				entry.message.mouse_state.button = gleam_mouse_code;
+	//		if (gleam_mouse_code < Gleam::MouseCode::ButtonCount) {
+	//			entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputMouseDown : Gleam::EventType::InputMouseUp;
+	//			entry.message.mouse_state.button = gleam_mouse_code;
 
-			} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelVertical, Gleam::MouseCode::WheelDown)) {
-				entry.message.base.type = Gleam::EventType::InputMouseWheelVertical;
-				entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
+	//		} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelVertical, Gleam::MouseCode::WheelDown)) {
+	//			entry.message.base.type = Gleam::EventType::InputMouseWheelVertical;
+	//			entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
 
-			} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelHorizontal, Gleam::MouseCode::WheelRight)) {
-				entry.message.base.type = Gleam::EventType::InputMouseWheelHorizontal;
-				entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
+	//		} else if (Gaff::Between(gleam_mouse_code, Gleam::MouseCode::WheelHorizontal, Gleam::MouseCode::WheelRight)) {
+	//			entry.message.base.type = Gleam::EventType::InputMouseWheelHorizontal;
+	//			entry.message.mouse_state.wheel = static_cast<int16_t>(input_value);
 
-			} else {
-				// $TODO: Log error.
-			}
+	//		} else {
+	//			// $TODO: Log error.
+	//		}
 
-		} else if (char_code.isString()) {
-			entry.message.base.type = Gleam::EventType::InputCharacter;
+	//	} else if (char_code.isString()) {
+	//		entry.message.base.type = Gleam::EventType::InputCharacter;
 
-			// All this nonsense because eastl::DecodePart() takes pointer references ... for some reason.
-			const char8_t* character = char_code.getString(buffer, sizeof(buffer));
+	//		// All this nonsense because eastl::DecodePart() takes pointer references ... for some reason.
+	//		const char8_t* character = char_code.getString(buffer, sizeof(buffer));
 
-			char32_t out_character;
-			char32_t* out_character_begin = &out_character;
+	//		char32_t out_character;
+	//		char32_t* out_character_begin = &out_character;
 
-			eastl::DecodePart(
-				character,
-				character + eastl::CharStrlen(character),
-				out_character_begin,
-				out_character_begin + 1
-			);
+	//		eastl::DecodePart(
+	//			character,
+	//			character + eastl::CharStrlen(character),
+	//			out_character_begin,
+	//			out_character_begin + 1
+	//		);
 
-			// Decode first character into UTF-32
-			entry.message.key_char.character = static_cast<uint32_t>(out_character);
+	//		// Decode first character into UTF-32
+	//		entry.message.key_char.character = static_cast<uint32_t>(out_character);
 
-		} else if (key_code.isString()) {
-			const char8_t* const code_name = key_code.getString(buffer, sizeof(buffer));
-			const auto& ref_def = Refl::Reflection<Gleam::KeyCode>::GetReflectionDefinition();
+	//	} else if (key_code.isString()) {
+	//		const char8_t* const code_name = key_code.getString(buffer, sizeof(buffer));
+	//		const auto& ref_def = Refl::Reflection<Gleam::KeyCode>::GetReflectionDefinition();
 
-			if (!ref_def.entryExists(code_name)) {
-				// $TODO: Log error.
-				return false;
-			}
+	//		if (!ref_def.entryExists(code_name)) {
+	//			// $TODO: Log error.
+	//			return false;
+	//		}
 
-			entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputKeyDown : Gleam::EventType::InputKeyUp;
-			entry.message.key_char.key = ref_def.getEntry(code_name);
-		}
+	//		entry.message.base.type = input_value > 0.0f ? Gleam::EventType::InputKeyDown : Gleam::EventType::InputKeyUp;
+	//		entry.message.key_char.key = ref_def.getEntry(code_name);
+	//	}
 
-		const EA::Thread::AutoMutex lock(_input_queue_lock);
-		_input_queue.emplace_back(entry);
+	//	const EA::Thread::AutoMutex lock(_input_queue_lock);
+	//	_input_queue.emplace_back(entry);
 
-		return false;
-	});
+	//	return false;
+	//});
 
 	return true;
 }
@@ -232,56 +232,56 @@ bool WebInputHandler::handlePut(CivetServer* /*server*/, mg_connection* conn)
 		return true;
 	}
 
-	const bool create_keyboard = req_data.getObject(u8"create_keyboard").getBool(false);
-	const bool create_mouse = req_data.getObject(u8"create_mouse").getBool(false);
+	//const bool create_keyboard = req_data.getObject(u8"create_keyboard").getBool(false);
+	//const bool create_mouse = req_data.getObject(u8"create_mouse").getBool(false);
 
-	NewDeviceEntry entry;
-	entry.player_id = req_data.getObject(u8"player_id").getInt32(-1);
+	//NewDeviceEntry entry;
+	//entry.player_id = req_data.getObject(u8"player_id").getInt32(-1);
 
-	Gaff::JSON response = Gaff::JSON::CreateObject();
+	//Gaff::JSON response = Gaff::JSON::CreateObject();
 
-	if (create_keyboard && _keyboards.find(entry.player_id) == _keyboards.end()) {
-		KeyboardWeb* const keyboard = SHIB_ALLOCT(KeyboardWeb, g_allocator);
+	//if (create_keyboard && _keyboards.find(entry.player_id) == _keyboards.end()) {
+	//	KeyboardWeb* const keyboard = SHIB_ALLOCT(KeyboardWeb, g_allocator);
 
-		if (keyboard->init()) {
-			entry.devices.emplace_back(keyboard);
+	//	if (keyboard->init()) {
+	//		entry.devices.emplace_back(keyboard);
 
-			response.setObject(u8"keyboard", Gaff::JSON::CreateBool(true));
+	//		response.setObject(u8"keyboard", Gaff::JSON::CreateBool(true));
 
-			const EA::Thread::AutoMutex lock(_device_lock);
-			_keyboards[entry.player_id].reset(keyboard);
+	//		const EA::Thread::AutoMutex lock(_device_lock);
+	//		_keyboards[entry.player_id].reset(keyboard);
 
-		} else {
-			SHIB_FREET(keyboard, g_allocator);
-		}
-	}
+	//	} else {
+	//		SHIB_FREET(keyboard, g_allocator);
+	//	}
+	//}
 
-	if (create_mouse && _mice.find(entry.player_id) == _mice.end()) {
-		MouseWeb* const mouse = SHIB_ALLOCT(MouseWeb, g_allocator);
+	//if (create_mouse && _mice.find(entry.player_id) == _mice.end()) {
+	//	MouseWeb* const mouse = SHIB_ALLOCT(MouseWeb, g_allocator);
 
-		if (mouse->init()) {
-			entry.devices.emplace_back(mouse);
+	//	if (mouse->init()) {
+	//		entry.devices.emplace_back(mouse);
 
-			response.setObject(u8"mouse", Gaff::JSON::CreateBool(true));
+	//		response.setObject(u8"mouse", Gaff::JSON::CreateBool(true));
 
-			const EA::Thread::AutoMutex lock(_device_lock);
-			_mice[entry.player_id].reset(mouse);
+	//		const EA::Thread::AutoMutex lock(_device_lock);
+	//		_mice[entry.player_id].reset(mouse);
 
-		} else {
-			SHIB_FREET(mouse, g_allocator);
-		}
-	}
+	//	} else {
+	//		SHIB_FREET(mouse, g_allocator);
+	//	}
+	//}
 
-	if (!entry.devices.empty()) {
-		const EA::Thread::AutoMutex lock(_new_device_queue_lock);
-		_new_device_queue.emplace_back(std::move(entry));
-	}
+	//if (!entry.devices.empty()) {
+	//	const EA::Thread::AutoMutex lock(_new_device_queue_lock);
+	//	_new_device_queue.emplace_back(std::move(entry));
+	//}
 
-	char8_t response_buffer[1024] = { 0 };
-	const char8_t* rb_beg = response_buffer;
-	response.dump(response_buffer, sizeof(response_buffer));
+	//char8_t response_buffer[1024] = { 0 };
+	//const char8_t* rb_beg = response_buffer;
+	//response.dump(response_buffer, sizeof(response_buffer));
 
-	WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
+	//WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
 
 	return true;
 }
@@ -324,58 +324,58 @@ bool WebInputHandler::handleOptions(CivetServer* /*server*/, mg_connection* conn
 		return true;
 	}
 
-	const Gaff::JSON req_type = req_data.getObject(u8"request_type");
+	//const Gaff::JSON req_type = req_data.getObject(u8"request_type");
 
-	char8_t req_type_buffer[32] = { 0 };
-	req_type.getString(req_type_buffer, sizeof(req_type_buffer));
+	//char8_t req_type_buffer[32] = { 0 };
+	//req_type.getString(req_type_buffer, sizeof(req_type_buffer));
 
-	// $TODO: Refactor this if more GET request type are introduced.
-	if (eastl::u8string_view(req_type_buffer) != u8"player_devices") {
-		return true;
-	}
+	//// $TODO: Refactor this if more GET request type are introduced.
+	//if (eastl::u8string_view(req_type_buffer) != u8"player_devices") {
+	//	return true;
+	//}
 
-	Vector<const Gleam::IInputDevice*> devices(ProxyAllocator("DevWeb"));
-	Vector<int32_t> player_ids(ProxyAllocator("DevWeb"));
-	Gaff::JSON response = Gaff::JSON::CreateArray();
+	//Vector<const Gleam::IInputDevice*> devices(ProxyAllocator("DevWeb"));
+	//Vector<int32_t> player_ids(ProxyAllocator("DevWeb"));
+	//Gaff::JSON response = Gaff::JSON::CreateArray();
 
-	{
-		const EA::Thread::AutoMutex lock(_input_mgr_lock);
-		_input_mgr->getPlayerIDs(player_ids);
-	}
+	//{
+	//	const EA::Thread::AutoMutex lock(_input_mgr_lock);
+	//	_input_mgr->getPlayerIDs(player_ids);
+	//}
 
-	devices.reserve(3);
+	//devices.reserve(3);
 
-	for (int32_t player_id : player_ids) {
-		devices.clear();
+	//for (int32_t player_id : player_ids) {
+	//	devices.clear();
 
-		{
-			const EA::Thread::AutoMutex lock(_input_mgr_lock);
-			_input_mgr->getInputDevices(player_id, devices);
-		}
+	//	{
+	//		const EA::Thread::AutoMutex lock(_input_mgr_lock);
+	//		_input_mgr->getInputDevices(player_id, devices);
+	//	}
 
-		Gaff::JSON devices_json = Gaff::JSON::CreateArray();
+	//	Gaff::JSON devices_json = Gaff::JSON::CreateArray();
 
-		for (const Gleam::IInputDevice* device : devices) {
-			CONVERT_STRING(char8_t, temp_device_name, device->getDeviceName());
-			Gaff::JSON device_name = Gaff::JSON::CreateString(temp_device_name);
-			devices_json.push(std::move(device_name));
-		}
+	//	for (const Gleam::IInputDevice* device : devices) {
+	//		CONVERT_STRING(char8_t, temp_device_name, device->getDeviceName());
+	//		Gaff::JSON device_name = Gaff::JSON::CreateString(temp_device_name);
+	//		devices_json.push(std::move(device_name));
+	//	}
 
-		const int32_t new_size = player_id + 1;
+	//	const int32_t new_size = player_id + 1;
 
-		// Empty slots are null.
-		while (response.size() < new_size) {
-			response.push(Gaff::JSON::CreateNull());
-		}
+	//	// Empty slots are null.
+	//	while (response.size() < new_size) {
+	//		response.push(Gaff::JSON::CreateNull());
+	//	}
 
-		response.setObject(player_id, std::move(devices_json));
-	}
+	//	response.setObject(player_id, std::move(devices_json));
+	//}
 
-	char8_t response_buffer[1024] = { 0 };
-	const char8_t* rb_beg = response_buffer;
-	response.dump(response_buffer, sizeof(response_buffer));
+	//char8_t response_buffer[1024] = { 0 };
+	//const char8_t* rb_beg = response_buffer;
+	//response.dump(response_buffer, sizeof(response_buffer));
 
-	WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
+	//WriteResponse(*conn, reinterpret_cast<const char*>(rb_beg));
 	return true;
 }
 

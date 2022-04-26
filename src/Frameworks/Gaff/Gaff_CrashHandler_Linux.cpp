@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Gaff_CrashHandler.h"
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-
 #include <sys/resource.h>
 #include <csignal>
 #include <err.h>

@@ -82,8 +82,8 @@ u8R"({
 				{
 					"width": { "type": "number" },
 					"height": { "type": "number" },
-					"monitor_id": { "type": "number" },
-					"video_mode_id": { "type": "number" },
+					"monitor_id": { "type": "number", "minimum": 0 },
+					"video_mode_id": { "type": "number", "minimum": 0 },
 					"windowed": { "type": "boolean" },
 					"vsync": { "type": "boolean" },
 					"icon": { "type": "string" }
@@ -150,7 +150,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer()), g_graphics_cfg_schema)) {
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, g_graphics_cfg_schema*/)) {
 		LogErrorGraphics("Failed to parse config file with error - %s.", config.getErrorText());
 		fs.closeFile(file);
 
@@ -206,7 +206,7 @@ bool RenderManagerBase::init(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer()), g_graphics_cfg_schema)) {
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, g_graphics_cfg_schema*/)) {
 		const char8_t* const error = config.getErrorText();
 		LogErrorGraphics("Failed to parse config file with error - %s.", error);
 		fs.closeFile(file);

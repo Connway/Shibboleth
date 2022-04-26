@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IncludeGLFWNative.h"
 #include <Gaff_Assert.h>
+#include <Gaff_Utils.h>
 
 namespace
 {
@@ -36,9 +37,7 @@ namespace
 
 	static void* Reallocate(void* block, size_t size, void* /*user*/)
 	{
-		// Very naive Reallocate.
-		GAFF_FREE(block, s_allocator);
-		return GAFF_ALLOC(size, s_allocator);
+		return GAFF_REALLOC(block, size, s_allocator);
 	}
 
 	static void Deallocate(void* block, void* /*user*/)
@@ -931,6 +930,8 @@ void Window::OnMousePos(GLFWwindow* glfw_window, double x, double y)
 	Window* const window = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
 	const Vec2 pos(static_cast<float>(x), static_cast<float>(y));
 	const Vec2 delta = pos - window->_prev_pos;
+
+	Gaff::DebugPrintf("MP: %f, %f\n", x, y);
 
 	for (const auto& cb : window->_mouse_pos_callbacks) {
 		cb.second(*window, pos);

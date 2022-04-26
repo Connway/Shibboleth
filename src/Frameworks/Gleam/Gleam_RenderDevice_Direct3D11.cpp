@@ -145,7 +145,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		IRenderDevice::Adapter adpt;
 
 		const wchar_t*  src_begin = adpt_info.adapter_name;
-		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name);
+		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name) + 1;
 		char* dest_begin = adpt.adapter_name;
 		char* dest_end = dest_begin + ARRAY_SIZE(adpt.adapter_name);
 
@@ -168,7 +168,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 			display.is_primary = out_info.is_primary;
 
 			src_begin = out_info.display_name;
-			src_end = src_begin + eastl::CharStrlen(out_info.display_name);
+			src_end = src_begin + eastl::CharStrlen(out_info.display_name) + 1;
 			dest_begin = display.display_name;
 			dest_end = dest_begin + ARRAY_SIZE(display.display_name);
 

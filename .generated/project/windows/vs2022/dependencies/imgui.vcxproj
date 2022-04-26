@@ -192,7 +192,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\imgui\imconfig.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\imgui\imgui.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\imgui\imgui_internal.h" />
@@ -203,7 +202,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\imgui\misc\single_file\imgui_single_file.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\imgui_draw.cpp" />

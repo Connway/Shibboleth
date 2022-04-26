@@ -241,6 +241,8 @@ private:
 	DebugRenderData _debug_data;
 	DebugMenuEntry _debug_menu_root;
 
+	Gleam::Vec2 _last_mouse_pos{ 0.0f, 0.0f };
+
 	Gaff::Flags<DebugFlag> _debug_flags;
 	Gaff::Flags<Flag> _flags;
 

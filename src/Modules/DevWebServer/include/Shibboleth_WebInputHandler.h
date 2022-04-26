@@ -22,8 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Keyboard_Web.h"
-#include "Shibboleth_Mouse_Web.h"
 #include <Shibboleth_IDevWebHandler.h>
 #include <Shibboleth_Reflection.h>
 #include <Gaff_Flags.h>
@@ -48,23 +46,23 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(WebInputHandler);
 
 private:
-	struct NewDeviceEntry final
-	{
-		Vector<Gleam::IInputDevice*> devices{ ProxyAllocator("DevWeb") };
-		int32_t player_id = -1;
-	};
+	//struct NewDeviceEntry final
+	//{
+	//	Vector<Gleam::IInputDevice*> devices{ ProxyAllocator("DevWeb") };
+	//	int32_t player_id = -1;
+	//};
 
-	struct InputEntry final
-	{
-		Gleam::AnyMessage message;
-		int32_t player_id;
-	};
+	//struct InputEntry final
+	//{
+	//	Gleam::AnyMessage message;
+	//	int32_t player_id;
+	//};
 
-	Vector<NewDeviceEntry> _new_device_queue{ ProxyAllocator("DevWeb") };
-	Vector<InputEntry> _input_queue{ ProxyAllocator("DevWeb") };
+	//Vector<NewDeviceEntry> _new_device_queue{ ProxyAllocator("DevWeb") };
+	//Vector<InputEntry> _input_queue{ ProxyAllocator("DevWeb") };
 
-	VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
-	VectorMap<int32_t, UniquePtr<MouseWeb> > _mice{ ProxyAllocator("DevWeb") };
+	//VectorMap<int32_t, UniquePtr<KeyboardWeb> > _keyboards{ ProxyAllocator("DevWeb") };
+	//VectorMap<int32_t, UniquePtr<MouseWeb> > _mice{ ProxyAllocator("DevWeb") };
 
 	EA::Thread::Mutex _new_device_queue_lock;
 	EA::Thread::Mutex _input_queue_lock;

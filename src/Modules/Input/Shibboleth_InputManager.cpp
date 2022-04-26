@@ -239,6 +239,10 @@ bool InputManager::initAllModulesLoaded(void)
 		window->addKeyCallback(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
 		window->addMouseCallback(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
 		//window->addGamepadCallback();
+
+		if (!window->isUsingRawMouseMotion()) {
+			window->useRawMouseMotion(true);
+		}
 	}
 
 	return true;

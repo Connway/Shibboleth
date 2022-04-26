@@ -40,8 +40,20 @@ public:
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs);
 	bool operator==(const ProxyAllocator& rhs) const;
 
-	void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line);
-	void* realloc(void* old_ptr, size_t new_size, const char* file, int line);
+	int32_t getPoolIndex(void) const { return _pool_index; }
+
+	// Gaff::IAllocator
+	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override;
+	void* alloc(size_t size_bytes, const char* file, int line) override;
+	void free(void* data) override;
+
+	void* realloc(void* old_ptr, size_t new_size, size_t alignment, const char* file, int line) override;
+	void* realloc(void* old_ptr, size_t new_size, const char* file, int line) override;
+
+	void* calloc(size_t num_members, size_t member_size, size_t alignment, const char* file, int line) override;
+	void* calloc(size_t num_members, size_t member_size, const char* file, int line) override;
+
+	size_t getUsableSize(const void* data) const override;
 
 	// For EASTL support.
 	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override;
@@ -50,12 +62,6 @@ public:
 
 	const char* get_name() const override;
 	void set_name(const char* pName) override;
-
-	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override;
-	void* alloc(size_t size_bytes, const char* file, int line) override;
-	void free(void* data) override;
-
-	int32_t getPoolIndex(void) const { return _pool_index; }
 
 private:
 	Shibboleth::IAllocator& _allocator = GetAllocator();
