@@ -265,6 +265,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
       <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>

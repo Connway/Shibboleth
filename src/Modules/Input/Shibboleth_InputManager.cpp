@@ -441,7 +441,8 @@ void InputManager::handleKeyboardInput(
 	Gleam::Window& /*window*/,
 	Gleam::KeyCode key_code,
 	bool pressed,
-	Gaff::Flags<Gleam::Modifier> /*modifiers*/)
+	Gaff::Flags<Gleam::Modifier> /*modifiers*/,
+	int32_t /*scan_code*/)
 {
 	const auto dpm_it = _device_player_map.find(k_keyboard_device);
 

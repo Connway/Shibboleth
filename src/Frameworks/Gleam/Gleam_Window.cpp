@@ -706,6 +706,18 @@ void Window::useRawMouseMotion(bool enabled)
 	glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, (enabled) ? GLFW_TRUE : GLFW_FALSE);
 }
 
+const char* Window::getClipboardText(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetClipboardString(_window);
+}
+
+void Window::setClipboardText(const char* text)
+{
+	GAFF_ASSERT(_window);
+	glfwSetClipboardString(_window, text);
+}
+
 int32_t Window::addSizeChangeCallback(const IVecCallback& callback)
 {
 	return AddCallback(_size_callbacks, callback);
@@ -1011,7 +1023,7 @@ void Window::OnCharacter(GLFWwindow* glfw_window, unsigned int character)
 	}
 }
 
-void Window::OnKey(GLFWwindow* glfw_window, int key, int /*scan_code*/, int action, int mods)
+void Window::OnKey(GLFWwindow* glfw_window, int key, int scan_code, int action, int mods)
 {
 	// We don't process key repeats.
 	// We don't process unknown keys.
@@ -1025,11 +1037,11 @@ void Window::OnKey(GLFWwindow* glfw_window, int key, int /*scan_code*/, int acti
 	const Gaff::Flags<Modifier> modifiers(static_cast<Gaff::Flags<Modifier>::StorageType>(mods));
 
 	for (const auto& cb : window->_key_callbacks) {
-		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers);
+		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers, scan_code);
 	}
 
 	for (const auto& cb : g_key_callbacks) {
-		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers);
+		cb.second(*window, static_cast<KeyCode>(key), action == GLFW_PRESS, modifiers, scan_code);
 	}
 }
 

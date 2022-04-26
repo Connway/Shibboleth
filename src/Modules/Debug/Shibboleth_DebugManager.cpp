@@ -233,6 +233,200 @@ namespace
 	};
 
 	static constexpr int32_t k_num_instances_per_buffer = 32;
+
+	static constexpr int32_t k_key_mapping[GLFW_KEY_LAST + 1] =
+	{
+		ImGuiKey_None, /* 0 */ ImGuiKey_None, /* 1 */ ImGuiKey_None, /* 2 */ ImGuiKey_None, /* 3 */ ImGuiKey_None, /* 4 */
+		ImGuiKey_None, /* 5 */ ImGuiKey_None, /* 6 */ ImGuiKey_None, /* 7 */ ImGuiKey_None, /* 8 */ ImGuiKey_None, /* 9 */
+		ImGuiKey_None, /* 10 */ ImGuiKey_None, /* 11 */ ImGuiKey_None, /* 12 */ ImGuiKey_None, /* 13 */ ImGuiKey_None, /* 14 */
+		ImGuiKey_None, /* 15 */ ImGuiKey_None, /* 16 */ ImGuiKey_None, /* 17 */ ImGuiKey_None, /* 18 */ ImGuiKey_None, /* 19 */
+		ImGuiKey_None, /* 20 */ ImGuiKey_None, /* 21 */ ImGuiKey_None, /* 22 */ ImGuiKey_None, /* 23 */ ImGuiKey_None, /* 24 */
+		ImGuiKey_None, /* 25 */ ImGuiKey_None, /* 26 */ ImGuiKey_None, /* 27 */ ImGuiKey_None, /* 28 */ ImGuiKey_None, /* 29 */
+		ImGuiKey_None, /* 30 */ ImGuiKey_None, /* 31 */
+		ImGuiKey_Space,
+		ImGuiKey_None, /* 33 */ ImGuiKey_None, /* 34 */ ImGuiKey_None, /* 35 */ ImGuiKey_None, /* 36 */ ImGuiKey_None, /* 37 */
+		ImGuiKey_None, /* 38 */
+		ImGuiKey_Apostrophe,
+		ImGuiKey_None, /* 40 */ ImGuiKey_None, /* 41 */ ImGuiKey_None, /* 42 */ ImGuiKey_None, /* 43 */
+		ImGuiKey_Comma,
+		ImGuiKey_Minus,
+		ImGuiKey_Period,
+		ImGuiKey_Slash,
+		ImGuiKey_0,
+		ImGuiKey_1,
+		ImGuiKey_2,
+		ImGuiKey_3,
+		ImGuiKey_4,
+		ImGuiKey_5,
+		ImGuiKey_6,
+		ImGuiKey_7,
+		ImGuiKey_8,
+		ImGuiKey_9,
+		ImGuiKey_None, /* 58 */
+		ImGuiKey_Semicolon,
+		ImGuiKey_None, /* 60 */
+		ImGuiKey_Equal,
+		ImGuiKey_None, /* 62 */ ImGuiKey_None, /* 63 */ ImGuiKey_None, /* 64 */
+		ImGuiKey_A,
+		ImGuiKey_B,
+		ImGuiKey_C,
+		ImGuiKey_D,
+		ImGuiKey_E,
+		ImGuiKey_F,
+		ImGuiKey_G,
+		ImGuiKey_H,
+		ImGuiKey_I,
+		ImGuiKey_J,
+		ImGuiKey_K,
+		ImGuiKey_L,
+		ImGuiKey_M,
+		ImGuiKey_N,
+		ImGuiKey_O,
+		ImGuiKey_P,
+		ImGuiKey_Q,
+		ImGuiKey_R,
+		ImGuiKey_S,
+		ImGuiKey_T,
+		ImGuiKey_U,
+		ImGuiKey_V,
+		ImGuiKey_W,
+		ImGuiKey_X,
+		ImGuiKey_Y,
+		ImGuiKey_Z,
+		ImGuiKey_LeftBracket,
+		ImGuiKey_Backslash,
+		ImGuiKey_RightBracket,
+		ImGuiKey_None, /* 94 */ ImGuiKey_None, /* 95 */
+		ImGuiKey_GraveAccent,
+		ImGuiKey_None, /* 97 */ ImGuiKey_None, /* 98 */ ImGuiKey_None, /* 99 */ ImGuiKey_None, /* 100 */ ImGuiKey_None, /* 101 */
+		ImGuiKey_None, /* 102 */ ImGuiKey_None, /* 103 */ ImGuiKey_None, /* 104 */ ImGuiKey_None, /* 105 */ ImGuiKey_None, /* 106 */
+		ImGuiKey_None, /* 107 */ ImGuiKey_None, /* 108 */ ImGuiKey_None, /* 109 */ ImGuiKey_None, /* 110 */ ImGuiKey_None, /* 111 */
+		ImGuiKey_None, /* 112 */ ImGuiKey_None, /* 113 */ ImGuiKey_None, /* 114 */ ImGuiKey_None, /* 115 */ ImGuiKey_None, /* 116 */
+		ImGuiKey_None, /* 117 */ ImGuiKey_None, /* 118 */ ImGuiKey_None, /* 119 */ ImGuiKey_None, /* 120 */ ImGuiKey_None, /* 121 */
+		ImGuiKey_None, /* 122 */ ImGuiKey_None, /* 123 */ ImGuiKey_None, /* 124 */ ImGuiKey_None, /* 125 */ ImGuiKey_None, /* 126 */
+		ImGuiKey_None, /* 127 */ ImGuiKey_None, /* 128 */ ImGuiKey_None, /* 129 */ ImGuiKey_None, /* 130 */ ImGuiKey_None, /* 131 */
+		ImGuiKey_None, /* 132 */ ImGuiKey_None, /* 133 */ ImGuiKey_None, /* 134 */ ImGuiKey_None, /* 135 */ ImGuiKey_None, /* 136 */
+		ImGuiKey_None, /* 137 */ ImGuiKey_None, /* 138 */ ImGuiKey_None, /* 139 */ ImGuiKey_None, /* 140 */ ImGuiKey_None, /* 141 */
+		ImGuiKey_None, /* 142 */ ImGuiKey_None, /* 143 */ ImGuiKey_None, /* 144 */ ImGuiKey_None, /* 145 */ ImGuiKey_None, /* 146 */
+		ImGuiKey_None, /* 147 */ ImGuiKey_None, /* 148 */ ImGuiKey_None, /* 149 */ ImGuiKey_None, /* 150 */ ImGuiKey_None, /* 151 */
+		ImGuiKey_None, /* 152 */ ImGuiKey_None, /* 153 */ ImGuiKey_None, /* 154 */ ImGuiKey_None, /* 155 */ ImGuiKey_None, /* 156 */
+		ImGuiKey_None, /* 157 */ ImGuiKey_None, /* 158 */ ImGuiKey_None, /* 159 */ ImGuiKey_None, /* 160 */ ImGuiKey_None, /* 161 */
+		ImGuiKey_None, /* 162 */ ImGuiKey_None, /* 163 */ ImGuiKey_None, /* 164 */ ImGuiKey_None, /* 165 */ ImGuiKey_None, /* 166 */
+		ImGuiKey_None, /* 167 */ ImGuiKey_None, /* 168 */ ImGuiKey_None, /* 169 */ ImGuiKey_None, /* 170 */ ImGuiKey_None, /* 171 */
+		ImGuiKey_None, /* 172 */ ImGuiKey_None, /* 173 */ ImGuiKey_None, /* 174 */ ImGuiKey_None, /* 175 */ ImGuiKey_None, /* 176 */
+		ImGuiKey_None, /* 177 */ ImGuiKey_None, /* 178 */ ImGuiKey_None, /* 179 */ ImGuiKey_None, /* 180 */ ImGuiKey_None, /* 181 */
+		ImGuiKey_None, /* 182 */ ImGuiKey_None, /* 183 */ ImGuiKey_None, /* 184 */ ImGuiKey_None, /* 185 */ ImGuiKey_None, /* 186 */
+		ImGuiKey_None, /* 187 */ ImGuiKey_None, /* 188 */ ImGuiKey_None, /* 189 */ ImGuiKey_None, /* 190 */ ImGuiKey_None, /* 191 */
+		ImGuiKey_None, /* 192 */ ImGuiKey_None, /* 193 */ ImGuiKey_None, /* 194 */ ImGuiKey_None, /* 195 */ ImGuiKey_None, /* 196 */
+		ImGuiKey_None, /* 197 */ ImGuiKey_None, /* 198 */ ImGuiKey_None, /* 199 */ ImGuiKey_None, /* 200 */ ImGuiKey_None, /* 201 */
+		ImGuiKey_None, /* 202 */ ImGuiKey_None, /* 203 */ ImGuiKey_None, /* 204 */ ImGuiKey_None, /* 205 */ ImGuiKey_None, /* 206 */
+		ImGuiKey_None, /* 207 */ ImGuiKey_None, /* 208 */ ImGuiKey_None, /* 209 */ ImGuiKey_None, /* 210 */ ImGuiKey_None, /* 211 */
+		ImGuiKey_None, /* 212 */ ImGuiKey_None, /* 213 */ ImGuiKey_None, /* 214 */ ImGuiKey_None, /* 215 */ ImGuiKey_None, /* 216 */
+		ImGuiKey_None, /* 217 */ ImGuiKey_None, /* 218 */ ImGuiKey_None, /* 219 */ ImGuiKey_None, /* 220 */ ImGuiKey_None, /* 221 */
+		ImGuiKey_None, /* 222 */ ImGuiKey_None, /* 223 */ ImGuiKey_None, /* 224 */ ImGuiKey_None, /* 225 */ ImGuiKey_None, /* 226 */
+		ImGuiKey_None, /* 227 */ ImGuiKey_None, /* 228 */ ImGuiKey_None, /* 229 */ ImGuiKey_None, /* 230 */ ImGuiKey_None, /* 231 */
+		ImGuiKey_None, /* 232 */ ImGuiKey_None, /* 233 */ ImGuiKey_None, /* 234 */ ImGuiKey_None, /* 235 */ ImGuiKey_None, /* 236 */
+		ImGuiKey_None, /* 237 */ ImGuiKey_None, /* 238 */ ImGuiKey_None, /* 239 */ ImGuiKey_None, /* 240 */ ImGuiKey_None, /* 241 */
+		ImGuiKey_None, /* 242 */ ImGuiKey_None, /* 243 */ ImGuiKey_None, /* 244 */ ImGuiKey_None, /* 245 */ ImGuiKey_None, /* 246 */
+		ImGuiKey_None, /* 247 */ ImGuiKey_None, /* 248 */ ImGuiKey_None, /* 249 */ ImGuiKey_None, /* 250 */ ImGuiKey_None, /* 251 */
+		ImGuiKey_None, /* 252 */ ImGuiKey_None, /* 253 */ ImGuiKey_None, /* 254 */ ImGuiKey_None, /* 255 */
+		ImGuiKey_Escape,
+		ImGuiKey_Enter,
+		ImGuiKey_Tab,
+		ImGuiKey_Backspace,
+		ImGuiKey_Insert,
+		ImGuiKey_Delete,
+		ImGuiKey_RightArrow,
+		ImGuiKey_LeftArrow,
+		ImGuiKey_DownArrow,
+		ImGuiKey_UpArrow,
+		ImGuiKey_PageUp,
+		ImGuiKey_PageDown,
+		ImGuiKey_Home,
+		ImGuiKey_End,
+		ImGuiKey_None, /* 270 */ ImGuiKey_None, /* 271 */ ImGuiKey_None, /* 272 */ ImGuiKey_None, /* 273 */ ImGuiKey_None, /* 274 */
+		ImGuiKey_None, /* 275 */ ImGuiKey_None, /* 276 */ ImGuiKey_None, /* 277 */ ImGuiKey_None, /* 278 */ ImGuiKey_None, /* 279 */
+		ImGuiKey_CapsLock,
+		ImGuiKey_ScrollLock,
+		ImGuiKey_NumLock,
+		ImGuiKey_PrintScreen,
+		ImGuiKey_Pause,
+		ImGuiKey_None, /* 285 */ ImGuiKey_None, /* 286 */ ImGuiKey_None, /* 287 */ ImGuiKey_None, /* 288 */ ImGuiKey_None, /* 289 */
+		ImGuiKey_F1,
+		ImGuiKey_F2,
+		ImGuiKey_F3,
+		ImGuiKey_F4,
+		ImGuiKey_F5,
+		ImGuiKey_F6,
+		ImGuiKey_F7,
+		ImGuiKey_F8,
+		ImGuiKey_F9,
+		ImGuiKey_F10,
+		ImGuiKey_F11,
+		ImGuiKey_F12,
+		ImGuiKey_None, /* 302 */ ImGuiKey_None, /* 303 */ ImGuiKey_None, /* 304 */ ImGuiKey_None, /* 305 */ ImGuiKey_None, /* 306 */
+		ImGuiKey_None, /* 307 */ ImGuiKey_None, /* 308 */ ImGuiKey_None, /* 309 */ ImGuiKey_None, /* 310 */ ImGuiKey_None, /* 311 */
+		ImGuiKey_None, /* 312 */ ImGuiKey_None, /* 313 */ ImGuiKey_None, /* 314 */ ImGuiKey_None, /* 315 */ ImGuiKey_None, /* 316 */
+		ImGuiKey_None, /* 317 */ ImGuiKey_None, /* 318 */ ImGuiKey_None, /* 319 */
+		ImGuiKey_Keypad0,
+		ImGuiKey_Keypad1,
+		ImGuiKey_Keypad2,
+		ImGuiKey_Keypad3,
+		ImGuiKey_Keypad4,
+		ImGuiKey_Keypad5,
+		ImGuiKey_Keypad6,
+		ImGuiKey_Keypad7,
+		ImGuiKey_Keypad8,
+		ImGuiKey_Keypad9,
+		ImGuiKey_KeypadDecimal,
+		ImGuiKey_KeypadDivide,
+		ImGuiKey_KeypadMultiply,
+		ImGuiKey_KeypadSubtract,
+		ImGuiKey_KeypadAdd,
+		ImGuiKey_KeypadEnter,
+		ImGuiKey_KeypadEqual,
+		ImGuiKey_None, /* 337 */ ImGuiKey_None, /* 338 */ ImGuiKey_None, /* 339 */
+		ImGuiKey_LeftShift,
+		ImGuiKey_LeftCtrl,
+		ImGuiKey_LeftAlt,
+		ImGuiKey_LeftSuper,
+		ImGuiKey_RightShift,
+		ImGuiKey_RightCtrl,
+		ImGuiKey_RightAlt,
+		ImGuiKey_RightSuper,
+		ImGuiKey_Menu
+	};
+
+	static Gleam::KeyCode TranslateUntranslatedKey(Gleam::KeyCode key_code, int32_t scancode)
+	{
+		// GLFW 3.1+ attempts to "untranslate" keys, which goes the opposite of what every other framework does, making using lettered shortcuts difficult.
+		// (It had reasons to do so: namely GLFW is/was more likely to be used for WASD-type game controls rather than lettered shortcuts, but IHMO the 3.1 change could have been done differently)
+		// See https://github.com/glfw/glfw/issues/1502 for details.
+		// Adding a workaround to undo this (so our keys are translated->untranslated->translated, likely a lossy process).
+		// This won't cover edge cases but this is at least going to cover common cases.
+
+		if (static_cast<int32_t>(key_code) >= GLFW_KEY_KP_0 && static_cast<int32_t>(key_code) <= GLFW_KEY_KP_EQUAL) {
+			return key_code;
+		}
+
+		const char* const key_name = glfwGetKeyName(static_cast<int32_t>(key_code), scancode);
+
+		if (key_name && key_name[0] != 0 && key_name[1] == 0) {
+			constexpr const int32_t char_keys[] = { GLFW_KEY_GRAVE_ACCENT, GLFW_KEY_MINUS, GLFW_KEY_EQUAL, GLFW_KEY_LEFT_BRACKET, GLFW_KEY_RIGHT_BRACKET, GLFW_KEY_BACKSLASH, GLFW_KEY_COMMA, GLFW_KEY_SEMICOLON, GLFW_KEY_APOSTROPHE, GLFW_KEY_PERIOD, GLFW_KEY_SLASH, 0 };
+			constexpr const char char_names[] = "`-=[]\\,;\'./";
+			static_assert(ARRAY_SIZE(char_names) == ARRAY_SIZE(char_keys));
+
+			if (key_name[0] >= '0' && key_name[0] <= '9') {
+				key_code = static_cast<Gleam::KeyCode>(GLFW_KEY_0 + (key_name[0] - '0'));
+			} else if (key_name[0] >= 'A' && key_name[0] <= 'Z') {
+				key_code = static_cast<Gleam::KeyCode>(GLFW_KEY_A + (key_name[0] - 'A'));
+			} else if (const char* p = strchr(char_names, key_name[0])) {
+				key_code = static_cast<Gleam::KeyCode>(char_keys[p - char_names]);
+			}
+		}
+
+		return key_code;
+	}
 }
 
 GAFF_STATIC_FILE_FUNC
@@ -260,71 +454,101 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
 
-static void HandleKeyboardInput(Gleam::IInputDevice*, int32_t key_code, float value)
+
+void DebugManager::HandleKeyboardCharacterInput(Gleam::Window& /*window*/, uint32_t char_code)
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.KeysDown[key_code] = value > 0.0f;
-
-	if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftShift)) ||
-		(key_code == static_cast<int32_t>(Gleam::KeyCode::RightShift))) {
-
-		io.KeyShift = value > 0.0f;
-
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftControl)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightControl))) {
-
-		io.KeyCtrl = value > 0.0f;
-
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftAlt)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightAlt))) {
-		io.KeyAlt = value > 0.0f;
-
-	} else if ((key_code == static_cast<int32_t>(Gleam::KeyCode::LeftSuper)) ||
-				(key_code == static_cast<int32_t>(Gleam::KeyCode::RightSuper))) {
-
-		io.KeySuper = value > 0.0f;
-	}
+	io.AddInputCharacter(char_code);
 }
 
-static void HandleMouseInput(Gleam::IInputDevice*, int32_t mouse_event, float value)
+void DebugManager::HandleKeyboardInput(Gleam::Window& /*window*/, Gleam::KeyCode key_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers, int32_t scan_code)
+{
+	const ImGuiKey key = k_key_mapping[static_cast<size_t>(key_code)];
+
+	key_code = TranslateUntranslatedKey(key_code, scan_code);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddKeyEvent(ImGuiKey_ModCtrl,  modifiers.testAll(Gleam::Modifier::Control));
+	io.AddKeyEvent(ImGuiKey_ModShift, modifiers.testAll(Gleam::Modifier::Shift));
+	io.AddKeyEvent(ImGuiKey_ModAlt, modifiers.testAll(Gleam::Modifier::Alt));
+	io.AddKeyEvent(ImGuiKey_ModSuper, modifiers.testAll(Gleam::Modifier::Super));
+
+	io.AddKeyEvent(key, pressed);
+}
+
+void DebugManager::HandleMouseButtonInput(Gleam::Window& /*window*/, Gleam::MouseButton button_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers)
 {
 	ImGuiIO& io = ImGui::GetIO();
+	io.AddKeyEvent(ImGuiKey_ModCtrl, modifiers.testAll(Gleam::Modifier::Control));
+	io.AddKeyEvent(ImGuiKey_ModShift, modifiers.testAll(Gleam::Modifier::Shift));
+	io.AddKeyEvent(ImGuiKey_ModAlt, modifiers.testAll(Gleam::Modifier::Alt));
+	io.AddKeyEvent(ImGuiKey_ModSuper, modifiers.testAll(Gleam::Modifier::Super));
 
-	if (mouse_event < static_cast<int32_t>(Gleam::MouseCode::ButtonCount)) {
-		if (mouse_event < 5) {
-			io.MouseDown[mouse_event] = (value > 0.0f);
-		}
-
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::WheelHorizontal)) {
-		io.MouseWheelH = value;
-
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::WheelVertical)) {
-		io.MouseWheel = value;
-
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::PosX)) {
-		io.MousePos.x = value;
-
-	} else if (mouse_event == static_cast<int32_t>(Gleam::MouseCode::PosY)) {
-		io.MousePos.y = value;
+	if (static_cast<int32_t>(button_code) >= 0 && static_cast<int32_t>(button_code) < ImGuiMouseButton_COUNT) {
+		io.AddMouseButtonEvent(static_cast<int32_t>(button_code), pressed);
 	}
 }
 
-void DebugManager::HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character)
+void DebugManager::HandleMouseWheelInput(Gleam::Window& /*window*/, const Gleam::Vec2& wheel)
 {
-	DebugManager& dbg_mgr = GetManagerTFast<DebugManager>();
-	dbg_mgr._character_buffer[dbg_mgr._char_buffer_cache_index].emplace_back(character);
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseWheelEvent(wheel.x, wheel.y);
 }
 
-bool DebugManager::HandleMainWindowMessage(const Gleam::AnyMessage& msg)
+void DebugManager::HandleMousePosInput(Gleam::Window& /*window*/, const Gleam::Vec2& pos)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMousePosEvent(pos.x, pos.y);
+}
+
+void DebugManager::HandleMouseEnterLeave(Gleam::Window& window, bool entered)
+{
+	GAFF_REF(window, entered);
+
+	//ImGuiIO& io = ImGui::GetIO();
+
+	//if (entered) {
+	//	bd->MouseWindow = window;
+	//	io.AddMousePosEvent(bd->LastValidMousePos.x, bd->LastValidMousePos.y);
+
+	//} else if (!entered && bd->MouseWindow == window) {
+	//	bd->LastValidMousePos = io.MousePos;
+	//	bd->MouseWindow = NULL;
+	//	io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+	//}
+}
+
+void DebugManager::HandleMainWindowClosed(Gleam::Window& /*window*/)
 {
 	DebugManager& dbg_mgr = GetManagerTFast<DebugManager>();
+	dbg_mgr._main_output = nullptr;
+	dbg_mgr._main_window = nullptr;
+}
 
-	if (msg.base.type == Gleam::EventType::WindowClosed) {
-		dbg_mgr._main_output = nullptr;
-		return true;
+void DebugManager::HandleFocus(Gleam::Window& /*window*/, bool focused)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddFocusEvent(focused);
+}
+
+void DebugManager::SetClipboardText(void* user_data, const char* text)
+{
+	DebugManager& dbg_mgr = *reinterpret_cast<DebugManager*>(user_data);
+
+	if (dbg_mgr._main_window) {
+		dbg_mgr._main_window->setClipboardText(text);
+	}
+}
+
+const char* DebugManager::GetClipboardText(void* user_data)
+{
+	DebugManager& dbg_mgr = *reinterpret_cast<DebugManager*>(user_data);
+
+	if (dbg_mgr._main_window) {
+		return dbg_mgr._main_window->getClipboardText();
 	}
 
-	return false;
+	return "";
 }
 
 void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& debug_data)
@@ -799,6 +1023,12 @@ void DebugManager::SetupModuleToUseImGui(void)
 DebugManager::~DebugManager(void)
 {
 	ImGui::DestroyContext();
+
+	for (GLFWcursor* cursor : _mouse_cursors) {
+		if (cursor) {
+			glfwDestroyCursor(cursor);
+		}
+	}
 }
 
 bool DebugManager::initAllModulesLoaded(void)
@@ -807,16 +1037,15 @@ bool DebugManager::initAllModulesLoaded(void)
 	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	_input_mgr = &GetManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
+	_main_window = _render_mgr->getWindow("main");
 
 	const auto* const devices = _render_mgr->getDevicesByTag("main");
 	GAFF_ASSERT(devices && devices->size() == 1);
 
 	_main_device = devices->front();
 
-	Gleam::IWindow* const main_window = _render_mgr->getWindow("main");
-
-	if (main_window) {
-		main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
+	if (_main_window) {
+		_main_window->addCloseCallback(Gaff::Func(HandleMainWindowClosed));
 	}
 
 	ECSQuery camera_query;
@@ -834,18 +1063,18 @@ void DebugManager::update(void)
 {
 	if (!_main_output) {
 		_main_output = _render_mgr->getOutput("main");
+		_main_window = _render_mgr->getWindow("main");
 
 		if (!_main_output) {
 			return;
 		}
 
-		Gleam::IWindow* const main_window = _render_mgr->getWindow("main");
+		if (_main_window) {
+			_main_window->addCloseCallback(Gaff::Func(HandleMainWindowClosed));
 
-		if (main_window) {
-			main_window->addWindowMessageHandler(Gaff::Func(HandleMainWindowMessage));
-
-			ImGuiIO& io = ImGui::GetIO();
-			io.ImeWindowHandle = main_window->getPlatformHandle();
+		#ifdef PLATFORM_WINDOWS
+			ImGui::GetMainViewport()->PlatformHandleRaw = _main_window->getHWnd();
+		#endif
 		}
 	}
 
@@ -875,64 +1104,24 @@ void DebugManager::update(void)
 		if (_prev_cursor != mouse_cursor) {
 			_prev_cursor = mouse_cursor;
 
-			if (mouse_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor) {
-				Gleam::SetCursor(Gleam::CursorType::None);
-
+			// Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+			if (mouse_cursor == ImGuiMouseCursor_None) {
+				_main_window->hideCursor();
 			} else {
-				Gleam::CursorType cursor = Gleam::CursorType::Arrow;
-
-				switch (mouse_cursor)
-				{
-					case ImGuiMouseCursor_Arrow:
-						cursor = Gleam::CursorType::Arrow;
-						break;
-
-					case ImGuiMouseCursor_TextInput:
-						cursor = Gleam::CursorType::IBeam;
-						break;
-
-					case ImGuiMouseCursor_ResizeAll:
-						cursor = Gleam::CursorType::SizeAll;
-						break;
-
-					case ImGuiMouseCursor_ResizeEW:
-						cursor = Gleam::CursorType::SizeWE;
-						break;
-
-					case ImGuiMouseCursor_ResizeNS:
-						cursor = Gleam::CursorType::SizeNS;
-						break;
-
-					case ImGuiMouseCursor_ResizeNESW:
-						cursor = Gleam::CursorType::SizeNESW;
-						break;
-
-					case ImGuiMouseCursor_ResizeNWSE:
-						cursor = Gleam::CursorType::SizeNWSE;
-						break;
-
-					case ImGuiMouseCursor_Hand:
-						cursor = Gleam::CursorType::Hand;
-						break;
-
-					case ImGuiMouseCursor_NotAllowed:
-						cursor = Gleam::CursorType::No;
-						break;
-				}
-
-				Gleam::SetCursor(cursor);
+				_main_window->showCursor();
+				_main_window->setCursor(_mouse_cursors[mouse_cursor] ? _mouse_cursors[mouse_cursor] : _mouse_cursors[ImGuiMouseCursor_Arrow]);
 			}
 		}
 	}
 
-	const int32_t char_buf_index = _char_buffer_cache_index;
-	_char_buffer_cache_index = (_char_buffer_cache_index + 1) % 2;
+	//const int32_t char_buf_index = _char_buffer_cache_index;
+	//_char_buffer_cache_index = (_char_buffer_cache_index + 1) % 2;
 
-	for (uint32_t character : _character_buffer[char_buf_index]) {
-		ImGui::GetIO().AddInputCharacter(character);
-	}
+	//for (uint32_t character : _character_buffer[char_buf_index]) {
+	//	ImGui::GetIO().AddInputCharacter(character);
+	//}
 
-	_character_buffer[char_buf_index].clear();
+	//_character_buffer[char_buf_index].clear();
 
 	ImGui::NewFrame();
 
@@ -1870,43 +2059,58 @@ bool DebugManager::initImGui(void)
 
 	ImGui::StyleColorsDark();
 
-	const Gleam::IWindow* const window = _render_mgr->getWindow("main");
-
 	ImGuiIO& io = ImGui::GetIO();
+	io.BackendPlatformUserData = this;
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;	// We can honor GetMouseCursor() values (optional)
-	//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
-	io.ImeWindowHandle = window ? window->getPlatformHandle() : nullptr;
+	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;	// We can honor io.WantSetMousePos requests (optional, rarely used)
 	io.BackendRendererName = "Gleam";
 	io.BackendPlatformName = "Gleam";
 	io.IniFilename = nullptr;
 
-	io.KeyMap[ImGuiKey_Tab] = static_cast<int32_t>(Gleam::KeyCode::Tab);
-	io.KeyMap[ImGuiKey_LeftArrow] = static_cast<int32_t>(Gleam::KeyCode::Left);
-	io.KeyMap[ImGuiKey_RightArrow] = static_cast<int32_t>(Gleam::KeyCode::Right);
-	io.KeyMap[ImGuiKey_UpArrow] = static_cast<int32_t>(Gleam::KeyCode::Up);
-	io.KeyMap[ImGuiKey_DownArrow] = static_cast<int32_t>(Gleam::KeyCode::Down);
-	io.KeyMap[ImGuiKey_PageUp] = static_cast<int32_t>(Gleam::KeyCode::PageUp);
-	io.KeyMap[ImGuiKey_PageDown] = static_cast<int32_t>(Gleam::KeyCode::PageDown);
-	io.KeyMap[ImGuiKey_Home] = static_cast<int32_t>(Gleam::KeyCode::Home);
-	io.KeyMap[ImGuiKey_End] = static_cast<int32_t>(Gleam::KeyCode::End);
-	io.KeyMap[ImGuiKey_Insert] = static_cast<int32_t>(Gleam::KeyCode::Insert);
-	io.KeyMap[ImGuiKey_Delete] = static_cast<int32_t>(Gleam::KeyCode::Delete);
-	io.KeyMap[ImGuiKey_Backspace] = static_cast<int32_t>(Gleam::KeyCode::Backspace);
-	io.KeyMap[ImGuiKey_Space] = static_cast<int32_t>(Gleam::KeyCode::Space);
-	io.KeyMap[ImGuiKey_Enter] = static_cast<int32_t>(Gleam::KeyCode::Enter);
-	io.KeyMap[ImGuiKey_Escape] = static_cast<int32_t>(Gleam::KeyCode::Escape);
-	io.KeyMap[ImGuiKey_KeyPadEnter] = static_cast<int32_t>(Gleam::KeyCode::NumpadEnter);
-	io.KeyMap[ImGuiKey_A] = static_cast<int32_t>(Gleam::KeyCode::A);
-	io.KeyMap[ImGuiKey_C] = static_cast<int32_t>(Gleam::KeyCode::C);
-	io.KeyMap[ImGuiKey_V] = static_cast<int32_t>(Gleam::KeyCode::V);
-	io.KeyMap[ImGuiKey_X] = static_cast<int32_t>(Gleam::KeyCode::X);
-	io.KeyMap[ImGuiKey_Y] = static_cast<int32_t>(Gleam::KeyCode::Y);
-	io.KeyMap[ImGuiKey_Z] = static_cast<int32_t>(Gleam::KeyCode::Z);
+	io.GetClipboardTextFn = GetClipboardText;
+	io.SetClipboardTextFn = SetClipboardText;
+	io.ClipboardUserData = this;
 
-	InputManager& input = GetManagerTFast<InputManager>();
-	input.getKeyboard()->addCharacterHandler(Gaff::Func(HandleKeyboardCharacter));
-	input.getKeyboard()->addInputHandler(Gaff::Func(HandleKeyboardInput));
-	input.getMouse()->addInputHandler(Gaff::Func(HandleMouseInput));
+#ifdef PLATFORM_WINDOWS
+	if (_main_window) {
+		ImGui::GetMainViewport()->PlatformHandleRaw = _main_window->getHWnd();
+	}
+#endif
+
+	static_assert(ARRAY_SIZE(_mouse_cursors) == ImGuiMouseCursor_COUNT);
+
+	_mouse_cursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+#if GLFW_HAS_NEW_CURSORS
+	_mouse_cursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_NotAllowed] = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR);
+#else
+	_mouse_cursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	_mouse_cursors[ImGuiMouseCursor_NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+#endif
+
+	// Register for all the input callbacks.
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+
+	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
+		Gleam::Window* const window = render_mgr.getWindow(i);
+
+		window->addCharacterCallback(Gaff::Func(HandleKeyboardCharacterInput));
+		window->addKeyCallback(Gaff::Func(HandleKeyboardInput));
+		window->addMouseEnterLeaveCallback(Gaff::Func(HandleMouseEnterLeave));
+		window->addMouseButtonCallback(Gaff::Func(HandleMouseButtonInput));
+		window->addMouseWheelCallback(Gaff::Func(HandleMouseWheelInput));
+		window->addMousePosCallback(Gaff::Func(HandleMousePosInput));
+		window->addFocusCallback(Gaff::Func(HandleFocus));
+		//window->addGamepadCallback();
+	}
 
 	// Command List
 	_cmd_list[0].reset(_render_mgr->createCommandList());

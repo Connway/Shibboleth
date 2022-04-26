@@ -22,6 +22,7 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/imgui",
 			base_dir .. "../../Dependencies/EASTL/include",
+			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
@@ -56,6 +57,7 @@ local GenerateProject = function()
 			"imgui",
 			"minizip-ng",
 			"zlib-ng",
+			"GLFW",
 
 			"Gleam",
 			"GraphicsBase",
@@ -75,6 +77,7 @@ local LinkDependencies = function()
 	table.insert(deps, "imgui")
 	table.insert(deps, "minizip-ng")
 	table.insert(deps, "zlib-ng")
+	table.insert(deps, "GLFW")
 
 	table.insert(deps, "Gleam")
 	table.insert(deps, "GraphicsBase")

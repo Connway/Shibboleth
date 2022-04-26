@@ -45,9 +45,15 @@ THE SOFTWARE.
 
 NS_GLEAM
 	class IRenderOutput;
-	class IKeyboard;
-	union AnyMessage;
+	class Window;
+
+	enum class MouseButton : uint8_t;
+	enum class MouseCode : uint8_t;
+	enum class KeyCode : uint16_t;
+	enum class Modifier : uint8_t;
 NS_END
+
+struct GLFWcursor;
 
 NS_SHIBBOLETH
 
@@ -190,16 +196,19 @@ private:
 
 	const Time* _time = nullptr;
 	int32_t _prev_cursor = -1;
-	int32_t _char_buffer_cache_index = 0;
+	//int32_t _char_buffer_cache_index = 0;
 	int32_t _render_cache_index = 0;
 
 	Gleam::IRenderOutput* _main_output = nullptr;
 	Gleam::IRenderDevice* _main_device = nullptr;
+	Gleam::Window* _main_window = nullptr;
 
-	Vector<uint32_t> _character_buffer[2] = {
-		Vector<uint32_t>{ ProxyAllocator("Debug") },
-		Vector<uint32_t>{ ProxyAllocator("Debug") }
-	};
+	//Vector<uint32_t> _character_buffer[2] = {
+	//	Vector<uint32_t>{ ProxyAllocator("Debug") },
+	//	Vector<uint32_t>{ ProxyAllocator("Debug") }
+	//};
+
+	GLFWcursor* _mouse_cursors[9] = { nullptr };
 
 	UniquePtr<Gleam::ICommandList> _cmd_list[2];
 
@@ -235,8 +244,18 @@ private:
 	Gaff::Flags<DebugFlag> _debug_flags;
 	Gaff::Flags<Flag> _flags;
 
-	static void HandleKeyboardCharacter(Gleam::IKeyboard*, uint32_t character);
-	static bool HandleMainWindowMessage(const Gleam::AnyMessage& msg);
+	static void HandleKeyboardCharacterInput(Gleam::Window& window, uint32_t char_code);
+	static void HandleKeyboardInput(Gleam::Window& window, Gleam::KeyCode key_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers, int32_t scan_code);
+	static void HandleMouseButtonInput(Gleam::Window& window, Gleam::MouseButton button_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers);
+	static void HandleMouseWheelInput(Gleam::Window& window, const Gleam::Vec2& wheel);
+	static void HandleMousePosInput(Gleam::Window& window, const Gleam::Vec2& pos);
+	static void HandleMouseEnterLeave(Gleam::Window& window, bool entered);
+	static void HandleMainWindowClosed(Gleam::Window& window);
+	static void HandleFocus(Gleam::Window& window, bool focused);
+
+	static void SetClipboardText(void* user_data, const char* text);
+	static const char* GetClipboardText(void* user_data);
+
 	static void RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& instance_data);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 

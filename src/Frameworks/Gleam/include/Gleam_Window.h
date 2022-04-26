@@ -36,16 +36,12 @@ struct GLFWimage;
 
 NS_GLEAM
 
-enum class MouseButton : uint8_t;
-enum class KeyCode : uint16_t;
-enum class Modifier : uint8_t;
-
 class Window
 {
 public:
-	using KeyCallback = eastl::function<void (Window&, KeyCode, bool, Gaff::Flags<Modifier>)>;
+	using KeyCallback = eastl::function<void (Window&, KeyCode, bool, Gaff::Flags<Modifier>, int32_t)>;
 	using MouseButtonCallback = eastl::function<void (Window&, MouseButton, bool, Gaff::Flags<Modifier>)>;
-	using CharCallback = eastl::function<void (Window&, unsigned int)>;
+	using CharCallback = eastl::function<void (Window&, uint32_t)>;
 	using IVecCallback = eastl::function<void (Window&, const IVec2&)>;
 	using VecCallback = eastl::function<void (Window&, const Vec2&)>;
 	using BoolCallback = eastl::function<void (Window&, bool)>;
@@ -185,6 +181,9 @@ public:
 
 	bool isUsingRawMouseMotion(void) const;
 	void useRawMouseMotion(bool enabled);
+
+	const char* getClipboardText(void) const;
+	void setClipboardText(const char* text);
 
 	int32_t addSizeChangeCallback(const IVecCallback& callback);
 	int32_t addSizeChangeCallback(IVecCallback&& callback);

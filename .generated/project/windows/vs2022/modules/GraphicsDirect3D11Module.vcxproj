@@ -283,6 +283,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ProjectReference Include="..\dependencies\libtiff.vcxproj">
       <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
