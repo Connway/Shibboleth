@@ -30,8 +30,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IRenderManager;
-
 class MainLoop : public IMainLoop
 {
 public:
@@ -65,7 +63,6 @@ private:
 	};
 
 	Vector<UpdateBlock> _blocks{ ProxyAllocator("MainLoop") };
-	IRenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
 
 	bool _update_windows = true;

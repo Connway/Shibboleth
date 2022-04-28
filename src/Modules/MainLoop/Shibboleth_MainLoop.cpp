@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_MainLoop.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
-#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
@@ -49,7 +48,6 @@ bool MainLoop::init(void)
 {
 	IApp& app = GetApp();
 
-	_render_mgr = &GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	_job_pool = &app.getJobPool();
 
 	const auto* const systems = app.getReflectionManager().template getTypeBucket<ISystem>();
@@ -194,11 +192,6 @@ void MainLoop::destroy(void)
 
 void MainLoop::update(void)
 {
-	if (!_update_windows) {
-		// This has to happen in the main thread.
-		_render_mgr->updateWindows();
-	}
-
 	const int32_t num_blocks = static_cast<int32_t>(_blocks.size());
 
 	for (int32_t i = 0; i < num_blocks; ++i) {
@@ -258,7 +251,7 @@ void MainLoop::update(void)
 	}
 
 	// Help out a little before the next iteration.
-	//_job_pool->help(_job_pool->getMainThreadID());
+	_job_pool->help(_job_pool->getMainThreadID());
 
 	// Give some time to other threads.
 	EA::Thread::ThreadSleep();

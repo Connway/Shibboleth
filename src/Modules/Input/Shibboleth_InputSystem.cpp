@@ -37,9 +37,9 @@ bool InputSystem::init(void)
 	return true;
 }
 
-void InputSystem::update(uintptr_t /*thread_id_int*/)
+void InputSystem::update(uintptr_t thread_id_int)
 {
-	_input_mgr->update();
+	_input_mgr->update(thread_id_int);
 }
 
 NS_END

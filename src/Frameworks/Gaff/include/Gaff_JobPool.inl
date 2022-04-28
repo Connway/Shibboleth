@@ -45,6 +45,9 @@ bool JobPool<Allocator>::init(int32_t num_threads, ThreadInitOrShutdownFunc init
 	job_queue.jobs = Queue<JobPair, Allocator>(_allocator);
 	job_queue.read_write_lock = UniquePtr<EA::Thread::Mutex, Allocator>(GAFF_ALLOCT(EA::Thread::Mutex, _allocator));
 
+	_main_thread_jobs.jobs = Queue<JobPair, Allocator>(_allocator);
+	_main_thread_jobs.read_write_lock = UniquePtr<EA::Thread::Mutex, Allocator>(GAFF_ALLOCT(EA::Thread::Mutex, _allocator));
+
 	_thread_data.init_func = init;
 	_thread_data.shutdown_func = shutdown;
 	_threads.resize(num_threads);
@@ -127,6 +130,46 @@ void JobPool<Allocator>::addPool(const HashStringView32<>& name, int32_t max_con
 }
 
 template <class Allocator>
+void JobPool<Allocator>::addMainThreadJobs(const JobData* jobs, int32_t num_jobs, Counter** counter)
+{
+	GAFF_ASSERT(jobs && num_jobs > 0);
+
+	Counter* cnt = nullptr;
+
+	if (counter) {
+		if (*counter) {
+			cnt = *counter;
+		} else {
+			*counter = cnt = GAFF_ALLOCT(Counter, _allocator, 0);
+		}
+
+		*cnt += num_jobs;
+	}
+
+	_main_thread_jobs.read_write_lock->Lock();
+
+	for (int32_t i = 0; i < num_jobs; ++i) {
+		GAFF_ASSERT(jobs[i].job_func);
+		_main_thread_jobs.jobs.emplace(JobPair(jobs[i], cnt));
+	}
+
+	_main_thread_jobs.read_write_lock->Unlock();
+
+	_num_main_thread_jobs += num_jobs;
+	_num_jobs += num_jobs;
+
+	// Main thread is not part of the thread pool. Don't post to the pool threads.
+	//_thread_lock.Post(num_jobs);
+}
+
+template <class Allocator>
+void JobPool<Allocator>::addMainThreadJobs(const JobData* jobs, int32_t num_jobs, Counter& counter)
+{
+	Counter* cnt = &counter;
+	addMainThreadJobs(jobs, num_jobs, &cnt);
+}
+
+template <class Allocator>
 void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter** counter, Hash32 pool)
 {
 	GAFF_ASSERT(jobs && num_jobs > 0);
@@ -157,7 +200,6 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 	job_queue.read_write_lock->Unlock();
 
 	_num_jobs += num_jobs;
-
 	_thread_lock.Post(num_jobs);
 }
 
@@ -191,8 +233,16 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::waitForAllJobsToFinish(void)
+void JobPool<Allocator>::waitForAllJobsToFinish(EA::Thread::ThreadId thread_id)
 {
+	// Do main thread jobs.
+	if (thread_id == _main_thread_id) {
+		while (doJobFromQueue(thread_id, _main_thread_jobs)) {
+			--_num_main_thread_jobs;
+			EA::Thread::ThreadSleep();
+		}
+	}
+
 	while (_num_jobs > 0) {
 		EA::Thread::ThreadSleep();
 	}
@@ -238,17 +288,23 @@ void JobPool<Allocator>::help(EA::Thread::ThreadId thread_id, eastl::chrono::mil
 	const auto start = eastl::chrono::high_resolution_clock::now();
 	auto curr = start;
 
-	while ((curr - start) < ms) {
+	do {
 		if (_thread_lock.Wait(EA::Thread::kTimeoutImmediate) >= 0) {
 			if (!doAJob(thread_id)) {
 				// We didn't do a job, put the count back.
 				_thread_lock.Post();
 			}
+
+		// Do main thread jobs.
+		} else if (thread_id == _main_thread_id) {
+			if (doJobFromQueue(thread_id, _main_thread_jobs)) {
+				--_num_main_thread_jobs;
+			}
 		}
 
-		EA::Thread::ThreadSleep();
 		curr = eastl::chrono::high_resolution_clock::now();
-	}
+		EA::Thread::ThreadSleep();
+	} while ((curr - start) < ms);
 }
 
 template <class Allocator>
@@ -341,6 +397,14 @@ void JobPool<Allocator>::doJob(EA::Thread::ThreadId thread_id, JobPair& job)
 template <class Allocator>
 bool JobPool<Allocator>::doAJob(EA::Thread::ThreadId thread_id)
 {
+	// Do main thread jobs.
+	if (thread_id == _main_thread_id) {
+		if (doJobFromQueue(thread_id, _main_thread_jobs)) {
+			--_num_main_thread_jobs;
+			return true;
+		}
+	}
+
 	for (auto& pair : _job_pools) {
 		if (doJobFromQueue(thread_id, pair.second)) {
 			return true;

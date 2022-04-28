@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
+#include <Shibboleth_JobPool.h>
 #include <Gaff_Function.h>
 #include <Gaff_JSON.h>
 #include <Gaff_Math.h>
@@ -40,12 +41,12 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(InputManager)
+
 static constexpr int32_t k_keyboard_device = GLFW_JOYSTICK_LAST + 1;
 static constexpr int32_t k_mouse_device = GLFW_JOYSTICK_LAST + 2;
 
-SHIB_REFLECTION_CLASS_DEFINE(InputManager)
-
-constexpr const char8_t* const g_binding_cfg_schema =
+static constexpr const char8_t* const g_binding_cfg_schema =
 u8R"({
 	"type": "array",
 	"items":
@@ -65,6 +66,10 @@ u8R"({
 	}
 })";
 
+static void UpdateWindows(uintptr_t, void* data)
+{
+	reinterpret_cast<IRenderManager*>(data)->updateWindows();
+}
 
 
 bool InputManager::initAllModulesLoaded(void)
@@ -231,10 +236,10 @@ bool InputManager::initAllModulesLoaded(void)
 	_device_player_map[k_mouse_device] = _km_player_id;
 
 	// Register for all the input callbacks.
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	_render_mgr = &GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 
-	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
-		Gleam::Window* const window = render_mgr.getWindow(i);
+	for (int32_t i = 0; i < _render_mgr->getNumWindows(); ++i) {
+		Gleam::Window* const window = _render_mgr->getWindow(i);
 
 		window->addKeyCallback(Gaff::MemberFunc(this, &InputManager::handleKeyboardInput));
 		window->addMouseCallback(Gaff::MemberFunc(this, &InputManager::handleMouseInput));
@@ -248,8 +253,70 @@ bool InputManager::initAllModulesLoaded(void)
 	return true;
 }
 
-void InputManager::update(void)
+void InputManager::update(uintptr_t thread_id_int)
 {
+	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
+
+	// Zero out any mouse axis bindings.
+	for (int32_t binding_index = 0; binding_index < num_bindings; ++binding_index) {
+		const Binding& binding = _bindings[binding_index];
+
+		if (!binding.mouse_codes.empty()) {
+			// Binding only uses mouse delta. Zero it out.
+			if (binding.key_codes.empty() && binding.mouse_codes.size() == 1) {
+				const bool is_delta_axis =	binding.mouse_codes.front() == Gleam::MouseCode::DeltaX ||
+											binding.mouse_codes.front() == Gleam::MouseCode::DeltaY;
+
+				if (!is_delta_axis) {
+					for (auto& instances : _alias_values) {
+						instances.at(binding.alias_index).second.value = 0.0f;
+					}
+				}
+
+			// It is a multiple input binding, reduce the count and handle accordingly.
+			} else {
+				int32_t change_count = 0;
+
+				if (Gaff::Find(binding.mouse_codes, Gleam::MouseCode::DeltaX) != binding.mouse_codes.end()) {
+					++change_count;
+				}
+
+				if (Gaff::Find(binding.mouse_codes, Gleam::MouseCode::DeltaY) != binding.mouse_codes.end()) {
+					++change_count;
+				}
+
+				if (change_count <= 0) {
+					continue;
+				}
+
+				for (auto it = _binding_instances.begin(); it != _binding_instances.end(); ++it) {
+					auto& alias_values = _alias_values[it.getIndex()];
+
+					for (int32_t i = 0; i < change_count; ++i) {
+						handleInputChange(binding, it->at(binding_index), alias_values, false);
+					}
+				}
+			}
+		}
+	}
+
+
+	// Have main thread update the windows.
+	Gaff::Counter counter = 0;
+	const Gaff::JobData window_update_job =
+	{
+		UpdateWindows,
+		_render_mgr
+	};
+
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
+	JobPool& job_pool = GetApp().getJobPool();
+	job_pool.addMainThreadJobs(&window_update_job, 1, counter);
+	job_pool.helpWhileWaiting(thread_id, counter);
+
+
+	// Update inputs.
 	using DoubleSeconds = eastl::chrono::duration<double>;
 	_end = eastl::chrono::high_resolution_clock::now();
 
@@ -258,7 +325,6 @@ void InputManager::update(void)
 
 	// Delta time is real-time.
 	const float dt = static_cast<float>(delta.count());
-	const int32_t num_bindings = static_cast<int32_t>(_bindings.size());
 
 	for (auto it = _binding_instances.begin(); it != _binding_instances.end(); ++it) {
 		const int32_t input_index = it.getIndex();
@@ -268,6 +334,7 @@ void InputManager::update(void)
 			auto& binding_instance = input_instance[binding_index];
 			const auto& binding = _bindings[binding_index];
 
+			// $TODO: Only do this once when we change modes.
 			if (Gaff::Find(binding.modes, _curr_mode) == binding.modes.end()) {
 				_alias_values[input_index].at(binding.alias_index).second.value = 0.0f;
 
@@ -468,46 +535,8 @@ void InputManager::handleKeyboardInput(
 			continue;
 		}
 
-		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
-		const auto it = Gaff::Find(binding.key_codes, code);
-
-		if (it != binding.key_codes.end()) {
-			if (pressed) {
-				++binding_instance.count;
-
-				// All the bindings have been pressed.
-				if (binding_instance.count == binding_size) {
-					auto& alias = alias_values.at(binding.alias_index).second;
-
-					if (binding.taps <= 0) {
-						alias.value += binding.scale;
-					}
-				}
-
-			} else {
-				// All the bindings have been released.
-				if (binding_instance.count == binding_size) {
-					auto& alias = alias_values.at(binding.alias_index).second;
-
-					// Check that we've reached the tap count.
-					if (binding.taps > 0) {
-						binding_instance.curr_tap_time = 0.0f;
-						++binding_instance.curr_tap;
-
-						// We've reached the tap count, set the alias.
-						if (binding_instance.curr_tap == binding.taps) {
-							alias.value += binding.scale;
-							binding_instance.first_frame = true;
-						}
-
-					// We have no tap requirements.
-					} else {
-						alias.value -= binding.scale;
-					}
-				}
-
-				--binding_instance.count;
-			}
+		if (Gaff::Find(binding.key_codes, code) != binding.key_codes.end()) {
+			handleInputChange(binding, binding_instance, alias_values, pressed);
 		}
 	}
 }
@@ -535,52 +564,62 @@ void InputManager::handleMouseInput(Gleam::Window& /*window*/, Gleam::MouseCode 
 			continue;
 		}
 
-		const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
-		const auto it = Gaff::Find(binding.mouse_codes, code);
+		if (Gaff::Find(binding.mouse_codes, code) != binding.mouse_codes.end()) {
+			const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
 
-		if (it != binding.mouse_codes.end()) {
 			if (binding_size == 1 && !is_button) {
 				alias_values.at(binding.alias_index).second.value = binding.scale * value;
 
 			} else {
-				if (value != 0.0f) {
-					++binding_instance.count;
-
-					// All the bindings have been pressed.
-					if (binding_instance.count == binding_size) {
-						auto& alias = alias_values.at(binding.alias_index).second;
-
-						if (binding.taps <= 0) {
-							alias.value += binding.scale;
-						}
-					}
-
-				} else {
-					// All the bindings have been released.
-					if (binding_instance.count == binding_size) {
-						auto& alias = alias_values.at(binding.alias_index).second;
-
-						// Check that we've reached the tap count.
-						if (binding.taps > 0) {
-							binding_instance.curr_tap_time = 0.0f;
-							++binding_instance.curr_tap;
-
-							// We've reached the tap count, set the alias.
-							if (binding_instance.curr_tap == binding.taps) {
-								alias.value += binding.scale;
-								binding_instance.first_frame = true;
-							}
-
-						// We have no tap requirements.
-						} else {
-							alias.value -= binding.scale;
-						}
-					}
-
-					--binding_instance.count;
-				}
+				handleInputChange(binding, binding_instance, alias_values, value != 0.0f);
 			}
 		}
+	}
+}
+
+void InputManager::handleInputChange(
+	const Binding& binding,
+	BindingInstance& binding_instance,
+	VectorMap<Gaff::Hash32, Alias>& alias_values,
+	bool activated)
+{
+	const int8_t binding_size = static_cast<int8_t>(binding.key_codes.size() + binding.mouse_codes.size());
+
+	if (activated) {
+		++binding_instance.count;
+
+		// All the bindings have been pressed.
+		if (binding_instance.count == binding_size) {
+			auto& alias = alias_values.at(binding.alias_index).second;
+
+			if (binding.taps <= 0) {
+				alias.value += binding.scale;
+			}
+		}
+
+	} else {
+		// All the bindings have been released.
+		if (binding_instance.count == binding_size) {
+			auto& alias = alias_values.at(binding.alias_index).second;
+
+			// Check that we've reached the tap count.
+			if (binding.taps > 0) {
+				binding_instance.curr_tap_time = 0.0f;
+				++binding_instance.curr_tap;
+
+				// We've reached the tap count, set the alias.
+				if (binding_instance.curr_tap == binding.taps) {
+					alias.value += binding.scale;
+					binding_instance.first_frame = true;
+				}
+
+			// We have no tap requirements.
+			} else {
+				alias.value -= binding.scale;
+			}
+		}
+
+		--binding_instance.count;
 	}
 }
 

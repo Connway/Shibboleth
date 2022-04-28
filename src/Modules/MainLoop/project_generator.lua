@@ -23,14 +23,9 @@ local GenerateProject = function()
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/glm"
-
-			, base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Modules/ECS/include",
-			base_dir .. "../../Modules/Graphics/include",
-			base_dir .. "../../Frameworks/Gleam/include",
+			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/mpack",
-			base_dir .. "../../Dependencies/rapidjson"
+			base_dir .. "../../Dependencies/glm"
 		}
 
 	project "MainLoopModule"
@@ -48,36 +43,16 @@ local GenerateProject = function()
 		ModuleCopy()
 		NewDeleteLinkFix()
 
-		local deps =
+		--[[local deps =
 		{
-			"Resource",
-			"ECS",
-			"GraphicsBase",
-			"Gleam",
-			"Assimp",
-			"zlib-ng",
-			"minizip-ng",
-			"libpng",
-			"libtiff"
 		}
 
 		dependson(deps)
-		links(deps)
+		links(deps)--]]
 end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("MainLoop")
-
-	-- temp
-	table.insert(deps, "Resource")
-	table.insert(deps, "ECS")
-	table.insert(deps, "GraphicsBase")
-	table.insert(deps, "Gleam")
-	table.insert(deps, "Assimp")
-	table.insert(deps, "zlib-ng")
-	table.insert(deps, "minizip-ng")
-	table.insert(deps, "libpng")
-	table.insert(deps, "libtiff")
 
 	dependson(deps)
 	links(deps)

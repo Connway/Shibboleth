@@ -127,10 +127,10 @@ void App::destroy(void)
 		_job_pool.run();
 	}
 
-	_job_pool.waitForAllJobsToFinish();
-	_job_pool.destroy();
-
 	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+
+	_job_pool.waitForAllJobsToFinish(thread_id);
+	_job_pool.destroy();
 
 	for (const auto& entry : _manager_map) {
 		entry.second->destroyThread((uintptr_t)&thread_id);

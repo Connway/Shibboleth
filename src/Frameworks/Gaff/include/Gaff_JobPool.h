@@ -65,6 +65,9 @@ public:
 
 	void addPool(const HashStringView32<>& name, int32_t max_concurrent_threads = 1);
 
+	void addMainThreadJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr);
+	void addMainThreadJobs(const JobData* jobs, int32_t num_jobs, Counter& counter);
+
 	void addJobs(const JobData* jobs, int32_t num_jobs = 1, Counter** counter = nullptr, Hash32 pool = Hash32(0));
 	void addJobs(const JobData* jobs, int32_t num_jobs, Counter& counter, Hash32 pool = Hash32(0));
 
@@ -72,7 +75,7 @@ public:
 	void waitForCounter(const Counter& counter);
 	void freeCounter(Counter* counter);
 
-	void waitForAllJobsToFinish(void);
+	void waitForAllJobsToFinish(EA::Thread::ThreadId thread_id);
 
 	void helpWhileWaiting(EA::Thread::ThreadId thread_id, const Counter& counter);
 	void helpWhileWaiting(const Counter& counter);
@@ -104,6 +107,7 @@ private:
 	};
 
 	VectorMap<HashString32<Allocator>, JobQueue, Allocator> _job_pools;
+	JobQueue _main_thread_jobs;
 
 	Vector<EA::Thread::Thread, Allocator> _threads;
 	ThreadData _thread_data;
@@ -111,6 +115,7 @@ private:
 	EA::Thread::Semaphore _thread_lock;
 
 	EA::Thread::ThreadId _main_thread_id;
+	eastl::atomic<int32_t> _num_main_thread_jobs = 0;
 	eastl::atomic<int32_t> _num_jobs = 0;
 
 	Allocator _allocator;

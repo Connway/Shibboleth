@@ -32,6 +32,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IRenderManager;
+
 class InputManager final : public IManager
 {
 public:
@@ -48,7 +50,7 @@ public:
 	}
 
 	bool initAllModulesLoaded(void) override;
-	void update(void);
+	void update(uintptr_t thread_id_int);
 	void resetTimer(void);
 
 	float getAliasValue(Gaff::Hash32 alias_name, int32_t player_id) const;
@@ -117,12 +119,19 @@ private:
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _start;
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _end;
 
+	IRenderManager* _render_mgr = nullptr;
+
 	Gaff::Hash32 _prev_mode = Gaff::FNV1aHash32Const("Default");
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");
 	int32_t _km_player_id = 0;
 
 	void handleKeyboardInput(Gleam::Window& window, Gleam::KeyCode key_code, bool pressed, Gaff::Flags<Gleam::Modifier> modifiers, int32_t scan_code);
 	void handleMouseInput(Gleam::Window& window, Gleam::MouseCode mouse_code, float value);
+	void handleInputChange(
+		const Binding& binding,
+		BindingInstance& binding_instance,
+		VectorMap<Gaff::Hash32, Alias>& alias_values,
+		bool activated);
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };
