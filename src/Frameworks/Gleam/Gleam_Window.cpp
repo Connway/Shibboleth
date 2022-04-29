@@ -54,19 +54,29 @@ namespace
 	static int32_t g_next_id = 0;
 
 	template <class T>
-	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
+	static int32_t AddCallback(int32_t id, Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
 	{
-		const int32_t id = g_next_id++;
 		callbacks.emplace(id, cb);
 		return id;
 	}
 
 	template <class T>
-	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
+	static int32_t AddCallback(int32_t id, Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
 	{
-		const int32_t id = g_next_id++;
 		callbacks.emplace(id, std::move(cb));
 		return id;
+	}
+
+	template <class T>
+	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, const T& cb)
+	{
+		return AddCallback(g_next_id++, callbacks, cb);
+	}
+
+	template <class T>
+	static int32_t AddCallback(Gleam::VectorMap<int32_t, T>& callbacks, T&& cb)
+	{
+		return AddCallback(g_next_id++, callbacks, std::move(cb));
 	}
 
 
@@ -719,122 +729,122 @@ void Window::setClipboardText(const char* text)
 
 int32_t Window::addSizeChangeCallback(const IVecCallback& callback)
 {
-	return AddCallback(_size_callbacks, callback);
+	return AddCallback(_next_id++, _size_callbacks, callback);
 }
 
 int32_t Window::addSizeChangeCallback(IVecCallback&& callback)
 {
-	return AddCallback(_size_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _size_callbacks, std::move(callback));
 }
 
 int32_t Window::addPosChangeCallback(const IVecCallback& callback)
 {
-	return AddCallback(_pos_callbacks, callback);
+	return AddCallback(_next_id++, _pos_callbacks, callback);
 }
 
 int32_t Window::addPosChangeCallback(IVecCallback&& callback)
 {
-	return AddCallback(_pos_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _pos_callbacks, std::move(callback));
 }
 
 int32_t Window::addCloseCallback(const WindowCallback& callback)
 {
-	return AddCallback(_close_callbacks, callback);
+	return AddCallback(_next_id++, _close_callbacks, callback);
 }
 
 int32_t Window::addCloseCallback(WindowCallback&& callback)
 {
-	return AddCallback(_close_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _close_callbacks, std::move(callback));
 }
 
 int32_t Window::addMaximizeCallback(const BoolCallback& callback)
 {
-	return AddCallback(_maximize_callbacks, callback);
+	return AddCallback(_next_id++, _maximize_callbacks, callback);
 }
 
 int32_t Window::addMaximizeCallback(BoolCallback&& callback)
 {
-	return AddCallback(_maximize_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _maximize_callbacks, std::move(callback));
 }
 
 int32_t Window::addFocusCallback(const BoolCallback& callback)
 {
-	return AddCallback(_focus_callbacks, callback);
+	return AddCallback(_next_id++, _focus_callbacks, callback);
 }
 
 int32_t Window::addFocusCallback(BoolCallback&& callback)
 {
-	return AddCallback(_focus_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _focus_callbacks, std::move(callback));
 }
 
 int32_t Window::addMouseEnterLeaveCallback(const BoolCallback& callback)
 {
-	return AddCallback(_mouse_enter_leave_callbacks, callback);
+	return AddCallback(_next_id++, _mouse_enter_leave_callbacks, callback);
 }
 
 int32_t Window::addMouseEnterLeaveCallback(BoolCallback&& callback)
 {
-	return AddCallback(_mouse_enter_leave_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _mouse_enter_leave_callbacks, std::move(callback));
 }
 
 int32_t Window::addMousePosCallback(const VecCallback& callback)
 {
-	return AddCallback(_mouse_pos_callbacks, callback);
+	return AddCallback(_next_id++, _mouse_pos_callbacks, callback);
 }
 
 int32_t Window::addMousePosCallback(VecCallback&& callback)
 {
-	return AddCallback(_mouse_pos_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _mouse_pos_callbacks, std::move(callback));
 }
 
 int32_t Window::addMouseButtonCallback(const MouseButtonCallback& callback)
 {
-	return AddCallback(_mouse_button_callbacks, callback);
+	return AddCallback(_next_id++, _mouse_button_callbacks, callback);
 }
 
 int32_t Window::addMouseButtonCallback(MouseButtonCallback&& callback)
 {
-	return AddCallback(_mouse_button_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _mouse_button_callbacks, std::move(callback));
 }
 
 int32_t Window::addMouseWheelCallback(const VecCallback& callback)
 {
-	return AddCallback(_mouse_wheel_callbacks, callback);
+	return AddCallback(_next_id++, _mouse_wheel_callbacks, callback);
 }
 
 int32_t Window::addMouseWheelCallback(VecCallback&& callback)
 {
-	return AddCallback(_mouse_wheel_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _mouse_wheel_callbacks, std::move(callback));
 }
 
 int32_t Window::addCharacterCallback(const CharCallback& callback)
 {
-	return AddCallback(_char_callbacks, callback);
+	return AddCallback(_next_id++, _char_callbacks, callback);
 }
 
 int32_t Window::addCharacterCallback(CharCallback&& callback)
 {
-	return AddCallback(_char_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _char_callbacks, std::move(callback));
 }
 
 int32_t Window::addKeyCallback(const KeyCallback& callback)
 {
-	return AddCallback(_key_callbacks, callback);
+	return AddCallback(_next_id++, _key_callbacks, callback);
 }
 
 int32_t Window::addKeyCallback(KeyCallback&& callback)
 {
-	return AddCallback(_key_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _key_callbacks, std::move(callback));
 }
 
 int32_t Window::addMouseCallback(const MouseCallback& callback)
 {
-	return AddCallback(_mouse_callbacks, callback);
+	return AddCallback(_next_id++, _mouse_callbacks, callback);
 }
 
 int32_t Window::addMouseCallback(MouseCallback&& callback)
 {
-	return AddCallback(_mouse_callbacks, std::move(callback));
+	return AddCallback(_next_id++, _mouse_callbacks, std::move(callback));
 }
 
 #ifdef PLATFORM_WINDOWS

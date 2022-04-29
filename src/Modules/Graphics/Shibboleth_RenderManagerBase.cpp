@@ -640,6 +640,12 @@ void RenderManagerBase::removeWindow(const Gleam::Window& window)
 {
 	for (auto it = _window_outputs.begin(); it != _window_outputs.end(); ++it) {
 		if (it->second.first.get() == &window) {
+			// Move over to pending for now. If we delete in the middle of a close window callback,
+			// this would delete the window before the other callbacks have had a chance to be called.
+			auto& pending = _pending_window_removes.emplace_back();
+			pending.first.reset(it->second.first.release());
+			pending.second.reset(it->second.second.release());
+
 			_window_outputs.erase(it);
 			break;
 		}
@@ -835,6 +841,8 @@ void RenderManagerBase::presentAllOutputs(void)
 	for (auto& pair : _window_outputs) {
 		pair.second.second->present();
 	}
+
+	_pending_window_removes.clear();
 }
 
 const Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const

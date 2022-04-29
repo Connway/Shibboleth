@@ -162,6 +162,7 @@ private:
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
 	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+	Vector<WindowOutputPair> _pending_window_removes{ ProxyAllocator("Graphics") };
 
 	VectorMap<
 		const Gleam::IRenderDevice*,

@@ -36,7 +36,7 @@ struct GLFWimage;
 
 NS_GLEAM
 
-class Window
+class Window final
 {
 public:
 	using KeyCallback = eastl::function<void (Window&, KeyCode, bool, Gaff::Flags<Modifier>, int32_t)>;
@@ -246,6 +246,7 @@ private:
 
 	Vec2 _prev_pos{ 0.0f, 0.0f };
 	GLFWwindow* _window = nullptr;
+	int32_t _next_id = 0;
 	bool _fullscreen = false;
 
 	static void OnWindowSize(GLFWwindow* glfw_window, int width, int height);

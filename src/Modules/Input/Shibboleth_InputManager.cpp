@@ -267,7 +267,7 @@ void InputManager::update(uintptr_t thread_id_int)
 				const bool is_delta_axis =	binding.mouse_codes.front() == Gleam::MouseCode::DeltaX ||
 											binding.mouse_codes.front() == Gleam::MouseCode::DeltaY;
 
-				if (!is_delta_axis) {
+				if (is_delta_axis) {
 					for (auto& instances : _alias_values) {
 						instances.at(binding.alias_index).second.value = 0.0f;
 					}
