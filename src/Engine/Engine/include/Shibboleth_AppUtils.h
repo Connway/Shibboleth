@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
@@ -29,22 +30,22 @@ NS_SHIBBOLETH
 template <class T>
 static T& GetManagerTFast(void)
 {
-	static_assert(std::is_base_of<Shibboleth::IManager, T>::value, "Type T does not derive from IManager.");
-	return *static_cast<T*>(Shibboleth::GetApp().getManager(Refl::Reflection<T>::GetHash()));
+	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
+	return *static_cast<T*>(GetApp().getManager(Refl::Reflection<T>::GetHash()));
 }
 
 template <class T>
 static T& GetManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
 {
-	IManager* const manager = Shibboleth::GetApp().getManager(manager_name);
+	IManager* const manager = GetApp().getManager(manager_name);
 	return *Refl::InterfaceCast<T>(*manager, interface_name);
 }
 
 template <class T>
 static T& GetManagerT(void)
 {
-	static_assert(std::is_base_of<Shibboleth::IManager, T>::value, "Type T does not derive from IManager.");
-	IManager* const manager = Shibboleth::GetApp().getManager(Refl::Reflection<T>::GetHash());
+	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
+	IManager* const manager = GetApp().getManager(Refl::Reflection<T>::GetHash());
 	return *Refl::ReflectionCast<T>(*manager);
 }
 

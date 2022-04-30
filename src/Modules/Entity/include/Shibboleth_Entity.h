@@ -39,7 +39,9 @@ public:
 	{
 		PrePhysics,
 		DuringPhysics,
-		PostPhysics
+		PostPhysics,
+
+		Count
 	};
 
 	template <class T>

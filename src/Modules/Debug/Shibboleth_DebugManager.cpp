@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 namespace
 {
-	static Shibboleth::ProxyAllocator g_allocator;
+	static Shibboleth::ProxyAllocator g_allocator{ "Debug" };
 
 	static void* ImGuiAlloc(size_t size, void*)
 	{

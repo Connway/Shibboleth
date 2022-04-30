@@ -58,4 +58,9 @@ Entity* EntityManager::createEntity(void)
 	return entity;
 }
 
+void EntityManager::updateEntitiesAndComponents(Entity::UpdatePhase update_phase)
+{
+	GAFF_REF(update_phase);
+}
+
 NS_END

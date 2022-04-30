@@ -47,6 +47,8 @@ public:
 	Entity* createEntity(const Refl::IReflectionDefinition& ref_def);
 	Entity* createEntity(void);
 
+	void updateEntitiesAndComponents(Entity::UpdatePhase update_phase);
+
 private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityManager);
