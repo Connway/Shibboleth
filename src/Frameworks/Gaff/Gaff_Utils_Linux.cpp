@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gaff_Utils.h"
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-#include "Gaff_Assert.h"
+#include "Gaff_String.h"
 #include <EASTL/allocator_malloc.h>
 #include <sys/stat.h>
 #include <unistd.h>

@@ -27,7 +27,7 @@ THE SOFTWARE.
 #endif
 
 #include "Gaff_DefaultAllocator.h"
-#include <Gaff_Assert.h>
+#include "Gaff_Assert.h"
 #include <EASTL/string.h>
 
 NS_GAFF
