@@ -44,8 +44,8 @@ THE SOFTWARE.
 NS_GAFF
 
 unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
-void GetCurrentTimeString(char8_t* buff, size_t count, const char8_t* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
-void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
+void GetCurrentTimeString(char8_t* buff, size_t count, const char8_t* format);
+void GetCurrentTimeString(char* buff, size_t count, const char* format);
 void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
 bool CreateDir(const char8_t* dir_name, unsigned short mode);
 bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
