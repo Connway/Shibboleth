@@ -941,8 +941,6 @@ void Window::OnMousePos(GLFWwindow* glfw_window, double x, double y)
 	const Vec2 pos(static_cast<float>(x), static_cast<float>(y));
 	const Vec2 delta = pos - window->_prev_pos;
 
-	Gaff::DebugPrintf("MP: %f, %f\n", x, y);
-
 	for (const auto& cb : window->_mouse_pos_callbacks) {
 		cb.second(*window, pos);
 	}

@@ -103,9 +103,6 @@
     <Filter Include="Modules\Camera">
       <UniqueIdentifier>{96C3CFEB-8291-C3F1-6B25-341857929F56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Modules\Debug">
-      <UniqueIdentifier>{D4CDADD8-408E-290F-09C9-728C75486EEB}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Modules\DevDebug">
       <UniqueIdentifier>{D3009C51-BFF9-BAA3-E82B-A028D4839AAF}</UniqueIdentifier>
     </Filter>
@@ -302,9 +299,6 @@
     </None>
     <None Include="..\..\..\..\src\Modules\Camera\project_generator.lua">
       <Filter>Modules\Camera</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Modules\Debug\project_generator.lua">
-      <Filter>Modules\Debug</Filter>
     </None>
     <None Include="..\..\..\..\src\Modules\DevDebug\project_generator.lua">
       <Filter>Modules\DevDebug</Filter>

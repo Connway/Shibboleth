@@ -173,7 +173,6 @@
     <None Include="..\..\..\..\src\Frameworks\Gaff\project_generator.lua" />
     <None Include="..\..\..\..\src\Frameworks\Gleam\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Camera\project_generator.lua" />
-    <None Include="..\..\..\..\src\Modules\Debug\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevDebug\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevECS\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\DevEditor\project_generator.lua" />

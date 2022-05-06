@@ -31,20 +31,24 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 #include <PxPhysicsAPI.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager::DebugFlag)
-	.entry("Draw Rigid Bodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager::DebugFlag)
+#ifdef _DEBUG
+	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager::DebugFlag)
+		.entry("Draw Rigid Bodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
+	SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager::DebugFlag)
+#endif
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager)
 	.base<Shibboleth::IManager>()
 	.ctor<>()
 
+#ifdef _DEBUG
 	.var(
 		"Debug Flags",
 		&Shibboleth::PhysicsManager::_debug_flags,
 		Shibboleth::DebugMenuItemAttribute(u8"Physics"),
 		Shibboleth::NoSerializeAttribute()
 	)
+#endif
 SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager)
 
 
@@ -111,6 +115,7 @@ namespace
 	static PhysicsErrorHandler g_physics_error_handler;
 	static PhysicsAllocator g_physics_allocator;
 
+#ifdef _DEBUG
 	static constexpr Shibboleth::IDebugManager::DebugRenderType k_render_type_map[] =
 	{
 		Shibboleth::IDebugManager::DebugRenderType::Sphere,
@@ -121,7 +126,7 @@ namespace
 		Shibboleth::IDebugManager::DebugRenderType::Count, // Triangle Mesh
 		Shibboleth::IDebugManager::DebugRenderType::Count  // Height field
 	};
-
+#endif
 }
 
 
@@ -212,6 +217,109 @@ bool PhysicsManager::init(void)
 	return true;
 }
 
+void PhysicsManager::update(uintptr_t thread_id_int)
+{
+	ZoneScoped;
+
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	// $TODO: Add to a config file.
+	constexpr float k_frame_step = 1.0f / 60.0f;
+
+	_remaining_time += _game_time->getDeltaFloat();
+
+	while (_remaining_time > k_frame_step) {
+		for (auto& pair : _scenes) {
+			pair.second->simulate(k_frame_step);
+		}
+
+		_remaining_time -= k_frame_step;
+
+		// $TODO: While the sim is running, run threads to create new bodies.
+
+		for (auto& pair : _scenes) {
+			while (!pair.second->fetchResults()) {
+				_job_pool->help(thread_id);
+				EA::Thread::ThreadSleep();
+			}
+		}
+	}
+
+	// Create new bodies and update transforms.
+	const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
+
+	// $TODO: Thread this loop.
+	for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
+		_ecs_mgr->iterate<RigidBody, Position, Rotation, Scale>(
+			_rigid_bodies[rb_index],
+			_positions[rb_index],
+			_rotations[rb_index],
+			_scales[rb_index],
+			[&](EntityID id, RigidBody& rb, Position position, Rotation rotation, Scale scale) -> void
+			{
+				GAFF_REF(scale);
+
+				// Update transform data to reflect physics state.
+				if (rb.body.body_dynamic) {
+					const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
+
+					position.value = Gleam::Vec3(transform.p.x, transform.p.y, transform.p.z);
+
+					const Gleam::Quat rot(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+					rotation.value = glm::eulerAngles(rot) * Gaff::RadToTurns;
+
+					// $TODO: Scale
+
+					Position::Set(*_ecs_mgr, id, position);
+					Rotation::Set(*_ecs_mgr, id, rotation);
+
+				// Body needs to be created.
+				} else {
+					if (!rb.shape->isLoaded()) {
+						return;
+					}
+
+					const Gleam::Quat rot(rotation.value * Gaff::TurnsToRad);
+
+					const physx::PxTransform transform = physx::PxTransform(
+						physx::PxVec3(position.value.x, position.value.y, position.value.z),
+						physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+					);
+
+					physx::PxActor* actor = nullptr;
+
+					if (rb.is_static) {
+						rb.body.body_static = physx::PxCreateStatic(*_physics, transform, *rb.shape->getShape());
+						actor = rb.body.body_static;
+					} else {
+						rb.body.body_dynamic = physx::PxCreateDynamic(*_physics, transform, *rb.shape->getShape(), rb.density);
+						actor = rb.body.body_dynamic;
+					}
+
+					const auto it = _scenes.find(_scene_comps[rb_index]->value);
+
+					if (it == _scenes.end()) {
+						// $TODO: Log error.
+						return;
+					}
+
+					it->second->addActor(*actor);
+				}
+			}
+		);
+	}
+}
+
+physx::PxFoundation* PhysicsManager::getFoundation(void)
+{
+	return _foundation;
+}
+
+physx::PxPhysics* PhysicsManager::getPhysics(void)
+{
+	return _physics;
+}
+
+#ifdef _DEBUG
 void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 {
 	ZoneScoped;
@@ -334,107 +442,6 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 		}
 	}
 }
-
-void PhysicsManager::update(uintptr_t thread_id_int)
-{
-	ZoneScoped;
-
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	// $TODO: Add to a config file.
-	constexpr float k_frame_step = 1.0f / 60.0f;
-
-	_remaining_time += _game_time->getDeltaFloat();
-
-	while (_remaining_time > k_frame_step) {
-		for (auto& pair : _scenes) {
-			pair.second->simulate(k_frame_step);
-		}
-
-		_remaining_time -= k_frame_step;
-
-		// $TODO: While the sim is running, run threads to create new bodies.
-
-		for (auto& pair : _scenes) {
-			while (!pair.second->fetchResults()) {
-				_job_pool->help(thread_id);
-				EA::Thread::ThreadSleep();
-			}
-		}
-	}
-
-	// Create new bodies and update transforms.
-	const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
-
-	// $TODO: Thread this loop.
-	for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
-		_ecs_mgr->iterate<RigidBody, Position, Rotation, Scale>(
-			_rigid_bodies[rb_index],
-			_positions[rb_index],
-			_rotations[rb_index],
-			_scales[rb_index],
-			[&](EntityID id, RigidBody& rb, Position position, Rotation rotation, Scale scale) -> void
-			{
-				GAFF_REF(scale);
-
-				// Update transform data to reflect physics state.
-				if (rb.body.body_dynamic) {
-					const physx::PxTransform transform = (rb.is_static) ? rb.body.body_static->getGlobalPose() : rb.body.body_dynamic->getGlobalPose();
-
-					position.value = Gleam::Vec3(transform.p.x, transform.p.y, transform.p.z);
-
-					const Gleam::Quat rot(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
-					rotation.value = glm::eulerAngles(rot) * Gaff::RadToTurns;
-
-					// $TODO: Scale
-
-					Position::Set(*_ecs_mgr, id, position);
-					Rotation::Set(*_ecs_mgr, id, rotation);
-
-				// Body needs to be created.
-				} else {
-					if (!rb.shape->isLoaded()) {
-						return;
-					}
-
-					const Gleam::Quat rot(rotation.value * Gaff::TurnsToRad);
-
-					const physx::PxTransform transform = physx::PxTransform(
-						physx::PxVec3(position.value.x, position.value.y, position.value.z),
-						physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
-					);
-
-					physx::PxActor* actor = nullptr;
-
-					if (rb.is_static) {
-						rb.body.body_static = physx::PxCreateStatic(*_physics, transform, *rb.shape->getShape());
-						actor = rb.body.body_static;
-					} else {
-						rb.body.body_dynamic = physx::PxCreateDynamic(*_physics, transform, *rb.shape->getShape(), rb.density);
-						actor = rb.body.body_dynamic;
-					}
-
-					const auto it = _scenes.find(_scene_comps[rb_index]->value);
-
-					if (it == _scenes.end()) {
-						// $TODO: Log error.
-						return;
-					}
-
-					it->second->addActor(*actor);
-				}
-			}
-		);
-	}
-}
-
-physx::PxFoundation* PhysicsManager::getFoundation(void)
-{
-	return _foundation;
-}
-
-physx::PxPhysics* PhysicsManager::getPhysics(void)
-{
-	return _physics;
-}
+#endif
 
 NS_END

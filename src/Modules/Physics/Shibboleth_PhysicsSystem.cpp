@@ -24,14 +24,21 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsManager.h"
 #include <Shibboleth_AppUtils.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsDebugSystem, Shibboleth::ISystem)
+#ifdef _DEBUG
+	SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsDebugSystem, Shibboleth::ISystem)
+#endif
+
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::PhysicsSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(PhysicsDebugSystem)
+#ifdef _DEBUG
+	SHIB_REFLECTION_CLASS_DEFINE(PhysicsDebugSystem)
+#endif
+
 SHIB_REFLECTION_CLASS_DEFINE(PhysicsSystem)
 
+#ifdef _DEBUG
 bool PhysicsDebugSystem::init(void)
 {
 	_physics_mgr = &GetManagerTFast<PhysicsManager>();
@@ -42,6 +49,7 @@ void PhysicsDebugSystem::update(uintptr_t thread_id_int)
 {
 	_physics_mgr->updateDebug(thread_id_int);
 }
+#endif
 
 bool PhysicsSystem::init(void)
 {

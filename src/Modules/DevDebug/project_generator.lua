@@ -25,12 +25,16 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Dependencies/imgui",
+			base_dir .. "../../Frameworks/Gaff/include",
+			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Dependencies/CivetWeb/include",
 			base_dir .. "../../Modules/DevWebServer/include",
-			base_dir .. "../../Modules/Debug/include",
-			--base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Frameworks/Gaff/include",
-			base_dir .. "../../Frameworks/Gleam/include"
+			base_dir .. "../../Modules/MainLoop/include",
+			base_dir .. "../../Modules/Resource/include",
+			base_dir .. "../../Modules/Graphics/include",
+			base_dir .. "../../Modules/Input/include",
+			base_dir .. "../../Modules/ECS/include"
 		}
 
 	project "DevDebugModule"
@@ -50,14 +54,24 @@ local GenerateProject = function()
 		SetupConfigMap()
 
 		local deps =
-		{
+		{	
+			"Assimp",
+			"imgui",
+			"minizip-ng",
+			"zlib-ng",
+			"libpng",
+			"libtiff",
+			"CivetWeb",
+			"GLFW",
+
 			"Gleam",
 
 			"DevWebServer",
-			--"Debug",
-
-			"CivetWeb",
-			"GLFW"
+			"GraphicsBase",
+			"MainLoop",
+			"Resource",
+			"Input",
+			"ECS"
 		}
 
 		dependson(deps)
@@ -66,13 +80,23 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("DevDebug")
-	table.insert(deps, "Gleam")
-	table.insert(deps, "DevWebServer")
-	--table.insert(deps, "MainLoop")
-	--table.insert(deps, "Resource")
-	--table.insert(deps, "Debug")
+	table.insert(deps, "Assimp")
+	table.insert(deps, "imgui")
+	table.insert(deps, "minizip-ng")
+	table.insert(deps, "zlib-ng")
+	table.insert(deps, "libpng")
+	table.insert(deps, "libtiff")
 	table.insert(deps, "CivetWeb")
 	table.insert(deps, "GLFW")
+
+	table.insert(deps, "Gleam")
+
+	table.insert(deps, "DevWebServer")
+	table.insert(deps, "GraphicsBase")
+	table.insert(deps, "MainLoop")
+	table.insert(deps, "Resource")
+	table.insert(deps, "Input")
+	table.insert(deps, "ECS")
 
 	dependson(deps)
 	links(deps)

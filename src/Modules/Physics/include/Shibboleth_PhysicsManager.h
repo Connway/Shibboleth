@@ -44,22 +44,27 @@ struct Time;
 class PhysicsManager final : public IManager
 {
 public:
+#ifdef _DEBUG
 	enum class DebugFlag
 	{
 		DrawRigidBodies,
 
 		Count
 	};
+#endif
 
 	~PhysicsManager(void);
 
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
-	void updateDebug(uintptr_t thread_id_int);
 	void update(uintptr_t thread_id_int);
 
 	physx::PxFoundation* getFoundation(void);
 	physx::PxPhysics* getPhysics(void);
+
+#ifdef _DEBUG
+	void updateDebug(uintptr_t thread_id_int);
+#endif
 
 private:
 	VectorMap<Gaff::Hash32, physx::PxScene*> _scenes{ ProxyAllocator("Physics") };
@@ -81,10 +86,6 @@ private:
 
 	JobPool* _job_pool = nullptr;
 
-#ifdef _DEBUG
-	physx::PxPvd* _pvd = nullptr;
-#endif
-
 	Vector<IDebugManager::DebugRenderHandle> _debug_render_handles[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] =
 	{
 		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Line
@@ -96,7 +97,10 @@ private:
 		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }  // Arrow
 	};
 
+#ifdef _DEBUG
 	Gaff::Flags<DebugFlag> _debug_flags;
+	physx::PxPvd* _pvd = nullptr;
+#endif
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsManager);
 };
