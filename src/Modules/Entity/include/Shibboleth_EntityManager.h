@@ -30,11 +30,18 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IEntityUpdateable;
-
 class EntityManager final : public IManager
 {
 public:
+	enum class UpdatePhase
+	{
+		PrePhysics,
+		DuringPhysics,
+		PostPhysics,
+
+		Count
+	};
+
 	template <class T>
 	T* createEntity(void)
 	{
@@ -54,29 +61,30 @@ public:
 	void destroyEntity(Entity& entity);
 	void destroyEntity(EntityID id);
 
-	void updateEntitiesAndComponents(Entity::UpdatePhase update_phase);
+	void updateEntitiesAndComponents(UpdatePhase update_phase);
 
-	void updateBefore(const Entity& before, const Entity& after);
-	void updateAfter(const Entity& before, const Entity& after);
+	void changeDefaultUpdatePhase(const Entity& entity, UpdatePhase update_phase);
+	void markDirty(Entity& entity);
 
 private:
 	struct UpdateNode final
 	{
-		IEntityUpdateable* updater;
-		UpdateNode* parent;
-		//UpdateNode* child;
+		IEntityUpdateable* updater = nullptr;
+		UpdateNode* parent = nullptr;
+		UpdateNode* first_child = nullptr;
+		UpdateNode* last_child = nullptr;
+		UpdateNode* prev_sibling = nullptr;
+		UpdateNode* next_sibling = nullptr;
 	};
 
-	//VectorMap<Entity*, UpdateNode> _entity_update_map[static_cast<size_t>(UpdatePhase::Count)] =
-	//{
-		//ProxyAllocator("Entity")
-	//};
-
+	UpdateNode _update_roots[static_cast<size_t>(UpdatePhase::Count)];
+	// $TODO: Change this to using a page system?
+	Vector<UpdateNode*> _dirty_nodes{ ProxyAllocator("Entity") };
+	Vector< UniquePtr<UpdateNode> > _entities{ ProxyAllocator("Entity") };
 	Vector<EntityID> _free_ids{ ProxyAllocator("Entity") };
-	Vector<Entity*> _entities{ ProxyAllocator("Entity") };
 	EntityID _next_id = 0;
 
-	void initializeEntity(Entity& entity);
+	void removeFromGraph(UpdateNode& node);
 	void returnID(EntityID id);
 	EntityID allocateID(void);
 

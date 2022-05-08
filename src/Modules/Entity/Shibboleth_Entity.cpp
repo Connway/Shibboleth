@@ -21,18 +21,18 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Entity.h"
+#include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	.template ctor<Shibboleth::EntityID>()
-	.template ctor<>()
+	.template ctor<Shibboleth::EntityManager&>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(Entity)
 
-Entity::Entity(EntityID id):
-	_id(id)
+Entity::Entity(EntityManager& entity_mgr):
+	_entity_mgr(entity_mgr)
 {
 }
 
@@ -204,6 +204,31 @@ EntityID Entity::getID(void) const
 void Entity::setID(EntityID id)
 {
 	_id = id;
+}
+
+void Entity::updateAfter(Entity& entity)
+{
+	const auto it_other = Gaff::LowerBound(entity._entities_dependent_on_me, _id);
+
+	// We are already dependent on this entity.
+	if (it_other != entity._entities_dependent_on_me.end() && *it_other == _id) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const EntityID id = entity.getID();
+	const auto it_dep = Gaff::LowerBound(_update_after, id);
+
+	// We are already in the dependency list.
+	if (it_dep != _update_after.end() && *it_dep == id) {
+		// $TODO: Log warning.
+		return;
+	}
+
+	entity._entities_dependent_on_me.emplace(it_other, _id);
+	_update_after.emplace(it_dep, id);
+
+	//_entity_mgr.markDirty(entity);
 }
 
 void Entity::update(float dt)

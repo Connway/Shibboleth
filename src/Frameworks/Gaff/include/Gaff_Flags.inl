@@ -111,6 +111,20 @@ void Flags<Enum>::set(bool value, Enum flag, Enum2... rest)
 
 template <class Enum>
 template <class... Enum2>
+void Flags<Enum>::set(Enum flag, Enum2... rest)
+{
+	set(GetBits(flag, rest...));
+}
+
+template <class Enum>
+template <class... Enum2>
+void Flags<Enum>::clear(Enum flag, Enum2... rest)
+{
+	clear(GetBits(flag, rest...));
+}
+
+template <class Enum>
+template <class... Enum2>
 Flags<Enum>::Flags(Enum flag, Enum2... rest)
 {
 	_flags.from_uint64(GetBits(flag, rest...));
@@ -187,6 +201,15 @@ void Flags<Enum>::set(bool value, StorageType flags)
 }
 
 template <class Enum>
+void Flags<Enum>::set(StorageType flags)
+{
+	BitsetType temp;
+	temp.from_uint64(flags);
+
+	_flags |= temp;
+}
+
+template <class Enum>
 bool Flags<Enum>::toggle(Enum flag)
 {
 	_flags.flip(static_cast<size_t>(flag));
@@ -197,6 +220,15 @@ template <class Enum>
 void Flags<Enum>::invert(void)
 {
 	_flags.flip();
+}
+
+template <class Enum>
+void Flags<Enum>::clear(StorageType flags)
+{
+	BitsetType temp;
+	temp.from_uint64(flags);
+
+	_flags &= ~temp;
 }
 
 template <class Enum>

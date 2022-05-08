@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class EntityManager;
+
 using EntityID = int32_t;
 constexpr EntityID EntityID_None = -1;
 
@@ -42,14 +44,10 @@ constexpr bool ValidEntityID(EntityID id)
 
 class Entity : public IEntityUpdateable
 {
-	GAFF_NO_COPY(Entity);
-
 public:
-	enum class UpdatePhase
+	enum class Flag
 	{
-		PrePhysics,
-		DuringPhysics,
-		PostPhysics,
+		UpdateNodeDirty,
 
 		Count
 	};
@@ -120,9 +118,8 @@ public:
 		return (comp) ? static_cast<T*>(comp) : nullptr;
 	}
 
-	Entity(void) = default;
+	Entity(EntityManager& entity_mgr);
 	~Entity(void) = default;
-	Entity(EntityID id);
 
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	void addComponent(const Refl::IReflectionDefinition& ref_def);
@@ -150,13 +147,27 @@ public:
 	EntityID getID(void) const;
 	void setID(EntityID id);
 
+	//void updateAfter(EntityComponent& component);
+	void updateAfter(Entity& entity);
+
 	void update(float dt) override;
 
 private:
 	Vector< UniquePtr<EntityComponent> > _components;
+
+	Vector<EntityID> _entities_dependent_on_me;
+	Vector<EntityID> _update_after;
+
+	EntityManager& _entity_mgr;
 	EntityID _id = EntityID_None;
 
+	Gaff::Flags<Flag> _flags;
+
+	friend class EntityManager;
+
 	SHIB_REFLECTION_CLASS_DECLARE(Entity);
+	GAFF_NO_MOVE(Entity);
+	GAFF_NO_COPY(Entity);
 };
 
 NS_END

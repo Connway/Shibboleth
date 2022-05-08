@@ -104,6 +104,12 @@ public:
 	void set(bool value, Enum flag, Enum2... rest);
 
 	template <class... Enum2>
+	void set(Enum flag, Enum2... rest);
+
+	template <class... Enum2>
+	void clear(Enum flag, Enum2... rest);
+
+	template <class... Enum2>
 	Flags(Enum flag, Enum2... rest);
 
 	Flags(BitsetType flags);
@@ -117,8 +123,10 @@ public:
 
 	void setRange(bool value, Enum start, Enum end);
 	void set(bool value, StorageType flags);
+	void set(StorageType flags);
 	bool toggle(Enum flag);
 	void invert(void);
+	void clear(StorageType flags);
 	void clear(void);
 
 	int32_t countUnset(void) const;

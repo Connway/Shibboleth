@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <Entity::UpdatePhase update_phase>
+template <EntityManager::UpdatePhase update_phase>
 class EntityUpdateSystem : public ISystem
 {
 public:
@@ -47,17 +47,17 @@ private:
 	EntityManager* _entity_mgr = nullptr;
 };
 
-class EntityUpdatePrePhysicsSystem final : public EntityUpdateSystem<Entity::UpdatePhase::PrePhysics>
+class EntityUpdatePrePhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::PrePhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdatePrePhysicsSystem);
 };
 
-class EntityUpdateDuringPhysicsSystem final : public EntityUpdateSystem<Entity::UpdatePhase::DuringPhysics>
+class EntityUpdateDuringPhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::DuringPhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdateDuringPhysicsSystem);
 };
 
-class EntityUpdatePostPhysicsSystem final : public EntityUpdateSystem<Entity::UpdatePhase::PostPhysics>
+class EntityUpdatePostPhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::PostPhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdatePostPhysicsSystem);
 };
