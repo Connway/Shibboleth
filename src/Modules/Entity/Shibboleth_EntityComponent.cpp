@@ -22,6 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_EntityComponent.h"
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(EntityComponent)
@@ -32,10 +35,6 @@ bool EntityComponent::init(void)
 }
 
 void EntityComponent::destroy(void)
-{
-}
-
-void EntityComponent::update(float /*dt*/)
 {
 }
 

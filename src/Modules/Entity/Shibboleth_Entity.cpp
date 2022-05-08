@@ -23,13 +23,18 @@ THE SOFTWARE.
 #include "Shibboleth_Entity.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	.template BASE(Refl::IReflectionObject)
-	.ctor<>()
+	.template ctor<Shibboleth::EntityID>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(Entity)
+
+Entity::Entity(EntityID id):
+	_id(id)
+{
+}
 
 void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
 {
@@ -189,6 +194,21 @@ bool Entity::hasComponent(const Refl::IReflectionDefinition& ref_def) const
 int32_t Entity::getNumComponents(void) const
 {
 	return static_cast<int32_t>(_components.size());
+}
+
+EntityID Entity::getID(void) const
+{
+	return _id;
+}
+
+void Entity::setID(EntityID id)
+{
+	_id = id;
+}
+
+void Entity::update(float dt)
+{
+	GAFF_REF(dt);
 }
 
 NS_END

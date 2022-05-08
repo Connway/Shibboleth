@@ -37,7 +37,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachine)
 	.staticFunc("Constructor", Shibboleth::StateMachine::Constructor)
 	.staticFunc("Destructor", Shibboleth::StateMachine::Destructor)
 
-	.staticFunc("Load", static_cast<bool (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const Shibboleth::ISerializeReader&)>(Shibboleth::StateMachine::Load))
+	.staticFunc("Load", static_cast<bool (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID, const Shibboleth::ISerializeReader&)>(Shibboleth::StateMachine::Load))
 
 	.var("resource", &Shibboleth::StateMachine::resource)
 	.ctor<>()
@@ -63,17 +63,17 @@ StateMachine& StateMachine::GetInternal(const void* component, int32_t comp_inde
 	return *(reinterpret_cast<StateMachine*>(const_cast<void*>(component)) + comp_index);
 }
 
-void StateMachine::Constructor(EntityID, void* component, int32_t comp_index)
+void StateMachine::Constructor(ECSEntityID, void* component, int32_t comp_index)
 {
 	new(&GetInternal(component, comp_index)) StateMachine();
 }
 
-void StateMachine::Destructor(EntityID, void* component, int32_t comp_index)
+void StateMachine::Destructor(ECSEntityID, void* component, int32_t comp_index)
 {
 	GetInternal(component, comp_index).~StateMachine();
 }
 
-bool StateMachine::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
+bool StateMachine::Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader)
 {
 	StateMachine& sm = GetInternal(ecs_mgr.getComponent<StateMachine>(id), ecs_mgr.getComponentIndex(id));
 

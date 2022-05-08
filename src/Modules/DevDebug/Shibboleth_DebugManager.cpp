@@ -558,7 +558,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 
 	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
 	Gleam::Mat4x4 final_camera = glm::identity<Gleam::Mat4x4>();
-	EntityID camera_id = EntityID_None;
+	ECSEntityID camera_id = ECSEntityID_None;
 
 	// Nothing to render.
 	if (!debug_data.render_list[0].size() && !debug_data.render_list[1].size()) {
@@ -570,7 +570,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 			job_data.debug_mgr->_camera_position[i],
 			job_data.debug_mgr->_camera_rotation[i],
 			job_data.debug_mgr->_camera[i],
-			[&](EntityID id, const Position& position, const Rotation& rotation, const Camera& camera) -> void
+			[&](ECSEntityID id, const Position& position, const Rotation& rotation, const Camera& camera) -> void
 			{
 				constexpr Gaff::Hash32 main_tag = Gaff::FNV1aHash32Const(u8"main");
 

@@ -46,27 +46,27 @@ public:
 	using GetType = GetT;
 
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const T& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, const T& value);
+	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, const T& value);
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, T&& value);
-	static void SetShared(ECSManager& ecs_mgr, EntityID id, T&& value);
+	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, T&& value);
 
 	static T& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static T& GetShared(ECSManager& ecs_mgr, EntityID id);
+	static T& GetShared(ECSManager& ecs_mgr, ECSEntityID id);
 
 	template <class Value>
 	static void Set(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index, const Value& value);
 
 	template <class Value>
-	static void Set(ECSManager& ecs_mgr, EntityID id, const Value& value);
+	static void Set(ECSManager& ecs_mgr, ECSEntityID id, const Value& value);
 
 	static GetT Get(ECSManager& ecs_mgr, const ECSQueryResult& query_result, int32_t entity_index);
-	static GetT Get(ECSManager& ecs_mgr, EntityID id);
+	static GetT Get(ECSManager& ecs_mgr, ECSEntityID id);
 
-	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared);
+	static void CopyDefaultToNonShared(ECSManager& ecs_mgr, ECSEntityID id, const void* shared);
 	static void CopyShared(const void* old_value, void* new_value);
 	static void Copy(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
 
 	static constexpr bool IsNonShared(void);
 	static constexpr bool IsShared(void);
@@ -167,12 +167,12 @@ SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ECSComponentDestructable, T)
 		.var("value", &type::value, ##__VA_ARGS__); \
 		if constexpr (type::IsNonShared()) { \
 			builder \
-				.staticFunc("Get", static_cast<typename type::GetType (*)(Shibboleth::ECSManager&, Shibboleth::EntityID)>(&type::Get)) \
-				.staticFunc("Set", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const type&)>(&type::Set)); \
+				.staticFunc("Get", static_cast<typename type::GetType (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID)>(&type::Get)) \
+				.staticFunc("Set", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID, const type&)>(&type::Set)); \
 		} \
 		if constexpr (type::IsShared()) { \
 			builder \
-				.staticFunc("GetShared", static_cast<type& (*)(Shibboleth::ECSManager&, Shibboleth::EntityID)>(&type::GetShared)) \
-				.staticFunc("SetShared", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::EntityID, const type&)>(&type::SetShared)); \
+				.staticFunc("GetShared", static_cast<type& (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID)>(&type::GetShared)) \
+				.staticFunc("SetShared", static_cast<void (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID, const type&)>(&type::SetShared)); \
 		} \
 	SHIB_REFLECTION_DEFINE_END(type)

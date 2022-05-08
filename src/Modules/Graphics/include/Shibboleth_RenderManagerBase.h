@@ -141,11 +141,11 @@ public:
 	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
 	SamplerStateResourcePtr& getDefaultSamplerState(void);
 
-	bool createGBuffer(EntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
-	const GBufferData* getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
-	bool removeGBuffer(EntityID id);
-	bool hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const;
-	bool hasGBuffer(EntityID id) const;
+	bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
+	const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	bool removeGBuffer(ECSEntityID id);
+	bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	bool hasGBuffer(ECSEntityID id) const;
 
 	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
 	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
@@ -157,7 +157,7 @@ public:
 
 private:
 	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
-	VectorMap<EntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
+	VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };

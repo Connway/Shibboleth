@@ -61,7 +61,7 @@ void CameraPreRenderSystem::update(uintptr_t /*thread_id_int*/)
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Camera>(
 			_camera[camera_index],
-			[&](EntityID id, const Camera& camera) -> void
+			[&](ECSEntityID id, const Camera& camera) -> void
 			{
 				if (!_render_mgr->hasGBuffer(id)) {
 					bool create_render_texture = false;
@@ -226,7 +226,7 @@ void CameraPostRenderSystem::RenderCameras(uintptr_t thread_id_int, void* data)
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		job_data.system->_ecs_mgr->iterate<Camera>(
 			job_data.system->_camera[camera_index],
-			[&](EntityID id, const Camera& camera) -> void
+			[&](ECSEntityID id, const Camera& camera) -> void
 			{
 				const auto* const devices = job_data.system->_render_mgr->getDevicesByTag(camera.device_tag);
 

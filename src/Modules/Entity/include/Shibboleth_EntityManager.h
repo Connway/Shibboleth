@@ -24,9 +24,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_Entity.h"
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_Vector.h>
 //#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
+
+class IEntityUpdateable;
 
 class EntityManager final : public IManager
 {
@@ -47,9 +51,34 @@ public:
 	Entity* createEntity(const Refl::IReflectionDefinition& ref_def);
 	Entity* createEntity(void);
 
+	void destroyEntity(Entity& entity);
+	void destroyEntity(EntityID id);
+
 	void updateEntitiesAndComponents(Entity::UpdatePhase update_phase);
 
+	void updateBefore(const Entity& before, const Entity& after);
+	void updateAfter(const Entity& before, const Entity& after);
+
 private:
+	struct UpdateNode final
+	{
+		IEntityUpdateable* updater;
+		UpdateNode* parent;
+		//UpdateNode* child;
+	};
+
+	//VectorMap<Entity*, UpdateNode> _entity_update_map[static_cast<size_t>(UpdatePhase::Count)] =
+	//{
+		//ProxyAllocator("Entity")
+	//};
+
+	Vector<EntityID> _free_ids{ ProxyAllocator("Entity") };
+	Vector<Entity*> _entities{ ProxyAllocator("Entity") };
+	EntityID _next_id = 0;
+
+	void initializeEntity(Entity& entity);
+	void returnID(EntityID id);
+	EntityID allocateID(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityManager);
 };

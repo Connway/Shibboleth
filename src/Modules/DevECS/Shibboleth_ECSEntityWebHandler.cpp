@@ -44,7 +44,7 @@ ECSEntityWebHandler::ECSEntityWebHandler(void):
 bool ECSEntityWebHandler::handleGet(CivetServer* /*server*/, mg_connection* conn)
 {
 	const mg_request_info* const req = mg_get_request_info(conn);
-	EntityID id = -1;
+	ECSEntityID id = ECSEntityID_None;
 
 	if (req->query_string) {
 		sscanf(req->query_string, "id=%i", &id);

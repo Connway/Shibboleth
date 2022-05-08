@@ -51,13 +51,13 @@ void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typenam
 }
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, EntityID id, const typename ResourceType& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, const typename ResourceType& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = value;
 }
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, EntityID id, typename ResourceType&& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, typename ResourceType&& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = std::move(value);
 }
@@ -69,7 +69,7 @@ typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, 
 }
 
 template <class T>
-typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, EntityID id)
+typename Resource<T>::ResourceType& Resource<T>::GetShared(ECSManager& ecs_mgr, ECSEntityID id)
 {
 	return ecs_mgr.getComponentShared<Resource>(id)->value;
 }

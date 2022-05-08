@@ -53,7 +53,7 @@ void StateMachineSystem::update(uintptr_t /*thread_id_int*/)
 	for (const auto& sm_arch : _state_machines) {
 		_ecs_mgr->iterate<StateMachine>(
 			sm_arch,
-			[](EntityID id, StateMachine& state_machine) -> void
+			[](ECSEntityID id, StateMachine& state_machine) -> void
 			{
 				if (!state_machine.resource) {
 					// $TODO: Log error

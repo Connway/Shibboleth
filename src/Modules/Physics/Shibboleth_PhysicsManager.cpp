@@ -254,7 +254,7 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 			_positions[rb_index],
 			_rotations[rb_index],
 			_scales[rb_index],
-			[&](EntityID id, RigidBody& rb, Position position, Rotation rotation, Scale scale) -> void
+			[&](ECSEntityID id, RigidBody& rb, Position position, Rotation rotation, Scale scale) -> void
 			{
 				GAFF_REF(scale);
 
@@ -332,7 +332,7 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 		for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
 			_ecs_mgr->iterate<RigidBody>(
 				_rigid_bodies[rb_index],
-				[&](EntityID, RigidBody& rb) -> void
+				[&](ECSEntityID, RigidBody& rb) -> void
 			{
 				if (!rb.body.body_dynamic) {
 					return;

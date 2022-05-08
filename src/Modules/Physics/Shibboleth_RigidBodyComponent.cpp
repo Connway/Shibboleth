@@ -71,17 +71,17 @@ RigidBody& RigidBody::GetInternal(const void* component, int32_t comp_index)
 	return *(reinterpret_cast<RigidBody*>(const_cast<void*>(component)) + comp_index);
 }
 
-void RigidBody::Constructor(EntityID, void* component, int32_t comp_index)
+void RigidBody::Constructor(ECSEntityID, void* component, int32_t comp_index)
 {
 	new(&GetInternal(component, comp_index)) RigidBody();
 }
 
-void RigidBody::Destructor(EntityID, void* component, int32_t comp_index)
+void RigidBody::Destructor(ECSEntityID, void* component, int32_t comp_index)
 {
 	GetInternal(component, comp_index).~RigidBody();
 }
 
-bool RigidBody::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
+bool RigidBody::Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader)
 {
 	RigidBody& rb = GetInternal(ecs_mgr.getComponent<RigidBody>(id), ecs_mgr.getComponentIndex(id));
 	return Refl::Reflection<RigidBody>::GetInstance().load(reader, rb);

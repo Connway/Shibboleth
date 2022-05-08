@@ -120,9 +120,9 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 		return;
 	}
 
-	const EntityID entity_id = static_cast<EntityID>(variables.integers[_entity_id_index]);
+	const ECSEntityID entity_id = static_cast<ECSEntityID>(variables.integers[_entity_id_index]);
 	
-	if (entity_id == EntityID_None) {
+	if (entity_id == ECSEntityID_None) {
 		// $TODO: Log error periodic.
 		return;
 	}

@@ -34,10 +34,10 @@ public:
 	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
 	static StateMachine& GetInternal(const void* component, int32_t entity_index);
 
-	static void Constructor(EntityID, void* component, int32_t entity_index);
-	static void Destructor(EntityID, void* component, int32_t entity_index);
+	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
+	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
 
-	static bool Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader);
+	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
 	static bool Load(const ISerializeReader& reader, StateMachine& out);
 
 	StateMachine& operator=(const StateMachine& rhs);

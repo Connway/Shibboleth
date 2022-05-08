@@ -86,7 +86,7 @@ Camera Camera::GetInternal(const void* component, int32_t page_index)
 	return camera;
 }
 
-void Camera::Destructor(EntityID id, void*, int32_t)
+void Camera::Destructor(ECSEntityID id, void*, int32_t)
 {
 	auto& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	render_mgr.removeGBuffer(id);

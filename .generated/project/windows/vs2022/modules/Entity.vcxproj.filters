@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntitySystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_IEntityUpdateable.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_Entity.cpp" />

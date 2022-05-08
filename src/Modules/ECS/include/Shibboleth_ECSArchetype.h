@@ -177,24 +177,24 @@ public:
 	const void* getSharedComponent(Gaff::Hash64 component) const;
 	void* getSharedComponent(Gaff::Hash64 component);
 
-	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, Gaff::Hash64 component) const;
-	bool loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, int32_t index) const;
-	void loadDefaults(ECSManager& ecs_mgr, EntityID id) const;
+	bool loadComponent(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader, Gaff::Hash64 component) const;
+	bool loadComponent(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader, int32_t index) const;
+	void loadDefaults(ECSManager& ecs_mgr, ECSEntityID id) const;
 
 	bool isBase(void) const;
 
-	void destroyEntity(EntityID id, void* entity, int32_t entity_index) const;
+	void destroyEntity(ECSEntityID id, void* entity, int32_t entity_index) const;
 	void constructPage(void* page, int32_t num_entities) const;
 
 private:
 	struct RefDefOffset final
 	{
-		using CopyDefaultToNonSharedFunc = void (*)(ECSManager&, EntityID, const void*);
+		using CopyDefaultToNonSharedFunc = void (*)(ECSManager&, ECSEntityID, const void*);
 		using CopySharedFunc = void (*)(const void*, void*);
 		using CopyFunc = void (*)(const void*, int32_t, void*, int32_t);
-		using LoadFunc = bool (*)(ECSManager&, EntityID, const ISerializeReader&);
-		using ConstructorFunc = void (*)(EntityID, void*, int32_t);
-		using DestructorFunc = void (*)(EntityID, void*, int32_t);
+		using LoadFunc = bool (*)(ECSManager&, ECSEntityID, const ISerializeReader&);
+		using ConstructorFunc = void (*)(ECSEntityID, void*, int32_t);
+		using DestructorFunc = void (*)(ECSEntityID, void*, int32_t);
 
 		const Refl::IReflectionDefinition* ref_def;
 		int32_t offset;

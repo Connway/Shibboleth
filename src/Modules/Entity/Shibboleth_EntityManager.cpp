@@ -44,7 +44,11 @@ Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
 
 	Entity* const entity = ref_def.createT<Entity>(s_allocator);
 
-	// $TODO: Add to world and manage newly created entity.
+	if (entity) {
+		initializeEntity(*entity);
+	} else {
+		// $TODO: Log error.
+	}
 
 	return entity;
 }
@@ -53,14 +57,68 @@ Entity* EntityManager::createEntity(void)
 {
 	Entity* const entity = SHIB_ALLOCT(Entity, s_allocator);
 
-	// $TODO: Add to world and manage newly created entity.
+	if (entity) {
+		initializeEntity(*entity);
+	} else {
+		// $TODO: Log error.
+	}
 
 	return entity;
+}
+
+void EntityManager::destroyEntity(Entity& entity)
+{
+	const EntityID id = entity.getID();
+	_entities[id] = nullptr;
+
+	SHIB_FREET(entity.getBasePointer(), s_allocator);
+	returnID(id);
+}
+
+void EntityManager::destroyEntity(EntityID id)
+{
+	GAFF_ASSERT(Gaff::UpperBound(_free_ids, id) == _free_ids.end() || *Gaff::UpperBound(_free_ids, id) != id);
+	GAFF_ASSERT(_entities[id]);
+	destroyEntity(*_entities[id]);
 }
 
 void EntityManager::updateEntitiesAndComponents(Entity::UpdatePhase update_phase)
 {
 	GAFF_REF(update_phase);
+}
+
+void EntityManager::initializeEntity(Entity& entity)
+{
+	// $TODO: Add to world and manage newly created entity.
+	const EntityID id = allocateID();
+	entity.setID(id);
+
+	if (id >= static_cast<int32_t>(_entities.size())) {
+		constexpr int32_t k_entity_padding = 128;
+		_entities.resize(id + k_entity_padding);
+	}
+
+	_entities[id] = &entity;
+}
+
+void EntityManager::returnID(EntityID id)
+{
+	// Sort array from highest to lowest.
+	const auto it = Gaff::UpperBound(_free_ids, id);
+	GAFF_ASSERT(it == _free_ids.end() || (*it) != id);
+	_free_ids.emplace(it, id);
+}
+
+EntityID EntityManager::allocateID(void)
+{
+	if (!_free_ids.empty()) {
+		const EntityID id = _free_ids.back();
+		_free_ids.pop_back();
+
+		return id;
+	}
+
+	return _next_id++;
 }
 
 NS_END

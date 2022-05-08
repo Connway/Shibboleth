@@ -105,7 +105,7 @@ void ECSManager::removeArchetype(Gaff::Hash64 archetype)
 
 	// Someone is manually calling removeArchetype().
 	if (!it->second->entity_ids.empty()) {
-		for (EntityID id : it->second->entity_ids) {
+		for (ECSEntityID id : it->second->entity_ids) {
 			if (id != -1) {
 				destroyEntityInternal(id, false);
 			}
@@ -128,9 +128,9 @@ const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 archetype) const
 	return it->second->archetype;
 }
 
-const ECSArchetype& ECSManager::getArchetype(EntityID id) const
+const ECSArchetype& ECSManager::getArchetype(ECSEntityID id) const
 {
-	GAFF_ASSERT(ValidEntityID(id) && id < _next_id && _entities[id].data);
+	GAFF_ASSERT(ValidECSEntityID(id) && id < _next_id && _entities[id].data);
 	return _entities[id].data->archetype;
 }
 
@@ -142,25 +142,25 @@ ArchetypeReferencePtr ECSManager::getArchetypeReference(Gaff::Hash64 archetype)
 	return ArchetypeReferencePtr(it->second->arch_ref);
 }
 
-ArchetypeReferencePtr ECSManager::getArchetypeReference(EntityID id)
+ArchetypeReferencePtr ECSManager::getArchetypeReference(ECSEntityID id)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	return ArchetypeReferencePtr(_entities[id].data->arch_ref);
 }
 
-EntityID ECSManager::createEntity(const ECSArchetype& archetype)
+ECSEntityID ECSManager::createEntity(const ECSArchetype& archetype)
 {
 	return createEntity(archetype.getHash());
 }
 
-EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
+ECSEntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 {
 	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	const auto it = _entity_pages.find(archetype);
 	GAFF_ASSERT(it != _entity_pages.end() && it->first == archetype);
 	EntityData& data = *(it->second);
 
-	EntityID id = EntityID_None;
+	ECSEntityID id = ECSEntityID_None;
 
 	if (_free_ids.empty()) {
 		id = _next_id++;
@@ -188,16 +188,16 @@ EntityID ECSManager::createEntity(Gaff::Hash64 archetype)
 	return id;
 }
 
-EntityID ECSManager::loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader)
+ECSEntityID ECSManager::loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader)
 {
 	if (!reader.isObject()) {
 		LogErrorDefault("Malformed entity. Entity is not an object.");
-		return EntityID_None;
+		return ECSEntityID_None;
 	}
 
-	const EntityID id = createEntity(archetype);
+	const ECSEntityID id = createEntity(archetype);
 
-	if (ValidEntityID(id)) {
+	if (ValidECSEntityID(id)) {
 		archetype.loadDefaults(*this, id);
 
 		reader.forEachInObject([&](const char8_t* component) -> bool {
@@ -210,12 +210,12 @@ EntityID ECSManager::loadEntity(const ECSArchetype& archetype, const ISerializeR
 	return id;
 }
 
-EntityID ECSManager::loadEntity(Gaff::Hash64 archetype_hash, const ISerializeReader& reader)
+ECSEntityID ECSManager::loadEntity(Gaff::Hash64 archetype_hash, const ISerializeReader& reader)
 {
 	return loadEntity(getArchetype(archetype_hash), reader);
 }
 
-void ECSManager::destroyEntity(EntityID id)
+void ECSManager::destroyEntity(ECSEntityID id)
 {
 	destroyEntityInternal(id, true);
 }
@@ -230,12 +230,12 @@ const void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 
 	return const_cast<ECSManager*>(this)->getComponentShared(archetype, component);
 }
 
-const void* ECSManager::getComponentShared(EntityID id, const Refl::IReflectionDefinition& component) const
+const void* ECSManager::getComponentShared(ECSEntityID id, const Refl::IReflectionDefinition& component) const
 {
 	return const_cast<ECSManager*>(this)->getComponentShared(id, component);
 }
 
-const void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component) const
+const void* ECSManager::getComponentShared(ECSEntityID id, Gaff::Hash64 component) const
 {
 	return const_cast<ECSManager*>(this)->getComponentShared(id, component);
 }
@@ -257,12 +257,12 @@ void* ECSManager::getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 compon
 	return reinterpret_cast<int8_t*>(archetype_instance.getSharedData()) + component_offset;
 }
 
-void* ECSManager::getComponentShared(EntityID id, const Refl::IReflectionDefinition& component)
+void* ECSManager::getComponentShared(ECSEntityID id, const Refl::IReflectionDefinition& component)
 {
 	return getComponentShared(id, component.getReflectionInstance().getHash());
 }
 
-void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
+void* ECSManager::getComponentShared(ECSEntityID id, Gaff::Hash64 component)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	const Entity& entity = _entities[id];
@@ -273,22 +273,22 @@ void* ECSManager::getComponentShared(EntityID id, Gaff::Hash64 component)
 	return reinterpret_cast<int8_t*>(entity.data->archetype.getSharedData()) + component_offset;
 }
 
-const void* ECSManager::getComponent(EntityID id, const Refl::IReflectionDefinition& component) const
+const void* ECSManager::getComponent(ECSEntityID id, const Refl::IReflectionDefinition& component) const
 {
 	return const_cast<ECSManager*>(this)->getComponent(id, component);
 }
 
-const void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component) const
+const void* ECSManager::getComponent(ECSEntityID id, Gaff::Hash64 component) const
 {
 	return const_cast<ECSManager*>(this)->getComponent(id, component);
 }
 
-void* ECSManager::getComponent(EntityID id, const Refl::IReflectionDefinition& component)
+void* ECSManager::getComponent(ECSEntityID id, const Refl::IReflectionDefinition& component)
 {
 	return getComponent(id, component.getReflectionInstance().getHash());
 }
 
-void* ECSManager::getComponent(EntityID id, Gaff::Hash64 component)
+void* ECSManager::getComponent(ECSEntityID id, Gaff::Hash64 component)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 	const Entity& entity = _entities[id];
@@ -320,12 +320,12 @@ bool ECSManager::hasComponent(Gaff::Hash64 archetype, Gaff::Hash64 component) co
 	return archetype_instance.hasComponent(component);
 }
 
-bool ECSManager::hasComponent(EntityID id, const Refl::IReflectionDefinition& component) const
+bool ECSManager::hasComponent(ECSEntityID id, const Refl::IReflectionDefinition& component) const
 {
 	return getComponent(id, component) != nullptr;
 }
 
-bool ECSManager::hasComponent(EntityID id, Gaff::Hash64 component) const
+bool ECSManager::hasComponent(ECSEntityID id, Gaff::Hash64 component) const
 {
 	return getComponent(id, component) != nullptr;
 }
@@ -338,9 +338,9 @@ int32_t ECSManager::getComponentIndex(const ECSQueryResult& query_result, int32_
 	return getComponentIndex(data->entity_ids[entity_index]);
 }
 
-int32_t ECSManager::getComponentIndex(EntityID id) const
+int32_t ECSManager::getComponentIndex(ECSEntityID id) const
 {
-	GAFF_ASSERT(ValidEntityID(id) && id < _next_id&& _entities[id].data);
+	GAFF_ASSERT(ValidECSEntityID(id) && id < _next_id&& _entities[id].data);
 	return _entities[id].index % 4;
 }
 
@@ -352,9 +352,9 @@ int32_t ECSManager::getPageIndex(const ECSQueryResult& query_result, int32_t ent
 	return getPageIndex(data->entity_ids[entity_index]);
 }
 
-int32_t ECSManager::getPageIndex(EntityID id) const
+int32_t ECSManager::getPageIndex(ECSEntityID id) const
 {
-	GAFF_ASSERT(ValidEntityID(id) && id < _next_id && _entities[id].data);
+	GAFF_ASSERT(ValidECSEntityID(id) && id < _next_id && _entities[id].data);
 	return _entities[id].index;
 }
 
@@ -405,9 +405,9 @@ void ECSManager::switchScene(const ECSSceneResourcePtr scene)
 	_curr_scene = scene;
 }
 
-bool ECSManager::isValid(EntityID id) const
+bool ECSManager::isValid(ECSEntityID id) const
 {
-	return ValidEntityID(id) && id < _next_id;
+	return ValidECSEntityID(id) && id < _next_id;
 }
 
 const ECSArchetype& ECSManager::getEmptyArchetype(void) const
@@ -415,7 +415,7 @@ const ECSArchetype& ECSManager::getEmptyArchetype(void) const
 	return getArchetype(Gaff::k_init_hash64);
 }
 
-void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
+void ECSManager::destroyEntityInternal(ECSEntityID id, bool change_ref_count)
 {
 	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
@@ -470,7 +470,7 @@ void ECSManager::destroyEntityInternal(EntityID id, bool change_ref_count)
 	}
 }
 
-void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
+void ECSManager::migrate(ECSEntityID id, Gaff::Hash64 new_archetype)
 {
 	const EA::Thread::AutoMutex lock(_entity_page_lock);
 	GAFF_ASSERT(_entity_pages.find(new_archetype) != _entity_pages.end());
@@ -504,7 +504,7 @@ void ECSManager::migrate(EntityID id, Gaff::Hash64 new_archetype)
 	old_entity_data.arch_ref->release();
 }
 
-int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
+int32_t ECSManager::allocateIndex(EntityData& data, ECSEntityID id)
 {
 	// Grab a free ID if available.
 	if (!data.free_indices.empty()) {
@@ -557,7 +557,7 @@ int32_t ECSManager::allocateIndex(EntityData& data, EntityID id)
 	return global_index;
 }
 
-ArchetypeReference* ECSManager::modifyInternal(EntityID& id, ArchetypeModifier modifier)
+ArchetypeReference* ECSManager::modifyInternal(ECSEntityID& id, ArchetypeModifier modifier)
 {
 	GAFF_ASSERT(id < _next_id && _entities[id].data);
 

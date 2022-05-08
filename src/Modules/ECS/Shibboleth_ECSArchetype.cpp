@@ -358,9 +358,9 @@ void* ECSArchetype::getSharedComponent(Gaff::Hash64 component)
 	return (offset >= 0) ? reinterpret_cast<int8_t*>(_shared_instances) + offset : nullptr;
 }
 
-bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, Gaff::Hash64 component) const
+bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader, Gaff::Hash64 component) const
 {
-	GAFF_ASSERT(ValidEntityID(id));
+	GAFF_ASSERT(ValidECSEntityID(id));
 
 	const auto it = Gaff::LowerBound(_vars, component, SearchPredicate);
 
@@ -372,10 +372,10 @@ bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerial
 	return false;
 }
 
-bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader, int32_t index) const
+bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader, int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	GAFF_ASSERT(ValidEntityID(id));
+	GAFF_ASSERT(ValidECSEntityID(id));
 
 	const RefDefOffset& rdo = _vars[index];
 
@@ -387,7 +387,7 @@ bool ECSArchetype::loadComponent(ECSManager& ecs_mgr, EntityID id, const ISerial
 	return rdo.load_func(ecs_mgr, id, reader);
 }
 
-void ECSArchetype::loadDefaults(ECSManager& ecs_mgr, EntityID id) const
+void ECSArchetype::loadDefaults(ECSManager& ecs_mgr, ECSEntityID id) const
 {
 	for (const RefDefOffset& rdo : _vars_defaults) {
 		rdo.copy_default_to_non_shared_func(ecs_mgr, id, static_cast<int8_t*>(_default_data) + rdo.offset);
@@ -399,7 +399,7 @@ bool ECSArchetype::isBase(void) const
 	return _is_base;
 }
 
-void ECSArchetype::destroyEntity(EntityID id, void* entity, int32_t entity_index) const
+void ECSArchetype::destroyEntity(ECSEntityID id, void* entity, int32_t entity_index) const
 {
 	for (const RefDefOffset& rdo : _vars) {
 		if (rdo.destructor_func) {
@@ -407,7 +407,7 @@ void ECSArchetype::destroyEntity(EntityID id, void* entity, int32_t entity_index
 		}
 
 		if (rdo.constructor_func) {
-			rdo.constructor_func(EntityID_None, reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
+			rdo.constructor_func(ECSEntityID_None, reinterpret_cast<int8_t*>(entity) + rdo.offset, entity_index);
 		}
 	}
 }
@@ -420,10 +420,10 @@ void ECSArchetype::constructPage(void* page, int32_t num_entities) const
 	for (int32_t i = 0; i < num_entities; i += 4) {
 		for (const RefDefOffset& rdo : _vars) {
 			if (rdo.constructor_func) {
-				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 0);
-				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 1);
-				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 2);
-				rdo.constructor_func(EntityID_None, entity_start + rdo.offset, 3);
+				rdo.constructor_func(ECSEntityID_None, entity_start + rdo.offset, 0);
+				rdo.constructor_func(ECSEntityID_None, entity_start + rdo.offset, 1);
+				rdo.constructor_func(ECSEntityID_None, entity_start + rdo.offset, 2);
+				rdo.constructor_func(ECSEntityID_None, entity_start + rdo.offset, 3);
 			}
 		}
 
@@ -482,12 +482,12 @@ bool ECSArchetype::add(const Refl::IReflectionDefinition& ref_def, bool has_defa
 		return false;
 	}
 
-	RefDefOffset::CopyDefaultToNonSharedFunc copy_default_to_non_shared_func = GetStaticFunc<void, ECSManager&, EntityID, const void*>(ref_def, Gaff::FNV1aHash32Const("CopyDefaultToNonShared"));
+	RefDefOffset::CopyDefaultToNonSharedFunc copy_default_to_non_shared_func = GetStaticFunc<void, ECSManager&, ECSEntityID, const void*>(ref_def, Gaff::FNV1aHash32Const("CopyDefaultToNonShared"));
 	RefDefOffset::CopySharedFunc copy_shared_func = GetStaticFunc<void, const void*, void*>(ref_def, Gaff::FNV1aHash32Const("CopyShared"));
 	RefDefOffset::CopyFunc copy_func = GetStaticFunc<void, const void*, int32_t, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Copy"));
-	RefDefOffset::LoadFunc load_func = GetStaticFunc<bool, ECSManager&, EntityID, const ISerializeReader&>(ref_def, Gaff::FNV1aHash32Const("Load"));
-	RefDefOffset::ConstructorFunc constructor_func = GetStaticFunc<void, EntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Constructor"));
-	RefDefOffset::DestructorFunc destructor_func = GetStaticFunc<void, EntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Destructor"));
+	RefDefOffset::LoadFunc load_func = GetStaticFunc<bool, ECSManager&, ECSEntityID, const ISerializeReader&>(ref_def, Gaff::FNV1aHash32Const("Load"));
+	RefDefOffset::ConstructorFunc constructor_func = GetStaticFunc<void, ECSEntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Constructor"));
+	RefDefOffset::DestructorFunc destructor_func = GetStaticFunc<void, ECSEntityID, void*, int32_t>(ref_def, Gaff::FNV1aHash32Const("Destructor"));
 
 	if (!copy_shared_func && shared) {
 		// $TODO: Log error.

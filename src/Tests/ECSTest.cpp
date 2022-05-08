@@ -65,8 +65,8 @@ TEST_CASE("shibboleth_ecs_create_destroy_entity")
 
 	ecs_mgr.addArchetype(std::move(archetype));
 
-	const Shibboleth::EntityID id1 = ecs_mgr.createEntity(archetype_hash);
-	const Shibboleth::EntityID id2 = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::ECSEntityID id1 = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::ECSEntityID id2 = ecs_mgr.createEntity(archetype_hash);
 
 	REQUIRE(id1 == 0);
 	REQUIRE(id2 == 1);
@@ -106,7 +106,7 @@ TEST_CASE("shibboleth_ecs_add_remove_component")
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
 	ecs_mgr.addArchetype(std::move(archetype));
 
-	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::ECSEntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE(id == 0);
 
 	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position((Gleam::Vec3(0.0f, 1.0f, 2.0f))));
@@ -144,7 +144,7 @@ TEST_CASE("shibboleth_ecs_add_remove_shared_component")
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
 	Shibboleth::Rotation::SetShared(ecs_mgr, archetype_hash, Shibboleth::Rotation(Gleam::Vec3(0.0f, 0.0f, 0.0f)));
 
-	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::ECSEntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE(id == 0);
 
 	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));
@@ -185,7 +185,7 @@ TEST_CASE("shibboleth_ecs_query")
 	ecs_mgr.addArchetype(std::move(archetype));
 
 	const Gaff::Hash64 archetype_hash = archetype.getHash();
-	const Shibboleth::EntityID id = ecs_mgr.createEntity(archetype_hash);
+	const Shibboleth::ECSEntityID id = ecs_mgr.createEntity(archetype_hash);
 	REQUIRE(id == 0);
 
 	Shibboleth::Position::Set(ecs_mgr, id, Shibboleth::Position(Gleam::Vec3(0.0f, 1.0f, 2.0f)));

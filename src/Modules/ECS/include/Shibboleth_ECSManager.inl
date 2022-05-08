@@ -163,7 +163,7 @@ ArchetypeReference* ECSManager::addComponentsInternal(Gaff::Hash64 archetype_has
 }
 
 template <class... Components>
-ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::removeSharedComponentsInternal(ECSEntityID id)
 {
 	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
@@ -179,7 +179,7 @@ ArchetypeReference* ECSManager::removeSharedComponentsInternal(EntityID id)
 }
 
 template <class... Components>
-ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::removeComponentsInternal(ECSEntityID id)
 {
 	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
@@ -195,7 +195,7 @@ ArchetypeReference* ECSManager::removeComponentsInternal(EntityID id)
 }
 
 template <class... Components>
-ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::addSharedComponentsInternal(ECSEntityID id)
 {
 	const ECSArchetype& base_archetype = getArchetype(id);
 	ECSArchetype archetype;
@@ -211,7 +211,7 @@ ArchetypeReference* ECSManager::addSharedComponentsInternal(EntityID id)
 }
 
 template <class... Components>
-ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
+ArchetypeReference* ECSManager::addComponentsInternal(ECSEntityID id)
 {
 	ECSArchetype archetype;
 	archetype.copy(getArchetype(id), true);
@@ -227,7 +227,7 @@ ArchetypeReference* ECSManager::addComponentsInternal(EntityID id)
 template <class Callback, size_t index, class ComponentFirst, class... ComponentsRest, size_t array_size, class... ComponentsPrev>
 void ECSManager::iterateInternalHelper(
 	Callback&& callback,
-	EntityID entity_id,
+	ECSEntityID entity_id,
 	int32_t entity_index,
 	const ECSQueryResult* (&query_results)[array_size],
 	ComponentsPrev&&... prev_comps)

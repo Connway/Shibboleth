@@ -668,7 +668,7 @@ SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
 }
 
 bool RenderManagerBase::createGBuffer(
-	EntityID id,
+	ECSEntityID id,
 	Gaff::Hash32 device_tag,
 	const Gleam::IVec2& size,
 	bool create_render_texture)
@@ -789,7 +789,7 @@ bool RenderManagerBase::createGBuffer(
 	return true;
 }
 
-const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(EntityID id, const Gleam::IRenderDevice& device) const
+const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
 {
 	const auto rd_it = _g_buffers.find(id);
 
@@ -801,12 +801,12 @@ const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(EntityID id,
 	return nullptr;
 }
 
-bool RenderManagerBase::removeGBuffer(EntityID id)
+bool RenderManagerBase::removeGBuffer(ECSEntityID id)
 {
 	return _g_buffers.erase(id) > 0;
 }
 
-bool RenderManagerBase::hasGBuffer(EntityID id, const Gleam::IRenderDevice& device) const
+bool RenderManagerBase::hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
 {
 	const auto it = _g_buffers.find(id);
 
@@ -817,7 +817,7 @@ bool RenderManagerBase::hasGBuffer(EntityID id, const Gleam::IRenderDevice& devi
 	return false;
 }
 
-bool RenderManagerBase::hasGBuffer(EntityID id) const
+bool RenderManagerBase::hasGBuffer(ECSEntityID id) const
 {
 	return _g_buffers.find(id) != _g_buffers.end();
 }

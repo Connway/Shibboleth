@@ -95,7 +95,7 @@ void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash6
 }
 
 template <class T, class GetT, ECSComponentType type>
-void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, EntityID id, const T& value)
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, const T& value)
 {
 	*ecs_mgr.getComponentShared<T>(id) = value;
 }
@@ -107,7 +107,7 @@ void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, Gaff::Hash6
 }
 
 template <class T, class GetT, ECSComponentType type>
-void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, EntityID id, T&& value)
+void ECSComponentBase<T, GetT, type>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, T&& value)
 {
 	*ecs_mgr.getComponentShared<T>(id) = std::move(value);
 }
@@ -119,7 +119,7 @@ T& ECSComponentBase<T, GetT, type>::GetShared(ECSManager& ecs_mgr, Gaff::Hash64 
 }
 
 template <class T, class GetT, ECSComponentType type>
-T& ECSComponentBase<T, GetT, type>::GetShared(ECSManager& ecs_mgr, EntityID id)
+T& ECSComponentBase<T, GetT, type>::GetShared(ECSManager& ecs_mgr, ECSEntityID id)
 {
 	return *ecs_mgr.getComponentShared<T>(id);
 }
@@ -136,7 +136,7 @@ void ECSComponentBase<T, GetT, type>::Set(ECSManager& ecs_mgr, const ECSQueryRes
 
 template <class T, class GetT, ECSComponentType type>
 template <class Value>
-void ECSComponentBase<T, GetT, type>::Set(ECSManager& ecs_mgr, EntityID id, const Value& value)
+void ECSComponentBase<T, GetT, type>::Set(ECSManager& ecs_mgr, ECSEntityID id, const Value& value)
 {
 	void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;
@@ -154,7 +154,7 @@ GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, const ECSQueryRes
 }
 
 template <class T, class GetT, ECSComponentType type>
-GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, EntityID id)
+GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, ECSEntityID id)
 {
 	const void* const component = ecs_mgr.getComponent<T>(id);
 	const int32_t page_index = ecs_mgr.getPageIndex(id) % 4;
@@ -163,7 +163,7 @@ GetT ECSComponentBase<T, GetT, type>::Get(ECSManager& ecs_mgr, EntityID id)
 }
 
 template <class T, class GetT, ECSComponentType type>
-void ECSComponentBase<T, GetT, type>::CopyDefaultToNonShared(ECSManager& ecs_mgr, EntityID id, const void* shared)
+void ECSComponentBase<T, GetT, type>::CopyDefaultToNonShared(ECSManager& ecs_mgr, ECSEntityID id, const void* shared)
 {
 	if constexpr (IsNonShared()) {
 		T::Set(ecs_mgr, id, *reinterpret_cast<const T*>(shared));
@@ -186,7 +186,7 @@ void ECSComponentBase<T, GetT, type>::Copy(const void* old_begin, int32_t old_in
 }
 
 template <class T, class GetT, ECSComponentType type>
-bool ECSComponentBase<T, GetT, type>::Load(ECSManager& ecs_mgr, EntityID id, const ISerializeReader& reader)
+bool ECSComponentBase<T, GetT, type>::Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader)
 {
 	if constexpr (IsNonShared()) {
 		T value;

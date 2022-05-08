@@ -22,49 +22,17 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IEntityUpdateable.h"
-#include <Shibboleth_Reflection.h>
-#include <Gaff_Flags.h>
-//#include <Shibboleth_ECSEntity.h>
-//#include <Gaff_IncludeEASTLAtomic.h>
-//#include <Gaff_RefPtr.h>
-//#include <Gaff_Hash.h>
+#include <Shibboleth_IReflectionObject.h>
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class Entity;
-
-class EntityComponent : public IEntityUpdateable
+class IEntityUpdateable : public Refl::IReflectionObject
 {
-	GAFF_NO_COPY(EntityComponent);
-
 public:
-	EntityComponent(void) = default;
+	virtual ~IEntityUpdateable(void) {}
 
-	virtual bool init(void);
-	virtual void destroy(void);
-
-	Entity* getOwner(void) const;
-
-	void setEnableUpdate(bool enabled);
-	bool canUpdate(void) const;
-
-private:
-	enum class Flag
-	{
-		UpdateEnabled,
-
-		Count
-	};
-
-	Entity* _owner = nullptr;
-	Gaff::Flags<Flag> _flags;
-
-	friend class Entity;
-
-	SHIB_REFLECTION_CLASS_DECLARE(EntityComponent);
+	virtual void update(float /*dt*/) {}
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)

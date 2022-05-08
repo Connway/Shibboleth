@@ -236,7 +236,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Camera>(
 			_camera[camera_index],
-			[&](EntityID, const Camera& camera) -> void
+			[&](ECSEntityID, const Camera& camera) -> void
 			{
 				const auto devices = _render_mgr->getDevicesByTag(camera.device_tag);
 
@@ -668,7 +668,7 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 
 	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>(
 		job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index],
-		[&](EntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
+		[&](ECSEntityID /*id*/, const Position& obj_pos, const Rotation& obj_rot, const Scale& obj_scale) -> void
 		{
 			const Gleam::Vec3 euler_angles = obj_rot.value * Gaff::TurnsToRad;
 
@@ -754,7 +754,7 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 			job_data.rcs->_camera_position[camera_index],
 			job_data.rcs->_camera_rotation[camera_index],
 			job_data.rcs->_camera[camera_index],
-			[&](EntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
+			[&](ECSEntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
 			{
 				const auto devices = job_data.rcs->_render_mgr->getDevicesByTag(camera.device_tag);
 

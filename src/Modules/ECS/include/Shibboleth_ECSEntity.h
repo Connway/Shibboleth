@@ -27,12 +27,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-using EntityID = int32_t;
-constexpr EntityID EntityID_None = -1;
+using ECSEntityID = int32_t;
+constexpr ECSEntityID ECSEntityID_None = -1;
 
-constexpr bool ValidEntityID(EntityID id)
+// Negative IDs are not valid, as we use these as indices.
+constexpr bool ValidECSEntityID(ECSEntityID id)
 {
-	return id > EntityID_None;
+	return id > ECSEntityID_None;
 }
 
 NS_END

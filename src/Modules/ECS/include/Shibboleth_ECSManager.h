@@ -94,7 +94,7 @@ public:
 	}
 
 	template <class T>
-	const T* getComponentShared(EntityID id) const
+	const T* getComponentShared(ECSEntityID id) const
 	{
 		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
@@ -106,19 +106,19 @@ public:
 	}
 
 	template <class T>
-	T* getComponentShared(EntityID id)
+	T* getComponentShared(ECSEntityID id)
 	{
 		return reinterpret_cast<T*>(getComponentShared(id, Refl::Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	const void* getComponent(EntityID id) const
+	const void* getComponent(ECSEntityID id) const
 	{
 		return getComponent(id, Refl::Reflection<T>::GetHash());
 	}
 
 	template <class T>
-	void* getComponent(EntityID id)
+	void* getComponent(ECSEntityID id)
 	{
 		return getComponent(id, Refl::Reflection<T>::GetHash());
 	}
@@ -130,7 +130,7 @@ public:
 	}
 
 	template <class T>
-	bool hasComponent(EntityID id) const
+	bool hasComponent(ECSEntityID id) const
 	{
 		return hasComponent(id, Refl::Reflection<T>::GetHash());
 	}
@@ -184,59 +184,59 @@ public:
 	}
 
 	template <class... Components>
-	void removeSharedComponents(EntityID id, ArchetypeReferencePtr& out_ref)
+	void removeSharedComponents(ECSEntityID id, ArchetypeReferencePtr& out_ref)
 	{
 		out_ref = removeSharedComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void removeSharedComponents(EntityID id)
+	void removeSharedComponents(ECSEntityID id)
 	{
 		removeSharedComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void removeComponents(EntityID id, ArchetypeReferencePtr& out_ref)
+	void removeComponents(ECSEntityID id, ArchetypeReferencePtr& out_ref)
 	{
 		out_ref = removeComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void removeComponents(EntityID id)
+	void removeComponents(ECSEntityID id)
 	{
 		removeComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void addSharedComponents(EntityID id, ArchetypeReferencePtr& out_ref)
+	void addSharedComponents(ECSEntityID id, ArchetypeReferencePtr& out_ref)
 	{
 		out_ref = addSharedComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void addSharedComponents(EntityID id)
+	void addSharedComponents(ECSEntityID id)
 	{
 		addSharedComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void addComponents(EntityID id, ArchetypeReferencePtr& out_ref)
+	void addComponents(ECSEntityID id, ArchetypeReferencePtr& out_ref)
 	{
 		out_ref = addComponentsInternal<Components...>(id);
 	}
 
 	template <class... Components>
-	void addComponents(EntityID id)
+	void addComponents(ECSEntityID id)
 	{
 		addComponentsInternal<Components...>(id);
 	}
 
-	void modify(EntityID& id, ArchetypeModifier modifier, ArchetypeReferencePtr& out_ref)
+	void modify(ECSEntityID& id, ArchetypeModifier modifier, ArchetypeReferencePtr& out_ref)
 	{
 		out_ref = modifyInternal(id, modifier);
 	}
 
-	void modify(EntityID& id, ArchetypeModifier modifier)
+	void modify(ECSEntityID& id, ArchetypeModifier modifier)
 	{
 		modifyInternal(id, modifier);
 	}
@@ -307,44 +307,44 @@ public:
 	void removeArchetype(Gaff::Hash64 archetype);
 
 	const ECSArchetype& getArchetype(Gaff::Hash64 archetype) const;
-	const ECSArchetype& getArchetype(EntityID id) const;
+	const ECSArchetype& getArchetype(ECSEntityID id) const;
 
 	ArchetypeReferencePtr getArchetypeReference(Gaff::Hash64 archetype);
-	ArchetypeReferencePtr getArchetypeReference(EntityID id);
+	ArchetypeReferencePtr getArchetypeReference(ECSEntityID id);
 
-	EntityID createEntity(const ECSArchetype& archetype);
-	EntityID createEntity(Gaff::Hash64 archetype);
+	ECSEntityID createEntity(const ECSArchetype& archetype);
+	ECSEntityID createEntity(Gaff::Hash64 archetype);
 
-	EntityID loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader);
-	EntityID loadEntity(Gaff::Hash64 archetype, const ISerializeReader& reader);
+	ECSEntityID loadEntity(const ECSArchetype& archetype, const ISerializeReader& reader);
+	ECSEntityID loadEntity(Gaff::Hash64 archetype, const ISerializeReader& reader);
 
-	void destroyEntity(EntityID id);
+	void destroyEntity(ECSEntityID id);
 
 	const void* getComponentShared(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component) const;
 	const void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component) const;
-	const void* getComponentShared(EntityID id, const Refl::IReflectionDefinition& component) const;
-	const void* getComponentShared(EntityID id, Gaff::Hash64 component) const;
+	const void* getComponentShared(ECSEntityID id, const Refl::IReflectionDefinition& component) const;
+	const void* getComponentShared(ECSEntityID id, Gaff::Hash64 component) const;
 
 	void* getComponentShared(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component);
 	void* getComponentShared(Gaff::Hash64 archetype, Gaff::Hash64 component);
-	void* getComponentShared(EntityID id, const Refl::IReflectionDefinition& component);
-	void* getComponentShared(EntityID id, Gaff::Hash64 component);
+	void* getComponentShared(ECSEntityID id, const Refl::IReflectionDefinition& component);
+	void* getComponentShared(ECSEntityID id, Gaff::Hash64 component);
 
-	const void* getComponent(EntityID id, const Refl::IReflectionDefinition& component) const;
-	const void* getComponent(EntityID id, Gaff::Hash64 component) const;
-	void* getComponent(EntityID id, const Refl::IReflectionDefinition& component);
-	void* getComponent(EntityID id, Gaff::Hash64 component);
+	const void* getComponent(ECSEntityID id, const Refl::IReflectionDefinition& component) const;
+	const void* getComponent(ECSEntityID id, Gaff::Hash64 component) const;
+	void* getComponent(ECSEntityID id, const Refl::IReflectionDefinition& component);
+	void* getComponent(ECSEntityID id, Gaff::Hash64 component);
 
 	bool hasComponent(Gaff::Hash64 archetype, const Refl::IReflectionDefinition& component) const;
 	bool hasComponent(Gaff::Hash64 archetype, Gaff::Hash64 component) const;
-	bool hasComponent(EntityID id, const Refl::IReflectionDefinition& component) const;
-	bool hasComponent(EntityID id, Gaff::Hash64 component) const;
+	bool hasComponent(ECSEntityID id, const Refl::IReflectionDefinition& component) const;
+	bool hasComponent(ECSEntityID id, Gaff::Hash64 component) const;
 
 	int32_t getComponentIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
-	int32_t getComponentIndex(EntityID id) const;
+	int32_t getComponentIndex(ECSEntityID id) const;
 
 	int32_t getPageIndex(const ECSQueryResult& query_result, int32_t entity_index) const;
-	int32_t getPageIndex(EntityID id) const;
+	int32_t getPageIndex(ECSEntityID id) const;
 
 	const void* getComponent(const ECSQueryResult& query_result, int32_t entity_index) const;
 	void* getComponent(const ECSQueryResult& query_result, int32_t entity_index);
@@ -355,7 +355,7 @@ public:
 	const ECSSceneResourcePtr& getCurrentScene(void) const;
 	void switchScene(const ECSSceneResourcePtr scene);
 
-	bool isValid(EntityID id) const;
+	bool isValid(ECSEntityID id) const;
 
 	const ECSArchetype& getEmptyArchetype(void) const;
 
@@ -382,7 +382,7 @@ private:
 		int32_t page_size = static_cast<int32_t>(EA_KIBIBYTE(64));
 
 		Vector< UniquePtr<EntityPage> > pages{ ProxyAllocator("ECS") };
-		Vector<EntityID> entity_ids{ ProxyAllocator("ECS") };
+		Vector<ECSEntityID> entity_ids{ ProxyAllocator("ECS") };
 		Vector<int32_t> free_indices{ ProxyAllocator("ECS") };
 		Vector<int32_t> queries{ ProxyAllocator("ECS") };
 	};
@@ -400,18 +400,18 @@ private:
 	Vector<ECSQuery> _queries{ ProxyAllocator("ECS") };
 	Vector<Entity> _entities{ ProxyAllocator("ECS") };
 
-	Vector<EntityID> _free_ids{ ProxyAllocator("ECS") };
-	EntityID _next_id = 0;
+	Vector<ECSEntityID> _free_ids{ ProxyAllocator("ECS") };
+	ECSEntityID _next_id = 0;
 
 	ECSArchetypeResourcePtr _empty_arch_res;
 	ECSSceneResourcePtr _curr_scene;
 
 	//bool loadFile(const char* file_name, IFile* file);
-	void destroyEntityInternal(EntityID id, bool change_ref_count);
-	void migrate(EntityID id, Gaff::Hash64 new_archetype);
-	int32_t allocateIndex(EntityData& data, EntityID id);
+	void destroyEntityInternal(ECSEntityID id, bool change_ref_count);
+	void migrate(ECSEntityID id, Gaff::Hash64 new_archetype);
+	int32_t allocateIndex(EntityData& data, ECSEntityID id);
 
-	ArchetypeReference* modifyInternal(EntityID& id, ArchetypeModifier modifier);
+	ArchetypeReference* modifyInternal(ECSEntityID& id, ArchetypeModifier modifier);
 	ArchetypeReference* addArchetypeInternal(ECSArchetype&& archetype);
 
 	template <class... Components>
@@ -427,21 +427,21 @@ private:
 	ArchetypeReference* addComponentsInternal(Gaff::Hash64 archetype_hash);
 
 	template <class... Components>
-	ArchetypeReference* removeSharedComponentsInternal(EntityID id);
+	ArchetypeReference* removeSharedComponentsInternal(ECSEntityID id);
 
 	template <class... Components>
-	ArchetypeReference* removeComponentsInternal(EntityID id);
+	ArchetypeReference* removeComponentsInternal(ECSEntityID id);
 
 	template <class... Components>
-	ArchetypeReference* addSharedComponentsInternal(EntityID id);
+	ArchetypeReference* addSharedComponentsInternal(ECSEntityID id);
 
 	template <class... Components>
-	ArchetypeReference* addComponentsInternal(EntityID id);
+	ArchetypeReference* addComponentsInternal(ECSEntityID id);
 
 	template <class Callback, size_t index, class ComponentFirst, class... ComponentsRest, size_t array_size, class... ComponentsPrev>
 	void iterateInternalHelper(
 		Callback&& callback,
-		EntityID entity_id,
+		ECSEntityID entity_id,
 		int32_t entity_index,
 		const ECSQueryResult* (&query_results)[array_size],
 		ComponentsPrev&&... prev_comps

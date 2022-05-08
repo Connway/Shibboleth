@@ -41,7 +41,7 @@ public:
 	static void SetInternal(void* component, int32_t page_index, const Camera& value);
 	static Camera GetInternal(const void* component, int32_t page_index);
 
-	static void Destructor(EntityID id, void* component, int32_t entity_index);
+	static void Destructor(ECSEntityID id, void* component, int32_t entity_index);
 
 	static Gleam::Vec4SIMD GetVerticalFOVDegrees(const void* component, int32_t page_index);
 	static Gleam::Vec4SIMD GetVerticalFOV(const void* component, int32_t page_index);

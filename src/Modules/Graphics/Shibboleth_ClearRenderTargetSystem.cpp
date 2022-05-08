@@ -64,7 +64,7 @@ void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
 	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 		_ecs_mgr->iterate<Camera>(
 			_camera[camera_index],
-			[&](EntityID id, const Camera& camera) -> void
+			[&](ECSEntityID id, const Camera& camera) -> void
 			{
 				const auto* const devices = _render_mgr->getDevicesByTag(camera.device_tag);
 

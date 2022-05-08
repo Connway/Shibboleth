@@ -30,7 +30,17 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class Entity : public Refl::IReflectionObject
+using EntityID = int32_t;
+constexpr EntityID EntityID_None = -1;
+
+// Negative IDs are not valid, as we use these as indices.
+constexpr bool ValidEntityID(EntityID id)
+{
+	return id > EntityID_None;
+}
+
+
+class Entity : public IEntityUpdateable
 {
 	GAFF_NO_COPY(Entity);
 
@@ -112,6 +122,7 @@ public:
 
 	Entity(void) = default;
 	~Entity(void) = default;
+	Entity(EntityID id);
 
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	void addComponent(const Refl::IReflectionDefinition& ref_def);
@@ -134,11 +145,16 @@ public:
 	EntityComponent& getComponent(int32_t index);
 
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
-
 	int32_t getNumComponents(void) const;
+
+	EntityID getID(void) const;
+	void setID(EntityID id);
+
+	void update(float dt) override;
 
 private:
 	Vector< UniquePtr<EntityComponent> > _components;
+	EntityID _id = EntityID_None;
 
 	SHIB_REFLECTION_CLASS_DECLARE(Entity);
 };
