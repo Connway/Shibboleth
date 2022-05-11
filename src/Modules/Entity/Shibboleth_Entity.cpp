@@ -228,7 +228,7 @@ void Entity::updateAfter(Entity& entity)
 	entity._entities_dependent_on_me.emplace(it_other, _id);
 	_update_after.emplace(it_dep, id);
 
-	//_entity_mgr.markDirty(entity);
+	_entity_mgr.markDirty(entity);
 }
 
 void Entity::update(float dt)
