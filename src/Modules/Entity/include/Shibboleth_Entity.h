@@ -45,13 +45,6 @@ constexpr bool ValidEntityID(EntityID id)
 class Entity : public IEntityUpdateable
 {
 public:
-	enum class Flag
-	{
-		UpdateNodeDirty,
-
-		Count
-	};
-
 	template <class T>
 	bool removeComponents(void)
 	{
@@ -121,6 +114,9 @@ public:
 	Entity(EntityManager& entity_mgr);
 	~Entity(void) = default;
 
+	virtual bool init(void);
+	void update(float dt) override;
+
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	void addComponent(const Refl::IReflectionDefinition& ref_def);
 	void addComponent(const Vector<EntityComponent*>& components);
@@ -150,15 +146,27 @@ public:
 	//void updateAfter(EntityComponent& component);
 	void updateAfter(Entity& entity);
 
-	void update(float dt) override;
+	void setEnableUpdate(bool enabled);
+	bool canUpdate(void) const;
+
+protected:
+	EntityManager& _entity_mgr;
 
 private:
+	enum class Flag
+	{
+		UpdateEnabled,
+
+		Count
+	};
+
 	Vector< UniquePtr<EntityComponent> > _components;
 
-	Vector<EntityID> _entities_dependent_on_me;
-	Vector<EntityID> _update_after;
+	Vector<EntityComponentID> _dependent_on_me_components;
+	Vector<EntityID> _dependent_on_me_entities;
+	Vector<EntityComponentID> _update_after_components;
+	Vector<EntityID> _update_after_entities;
 
-	EntityManager& _entity_mgr;
 	EntityID _id = EntityID_None;
 
 	Gaff::Flags<Flag> _flags;

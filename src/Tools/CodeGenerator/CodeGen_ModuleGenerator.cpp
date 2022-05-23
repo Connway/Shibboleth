@@ -26,8 +26,11 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 #include <argparse.hpp>
-#include <fmt/core.h>
 #include <filesystem>
+
+MSVC_DISABLE_WARNING_PUSH(4189)
+#include <fmt/core.h>
+MSVC_DISABLE_WARNING_POP()
 
 static constexpr const char/*8_t*/* k_gen_module_code =
 /*u8*/R"(#include "Gen_ReflectionInit.h"

@@ -113,4 +113,24 @@ void Sort(Vector<T, Allocator>& vec)
 	return eastl::sort(vec.begin(), vec.end());
 }
 
+template <class T, class Allocator>
+bool EmplaceBackUnique(Vector<T, Allocator>& vec, T&& value)
+{
+	if (Find(vec, value) == vec.end()) {
+		vec.emplace_back(std::move(value));
+	}
+
+	return false;
+}
+
+template <class T, class Allocator>
+bool PushBackUnique(Vector<T, Allocator>& vec, const T& value)
+{
+	if (Find(vec, value) == vec.end()) {
+		vec.push_back(value);
+	}
+
+	return false;
+}
+
 NS_END

@@ -36,6 +36,23 @@ Entity::Entity(EntityManager& entity_mgr):
 {
 }
 
+bool Entity::init(void)
+{
+	for (auto& comp : _components) {
+		if (!comp->init()) {
+			// $TODO: Log error.
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void Entity::update(float dt)
+{
+	GAFF_REF(dt);
+}
+
 void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
 {
 	for (const Refl::IReflectionDefinition* ref_def : ref_defs) {
@@ -208,32 +225,37 @@ void Entity::setID(EntityID id)
 
 void Entity::updateAfter(Entity& entity)
 {
-	const auto it_other = Gaff::LowerBound(entity._entities_dependent_on_me, _id);
+	const auto it_other = Gaff::LowerBound(entity._dependent_on_me_entities, _id);
 
 	// We are already dependent on this entity.
-	if (it_other != entity._entities_dependent_on_me.end() && *it_other == _id) {
+	if (it_other != entity._dependent_on_me_entities.end() && *it_other == _id) {
 		// $TODO: Log error.
 		return;
 	}
 
 	const EntityID id = entity.getID();
-	const auto it_dep = Gaff::LowerBound(_update_after, id);
+	const auto it_dep = Gaff::LowerBound(_update_after_entities, id);
 
 	// We are already in the dependency list.
-	if (it_dep != _update_after.end() && *it_dep == id) {
+	if (it_dep != _update_after_entities.end() && *it_dep == id) {
 		// $TODO: Log warning.
 		return;
 	}
 
-	entity._entities_dependent_on_me.emplace(it_other, _id);
-	_update_after.emplace(it_dep, id);
+	entity._dependent_on_me_entities.emplace(it_other, _id);
+	_update_after_entities.emplace(it_dep, id);
 
-	_entity_mgr.markDirty(entity);
+	_entity_mgr.updateAfter(*this, entity);
 }
 
-void Entity::update(float dt)
+void Entity::setEnableUpdate(bool enabled)
 {
-	GAFF_REF(dt);
+	_flags.set(enabled, Flag::UpdateEnabled);
+}
+
+bool Entity::canUpdate(void) const
+{
+	return _flags.testAll(Flag::UpdateEnabled);
 }
 
 NS_END

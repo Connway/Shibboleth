@@ -43,6 +43,16 @@ Entity* EntityComponent::getOwner(void) const
 	return _owner;
 }
 
+EntityComponentID EntityComponent::getID(void) const
+{
+	return _id;
+}
+
+void EntityComponent::setID(EntityComponentID id)
+{
+	_id = id;
+}
+
 void EntityComponent::setEnableUpdate(bool enabled)
 {
 	_flags.set(enabled, Flag::UpdateEnabled);
