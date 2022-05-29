@@ -27,13 +27,5 @@ namespace argparse
 	class ArgumentParser;
 }
 
-constexpr const char* const k_arg_module_short = "-m";
-constexpr const char* const k_arg_module = "--module";
-constexpr const char* const k_arg_tool_short = "-t";
-constexpr const char* const k_arg_tool = "--tool";
-constexpr const char* const k_arg_no_write_short = "-nwie";
-constexpr const char* const k_arg_no_write = "--no_write_if_empty";
-
-
-void ReflectionHeaderGenerator_AddArguments(argparse::ArgumentParser& program);
-int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program);
+void Generate_AddArguments(argparse::ArgumentParser& program);
+int Generate_Run(const argparse::ArgumentParser& program);

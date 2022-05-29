@@ -191,6 +191,7 @@
     <None Include="..\..\..\..\src\Tests\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\CodeGenerator\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\JSONToMessagePack\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tools\ProjectBuild\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\ReflectionHashDump\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -160,6 +160,9 @@
     <Filter Include="Tools\JSONToMessagePack">
       <UniqueIdentifier>{E6FD6473-5235-AD0A-5B3F-112EC7F5D303}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tools\ProjectBuild">
+      <UniqueIdentifier>{6CA99041-588D-5197-C1ED-4BEAADF03B19}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Tools\ReflectionHashDump">
       <UniqueIdentifier>{2A9FE98B-16C4-380C-3F0F-1E9C2B93372A}</UniqueIdentifier>
     </Filter>
@@ -353,6 +356,9 @@
     </None>
     <None Include="..\..\..\..\src\Tools\JSONToMessagePack\project_generator.lua">
       <Filter>Tools\JSONToMessagePack</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tools\ProjectBuild\project_generator.lua">
+      <Filter>Tools\ProjectBuild</Filter>
     </None>
     <None Include="..\..\..\..\src\Tools\ReflectionHashDump\project_generator.lua">
       <Filter>Tools\ReflectionHashDump</Filter>

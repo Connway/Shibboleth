@@ -20,35 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "CodeGen_ReflectionHeaderGenerator.h"
-#include "CodeGen_ModuleGenerator.h"
+#include "ProjBuild_Generate.h"
 #include <Gaff_String.h>
-#include <Gaff_Utils.h>
 #include <argparse.hpp>
 
 int main(int argc, const char** argv)
 {
-	argparse::ArgumentParser program("CodeGenerator");
-
-	program.add_argument("--license_file", "-lf")
-		.help("(Optional) File containing the license text to put at the top of generated files.");
+	argparse::ArgumentParser program("ProjectBuild");
 
 	program.add_argument("--root_path", "-rp")
 		.help("(Optional) The root directory of the project.")
 		.default_value<std::string>("../..");
 
 	program.add_argument("action")
-		.help("Generate action to perform. Examples: module_header, tool_header, static_header");
+		.help("Build action to perform. Ex: generate, preprocessor, compile, link")
+		.default_value<std::string>("all");
 
 
-	ReflectionHeaderGenerator_AddArguments(program);
-	ModuleGenerator_AddArguments(program);
+	Generate_AddArguments(program);
+	//PreProc_AddArguments(program);
+	//Compile_AddArguments(program);
+	//Link_AddArguments(program);
 
 
 	try {
 		program.parse_args(argc, argv);
 
-	} catch(const std::runtime_error& err) {
+	} catch (const std::runtime_error& err) {
 		std::cerr << err.what() << std::endl;
 		std::cerr << program;
 		return -1;
@@ -60,10 +58,24 @@ int main(int argc, const char** argv)
 
 	const std::string action = program.get("action");
 
-	if (action == "module_header" || action == "tool_header" || action == "static_header") {
-		return ReflectionHeaderGenerator_Run(program);
-	} else if (action == "create_module" || action == "create_tool") {
-		return ModuleGenerator_Run(program);
+	if (action == "generate") {
+		Generate_Run(program);
+
+	} else if (action == "preprocessor") {
+		//PreProc_Run(program);
+
+	} else if (action == "compile") {
+		//Compile_Run(program);
+
+	} else if (action == "link") {
+		//Link_Run(program);
+
+	} else if (action == "all") {
+		Generate_Run(program);
+		//PreProc_Run(program);
+		//Compile_Run(program);
+		//Link_Run(program);
+
 	} else {
 		std::cout << program;
 	}

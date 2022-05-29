@@ -225,7 +225,7 @@ static int WriteFile(
 	const std::string module_name = (program.is_used(k_arg_module)) ?
 		program.get(k_arg_module) :
 		(program.is_used(k_arg_tool)) ?
-		program.get(k_arg_module) :
+		program.get(k_arg_tool) :
 		"Engine";
 
 	const std::string final_text = GetLicenseText(program) + fmt::format(
@@ -253,6 +253,10 @@ static int WriteFile(
 		if (!strcmp(current_gen_file_text.data(), final_text.data())) {
 			return 0;
 		}
+
+	// File does not exist and we are told to not create the file if we have no reflection classes.
+	} else if (program.get<bool>(k_arg_no_write) && file_class_map.empty()) {
+		return 0;
 	}
 
 	if (!gen_file.open(gen_file_path.data(), Gaff::File::OpenMode::Write)) {
@@ -467,6 +471,11 @@ void ReflectionHeaderGenerator_AddArguments(argparse::ArgumentParser& program)
 
 	program.add_argument(k_arg_tool, k_arg_tool_short)
 		.help("The tool to generate files for.");
+
+	program.add_argument(k_arg_no_write, k_arg_no_write_short)
+		.help("If no reflected classes are found, do not create the generated header.")
+		.default_value(false)
+		.implicit_value(true);
 }
 
 int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program)
