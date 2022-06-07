@@ -139,32 +139,48 @@ function NewDeleteLinkFix()
 	filter {}
 end
 
-function GetActionLocation()
-	return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
+function GetActionLocation(no_preproc)
+	if not no_preproc and _OPTIONS["generate-preproc"] then
+		return "../../../.generated/preproc/" .. os.target() .. "/" .. _ACTION
+	else
+		return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
+	end
 end
 
 function GetDependenciesLocation()
-	return GetActionLocation() .. "/dependencies"
+	return GetActionLocation(true) .. "/dependencies"
 end
 
 function GetFrameworkLocation()
-	return GetActionLocation() .. "/frameworks"
+	return GetActionLocation(true) .. "/frameworks"
 end
 
 function GetModulesLocation()
-	return "../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
+	if _OPTIONS["generate-preproc"] then
+		return "../.generated/preproc/" .. os.target() .. "/" .. _ACTION .. "/modules"
+	else
+		return "../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
+	end
 end
 
 function GetEngineLocation()
-	return GetActionLocation() .. "/engine"
+	return GetActionLocation(false) .. "/engine"
 end
 
 function GetToolsLocation()
-	return GetActionLocation() .. "/tools"
+	return GetActionLocation(false) .. "/tools"
 end
 
 function GetTestsLocation()
 	return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+end
+
+function GetModulesSourceDirectory(module_name)
+	if _OPTIONS["generate-preproc"] then
+		return "../.generated/preproc/src/Modules/" .. module_name .. "/"
+	else
+		return "../src/Modules/" .. module_name .. "/"
+	end
 end
 
 function GetModulesDirectory(module_name)
@@ -221,4 +237,49 @@ function QtSettings(modules, base_dir)
 	excludes { "**/moc*.*" }
 
 	QtSettingsModule(modules, base_dir)
+end
+
+function ModuleProject(module_name)
+	project(module_name)
+		--if _OPTIONS["generate-preproc"] then
+			kind "StaticLib"
+
+		--[[else
+			dependson { "RunProjectBuild" }
+			kind "Makefile"
+
+			if _ACTION == "vs2022" then
+				-- $TODO: Use ProjectBuild for this.
+				local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2022/Shibboleth-Preproc.sln"
+				local msbuild = "msbuild \"" .. solution .. "\" /p:Configuration=%{cfg.buildcfg}"
+				local vcvars = "vcvarsall.bat amd64"
+
+				local cwd = os.getcwd()
+				os.chdir("C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer")
+
+				local vs_path, _ = os.outputof("vswhere.exe -latest -property installationPath") .. "\\VC\\Auxiliary\\Build"
+				os.chdir(cwd)
+
+				vcvars = "\"" .. vs_path .. "\\" .. vcvars .. "\""
+
+				buildcommands
+				{
+					vcvars .. " && " .. msbuild .. " /t:" .. module_name
+				}
+
+				cleancommands
+				{
+					vcvars .. " && " .. msbuild .. " /t:" .. module_name .. ":Clean"
+				}
+
+			elseif _ACTION == "gmake2" then
+				buildcommands
+				{
+				}
+
+				cleancommands
+				{
+				}
+			end
+		end--]]
 end

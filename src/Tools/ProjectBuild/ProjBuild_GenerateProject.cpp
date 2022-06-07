@@ -20,12 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "ProjBuild_GenerateProject.h"
+#include "ProjBuild_Errors.h"
+#include <Gaff_Utils.h>
+//#include <Gaff_File.h>
+#include <argparse.hpp>
+//#include <filesystem>
 
-namespace argparse
+void GenerateProject_AddArguments(argparse::ArgumentParser& /*program*/)
 {
-	class ArgumentParser;
 }
 
-void Generate_AddArguments(argparse::ArgumentParser& program);
-int Generate_Run(const argparse::ArgumentParser& program);
+int GenerateProject_Run(const argparse::ArgumentParser& /*program*/)
+{
+	static constexpr const char* const k_preproc_modules_path = ".generated/preproc/src/Modules";
+	static constexpr const char* const k_preproc_tools_path = ".generated/preproc/src/Tools";
+	static constexpr const char* const k_preproc_path = ".generated/preproc";
+	static constexpr const char* const k_modules_path = "src/Modules";
+	static constexpr const char* const k_tools_path = "src/Tools";
+
+	if (!Gaff::CreateDir(k_preproc_modules_path, 0777)) {
+		return static_cast<int>(Error::PreProc_FailedToCreateModulesDir);
+	}
+
+	if (!Gaff::CreateDir(k_preproc_tools_path, 0777)) {
+		return static_cast<int>(Error::PreProc_FailedToCreateToolsDir);
+	}
+
+	return static_cast<int>(Error::Success);
+}

@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ProjBuild_Generate.h"
+#include "ProjBuild_GenerateHeaders.h"
+#include "ProjBuild_GenerateProject.h"
+#include "ProjBuild_Errors.h"
 #include <Gaff_String.h>
 #include <argparse.hpp>
 
@@ -33,12 +35,13 @@ int main(int argc, const char** argv)
 		.default_value<std::string>("../..");
 
 	program.add_argument("action")
-		.help("Build action to perform. Ex: generate, preprocessor, compile, link")
+		.help("Build action to perform. Ex: generate_headers, generate_project, preprocessor, compile, link")
 		.default_value<std::string>("all");
 
 
-	Generate_AddArguments(program);
+	GenerateHeaders_AddArguments(program);
 	//PreProc_AddArguments(program);
+	GenerateProject_AddArguments(program);
 	//Compile_AddArguments(program);
 	//Link_AddArguments(program);
 
@@ -58,27 +61,43 @@ int main(int argc, const char** argv)
 
 	const std::string action = program.get("action");
 
-	if (action == "generate") {
-		Generate_Run(program);
+	if (action == "generate_headers") {
+		return GenerateHeaders_Run(program);
 
 	} else if (action == "preprocessor") {
-		//PreProc_Run(program);
+		//return PreProc_Run(program);
+
+	} else if (action == "generate_project") {
+		return GenerateProject_Run(program);
 
 	} else if (action == "compile") {
-		//Compile_Run(program);
+		//return Compile_Run(program);
 
 	} else if (action == "link") {
-		//Link_Run(program);
+		//return Link_Run(program);
 
 	} else if (action == "all") {
-		Generate_Run(program);
-		//PreProc_Run(program);
-		//Compile_Run(program);
-		//Link_Run(program);
+		using ActionFunction = int (*)(const argparse::ArgumentParser&);
+		constexpr ActionFunction k_action_order[] =
+		{
+			GenerateHeaders_Run,
+			//PreProc_Run,
+			GenerateProject_Run,
+			//Compile_Run,
+			//Link_Run,
+		};
+
+		for (ActionFunction func : k_action_order) {
+			const int ret = func(program);
+
+			if (ret) {
+				return ret;
+			}
+		}
 
 	} else {
 		std::cout << program;
 	}
 
-	return 0;
+	return static_cast<int>(Error::Success);
 }

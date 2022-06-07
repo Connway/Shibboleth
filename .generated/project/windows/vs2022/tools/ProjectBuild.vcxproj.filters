@@ -6,12 +6,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Generate.h">
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Errors.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_GenerateHeaders.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_GenerateProject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_PreProc.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_Generate.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateHeaders.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateProject.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_PreProc.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjectBuild.cpp" />
   </ItemGroup>
 </Project>

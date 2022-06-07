@@ -1,4 +1,4 @@
-project "ProjectBuild"
+project "Preprocessor"
 	location(GetToolsLocation())
 
 	kind "ConsoleApp"
@@ -23,7 +23,6 @@ project "ProjectBuild"
 		"EASTL"
 	}
 
-	dependson { "CodeGenerator", "Preprocessor" }
 	dependson(deps)
 	links(deps)
 
@@ -37,26 +36,4 @@ project "ProjectBuild"
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
-	}
-
-project "RunProjectBuild"
-	location(GetToolsLocation())
-
-	kind "Makefile"
-
-	dependson("ProjectBuild")
-
-	rebuildcommands
-	{
-	}
-
-	buildcommands
-	{
-		"{CHDIR} ../../../../../workingdir/tools",
-		"echo \"Generating Module, Tool, and Engine Headers...\"",
-		"ProjectBuild%{cfg.buildtarget.suffix} generate_headers"
-	}
-
-	cleancommands
-	{
 	}

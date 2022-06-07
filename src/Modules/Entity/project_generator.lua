@@ -1,13 +1,13 @@
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("Entity")
 	local base_dir = GetModulesDirectory("Entity")
 
-	project "Entity"
+	ModuleProject "Entity"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
 		ModuleGen("Entity")
@@ -25,7 +25,6 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
-
 
 	project "EntityModule"
 		location(GetModulesLocation())

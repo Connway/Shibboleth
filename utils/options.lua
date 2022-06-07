@@ -15,3 +15,9 @@ newoption
 	trigger = "wayland",
 	description = "On Linux, use Wayland instead of X11 window system."
 }
+
+newoption
+{
+	trigger = "generate-preproc",
+	description = "Generate the preprocessor project."
+}

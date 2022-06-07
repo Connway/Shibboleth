@@ -20,15 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ProjBuild_Generate.h"
+#include "ProjBuild_GenerateHeaders.h"
+#include "ProjBuild_Errors.h"
 #include <Gaff_Utils.h>
-#include <Gaff_File.h>
 #include <argparse.hpp>
 #include <filesystem>
-
-MSVC_DISABLE_WARNING_PUSH(4189)
-#include <fmt/core.h>
-MSVC_DISABLE_WARNING_POP()
 
 static constexpr const char* const k_code_gen_name = "CodeGenerator" TARGET_SUFFIX;
 
@@ -47,7 +43,7 @@ static int RunStaticCodeGen(const argparse::ArgumentParser& program)
 	Gaff::SetWorkingDir(curr_working_dir);
 
 	if (ret) {
-		return -3;
+		return static_cast<int>(Error::GenerateHeaders_FailedToGenerateStatic);
 	}
 
 	return 0;
@@ -71,7 +67,7 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 	Gaff::GetWorkingDir(curr_working_dir, sizeof(curr_working_dir));
 	Gaff::SetWorkingDir(u8"workingdir/tools");
 
-	int ret = 0;
+	int ret = static_cast<int>(Error::Success);
 
 	for (const std::filesystem::path& module_path : directories) {
 		std::wcout << L"Generating Reflection Header for '" << module_path.filename().c_str() << '\'' << std::endl;
@@ -91,7 +87,7 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 		ret = std::system(code_gen_cmd.c_str());
 
 		if (ret) {
-			ret = (is_tool) ? -2 : -1;
+			ret = static_cast<int>((is_tool) ? Error::GenerateHeaders_FailedToGenerateTool : Error::GenerateHeaders_FailedToGenerateModule);
 			break;
 		}
 	}
@@ -100,11 +96,11 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 	return ret;
 }
 
-void Generate_AddArguments(argparse::ArgumentParser& /*program*/)
+void GenerateHeaders_AddArguments(argparse::ArgumentParser& /*program*/)
 {
 }
 
-int Generate_Run(const argparse::ArgumentParser& program)
+int GenerateHeaders_Run(const argparse::ArgumentParser& program)
 {
 	static constexpr const char* const k_modules_path = "src/Modules";
 	static constexpr const char* const k_tools_path = "src/Tools";

@@ -50,9 +50,19 @@ if is_project_action == true then
 		funcs.GenerateProject()
 	end
 
-	workspace "Shibboleth"
+	local workspace_name = "Shibboleth"
+
+	if _OPTIONS["generate-preproc"] then
+		workspace_name = "Shibboleth-Preproc"
+	end
+
+	workspace(workspace_name)
 		if _ACTION then
-			location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
+			if _OPTIONS["generate-preproc"] then
+				location("../.generated/preproc/" .. os.target() .. "/" .. _ACTION)
+			else
+				location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
+			end
 		end
 
 		configurations(configs)
