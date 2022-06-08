@@ -27,11 +27,11 @@ THE SOFTWARE.
 #include <argparse.hpp>
 //#include <filesystem>
 
-void PreProc_AddArguments(argparse::ArgumentParser& /*program*/)
+void Preproc_AddArguments(argparse::ArgumentParser& /*program*/)
 {
 }
 
-int PreProc_Run(const argparse::ArgumentParser& /*program*/)
+int Preproc_Run(const argparse::ArgumentParser& /*program*/)
 {
 	static constexpr const char* const k_dependencies_dir = "../../Dependencies";
 	static constexpr const char* const k_frameworks_dir = "../../Frameworks";
@@ -43,11 +43,11 @@ int PreProc_Run(const argparse::ArgumentParser& /*program*/)
 	//static constexpr const char* const k_tools_path = "src/Tools";
 
 	//if (!Gaff::CreateDir(k_preproc_modules_path, 0777)) {
-	//	return static_cast<int>(Error::PreProc_FailedToCreateModulesDir);
+	//	return static_cast<int>(Error::Preproc_FailedToCreateModulesDir);
 	//}
 
 	//if (!Gaff::CreateDir(k_preproc_tools_path, 0777)) {
-	//	return static_cast<int>(Error::PreProc_FailedToCreateToolsDir);
+	//	return static_cast<int>(Error::Preproc_FailedToCreateToolsDir);
 	//}
 
 	return static_cast<int>(Error::Success);

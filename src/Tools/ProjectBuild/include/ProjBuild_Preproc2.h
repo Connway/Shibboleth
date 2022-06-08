@@ -27,5 +27,5 @@ namespace argparse
 	class ArgumentParser;
 }
 
-void PreProc_AddArguments(argparse::ArgumentParser& program);
-int PreProc_Run(const argparse::ArgumentParser& program);
+void Preproc_AddArguments(argparse::ArgumentParser& program);
+int Preproc_Run(const argparse::ArgumentParser& program);
