@@ -59,7 +59,7 @@ if is_project_action == true then
 	workspace(workspace_name)
 		if _ACTION then
 			if _OPTIONS["generate-preproc"] then
-				location("../.generated/preproc/" .. os.target() .. "/" .. _ACTION)
+				location("../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION)
 			else
 				location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
 			end
@@ -75,32 +75,36 @@ if is_project_action == true then
 		local engine_generators = os.matchfiles("../src/Engine/**/project_generator.lua")
 		local tools_generators = os.matchfiles("../src/Tools/**/project_generator.lua")
 
-		group "Dependencies"
+		Group "Dependencies"
 		table.foreachi(dependency_generators, RunFile)
 
-		group "Frameworks"
+		Group "Frameworks"
 		table.foreachi(framework_generators, RunFile)
 
-		group "Core"
+		Group "Core"
 		table.foreachi(engine_generators, RunFile)
 
-		group "Modules"
+		Group "Modules"
 		table.foreachi(module_generators, GenerateModules)
 
-		group "Tools"
+		Group "Tools"
 		table.foreachi(tools_generators, RunFile)
 
-		group "Tests"
-		dofile("../src/Tests/project_generator.lua")
+		if _OPTIONS["generate-preproc"] then
+			group "Tests"
+			dofile("../src/Tests/project_generator.lua")
+		end
 
-		if _ACTION ~= "gmake2" then
-			group "Project Files"
-				project "Generators"
-					kind "None"
-					files { "../src/**.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
+		if not _OPTIONS["generate-preproc"] then
+			if _ACTION ~= "gmake2" then
+				group "Project Files"
+					project "Generators"
+						kind "None"
+						files { "../src/**.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
 
-				project "Utils"
-					kind "None"
-					files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
+					project "Utils"
+						kind "None"
+						files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
+			end
 		end
 end

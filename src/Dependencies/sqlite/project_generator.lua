@@ -1,4 +1,4 @@
-group "Dependencies/Unused By Engine"
+Group "Dependencies/Unused By Engine"
 
 project "sqlite"
 	location(GetDependenciesLocation())
@@ -16,4 +16,4 @@ project "sqlite"
 
 	SetupConfigMap()
 
-group "Dependencies"
+Group "Dependencies"

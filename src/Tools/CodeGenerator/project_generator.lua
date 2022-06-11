@@ -1,5 +1,5 @@
 project "CodeGenerator"
-	location(GetToolsLocation())
+	location(GetToolsLocation(true))
 
 	kind "ConsoleApp"
 	debugdir "../../../workingdir/tools"

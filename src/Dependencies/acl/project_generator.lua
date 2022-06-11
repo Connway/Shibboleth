@@ -2,7 +2,7 @@ if _ACTION == "gmake2" then
 	return
 end
 
-group "Dependencies/Unused By Engine"
+Group "Dependencies/Unused By Engine"
 
 project "acl"
 	location(GetDependenciesLocation())
@@ -20,4 +20,4 @@ project "acl"
 
 	SetupConfigMap()
 
-group "Dependencies"
+Group "Dependencies"

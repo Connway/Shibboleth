@@ -1,4 +1,4 @@
-group "Dependencies/Unused By Engine"
+Group "Dependencies/Unused By Engine"
 
 project "capstone"
 	location(GetDependenciesLocation())
@@ -29,4 +29,4 @@ project "capstone"
 
 	SetupConfigMap()
 
-group "Dependencies"
+Group "Dependencies"

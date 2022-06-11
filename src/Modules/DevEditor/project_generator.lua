@@ -13,55 +13,52 @@ local qt_modules =
 }
 
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("DevEditor")
 	local base_dir = GetModulesDirectory("DevEditor")
 
-	project "DevEditor"
+	GenProject "DevEditor"
 		qt.enable()
 
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
-		ModuleGen("DevEditor")
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
-			--base_dir .. "../../Modules/Graphics/include",
-			base_dir .. "../../Modules/MainLoop/include",
+			--source_dir .. "../../Modules/Graphics/include",
+			source_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/ads"
 		}
 
-		QtSettings(qt_modules, base_dir)
+		QtSettings(qt_modules, base_dir, source_dir)
 
-	project "DevEditorModule"
+	GenProject("DevEditorModule", "SharedLib")
 		qt.enable()
 
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_DevEditorModule.cpp" }
-
-		ModuleCopy("DevModules")
+		files { source_dir .. "Shibboleth_DevEditorModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("DevEditor")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+		ModuleCopy("DevModules")
 
 		local deps =
 		{
@@ -79,7 +76,7 @@ local GenerateProject = function()
 
 		filter {}
 
-		QtSettingsModule(qt_modules, base_dir)
+		QtSettingsModule(qt_modules, base_dir, source_dir)
 
 		local plugin_path = qt.defaultpath .. "/plugins"
 		local bin_path = qt.defaultpath .. "/bin"
@@ -93,10 +90,10 @@ local GenerateProject = function()
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../workingdir/bin",
-			"{MKDIR} ../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/bin/platforms"
+			"{MKDIR} ../../../../../../workingdir/bin",
+			"{MKDIR} ../../../../../../workingdir/bin/platforms",
+			"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../../workingdir/bin/platforms",
+			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../../workingdir/bin/platforms"
 		}
 
 		for _, name in ipairs(qt_modules) do
@@ -104,8 +101,8 @@ local GenerateProject = function()
 
 			postbuildcommands
 			{
-				"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../workingdir/bin",
-				"{COPYFILE} " .. final_name .. extension .." ../../../../../workingdir/bin"
+				"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../../workingdir/bin",
+				"{COPYFILE} " .. final_name .. extension .." ../../../../../../workingdir/bin"
 			}
 		end
 end

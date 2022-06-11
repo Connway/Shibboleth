@@ -103,7 +103,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -129,7 +129,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -161,7 +161,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -193,7 +193,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;FMT_HEADER_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Tools\ProjectBuild\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\fmt\include;..\..\..\..\..\src\Dependencies\argparse;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -220,15 +220,20 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_BuildProject.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Common.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Errors.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_GenerateHeaders.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_GenerateProject.h" />
-    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_PreProc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Preproc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_UpdateModifiedDatabase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_BuildProject.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateHeaders.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateProject.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_PreProc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_Preproc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_UpdateModifiedDatabase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjectBuild.cpp" />
   </ItemGroup>
   <ItemGroup>

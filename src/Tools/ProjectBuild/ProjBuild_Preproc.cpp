@@ -21,34 +21,116 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "ProjBuild_GenerateProject.h"
+#include "ProjBuild_Common.h"
 #include "ProjBuild_Errors.h"
 #include <Gaff_Utils.h>
-//#include <Gaff_File.h>
 #include <argparse.hpp>
-//#include <filesystem>
+#include <filesystem>
+
+static constexpr const char* const k_preproc_name = "Preprocessor" TARGET_SUFFIX;
+static constexpr const char* const k_modules_path = "src/Modules";
+static constexpr const char* const k_engine_path = "src/Engine";
+static constexpr const char* const k_tools_path = "src/Tools";
+
+static int RunPreproc(const argparse::ArgumentParser& /*program*/, const std::filesystem::path& path)
+{
+	std::vector<std::filesystem::path> directories;
+
+	// $TODO: Thread this.
+	for (const auto& entry : std::filesystem::directory_iterator(path)) {
+		// Only care about directory names.
+		if (!entry.is_directory()) {
+			continue;
+		}
+
+		if (path != k_modules_path) {
+			const std::string name = entry.path().stem().string();
+			bool ignore = false;
+
+			for (const char* const ignore_name : k_ignore_list) {
+				if (name == ignore_name) {
+					ignore = true;
+					break;
+				}
+			}
+
+			if (ignore) {
+				continue;
+			}
+		}
+
+		directories.emplace_back(entry.path());
+	}
+
+	char8_t curr_working_dir[2048] = { 0 };
+	Gaff::GetWorkingDir(curr_working_dir, sizeof(curr_working_dir));
+	Gaff::SetWorkingDir(u8"workingdir/tools");
+
+	int ret = static_cast<int>(Error::Success);
+
+	for (const std::filesystem::path& module_path : directories) {
+		std::wcout << L"Running Preprocessor for '" << module_path.filename().c_str() << '\'' << std::endl;
+
+		std::string preproc_cmd = std::string(k_preproc_name) + " " + module_path.filename().string();
+
+		if (path == k_modules_path) {
+			preproc_cmd += " --module";
+		} else if (path == k_tools_path) {
+			preproc_cmd += " --tool";
+		} else if (path == k_engine_path) {
+			preproc_cmd += " --engine";
+		}
+
+		std::wcout.flush();
+
+		ret = std::system(preproc_cmd.c_str());
+
+		if (ret) {
+			if (path == k_modules_path) {
+				ret = static_cast<int>(Error::Preproc_FailedToPreprocModule);
+			} else if (path == k_engine_path) {
+				ret = static_cast<int>(Error::Preproc_FailedToPreprocEngine);
+			} else /*if (path == k_tools_path)*/ {
+				ret = static_cast<int>(Error::Preproc_FailedToPreprocTool);
+			}
+
+			break;
+		}
+	}
+
+	Gaff::SetWorkingDir(curr_working_dir);
+	return ret;
+}
 
 void Preproc_AddArguments(argparse::ArgumentParser& /*program*/)
 {
 }
 
-int Preproc_Run(const argparse::ArgumentParser& /*program*/)
+int Preproc_Run(const argparse::ArgumentParser& program)
 {
-	static constexpr const char* const k_dependencies_dir = "../../Dependencies";
-	static constexpr const char* const k_frameworks_dir = "../../Frameworks";
+	if (std::filesystem::is_directory(k_modules_path)) {
+		const int ret = RunPreproc(program, k_modules_path);
 
-	//static constexpr const char* const k_preproc_modules_path = ".generated/preproc/src/Modules";
-	//static constexpr const char* const k_preproc_tools_path = ".generated/preproc/src/Tools";
-	//static constexpr const char* const k_preproc_path = ".generated/preproc";
-	//static constexpr const char* const k_modules_path = "src/Modules";
-	//static constexpr const char* const k_tools_path = "src/Tools";
+		if (ret) {
+			return ret;
+		}
+	}
 
-	//if (!Gaff::CreateDir(k_preproc_modules_path, 0777)) {
-	//	return static_cast<int>(Error::Preproc_FailedToCreateModulesDir);
-	//}
+	if (std::filesystem::is_directory(k_tools_path)) {
+		const int ret = RunPreproc(program, k_tools_path);
 
-	//if (!Gaff::CreateDir(k_preproc_tools_path, 0777)) {
-	//	return static_cast<int>(Error::Preproc_FailedToCreateToolsDir);
-	//}
+		if (ret) {
+			return ret;
+		}
+	}
+
+	if (std::filesystem::is_directory(k_engine_path)) {
+		const int ret = RunPreproc(program, k_engine_path);
+
+		if (ret) {
+			return ret;
+		}
+	}
 
 	return static_cast<int>(Error::Success);
 }

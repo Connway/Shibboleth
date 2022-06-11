@@ -1,19 +1,21 @@
-project "ReflectionHashDump"
+GenProject("ReflectionHashDump", "ConsoleApp")
 	location(GetToolsLocation())
 
-	kind "ConsoleApp"
 	debugdir "../../../workingdir/tools"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
+	local source_dir = GetToolsSourceDirectory("ReflectionHashDump")
+	local base_dir = GetToolsDirectory("ReflectionHashDump")
+
+	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
 	includedirs
 	{
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/EASTL/include"
+		source_dir .. "../../Engine/Engine/include",
+		base_dir .. "../../Engine/Memory/include",
+		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Dependencies/rapidjson",
+		base_dir .. "../../Dependencies/EASTL/include"
 	}
 
 	local deps =
@@ -43,6 +45,6 @@ project "ReflectionHashDump"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{MKDIR} ../../../../../../workingdir/tools",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tools"
 	}

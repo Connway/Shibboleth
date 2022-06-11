@@ -1,25 +1,23 @@
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("MainLoop")
 	local base_dir = GetModulesDirectory("MainLoop")
 
-	project "MainLoop"
+	GenProject "MainLoop"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
-		ModuleGen("MainLoop")
 		SetupConfigMap()
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir,
-			base_dir .. "include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Dependencies/EASTL/include",
@@ -28,20 +26,19 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm"
 		}
 
-	project "MainLoopModule"
+	GenProject("MainLoopModule", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_MainLoopModule.cpp" }
+		files { source_dir .. "Shibboleth_MainLoopModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("MainLoop")
+		NewDeleteLinkFix()
 		SetupConfigMap()
 		ModuleCopy()
-		NewDeleteLinkFix()
 
 		--[[local deps =
 		{

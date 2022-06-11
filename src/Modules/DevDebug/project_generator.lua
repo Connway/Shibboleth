@@ -1,25 +1,24 @@
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("DevDebug")
 	local base_dir = GetModulesDirectory("DevDebug")
 
-	project "DevDebug"
+	GenProject "DevDebug"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
-		ModuleGen("DevDebug")
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -29,29 +28,27 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Dependencies/CivetWeb/include",
-			base_dir .. "../../Modules/DevWebServer/include",
-			base_dir .. "../../Modules/MainLoop/include",
-			base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Modules/Graphics/include",
-			base_dir .. "../../Modules/Input/include",
-			base_dir .. "../../Modules/ECS/include"
+			source_dir .. "../../Modules/DevWebServer/include",
+			source_dir .. "../../Modules/MainLoop/include",
+			source_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/Graphics/include",
+			source_dir .. "../../Modules/Input/include",
+			source_dir .. "../../Modules/ECS/include"
 		}
 
-	project "DevDebugModule"
+	GenProject("DevDebugModule", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_DevDebugModule.cpp" }
-
-		ModuleCopy("DevModules")
+		files { source_dir .. "Shibboleth_DevDebugModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("DevDebug")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+		ModuleCopy("DevModules")
 
 		local deps =
 		{	

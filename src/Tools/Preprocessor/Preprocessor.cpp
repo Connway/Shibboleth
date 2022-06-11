@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "Preproc_DoPreproc.h"
+#include "Preproc_Errors.h"
 #include <Gaff_String.h>
 #include <argparse.hpp>
 
@@ -27,13 +29,29 @@ int main(int argc, const char** argv)
 {
 	argparse::ArgumentParser program("Preprocessor");
 
-	//program.add_argument("--root_path", "-rp")
-	//	.help("(Optional) The root directory of the project.")
-	//	.default_value<std::string>("../..");
+	program.add_argument("--root_path", "-rp")
+		.help("(Optional) The root directory of the project.")
+		.default_value<std::string>("../..");
 
-	//program.add_argument("action")
-	//	.help("Build action to perform. Ex: generate_headers, generate_project, preprocessor, compile, link")
-	//	.default_value<std::string>("all");
+	program.add_argument("--module", "-t")
+		.help("(Optional) Given name is for a module. Looks only in module directory instead of searching.")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("--tool", "-t")
+		.help("(Optional) Given name is for a tool. Looks only in tool directory instead of searching.")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("--engine", "-e")
+		.help("(Optional) Given name is for an engine module. Looks only in engine directory instead of searching.")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("module_or_tool_name")
+		.help("Module or tool to do preprocessing on.");
+
+	DoPreproc_AddArguments(program);
 
 	try {
 		program.parse_args(argc, argv);
@@ -44,18 +62,15 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	//const std::string working_dir = program.get("--root_path");
-	//CONVERT_STRING(char8_t, temp, working_dir.c_str());
-	//Gaff::SetWorkingDir(temp);
+	const std::string working_dir = program.get("--root_path");
+	CONVERT_STRING(char8_t, temp, working_dir.c_str());
+	Gaff::SetWorkingDir(temp);
 
-	//const std::string action = program.get("action");
+	if (program.is_used("module_or_tool_name")) {
+		DoPreproc_Run(program);
+	} else {
+		std::cout << program;
+	}
 
-	//if (action == "") {
-
-	//} else {
-	//	std::cout << program;
-	//}
-
-	//return static_cast<int>(Error::Success);
-	return 0;
+	return static_cast<int>(Error::Success);
 }

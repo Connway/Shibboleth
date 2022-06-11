@@ -1,25 +1,24 @@
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("Camera")
 	local base_dir = GetModulesDirectory("Camera")
 
-	project "Camera"
+	GenProject "Camera"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
-		ModuleGen("Camera")
 		SetupConfigMap()
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
@@ -28,27 +27,25 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			base_dir .. "../../Frameworks/Esprit/include",
-			base_dir .. "../../Modules/MainLoop/include",
-			base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Modules/Input/include",
-			base_dir .. "../../Modules/ECS/include"
+			source_dir .. "../../Modules/MainLoop/include",
+			source_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/Input/include",
+			source_dir .. "../../Modules/ECS/include"
 		}
 
-	project "CameraModule"
+	GenProject("CameraModule", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_CameraModule.cpp" }
-
-		ModuleCopy()
+		files { source_dir .. "Shibboleth_CameraModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("Camera")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+		ModuleCopy()
 
 		local deps =
 		{

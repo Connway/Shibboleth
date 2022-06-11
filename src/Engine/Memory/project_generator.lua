@@ -1,5 +1,5 @@
 project "Memory"
-	location(GetEngineLocation())
+	location(GetEngineLocation(true))
 
 	kind "SharedLib"
 	language "C++"
@@ -7,14 +7,17 @@ project "Memory"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
+	local gen_dir = GetEngineGeneratedDirectory("Memory")
+	local base_dir = GetEngineDirectory("Memory")
+
 	includedirs
 	{
-		"include",
-		"../Engine/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/mimalloc/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/tracy"
+		base_dir .. "include",
+		gen_dir .. "../Engine/include",
+		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Dependencies/mimalloc/include",
+		base_dir .. "../../Dependencies/EASTL/include",
+		base_dir .. "../../Dependencies/tracy"
 	}
 
 	local deps =

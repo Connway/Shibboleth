@@ -1,14 +1,18 @@
+-- $TODO: Make tests like other projects.
+local source_dir = GetTestsSourceDirectory()
+local base_dir = GetTestsDirectory()
+
 local tests = {
 	{
 		name = "AllocatorTest",
 
 		includedirs =
 		{
-			"../Dependencies/EASTL/include",
+			base_dir .. "../Dependencies/EASTL/include",
 
-			"../Frameworks/Gaff/include",
-			"../Engine/Engine/include",
-			"../Engine/Memory/include"
+			base_dir .. "../Frameworks/Gaff/include",
+			source_dir .. "../Engine/Engine/include",
+			base_dir .. "../Engine/Memory/include"
 		},
 
 		links =
@@ -36,13 +40,13 @@ local tests = {
 
 		includedirs =
 		{
-			"../Dependencies/EASTL/include",
-			"../Dependencies/mpack",
-			"../Dependencies/rapidjson",
+			base_dir .. "../Dependencies/EASTL/include",
+			base_dir .. "../Dependencies/mpack",
+			base_dir .. "../Dependencies/rapidjson",
 
-			"../Frameworks/Gaff/include",
-			"../Engine/Engine/include",
-			"../Engine/Memory/include"
+			base_dir .. "../Frameworks/Gaff/include",
+			source_dir .. "../Engine/Engine/include",
+			base_dir .. "../Engine/Memory/include"
 		},
 
 		links =
@@ -70,18 +74,18 @@ local tests = {
 
 		includedirs =
 		{
-			"../Dependencies/EASTL/include",
-			"../Dependencies/rapidjson",
-			"../Dependencies/glm",
-			"../Dependencies/mpack",
+			base_dir .. "../Dependencies/EASTL/include",
+			base_dir .. "../Dependencies/rapidjson",
+			base_dir .. "../Dependencies/glm",
+			base_dir .. "../Dependencies/mpack",
 
-			"../Frameworks/Gaff/include",
-			"../Frameworks/Gleam/include",
-			"../Engine/Engine/include",
-			"../Engine/Memory/include",
+			base_dir .. "../Frameworks/Gaff/include",
+			base_dir .. "../Frameworks/Gleam/include",
+			source_dir .. "../Engine/Engine/include",
+			base_dir .. "../Engine/Memory/include",
 
-			"../Modules/Resource/include",
-			"../Modules/ECS/include"
+			source_dir .. "../Modules/Resource/include",
+			source_dir .. "../Modules/ECS/include"
 		},
 
 		links =
@@ -122,7 +126,7 @@ function GenTest(settings)
 
 		includedirs
 		{
-			"../Dependencies/Catch2"
+			base_dir .. "../Dependencies/Catch2"
 		}
 
 		links
@@ -132,13 +136,16 @@ function GenTest(settings)
 
 		SetupConfigMap()
 
-		ModuleCopy("tests")
-
+		postbuildcommands
+		{
+			"{MKDIR} ../../../../../../workingdir/tests",
+			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tests"
+		}
 
 		if settings.files then
 			files(settings.files)
 		else
-			files { settings.name .. ".cpp" }
+			files { base_dir .. settings.name .. ".cpp" }
 		end
 
 		if settings.dependson then
@@ -159,4 +166,6 @@ function GenTest(settings)
 		links(settings.links)
 end
 
-table.foreachi(tests, GenTest)
+if _OPTIONS["generate-preproc"] then
+	table.foreachi(tests, GenTest)
+end

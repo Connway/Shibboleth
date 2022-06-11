@@ -1,26 +1,27 @@
-project "Game_App"
+local proj_kind = "WindowedApp"
+
+if _OPTIONS["console-app"] then
+	proj_kind = "ConsoleApp"
+end
+
+GenProject("Game_App", proj_kind)
 	location(GetEngineLocation())
-
-	filter { "options:console-app" }
-		kind "ConsoleApp"
-
-	filter { "options:not console-app" }
-		kind "WindowedApp"
-
-	filter {}
 
 	debugdir "../../../workingdir/bin"
 	language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
+	local source_dir = GetEngineSourceDirectory("Game_App")
+	local base_dir = GetEngineDirectory("Game_App")
+
+	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
 	includedirs
 	{
-		"../Engine/include",
-		"../Memory/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/rapidjson",
-		"../../Dependencies/EASTL/include"
+		source_dir .. "../Engine/include",
+		base_dir .. "../Memory/include",
+		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Dependencies/rapidjson",
+		base_dir .. "../../Dependencies/EASTL/include"
 	}
 
 	local deps =
@@ -55,6 +56,6 @@ project "Game_App"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 	}

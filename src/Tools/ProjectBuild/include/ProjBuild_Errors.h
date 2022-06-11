@@ -30,6 +30,12 @@ enum class Error
 	GenerateHeaders_FailedToGenerateTool = -2,
 	GenerateHeaders_FailedToGenerateStatic = -3,
 
-	PreProc_FailedToCreateModulesDir = -4,
-	PreProc_FailedToCreateToolsDir = -5,
+	Preproc_FailedToPreprocModule = -4,
+	Preproc_FailedToPreprocEngine = -5,
+	Preproc_FailedToPreprocTool = -6,
+
+	BuildProject_FailedToOpenVSDir = -7,
+	BuildProject_FailedToReadVSDir = -8,
+	BuildProject_NoProjectSpecified = -9,
+	BuildProject_NoConfigSpecified = -10
 };

@@ -20,8 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "ProjBuild_UpdateModifiedDatabase.h"
 #include "ProjBuild_GenerateHeaders.h"
 #include "ProjBuild_GenerateProject.h"
+#include "ProjBuild_BuildProject.h"
+#include "ProjBuild_Preproc.h"
 #include "ProjBuild_Errors.h"
 #include <Gaff_String.h>
 #include <argparse.hpp>
@@ -40,10 +43,12 @@ int main(int argc, const char** argv)
 
 
 	GenerateHeaders_AddArguments(program);
-	//PreProc_AddArguments(program);
+	Preproc_AddArguments(program);
 	GenerateProject_AddArguments(program);
+	BuildProject_AddArguments(program);
 	//Compile_AddArguments(program);
 	//Link_AddArguments(program);
+	UpdateModifiedDatabase_AddArguments(program);
 
 
 	try {
@@ -65,26 +70,33 @@ int main(int argc, const char** argv)
 		return GenerateHeaders_Run(program);
 
 	} else if (action == "preprocessor") {
-		//return PreProc_Run(program);
+		return Preproc_Run(program);
 
 	} else if (action == "generate_project") {
 		return GenerateProject_Run(program);
 
-	} else if (action == "compile") {
+	} else if (action == "build") {
+		return BuildProject_Run(program);
+
+	//} else if (action == "compile") {
 		//return Compile_Run(program);
 
-	} else if (action == "link") {
+	//} else if (action == "link") {
 		//return Link_Run(program);
+
+	} else if (action == "update_modified_database") {
+		return UpdateModifiedDatabase_Run(program);
 
 	} else if (action == "all") {
 		using ActionFunction = int (*)(const argparse::ArgumentParser&);
 		constexpr ActionFunction k_action_order[] =
 		{
 			GenerateHeaders_Run,
-			//PreProc_Run,
+			Preproc_Run,
 			GenerateProject_Run,
 			//Compile_Run,
 			//Link_Run,
+			UpdateModifiedDatabase_Run
 		};
 
 		for (ActionFunction func : k_action_order) {

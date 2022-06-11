@@ -1,4 +1,4 @@
-group "Dependencies/Unused By Engine"
+Group "Dependencies/Unused By Engine"
 
 project "zstd"
 	location(GetDependenciesLocation())
@@ -13,4 +13,4 @@ project "zstd"
 
 	SetupConfigMap()
 
-group "Dependencies"
+Group "Dependencies"

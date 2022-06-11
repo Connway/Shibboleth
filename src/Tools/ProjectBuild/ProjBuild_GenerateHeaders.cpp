@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "ProjBuild_GenerateHeaders.h"
+#include "ProjBuild_Common.h"
 #include "ProjBuild_Errors.h"
 #include <Gaff_Utils.h>
 #include <argparse.hpp>
@@ -58,6 +59,22 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 		// Only care about directory names.
 		if (!entry.is_directory()) {
 			continue;
+		}
+
+		if (is_tool) {
+			const std::string name = entry.path().stem().string();
+			bool ignore = false;
+
+			for (const char* const ignore_name : k_ignore_list) {
+				if (name == ignore_name) {
+					ignore = true;
+					break;
+				}
+			}
+
+			if (ignore) {
+				continue;
+			}
 		}
 
 		directories.emplace_back(entry.path());

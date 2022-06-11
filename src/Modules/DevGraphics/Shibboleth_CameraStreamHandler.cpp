@@ -354,6 +354,7 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		0, // encode max height
 		{},
 		NV_ENC_TUNING_INFO_HIGH_QUALITY,
+		NV_ENC_BUFFER_FORMAT_UNDEFINED, // Not using D3D12 (yet)
 		{ 0 },
 		{ 0 }
 	};

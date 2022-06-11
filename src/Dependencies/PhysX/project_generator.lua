@@ -60,7 +60,7 @@ function PhysXProject(proj_name, lib_type)
 end
 
 
-group "Dependencies/PhysX"
+Group "Dependencies/PhysX"
 
 PhysXProject("FastXml", "StaticLib")
 	includedirs
@@ -483,4 +483,4 @@ PhysXProject("PhysX", "StaticLib")
 		"physx/source/simulationcontroller/src"
 	}
 
-group "Dependencies"
+Group "Dependencies"

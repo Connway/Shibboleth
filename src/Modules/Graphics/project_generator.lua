@@ -1,31 +1,30 @@
 function DoMainGraphicsModule()
+	local source_dir = GetModulesSourceDirectory("Graphics")
 	local base_dir = GetModulesDirectory("Graphics")
 
-	project("GraphicsBase")
+	GenProject "GraphicsBase"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
 		excludes
 		{
-			base_dir .. "include/Shibboleth_RenderManager.h",
-			base_dir .. "Shibboleth_RenderManager.cpp",
-			base_dir .. "Shibboleth_GraphicsModule.cpp"
+			source_dir .. "include/Shibboleth_RenderManager.h",
+			source_dir .. "Shibboleth_RenderManager.cpp",
+			source_dir .. "Shibboleth_GraphicsModule.cpp"
 		}
 
-		ModuleGen("Graphics")
 		SetupConfigMap()
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/assimp/include",
 			base_dir .. "../../Dependencies/glfw/include",
@@ -34,27 +33,27 @@ function DoMainGraphicsModule()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Modules/ECS/include",
-			base_dir .. "../../Modules/MainLoop/include"
+			source_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/ECS/include",
+			source_dir .. "../../Modules/MainLoop/include"
 		}
 end
 
 function DoGraphicsModule(renderer)
-	local project_name = "Graphics" .. renderer
+	local source_dir = GetModulesSourceDirectory("Graphics")
 	local base_dir = GetModulesDirectory("Graphics")
+	local project_name = "Graphics" .. renderer
 
-	project(project_name)
+	GenProject(project_name)
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
 		files
 		{
-			base_dir .. "include/Shibboleth_RenderManager.h",
-			base_dir .. "Shibboleth_RenderManager.cpp",
-			base_dir .. "Shibboleth_GraphicsModule.cpp"
+			source_dir .. "include/Shibboleth_RenderManager.h",
+			source_dir .. "Shibboleth_RenderManager.cpp",
+			source_dir .. "Shibboleth_GraphicsModule.cpp"
 		}
 
 		defines { "SHIB_STATIC" }
@@ -73,9 +72,9 @@ function DoGraphicsModule(renderer)
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
@@ -83,9 +82,9 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Modules/Resource/include",
-			base_dir .. "../../Modules/ECS/include",
-			base_dir .. "../../Modules/MainLoop/include"
+			source_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/ECS/include",
+			source_dir .. "../../Modules/MainLoop/include"
 		}
 
 		local deps =
@@ -96,15 +95,12 @@ function DoGraphicsModule(renderer)
 		dependson(deps)
 
 
-	project(project_name .. "Module")
+	GenProject(project_name .. "Module", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_GraphicsModule.cpp" }
-
-		ModuleCopy()
+		files { source_dir .. "Shibboleth_GraphicsModule.cpp" }
 
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
@@ -117,6 +113,7 @@ function DoGraphicsModule(renderer)
 
 		ModuleIncludesAndLinks(project_name, "Graphics")
 		SetupConfigMap()
+		ModuleCopy()
 
 		deps =
 		{

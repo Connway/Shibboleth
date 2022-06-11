@@ -1,5 +1,5 @@
 project "ProjectBuild"
-	location(GetToolsLocation())
+	location(GetToolsLocation(true))
 
 	kind "ConsoleApp"
 	debugdir "../../../workingdir/tools"
@@ -11,7 +11,7 @@ project "ProjectBuild"
 	{
 		"include",
 		"../../Frameworks/Gaff/include",
-		-- "../../Dependencies/rapidjson",
+		"../../Dependencies/rapidjson",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/fmt/include",
 		"../../Dependencies/argparse"
@@ -39,24 +39,28 @@ project "ProjectBuild"
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 
-project "RunProjectBuild"
-	location(GetToolsLocation())
+if not _OPTIONS["generate-preproc"] then
+	project "RunProjectBuild"
+		location(GetToolsLocation())
 
-	kind "Makefile"
+		kind "Makefile"
 
-	dependson("ProjectBuild")
+		dependson("ProjectBuild")
 
-	rebuildcommands
-	{
-	}
+		rebuildcommands
+		{
+		}
 
-	buildcommands
-	{
-		"{CHDIR} ../../../../../workingdir/tools",
-		"echo \"Generating Module, Tool, and Engine Headers...\"",
-		"ProjectBuild%{cfg.buildtarget.suffix} generate_headers"
-	}
+		buildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"ProjectBuild%{cfg.buildtarget.suffix} generate_headers",
+			"ProjectBuild%{cfg.buildtarget.suffix} preprocessor",
+			"ProjectBuild%{cfg.buildtarget.suffix} generate_project",
+			"ProjectBuild%{cfg.buildtarget.suffix} update_modified_database"
+		}
 
-	cleancommands
-	{
-	}
+		cleancommands
+		{
+		}
+end

@@ -111,6 +111,7 @@ static constexpr const char/*8_t*/* const k_gen_static_header =
 
 #ifdef SHIB_STATIC
 	#undef SHIB_STATIC
+
 {}
 	#define SHIB_STATIC
 
@@ -336,21 +337,13 @@ static int GenerateStaticReflectionHeader(
 	}
 
 	// Write modules inits in the order of module_load_order and then the rest.
-	const size_t init_count = modules.size();
 	std::u8string includes = u8"";
 	std::u8string inits = u8"";
-	size_t count = 0;
 
 	for (const auto& module_name : init_order) {
-		++count;
-
 		// $TODO: Make use of std::filesystem::path::relative
-		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>";
+		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>\n";
 		inits += u8"\t\tGAFF_FAIL_RETURN(app.createModule(" + module_name + u8"::CreateModule, u8\"" + module_name + u8"\"), false)\n";
-
-		if (count != init_count) {
-			includes += u8'\n';
-		}
 	}
 
 	for (const auto& module_name : modules) {
@@ -358,15 +351,9 @@ static int GenerateStaticReflectionHeader(
 			continue;
 		}
 
-		++count;
-
 		// $TODO: Make use of std::filesystem::path::relative
-		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>";
+		includes += u8"\t#include <../../Modules/" + module_name + u8"/include/Gen_ReflectionInit.h>\n";
 		inits += u8"\t\tGAFF_FAIL_RETURN(app.createModule(" + module_name + u8"::CreateModule, u8\"" + module_name + u8"\"), false)\n";
-
-		if (count != init_count) {
-			includes += u8'\n';
-		}
 	}
 
 	const std::string final_text = GetLicenseText(program) + fmt::format(

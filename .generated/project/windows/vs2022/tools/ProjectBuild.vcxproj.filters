@@ -6,6 +6,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_BuildProject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Common.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Errors.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -15,14 +21,19 @@
     <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_GenerateProject.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_PreProc.h">
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_Preproc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\ProjectBuild\include\ProjBuild_UpdateModifiedDatabase.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_BuildProject.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateHeaders.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_GenerateProject.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_PreProc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_Preproc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_UpdateModifiedDatabase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjectBuild.cpp" />
   </ItemGroup>
 </Project>

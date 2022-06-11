@@ -104,48 +104,60 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64d</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64d generate_headers</NMakeBuildCommandLine>
+ProjectBuild64d generate_headers
+ProjectBuild64d preprocessor
+ProjectBuild64d generate_project
+ProjectBuild64d update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64 generate_headers</NMakeBuildCommandLine>
+ProjectBuild64 generate_headers
+ProjectBuild64 preprocessor
+ProjectBuild64 generate_project
+ProjectBuild64 update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64p</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64p generate_headers</NMakeBuildCommandLine>
+ProjectBuild64p generate_headers
+ProjectBuild64p preprocessor
+ProjectBuild64p generate_project
+ProjectBuild64p update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64od</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64od generate_headers</NMakeBuildCommandLine>
+ProjectBuild64od generate_headers
+ProjectBuild64od preprocessor
+ProjectBuild64od generate_project
+ProjectBuild64od update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64sd</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64sd generate_headers</NMakeBuildCommandLine>
+ProjectBuild64sd generate_headers
+ProjectBuild64sd preprocessor
+ProjectBuild64sd generate_project
+ProjectBuild64sd update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64sd";TARGET_SUFFIX="64sd";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
     <NMakeOutput>$(OutDir)RunProjectBuild64s</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-echo "Generating Module, Tool, and Engine Headers..."
-ProjectBuild64s generate_headers</NMakeBuildCommandLine>
+ProjectBuild64s generate_headers
+ProjectBuild64s preprocessor
+ProjectBuild64s generate_project
+ProjectBuild64s update_modified_database</NMakeBuildCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64s";TARGET_SUFFIX="64s";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

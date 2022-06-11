@@ -20,36 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ProjBuild_GenerateProject.h"
-#include "ProjBuild_Errors.h"
-#include <Gaff_Utils.h>
-#include <argparse.hpp>
-#include <chrono>
-#include <thread>
+#pragma once
 
-void GenerateProject_AddArguments(argparse::ArgumentParser& /*program*/)
+namespace argparse
 {
+	class ArgumentParser;
 }
 
-int GenerateProject_Run(const argparse::ArgumentParser& /*program*/)
-{
-	char8_t curr_working_dir[2048] = { 0 };
-	Gaff::GetWorkingDir(curr_working_dir, sizeof(curr_working_dir));
-	Gaff::SetWorkingDir(u8"utils");
-
-#ifdef PLATFORM_WINDOWS
-	constexpr const char* const k_premake_action = "vs2022";
-#elif defined(PLATFORM_MAC)
-	constexpr const char* const k_premake_action = "xcode4";
-#else
-	constexpr const char* const k_premake_action = "gmake2";
-#endif
-
-	std::string proj_gen_cmd = std::string("premake5 ") + k_premake_action + " --generate-preproc";
-
-	const int ret = std::system(proj_gen_cmd.c_str());
-
-	Gaff::SetWorkingDir(curr_working_dir);
-
-	return ret;
-}
+void DoPreproc_AddArguments(argparse::ArgumentParser& program);
+int DoPreproc_Run(const argparse::ArgumentParser& program);

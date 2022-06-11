@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Entity")
 	local base_dir = GetModulesDirectory("Entity")
 
-	ModuleProject "Entity"
+	GenProject "Entity"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -10,37 +10,34 @@ local GenerateProject = function()
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
-		ModuleGen("Entity")
 		SetupConfigMap()
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
-			base_dir .. "../../Modules/MainLoop/include",
+			source_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Modules/MainLoop/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 
-	project "EntityModule"
+	GenProject("EntityModule", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_EntityModule.cpp" }
-
-		ModuleCopy()
+		files { source_dir .. "Shibboleth_EntityModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("Entity")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+		ModuleCopy()
 
 		local deps =
 		{

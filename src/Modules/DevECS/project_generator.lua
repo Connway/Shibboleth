@@ -1,52 +1,49 @@
 local GenerateProject = function()
+	local source_dir = GetModulesSourceDirectory("DevECS")
 	local base_dir = GetModulesDirectory("DevECS")
 
-	project "DevECS"
+	GenProject "DevECS"
 		location(GetModulesLocation())
 
-		kind "StaticLib"
 		language "C++"
 
-		files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.inl" }
+		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 		defines { "SHIB_STATIC" }
 
 		SetupConfigMap()
-		ModuleGen("DevECS")
 
 		flags { "FatalWarnings" }
 
 		includedirs
 		{
-			base_dir .. "include",
+			source_dir .. "include",
 			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/CivetWeb/include",
-			base_dir .. "../../Modules/DevWebServer/include",
-			base_dir .. "../../Modules/ECS/include",
-			base_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/DevWebServer/include",
+			source_dir .. "../../Modules/ECS/include",
+			source_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
-	project "DevECSModule"
+	GenProject("DevECSModule", "SharedLib")
 		location(GetModulesLocation())
 
-		kind "SharedLib"
 		language "C++"
 
-		files { base_dir .. "Shibboleth_DevECSModule.cpp" }
-
-		ModuleCopy("DevModules")
+		files { source_dir .. "Shibboleth_DevECSModule.cpp" }
 
 		flags { "FatalWarnings" }
 
 		ModuleIncludesAndLinks("DevECS")
 		NewDeleteLinkFix()
 		SetupConfigMap()
+		ModuleCopy("DevModules")
 
 		local deps =
 		{

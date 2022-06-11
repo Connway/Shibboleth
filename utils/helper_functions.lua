@@ -10,47 +10,30 @@ function ModuleDependencies(module_name)
 end
 
 function ModuleIncludesAndLinks(module_name, base_name)
+
+	local source_dir = ""
 	local base_dir = ""
 
 	if base_name then
+		source_dir = GetModulesSourceDirectory(base_name)
 		base_dir = GetModulesDirectory(base_name)
 	else
+		source_dir = GetModulesSourceDirectory(module_name)
 		base_dir = GetModulesDirectory(module_name)
 	end
 
 	includedirs
 	{
-		base_dir .. "include",
+		source_dir .. "include",
 		base_dir .. "../../Frameworks/Gaff/include",
 		base_dir .. "../../Engine/Memory/include",
-		base_dir .. "../../Engine/Engine/include",
+		source_dir .. "../../Engine/Engine/include",
 		base_dir .. "../../Dependencies/EASTL/include"
 	}
 
 	local deps = ModuleDependencies(module_name)
 	dependson(deps)
 	links(deps)
-end
-
-function StaticHeaderGen()
-	prebuildmessage("Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!")
-
-	filter { "system:windows" }
-		prebuildcommands
-		{
-			"{CHDIR} ../../../../../workingdir/tools",
-			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
-		}
-
-	filter { "system:not windows" }
-		prebuildcommands
-		{
-			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header\""
-		}
-
-	filter {}
-
-	dependson { "CodeGenerator" }
 end
 
 function StaticLinks()
@@ -67,48 +50,6 @@ function StaticLinks()
 	table.foreachi(module_generators, ProcessModule)
 end
 
-function ToolGen(tool_name)
-	prebuildmessage("Generating Gen_ReflectionInit.h for tool " .. tool_name .. "!")
-
-	filter { "system:windows" }
-		prebuildcommands
-		{
-			"{CHDIR} ../../../../../workingdir/tools",
-			"CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
-		}
-
-	filter { "system:not windows" }
-		prebuildcommands
-		{
-			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name .. "\""
-		}
-
-	filter {}
-
-	dependson { "CodeGenerator" }
-end
-
-function ModuleGen(module_name)
-	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
-
-	filter { "system:windows" }
-		prebuildcommands
-		{
-			"{CHDIR} ../../../../../workingdir/tools",
-			"CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
-		}
-
-	filter { "system:not windows" }
-		prebuildcommands
-		{
-			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name .. "\""
-		}
-
-	filter {}
-
-	dependson { "CodeGenerator" }
-end
-
 function ModuleCopy(dir)
 	if dir == nil then
 		dir = "Modules"
@@ -116,8 +57,8 @@ function ModuleCopy(dir)
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/" .. dir,
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/" .. dir
+		"{MKDIR} ../../../../../../workingdir/" .. dir,
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/" .. dir
 	}
 end
 
@@ -140,8 +81,8 @@ function NewDeleteLinkFix()
 end
 
 function GetActionLocation(no_preproc)
-	if not no_preproc and _OPTIONS["generate-preproc"] then
-		return "../../../.generated/preproc/" .. os.target() .. "/" .. _ACTION
+	if no_preproc == false and _OPTIONS["generate-preproc"] then
+		return "../../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION
 	else
 		return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
 	end
@@ -157,34 +98,94 @@ end
 
 function GetModulesLocation()
 	if _OPTIONS["generate-preproc"] then
-		return "../.generated/preproc/" .. os.target() .. "/" .. _ACTION .. "/modules"
+		return "../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
 	else
 		return "../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
 	end
 end
 
-function GetEngineLocation()
-	return GetActionLocation(false) .. "/engine"
+function GetEngineLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	return GetActionLocation(no_preproc) .. "/engine"
 end
 
-function GetToolsLocation()
-	return GetActionLocation(false) .. "/tools"
+function GetToolsLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	return GetActionLocation(no_preproc) .. "/tools"
 end
 
 function GetTestsLocation()
-	return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+	return "../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
 end
 
 function GetModulesSourceDirectory(module_name)
 	if _OPTIONS["generate-preproc"] then
-		return "../.generated/preproc/src/Modules/" .. module_name .. "/"
+		return "../.generated/preproc/Modules/" .. module_name .. "/"
 	else
 		return "../src/Modules/" .. module_name .. "/"
 	end
 end
 
+function GetModulesGeneratedDirectory(module_name)
+	return "../.generated/preproc/Modules/" .. module_name .. "/"
+end
+
 function GetModulesDirectory(module_name)
 	return "../src/Modules/" .. module_name .. "/"
+end
+
+function GetEngineSourceDirectory(module_name)
+	if _OPTIONS["generate-preproc"] then
+		return "../../../.generated/preproc/Engine/" .. module_name .. "/"
+	else
+		return "../../Engine/" .. module_name .. "/"
+	end
+end
+
+function GetEngineGeneratedDirectory(module_name)
+	return "../../../.generated/preproc/Engine/" .. module_name .. "/"
+end
+
+function GetEngineDirectory(module_name)
+	return "../../Engine/" .. module_name .. "/"
+end
+
+function GetToolsSourceDirectory(tool_name)
+	if _OPTIONS["generate-preproc"] then
+		return "../../../.generated/preproc/Tools/" .. tool_name .. "/"
+	else
+		return "../../Tools/" .. tool_name .. "/"
+	end
+end
+
+function GetToolsGeneratedDirectory(tool_name)
+	return "../../../.generated/preproc/Tools/" .. tool_name .. "/"
+end
+
+function GetToolsDirectory(tool_name)
+	return "../../Tools/" .. tool_name .. "/"
+end
+
+function GetTestsSourceDirectory()
+	if _OPTIONS["generate-preproc"] then
+		return "../../.generated/preproc/Tests/"
+	else
+		return "../../src/Tests/"
+	end
+end
+
+function GetTestsGeneratedDirectory()
+	return "../../.generated/preproc/Tests/"
+end
+
+function GetTestsDirectory()
+	return "../../src/Tests/"
 end
 
 function RunFile(file)
@@ -199,10 +200,18 @@ function SetupConfigMap()
 	}
 end
 
-function QtSettingsModule(modules, base_dir)
+function QtSettingsModule(modules, base_dir, source_dir)
+	if base_dir == nil then
+		base_dir = ""
+	end
+
+	if source_dir == nil then
+		source_dir = base_dir
+	end
+
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
-	qtgenerateddir(base_dir .. ".generated/" .. os.target())
+	qtgenerateddir(source_dir .. ".generated/" .. os.target())
 	qtprefix "Qt6"
 
 	qtmodules(modules)
@@ -228,58 +237,49 @@ function QtSettingsModule(modules, base_dir)
 	filter {}
 end
 
-function QtSettings(modules, base_dir)
+function QtSettings(modules, base_dir, source_dir)
 	if base_dir == nil then
 		base_dir = ""
 	end
 
-	files { base_dir .. "**.h", base_dir .. "**.cpp", base_dir .. "**.qrc", base_dir .. "**.ui" }
+	if source_dir == nil then
+		source_dir = base_dir
+	end
+
+	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.qrc", source_dir .. "**.ui" }
 	excludes { "**/moc*.*" }
 
-	QtSettingsModule(modules, base_dir)
+	QtSettingsModule(modules, base_dir, source_dir)
 end
 
-function ModuleProject(module_name)
-	project(module_name)
-		--if _OPTIONS["generate-preproc"] then
-			kind "StaticLib"
+function GenProject(project_name, project_kind)
+	project(project_name)
+		if _OPTIONS["generate-preproc"] then
+			kind(project_kind or "StaticLib")
 
-		--[[else
-			dependson { "RunProjectBuild" }
+		else
+			if (project_name:sub(-6, -1) ~= "Module") then
+				dependson { "RunProjectBuild" }
+			end
+
 			kind "Makefile"
 
-			if _ACTION == "vs2022" then
-				-- $TODO: Use ProjectBuild for this.
-				local solution = os.getcwd() .. "/../.generated/project/" .. os.target() .. "/vs2022/Shibboleth-Preproc.sln"
-				local msbuild = "msbuild \"" .. solution .. "\" /p:Configuration=%{cfg.buildcfg}"
-				local vcvars = "vcvarsall.bat amd64"
+			buildcommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
 
-				local cwd = os.getcwd()
-				os.chdir("C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer")
+			cleancommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
+		end
+end
 
-				local vs_path, _ = os.outputof("vswhere.exe -latest -property installationPath") .. "\\VC\\Auxiliary\\Build"
-				os.chdir(cwd)
-
-				vcvars = "\"" .. vs_path .. "\\" .. vcvars .. "\""
-
-				buildcommands
-				{
-					vcvars .. " && " .. msbuild .. " /t:" .. module_name
-				}
-
-				cleancommands
-				{
-					vcvars .. " && " .. msbuild .. " /t:" .. module_name .. ":Clean"
-				}
-
-			elseif _ACTION == "gmake2" then
-				buildcommands
-				{
-				}
-
-				cleancommands
-				{
-				}
-			end
-		end--]]
+function Group(group_name)
+	if not _OPTIONS["generate-preproc"] then
+		group(group_name)
+	end
 end

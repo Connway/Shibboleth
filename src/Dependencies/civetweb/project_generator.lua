@@ -43,9 +43,6 @@ project "CivetWeb"
 
 	local deps =
 	{
-		"Engine",
-		"Memory",
-		"Gaff",
 		"Lua",
 		"sqlite",
 		"zlib-ng"
