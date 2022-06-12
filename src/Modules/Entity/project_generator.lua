@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Entity")
 	local base_dir = GetModulesDirectory("Entity")
 
-	GenProject "Entity"
+	ModuleProject "Entity"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -25,7 +25,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 
-	GenProject("EntityModule", "SharedLib")
+	ModuleProject("EntityModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

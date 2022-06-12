@@ -1,6 +1,4 @@
-GenProject("Engine")
-	location(GetEngineLocation())
-
+EngineProject "Engine"
 	language "C++"
 
 	flags { "FatalWarnings" }
@@ -13,7 +11,7 @@ GenProject("Engine")
 	includedirs
 	{
 		source_dir .. "include",
-		base_dir .. "../Memory/include",
+		base_dir .. "../../Engine/Memory/include",
 		base_dir .. "../../Dependencies/rapidjson",
 		base_dir .. "../../Frameworks/Gaff/include",
 		base_dir .. "../../Frameworks/Gleam/include",

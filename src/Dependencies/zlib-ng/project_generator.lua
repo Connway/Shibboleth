@@ -1,4 +1,4 @@
-project "zlib-ng"
+DepProject "zlib-ng"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

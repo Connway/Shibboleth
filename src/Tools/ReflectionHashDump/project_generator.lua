@@ -1,6 +1,4 @@
-GenProject("ReflectionHashDump", "ConsoleApp")
-	location(GetToolsLocation())
-
+ToolProject "ReflectionHashDump"
 	debugdir "../../../workingdir/tools"
 	language "C++"
 

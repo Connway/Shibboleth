@@ -1,4 +1,4 @@
-project "GLFW"
+DepProject "GLFW"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

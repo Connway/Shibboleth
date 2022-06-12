@@ -1,6 +1,6 @@
 Group "Dependencies/Unused By Engine"
 
-project "sqlite"
+DepProject "sqlite"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

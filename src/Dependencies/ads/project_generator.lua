@@ -5,7 +5,7 @@ end
 require("premake-qt/qt")
 local qt = premake.extensions.qt
 
-project "ads"
+DepProject "ads"
 	qt.enable()
 
 	location(GetDependenciesLocation())

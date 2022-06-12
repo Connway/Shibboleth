@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Camera")
 	local base_dir = GetModulesDirectory("Camera")
 
-	GenProject "Camera"
+	ModuleProject "Camera"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -33,7 +33,7 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/ECS/include"
 		}
 
-	GenProject("CameraModule", "SharedLib")
+	ModuleProject("CameraModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

@@ -1,4 +1,4 @@
-project "TracyClient"
+DepProject "TracyClient"
 	location(GetDependenciesLocation())
 
 	local build_files_in_dir = function(dir)
@@ -51,7 +51,7 @@ project "TracyClient"
 
 	SetupConfigMap()
 
-project "TracyProfiler"
+DepProject "TracyProfiler"
 	location(GetDependenciesLocation())
 
 	local build_files_in_dir = function(dir)

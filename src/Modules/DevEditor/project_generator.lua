@@ -16,7 +16,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevEditor")
 	local base_dir = GetModulesDirectory("DevEditor")
 
-	GenProject "DevEditor"
+	ModuleProject "DevEditor"
 		qt.enable()
 
 		location(GetModulesLocation())
@@ -44,7 +44,7 @@ local GenerateProject = function()
 
 		QtSettings(qt_modules, base_dir, source_dir)
 
-	GenProject("DevEditorModule", "SharedLib")
+	ModuleProject("DevEditorModule", "SharedLib")
 		qt.enable()
 
 		location(GetModulesLocation())

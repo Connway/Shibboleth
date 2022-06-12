@@ -1,4 +1,4 @@
-project "assimp"
+DepProject "assimp"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

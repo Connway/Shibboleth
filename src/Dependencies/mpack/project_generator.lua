@@ -1,4 +1,4 @@
-project "mpack"
+DepProject "mpack"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

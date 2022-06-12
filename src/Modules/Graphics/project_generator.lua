@@ -2,7 +2,7 @@ function DoMainGraphicsModule()
 	local source_dir = GetModulesSourceDirectory("Graphics")
 	local base_dir = GetModulesDirectory("Graphics")
 
-	GenProject "GraphicsBase"
+	ModuleProject "GraphicsBase"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -44,7 +44,7 @@ function DoGraphicsModule(renderer)
 	local base_dir = GetModulesDirectory("Graphics")
 	local project_name = "Graphics" .. renderer
 
-	GenProject(project_name)
+	ModuleProject(project_name)
 		location(GetModulesLocation())
 
 		language "C++"
@@ -95,7 +95,7 @@ function DoGraphicsModule(renderer)
 		dependson(deps)
 
 
-	GenProject(project_name .. "Module", "SharedLib")
+	ModuleProject(project_name .. "Module", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"
@@ -141,8 +141,6 @@ local GenerateProject = function()
 	DoMainGraphicsModule()
 	DoGraphicsModule("Direct3D11")
 	-- DoGraphicsModule("Direct3D12")
-
-	
 	-- DoGraphicsModule("Vulkan")
 end
 

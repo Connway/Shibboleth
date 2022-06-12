@@ -1,7 +1,4 @@
-project "Preprocessor"
-	location(GetToolsLocation(true))
-
-	kind "ConsoleApp"
+ToolProject("Preprocessor", "ConsoleApp", true)
 	debugdir "../../../workingdir/tools"
 	language "C++"
 

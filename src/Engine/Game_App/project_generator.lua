@@ -4,9 +4,7 @@ if _OPTIONS["console-app"] then
 	proj_kind = "ConsoleApp"
 end
 
-GenProject("Game_App", proj_kind)
-	location(GetEngineLocation())
-
+EngineProject("Game_App", proj_kind)
 	debugdir "../../../workingdir/bin"
 	language "C++"
 
@@ -34,6 +32,7 @@ GenProject("Game_App", proj_kind)
 		"mpack"
 	}
 
+	dependson("BuildModuleLibraries")
 	dependson(deps)
 	links(deps)
 

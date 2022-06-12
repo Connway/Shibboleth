@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevECS")
 	local base_dir = GetModulesDirectory("DevECS")
 
-	GenProject "DevECS"
+	ModuleProject "DevECS"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -31,7 +31,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
-	GenProject("DevECSModule", "SharedLib")
+	ModuleProject("DevECSModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

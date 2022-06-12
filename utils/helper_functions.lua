@@ -252,14 +252,131 @@ function QtSettings(modules, base_dir, source_dir)
 	QtSettingsModule(modules, base_dir, source_dir)
 end
 
-function GenProject(project_name, project_kind)
+local all_dependencies = {}
+local all_frameworks = {}
+local all_module_libs = {}
+local all_modules = {}
+local all_engine = {}
+local all_tools = {}
+
+function GetAllModuleLibraries()
+	return all_dependencies
+end
+
+function GetAllDependencies()
+	return all_dependencies
+end
+
+function GetAllFrameworks()
+	return all_frameworks
+end
+
+function GetAllModules()
+	return all_modules
+end
+
+function GetAllEngine()
+	return all_engine
+end
+
+function GetAllTools()
+	return all_tools
+end
+
+function FrameworkProject(project_name)
+	table.insert(all_frameworks, project_name)
+
 	project(project_name)
+		location(GetFrameworkLocation())
+end
+
+function DepProject(project_name)
+	table.insert(all_dependencies, project_name)
+	project(project_name)
+end
+
+function ToolProject(project_name, project_kind, no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	table.insert(all_tools, project_name)
+
+	project(project_name)
+		location(GetToolsLocation(no_preproc))
+
+		if _OPTIONS["generate-preproc"] or no_preproc then
+			kind(project_kind or "ConsoleApp")
+
+		else
+			dependson { "RunProjectBuild", "BuildDependencies", "BuildModuleLibraries", "BuildEngine" }
+
+			kind "Makefile"
+
+			buildcommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
+
+			cleancommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
+		end
+end
+
+function EngineProject(project_name, project_kind, no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	table.insert(all_engine, project_name)
+
+	project(project_name)
+		location(GetEngineLocation(no_preproc))
+
+		if _OPTIONS["generate-preproc"] or no_preproc then
+			kind(project_kind or "StaticLib")
+
+		else
+			dependson { "RunProjectBuild" }
+
+			kind "Makefile"
+
+			buildcommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
+
+			cleancommands
+			{
+				"{CHDIR} ../../../../../workingdir/tools",
+				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
+			}
+		end
+end
+
+function ModuleProject(project_name, project_kind)
+	if (project_name:sub(-6, -1) == "Module") then
+		table.insert(all_modules, project_name)
+	else
+		table.insert(all_module_libs, project_name)
+	end
+
+	project(project_name)
+		-- $TODO: Add location() call.
+
 		if _OPTIONS["generate-preproc"] then
 			kind(project_kind or "StaticLib")
 
 		else
-			if (project_name:sub(-6, -1) ~= "Module") then
-				dependson { "RunProjectBuild" }
+			dependson { "RunProjectBuild", "BuildDependencies", "BuildEngine" }
+
+			if (project_name:sub(-6, -1) == "Module") then
+				dependson { "BuildModuleLibraries" }
 			end
 
 			kind "Makefile"

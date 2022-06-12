@@ -1,4 +1,4 @@
-project "CivetWeb"
+DepProject "CivetWeb"
 	location(GetDependenciesLocation())
 
 	kind "SharedLib"

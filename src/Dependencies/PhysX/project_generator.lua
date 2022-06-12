@@ -1,5 +1,5 @@
 function PhysXProject(proj_name, lib_type)
-	project(proj_name)
+	DepProject(proj_name)
 
 	location(GetDependenciesLocation())
 

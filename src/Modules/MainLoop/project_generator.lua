@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("MainLoop")
 	local base_dir = GetModulesDirectory("MainLoop")
 
-	GenProject "MainLoop"
+	ModuleProject "MainLoop"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -26,7 +26,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm"
 		}
 
-	GenProject("MainLoopModule", "SharedLib")
+	ModuleProject("MainLoopModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

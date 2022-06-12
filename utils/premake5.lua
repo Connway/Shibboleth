@@ -96,8 +96,40 @@ if is_project_action == true then
 		end
 
 		if not _OPTIONS["generate-preproc"] then
-			if _ACTION ~= "gmake2" then
-				group "Project Files"
+			group "Project Files"
+				project "BuildEngine"
+					kind "None"
+
+					dependson({ "RunProjectBuild" })
+					dependson(GetAllEngine())
+
+				project "BuildDependencies"
+					kind "None"
+
+					dependson(GetAllDependencies())
+					dependson(GetAllFrameworks())
+					dependson({ "BuildEngine" })
+
+				project "BuildModuleLibraries"
+					kind "None"
+
+					dependson({ "BuildDependencies" })
+					dependson(GetAllModuleLibraries())
+
+				project "BuildModules"
+					kind "None"
+
+					dependson({ "BuildModuleLibraries" })
+					dependson(GetAllModules())
+
+				project "BuildTools"
+					kind "None"
+
+					dependson({ "BuildModuleLibraries" })
+					dependson(GetAllTools())
+
+
+				if _ACTION ~= "gmake2" then
 					project "Generators"
 						kind "None"
 						files { "../src/**.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
@@ -105,6 +137,6 @@ if is_project_action == true then
 					project "Utils"
 						kind "None"
 						files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
-			end
+				end
 		end
 end

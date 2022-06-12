@@ -1,4 +1,4 @@
-project "imgui"
+DepProject "imgui"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

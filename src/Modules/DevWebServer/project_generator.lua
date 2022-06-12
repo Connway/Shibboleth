@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevWebServer")
 	local base_dir = GetModulesDirectory("DevWebServer")
 
-	GenProject "DevWebServer"
+	ModuleProject "DevWebServer"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -31,7 +31,7 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/Input/include"
 		}
 
-	GenProject("DevWebServerModule", "SharedLib")
+	ModuleProject("DevWebServerModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

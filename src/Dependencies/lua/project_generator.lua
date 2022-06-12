@@ -1,4 +1,4 @@
-project "Lua"
+DepProject "Lua"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

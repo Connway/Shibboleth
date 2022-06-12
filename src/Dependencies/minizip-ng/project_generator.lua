@@ -1,4 +1,4 @@
-project "minizip-ng"
+DepProject "minizip-ng"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

@@ -1,7 +1,4 @@
-project "ProjectBuild"
-	location(GetToolsLocation(true))
-
-	kind "ConsoleApp"
+ToolProject("ProjectBuild", "ConsoleApp", true)
 	debugdir "../../../workingdir/tools"
 	language "C++"
 
@@ -45,7 +42,7 @@ if not _OPTIONS["generate-preproc"] then
 
 		kind "Makefile"
 
-		dependson("ProjectBuild")
+		dependson({ "ProjectBuild" })
 
 		rebuildcommands
 		{

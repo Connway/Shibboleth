@@ -1,6 +1,4 @@
-project "Gleam"
-	location(GetFrameworkLocation())
-
+FrameworkProject "Gleam"
 	kind "StaticLib"
 	language "C++"
 

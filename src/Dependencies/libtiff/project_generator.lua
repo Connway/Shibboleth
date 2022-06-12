@@ -1,4 +1,4 @@
-project "libtiff"
+DepProject "libtiff"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

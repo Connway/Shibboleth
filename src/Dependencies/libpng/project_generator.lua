@@ -1,4 +1,4 @@
-project "libpng"
+DepProject "libpng"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

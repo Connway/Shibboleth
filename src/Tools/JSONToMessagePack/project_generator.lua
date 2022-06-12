@@ -1,6 +1,4 @@
-GenProject("JSONToMessagePack", "ConsoleApp")
-	location(GetToolsLocation())
-
+ToolProject "JSONToMessagePack"
 	debugdir "../../../workingdir/tools"
 	language "C++"
 

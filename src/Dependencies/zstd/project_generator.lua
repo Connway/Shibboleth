@@ -1,6 +1,6 @@
 Group "Dependencies/Unused By Engine"
 
-project "zstd"
+DepProject "zstd"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

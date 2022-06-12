@@ -1,4 +1,4 @@
-project "mimalloc"
+DepProject "mimalloc"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

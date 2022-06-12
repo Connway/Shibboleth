@@ -1,6 +1,6 @@
 Group "Dependencies/Unused By Engine"
 
-project "capstone"
+DepProject "capstone"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"

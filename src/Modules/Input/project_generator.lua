@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Input")
 	local base_dir = GetModulesDirectory("Input")
 
-	GenProject "Input"
+	ModuleProject "Input"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -29,7 +29,7 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/Graphics/include" -- for iterating over windows.
 		}
 
-	GenProject("InputModule", "SharedLib")
+	ModuleProject("InputModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

@@ -1,6 +1,4 @@
-project "Gaff"
-	location(GetFrameworkLocation())
-
+FrameworkProject "Gaff"
 	kind "StaticLib"
 	language "C++"
 

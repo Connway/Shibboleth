@@ -2,7 +2,7 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Resource")
 	local base_dir = GetModulesDirectory("Resource")
 
-	GenProject "Resource"
+	ModuleProject "Resource"
 		location(GetModulesLocation())
 
 		language "C++"
@@ -26,7 +26,7 @@ local GenerateProject = function()
 		}
 
 
-	GenProject("ResourceModule", "SharedLib")
+	ModuleProject("ResourceModule", "SharedLib")
 		location(GetModulesLocation())
 
 		language "C++"

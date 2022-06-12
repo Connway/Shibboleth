@@ -1,23 +1,17 @@
-project "Memory"
-	location(GetEngineLocation(true))
-
-	kind "SharedLib"
+EngineProject("Memory", "SharedLib", true)
 	language "C++"
 	defines { "IS_MEMORY" }
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	local gen_dir = GetEngineGeneratedDirectory("Memory")
-	local base_dir = GetEngineDirectory("Memory")
-
 	includedirs
 	{
-		base_dir .. "include",
-		gen_dir .. "../Engine/include",
-		base_dir .. "../../Frameworks/Gaff/include",
-		base_dir .. "../../Dependencies/mimalloc/include",
-		base_dir .. "../../Dependencies/EASTL/include",
-		base_dir .. "../../Dependencies/tracy"
+		"include",
+		"../../Engine/Engine/include",
+		"../../Frameworks/Gaff/include",
+		"../../Dependencies/mimalloc/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/tracy"
 	}
 
 	local deps =

@@ -1,7 +1,4 @@
-project "CodeGenerator"
-	location(GetToolsLocation(true))
-
-	kind "ConsoleApp"
+ToolProject("CodeGenerator", "ConsoleApp", true)
 	debugdir "../../../workingdir/tools"
 	language "C++"
 

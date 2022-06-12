@@ -1,6 +1,4 @@
-project "Esprit"
-	location(GetFrameworkLocation())
-
+FrameworkProject "Esprit"
 	kind "StaticLib"
 	language "C++"
 

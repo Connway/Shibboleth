@@ -1,4 +1,4 @@
-project "Catch2"
+DepProject "Catch2"
 	location(GetDependenciesLocation())
 
 	kind "StaticLib"
