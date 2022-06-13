@@ -81,6 +81,10 @@ function NewDeleteLinkFix()
 end
 
 function GetActionLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
 	if no_preproc == false and _OPTIONS["generate-preproc"] then
 		return "../../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION
 	else
@@ -88,12 +92,20 @@ function GetActionLocation(no_preproc)
 	end
 end
 
-function GetDependenciesLocation()
-	return GetActionLocation(true) .. "/dependencies"
+function GetDependenciesLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	return GetActionLocation(no_preproc) .. "/dependencies"
 end
 
-function GetFrameworkLocation()
-	return GetActionLocation(true) .. "/frameworks"
+function GetFrameworkLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
+	return GetActionLocation(no_preproc) .. "/frameworks"
 end
 
 function GetModulesLocation()
@@ -120,7 +132,11 @@ function GetToolsLocation(no_preproc)
 	return GetActionLocation(no_preproc) .. "/tools"
 end
 
-function GetTestsLocation()
+function GetTestsLocation(no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
 	return "../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
 end
 
@@ -283,16 +299,38 @@ function GetAllTools()
 	return all_tools
 end
 
-function FrameworkProject(project_name)
+function FrameworkProject(project_name, project_kind, no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
 	table.insert(all_frameworks, project_name)
 
 	project(project_name)
-		location(GetFrameworkLocation())
+		location(GetFrameworkLocation(no_preproc))
+
+		if _OPTIONS["generate-preproc"] or no_preproc then
+			kind(project_kind or "StaticLib")
+		else
+			kind "None"
+		end
 end
 
-function DepProject(project_name)
+function DepProject(project_name, project_kind, no_preproc)
+	if no_preproc == nil then
+		no_preproc = false
+	end
+
 	table.insert(all_dependencies, project_name)
+
 	project(project_name)
+		location(GetDependenciesLocation(no_preproc))
+
+		if _OPTIONS["generate-preproc"] or no_preproc then
+			kind(project_kind or "StaticLib")
+		else
+			kind "None"
+		end
 end
 
 function ToolProject(project_name, project_kind, no_preproc)
@@ -307,23 +345,8 @@ function ToolProject(project_name, project_kind, no_preproc)
 
 		if _OPTIONS["generate-preproc"] or no_preproc then
 			kind(project_kind or "ConsoleApp")
-
 		else
-			dependson { "RunProjectBuild", "BuildDependencies", "BuildModuleLibraries", "BuildEngine" }
-
-			kind "Makefile"
-
-			buildcommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
-
-			cleancommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
+			kind "None"
 		end
 end
 
@@ -339,23 +362,8 @@ function EngineProject(project_name, project_kind, no_preproc)
 
 		if _OPTIONS["generate-preproc"] or no_preproc then
 			kind(project_kind or "StaticLib")
-
 		else
-			dependson { "RunProjectBuild" }
-
-			kind "Makefile"
-
-			buildcommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
-
-			cleancommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
+			kind "None"
 		end
 end
 
@@ -371,27 +379,8 @@ function ModuleProject(project_name, project_kind)
 
 		if _OPTIONS["generate-preproc"] then
 			kind(project_kind or "StaticLib")
-
 		else
-			dependson { "RunProjectBuild", "BuildDependencies", "BuildEngine" }
-
-			if (project_name:sub(-6, -1) == "Module") then
-				dependson { "BuildModuleLibraries" }
-			end
-
-			kind "Makefile"
-
-			buildcommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
-
-			cleancommands
-			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --clean --project " .. project_name .. " --config %{cfg.buildcfg}"
-			}
+			kind "None"
 		end
 end
 

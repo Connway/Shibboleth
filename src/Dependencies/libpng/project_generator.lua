@@ -1,7 +1,4 @@
 DepProject "libpng"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Default"
 

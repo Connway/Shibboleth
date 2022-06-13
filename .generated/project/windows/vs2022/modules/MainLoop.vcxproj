@@ -74,42 +74,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)MainLoop64d</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --project MainLoop --config Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --clean --project MainLoop --config Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)MainLoop64</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --project MainLoop --config Release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --clean --project MainLoop --config Release</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)MainLoop64p</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --project MainLoop --config Profile</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --clean --project MainLoop --config Profile</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)MainLoop64od</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --project MainLoop --config Optimized_Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --clean --project MainLoop --config Optimized_Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

@@ -1,7 +1,4 @@
 DepProject "GLFW"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Extra"
 

@@ -1,7 +1,4 @@
-DepProject "CivetWeb"
-	location(GetDependenciesLocation())
-
-	kind "SharedLib"
+DepProject("CivetWeb", "SharedLib")
 	language "C++"
 	warnings "Extra"
 
@@ -29,8 +26,8 @@ DepProject "CivetWeb"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 	}
 
 	filter { "system:windows" }

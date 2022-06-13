@@ -1,7 +1,4 @@
 DepProject "mpack"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	-- warnings "Default"
 

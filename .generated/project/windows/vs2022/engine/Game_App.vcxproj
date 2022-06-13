@@ -103,62 +103,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)Game_App64d</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --project Game_App --config Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --clean --project Game_App --config Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)Game_App64</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --project Game_App --config Release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --clean --project Game_App --config Release</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)Game_App64p</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --project Game_App --config Profile</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --clean --project Game_App --config Profile</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)Game_App64od</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --project Game_App --config Optimized_Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --clean --project Game_App --config Optimized_Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
     <NMakeOutput>$(OutDir)Game_App64sd</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64sd build --project Game_App --config Static_Debug_D3D11</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64sd build --clean --project Game_App --config Static_Debug_D3D11</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64sd";TARGET_SUFFIX="64sd";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
     <NMakeOutput>$(OutDir)Game_App64s</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64s build --project Game_App --config Static_Release_D3D11</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64s build --clean --project Game_App --config Static_Release_D3D11</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64s";TARGET_SUFFIX="64s";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;SHIB_STATIC;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

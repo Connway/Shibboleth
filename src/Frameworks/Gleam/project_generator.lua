@@ -1,5 +1,4 @@
 FrameworkProject "Gleam"
-	kind "StaticLib"
 	language "C++"
 
 	flags { "FatalWarnings" }

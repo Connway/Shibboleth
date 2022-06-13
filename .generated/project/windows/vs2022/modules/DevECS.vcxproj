@@ -74,42 +74,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)DevECS64d</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --project DevECS --config Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --clean --project DevECS --config Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)DevECS64</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --project DevECS --config Release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --clean --project DevECS --config Release</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)DevECS64p</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --project DevECS --config Profile</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --clean --project DevECS --config Profile</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)DevECS64od</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --project DevECS --config Optimized_Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --clean --project DevECS --config Optimized_Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

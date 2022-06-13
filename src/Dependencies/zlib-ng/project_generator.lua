@@ -1,7 +1,4 @@
 DepProject "zlib-ng"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Default"
 

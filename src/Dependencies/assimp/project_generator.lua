@@ -1,7 +1,4 @@
 DepProject "assimp"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C++"
 	warnings "Default"
 

@@ -5,12 +5,9 @@ end
 require("premake-qt/qt")
 local qt = premake.extensions.qt
 
-DepProject "ads"
+DepProject("ads", "SharedLib")
 	qt.enable()
 
-	location(GetDependenciesLocation())
-
-	kind "SharedLib"
 	language "C++"
 	warnings "Extra"
 
@@ -51,8 +48,8 @@ DepProject "ads"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 	}
 
 	SetupConfigMap()

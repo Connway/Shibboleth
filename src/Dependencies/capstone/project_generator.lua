@@ -1,9 +1,6 @@
 Group "Dependencies/Unused By Engine"
 
 DepProject "capstone"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Extra"
 

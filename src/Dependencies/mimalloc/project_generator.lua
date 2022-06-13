@@ -1,8 +1,4 @@
 DepProject "mimalloc"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
-	-- kind "SharedLib"
 	language "C++"
 	warnings "Default"
 

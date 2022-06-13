@@ -1,5 +1,4 @@
 FrameworkProject "Esprit"
-	kind "StaticLib"
 	language "C++"
 
 	flags { "FatalWarnings" }

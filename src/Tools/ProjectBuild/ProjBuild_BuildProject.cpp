@@ -51,10 +51,10 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 #endif
 
 
-	if (!program.is_used("--project")) {
-		std::cout << "--project not specified." << std::endl;
-		return static_cast<int>(Error::BuildProject_NoProjectSpecified);
-	}
+	//if (!program.is_used("--project")) {
+	//	std::cout << "--project not specified." << std::endl;
+	//	return static_cast<int>(Error::BuildProject_NoProjectSpecified);
+	//}
 
 	if (!program.is_used("--config")) {
 		std::cout << "--config not specified." << std::endl;
@@ -86,11 +86,18 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 	vs_dir.pop_back(); // Remove newline.
 
 	const std::string vcvars = "\"" + vs_dir + "\\VC\\Auxiliary\\Build\\vcvarsall.bat\" amd64";
-	std::string msbuild = "msbuild .generated/preproc/project/" + std::string(k_platform_folder) + "/Shibboleth-Preproc.sln -m -p:Configuration=" +
-		program.get<std::string>("--config") + " -t:" + program.get<std::string>("--project");
+	std::string msbuild = "msbuild .generated/preproc/project/" + std::string(k_platform_folder) +
+		"/Shibboleth-Preproc.sln -m -p:Configuration=" + program.get<std::string>("--config");
 
-	if (program.get<bool>("--clean")) {
-		msbuild += ":Clean";
+	if (program.is_used("--project")) {
+		msbuild += " -t:" + program.get<std::string>("--project");
+
+		if (program.get<bool>("--clean")) {
+			msbuild += ":Clean";
+		}
+
+	} else if (program.get<bool>("--clean")) {
+		msbuild += " /t:Clean";
 	}
 
 	const std::string final_command = vcvars + " && " + msbuild;
@@ -103,6 +110,4 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 
 
 	return system(final_command.c_str());
-
-	return 0;
 }

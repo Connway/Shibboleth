@@ -74,42 +74,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)Physics64d</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --project Physics --config Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --clean --project Physics --config Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;PX_PHYSX_STATIC_LIB;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\tracy;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Modules\ECS\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)Physics64</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --project Physics --config Release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --clean --project Physics --config Release</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;SHIB_STATIC;PX_PHYSX_STATIC_LIB;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\tracy;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Modules\ECS\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)Physics64p</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --project Physics --config Profile</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --clean --project Physics --config Profile</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;PX_PHYSX_STATIC_LIB;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\tracy;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Modules\ECS\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)Physics64od</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --project Physics --config Optimized_Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --clean --project Physics --config Optimized_Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;SHIB_STATIC;PX_PHYSX_STATIC_LIB;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Physics\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\tracy;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Modules\ECS\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

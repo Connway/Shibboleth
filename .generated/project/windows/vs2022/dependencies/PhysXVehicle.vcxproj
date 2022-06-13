@@ -21,37 +21,40 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A1CA1E15-8D2D-AEB9-36B3-E66F22F5793C}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>PhysXVehicle</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\PhysXVehicle\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\PhysXVehicle\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\PhysXVehicle\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\PhysXVehicle\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -70,126 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\PhysXVehicle\</IntDir>
-    <TargetName>PhysXVehicle64d</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <NMakeOutput>$(OutDir)PhysXVehicle64d</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\PhysXVehicle\</IntDir>
-    <TargetName>PhysXVehicle64</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <NMakeOutput>$(OutDir)PhysXVehicle64</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\PhysXVehicle\</IntDir>
-    <TargetName>PhysXVehicle64p</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <NMakeOutput>$(OutDir)PhysXVehicle64p</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\PhysXVehicle\</IntDir>
-    <TargetName>PhysXVehicle64od</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <NMakeOutput>$(OutDir)PhysXVehicle64od</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\extensions;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\physxprofilesdk;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\include\vehicle;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\serialization\Xml;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\core\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\extensions\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src\physxmetadata\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvdsdk\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_SUPPORT_PVD=0;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\extensions;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\physxprofilesdk;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\include\vehicle;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\serialization\Xml;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\core\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\extensions\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src\physxmetadata\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvdsdk\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\extensions;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\physxprofilesdk;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\include\vehicle;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\serialization\Xml;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\core\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\extensions\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src\physxmetadata\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvdsdk\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;PX_PHYSX_STATIC_LIB;PX_DEBUG=1;PX_CHECKED=1;PX_NVTX=0;PX_SUPPORT_PVD=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\extensions;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\physxprofilesdk;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\include\vehicle;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxextensions\src\serialization\Xml;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\core\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\extensions\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src\physxmetadata\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxvehicle\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvdsdk\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
+  <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\include\vehicle\PxVehicleComponents.h" />

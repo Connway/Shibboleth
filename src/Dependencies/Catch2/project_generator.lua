@@ -1,7 +1,4 @@
 DepProject "Catch2"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C++"
 	warnings "Extra"
 

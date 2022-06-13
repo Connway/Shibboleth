@@ -1,5 +1,4 @@
-FrameworkProject "Gaff"
-	kind "StaticLib"
+FrameworkProject("Gaff", "StaticLib", true)
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }

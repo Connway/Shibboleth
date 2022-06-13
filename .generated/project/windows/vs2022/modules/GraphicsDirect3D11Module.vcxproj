@@ -74,42 +74,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64d</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --project GraphicsDirect3D11Module --config Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64d build --clean --project GraphicsDirect3D11Module --config Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --project GraphicsDirect3D11Module --config Release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64 build --clean --project GraphicsDirect3D11Module --config Release</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64p</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --project GraphicsDirect3D11Module --config Profile</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64p build --clean --project GraphicsDirect3D11Module --config Profile</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64od</NMakeOutput>
-    <NMakeBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --project GraphicsDirect3D11Module --config Optimized_Debug</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>chdir ..\..\..\..\..\workingdir\tools
-ProjectBuild64od build --clean --project GraphicsDirect3D11Module --config Optimized_Debug</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;USE_D3D11;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include</NMakeIncludeSearchPath>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>

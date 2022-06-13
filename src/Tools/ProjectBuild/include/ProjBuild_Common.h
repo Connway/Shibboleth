@@ -26,6 +26,5 @@ static constexpr const char* const k_ignore_list[] =
 {
 	"CodeGenerator",
 	"Preprocessor",
-	"ProjectBuild",
-	"Memory"
+	"ProjectBuild"
 };

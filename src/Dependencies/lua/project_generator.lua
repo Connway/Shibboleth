@@ -1,7 +1,4 @@
 DepProject "Lua"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Extra"
 

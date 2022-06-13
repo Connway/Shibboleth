@@ -1,9 +1,6 @@
 Group "Dependencies/Unused By Engine"
 
 DepProject "sqlite"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Extra"
 

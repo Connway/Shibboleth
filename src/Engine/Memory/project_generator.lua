@@ -1,17 +1,20 @@
-EngineProject("Memory", "SharedLib", true)
+EngineProject("Memory", "SharedLib")
 	language "C++"
-	defines { "IS_MEMORY" }
 
 	files { "**.h", "**.cpp", "**.inl" }
+	defines { "IS_MEMORY" }
+
+	local source_dir = GetEngineSourceDirectory("Memory")
+	local base_dir = GetEngineDirectory("Memory")
 
 	includedirs
 	{
-		"include",
-		"../../Engine/Engine/include",
-		"../../Frameworks/Gaff/include",
-		"../../Dependencies/mimalloc/include",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/tracy"
+		source_dir .. "include",
+		source_dir .. "../../Engine/Engine/include",
+		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .."../../Dependencies/mimalloc/include",
+		base_dir .."../../Dependencies/EASTL/include",
+		base_dir .."../../Dependencies/tracy"
 	}
 
 	local deps =
@@ -44,8 +47,8 @@ EngineProject("Memory", "SharedLib", true)
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 	}
 
 	SetupConfigMap()

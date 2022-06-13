@@ -1,10 +1,7 @@
 function PhysXProject(proj_name, lib_type)
-	DepProject(proj_name)
-
-	location(GetDependenciesLocation())
+	DepProject(proj_name, lib_type)
 
 	cppdialect "C++17" -- C++20 breaks this library.
-	kind(lib_type)
 	language "C++"
 
 	includedirs
@@ -51,8 +48,8 @@ function PhysXProject(proj_name, lib_type)
 	if lib_type == "SharedLib" then
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../workingdir/bin",
-			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+			"{MKDIR} ../../../../../../workingdir/bin",
+			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 		}
 	end
 
@@ -411,11 +408,11 @@ PhysXProject("PhysX", "StaticLib")
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
+			"{MKDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{MOVE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
+			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../../workingdir/bin",
+			"{RMDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
 		}
 
 	filter { "system:windows", "configurations:*Release* or *Optimized_Debug* or *Profile*" }
@@ -423,11 +420,11 @@ PhysXProject("PhysX", "StaticLib")
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp",
-			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp"
+			"{MKDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp",
+			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{MOVE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
+			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../../workingdir/bin",
+			"{RMDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp"
 		}
 
 	filter { "system:not windows" }

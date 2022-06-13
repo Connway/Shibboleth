@@ -1,7 +1,4 @@
 DepProject "libtiff"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
 	language "C"
 	warnings "Default"
 

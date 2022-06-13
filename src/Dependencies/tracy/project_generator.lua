@@ -1,6 +1,4 @@
-DepProject "TracyClient"
-	location(GetDependenciesLocation())
-
+DepProject("TracyClient", "SharedLib")
 	local build_files_in_dir = function(dir)
 		files
 		{
@@ -11,7 +9,6 @@ DepProject "TracyClient"
 		}
 	end
 
-	kind "SharedLib"
 	language "C++"
 	warnings "Extra"
 
@@ -31,8 +28,8 @@ DepProject "TracyClient"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
 	}
 
 	filter { "system:not windows" }
@@ -51,9 +48,7 @@ DepProject "TracyClient"
 
 	SetupConfigMap()
 
-DepProject "TracyProfiler"
-	location(GetDependenciesLocation())
-
+DepProject("TracyProfiler", "WindowedApp")
 	local build_files_in_dir = function(dir)
 		files
 		{
@@ -64,7 +59,6 @@ DepProject "TracyProfiler"
 		}
 	end
 
-	kind "WindowedApp"
 	language "C++"
 	warnings "Extra"
 
@@ -101,8 +95,8 @@ DepProject "TracyProfiler"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+		"{MKDIR} ../../../../../../workingdir/tools",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tools"
 	}
 
 	filter { "system:linux", "options:not wayland" }

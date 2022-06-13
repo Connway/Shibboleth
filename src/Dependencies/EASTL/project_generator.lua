@@ -1,7 +1,4 @@
-project "EASTL"
-	location(GetDependenciesLocation())
-
-	kind "StaticLib"
+DepProject("EASTL", "StaticLib", true)
 	language "C++"
 	warnings "Extra"
 
