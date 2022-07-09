@@ -33,7 +33,7 @@ int main(int argc, const char** argv)
 		.help("(Optional) The root directory of the project.")
 		.default_value<std::string>("../..");
 
-	program.add_argument("--module", "-t")
+	program.add_argument("--module", "-m")
 		.help("(Optional) Given name is for a module. Looks only in module directory instead of searching.")
 		.default_value(false)
 		.implicit_value(true);
@@ -48,9 +48,12 @@ int main(int argc, const char** argv)
 		.default_value(false)
 		.implicit_value(true);
 
-	program.add_argument("module_or_tool_name")
-		.help("Module or tool to do preprocessing on.");
+	program.add_argument("--file", "-f")
+		.help("(Optional) Process a specific file from the given module or tool. Requires --module, --tool, or --engine.");
 
+	program.add_argument<std::string>("module_or_tool_name")
+		.help("Module or tool to do preprocessing on.");
+	
 	DoPreproc_AddArguments(program);
 
 	try {

@@ -12,9 +12,13 @@
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Errors.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFile.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_DoPreproc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFile.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preprocessor.cpp" />
   </ItemGroup>
 </Project>

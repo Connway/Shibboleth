@@ -20,17 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#pragma	once
 
-enum class Error
-{
-	Success = 0,
+#include <string>
 
-	DoPreproc_PathNotFound = -1,
-	DoPreproc_FailedToOpenInputFile = -2,
-	DoPreproc_FailedToOpenOutputFile = -3,
-	DoPreproc_FailedToReadOutputFile = -4,
-	DoPreproc_FailedToWriteOutputFile = -5,
-	DoPreproc_FailedToCreateOutputDir = -6,
-	DoPreproc_FailedToProcessFile = -7
-};
+bool Preproc_ParseFile(std::string_view file_text, std::string& out_text);
