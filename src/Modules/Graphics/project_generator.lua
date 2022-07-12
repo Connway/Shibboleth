@@ -23,7 +23,7 @@ function DoMainGraphicsModule()
 		includedirs
 		{
 			source_dir .. "include",
-			base_dir .. "../../Engine/Memory/include",
+			source_dir .. "../../Engine/Memory/include",
 			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/assimp/include",
@@ -73,7 +73,7 @@ function DoGraphicsModule(renderer)
 		includedirs
 		{
 			source_dir .. "include",
-			base_dir .. "../../Engine/Memory/include",
+			source_dir .. "../../Engine/Memory/include",
 			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glfw/include",

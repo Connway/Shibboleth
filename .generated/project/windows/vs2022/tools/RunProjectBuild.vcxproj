@@ -107,7 +107,6 @@
 ProjectBuild64d generate_headers
 ProjectBuild64d preprocessor
 ProjectBuild64d generate_project
-ProjectBuild64d update_modified_database
 ProjectBuild64d build --config Debug</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64d build --config Debug --clean
@@ -123,7 +122,6 @@ ProjectBuild64d build --config Debug --clean</NMakeCleanCommandLine>
 ProjectBuild64 generate_headers
 ProjectBuild64 preprocessor
 ProjectBuild64 generate_project
-ProjectBuild64 update_modified_database
 ProjectBuild64 build --config Release</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64 build --config Release --clean
@@ -139,7 +137,6 @@ ProjectBuild64 build --config Release --clean</NMakeCleanCommandLine>
 ProjectBuild64p generate_headers
 ProjectBuild64p preprocessor
 ProjectBuild64p generate_project
-ProjectBuild64p update_modified_database
 ProjectBuild64p build --config Profile</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64p build --config Profile --clean
@@ -155,7 +152,6 @@ ProjectBuild64p build --config Profile --clean</NMakeCleanCommandLine>
 ProjectBuild64od generate_headers
 ProjectBuild64od preprocessor
 ProjectBuild64od generate_project
-ProjectBuild64od update_modified_database
 ProjectBuild64od build --config Optimized_Debug</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64od build --config Optimized_Debug --clean
@@ -171,7 +167,6 @@ ProjectBuild64od build --config Optimized_Debug --clean</NMakeCleanCommandLine>
 ProjectBuild64sd generate_headers
 ProjectBuild64sd preprocessor
 ProjectBuild64sd generate_project
-ProjectBuild64sd update_modified_database
 ProjectBuild64sd build --config Static_Debug_D3D11</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64sd build --config Static_Debug_D3D11 --clean
@@ -187,7 +182,6 @@ ProjectBuild64sd build --config Static_Debug_D3D11 --clean</NMakeCleanCommandLin
 ProjectBuild64s generate_headers
 ProjectBuild64s preprocessor
 ProjectBuild64s generate_project
-ProjectBuild64s update_modified_database
 ProjectBuild64s build --config Static_Release_D3D11</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>chdir ..\..\..\..\..\workingdir\tools
 ProjectBuild64s build --config Static_Release_D3D11 --clean

@@ -26,7 +26,7 @@ function ModuleIncludesAndLinks(module_name, base_name)
 	{
 		source_dir .. "include",
 		base_dir .. "../../Frameworks/Gaff/include",
-		base_dir .. "../../Engine/Memory/include",
+		source_dir .. "../../Engine/Memory/include",
 		source_dir .. "../../Engine/Engine/include",
 		base_dir .. "../../Dependencies/EASTL/include"
 	}

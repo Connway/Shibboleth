@@ -72,7 +72,7 @@ int DoPreproc_CopyFile(
 }
 
 int DoPreproc_ProcessFile(
-	const argparse::ArgumentParser& /*program*/,
+	const argparse::ArgumentParser& program,
 	const std::string& /*name*/,
 	const std::string& dir,
 	const std::string& gen_dir,
@@ -86,13 +86,16 @@ int DoPreproc_ProcessFile(
 		return static_cast<int>(Error::DoPreproc_FailedToOpenInputFile);
 	}
 
-	std::string new_output_file_text;
+	ParseData parse_data;
 	std::string file_text;
 
 	file_text.resize(file.getFileSize());
 	file.readEntireFile(file_text.data());
 
-	if (!Preproc_ParseFile(file_text, new_output_file_text)) {
+	parse_data.include_dirs = program.get< std::vector<std::string> >("--include");
+	parse_data.file_text = file_text;
+
+	if (!Preproc_ParseFile(parse_data)) {
 		std::cout << "Failed to process file '" << path.string() << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
 	}
@@ -139,7 +142,7 @@ int DoPreproc_ProcessFile(
 
 		// Don't write the output file if the resulting output is the same.
 		// $TODO: Database of timestamps to make this more optimal? Could also be used for CodeGenerator.
-		if (new_output_file_text == old_output_file_text) {
+		if (parse_data.out_text == old_output_file_text) {
 			return static_cast<int>(Error::Success);
 		}
 
@@ -153,7 +156,7 @@ int DoPreproc_ProcessFile(
 		return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 	}
 
-	if (!output_file.writeString(new_output_file_text.c_str())) {
+	if (!output_file.writeString(parse_data.out_text.c_str())) {
 		std::cout << "Failed to write output file '" << output_file_path << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 	}
@@ -215,7 +218,7 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 	constexpr const char* const k_engine_dir = "src/Engine";
 	constexpr const char* const k_tool_dir = "src/Tools";
 
-	const std::string& name = program.get("module_or_tool_name");
+	const std::string name = program.get("module_or_tool_name");
 	const bool force_module = program.get<bool>("--module");
 	const bool force_engine = program.get<bool>("--engine");
 	const bool force_tool = program.get<bool>("--tool");
@@ -223,7 +226,7 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 	int ret = static_cast<int>(Error::Success);
 
 	if (program.is_used("--file")) {
-		const std::string& file_name = program.get<std::string>("--file");
+		const std::string file_name = program.get<std::string>("--file");
 
 		if (force_module) {
 			const std::string rel_path = std::string(k_module_dir) + "/" + name + "/" + file_name;

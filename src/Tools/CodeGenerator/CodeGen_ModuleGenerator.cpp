@@ -105,9 +105,9 @@ static constexpr const char/*8_t*/* k_gen_module_project =
 
 		includedirs
 		{{
-			base_dir .. "include",
-			base_dir .. "../../Engine/Memory/include",
-			base_dir .. "../../Engine/Engine/include",
+			source_dir .. "include",
+			source_dir .. "../../Engine/Memory/include",
+			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",

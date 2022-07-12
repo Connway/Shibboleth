@@ -57,7 +57,14 @@ int UpdateModifiedDatabase_Run(const argparse::ArgumentParser& /*program*/)
 		}
 
 		const auto root_dir = entry.path().parent_path();
-		const std::u8string dir = root_dir.u8string();
+		std::u8string dir = root_dir.u8string();
+
+		size_t pos = dir.find(u8'\\');
+
+		while (pos != std::u8string::npos) {
+			dir[pos] = u8'/';
+			pos = dir.find(u8'\\');
+		}
 
 		if (database.getObject(dir.c_str()).isNull()) {
 			database.setObject(dir.c_str(), Gaff::JSON::CreateObject());
@@ -69,7 +76,7 @@ int UpdateModifiedDatabase_Run(const argparse::ArgumentParser& /*program*/)
 		db_entry.setObject(entry.path().filename().u8string().c_str(), Gaff::JSON::CreateInt64(write_time));
 	}
 
-	if (std::filesystem::is_regular_file(database_file)) {
+	if (std::filesystem::exists(database_file)) {
 		std::filesystem::remove(database_file);
 	}
 

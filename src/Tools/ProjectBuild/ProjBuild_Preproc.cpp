@@ -24,13 +24,28 @@ THE SOFTWARE.
 #include "ProjBuild_Common.h"
 #include "ProjBuild_Errors.h"
 #include <Gaff_Utils.h>
+#include <Gaff_File.h>
 #include <argparse.hpp>
 #include <filesystem>
 
-static constexpr const char* const k_preproc_name = "Preprocessor" TARGET_SUFFIX;
-static constexpr const char* const k_modules_path = "src/Modules";
-static constexpr const char* const k_engine_path = "src/Engine";
-static constexpr const char* const k_tools_path = "src/Tools";
+namespace
+{
+	static constexpr const char* const k_preproc_name = "Preprocessor" TARGET_SUFFIX;
+	static constexpr const char* const k_modules_path = "src/Modules";
+	static constexpr const char* const k_engine_path = "src/Engine";
+	static constexpr const char* const k_tools_path = "src/Tools";
+
+	//struct ModuleData final
+	//{
+	//	std::vector<std::string> include_dirs;
+	//	std::filesystem::path base_path;
+	//};
+
+	//struct PreprocData final
+	//{
+	//	std::vector<ModuleData> modules;
+	//};
+}
 
 static int RunPreproc(const argparse::ArgumentParser& /*program*/, const std::filesystem::path& path)
 {
@@ -79,6 +94,46 @@ static int RunPreproc(const argparse::ArgumentParser& /*program*/, const std::fi
 			preproc_cmd += " --tool";
 		} else if (path == k_engine_path) {
 			preproc_cmd += " --engine";
+		}
+
+		const std::string proj_gen_path = "../../" + module_path.string() + "/project_generator.lua";
+		Gaff::File proj_gen_file(proj_gen_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+
+		if (proj_gen_file.isOpen()) {
+			std::string proj_gen_text;
+
+			proj_gen_text.resize(proj_gen_file.getFileSize());
+			proj_gen_file.readEntireFile(proj_gen_text.data());
+
+			// Find all includedirs calls.
+			size_t pos = proj_gen_text.find("includedirs");
+
+			while (pos != std::string::npos) {
+				pos = proj_gen_text.find('{', pos);
+				const size_t end_pos = proj_gen_text.find('}', pos);
+
+				// Iterate over all include dirs. Ignore source_dir/base_dir additions. We can deduce that from the rest of the path.
+				std::string_view include_dirs = static_cast<std::string_view>(proj_gen_text).substr(pos, end_pos - pos + 1);
+				size_t dir_start = include_dirs.find('"');
+
+				while (dir_start != std::string_view::npos) {
+					size_t dir_end = include_dirs.find('"', dir_start + 1);
+
+					const std::string_view dir = include_dirs.substr(dir_start + 1, dir_end - dir_start - 1);
+					const std::filesystem::path abs_path = std::filesystem::absolute("../../" + module_path.string() + "/" + std::string(dir));
+
+					preproc_cmd += " -i " + abs_path.string();
+
+					dir_start = include_dirs.find('"', dir_end + 1);
+				}
+
+				pos = proj_gen_text.find("includedirs", end_pos);
+			}
+
+			proj_gen_file.close();
+
+		} else {
+			// $TODO: Log warning.
 		}
 
 		std::wcout.flush();

@@ -33,7 +33,7 @@ local GenerateProject = function()
 		{
 			source_dir .. "include",
 			source_dir .. "../../Engine/Engine/include",
-			base_dir .. "../../Engine/Memory/include",
+			source_dir .. "../../Engine/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			--source_dir .. "../../Modules/Graphics/include",
 			source_dir .. "../../Modules/MainLoop/include",

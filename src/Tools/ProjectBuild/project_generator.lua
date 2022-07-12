@@ -58,7 +58,7 @@ if not _OPTIONS["generate-preproc"] then
 				"ProjectBuild%{cfg.buildtarget.suffix} generate_headers",
 				"ProjectBuild%{cfg.buildtarget.suffix} preprocessor",
 				"ProjectBuild%{cfg.buildtarget.suffix} generate_project",
-				"ProjectBuild%{cfg.buildtarget.suffix} update_modified_database",
+				--"ProjectBuild%{cfg.buildtarget.suffix} update_modified_database",
 				"ProjectBuild%{cfg.buildtarget.suffix} build --config %{cfg.buildcfg}"
 			}
 

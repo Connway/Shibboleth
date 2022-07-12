@@ -23,5 +23,78 @@ THE SOFTWARE.
 #pragma	once
 
 #include <string>
+#include <vector>
+#include <map>
 
-bool Preproc_ParseFile(std::string_view file_text, std::string& out_text);
+// Stop when we hit a newline or a semi-colon.
+constexpr const char* const k_parse_until_tokens = " \n\f\r\t\v";
+constexpr const char* const k_newline_chars = "\n\f\r";
+
+enum class BlockRangeType
+{
+	BlockComment,
+	LineComment,
+
+	StringLiteral,
+	CharLiteral,
+
+	Scope,
+
+	Count,
+
+	IgnoreBlocksStart = BlockComment,
+	IgnoreBlocksEnd = CharLiteral,
+	IgnoreBlocksCount = IgnoreBlocksEnd - IgnoreBlocksStart + 1,
+
+	//EmbeddableBlocksStart = Scope,
+	//EmbeddableBlocksEnd = Scope,
+	//EmbeddableBlocksCount = EmbeddableBlocksStart - EmbeddableBlocksEnd + 1,
+};
+
+constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)][2] =
+{
+	{ "/*", "*/" },
+	{ "//", nullptr },
+	{ "\"", "\"" },
+	{ "'", "'" },
+	{ "{", "}" }
+};
+
+struct BlockRange final
+{
+	size_t start = std::string_view::npos;
+	size_t end = std::string_view::npos;
+};
+
+struct ClassData final
+{
+	std::string name;
+	std::string declaration_text; // Text between curly braces.
+	std::vector<std::string> mixin_classes;
+};
+
+struct ClassRange final
+{
+	std::string name;
+	std::vector<BlockRange>::iterator scope_range;
+};
+
+struct ParseData final
+{
+	std::string_view file_text;
+	std::string out_text;
+
+	std::vector<std::string> include_dirs;
+	std::map<size_t, ClassData> class_data;
+
+	// Runtime info.
+	//std::vector<BlockRange> embed_ranges[static_cast<size_t>(BlockRangeType::EmbeddableBlocksCount)];
+	BlockRange block_ranges[static_cast<size_t>(BlockRangeType::IgnoreBlocksCount)];
+	std::vector<BlockRange> scope_ranges;
+	std::vector<ClassRange> class_stack;
+	size_t start_index = 0;
+	size_t next_index = 0;
+};
+
+void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int32_t depth = 0);
+bool Preproc_ParseFile(ParseData& parse_data);

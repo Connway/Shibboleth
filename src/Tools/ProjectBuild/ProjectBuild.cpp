@@ -48,7 +48,7 @@ int main(int argc, const char** argv)
 	BuildProject_AddArguments(program);
 	//Compile_AddArguments(program);
 	//Link_AddArguments(program);
-	UpdateModifiedDatabase_AddArguments(program);
+	//UpdateModifiedDatabase_AddArguments(program);
 
 
 	try {
@@ -84,8 +84,8 @@ int main(int argc, const char** argv)
 	//} else if (action == "link") {
 		//return Link_Run(program);
 
-	} else if (action == "update_modified_database") {
-		return UpdateModifiedDatabase_Run(program);
+	//} else if (action == "update_modified_database") {
+		//return UpdateModifiedDatabase_Run(program);
 
 	} else if (action == "all") {
 		using ActionFunction = int (*)(const argparse::ArgumentParser&);
@@ -93,10 +93,10 @@ int main(int argc, const char** argv)
 		{
 			GenerateHeaders_Run,
 			Preproc_Run,
-			GenerateProject_Run,
+			GenerateProject_Run//,
 			//Compile_Run,
 			//Link_Run,
-			UpdateModifiedDatabase_Run
+			//UpdateModifiedDatabase_Run
 		};
 
 		for (ActionFunction func : k_action_order) {

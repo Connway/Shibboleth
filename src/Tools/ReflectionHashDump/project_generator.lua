@@ -10,7 +10,7 @@ ToolProject "ReflectionHashDump"
 	includedirs
 	{
 		source_dir .. "../../Engine/Engine/include",
-		base_dir .. "../../Engine/Memory/include",
+		source_dir .. "../../Engine/Memory/include",
 		base_dir .. "../../Frameworks/Gaff/include",
 		base_dir .. "../../Dependencies/rapidjson",
 		base_dir .. "../../Dependencies/EASTL/include"

@@ -51,6 +51,11 @@ int main(int argc, const char** argv)
 	program.add_argument("--file", "-f")
 		.help("(Optional) Process a specific file from the given module or tool. Requires --module, --tool, or --engine.");
 
+	program.add_argument("--include", "-i")
+		.help("(Optional) Specifies include directories. Paths can be relative or absolute.")
+		.default_value< std::vector<std::string> >({})
+		.append();
+
 	program.add_argument<std::string>("module_or_tool_name")
 		.help("Module or tool to do preprocessing on.");
 	
