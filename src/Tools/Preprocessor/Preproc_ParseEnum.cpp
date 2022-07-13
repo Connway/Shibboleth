@@ -20,39 +20,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Preproc_ParseMixin.h"
+#include "Preproc_ParseEnum.h"
 #include "Preproc_ParseFile.h"
-#include <iostream>
 
-bool ParseMixin(std::string_view substr, ParseData& parse_data)
+// We currently have no special features that require processing enums.
+// Does nothing for now other than to mark enums so that "enum class" is not intepreted as a class.
+
+bool ParseEnum(std::string_view substr, ParseData& parse_data)
 {
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::MixinName)) {
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::EnumName)) {
 		return false;
 	}
 
-	// Found the name of a mixin.
-	if (parse_data.flags.testAll(ParseFlag::MixinName)) {
-		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+	// Found the name of an enum.
+	if (parse_data.flags.testAll(ParseFlag::EnumName)) {
+		// If marked "enum class", keep parsing.
+		if (substr == "class") {
+			return true;
+		} //else if (substr.back() == ';') {
+		//	// Just a forward declare.
+		//	parse_data.flags.clear(ParseFlag::EnumName);
+		//	return true;
+		//}
 
-		class_data.mixin_classes.emplace_back(substr);
+		// $TODO: Enum forward declares can take the form of "enum <name> : <type>;". Will need to handle that.
+		// $TODO: Enum names could (worst case) take the form of "enum <name>:<type>". Will need to handle that case.
+		// $TODO: Add enum data.
 
-		parse_data.flags.clear(ParseFlag::MixinName);
+		parse_data.flags.clear(ParseFlag::EnumName);
 		return true;
 	}
 
-	// Parse "mixin" token.
-	const size_t mixin_index = substr.find("mixin");
+	// Process "enum" token.
+	const size_t enum_index = substr.find("enum");
 
-	if (mixin_index != 0) {
+	if (enum_index != 0) {
 		return false;
 	}
 
-	if (parse_data.class_stack.empty()) {
-		std::cerr << "'mixin' used outside of a class or struct scope." << std::endl;
-		return true;
-	}
-
-	parse_data.flags.set(ParseFlag::MixinName);
+	parse_data.flags.set(ParseFlag::EnumName);
 	return true;
+}
+
+void ProcessEnumScopeOpen(ParseData& /*parse_data*/)
+{
+}
+
+void ProcessEnumScopeClose(ParseData& /*parse_data*/)
+{
 }

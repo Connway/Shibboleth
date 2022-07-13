@@ -20,39 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Preproc_ParseMixin.h"
+#include "Preproc_ParseNamespace.h"
 #include "Preproc_ParseFile.h"
-#include <iostream>
 
-bool ParseMixin(std::string_view substr, ParseData& parse_data)
+bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 {
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::MixinName)) {
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::NamespaceName)) {
 		return false;
 	}
 
-	// Found the name of a mixin.
-	if (parse_data.flags.testAll(ParseFlag::MixinName)) {
-		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+	// Found the name of an Namespace.
+	if (parse_data.flags.testAll(ParseFlag::NamespaceName)) {
+		// $TODO: Add Namespace data.
 
-		class_data.mixin_classes.emplace_back(substr);
-
-		parse_data.flags.clear(ParseFlag::MixinName);
+		parse_data.flags.clear(ParseFlag::NamespaceName);
 		return true;
 	}
 
-	// Parse "mixin" token.
-	const size_t mixin_index = substr.find("mixin");
+	// Process "namespace" token.
+	const size_t namespace_index = substr.find("namespace");
 
-	if (mixin_index != 0) {
+	if (namespace_index == std::string_view::npos) {
 		return false;
 	}
 
-	if (parse_data.class_stack.empty()) {
-		std::cerr << "'mixin' used outside of a class or struct scope." << std::endl;
-		return true;
-	}
-
-	parse_data.flags.set(ParseFlag::MixinName);
+	parse_data.flags.set(ParseFlag::NamespaceName);
 	return true;
+}
+
+void ProcessNamespaceScopeOpen(ParseData& /*parse_data*/)
+{
+}
+
+void ProcessNamespaceScopeClose(ParseData& /*parse_data*/)
+{
 }

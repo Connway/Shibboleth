@@ -21,8 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Preproc_ParseFile.h"
+#include "Preproc_ParseNamespace.h"
 #include "Preproc_ParseClass.h"
 #include "Preproc_ParseMixin.h"
+#include "Preproc_ParseEnum.h"
 
 namespace
 {
@@ -204,7 +206,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			// Process things that care about new scopes.
 			constexpr ScopeFunc k_scope_open_funcs[] =
 			{
-				ProcessClassScopeOpen
+				ProcessClassScopeOpen,
+				ProcessEnumScopeOpen,
+				ProcessNamespaceScopeOpen
 			};
 
 			for (ScopeFunc scope_func : k_scope_open_funcs) {
@@ -237,7 +241,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 
 			constexpr ScopeFunc k_scope_close_funcs[] =
 			{
-				ProcessClassScopeClose
+				ProcessClassScopeClose,
+				ProcessEnumScopeClose,
+				ProcessNamespaceScopeClose
 			};
 
 			for (ScopeFunc scope_func : k_scope_close_funcs) {
@@ -265,7 +271,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 		constexpr ParseFunc k_parse_funcs[] =
 		{
 			ParseClass,
-			ParseMixin
+			ParseMixin,
+			ParseEnum,
+			ParseNamespace
 		};
 
 		for (ParseFunc parse_func : k_parse_funcs) {

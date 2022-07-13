@@ -82,14 +82,49 @@ struct ClassData final
 	std::string name;
 	std::string declaration_text; // Text between curly braces.
 	std::vector<std::string> mixin_classes;
-};
-
-struct ClassRange final
-{
-	std::string name;
-	size_t scope_range_index = SIZE_T_FAIL;
 	bool is_struct = false;
 };
+
+struct ClassRuntimeData final
+{
+	enum class Visibility
+	{
+		Public,
+		Private,
+		Protected
+	};
+
+	std::string name;
+	size_t scope_range_index = SIZE_T_FAIL;
+	Visibility curr_visibility = Visibility::Private;
+	bool is_struct = false;
+};
+
+struct ScopeRuntimeData final
+{
+	enum class Type
+	{
+		Unknown,
+		Class,
+		Namespace,
+		Conditional,
+		Loop
+	};
+
+	BlockRange range;
+	Type type = Type::Unknown;
+};
+
+//struct EnumData final
+//{
+//	std::string name;
+//};
+//
+//struct EnumRuntimeData final
+//{
+//	std::string name;
+//	size_t scope_range_index = SIZE_T_FAIL;
+//};
 
 // If copying runtime data becomes more of a hassle, use a struct for easy copying.
 //struct ParseRuntimeData final
@@ -102,6 +137,8 @@ enum class ParseFlag
 {
 	ClassStructName,
 	MixinName,
+	EnumName,
+	NamespaceName,
 
 	Count
 };
@@ -114,10 +151,12 @@ struct ParseData final
 	std::vector<std::string> include_dirs;
 	std::map<size_t, ClassData> class_data;
 
+	//std::map<size_t, EnumData> enum_data;
+
 	// Runtime info.
 	BlockRange block_ranges[static_cast<size_t>(BlockRangeType::IgnoreBlocksCount)];
+	std::vector<ClassRuntimeData> class_stack;
 	std::vector<BlockRange> scope_ranges;
-	std::vector<ClassRange> class_stack;
 
 	Gaff::Flags<ParseFlag> flags;
 

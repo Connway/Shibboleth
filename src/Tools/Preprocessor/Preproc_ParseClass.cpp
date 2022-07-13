@@ -37,11 +37,20 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 			parse_data.class_stack.pop_back();
 
 		} else if (!parse_data.class_stack.empty() && parse_data.class_stack.back().name.empty()) {
-			ClassRange& class_range = parse_data.class_stack.back();
-			class_range.name = substr;
+			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+			if (parse_data.class_stack.size() > 1) {
+				const auto it = parse_data.class_stack.end() - 2;
+				class_runtime_data.name = it->name + "::" + std::string(substr);
+
+			} else {
+				class_runtime_data.name = substr;
+			}
 
 			// Add class data to parse data.
-			parse_data.class_data[std::hash<std::string>{}(class_range.name)] = ClassData{ class_range.name };
+			ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+			class_data.is_struct = class_runtime_data.is_struct;
+			class_data.name = class_runtime_data.name;
 
 		} else {
 			std::cerr << "Was parsing a class or struct name, but no class data was present." << std::endl;
@@ -51,16 +60,47 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 		return true;
 	}
 
-	// Process 'class' or 'struct' tokens.
+	// Process "class" or "struct" tokens.
 	const size_t struct_index = substr.find("struct");
 	const size_t class_index = (struct_index == std::string_view::npos) ? substr.find("class") : std::string_view::npos;
+	const size_t public_index = (class_index == std::string_view::npos) ? substr.find("public") : std::string_view::npos;
+	const size_t private_index = (public_index == std::string_view::npos) ? substr.find("private") : std::string_view::npos;
+	const size_t protected_index = (private_index == std::string_view::npos) ? substr.find("protected") : std::string_view::npos;
 
 	if (struct_index == 0 || class_index == 0) {
 		parse_data.class_stack.emplace_back();
-		parse_data.class_stack.back().is_struct = struct_index != std::string_view::npos;
+
+		if (struct_index != std::string_view::npos) {
+			parse_data.class_stack.back().curr_visibility = ClassRuntimeData::Visibility::Public;
+			parse_data.class_stack.back().is_struct = true;
+		}
 
 		parse_data.flags.set(ParseFlag::ClassStructName);
 		return true;
+
+	} else if (public_index == 0) {
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
+			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Public;
+			return true;
+		}
+
+	} else if (private_index == 0) {
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
+			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Private;
+			return true;
+		}
+
+	} else if (protected_index == 0) {
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
+			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Protected;
+			return true;
+		}
 	}
 
 	return false;
@@ -76,6 +116,11 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 void ProcessClassScopeClose(ParseData& parse_data)
 {
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == (parse_data.scope_ranges.size() - 1)) {
+		// We have an anonymous class/struct.
+		if (parse_data.class_stack.back().name.empty()) {
+			// $TODO: Handle anonymous class/struct.
+		}
+
 		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(parse_data.class_stack.back().name)];
 		const BlockRange& scope_range = parse_data.scope_ranges.back();
 

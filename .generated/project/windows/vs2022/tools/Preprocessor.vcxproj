@@ -223,14 +223,18 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetF
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_DoPreproc.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Errors.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseClass.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseEnum.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFile.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseMixin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseNamespace.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_DoPreproc.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseClass.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseEnum.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFile.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseMixin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseNamespace.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preprocessor.cpp" />
   </ItemGroup>
   <ItemGroup>
