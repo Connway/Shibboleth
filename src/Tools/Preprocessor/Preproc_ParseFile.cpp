@@ -222,16 +222,6 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			parse_data.scope_ranges.pop_back();
 			// Process class scopes.
 
-			size_t count = 0;
-
-			for (auto it = parse_data.out_text.rbegin(); it != parse_data.out_text.rend(); ++it) {
-				if (*it == '\t') {
-					++count;
-				} else {
-					break;
-				}
-			}
-
 			// Preserve close scope marker.
 			parse_data.out_text += marker[1];
 
