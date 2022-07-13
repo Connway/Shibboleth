@@ -424,7 +424,6 @@ static int GenerateReflectionHeader(
 		std::u8string text(file.getFileSize() + 1, 0);
 
 		if (!file.readEntireFile(text.data())) {
-			std::cout << reinterpret_cast<const char*>(text.data()) << std::endl;
 			std::cerr << "Failed to read contents of '" << abs_path << "'." << std::endl;
 			continue;
 		}

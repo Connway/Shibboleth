@@ -120,6 +120,7 @@ public:
 	bool testAny(StorageType flags) const;
 	bool testRange(Enum start, Enum end) const;
 	bool empty(void) const;
+	bool any(void) const;
 
 	void setRange(bool value, Enum start, Enum end);
 	void set(bool value, StorageType flags);

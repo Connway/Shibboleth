@@ -52,12 +52,12 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 
 
 	//if (!program.is_used("--project")) {
-	//	std::cout << "--project not specified." << std::endl;
+	//	std::cerr << "--project not specified." << std::endl;
 	//	return static_cast<int>(Error::BuildProject_NoProjectSpecified);
 	//}
 
 	if (!program.is_used("--config")) {
-		std::cout << "--config not specified." << std::endl;
+		std::cerr << "--config not specified." << std::endl;
 		return static_cast<int>(Error::BuildProject_NoConfigSpecified);
 	}
 
@@ -65,7 +65,7 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 	FILE* const pipe = _popen("\"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe\" -latest -property installationPath", "r");
 
 	if (!pipe) {
-		std::cout << "Failed to run vswhere." << std::endl;
+		std::cerr << "Failed to run vswhere." << std::endl;
 		return static_cast<int>(Error::BuildProject_FailedToOpenVSDir);
 	}
 
@@ -79,7 +79,7 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 	_pclose(pipe);
 
 	if (vs_dir.empty()) {
-		std::cout << "Failed to find VS directory." << std::endl;
+		std::cerr << "Failed to find VS directory." << std::endl;
 		return static_cast<int>(Error::BuildProject_FailedToReadVSDir);
 	}
 

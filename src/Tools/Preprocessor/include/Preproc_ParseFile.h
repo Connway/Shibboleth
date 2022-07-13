@@ -20,8 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma	once
+#pragma once
 
+#include <Gaff_Flags.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -32,18 +33,23 @@ constexpr const char* const k_newline_chars = "\n\f\r";
 
 enum class BlockRangeType
 {
+	// Ignore Ranges
 	BlockComment,
 	LineComment,
 
 	StringLiteral,
 	CharLiteral,
 
+	TemplateArgs1,
+	TemplateArgs2,
+
+	// Scope Ranges
 	Scope,
 
 	Count,
 
 	IgnoreBlocksStart = BlockComment,
-	IgnoreBlocksEnd = CharLiteral,
+	IgnoreBlocksEnd = TemplateArgs2,
 	IgnoreBlocksCount = IgnoreBlocksEnd - IgnoreBlocksStart + 1,
 
 	//EmbeddableBlocksStart = Scope,
@@ -53,10 +59,15 @@ enum class BlockRangeType
 
 constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)][2] =
 {
+	// Ignore Ranges
 	{ "/*", "*/" },
 	{ "//", nullptr },
 	{ "\"", "\"" },
 	{ "'", "'" },
+	{ "template<", ">" },
+	{ "template <", ">" },
+
+	// Scope Ranges
 	{ "{", "}" }
 };
 
@@ -76,7 +87,23 @@ struct ClassData final
 struct ClassRange final
 {
 	std::string name;
-	std::vector<BlockRange>::iterator scope_range;
+	size_t scope_range_index = SIZE_T_FAIL;
+	bool is_struct = false;
+};
+
+// If copying runtime data becomes more of a hassle, use a struct for easy copying.
+//struct ParseRuntimeData final
+//{
+//	size_t start_index = 0;
+//	size_t next_index = 0;
+//};
+
+enum class ParseFlag
+{
+	ClassStructName,
+	MixinName,
+
+	Count
 };
 
 struct ParseData final
@@ -88,10 +115,12 @@ struct ParseData final
 	std::map<size_t, ClassData> class_data;
 
 	// Runtime info.
-	//std::vector<BlockRange> embed_ranges[static_cast<size_t>(BlockRangeType::EmbeddableBlocksCount)];
 	BlockRange block_ranges[static_cast<size_t>(BlockRangeType::IgnoreBlocksCount)];
 	std::vector<BlockRange> scope_ranges;
 	std::vector<ClassRange> class_stack;
+
+	Gaff::Flags<ParseFlag> flags;
+
 	size_t start_index = 0;
 	size_t next_index = 0;
 };

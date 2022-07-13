@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Preproc_ParseFile.h"
+#include "Preproc_ParseClass.h"
+#include "Preproc_ParseMixin.h"
 
 namespace
 {
@@ -186,6 +188,8 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 		const size_t start_index = parse_data.start_index;
 		const size_t end_index = parse_data.next_index;
 
+		using ScopeFunc = void (*)(ParseData&);
+
 		if (open_pos != std::string_view::npos) {
 			const std::string_view before_scope = substr.substr(0, open_pos);
 			const std::string_view after_scope = substr.substr(open_pos + strlen(marker[0]));
@@ -196,6 +200,16 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 
 			// Open new scope.
 			parse_data.scope_ranges.emplace_back(BlockRange{ start_index + open_pos, std::string_view::npos });
+
+			// Process things that care about new scopes.
+			constexpr ScopeFunc k_scope_open_funcs[] =
+			{
+				ProcessClassScopeOpen
+			};
+
+			for (ScopeFunc scope_func : k_scope_open_funcs) {
+				scope_func(parse_data);
+			}
 
 			// Preserve open scope marker.
 			parse_data.out_text += marker[0];
@@ -218,9 +232,20 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			parse_data.next_index = start_index + before_scope.size();
 			Preproc_ParseSubstring(before_scope, parse_data, depth + 1);
 
+			// Process things that care about closing scopes.
+			parse_data.scope_ranges.back().end = start_index + close_pos;
+
+			constexpr ScopeFunc k_scope_close_funcs[] =
+			{
+				ProcessClassScopeClose
+			};
+
+			for (ScopeFunc scope_func : k_scope_close_funcs) {
+				scope_func(parse_data);
+			}
+
 			// Close previous scope.
 			parse_data.scope_ranges.pop_back();
-			// Process class scopes.
 
 			// Preserve close scope marker.
 			parse_data.out_text += marker[1];
@@ -236,38 +261,18 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			append_text = false;
 		}
 
-		// Process 'class'/'struct' tokens.
-		// Found the name of the class.
-		//if (!parse_data.class_stack.empty() && parse_data.class_stack.back().name.empty()) {
-		//	// Check if class name has an opening bracket directly after it.
-		//	size_t class_name_count = std::string_view::npos;
+		using ParseFunc = bool (*)(std::string_view, ParseData&);
+		constexpr ParseFunc k_parse_funcs[] =
+		{
+			ParseClass,
+			ParseMixin
+		};
 
-		//	if (!parse_data.scope_ranges.empty() &&
-		//		parse_data.scope_ranges.back().start > parse_data.start_index &&
-		//		parse_data.scope_ranges.back().start < (parse_data.start_index + substr.size())) {
-
-		//		class_name_count = parse_data.scope_ranges.back().start - parse_data.start_index;
-		//	}
-
-		//	ClassRange& class_range = parse_data.class_stack.back();
-		//	class_range.name = substr.substr(0, class_name_count);
-
-		//	// Add class data to parse data.
-		//	parse_data.class_data[std::hash<std::string>{}(class_range.name)] = ClassData{ class_range.name };
-		//}
-
-		//const size_t struct_index = substr.find("struct");
-		//const size_t class_index = substr.find("class");
-
-		//if (struct_index != std::string_view::npos || class_index != std::string_view::npos) {
-		//	parse_data.class_stack.emplace_back();
-		//}
-
-		//const size_t mixin_index = substr.find("mixin");
-
-		//if (mixin_index != std::string_view::npos) {
-		//	append_text = false;
-		//}
+		for (ParseFunc parse_func : k_parse_funcs) {
+			if (parse_func(substr, parse_data)) {
+				break;
+			}
+		}
 
 		if (append_text) {
 			parse_data.out_text += substr;
@@ -301,6 +306,8 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 
 bool Preproc_ParseFile(ParseData& parse_data)
 {
+	//ParseRuntimeData runtime_data;
+
 	parse_data.next_index = parse_data.file_text.find_first_of(k_parse_until_tokens);
 
 	while (parse_data.next_index != std::string::npos) {
@@ -313,7 +320,7 @@ bool Preproc_ParseFile(ParseData& parse_data)
 
 		} else {
 			const std::string_view substr = parse_data.file_text.substr(parse_data.start_index, parse_data.next_index - parse_data.start_index);
-			Preproc_ParseSubstring(substr, parse_data);
+			Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
 		}
 
 		parse_data.start_index = parse_data.next_index + 1;
@@ -321,7 +328,7 @@ bool Preproc_ParseFile(ParseData& parse_data)
 	}
 
 	const std::string_view substr = parse_data.file_text.substr(parse_data.start_index);
-	Preproc_ParseSubstring(substr, parse_data);
+	Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
 
 	return true;
 }

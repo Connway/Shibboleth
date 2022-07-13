@@ -52,7 +52,7 @@ int DoPreproc_CopyFile(
 		const std::string out_dir = output_file_path.substr(0, pos);
 
 		if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
-			std::cout << "Failed to create output directory '" << out_dir << "'." << std::endl;
+			std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
 			return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
 		}
 
@@ -64,7 +64,7 @@ int DoPreproc_CopyFile(
 	std::filesystem::copy(path, output_file_path, std::filesystem::copy_options::overwrite_existing, error);
 
 	if (error) {
-		std::cout << error.message() << std::endl;
+		std::cerr << error.message() << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 	}
 
@@ -82,7 +82,7 @@ int DoPreproc_ProcessFile(
 	Gaff::File file(temp, Gaff::File::OpenMode::ReadBinary);
 
 	if (!file.isOpen()) {
-		std::cout << "Failed to open file '" << path << "'." << std::endl;
+		std::cerr << "Failed to open file '" << path << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToOpenInputFile);
 	}
 
@@ -96,7 +96,7 @@ int DoPreproc_ProcessFile(
 	parse_data.file_text = file_text;
 
 	if (!Preproc_ParseFile(parse_data)) {
-		std::cout << "Failed to process file '" << path.string() << "'." << std::endl;
+		std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
 	}
 
@@ -117,7 +117,7 @@ int DoPreproc_ProcessFile(
 		const std::string out_dir = output_file_path.substr(0, pos);
 
 		if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
-			std::cout << "Failed to create output directory '" << out_dir << "'." << std::endl;
+			std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
 			return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
 		}
 
@@ -128,7 +128,7 @@ int DoPreproc_ProcessFile(
 		Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
 
 		if (!output_file.isOpen()) {
-			std::cout << "Failed to open output file '" << output_file_path << "'." << std::endl;
+			std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
 			return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 		}
 
@@ -136,7 +136,7 @@ int DoPreproc_ProcessFile(
 		old_output_file_text.resize(output_file.getFileSize());
 
 		if (!output_file.readEntireFile(old_output_file_text.data())) {
-			std::cout << "Failed to read output file '" << output_file_path << "'." << std::endl;
+			std::cerr << "Failed to read output file '" << output_file_path << "'." << std::endl;
 			return static_cast<int>(Error::DoPreproc_FailedToReadOutputFile);
 		}
 
@@ -152,12 +152,12 @@ int DoPreproc_ProcessFile(
 	Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
 
 	if (!output_file.isOpen()) {
-		std::cout << "Failed to open output file '" << output_file_path << "'." << std::endl;
+		std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 	}
 
 	if (!output_file.writeString(parse_data.out_text.c_str())) {
-		std::cout << "Failed to write output file '" << output_file_path << "'." << std::endl;
+		std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
 		return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 	}
 
@@ -173,7 +173,7 @@ int DoPreproc_ProcessDirectory(
 	const std::string path = dir + "/" + name;
 
 	if (!std::filesystem::is_directory(path)) {
-		std::cout << '"' << path << "\" is not a directory." << std::endl;
+		std::cerr << '"' << path << "\" is not a directory." << std::endl;
 		return static_cast<int>(Error::DoPreproc_PathNotFound);
 	}
 

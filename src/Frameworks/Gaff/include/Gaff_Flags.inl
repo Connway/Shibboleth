@@ -179,6 +179,12 @@ bool Flags<Enum>::empty(void) const
 }
 
 template <class Enum>
+bool Flags<Enum>::any(void) const
+{
+	return _flags.any();
+}
+
+template <class Enum>
 void Flags<Enum>::setRange(bool value, Enum start, Enum end)
 {
 	GAFF_ASSERT(static_cast<int32_t>(start) <= static_cast<int32_t>(end));
