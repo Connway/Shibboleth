@@ -43,13 +43,15 @@ enum class BlockRangeType
 	TemplateArgs1,
 	TemplateArgs2,
 
+	PreprocessorDirective,
+
 	// Scope Ranges
 	Scope,
 
 	Count,
 
 	IgnoreBlocksStart = BlockComment,
-	IgnoreBlocksEnd = TemplateArgs2,
+	IgnoreBlocksEnd = PreprocessorDirective,
 	IgnoreBlocksCount = IgnoreBlocksEnd - IgnoreBlocksStart + 1,
 
 	//EmbeddableBlocksStart = Scope,
@@ -66,6 +68,7 @@ constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)
 	{ "'", "'" },
 	{ "template<", ">" },
 	{ "template <", ">" },
+	{ "#", nullptr }, // Requires special processing.
 
 	// Scope Ranges
 	{ "{", "}" }
@@ -94,10 +97,18 @@ struct ClassRuntimeData final
 		Protected
 	};
 
+	enum class Flag
+	{
+		Struct,
+		Anonymous,
+
+		Count
+	};
+
 	std::string name;
 	size_t scope_range_index = SIZE_T_FAIL;
 	Visibility curr_visibility = Visibility::Private;
-	bool is_struct = false;
+	Gaff::Flags<Flag> flags;
 };
 
 struct ScopeRuntimeData final
@@ -106,11 +117,13 @@ struct ScopeRuntimeData final
 	{
 		Unknown,
 		Class,
+		Enum,
 		Namespace,
-		Conditional,
-		Loop
+		Conditional,	// Currently unused as we have no detection for it.
+		Loop			// Currently unused as we have no detection for it.
 	};
 
+	std::string name;
 	BlockRange range;
 	Type type = Type::Unknown;
 };
@@ -119,12 +132,28 @@ struct ScopeRuntimeData final
 //{
 //	std::string name;
 //};
-//
-//struct EnumRuntimeData final
-//{
-//	std::string name;
-//	size_t scope_range_index = SIZE_T_FAIL;
-//};
+
+struct EnumRuntimeData final
+{
+	enum class Flag
+	{
+		Valid,
+		Anonymous,
+
+		Count
+	};
+
+
+	std::string name;
+	size_t scope_range_index = SIZE_T_FAIL;
+	Gaff::Flags<Flag> flags;
+};
+
+struct NamespaceRuntimeData final
+{
+	std::string name;
+	bool valid = false;
+};
 
 // If copying runtime data becomes more of a hassle, use a struct for easy copying.
 //struct ParseRuntimeData final
@@ -133,18 +162,24 @@ struct ScopeRuntimeData final
 //	size_t next_index = 0;
 //};
 
-enum class ParseFlag
-{
-	ClassStructName,
-	MixinName,
-	EnumName,
-	NamespaceName,
-
-	Count
-};
-
 struct ParseData final
 {
+	enum class Flag
+	{
+		ClassStructName,
+		MixinName,
+		EnumName,
+		NamespaceName,
+
+		PreprocFirstToken,
+		PreprocFirstTokenClear,
+		PreprocConditional,
+		PreprocDefine,
+		PreprocSkipNewline,
+
+		Count
+	};
+
 	std::string_view file_text;
 	std::string out_text;
 
@@ -156,9 +191,11 @@ struct ParseData final
 	// Runtime info.
 	BlockRange block_ranges[static_cast<size_t>(BlockRangeType::IgnoreBlocksCount)];
 	std::vector<ClassRuntimeData> class_stack;
-	std::vector<BlockRange> scope_ranges;
+	std::vector<ScopeRuntimeData> scope_ranges;
+	NamespaceRuntimeData namespace_runtime; // Only have one instance of it as this data is temporary. It gets absorbed into ScopeRuntimeData after we process it enough.
+	EnumRuntimeData enum_runtime;
 
-	Gaff::Flags<ParseFlag> flags;
+	Gaff::Flags<Flag> flags;
 
 	size_t start_index = 0;
 	size_t next_index = 0;

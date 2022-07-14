@@ -123,6 +123,9 @@ public:
 	bool any(void) const;
 
 	void setRange(bool value, Enum start, Enum end);
+	void clearRange(Enum start, Enum end);
+	void setRange(Enum start, Enum end);
+
 	void set(bool value, StorageType flags);
 	void set(StorageType flags);
 	bool toggle(Enum flag);

@@ -44,53 +44,116 @@ namespace
 		return false;
 	}
 
-	static bool ProcessBlockRange(std::string_view substr, const ParseData& parse_data, BlockRange& range, BlockRangeType type, size_t offset = 0)
+	static void ProcessBlockRangeStart(std::string_view substr, const ParseData& parse_data, BlockRange& range, BlockRangeType type, size_t offset = 0)
 	{
 		const auto marker = k_range_markers[static_cast<size_t>(type)];
 
+		range.start = substr.find(marker[0], offset);
+
+		if (range.start != std::string_view::npos) {
+			range.start += parse_data.start_index;
+		}
+	}
+
+	static void ProcessBlockRangeEnd(std::string_view substr, const ParseData& parse_data, BlockRange& range, BlockRangeType type, size_t offset = 0)
+	{
+		const auto marker = k_range_markers[static_cast<size_t>(type)];
+
+		if (marker[1]) {
+			range.end = substr.find(marker[1], offset);
+
+			if (range.end != std::string_view::npos) {
+				range.end += parse_data.start_index + strlen(marker[1]);
+			}
+
+		} else if (parse_data.next_index != std::string_view::npos) {
+			if (parse_data.file_text.substr(parse_data.next_index, 1).find_first_of(k_newline_chars) != std::string_view::npos) {
+				range.end = parse_data.next_index;
+			}
+		}
+	}
+
+	static void ProcessBlockRange(std::string_view substr, const ParseData& parse_data, BlockRange& range, BlockRangeType type, size_t offset = 0)
+	{
+		const auto marker = k_range_markers[static_cast<size_t>(type)];
+
+		if (marker[0] == nullptr) {
+			return;
+		}
+
 		if (range.start == std::string_view::npos) {
-			range.start = substr.find(marker[0], offset);
+			ProcessBlockRangeStart(substr, parse_data, range, type, offset);
 
 			if (range.start != std::string_view::npos) {
-				if (marker[1]) {
-					range.end = substr.find(marker[1], range.start + 1);
-
-					if (range.end != std::string_view::npos) {
-						range.end += parse_data.start_index + strlen(marker[1]);
-					}
-
-				// Currently only used for line comments.
-				} else if (parse_data.next_index != std::string_view::npos) {
-					if (parse_data.file_text.substr(parse_data.next_index, 1).find_first_of(k_newline_chars) != std::string_view::npos) {
-						range.end = parse_data.next_index;
-					}
-				}
-
-				range.start += parse_data.start_index;
-				return true;
+				ProcessBlockRangeEnd(substr, parse_data, range, type, range.start + 1);
 			}
 
 		} else {
-			if (marker[1]) {
-				range.end = substr.find(marker[1], offset);
+			ProcessBlockRangeEnd(substr, parse_data, range, type, offset);
+		}
+	}
 
-				if (range.end != std::string_view::npos) {
-					range.end += parse_data.start_index + strlen(marker[1]);
-				}
+	static void ProcessPreprocessorDirective(std::string_view substr, ParseData& parse_data, BlockRange& range)
+	{
+		// Find opening '#' as normal.
+		if (range.start == std::string_view::npos) {
+			ProcessBlockRangeStart(substr, parse_data, range, BlockRangeType::PreprocessorDirective);
 
-			// Currently only used for line comments.
-			} else if (parse_data.next_index != std::string_view::npos) {
-				if (parse_data.file_text.substr(parse_data.next_index, 1).find_first_of(k_newline_chars) != std::string_view::npos) {
-					range.end = parse_data.next_index;
-				}
-			}
-
-			if (range.end != std::string_view::npos) {
-				return true;
+			if (range.start != std::string_view::npos) {
+				parse_data.flags.set(ParseData::Flag::PreprocFirstToken);
 			}
 		}
 
-		return false;
+		if (range.start != std::string_view::npos) {
+			if (parse_data.flags.testAll(ParseData::Flag::PreprocFirstToken) && substr != "#") {
+				if (substr.find("if") != std::string_view::npos) {
+					parse_data.flags.set(ParseData::Flag::PreprocConditional);
+				} else if (substr.find("define") != std::string_view::npos) {
+					parse_data.flags.set(ParseData::Flag::PreprocDefine);
+				}
+
+				parse_data.flags.set(ParseData::Flag::PreprocFirstTokenClear);
+			}
+
+			if (range.end == std::string_view::npos) {
+				if (parse_data.flags.testAll(ParseData::Flag::PreprocDefine) && substr.find('\\') != std::string_view::npos) {
+					ProcessBlockRangeEnd(substr, parse_data, range, BlockRangeType::PreprocessorDirective);
+					parse_data.flags.set(ParseData::Flag::PreprocSkipNewline);
+
+				} else if (parse_data.flags.testAll(ParseData::Flag::PreprocConditional)) {
+					if (!parse_data.flags.testAll(ParseData::Flag::PreprocFirstTokenClear)) {
+						if (!parse_data.flags.testAll(ParseData::Flag::PreprocFirstToken) && substr.find("#") != std::string_view::npos) {
+							parse_data.flags.set(ParseData::Flag::PreprocFirstToken);
+						}
+
+						if (parse_data.flags.testAll(ParseData::Flag::PreprocFirstToken) && substr != "#") {
+							parse_data.flags.set(ParseData::Flag::PreprocFirstTokenClear);
+
+							if (const size_t end_pos = substr.find("endif"); end_pos != std::string_view::npos) {
+								range.end = parse_data.start_index + end_pos + 5;
+							}
+						}
+					}
+
+				} else {
+					ProcessBlockRangeEnd(substr, parse_data, range, BlockRangeType::PreprocessorDirective);
+				}
+
+				if (range.end != std::string_view::npos && parse_data.flags.testAll(ParseData::Flag::PreprocSkipNewline)) {
+					parse_data.flags.clear(ParseData::Flag::PreprocSkipNewline);
+					range.end = std::string_view::npos;
+				}
+			}
+		}
+
+		if (parse_data.flags.testAll(ParseData::Flag::PreprocFirstTokenClear)) {
+			parse_data.flags.clear(ParseData::Flag::PreprocFirstTokenClear);
+			parse_data.flags.clear(ParseData::Flag::PreprocFirstToken);
+		}
+
+		if (range.end != std::string_view::npos) {
+			parse_data.flags.clearRange(ParseData::Flag::PreprocFirstToken, ParseData::Flag::PreprocSkipNewline);
+		}
 	}
 
 	static BlockRange ProcessIgnoreRange(std::string_view substr, ParseData& parse_data)
@@ -101,7 +164,13 @@ namespace
 
 		for (int32_t i = 0; i < static_cast<int32_t>(BlockRangeType::IgnoreBlocksCount); ++i) {
 			BlockRange& range = parse_data.block_ranges[i];
-			ProcessBlockRange(substr, parse_data, range, static_cast<BlockRangeType>(i));
+
+			// Ignore this for now. We need to process this differently.
+			if (i == static_cast<int32_t>(BlockRangeType::PreprocessorDirective)) {
+				ProcessPreprocessorDirective(substr, parse_data, range);
+			} else {
+				ProcessBlockRange(substr, parse_data, range, static_cast<BlockRangeType>(i));
+			}
 
 			ignore_range.start = std::min(ignore_range.start, range.start);
 			ignore_range.end = std::max(
@@ -201,7 +270,10 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			Preproc_ParseSubstring(before_scope, parse_data, depth + 1);
 
 			// Open new scope.
-			parse_data.scope_ranges.emplace_back(BlockRange{ start_index + open_pos, std::string_view::npos });
+			ScopeRuntimeData scope_data;
+			scope_data.range.start = start_index + open_pos;
+
+			parse_data.scope_ranges.emplace_back(scope_data);
 
 			// Process things that care about new scopes.
 			constexpr ScopeFunc k_scope_open_funcs[] =
@@ -237,7 +309,7 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			Preproc_ParseSubstring(before_scope, parse_data, depth + 1);
 
 			// Process things that care about closing scopes.
-			parse_data.scope_ranges.back().end = start_index + close_pos;
+			parse_data.scope_ranges.back().range.end = start_index + close_pos;
 
 			constexpr ScopeFunc k_scope_close_funcs[] =
 			{

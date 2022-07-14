@@ -28,26 +28,27 @@ THE SOFTWARE.
 
 bool ParseEnum(std::string_view substr, ParseData& parse_data)
 {
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::EnumName)) {
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::EnumName)) {
 		return false;
 	}
 
 	// Found the name of an enum.
-	if (parse_data.flags.testAll(ParseFlag::EnumName)) {
+	if (parse_data.flags.testAll(ParseData::Flag::EnumName)) {
 		// If marked "enum class", keep parsing.
 		if (substr == "class") {
 			return true;
-		} //else if (substr.back() == ';') {
-		//	// Just a forward declare.
-		//	parse_data.flags.clear(ParseFlag::EnumName);
-		//	return true;
-		//}
+
+		} else if (substr.back() == ';') {
+			// Just a forward declare.
+			parse_data.flags.clear(ParseData::Flag::EnumName);
+			return true;
+		}
 
 		// $TODO: Enum forward declares can take the form of "enum <name> : <type>;". Will need to handle that.
 		// $TODO: Enum names could (worst case) take the form of "enum <name>:<type>". Will need to handle that case.
 		// $TODO: Add enum data.
 
-		parse_data.flags.clear(ParseFlag::EnumName);
+		parse_data.flags.clear(ParseData::Flag::EnumName);
 		return true;
 	}
 
@@ -58,14 +59,39 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	parse_data.flags.set(ParseFlag::EnumName);
+	parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Valid);
+	parse_data.flags.set(ParseData::Flag::EnumName);
 	return true;
 }
 
-void ProcessEnumScopeOpen(ParseData& /*parse_data*/)
+void ProcessEnumScopeOpen(ParseData& parse_data)
 {
+	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == SIZE_T_FAIL) {
+		if (parse_data.scope_ranges.size() > 1) {
+			const auto it = parse_data.scope_ranges.end() - 2;
+
+			// Anonymous enum. Just absorb the name of the previous scope.
+			if (parse_data.enum_runtime.name.empty()) {
+				parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Anonymous);
+				parse_data.scope_ranges.back().name = it->name;
+
+			} else {
+				parse_data.scope_ranges.back().name = it->name + "::" + parse_data.enum_runtime.name;
+			}
+
+		// We are the only scope. Just take the enum name.
+		} else {
+			parse_data.scope_ranges.back().name = parse_data.enum_runtime.name;
+		}
+
+		parse_data.enum_runtime.scope_range_index = parse_data.scope_ranges.size() - 1;
+		parse_data.scope_ranges.back().type = ScopeRuntimeData::Type::Enum;
+	}
 }
 
-void ProcessEnumScopeClose(ParseData& /*parse_data*/)
+void ProcessEnumScopeClose(ParseData& parse_data)
 {
+	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == (parse_data.scope_ranges.size() - 1)) {
+		parse_data.enum_runtime.flags.clear(EnumRuntimeData::Flag::Valid);
+	}
 }

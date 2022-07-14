@@ -187,9 +187,34 @@ bool Flags<Enum>::any(void) const
 template <class Enum>
 void Flags<Enum>::setRange(bool value, Enum start, Enum end)
 {
+	if (value) {
+		setRange(start, end);
+	} else {
+		clearRange(start, end);
+	}
+}
+
+template <class Enum>
+void Flags<Enum>::clearRange(Enum start, Enum end)
+{
 	GAFF_ASSERT(static_cast<int32_t>(start) <= static_cast<int32_t>(end));
-	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++start) {
-		_flags.set(static_cast<size_t>(i), value);
+
+	// $TODO: Optimize this.
+
+	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++i) {
+		clear(static_cast<Enum>(i));
+	}
+}
+
+template <class Enum>
+void Flags<Enum>::setRange(Enum start, Enum end)
+{
+	GAFF_ASSERT(static_cast<int32_t>(start) <= static_cast<int32_t>(end));
+
+	// $TODO: Optimize this.
+
+	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++i) {
+		set(static_cast<Enum>(i));
 	}
 }
 

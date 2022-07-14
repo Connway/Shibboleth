@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 bool ParseClass(std::string_view substr, ParseData& parse_data)
 {
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::ClassStructName)) {
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
 		return false;
 	}
 
 	// Found the name of the class or struct.
-	if (parse_data.flags.testAll(ParseFlag::ClassStructName)) {
+	if (parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
 		if (substr.back() == ';') {
 			// Just a forward declare. Remove the entry from the stack.
 			parse_data.class_stack.pop_back();
@@ -49,14 +49,14 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 
 			// Add class data to parse data.
 			ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
-			class_data.is_struct = class_runtime_data.is_struct;
+			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
 			class_data.name = class_runtime_data.name;
 
 		} else {
 			std::cerr << "Was parsing a class or struct name, but no class data was present." << std::endl;
 		}
 
-		parse_data.flags.clear(ParseFlag::ClassStructName);
+		parse_data.flags.clear(ParseData::Flag::ClassStructName);
 		return true;
 	}
 
@@ -72,10 +72,10 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 
 		if (struct_index != std::string_view::npos) {
 			parse_data.class_stack.back().curr_visibility = ClassRuntimeData::Visibility::Public;
-			parse_data.class_stack.back().is_struct = true;
+			parse_data.class_stack.back().flags.set(ClassRuntimeData::Flag::Struct);
 		}
 
-		parse_data.flags.set(ParseFlag::ClassStructName);
+		parse_data.flags.set(ParseData::Flag::ClassStructName);
 		return true;
 
 	} else if (public_index == 0) {
@@ -109,28 +109,51 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 void ProcessClassScopeOpen(ParseData& parse_data)
 {
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
-		parse_data.class_stack.back().scope_range_index = parse_data.scope_ranges.size() - 1;
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+		if (parse_data.scope_ranges.size() > 1) {
+			const auto it = parse_data.scope_ranges.end() - 2;
+
+			// Anonymous class/struct. Just absorb the name of the previous scope.
+			if (class_runtime_data.name.empty()) {
+				class_runtime_data.flags.set(ClassRuntimeData::Flag::Anonymous);
+				parse_data.scope_ranges.back().name = it->name;
+
+			} else {
+				parse_data.scope_ranges.back().name = it->name + "::" + class_runtime_data.name;
+			}
+
+		// We are the only scope. Just take the class name.
+		} else {
+			parse_data.scope_ranges.back().name = class_runtime_data.name;
+		}
+
+
+		class_runtime_data.scope_range_index = parse_data.scope_ranges.size() - 1;
+		parse_data.scope_ranges.back().type = ScopeRuntimeData::Type::Class;
 	}
 }
 
 void ProcessClassScopeClose(ParseData& parse_data)
 {
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == (parse_data.scope_ranges.size() - 1)) {
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
 		// We have an anonymous class/struct.
-		if (parse_data.class_stack.back().name.empty()) {
-			// $TODO: Handle anonymous class/struct.
+		if (class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Anonymous)) {
+			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for the anonymous class/struct)
 		}
 
-		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(parse_data.class_stack.back().name)];
-		const BlockRange& scope_range = parse_data.scope_ranges.back();
+		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
 
 		parse_data.class_stack.pop_back();
 
-		class_data.declaration_text = parse_data.file_text.substr(scope_range.start + 1, scope_range.end - scope_range.start - 1);
+		class_data.declaration_text = parse_data.file_text.substr(scope_data.range.start + 1, scope_data.range.end - scope_data.range.start - 1);
 
 		while (!class_data.declaration_text.empty() &&
 			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
-			
+
 			class_data.declaration_text.pop_back();
 		}
 

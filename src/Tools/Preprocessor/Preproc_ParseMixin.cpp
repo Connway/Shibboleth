@@ -26,18 +26,18 @@ THE SOFTWARE.
 
 bool ParseMixin(std::string_view substr, ParseData& parse_data)
 {
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseFlag::MixinName)) {
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::MixinName)) {
 		return false;
 	}
 
 	// Found the name of a mixin.
-	if (parse_data.flags.testAll(ParseFlag::MixinName)) {
+	if (parse_data.flags.testAll(ParseData::Flag::MixinName)) {
 		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
 
 		class_data.mixin_classes.emplace_back(substr);
 
-		parse_data.flags.clear(ParseFlag::MixinName);
+		parse_data.flags.clear(ParseData::Flag::MixinName);
 		return true;
 	}
 
@@ -53,6 +53,6 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 		return true;
 	}
 
-	parse_data.flags.set(ParseFlag::MixinName);
+	parse_data.flags.set(ParseData::Flag::MixinName);
 	return true;
 }
