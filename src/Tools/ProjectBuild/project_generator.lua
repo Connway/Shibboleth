@@ -44,6 +44,8 @@ if not _OPTIONS["generate-preproc"] then
 
 			dependson({ "ProjectBuild" })
 
+			-- No rebuild commands for now.
+			--[[
 			rebuildcommands
 			{
 				"{CHDIR} ../../../../../workingdir/tools",
@@ -51,6 +53,7 @@ if not _OPTIONS["generate-preproc"] then
 				-- $TODO: Delete preproc folder
 				"ProjectBuild%{cfg.buildtarget.suffix} build --config %{cfg.buildcfg}"
 			}
+			--]]
 
 			buildcommands
 			{
@@ -62,9 +65,10 @@ if not _OPTIONS["generate-preproc"] then
 				"ProjectBuild%{cfg.buildtarget.suffix} build --config %{cfg.buildcfg}"
 			}
 
+			-- Cleaning the ENTIRE project.
 			cleancommands
 			{
-				"{CHDIR} ../../../../../workingdir/tools",
-				"ProjectBuild%{cfg.buildtarget.suffix} build --config %{cfg.buildcfg} --clean"
+				"{RMDIR} ../../../../../.generated/build/" .. os.target() .. "/" .. _ACTION,
+				"{RMDIR} ../../../../../.generated/preproc"
 			}
 end

@@ -49,7 +49,7 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 
 		// $TODO (maybe): May want to have higher level logic parse the NS_* and NS_END scope delimeters.
 		} else if (substr == "NS_END") {
-			parse_data.scope_ranges.back().range.end = parse_data.start_index;
+			parse_data.scope_ranges.back().range.end = parse_data.start_index + 6;
 
 			ProcessNamespaceScopeClose(parse_data);
 

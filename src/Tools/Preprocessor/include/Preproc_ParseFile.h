@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 // Stop when we hit a newline or a semi-colon.
 constexpr const char* const k_parse_until_tokens = " \n\f\r\t\v";
+constexpr const char* const k_whitespace_chars = " \t\v";
 constexpr const char* const k_newline_chars = "\n\f\r";
 
 enum class BlockRangeType
@@ -177,6 +178,8 @@ struct ParseData final
 		PreprocDefine,
 		PreprocSkipNewline,
 
+		LastTokenOnLine,
+
 		Count
 	};
 
@@ -195,10 +198,12 @@ struct ParseData final
 	NamespaceRuntimeData namespace_runtime; // Only have one instance of it as this data is temporary. It gets absorbed into ScopeRuntimeData after we process it enough.
 	EnumRuntimeData enum_runtime;
 
-	Gaff::Flags<Flag> flags;
+	int32_t preproc_if_count = 0;
 
 	size_t start_index = 0;
 	size_t next_index = 0;
+
+	Gaff::Flags<Flag> flags;
 };
 
 void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int32_t depth = 0);

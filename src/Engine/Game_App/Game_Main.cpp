@@ -22,6 +22,33 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
+namespace
+{
+	static Shibboleth::App app;
+
+	bool InitApp(int argc, const char** argv)
+	{
+		// Step out of bin directory into main directory.
+		Gaff::SetWorkingDir(u8"..");
+
+		//while (true) {
+		//}
+
+		if (!app.init(argc, argv)) {
+			app.destroy();
+			return false;
+		}
+
+		return true;
+	}
+
+	void RunApp(void)
+	{
+		app.run();
+		app.destroy();
+	}
+}
+
 #ifdef PLATFORM_WINDOWS
 	#include <shellapi.h>
 
@@ -50,32 +77,28 @@ THE SOFTWARE.
 
 		const char** const argv = reinterpret_cast<const char**>(args.data());
 
-#else
-	int main(int argc, const char** argv)
-	{
-#endif
-
-		// Step out of bin directory into main directory.
-		Gaff::SetWorkingDir(u8"..");
-
-		Shibboleth::App app;
-
-		//while (true) {
-		//}
-
-		if (!app.init(argc, argv)) {
-			app.destroy();
+		if (!InitApp(argc, argv)) {
 			return -1;
 		}
 
-#ifdef PLATFORM_WINDOWS
 		// Shibboleth::App::init() should not be holding onto references to the command-line args.
 		arg_strings.clear();
 		args.clear();
-#endif
 
-		app.run();
-		app.destroy();
+		RunApp();
 
 		return 0;
 	}
+
+#else
+	int main(int argc, const char** argv)
+	{
+		if (!InitApp(argc, argv)) {
+			return -1;
+		}
+
+		RunApp();
+
+		return 0;
+	}
+#endif

@@ -32,7 +32,3 @@ THE SOFTWARE.
 #ifndef NS_END
 	#define NS_END }
 #endif
-
-#define NS_TEST namespace \
-				Test \
-				{

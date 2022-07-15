@@ -36,7 +36,7 @@ namespace
 		}
 
 		if ((range.end == std::string_view::npos && index > range.start) ||
-			(range.end != std::string_view::npos && index > range.start && index < range.end)) {
+			(range.end != std::string_view::npos && index > range.start && index <= range.end)) {
 
 			return true;
 		}
@@ -67,9 +67,13 @@ namespace
 			}
 
 		} else if (parse_data.next_index != std::string_view::npos) {
-			if (parse_data.file_text.substr(parse_data.next_index, 1).find_first_of(k_newline_chars) != std::string_view::npos) {
+			if (parse_data.flags.testAll(ParseData::Flag::LastTokenOnLine)) {
 				range.end = parse_data.next_index;
 			}
+
+			//if (parse_data.file_text.substr(parse_data.next_index, 1).find_first_of(k_newline_chars) != std::string_view::npos) {
+			//	range.end = parse_data.next_index;
+			//}
 		}
 	}
 
@@ -85,7 +89,7 @@ namespace
 			ProcessBlockRangeStart(substr, parse_data, range, type, offset);
 
 			if (range.start != std::string_view::npos) {
-				ProcessBlockRangeEnd(substr, parse_data, range, type, range.start + 1);
+				ProcessBlockRangeEnd(substr, parse_data, range, type, range.start + 1 - parse_data.start_index);
 			}
 
 		} else {
@@ -108,6 +112,8 @@ namespace
 			if (parse_data.flags.testAll(ParseData::Flag::PreprocFirstToken) && substr != "#") {
 				if (substr.find("if") != std::string_view::npos) {
 					parse_data.flags.set(ParseData::Flag::PreprocConditional);
+					++parse_data.preproc_if_count;
+
 				} else if (substr.find("define") != std::string_view::npos) {
 					parse_data.flags.set(ParseData::Flag::PreprocDefine);
 				}
@@ -129,8 +135,19 @@ namespace
 						if (parse_data.flags.testAll(ParseData::Flag::PreprocFirstToken) && substr != "#") {
 							parse_data.flags.set(ParseData::Flag::PreprocFirstTokenClear);
 
-							if (const size_t end_pos = substr.find("endif"); end_pos != std::string_view::npos) {
-								range.end = parse_data.start_index + end_pos + 5;
+							const size_t end_end_if_pos = substr.find("endif");
+							const size_t end_if_pos = substr.find("if");
+
+							// Count nested "#if*" directives.
+							if (end_if_pos != std::string_view::npos && end_end_if_pos == std::string_view::npos) {
+								++parse_data.preproc_if_count;
+
+							} else if (end_end_if_pos != std::string_view::npos) {
+								--parse_data.preproc_if_count;
+
+								if (!parse_data.preproc_if_count) {
+									range.end = parse_data.start_index + end_end_if_pos + 5;
+								}
 							}
 						}
 					}
@@ -399,8 +416,26 @@ bool Preproc_ParseFile(ParseData& parse_data)
 			}
 
 		} else {
+			constexpr std::string_view parse_tokens(k_parse_until_tokens);
+			constexpr std::string_view newline_substr(k_newline_chars);
+
+			for (size_t index = parse_data.next_index; index < parse_data.file_text.size(); ++index) {
+				// Find a valid character. We're done parsing.
+				if (parse_tokens.find(parse_data.file_text[index]) == std::string_view::npos) {
+					break;
+				}
+
+				// We found a newline, this is the last token for this line.
+				if (newline_substr.find(parse_data.file_text[index]) != std::string_view::npos) {
+					parse_data.flags.set(ParseData::Flag::LastTokenOnLine);
+					break;
+				}
+			}
+
 			const std::string_view substr = parse_data.file_text.substr(parse_data.start_index, parse_data.next_index - parse_data.start_index);
 			Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
+
+			parse_data.flags.clear(ParseData::Flag::LastTokenOnLine);
 		}
 
 		parse_data.start_index = parse_data.next_index + 1;
