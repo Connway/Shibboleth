@@ -314,6 +314,13 @@ function FrameworkProject(project_name, project_kind, no_preproc)
 		else
 			kind "None"
 		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
 end
 
 function DepProject(project_name, project_kind, no_preproc)
@@ -331,6 +338,13 @@ function DepProject(project_name, project_kind, no_preproc)
 		else
 			kind "None"
 		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
 end
 
 function ToolProject(project_name, project_kind, no_preproc)
@@ -348,6 +362,13 @@ function ToolProject(project_name, project_kind, no_preproc)
 		else
 			kind "None"
 		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
 end
 
 function EngineProject(project_name, project_kind, no_preproc)
@@ -365,6 +386,13 @@ function EngineProject(project_name, project_kind, no_preproc)
 		else
 			kind "None"
 		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
 end
 
 function ModuleProject(project_name, project_kind)
@@ -375,13 +403,20 @@ function ModuleProject(project_name, project_kind)
 	end
 
 	project(project_name)
-		-- $TODO: Add location() call.
+		location(GetModulesLocation())
 
 		if _OPTIONS["generate-preproc"] then
 			kind(project_kind or "StaticLib")
 		else
 			kind "None"
 		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
 end
 
 function Group(group_name)

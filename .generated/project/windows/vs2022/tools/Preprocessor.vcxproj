@@ -71,28 +71,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\Preprocessor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\Preprocessor\</IntDir>
     <TargetName>Preprocessor64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\Preprocessor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\Preprocessor\</IntDir>
     <TargetName>Preprocessor64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\Preprocessor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\Preprocessor\</IntDir>
     <TargetName>Preprocessor64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Preprocessor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\Preprocessor\</IntDir>
     <TargetName>Preprocessor64od</TargetName>
     <TargetExt>.exe</TargetExt>
@@ -120,7 +120,7 @@
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\Preprocessor\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,7 +152,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\$(TargetFileName) .
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Preprocessor\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -184,7 +184,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\$(TargetFileName)
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\Preprocessor\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -216,7 +216,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\$(TargetFileName)
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Preprocessor\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

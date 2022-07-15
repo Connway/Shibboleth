@@ -70,25 +70,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\Gaff\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\Gaff\</IntDir>
     <TargetName>Gaff64d</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\Gaff\</IntDir>
     <TargetName>Gaff64</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\Gaff\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\Gaff\</IntDir>
     <TargetName>Gaff64p</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Gaff\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\Gaff\</IntDir>
     <TargetName>Gaff64od</TargetName>
     <TargetExt>.lib</TargetExt>

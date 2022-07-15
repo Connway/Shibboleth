@@ -3,8 +3,6 @@ function DoMainGraphicsModule()
 	local base_dir = GetModulesDirectory("Graphics")
 
 	ModuleProject "GraphicsBase"
-		location(GetModulesLocation())
-
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
@@ -45,8 +43,6 @@ function DoGraphicsModule(renderer)
 	local project_name = "Graphics" .. renderer
 
 	ModuleProject(project_name)
-		location(GetModulesLocation())
-
 		language "C++"
 
 		files
@@ -96,8 +92,6 @@ function DoGraphicsModule(renderer)
 
 
 	ModuleProject(project_name .. "Module", "SharedLib")
-		location(GetModulesLocation())
-
 		language "C++"
 
 		files { source_dir .. "Shibboleth_GraphicsModule.cpp" }
