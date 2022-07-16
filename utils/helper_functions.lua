@@ -68,7 +68,7 @@ function NewDeleteLinkFix()
 
 		links
 		{
-			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/%{cfg.platform}/%{cfg.buildcfg}/Engine%{cfg.buildtarget.suffix}.lib",
+			"../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/%{cfg.platform}/%{cfg.buildcfg}/Engine/Engine%{cfg.buildtarget.suffix}.lib",
 		}
 
 	filter { "system:windows", "configurations:*Debug*" }
