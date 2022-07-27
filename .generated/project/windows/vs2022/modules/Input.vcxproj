@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Input64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Input64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Input64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Graphics\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Input64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

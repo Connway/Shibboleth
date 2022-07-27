@@ -5,7 +5,7 @@ DepProject "capstone"
 	warnings "Extra"
 
 	files { "**.c", "**.h" }
-	includedirs { "include" }
+	IncludeDirs { "include" }
 
 	defines
 	{

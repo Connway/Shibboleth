@@ -72,7 +72,7 @@ DepProject("TracyProfiler", "WindowedApp")
 	-- I do not want to add another dependency, so I am using the default font renderer instead.
 	removefiles { "imgui/misc/freetype/*.*" }
 
-	includedirs
+	IncludeDirs
 	{
 		"profiler",
 		"imgui",

@@ -3,7 +3,7 @@ DepProject "libtiff"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	includedirs { "port", "../zlib-ng" }
+	IncludeDirs { "port", "../zlib-ng" }
 	excludes { "tif_win32.c" }
 
 	filter { "system:windows" }

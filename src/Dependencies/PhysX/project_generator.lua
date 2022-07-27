@@ -4,7 +4,7 @@ function PhysXProject(proj_name, lib_type)
 	cppdialect "C++17" -- C++20 breaks this library.
 	language "C++"
 
-	includedirs
+	IncludeDirs
 	{
 		"physx/include",
 		"pxshared/include",
@@ -60,13 +60,13 @@ end
 Group "Dependencies/PhysX"
 
 PhysXProject("FastXml", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/source/fastxml/include"
 	}
 
 PhysXProject("LowLevel", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -97,7 +97,7 @@ PhysXProject("LowLevel", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		includedirs
+		IncludeDirs
 		{
 			"physx/source/common/include/windows",
 			"physx/source/common/src/windows"
@@ -106,7 +106,7 @@ PhysXProject("LowLevel", "StaticLib")
 	filter {}
 
 PhysXProject("LowLevelAABB", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -124,7 +124,7 @@ PhysXProject("LowLevelAABB", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		includedirs
+		IncludeDirs
 		{
 			"physx/source/common/include/windows",
 			"physx/source/common/src/windows"
@@ -133,7 +133,7 @@ PhysXProject("LowLevelAABB", "StaticLib")
 	filter {}
 
 PhysXProject("LowLevelDynamics", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -152,7 +152,7 @@ PhysXProject("LowLevelDynamics", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		includedirs
+		IncludeDirs
 		{
 			"physx/source/common/src/windows"
 		}
@@ -160,7 +160,7 @@ PhysXProject("LowLevelDynamics", "StaticLib")
 	filter {}
 
 PhysXProject("PhysXCharacterKinematic", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/characterkinematic",
@@ -183,7 +183,7 @@ PhysXProject("PhysXCharacterKinematic", "StaticLib")
 	}
 
 PhysXProject("PhysXExtensions", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/cooking",
@@ -218,20 +218,20 @@ PhysXProject("PhysXExtensions", "StaticLib")
 	}
 
 PhysXProject("PhysXPvdSDK", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/source/filebuf/include",
 		"physx/source/pvd/include"
 	}
 
 PhysXProject("PhysXTask", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/source/cudamanager/include"
 	}
 
 PhysXProject("PhysXVehicle", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/extensions",
@@ -252,7 +252,7 @@ PhysXProject("PhysXVehicle", "StaticLib")
 	}
 
 PhysXProject("SceneQuery", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -282,7 +282,7 @@ PhysXProject("SceneQuery", "StaticLib")
 	}
 
 PhysXProject("SimulationController", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -317,7 +317,7 @@ PhysXProject("SimulationController", "StaticLib")
 	}
 
 PhysXProject("PhysXCommon", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -351,7 +351,7 @@ PhysXProject("PhysXCooking", "StaticLib")
 		"PX_COOKING"
 	}
 
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/cooking",
@@ -384,13 +384,13 @@ PhysXProject("PhysXCooking", "StaticLib")
 	filter {}
 
 PhysXProject("PhysXFoundation", "StaticLib")
-	includedirs
+	IncludeDirs
 	{
 		"physx/source/foundation/include",
 	}
 
 	filter { "system:windows" }
-		includedirs
+		IncludeDirs
 		{
 			"physx/source/foundation/include/windows"
 		}
@@ -438,7 +438,7 @@ PhysXProject("PhysX", "StaticLib")
 
 	filter {}
 
-	includedirs
+	IncludeDirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",

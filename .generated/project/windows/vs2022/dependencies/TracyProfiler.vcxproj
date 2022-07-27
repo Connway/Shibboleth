@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)TracyProfiler64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /bigobj /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)TracyProfiler64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /bigobj /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)TracyProfiler64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /bigobj /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)TracyProfiler64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /bigobj /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

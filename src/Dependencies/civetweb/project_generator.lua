@@ -3,7 +3,7 @@ DepProject("CivetWeb", "SharedLib")
 	warnings "Extra"
 
 	files { "**.c", "**.h", "**.cpp", "**.inl" }
-	includedirs
+	IncludeDirs
 	{
 		"include",
 		"src/third_party",

@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)FastXml64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)FastXml64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)FastXml64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)FastXml64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++17 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

@@ -3,7 +3,7 @@ DepProject "libpng"
 	warnings "Default"
 
 	files { "**.h", "**.c" }
-	includedirs { "../zlib-ng" }
+	IncludeDirs { "../zlib-ng" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }

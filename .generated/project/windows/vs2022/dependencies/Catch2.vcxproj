@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Catch264d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Catch264</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Catch264p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)Catch264od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

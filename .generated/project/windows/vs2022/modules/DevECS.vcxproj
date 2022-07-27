@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevECS64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevECS64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevECS64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevECS\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\ECS\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevECS64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

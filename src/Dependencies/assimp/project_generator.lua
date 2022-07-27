@@ -12,7 +12,7 @@ DepProject "assimp"
 		"**.c"
 	}
 
-	includedirs
+	IncludeDirs
 	{
 		".",
 		"contrib/openddlparser/include",

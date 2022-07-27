@@ -4,7 +4,7 @@ DepProject "imgui"
 
 	files { "**.c", "**.h", "**.cpp" }
 
-	includedirs
+	IncludeDirs
 	{
 		"../../Frameworks/Gaff/include",
 		"."

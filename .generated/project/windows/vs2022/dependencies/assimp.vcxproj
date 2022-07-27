@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip-ng;..\..\..\..\..\src\Dependencies\zlib-ng;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)assimp64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip-ng;..\..\..\..\..\src\Dependencies\zlib-ng;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)assimp64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip-ng;..\..\..\..\..\src\Dependencies\zlib-ng;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)assimp64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\assimp\code;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip-ng;..\..\..\..\..\src\Dependencies\zlib-ng;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)assimp64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

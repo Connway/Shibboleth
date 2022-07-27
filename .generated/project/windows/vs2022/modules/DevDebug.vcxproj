@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\imgui;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Modules\ECS\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevDebug64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\imgui;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Modules\ECS\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevDebug64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\imgui;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Modules\ECS\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevDebug64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\DevDebug\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\glm;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\imgui;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\..\src\Dependencies\CivetWeb\include;..\..\..\..\..\src\Modules\DevWebServer\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Modules\Resource\include;..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Modules\Input\include;..\..\..\..\..\src\Modules\ECS\include;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)DevDebug64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

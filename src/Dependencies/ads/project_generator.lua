@@ -32,17 +32,17 @@ DepProject("ads", "SharedLib")
 		last_separator = version_number:findlast("/", true)
 		version_number = version_number:sub(last_separator + 1)
 
-		includedirs { qt.defaultpath .. "/include/QtGui/" .. version_number .. "/QtGui" }
+		IncludeDirs { qt.defaultpath .. "/include/QtGui/" .. version_number .. "/QtGui" }
 	end
 
 	filter { "system:not linux" }
 		removefiles { "linux/*.*" }
 
 	filter { "system:linux" }
-		includedirs { "." }
+		IncludeDirs { "." }
 
 	filter { "system:macosx" }
-		includedirs { "." }
+		IncludeDirs { "." }
 
 	filter {}
 

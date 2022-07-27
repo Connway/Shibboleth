@@ -22,7 +22,7 @@ function ModuleIncludesAndLinks(module_name, base_name)
 		base_dir = GetModulesDirectory(module_name)
 	end
 
-	includedirs
+	IncludeDirs
 	{
 		source_dir .. "include",
 		base_dir .. "../../Frameworks/Gaff/include",
@@ -387,5 +387,16 @@ end
 function Group(group_name)
 	if not _OPTIONS["generate-preproc"] then
 		group(group_name)
+	end
+end
+
+function IncludeDirs(dirs)
+	if not _OPTIONS["generate-preproc"] then
+		sysincludedirs(dirs)
+
+		-- Swap over to externalincludedirs when 5.0 beta2 comes out.
+		--externalincludedirs(dirs)
+	else
+		includedirs(dirs)
 	end
 end

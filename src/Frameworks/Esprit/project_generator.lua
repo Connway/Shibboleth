@@ -5,7 +5,7 @@ FrameworkProject "Esprit"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	includedirs
+	IncludeDirs
 	{
 		"include",
 		"../Gaff/include",

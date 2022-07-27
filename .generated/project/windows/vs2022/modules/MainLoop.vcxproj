@@ -73,18 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)MainLoop64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)MainLoop64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)MainLoop64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <IncludePath>..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\mpack;..\..\..\..\..\src\Dependencies\glm;$(IncludePath)</IncludePath>
     <NMakeOutput>$(OutDir)MainLoop64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

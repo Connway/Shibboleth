@@ -7,7 +7,7 @@ ToolProject "ReflectionHashDump"
 
 	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
-	includedirs
+	IncludeDirs
 	{
 		source_dir .. "../../Engine/Engine/include",
 		source_dir .. "../../Engine/Memory/include",

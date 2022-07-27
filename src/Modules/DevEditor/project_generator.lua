@@ -29,7 +29,7 @@ local GenerateProject = function()
 
 		flags { "FatalWarnings" }
 
-		includedirs
+		IncludeDirs
 		{
 			source_dir .. "include",
 			source_dir .. "../../Engine/Engine/include",

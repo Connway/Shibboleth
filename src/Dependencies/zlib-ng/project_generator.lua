@@ -5,7 +5,7 @@ DepProject "zlib-ng"
 	files { "**.h", "**.c" }
 	excludes { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*" }
 
-	includedirs { "." }
+	IncludeDirs { "." }
 
 	defines { "WITH_GZFILEOP", "_LARGEFILE64_SOURCE", "_LFS64_LARGEFILE" }
 

@@ -20,7 +20,7 @@ function DoMainGraphicsModule()
 
 		flags { "FatalWarnings" }
 
-		includedirs
+		IncludeDirs
 		{
 			source_dir .. "include",
 			source_dir .. "../../Engine/Memory/include",
@@ -70,7 +70,7 @@ function DoGraphicsModule(renderer)
 
 		flags { "FatalWarnings" }
 
-		includedirs
+		IncludeDirs
 		{
 			source_dir .. "include",
 			source_dir .. "../../Engine/Memory/include",

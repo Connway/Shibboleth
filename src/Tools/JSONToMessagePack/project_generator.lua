@@ -7,7 +7,7 @@ ToolProject "JSONToMessagePack"
 
 	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
-	includedirs
+	IncludeDirs
 	{
 		base_dir .. "../../Frameworks/Gaff/include",
 		base_dir .. "../../Dependencies/rapidjson",
