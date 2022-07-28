@@ -37,7 +37,7 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -45,7 +45,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
@@ -53,7 +53,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
@@ -61,14 +61,14 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Debug_D3D11\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Debug_D3D11\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'" Label="Configuration">
@@ -76,7 +76,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\ReflectionHashDump\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Static_Release_D3D11\ReflectionHashDump\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

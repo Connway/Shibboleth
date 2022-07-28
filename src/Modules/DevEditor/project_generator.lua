@@ -19,8 +19,6 @@ local GenerateProject = function()
 	ModuleProject "DevEditor"
 		qt.enable()
 
-		location(GetModulesLocation())
-
 		language "C++"
 
 		defines { "SHIB_STATIC" }
@@ -46,8 +44,6 @@ local GenerateProject = function()
 
 	ModuleProject("DevEditorModule", "SharedLib")
 		qt.enable()
-
-		location(GetModulesLocation())
 
 		language "C++"
 

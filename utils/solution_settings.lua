@@ -1,10 +1,10 @@
 function SetIntermediateAndTargetDirs(configuration)
+	objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
+
 	filter { "configurations:" .. configuration, "platforms:x86" }
-		objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
 		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x86/" .. configuration)
 
 	filter { "configurations:" .. configuration, "platforms:x64" }
-		objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
 		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
 end
 

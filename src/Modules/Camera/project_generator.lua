@@ -3,8 +3,6 @@ local GenerateProject = function()
 	local base_dir = GetModulesDirectory("Camera")
 
 	ModuleProject "Camera"
-		location(GetModulesLocation())
-
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
@@ -34,8 +32,6 @@ local GenerateProject = function()
 		}
 
 	ModuleProject("CameraModule", "SharedLib")
-		location(GetModulesLocation())
-
 		language "C++"
 
 		files { source_dir .. "Shibboleth_CameraModule.cpp" }
