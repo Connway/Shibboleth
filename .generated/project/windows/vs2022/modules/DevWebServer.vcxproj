@@ -29,7 +29,7 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Debug\DevWebServer\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\DevWebServer\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\DevWebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -37,7 +37,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Release\DevWebServer\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\DevWebServer\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\DevWebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
@@ -45,7 +45,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Profile\DevWebServer\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\DevWebServer\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\DevWebServer\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
@@ -53,7 +53,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Optimized_Debug\DevWebServer\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevWebServer\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\DevWebServer\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

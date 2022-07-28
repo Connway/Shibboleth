@@ -413,7 +413,7 @@ function ModuleProject(project_name, project_kind)
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
-				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+				targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}

@@ -29,7 +29,7 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Debug\DevEditor\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\DevEditor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\DevEditor\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -37,7 +37,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Release\DevEditor\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\DevEditor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\DevEditor\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
@@ -45,7 +45,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Profile\DevEditor\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\DevEditor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\DevEditor\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
@@ -53,7 +53,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Optimized_Debug\DevEditor\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevEditor\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\DevEditor\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

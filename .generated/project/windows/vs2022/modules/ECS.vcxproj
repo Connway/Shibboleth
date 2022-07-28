@@ -29,7 +29,7 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Debug\ECS\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\ECS\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\ECS\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -37,7 +37,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Release\ECS\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\ECS\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\ECS\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
@@ -45,7 +45,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Profile\ECS\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\ECS\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\ECS\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
@@ -53,7 +53,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>C:\.generated\build\windows\vs2022\output\x64\Optimized_Debug\ECS\</OutDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ECS\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\ECS\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
