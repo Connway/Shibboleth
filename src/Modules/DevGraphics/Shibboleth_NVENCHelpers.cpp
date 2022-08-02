@@ -63,10 +63,11 @@ bool InitNVENC(void)
 		return false;
 	}
 
-	if (max_supported_version < NVENCAPI_VERSION) {
-		// $TODO: Log error.
-		return false;
-	}
+	// $TODO: Fix this.
+	//if (max_supported_version < NVENCAPI_VERSION) {
+	//	// $TODO: Log error.
+	//	return false;
+	//}
 
 	using NvEncodeAPICreateInstanceFunc = NVENCSTATUS (NVENCAPI*)(NV_ENCODE_API_FUNCTION_LIST*);
 	const NvEncodeAPICreateInstanceFunc load_api = nvenc_module->getFunc<NvEncodeAPICreateInstanceFunc>("NvEncodeAPICreateInstance");

@@ -7,7 +7,7 @@ EngineProject("Memory", "SharedLib")
 	local source_dir = GetEngineSourceDirectory("Memory")
 	local base_dir = GetEngineDirectory("Memory")
 
-	includedirs
+	IncludeDirs
 	{
 		source_dir .. "include",
 		source_dir .. "../../Engine/Engine/include",

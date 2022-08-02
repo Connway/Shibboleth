@@ -65,8 +65,8 @@ end
 function TestCopy()
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/tests",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tests"
+		"{MKDIR} ../../../../../workingdir/tests",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tests"
 	}
 end
 

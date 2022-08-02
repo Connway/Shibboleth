@@ -122,7 +122,7 @@ function GenTest(settings)
 
 		flags { "FatalWarnings" }
 
-		includedirs
+		IncludeDirs
 		{
 			base_dir .. "../Dependencies/Catch2"
 		}
@@ -160,7 +160,7 @@ function GenTest(settings)
 			settings.extra()
 		end
 
-		includedirs(settings.includedirs)
+		IncludeDirs(settings.includedirs)
 		links(settings.links)
 end
 

@@ -24,10 +24,13 @@ THE SOFTWARE.
 
 namespace
 {
-	static Shibboleth::App app;
+	static Shibboleth::App* g_app = nullptr;
 
 	bool InitApp(int argc, const char** argv)
 	{
+		static Shibboleth::App app;
+		g_app = &app;
+
 		// Step out of bin directory into main directory.
 		Gaff::SetWorkingDir(u8"..");
 
@@ -44,8 +47,8 @@ namespace
 
 	void RunApp(void)
 	{
-		app.run();
-		app.destroy();
+		g_app->run();
+		g_app->destroy();
 	}
 }
 

@@ -71,7 +71,7 @@ bool DebugMenuItemAttribute::isImGuiUpdateFunction(void) const
 Refl::IAttribute* DebugMenuItemAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator, _path.data());
+	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator, _path.data(), _is_imgui_update_function);
 }
 
 void DebugMenuItemAttribute::finish(Refl::IReflectionDefinition& ref_def)

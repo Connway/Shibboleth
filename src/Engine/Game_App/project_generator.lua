@@ -13,7 +13,7 @@ EngineProject("Game_App", proj_kind)
 
 	files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
-	includedirs
+	IncludeDirs
 	{
 		source_dir .. "../Engine/include",
 		base_dir .. "../Memory/include",

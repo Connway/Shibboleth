@@ -247,7 +247,7 @@ private:
 	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
 	ECSQuery::Output _camera{ ProxyAllocator("Debug") };
 
-	Vector<const DebugMenuEntry*> _update_functions{ ProxyAllocator("Debug") };
+	Vector<DebugMenuEntry*> _update_functions{ ProxyAllocator("Debug") };
 
 	RenderManagerBase* _render_mgr = nullptr;
 	InputManager* _input_mgr = nullptr;

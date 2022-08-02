@@ -151,6 +151,9 @@
     <Filter Include="Tests">
       <UniqueIdentifier>{5865280E-C479-50BF-8DFB-F31EF9CE4CF0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tests\AllocatorTest">
+      <UniqueIdentifier>{68DFEB32-D440-C940-5DAE-0FF3C90E0000}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Tools">
       <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
     </Filter>
@@ -350,6 +353,9 @@
     </None>
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua">
       <Filter>Modules\Script</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tests\AllocatorTest\project_generator.lua">
+      <Filter>Tests\AllocatorTest</Filter>
     </None>
     <None Include="..\..\..\..\src\Tests\project_generator.lua">
       <Filter>Tests</Filter>

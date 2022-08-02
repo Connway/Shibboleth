@@ -1141,7 +1141,7 @@ void DebugManager::update(void)
 		}
 
 		// $TODO: Turn this into a helper function.
-		for (auto it = _update_functions.begin(); it != _update_functions.end(); ++it) {
+		for (auto it = _update_functions.begin(); it != _update_functions.end();) {
 			GAFF_ASSERT((*it)->type == DebugMenuEntry::Type::FuncImGuiUpdate);
 
 			bool open = true;
@@ -1152,27 +1152,38 @@ void DebugManager::update(void)
 
 			ImGui::End();
 
-			if (!open) {
+			if (open) {
+				++it;
+
+			} else {
+				(*it)->flags.clear(DebugMenuEntry::Flag::Updating);
 				it = _update_functions.erase_unsorted(it);
 			}
 		}
 
 	} else {
-		for (auto it = _update_functions.begin(); it != _update_functions.end(); ++it) {
+		for (auto it = _update_functions.begin(); it != _update_functions.end();) {
 			GAFF_ASSERT((*it)->type == DebugMenuEntry::Type::FuncImGuiUpdate);
 
 			if ((*it)->flags.testAll(DebugMenuEntry::Flag::AlwaysRender)) {
 				bool open = true;
 
-				if (ImGui::Begin(reinterpret_cast<const char*>((*it)->name.getBuffer()), &open)) {
+				if (ImGui::Begin(reinterpret_cast<const char*>((*it)->name.getBuffer()), &open, ImGuiWindowFlags_NoInputs)) {
 					(*it)->func->call((*it)->object);
 				}
 
 				ImGui::End();
 
-				if (!open) {
+				if (open) {
+					++it;
+
+				} else {
+					(*it)->flags.clear(DebugMenuEntry::Flag::Updating);
 					it = _update_functions.erase_unsorted(it);
 				}
+
+			} else {
+				++it;
 			}
 		}
 	}
@@ -2465,11 +2476,11 @@ void DebugManager::renderDebugMenu(DebugMenuEntry& entry)
 
 				const U8String always_render_name = entry.name.getString() + u8" (Always Render)";
 
-				if (ImGui::MenuItem(reinterpret_cast<const char*>(always_render_name.data(), nullptr, always_render))) {
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(always_render_name.data()), nullptr, always_render)) {
 					entry.flags.set(!always_render, DebugMenuEntry::Flag::AlwaysRender);
 				}
 
-				if (ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer(), nullptr, updating))) {
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer()), nullptr, updating)) {
 					updating = !updating;
 					entry.flags.set(updating, DebugMenuEntry::Flag::Updating);
 
