@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B076C607-9C9B-1588-C5E6-FA17B16A14A6}</ProjectGuid>
+    <ProjectGuid>{A6C019BC-1281-95F2-DBBB-DE6F473BDACE}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>MakeFileProj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -29,32 +29,32 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\GraphicsDirect3D11Module\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\GraphicsDirect3D11Module\</IntDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\AllocatorTest\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\AllocatorTest\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\GraphicsDirect3D11Module\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\GraphicsDirect3D11Module\</IntDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\AllocatorTest\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\AllocatorTest\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\GraphicsDirect3D11Module\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\GraphicsDirect3D11Module\</IntDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\AllocatorTest\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\AllocatorTest\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\GraphicsDirect3D11Module\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\GraphicsDirect3D11Module\</IntDir>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\AllocatorTest\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\AllocatorTest\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -73,33 +73,29 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
-    <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64d</NMakeOutput>
+    <NMakeOutput>$(OutDir)AllocatorTest64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
-    <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64</NMakeOutput>
+    <NMakeOutput>$(OutDir)AllocatorTest64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
-    <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64p</NMakeOutput>
+    <NMakeOutput>$(OutDir)AllocatorTest64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
-    <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64od</NMakeOutput>
+    <NMakeOutput>$(OutDir)AllocatorTest64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tests\AllocatorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\engine\Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    <ProjectReference Include="..\dependencies\Catch2.vcxproj">
+      <Project>{7A3E45AB-66E0-6F81-4F9B-83D53BDCF6D1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\engine\Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
@@ -107,50 +103,17 @@
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\engine\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GraphicsDirect3D11.vcxproj">
-      <Project>{EA402CAF-D624-ED04-3F85-E7572B88D786}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GraphicsBase.vcxproj">
-      <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
-    </ProjectReference>
-    <ProjectReference Include="MainLoop.vcxproj">
-      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Resource.vcxproj">
-      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
-    <ProjectReference Include="ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\assimp.vcxproj">
-      <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\minizip-ng.vcxproj">
-      <Project>{A70964F0-93C1-A53D-FCC8-7E99E89F402E}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
-      <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libpng.vcxproj">
-      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libtiff.vcxproj">
-      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="DevDebug.vcxproj">
-      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

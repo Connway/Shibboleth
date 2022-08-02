@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsManager.h"
 #include "Shibboleth_RigidBodyComponent.h"
 #include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_DebugAttributes.h>
 #include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
@@ -32,6 +31,8 @@ THE SOFTWARE.
 #include <PxPhysicsAPI.h>
 
 #ifdef _DEBUG
+	#include <Shibboleth_DebugAttributes.h>
+
 	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager::DebugFlag)
 		.entry("Draw Rigid Bodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
 	SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager::DebugFlag)
@@ -168,6 +169,8 @@ bool PhysicsManager::init(void)
 	bool track_allocs = false;
 
 #ifdef _DEBUG
+	_debug_mgr = &GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
+
 	_pvd = PxCreatePvd(*_foundation);
 	physx::PxPvdTransport* const transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	_pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
@@ -210,7 +213,6 @@ bool PhysicsManager::init(void)
 	rb_query.add<Rotation>(_rotations);
 	rb_query.add<Scale>(_scales);
 
-	_debug_mgr = &GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(rb_query));
 

@@ -32,6 +32,11 @@ THE SOFTWARE.
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 
+#ifdef _DEBUG
+	#include <Shibboleth_DebugAttributes.h>
+	#include <imgui.h>
+#endif
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
@@ -40,6 +45,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::requestResource))
 	//.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
 	.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::getResource))
+
+#ifdef _DEBUG
+	.func(
+		"Loaded Resources",
+		&Shibboleth::ResourceManager::renderLoadedResources,
+		Shibboleth::DebugMenuItemAttribute(u8"Resource", true)
+	)
+#endif
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceManager)
 
 namespace
@@ -130,6 +143,10 @@ bool ResourceManager::init(void)
 		creatable = nullptr;
 		ext_attrs.clear();
 	}
+
+#ifdef _DEBUG
+	_debug_mgr = &GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
+#endif
 
 	return true;
 }
@@ -394,5 +411,11 @@ void ResourceManager::requestLoad(IResource& resource)
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
 	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, k_read_file_pool);
 }
+
+#ifdef _DEBUG
+void ResourceManager::renderLoadedResources(void) const
+{
+}
+#endif
 
 NS_END

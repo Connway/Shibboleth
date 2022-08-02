@@ -49,6 +49,7 @@ local GenerateProject = function()
 			"Gleam",
 
 			"DevWebServer",
+			"DevDebug",
 			--"MainLoop",
 			"Resource",
 			"GraphicsBase",
@@ -77,6 +78,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("DevGraphics")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "DevWebServer")
+	table.insert(deps, "DevDebug")
 	--table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "GraphicsBase")

@@ -52,14 +52,20 @@ void DebugMenuClassAttribute::instantiated(void* object, const Refl::IReflection
 
 
 
-DebugMenuItemAttribute::DebugMenuItemAttribute(const char8_t* path):
-	_path(path, ProxyAllocator("Reflection"))
+DebugMenuItemAttribute::DebugMenuItemAttribute(const char8_t* path, bool is_imgui_update_function):
+	_path(path, ProxyAllocator("Reflection")),
+	_is_imgui_update_function(is_imgui_update_function)
 {
 }
 
 const U8String& DebugMenuItemAttribute::getPath(void) const
 {
 	return _path;
+}
+
+bool DebugMenuItemAttribute::isImGuiUpdateFunction(void) const
+{
+	return _is_imgui_update_function;
 }
 
 Refl::IAttribute* DebugMenuItemAttribute::clone(void) const

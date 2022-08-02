@@ -119,6 +119,9 @@
     <ProjectReference Include="..\frameworks\Esprit.vcxproj">
       <Project>{7C5733B1-68F9-5D87-51B4-71DB3DF5E4D7}</Project>
     </ProjectReference>
+    <ProjectReference Include="DevDebug.vcxproj">
+      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
+    </ProjectReference>
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

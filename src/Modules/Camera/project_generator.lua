@@ -48,6 +48,7 @@ local GenerateProject = function()
 			"Esprit",
 			"Gleam",
 			"MainLoop",
+			"DevDebug",
 			"Resource",
 			"Input",
 			"ECS",
@@ -63,6 +64,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Esprit")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "MainLoop")
+	table.insert(deps, "DevDebug")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
 	table.insert(deps, "ECS")

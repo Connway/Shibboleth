@@ -32,6 +32,10 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+#ifdef _DEBUG
+	class IDebugManager;
+#endif
+
 class ResourceManager final : public IManager
 {
 public:
@@ -153,6 +157,12 @@ private:
 
 	void removeResource(const IResource& resource);
 	void requestLoad(IResource& resource);
+
+#ifdef _DEBUG
+	IDebugManager* _debug_mgr = nullptr;
+
+	void renderLoadedResources(void) const;
+#endif
 
 	friend class ResourceSystem;
 	friend class IResource;

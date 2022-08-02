@@ -83,14 +83,6 @@ function DoGraphicsModule(renderer)
 			source_dir .. "../../Modules/MainLoop/include"
 		}
 
-		local deps =
-		{
-			"GraphicsBase"
-		}
-
-		dependson(deps)
-
-
 	ModuleProject(project_name .. "Module", "SharedLib")
 		language "C++"
 
@@ -122,7 +114,8 @@ function DoGraphicsModule(renderer)
 			"zlib-ng",
 			"libpng",
 			"libtiff",
-			"GLFW"
+			"GLFW",
+			"DevDebug"
 		}
 
 		dependson(deps)
@@ -153,6 +146,7 @@ local LinkDependencies = function()
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
 	table.insert(deps, "GLFW")
+	table.insert(deps, "DevDebug")
 
 	dependson(deps)
 	links(deps)

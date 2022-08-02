@@ -18,8 +18,10 @@ local GenerateProject = function()
 			source_dir .. "../../Engine/Memory/include",
 			source_dir .. "../../Engine/Engine/include",
 			source_dir .. "../../Modules/MainLoop/include",
+			source_dir .. "../../Modules/DevDebug/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
+			base_dir .. "../../Dependencies/imgui",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 
@@ -38,7 +40,10 @@ local GenerateProject = function()
 
 		local deps =
 		{
-			"MainLoop"
+			"imgui",
+
+			"MainLoop",
+			"DevDebug"
 		}
 
 		dependson(deps)
@@ -47,7 +52,9 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Resource")
+	table.insert(deps, "imgui")
 	table.insert(deps, "MainLoop")
+	table.insert(deps, "DevDebug")
 
 	dependson(deps)
 	links(deps)

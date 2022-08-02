@@ -1133,11 +1133,47 @@ void DebugManager::update(void)
 
 	if (_flags.testAll(Flag::ShowDebugMenu)) {
 		if (ImGui::BeginMainMenuBar()) {
-			for (const DebugMenuEntry& entry : _debug_menu_root.children) {
+			for (DebugMenuEntry& entry : _debug_menu_root.children) {
 				renderDebugMenu(entry);
 			}
 
 			ImGui::EndMainMenuBar();
+		}
+
+		// $TODO: Turn this into a helper function.
+		for (auto it = _update_functions.begin(); it != _update_functions.end(); ++it) {
+			GAFF_ASSERT((*it)->type == DebugMenuEntry::Type::FuncImGuiUpdate);
+
+			bool open = true;
+
+			if (ImGui::Begin(reinterpret_cast<const char*>((*it)->name.getBuffer()), &open)) {
+				(*it)->func->call((*it)->object);
+			}
+
+			ImGui::End();
+
+			if (!open) {
+				it = _update_functions.erase_unsorted(it);
+			}
+		}
+
+	} else {
+		for (auto it = _update_functions.begin(); it != _update_functions.end(); ++it) {
+			GAFF_ASSERT((*it)->type == DebugMenuEntry::Type::FuncImGuiUpdate);
+
+			if ((*it)->flags.testAll(DebugMenuEntry::Flag::AlwaysRender)) {
+				bool open = true;
+
+				if (ImGui::Begin(reinterpret_cast<const char*>((*it)->name.getBuffer()), &open)) {
+					(*it)->func->call((*it)->object);
+				}
+
+				ImGui::End();
+
+				if (!open) {
+					it = _update_functions.erase_unsorted(it);
+				}
+			}
 		}
 	}
 }
@@ -1371,7 +1407,6 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 
 	for (const auto& entry : results) {
 		Refl::IReflectionFunction<void>* const func = ref_def.getFunc<void>(entry.first.getHash());
-		DebugMenuEntry* root = &_debug_menu_root;
 
 		if (!func) {
 			// Only allow functions with signature void func(void).
@@ -1380,6 +1415,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 		}
 
 		const U8String& path = entry.second->getPath();
+		DebugMenuEntry* root = &_debug_menu_root;
 		size_t prev_index = 0;
 		size_t index = 0;
 
@@ -1413,7 +1449,7 @@ void DebugManager::registerDebugMenuItems(void* object, const Refl::IReflectionD
 			it = Gaff::LowerBound(root->children, menu_entry.name);
 		}
 
-		menu_entry.type = DebugMenuEntry::Type::Func;
+		menu_entry.type = entry.second->isImGuiUpdateFunction() ? DebugMenuEntry::Type::FuncImGuiUpdate : DebugMenuEntry::Type::Func;
 		menu_entry.object = object;
 		menu_entry.func = func;
 
@@ -2383,7 +2419,7 @@ bool DebugManager::initImGui(void)
 	return true;
 }
 
-void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
+void DebugManager::renderDebugMenu(DebugMenuEntry& entry)
 {
 	if (entry.var) {
 		switch (entry.type) {
@@ -2422,11 +2458,42 @@ void DebugManager::renderDebugMenu(const DebugMenuEntry& entry)
 					entry.static_func->call();
 				}
 				break;
+
+			case DebugMenuEntry::Type::FuncImGuiUpdate: {
+				const bool always_render = entry.flags.testAll(DebugMenuEntry::Flag::AlwaysRender);
+				bool updating = entry.flags.testAll(DebugMenuEntry::Flag::Updating);
+
+				const U8String always_render_name = entry.name.getString() + u8" (Always Render)";
+
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(always_render_name.data(), nullptr, always_render))) {
+					entry.flags.set(!always_render, DebugMenuEntry::Flag::AlwaysRender);
+				}
+
+				if (ImGui::MenuItem(reinterpret_cast<const char*>(entry.name.getBuffer(), nullptr, updating))) {
+					updating = !updating;
+					entry.flags.set(updating, DebugMenuEntry::Flag::Updating);
+
+					entry.func->call(entry.object);
+
+					if (updating) {
+						_update_functions.emplace_back(&entry);
+
+					} else {
+						const auto it = Gaff::Find(_update_functions, &entry);
+						GAFF_ASSERT(it != _update_functions.end());
+
+						_update_functions.erase_unsorted(it);
+					}
+				}
+			} break;
+
+			case DebugMenuEntry::Type::StaticFuncImGuiUpdate:
+				break;
 		}
 
 	} else {
 		if (ImGui::BeginMenu(reinterpret_cast<const char*>(entry.name.getBuffer()))) {
-			for (const DebugMenuEntry& child_entry : entry.children) {
+			for (DebugMenuEntry& child_entry : entry.children) {
 				renderDebugMenu(child_entry);
 			}
 

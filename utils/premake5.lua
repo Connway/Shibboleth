@@ -74,6 +74,7 @@ if is_project_action == true then
 		local module_generators = os.matchfiles("../src/Modules/**/project_generator.lua")
 		local engine_generators = os.matchfiles("../src/Engine/**/project_generator.lua")
 		local tools_generators = os.matchfiles("../src/Tools/**/project_generator.lua")
+		local test_generators = os.matchfiles("../src/Tests/**/project_generator.lua")
 
 		Group "Dependencies"
 		table.foreachi(dependency_generators, RunFile)
@@ -90,10 +91,9 @@ if is_project_action == true then
 		Group "Tools"
 		table.foreachi(tools_generators, RunFile)
 
-		if _OPTIONS["generate-preproc"] then
-			group "Tests"
-			dofile("../src/Tests/project_generator.lua")
-		end
+		Group "Tests"
+		--table.foreachi(test_generators, RunFile)
+		dofile("../src/Tests/project_generator.lua")
 
 		if not _OPTIONS["generate-preproc"] then
 			if _ACTION ~= "gmake2" then

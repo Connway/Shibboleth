@@ -215,8 +215,8 @@
     <ProjectReference Include="..\dependencies\SimulationController.vcxproj">
       <Project>{AEFD6AD8-9A8C-F4A1-43AB-089D2F190548}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\modules\DevDebug.vcxproj">
-      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
+    <ProjectReference Include="..\dependencies\imgui.vcxproj">
+      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\Scene.vcxproj">
       <Project>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</Project>
@@ -239,6 +239,9 @@
     <ProjectReference Include="..\modules\Script.vcxproj">
       <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\modules\DevDebug.vcxproj">
+      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\modules\MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
@@ -259,9 +262,6 @@
     </ProjectReference>
     <ProjectReference Include="..\modules\Camera.vcxproj">
       <Project>{CE7141AB-BA13-6C81-A3CE-7FD58F0FF3D1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\imgui.vcxproj">
-      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\modules\DevECS.vcxproj">
       <Project>{9F5DE3AD-8BFF-0D84-74BA-21D860FB94D4}</Project>

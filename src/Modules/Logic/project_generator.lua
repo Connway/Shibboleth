@@ -46,6 +46,7 @@ local GenerateProject = function()
 		{
 			"Esprit",
 
+			"DevDebug",
 			"MainLoop",
 			"Resource",
 			"Script",
@@ -67,6 +68,7 @@ end
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Logic")
 	table.insert(deps, "Esprit")
+	table.insert(deps, "DevDebug")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Script")

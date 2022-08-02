@@ -62,6 +62,14 @@ function ModuleCopy(dir)
 	}
 end
 
+function TestCopy()
+	postbuildcommands
+	{
+		"{MKDIR} ../../../../../../workingdir/tests",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tests"
+	}
+end
+
 function NewDeleteLinkFix()
 	filter { "system:windows" }
 		ignoredefaultlibraries { "msvcrt.lib", "msvcrtd.lib" }
@@ -133,11 +141,18 @@ function GetToolsLocation(no_preproc)
 end
 
 function GetTestsLocation(no_preproc)
-	if no_preproc == nil then
+	-- $TODO: Swap to this after test refactor.
+	--[[if no_preproc == nil then
 		no_preproc = false
 	end
 
-	return "../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+	return GetActionLocation(no_preproc) .. "/tests"--]]
+
+	if _OPTIONS["generate-preproc"] then
+		return "../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+	else
+		return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+	end
 end
 
 function GetModulesSourceDirectory(module_name)
@@ -419,10 +434,30 @@ function ModuleProject(project_name, project_kind)
 		filter {}
 end
 
+function TestProject(project_name, project_kind)
+	table.insert(all_tools, project_name)
+
+	project(project_name)
+		location(GetTestsLocation())
+
+		if _OPTIONS["generate-preproc"] then
+			kind(project_kind or "ConsoleApp")
+		else
+			kind "None"
+		end
+
+		for _,v in ipairs(configs) do
+			filter { "configurations:" .. v, "platforms:x64" }
+				targetdir("../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+		end
+
+		filter {}
+end
+
 function Group(group_name)
-	if not _OPTIONS["generate-preproc"] then
+	--if not _OPTIONS["generate-preproc"] then
 		group(group_name)
-	end
+	--end
 end
 
 function IncludeDirs(dirs)

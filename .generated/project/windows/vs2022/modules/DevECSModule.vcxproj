@@ -122,6 +122,9 @@
     <ProjectReference Include="DevWebServer.vcxproj">
       <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
     </ProjectReference>
+    <ProjectReference Include="DevDebug.vcxproj">
+      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
+    </ProjectReference>
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>

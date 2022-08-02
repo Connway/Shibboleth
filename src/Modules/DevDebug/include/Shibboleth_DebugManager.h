@@ -82,6 +82,8 @@ public:
 	void render(uintptr_t thread_id_int);
 
 	ImGuiContext* getImGuiContext(void) const override;
+	//void lockImGui(void) override;
+	//void unlockImGui(void) override;
 
 	DebugRenderHandle renderDebugArrow(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugLine(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
@@ -165,7 +167,17 @@ private:
 		{
 			Var,
 			Func,
-			StaticFunc
+			StaticFunc,
+			FuncImGuiUpdate,
+			StaticFuncImGuiUpdate
+		};
+
+		enum class Flag
+		{
+			AlwaysRender,
+			Updating,
+
+			Count
 		};
 
 		Vector<DebugMenuEntry> children{ ProxyAllocator{ "Debug" } };
@@ -180,6 +192,7 @@ private:
 		};
 
 
+		Gaff::Flags<Flag> flags;
 		Type type = Type::Var;
 
 		bool operator<(const DebugMenuEntry& rhs) const { return name < rhs.name; }
@@ -234,6 +247,8 @@ private:
 	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
 	ECSQuery::Output _camera{ ProxyAllocator("Debug") };
 
+	Vector<const DebugMenuEntry*> _update_functions{ ProxyAllocator("Debug") };
+
 	RenderManagerBase* _render_mgr = nullptr;
 	InputManager* _input_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
@@ -269,7 +284,7 @@ private:
 	bool initDebugRender(void);
 	bool initImGui(void);
 
-	void renderDebugMenu(const DebugMenuEntry& entry);
+	void renderDebugMenu(DebugMenuEntry& entry);
 
 	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
 };

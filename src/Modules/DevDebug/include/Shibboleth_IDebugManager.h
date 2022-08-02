@@ -141,6 +141,8 @@ public:
 	virtual ~IDebugManager(void) {}
 
 	virtual ImGuiContext* getImGuiContext(void) const = 0;
+	//virtual void lockImGui(void) = 0;
+	//virtual void unlockImGui(void) = 0;
 
 	virtual DebugRenderHandle renderDebugArrow(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugLine(const Gleam::Vec3& start, const Gleam::Vec3& end, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;

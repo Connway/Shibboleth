@@ -23,10 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_IDebugManager.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_ECSQuery.h>
+
+#ifdef _DEBUG
+	#include <Shibboleth_IDebugManager.h>
+#endif
 
 namespace physx
 {
@@ -78,7 +81,6 @@ private:
 	physx::PxFoundation* _foundation = nullptr;
 	physx::PxPhysics* _physics = nullptr;
 
-	IDebugManager* _debug_mgr = nullptr;
 	ECSManager* _ecs_mgr = nullptr;
 
 	const Time* _game_time = nullptr;
@@ -86,6 +88,7 @@ private:
 
 	JobPool* _job_pool = nullptr;
 
+#ifdef _DEBUG
 	Vector<IDebugManager::DebugRenderHandle> _debug_render_handles[static_cast<size_t>(IDebugManager::DebugRenderType::Count)] =
 	{
 		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }, // Line
@@ -97,8 +100,9 @@ private:
 		Vector<IDebugManager::DebugRenderHandle>{ ProxyAllocator("Physics") }  // Arrow
 	};
 
-#ifdef _DEBUG
 	Gaff::Flags<DebugFlag> _debug_flags;
+
+	IDebugManager* _debug_mgr = nullptr;
 	physx::PxPvd* _pvd = nullptr;
 #endif
 

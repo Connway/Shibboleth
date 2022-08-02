@@ -12,7 +12,7 @@ local tests = {
 
 			base_dir .. "../Frameworks/Gaff/include",
 			source_dir .. "../Engine/Engine/include",
-			base_dir .. "../Engine/Memory/include"
+			source_dir .. "../Engine/Memory/include"
 		},
 
 		links =
@@ -46,7 +46,7 @@ local tests = {
 
 			base_dir .. "../Frameworks/Gaff/include",
 			source_dir .. "../Engine/Engine/include",
-			base_dir .. "../Engine/Memory/include"
+			source_dir .. "../Engine/Memory/include"
 		},
 
 		links =
@@ -82,7 +82,7 @@ local tests = {
 			base_dir .. "../Frameworks/Gaff/include",
 			base_dir .. "../Frameworks/Gleam/include",
 			source_dir .. "../Engine/Engine/include",
-			base_dir .. "../Engine/Memory/include",
+			source_dir .. "../Engine/Memory/include",
 
 			source_dir .. "../Modules/Resource/include",
 			source_dir .. "../Modules/ECS/include"
@@ -99,7 +99,8 @@ local tests = {
 
 			"ECS",
 			"Resource",
-			"MainLoop"
+			"MainLoop",
+			"DevDebug"
 		},
 
 		extra = function ()
@@ -115,10 +116,7 @@ local tests = {
 }
 
 function GenTest(settings)
-	project(settings.name)
-		location(GetTestsLocation())
-
-		kind(settings.kind or "ConsoleApp")
+	TestProject(settings.name)
 		debugdir "../../workingdir/tests"
 		language "C++"
 
@@ -166,6 +164,4 @@ function GenTest(settings)
 		links(settings.links)
 end
 
-if _OPTIONS["generate-preproc"] then
-	table.foreachi(tests, GenTest)
-end
+table.foreachi(tests, GenTest)
