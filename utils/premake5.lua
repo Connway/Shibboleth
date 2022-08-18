@@ -92,8 +92,7 @@ if is_project_action == true then
 		table.foreachi(tools_generators, RunFile)
 
 		Group "Tests"
-		--table.foreachi(test_generators, RunFile)
-		dofile("../src/Tests/project_generator.lua")
+		table.foreachi(test_generators, RunFile)
 
 		if not _OPTIONS["generate-preproc"] then
 			if _ACTION ~= "gmake2" then

@@ -1,7 +1,7 @@
-local source_dir = GetTestsSourceDirectory("AllocatorTest")
-local base_dir = GetTestsDirectory("AllocatorTest")
+local source_dir = GetTestsSourceDirectory("ReflectionTest")
+local base_dir = GetTestsDirectory("ReflectionTest")
 
-TestProject "AllocatorTest"
+TestProject "ReflectionTest"
 	debugdir "../../workingdir/tests"
 	language "C++"
 
@@ -13,6 +13,8 @@ TestProject "AllocatorTest"
 	{
 		base_dir .. "../../Dependencies/Catch2",
 		base_dir .. "../../Dependencies/EASTL/include",
+		base_dir .. "../../Dependencies/rapidjson",
+		base_dir .. "../../Dependencies/mpack",
 		base_dir .. "../../Frameworks/Gaff/include",
 		source_dir .. "../../Engine/Engine/include",
 		source_dir .. "../../Engine/Memory/include"

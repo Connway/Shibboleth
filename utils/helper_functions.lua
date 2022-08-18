@@ -65,8 +65,8 @@ end
 function TestCopy()
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../workingdir/tests",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tests"
+		"{MKDIR} ../../../../../../workingdir/tests",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tests"
 	}
 end
 
@@ -141,18 +141,11 @@ function GetToolsLocation(no_preproc)
 end
 
 function GetTestsLocation(no_preproc)
-	-- $TODO: Swap to this after test refactor.
-	--[[if no_preproc == nil then
+	if no_preproc == nil then
 		no_preproc = false
 	end
 
-	return GetActionLocation(no_preproc) .. "/tests"--]]
-
-	if _OPTIONS["generate-preproc"] then
-		return "../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
-	else
-		return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
-	end
+	return GetActionLocation(no_preproc) .. "/tests"
 end
 
 function GetModulesSourceDirectory(module_name)
@@ -203,20 +196,20 @@ function GetToolsDirectory(tool_name)
 	return "../../Tools/" .. tool_name .. "/"
 end
 
-function GetTestsSourceDirectory()
-	if _OPTIONS["generate-preproc"] then
-		return "../../.generated/preproc/Tests/"
-	else
-		return "../../src/Tests/"
-	end
+function GetTestsSourceDirectory(test_name)
+	--if _OPTIONS["generate-preproc"] then
+	--	return "../../.generated/preproc/Tests/" .. test_name .. "/"
+	--else
+		return "../../../src/Tests/" .. test_name .. "/"
+	--end
 end
 
 function GetTestsGeneratedDirectory()
 	return "../../.generated/preproc/Tests/"
 end
 
-function GetTestsDirectory()
-	return "../../src/Tests/"
+function GetTestsDirectory(test_name)
+	return "../../../src/Tests/" .. test_name .. "/"
 end
 
 function RunFile(file)
@@ -448,7 +441,7 @@ function TestProject(project_name, project_kind)
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
-				targetdir("../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}

@@ -1,7 +1,7 @@
-local source_dir = GetTestsSourceDirectory("AllocatorTest")
-local base_dir = GetTestsDirectory("AllocatorTest")
+local source_dir = GetTestsSourceDirectory("ECSTest")
+local base_dir = GetTestsDirectory("ECSTest")
 
-TestProject "AllocatorTest"
+TestProject "ECSTest"
 	debugdir "../../workingdir/tests"
 	language "C++"
 
@@ -13,9 +13,15 @@ TestProject "AllocatorTest"
 	{
 		base_dir .. "../../Dependencies/Catch2",
 		base_dir .. "../../Dependencies/EASTL/include",
+		base_dir .. "../../Dependencies/glm",
+		base_dir .. "../../Dependencies/rapidjson",
+		base_dir .. "../../Dependencies/mpack",
 		base_dir .. "../../Frameworks/Gaff/include",
+		base_dir .. "../../Frameworks/Gleam/include",
 		source_dir .. "../../Engine/Engine/include",
-		source_dir .. "../../Engine/Memory/include"
+		source_dir .. "../../Engine/Memory/include",
+		source_dir .. "../../Modules/Resource/include",
+		source_dir .. "../../Modules/ECS/include"
 	}
 
 	local deps =
@@ -26,7 +32,11 @@ TestProject "AllocatorTest"
 		"Memory",
 		"Gaff",
 		"Gleam",
-		"mpack"
+		"mpack",
+		"ECS",
+		"Resource",
+		"MainLoop",
+		"DevDebug"
 	}
 
 	dependson(deps)

@@ -189,7 +189,8 @@
     <None Include="..\..\..\..\src\Modules\Scene\project_generator.lua" />
     <None Include="..\..\..\..\src\Modules\Script\project_generator.lua" />
     <None Include="..\..\..\..\src\Tests\AllocatorTest\project_generator.lua" />
-    <None Include="..\..\..\..\src\Tests\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tests\ECSTest\project_generator.lua" />
+    <None Include="..\..\..\..\src\Tests\ReflectionTest\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\CodeGenerator\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\JSONToMessagePack\project_generator.lua" />
     <None Include="..\..\..\..\src\Tools\Preprocessor\project_generator.lua" />

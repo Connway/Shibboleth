@@ -154,6 +154,12 @@
     <Filter Include="Tests\AllocatorTest">
       <UniqueIdentifier>{68DFEB32-D440-C940-5DAE-0FF3C90E0000}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tests\ECSTest">
+      <UniqueIdentifier>{6213649B-CED3-DFD1-970E-294F038E24AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests\ReflectionTest">
+      <UniqueIdentifier>{D21A46BC-BEA9-CF85-67C8-E3805336E02B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Tools">
       <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
     </Filter>
@@ -357,8 +363,11 @@
     <None Include="..\..\..\..\src\Tests\AllocatorTest\project_generator.lua">
       <Filter>Tests\AllocatorTest</Filter>
     </None>
-    <None Include="..\..\..\..\src\Tests\project_generator.lua">
-      <Filter>Tests</Filter>
+    <None Include="..\..\..\..\src\Tests\ECSTest\project_generator.lua">
+      <Filter>Tests\ECSTest</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Tests\ReflectionTest\project_generator.lua">
+      <Filter>Tests\ReflectionTest</Filter>
     </None>
     <None Include="..\..\..\..\src\Tools\CodeGenerator\project_generator.lua">
       <Filter>Tools\CodeGenerator</Filter>

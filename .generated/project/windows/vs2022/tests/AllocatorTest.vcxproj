@@ -95,7 +95,7 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Tests\AllocatorTest.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tests\AllocatorTest\AllocatorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dependencies\Catch2.vcxproj">
