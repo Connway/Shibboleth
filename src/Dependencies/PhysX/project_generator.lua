@@ -4,7 +4,7 @@ function PhysXProject(proj_name, lib_type)
 	cppdialect "C++17" -- C++20 breaks this library.
 	language "C++"
 
-	IncludeDirs
+	includedirs
 	{
 		"physx/include",
 		"pxshared/include",
@@ -48,8 +48,8 @@ function PhysXProject(proj_name, lib_type)
 	if lib_type == "SharedLib" then
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../../workingdir/bin",
-			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
+			"{MKDIR} ../../../../../workingdir/bin",
+			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 		}
 	end
 
@@ -60,13 +60,13 @@ end
 Group "Dependencies/PhysX"
 
 PhysXProject("FastXml", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/source/fastxml/include"
 	}
 
 PhysXProject("LowLevel", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -97,7 +97,7 @@ PhysXProject("LowLevel", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		IncludeDirs
+		includedirs
 		{
 			"physx/source/common/include/windows",
 			"physx/source/common/src/windows"
@@ -106,7 +106,7 @@ PhysXProject("LowLevel", "StaticLib")
 	filter {}
 
 PhysXProject("LowLevelAABB", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -124,7 +124,7 @@ PhysXProject("LowLevelAABB", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		IncludeDirs
+		includedirs
 		{
 			"physx/source/common/include/windows",
 			"physx/source/common/src/windows"
@@ -133,7 +133,7 @@ PhysXProject("LowLevelAABB", "StaticLib")
 	filter {}
 
 PhysXProject("LowLevelDynamics", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -152,7 +152,7 @@ PhysXProject("LowLevelDynamics", "StaticLib")
 	}
 
 	filter { "system:windows" }
-		IncludeDirs
+		includedirs
 		{
 			"physx/source/common/src/windows"
 		}
@@ -160,7 +160,7 @@ PhysXProject("LowLevelDynamics", "StaticLib")
 	filter {}
 
 PhysXProject("PhysXCharacterKinematic", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/characterkinematic",
@@ -183,7 +183,7 @@ PhysXProject("PhysXCharacterKinematic", "StaticLib")
 	}
 
 PhysXProject("PhysXExtensions", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/cooking",
@@ -218,20 +218,20 @@ PhysXProject("PhysXExtensions", "StaticLib")
 	}
 
 PhysXProject("PhysXPvdSDK", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/source/filebuf/include",
 		"physx/source/pvd/include"
 	}
 
 PhysXProject("PhysXTask", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/source/cudamanager/include"
 	}
 
 PhysXProject("PhysXVehicle", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/extensions",
@@ -252,7 +252,7 @@ PhysXProject("PhysXVehicle", "StaticLib")
 	}
 
 PhysXProject("SceneQuery", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -282,7 +282,7 @@ PhysXProject("SceneQuery", "StaticLib")
 	}
 
 PhysXProject("SimulationController", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -317,7 +317,7 @@ PhysXProject("SimulationController", "StaticLib")
 	}
 
 PhysXProject("PhysXCommon", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",
@@ -351,7 +351,7 @@ PhysXProject("PhysXCooking", "StaticLib")
 		"PX_COOKING"
 	}
 
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/cooking",
@@ -384,13 +384,13 @@ PhysXProject("PhysXCooking", "StaticLib")
 	filter {}
 
 PhysXProject("PhysXFoundation", "StaticLib")
-	IncludeDirs
+	includedirs
 	{
 		"physx/source/foundation/include",
 	}
 
 	filter { "system:windows" }
-		IncludeDirs
+		includedirs
 		{
 			"physx/source/foundation/include/windows"
 		}
@@ -408,11 +408,11 @@ PhysXProject("PhysX", "StaticLib")
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{MOVE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
+			"{MKDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
+			"{MOVE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64.dll ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll ../../../../../workingdir/bin",
+			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp"
 		}
 
 	filter { "system:windows", "configurations:*Release* or *Optimized_Debug* or *Profile*" }
@@ -420,11 +420,7 @@ PhysXProject("PhysX", "StaticLib")
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp",
-			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp",
-			"{MOVE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64.dll ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/debug/temp/PhysXGpu_64d.dll",
-			"{COPYFILE} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp/PhysXGpu_64d.dll ../../../../../../workingdir/bin",
-			"{RMDIR} ../../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/temp"
+			"{COPYFILE} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc142.mt/release/PhysXGpu_64d.dll ../../../../../workingdir/bin"
 		}
 
 	filter { "system:not windows" }
@@ -438,7 +434,7 @@ PhysXProject("PhysX", "StaticLib")
 
 	filter {}
 
-	IncludeDirs
+	includedirs
 	{
 		"physx/include/common",
 		"physx/include/geometry",

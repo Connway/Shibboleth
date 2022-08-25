@@ -28,8 +28,8 @@ DepProject("TracyClient", "SharedLib")
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
 
 	filter { "system:not windows" }
@@ -72,7 +72,7 @@ DepProject("TracyProfiler", "WindowedApp")
 	-- I do not want to add another dependency, so I am using the default font renderer instead.
 	removefiles { "imgui/misc/freetype/*.*" }
 
-	IncludeDirs
+	includedirs
 	{
 		"profiler",
 		"imgui",
@@ -95,8 +95,8 @@ DepProject("TracyProfiler", "WindowedApp")
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tools"
+		"{MKDIR} ../../../../../workingdir/tools",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
 
 	filter { "system:linux", "options:not wayland" }

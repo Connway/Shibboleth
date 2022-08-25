@@ -3,7 +3,7 @@ DepProject("CivetWeb", "SharedLib")
 	warnings "Extra"
 
 	files { "**.c", "**.h", "**.cpp", "**.inl" }
-	IncludeDirs
+	includedirs
 	{
 		"include",
 		"src/third_party",
@@ -26,8 +26,8 @@ DepProject("CivetWeb", "SharedLib")
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
 
 	filter { "system:windows" }

@@ -6,7 +6,7 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC", "PX_PHYSX_STATIC_LIB" }
+		defines { "SHIB_STATIC", "PX_PHYSX_STATIC_LIB", "_SILENCE_CXX20_CISO646_REMOVED_WARNING" }
 
 		SetupConfigMap()
 

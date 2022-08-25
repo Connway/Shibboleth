@@ -3,7 +3,7 @@ DepProject "mimalloc"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	IncludeDirs { "include" }
+	includedirs { "include" }
 
 	removefiles
 	{

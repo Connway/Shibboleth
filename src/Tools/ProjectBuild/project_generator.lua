@@ -42,7 +42,7 @@ if not _OPTIONS["generate-preproc"] then
 
 		kind "Makefile"
 
-		dependson({ "ProjectBuild" })
+		dependson({ "ProjectBuild", "BuildDependencies" })
 
 		-- No rebuild commands for now.
 		--[[
@@ -71,4 +71,12 @@ if not _OPTIONS["generate-preproc"] then
 			"{RMDIR} ../../../../../.generated/build/" .. os.target() .. "/" .. _ACTION,
 			"{RMDIR} ../../../../../.generated/preproc"
 		}
+
+	project "BuildDependencies"
+		location(GetToolsLocation())
+
+		kind "None"
+
+		dependson(GetAllDependencies())
+		dependson(GetAllFrameworks())
 end

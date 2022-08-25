@@ -100,20 +100,12 @@ function GetActionLocation(no_preproc)
 	end
 end
 
-function GetDependenciesLocation(no_preproc)
-	if no_preproc == nil then
-		no_preproc = false
-	end
-
-	return GetActionLocation(no_preproc) .. "/dependencies"
+function GetDependenciesLocation()
+	return GetActionLocation(true) .. "/dependencies"
 end
 
-function GetFrameworkLocation(no_preproc)
-	if no_preproc == nil then
-		no_preproc = false
-	end
-
-	return GetActionLocation(no_preproc) .. "/frameworks"
+function GetFrameworkLocation()
+	return GetActionLocation(true) .. "/frameworks"
 end
 
 function GetModulesLocation()
@@ -307,21 +299,13 @@ function GetAllTools()
 	return all_tools
 end
 
-function FrameworkProject(project_name, project_kind, no_preproc)
-	if no_preproc == nil then
-		no_preproc = false
-	end
-
+function FrameworkProject(project_name, project_kind)
 	table.insert(all_frameworks, project_name)
 
 	project(project_name)
-		location(GetFrameworkLocation(no_preproc))
+		location(GetFrameworkLocation())
 
-		if _OPTIONS["generate-preproc"] or no_preproc then
-			kind(project_kind or "StaticLib")
-		else
-			kind "None"
-		end
+		kind(project_kind or "StaticLib")
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -331,21 +315,13 @@ function FrameworkProject(project_name, project_kind, no_preproc)
 		filter {}
 end
 
-function DepProject(project_name, project_kind, no_preproc)
-	if no_preproc == nil then
-		no_preproc = false
-	end
-
+function DepProject(project_name, project_kind)
 	table.insert(all_dependencies, project_name)
 
 	project(project_name)
-		location(GetDependenciesLocation(no_preproc))
+		location(GetDependenciesLocation())
 
-		if _OPTIONS["generate-preproc"] or no_preproc then
-			kind(project_kind or "StaticLib")
-		else
-			kind "None"
-		end
+		kind(project_kind or "StaticLib")
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }

@@ -5,7 +5,7 @@ FrameworkProject "Gleam"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	IncludeDirs
+	includedirs
 	{
 		"include",
 		"../Gaff/include",

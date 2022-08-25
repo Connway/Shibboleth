@@ -1,4 +1,4 @@
-DepProject("EASTL", "StaticLib", true)
+DepProject "EASTL"
 	language "C++"
 	warnings "Extra"
 

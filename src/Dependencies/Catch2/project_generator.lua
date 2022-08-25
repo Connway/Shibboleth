@@ -4,7 +4,7 @@ DepProject "Catch2"
 
 	files { "**.hpp", "**.c", "**.h", "**.cpp", "**.inl" }
 
-	IncludeDirs
+	includedirs
 	{
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",

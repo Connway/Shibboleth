@@ -6,7 +6,7 @@ DepProject "minizip-ng"
 	excludes { "**bzip.*", "**lzma.*", "**openssl.*", "**libcomp.*", "**crypt_win32.*" }
 	defines { "HAVE_ZLIB", "MZ_ZIP_NO_MAIN", "MZ_ZIP_SIGNING" }
 
-	IncludeDirs
+	includedirs
 	{
 		"../zlib-ng",
 		"../zstd"
