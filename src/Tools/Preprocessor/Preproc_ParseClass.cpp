@@ -26,6 +26,11 @@ THE SOFTWARE.
 
 bool ParseClass(std::string_view substr, ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return false;
+	}
+
 	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
 		return false;
 	}
@@ -48,7 +53,14 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 			}
 
 			// Add class data to parse data.
-			ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+			const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
+
+			if (parse_data.global_runtime->class_data.contains(hash)) {
+				std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
+				parse_data.global_runtime->class_data.erase(hash);
+			}
+
+			ClassData& class_data = parse_data.global_runtime->class_data[hash];
 			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
 			class_data.name = class_runtime_data.name;
 
@@ -108,6 +120,11 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 
 void ProcessClassScopeOpen(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
+
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
 		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
@@ -136,18 +153,29 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 
 void ProcessClassScopeClose(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
+
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == (parse_data.scope_ranges.size() - 1)) {
 		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
-		// We have an anonymous class/struct.
-		if (class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Anonymous)) {
-			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for the anonymous class/struct)
-		}
-
-		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
-		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
+		const bool is_anonymous = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Anonymous);
+		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
 
 		parse_data.class_stack.pop_back();
+
+		// We have an anonymous class/struct.
+		if (is_anonymous) {
+			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for the anonymous class/struct)
+			return;
+		}
+
+		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(hash));
+
+		ClassData& class_data = parse_data.global_runtime->class_data[hash];
+		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
 
 		class_data.declaration_text = parse_data.file_text.substr(scope_data.range.start + 1, scope_data.range.end - scope_data.range.start - 1);
 

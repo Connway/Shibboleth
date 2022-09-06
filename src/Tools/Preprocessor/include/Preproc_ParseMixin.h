@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 #include <string_view>
 
+struct GlobalRuntimeData;
+struct ClassData;
 struct ParseData;
 
 bool ParseMixin(std::string_view substr, ParseData& parse_data);
+void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& class_data);

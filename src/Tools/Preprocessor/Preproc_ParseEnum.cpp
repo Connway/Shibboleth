@@ -28,6 +28,11 @@ THE SOFTWARE.
 
 bool ParseEnum(std::string_view substr, ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return false;
+	}
+
 	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::EnumName)) {
 		return false;
 	}
@@ -66,6 +71,11 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 
 void ProcessEnumScopeOpen(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
+
 	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == SIZE_T_FAIL) {
 		if (parse_data.scope_ranges.size() > 1) {
 			const auto it = parse_data.scope_ranges.end() - 2;
@@ -91,6 +101,11 @@ void ProcessEnumScopeOpen(ParseData& parse_data)
 
 void ProcessEnumScopeClose(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
+
 	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == (parse_data.scope_ranges.size() - 1)) {
 		parse_data.enum_runtime.flags.clear(EnumRuntimeData::Flag::Valid);
 	}

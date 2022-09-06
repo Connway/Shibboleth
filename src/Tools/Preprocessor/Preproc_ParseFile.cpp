@@ -305,7 +305,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			}
 
 			// Preserve open scope marker.
-			parse_data.out_text += marker[0];
+			if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+				parse_data.out_text += marker[0];
+			}
 
 			// Process rest.
 			parse_data.start_index = start_index + open_pos + strlen(marker[0]);
@@ -343,7 +345,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			parse_data.scope_ranges.pop_back();
 
 			// Preserve close scope marker.
-			parse_data.out_text += marker[1];
+			if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+				parse_data.out_text += marker[1];
+			}
 
 			// Process rest.
 			parse_data.start_index = start_index + close_pos + strlen(marker[1]);
@@ -372,7 +376,11 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 		}
 
 		if (append_text) {
-			parse_data.out_text += substr;
+			if (parse_data.flags.testAll(ParseData::Flag::WriteFile) &&
+				!parse_data.flags.testAll(ParseData::Flag::DoNotWriteSubstring)) {
+
+				parse_data.out_text += substr;
+			}
 		}
 
 	} else {
@@ -386,7 +394,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 		parse_data.next_index = start_index + left_substr.size();
 		Preproc_ParseSubstring(left_substr, parse_data, depth + 1);
 
-		parse_data.out_text += ignore_substr;
+		if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+			parse_data.out_text += ignore_substr;
+		}
 
 		parse_data.start_index = parse_data.next_index + ignore_substr.size();
 		parse_data.next_index = end_index;
@@ -397,7 +407,9 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 	}
 
 	if (!depth && parse_data.next_index != std::string_view::npos) {
-		parse_data.out_text += parse_data.file_text[parse_data.next_index]; // Preserve token character.
+		if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+			parse_data.out_text += parse_data.file_text[parse_data.next_index]; // Preserve token character.
+		}
 	}
 }
 
@@ -410,9 +422,11 @@ bool Preproc_ParseFile(ParseData& parse_data)
 	while (parse_data.next_index != std::string::npos) {
 		// Started on whitespace. Append it to the output and move on.
 		if (parse_data.start_index == parse_data.next_index) {
-			// Don't append whitespace characters if we're stripping from the beginning of the file.
-			if (!parse_data.out_text.empty()) {
-				parse_data.out_text += parse_data.file_text[parse_data.start_index];
+			if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+				// Don't append whitespace characters if we're stripping from the beginning of the file.
+				if (!parse_data.out_text.empty()) {
+					parse_data.out_text += parse_data.file_text[parse_data.start_index];
+				}
 			}
 
 		} else {

@@ -85,8 +85,10 @@ struct ClassData final
 {
 	std::string name;
 	std::string declaration_text; // Text between curly braces.
+	std::string definition_text; // Text in cpp file.
 	std::vector<std::string> mixin_classes;
 	bool is_struct = false;
+	bool finished = false;
 };
 
 struct ClassRuntimeData final
@@ -163,8 +165,16 @@ struct NamespaceRuntimeData final
 //	size_t next_index = 0;
 //};
 
+//struct FileTextData final
+//{
+//	std::string output_path;
+//	std::string input_path;
+//	std::string text;
+//};
+
 struct GlobalRuntimeData final
 {
+	//std::map<size_t, FileTextData> file_text;
 	std::map<size_t, ClassData> class_data;
 };
 
@@ -185,6 +195,7 @@ struct ParseData final
 
 		LastTokenOnLine,
 
+		DoNotWriteSubstring,
 		WriteFile,
 
 		Count

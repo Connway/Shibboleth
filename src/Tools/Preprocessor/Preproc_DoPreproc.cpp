@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Preproc_DoPreproc.h"
+#include "Preproc_ParseMixin.h"
 #include "Preproc_ParseFile.h"
 #include "Preproc_Common.h"
 #include "Preproc_Errors.h"
@@ -90,8 +91,8 @@ int DoPreproc_ProcessFile(
 	}
 
 	ParseData parse_data;
+	parse_data.flags.set(write_file, ParseData::Flag::WriteFile);
 	parse_data.global_runtime = &global_runtime_data;
-	parse_data.flags.set(ParseData::Flag::WriteFile, write_file);
 
 	std::string file_text;
 
@@ -130,47 +131,65 @@ int DoPreproc_ProcessFile(
 		pos = output_file_path.find('/', pos + 1);
 	}
 
-	if (std::filesystem::is_regular_file(output_file_path)) {
-		Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+	//const size_t hash = std::hash<std::string>{}(path.string());
+
+	if (write_file) {
+		//GAFF_ASSERT(global_runtime_data.file_text.contains(hash));
+
+		//FileTextData& file_text_data = global_runtime_data.file_text[hash];
+		//file_text_data.text = std::move(parse_data.out_text);
+
+		// Do this check after we have processed the final output text.
+
+		if (std::filesystem::is_regular_file(output_file_path)) {
+			Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+
+			if (!output_file.isOpen()) {
+				std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
+			}
+
+			std::string old_output_file_text;
+			old_output_file_text.resize(output_file.getFileSize());
+
+			if (!output_file.readEntireFile(old_output_file_text.data())) {
+				std::cerr << "Failed to read output file '" << output_file_path << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToReadOutputFile);
+			}
+
+			// Don't write the output file if the resulting output is the same.
+			// $TODO: Database of timestamps to make this more optimal? Could also be used for CodeGenerator.
+			if (parse_data.out_text == old_output_file_text) {
+				return static_cast<int>(Error::Success);
+			}
+
+			output_file.close();
+		}
+
+		Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
 
 		if (!output_file.isOpen()) {
 			std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
 			return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 		}
 
-		std::string old_output_file_text;
-		old_output_file_text.resize(output_file.getFileSize());
-
-		if (!output_file.readEntireFile(old_output_file_text.data())) {
-			std::cerr << "Failed to read output file '" << output_file_path << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToReadOutputFile);
+		if (!output_file.writeString(parse_data.out_text.c_str())) {
+			std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
+			return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 		}
 
-		// Don't write the output file if the resulting output is the same.
-		// $TODO: Database of timestamps to make this more optimal? Could also be used for CodeGenerator.
-		if (parse_data.out_text == old_output_file_text) {
-			return static_cast<int>(Error::Success);
-		}
+	} //else {
+		//GAFF_ASSERT(!global_runtime_data.file_text.contains(hash));
 
-		output_file.close();
-	}
-
-	Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
-
-	if (!output_file.isOpen()) {
-		std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
-		return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
-	}
-
-	if (!output_file.writeString(parse_data.out_text.c_str())) {
-		std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
-		return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
-	}
+		//FileTextData& file_text_data = global_runtime_data.file_text[hash];
+		//file_text_data.output_path = output_file_path;
+		//file_text_data.input_path = path.string();
+	//}
 
 	return static_cast<int>(Error::Success);
 }
 
-int DoPreproc_ProcessDirectory(
+int DoPreproc_ProcessDirectoryAndPopulateClassData(
 	const argparse::ArgumentParser& program,
 	GlobalRuntimeData& global_runtime_data,
 	const std::string& dir,
@@ -195,12 +214,32 @@ int DoPreproc_ProcessDirectory(
 		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
 			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
 
-			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, dir, gen_dir, entry.path(), false);
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, entry.path(), false);
 		}
 
 		//if (ret) {
 		//	return ret;
 		//}
+	}
+
+	for (auto& data : global_runtime_data.class_data) {
+		if (data.second.finished) {
+			continue;
+		}
+
+		// $TODO: Process class data.
+
+		using ProcessClassStructFunc = void (*)(GlobalRuntimeData&, ClassData&);
+		constexpr ProcessClassStructFunc k_process_funcs[] =
+		{
+			ProcessClassStructMixin
+		};
+
+		for (ProcessClassStructFunc process_func : k_process_funcs) {
+			process_func(global_runtime_data, data.second);
+		}
+
+		data.second.finished = true;
 	}
 
 	return static_cast<int>(Error::Success);
@@ -270,7 +309,7 @@ int DoPreproc_ProcessDirectory(
 		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
 			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
 
-			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, entry.path());
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, entry.path(), true);
 
 		} else {
 			/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, entry.path());
@@ -304,21 +343,21 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 
 	GlobalRuntimeData global_runtime_data;
 
-	int ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
+	int ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
 
 	if (ret) {
 		return ret;
 	}
 
 	if (force_module) {
-		ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 		if (ret) {
 			return ret;
 		}
 
 	} else if (force_tool) {
-		ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
 
 		if (ret) {
 			return ret;
@@ -326,14 +365,14 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 
 	} else if (!name.empty()) {
 		if (std::filesystem::is_directory(std::string(k_module_dir) + "/" + name)) {
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
 				return ret;
 			}
 
 		} else if (std::filesystem::is_directory(std::string(k_tool_dir) + "/" + name)) {
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
 
 			if (ret) {
 				return ret;
@@ -379,7 +418,7 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 
 		} else {
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
 				return ret;
@@ -389,7 +428,7 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
-				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
 
 				if (ret) {
 					return ret;

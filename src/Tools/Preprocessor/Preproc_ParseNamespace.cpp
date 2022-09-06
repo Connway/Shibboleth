@@ -25,6 +25,11 @@ THE SOFTWARE.
 
 bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return false;
+	}
+
 	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::NamespaceName)) {
 		return false;
 	}
@@ -109,6 +114,11 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 
 void ProcessNamespaceScopeOpen(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
+
 	if (parse_data.namespace_runtime.valid) {
 		if (parse_data.scope_ranges.size() > 1) {
 			const auto it = parse_data.scope_ranges.end() - 2;
@@ -130,6 +140,10 @@ void ProcessNamespaceScopeOpen(ParseData& parse_data)
 	}
 }
 
-void ProcessNamespaceScopeClose(ParseData& /*parse_data*/)
+void ProcessNamespaceScopeClose(ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return;
+	}
 }

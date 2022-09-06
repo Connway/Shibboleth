@@ -26,6 +26,11 @@ THE SOFTWARE.
 
 bool ParseMixin(std::string_view substr, ParseData& parse_data)
 {
+	// Currently have no inline modifications to do during file writing.
+	if (parse_data.flags.testAll(ParseData::Flag::WriteFile)) {
+		return false;
+	}
+
 	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::MixinName)) {
 		return false;
 	}
@@ -33,7 +38,11 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 	// Found the name of a mixin.
 	if (parse_data.flags.testAll(ParseData::Flag::MixinName)) {
 		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-		ClassData& class_data = parse_data.class_data[std::hash<std::string>{}(class_runtime_data.name)];
+		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
+
+		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(hash));
+
+		ClassData& class_data = parse_data.global_runtime->class_data[hash];
 
 		class_data.mixin_classes.emplace_back(substr);
 
@@ -55,4 +64,27 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 
 	parse_data.flags.set(ParseData::Flag::MixinName);
 	return true;
+}
+
+void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& class_data)
+{
+	for (const std::string& mixin_class_name : class_data.mixin_classes) {
+		const size_t hash = std::hash<std::string>{}(mixin_class_name);
+		const auto it = global_runtime_data.class_data.find(hash);
+
+		GAFF_ASSERT(it != global_runtime_data.class_data.end());
+
+		// Ensure that dependency classes have been processed.
+		ProcessClassStructMixin(global_runtime_data, it->second);
+
+		std::string mixin_declaration = it->second.declaration_text;
+
+		// Find line with 'mixin <mixin_class_name>'.
+		// Replace 'mixin <mixin_class_name>' with modified declaration text of dependent class.
+
+		size_t start_index = class_data.declaration_text.find(mixin_class_name);
+		GAFF_ASSERT(start_index != std::string::npos);
+
+
+	}
 }
