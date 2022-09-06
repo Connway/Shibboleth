@@ -163,6 +163,11 @@ struct NamespaceRuntimeData final
 //	size_t next_index = 0;
 //};
 
+struct GlobalRuntimeData final
+{
+	std::map<size_t, ClassData> class_data;
+};
+
 struct ParseData final
 {
 	enum class Flag
@@ -180,6 +185,8 @@ struct ParseData final
 
 		LastTokenOnLine,
 
+		WriteFile,
+
 		Count
 	};
 
@@ -187,7 +194,6 @@ struct ParseData final
 	std::string out_text;
 
 	std::vector<std::string> include_dirs;
-	std::map<size_t, ClassData> class_data;
 
 	//std::map<size_t, EnumData> enum_data;
 
@@ -197,6 +203,7 @@ struct ParseData final
 	std::vector<ScopeRuntimeData> scope_ranges;
 	NamespaceRuntimeData namespace_runtime; // Only have one instance of it as this data is temporary. It gets absorbed into ScopeRuntimeData after we process it enough.
 	EnumRuntimeData enum_runtime;
+	GlobalRuntimeData* global_runtime = nullptr;
 
 	int32_t preproc_if_count = 0;
 

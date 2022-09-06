@@ -220,6 +220,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Preproces
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Common.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_DoPreproc.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Errors.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseClass.h" />

@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Preproc_DoPreproc.h"
 #include "Preproc_ParseFile.h"
+#include "Preproc_Common.h"
 #include "Preproc_Errors.h"
 #include <Gaff_String.h>
 #include <Gaff_Utils.h>
@@ -73,10 +74,12 @@ int DoPreproc_CopyFile(
 
 int DoPreproc_ProcessFile(
 	const argparse::ArgumentParser& program,
+	GlobalRuntimeData& global_runtime_data,
 	const std::string& /*name*/,
 	const std::string& dir,
 	const std::string& gen_dir,
-	const std::filesystem::path& path)
+	const std::filesystem::path& path,
+	bool write_file)
 {
 	CONVERT_STRING(char8_t, temp, path.c_str());
 	Gaff::File file(temp, Gaff::File::OpenMode::ReadBinary);
@@ -87,6 +90,9 @@ int DoPreproc_ProcessFile(
 	}
 
 	ParseData parse_data;
+	parse_data.global_runtime = &global_runtime_data;
+	parse_data.flags.set(ParseData::Flag::WriteFile, write_file);
+
 	std::string file_text;
 
 	file_text.resize(file.getFileSize());
@@ -166,10 +172,83 @@ int DoPreproc_ProcessFile(
 
 int DoPreproc_ProcessDirectory(
 	const argparse::ArgumentParser& program,
+	GlobalRuntimeData& global_runtime_data,
+	const std::string& dir,
+	const std::string& gen_dir)
+{
+	if (!std::filesystem::is_directory(dir)) {
+		std::cerr << '"' << dir << "\" is not a directory." << std::endl;
+		return static_cast<int>(Error::DoPreproc_PathNotFound);
+	}
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
+		if (!entry.is_regular_file()) {
+			continue;
+		}
+
+		if (entry.path().filename() == "project_generator.lua") {
+			continue;
+		}
+
+		//int ret = static_cast<int>(Error::Success);
+
+		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
+			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
+
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, dir, gen_dir, entry.path(), false);
+		}
+
+		//if (ret) {
+		//	return ret;
+		//}
+	}
+
+	return static_cast<int>(Error::Success);
+}
+
+int DoPreproc_ProcessDirectory(
+	const argparse::ArgumentParser& program,
+	GlobalRuntimeData& global_runtime_data,
 	const std::string& name,
 	const std::string& dir,
 	const std::string& gen_dir)
 {
+	if (name.empty()) {
+		int ret = static_cast<int>(Error::Success);
+
+		// Iterate over all folders in dir.
+		for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+			// Only care about directory names.
+			if (!entry.is_directory()) {
+				continue;
+			}
+
+			const std::string sub_name = entry.path().stem().string();
+			bool ignore = false;
+
+			for (const char* const ignore_name : k_ignore_list) {
+				if (name == ignore_name) {
+					ignore = true;
+					break;
+				}
+			}
+
+			if (ignore) {
+				continue;
+			}
+
+			std::cout << "Running Preprocessor for '" << sub_name << '\'' << std::endl;
+
+			const int new_ret = DoPreproc_ProcessDirectory(program, global_runtime_data, sub_name, dir, gen_dir);
+
+			if (new_ret && !ret) {
+				ret = new_ret;
+			}
+		}
+
+		return ret;
+	}
+
 	const std::string path = dir + "/" + name;
 
 	if (!std::filesystem::is_directory(path)) {
@@ -191,7 +270,7 @@ int DoPreproc_ProcessDirectory(
 		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
 			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
 
-			/*ret =*/ DoPreproc_ProcessFile(program, name, dir, gen_dir, entry.path());
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, entry.path());
 
 		} else {
 			/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, entry.path());
@@ -223,49 +302,106 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 	const bool force_engine = program.get<bool>("--engine");
 	const bool force_tool = program.get<bool>("--tool");
 
-	int ret = static_cast<int>(Error::Success);
+	GlobalRuntimeData global_runtime_data;
+
+	int ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
+
+	if (ret) {
+		return ret;
+	}
+
+	if (force_module) {
+		ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+
+		if (ret) {
+			return ret;
+		}
+
+	} else if (force_tool) {
+		ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+
+		if (ret) {
+			return ret;
+		}
+
+	} else if (!name.empty()) {
+		if (std::filesystem::is_directory(std::string(k_module_dir) + "/" + name)) {
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+
+			if (ret) {
+				return ret;
+			}
+
+		} else if (std::filesystem::is_directory(std::string(k_tool_dir) + "/" + name)) {
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+
+			if (ret) {
+				return ret;
+			}
+		}
+	}
 
 	if (program.is_used("--file")) {
+		if (name.empty()) {
+			std::cerr << "--file was used, but no module or tool name was given." << std::endl;
+			return static_cast<int>(Error::DoPreproc_NoModuleOrToolSpecified);
+		}
+
 		const std::string file_name = program.get<std::string>("--file");
 
 		if (force_module) {
 			const std::string rel_path = std::string(k_module_dir) + "/" + name + "/" + file_name;
 			//const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, name, k_module_dir, k_gen_module_dir, rel_path);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_module_dir, k_gen_module_dir, rel_path, true);
 
 		} else if (force_tool) {
 			const std::string rel_path = std::string(k_tool_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, name, k_tool_dir, k_gen_tool_dir, rel_path);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir, rel_path, true);
 
 		} else if (force_engine) {
 			const std::string rel_path = std::string(k_engine_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, name, k_engine_dir, k_gen_engine_dir, rel_path);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir, rel_path, true);
 		}
 
 	} else {
 		if (force_module) {
-			ret = DoPreproc_ProcessDirectory(program, name, k_module_dir, k_gen_module_dir);
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
 
 		} else if (force_tool) {
-			ret = DoPreproc_ProcessDirectory(program, name, k_tool_dir, k_gen_tool_dir);
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
 
 		} else if (force_engine) {
-			ret = DoPreproc_ProcessDirectory(program, name, k_engine_dir, k_gen_engine_dir);
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 
 		} else {
-			ret = DoPreproc_ProcessDirectory(program, name, k_module_dir, k_gen_module_dir);
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
-				ret = DoPreproc_ProcessDirectory(program, name, k_tool_dir, k_gen_tool_dir);
+				return ret;
+			}
+
+			ret = static_cast<int>(Error::Success);
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
+
+			if (ret) {
+				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+
+				if (ret) {
+					return ret;
+				}
+
+				ret = static_cast<int>(Error::Success);
+				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
 			}
 
 			if (ret) {
-				ret = DoPreproc_ProcessDirectory(program, name, k_engine_dir, k_gen_engine_dir);
+				ret = static_cast<int>(Error::Success);
+				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 			}
 		}
 	}

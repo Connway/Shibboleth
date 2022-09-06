@@ -22,16 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-enum class Error
+static constexpr const char* const k_ignore_list[] =
 {
-	Success = 0,
-
-	DoPreproc_PathNotFound = -1,
-	DoPreproc_FailedToOpenInputFile = -2,
-	DoPreproc_FailedToOpenOutputFile = -3,
-	DoPreproc_FailedToReadOutputFile = -4,
-	DoPreproc_FailedToWriteOutputFile = -5,
-	DoPreproc_FailedToCreateOutputDir = -6,
-	DoPreproc_FailedToProcessFile = -7,
-	DoPreproc_NoModuleOrToolSpecified = -8
+	"CodeGenerator",
+	"Preprocessor",
+	"ProjectBuild"
 };

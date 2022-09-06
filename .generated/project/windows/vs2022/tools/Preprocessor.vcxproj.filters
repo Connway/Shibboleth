@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Common.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_DoPreproc.h">
       <Filter>include</Filter>
     </ClInclude>

@@ -57,8 +57,9 @@ int main(int argc, const char** argv)
 		.append();
 
 	program.add_argument<std::string>("module_or_tool_name")
-		.help("Module or tool to do preprocessing on.");
-	
+		.help("Module or tool to do preprocessing on.")
+		.default_value<std::string>("");
+
 	DoPreproc_AddArguments(program);
 
 	try {
@@ -74,11 +75,7 @@ int main(int argc, const char** argv)
 	CONVERT_STRING(char8_t, temp, working_dir.c_str());
 	Gaff::SetWorkingDir(temp);
 
-	if (program.is_used("module_or_tool_name")) {
-		DoPreproc_Run(program);
-	} else {
-		std::cout << program;
-	}
+	DoPreproc_Run(program);
 
 	return static_cast<int>(Error::Success);
 }
