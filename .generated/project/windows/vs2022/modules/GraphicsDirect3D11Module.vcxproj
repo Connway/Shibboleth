@@ -73,22 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\Graphics\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Dependencies\EASTL\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)GraphicsDirect3D11Module64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

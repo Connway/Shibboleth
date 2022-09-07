@@ -41,8 +41,8 @@ enum class BlockRangeType
 	StringLiteral,
 	CharLiteral,
 
-	TemplateArgs1,
-	TemplateArgs2,
+	//TemplateArgs1,
+	//TemplateArgs2,
 
 	PreprocessorDirective,
 
@@ -67,8 +67,8 @@ constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)
 	{ "//", nullptr },
 	{ "\"", "\"" },
 	{ "'", "'" },
-	{ "template<", ">" },
-	{ "template <", ">" },
+	//{ "template<", ">" },
+	//{ "template <", ">" },
 	{ "#", nullptr }, // Requires special processing.
 
 	// Scope Ranges
@@ -158,6 +158,12 @@ struct NamespaceRuntimeData final
 	bool valid = false;
 };
 
+struct TemplateRuntimeData final
+{
+	std::vector<std::string> args;
+	bool is_template = false;
+};
+
 // If copying runtime data becomes more of a hassle, use a struct for easy copying.
 //struct ParseRuntimeData final
 //{
@@ -214,6 +220,7 @@ struct ParseData final
 	std::vector<ScopeRuntimeData> scope_ranges;
 	NamespaceRuntimeData namespace_runtime; // Only have one instance of it as this data is temporary. It gets absorbed into ScopeRuntimeData after we process it enough.
 	EnumRuntimeData enum_runtime;
+	TemplateRuntimeData template_runtime;
 	GlobalRuntimeData* global_runtime = nullptr;
 
 	int32_t preproc_if_count = 0;

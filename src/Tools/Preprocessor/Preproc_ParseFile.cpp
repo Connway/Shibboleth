@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Preproc_ParseFile.h"
 #include "Preproc_ParseNamespace.h"
+#include "Preproc_ParseTemplate.h"
 #include "Preproc_ParseClass.h"
 #include "Preproc_ParseMixin.h"
 #include "Preproc_ParseEnum.h"
@@ -366,7 +367,8 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			ParseClass,
 			ParseMixin,
 			ParseEnum,
-			ParseNamespace
+			ParseNamespace,
+			ParseTemplate
 		};
 
 		for (ParseFunc parse_func : k_parse_funcs) {

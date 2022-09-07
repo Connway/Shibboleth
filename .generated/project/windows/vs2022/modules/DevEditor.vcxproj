@@ -73,22 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)DevEditor64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)DevEditor64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)DevEditor64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <IncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Modules\DevEditor\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Modules\MainLoop\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\ads;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)DevEditor64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>

@@ -431,10 +431,7 @@ end
 
 function IncludeDirs(dirs)
 	if not _OPTIONS["generate-preproc"] then
-		sysincludedirs(dirs)
-
-		-- Swap over to externalincludedirs when 5.0 beta2 comes out.
-		--externalincludedirs(dirs)
+		externalincludedirs(dirs)
 	else
 		includedirs(dirs)
 	end
