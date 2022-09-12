@@ -35,7 +35,9 @@ bool ParseTemplate(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (!parse_data.template_runtime.is_template) {
+	bool processed = false;
+
+	if (!parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
 		const size_t template_index = substr.find("template");
 
 		// If we find ".template", then this is a function call, we don't are about function calls.
@@ -45,33 +47,42 @@ bool ParseTemplate(std::string_view substr, ParseData& parse_data)
 		if (template_index == 0 /*&& substr.find(".template") == std::string_view::npos*/) {
 			parse_data.flags.set(ParseData::Flag::ProcessingTemplate);
 			parse_data.template_runtime.is_template = true;
+			parse_data.template_runtime.clear(); // If template hasn't been consumed yet, clear it. We've hit another template declaraction.
+
+			processed = true;
 		}
 	}
 
-	if (parse_data.template_runtime.is_template) {
-		const size_t open_bracket_index = substr.find('<');
+	if (parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
+		if (parse_data.template_runtime.is_template) {
 
-		if (open_bracket_index != std::string_view::npos) {
-			if (parse_data.template_runtime.open_bracket_count == 0) {
-				parse_data.template_runtime.open_bracket_index = open_bracket_index;
+			const size_t open_bracket_index = substr.find('<');
+
+			if (open_bracket_index != std::string_view::npos) {
+				if (parse_data.template_runtime.open_bracket_count == 0) {
+					parse_data.template_runtime.open_bracket_index = open_bracket_index + parse_data.start_index;
+				}
+
+				++parse_data.template_runtime.open_bracket_count;
+				processed = true;
 			}
 
-			++parse_data.template_runtime.open_bracket_count;
-		}
+			const size_t close_bracket_index = substr.find('>');
 
-		const size_t close_bracket_index = substr.find('>');
+			if (close_bracket_index != std::string_view::npos) {
+				--parse_data.template_runtime.open_bracket_count;
 
-		if (close_bracket_index != std::string_view::npos) {
-			--parse_data.template_runtime.open_bracket_count;
+				if (parse_data.template_runtime.open_bracket_count == 0) {
+					parse_data.template_runtime.close_bracket_index = close_bracket_index + parse_data.start_index;
 
-			if (parse_data.template_runtime.open_bracket_count == 0) {
-				parse_data.template_runtime.close_bracket_index = close_bracket_index;
+					// $TODO: Process template arguments.
+					parse_data.flags.clear(ParseData::Flag::ProcessingTemplate);
+				}
+
+				processed = true;
 			}
-
-			// $TODO: Process template arguments.
-			parse_data.flags.clear(ParseData::Flag::ProcessingTemplate);
 		}
 	}
 
-	return false;
+	return processed;
 }

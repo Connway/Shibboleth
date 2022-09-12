@@ -56,6 +56,11 @@ int main(int argc, const char** argv)
 		.default_value< std::vector<std::string> >({})
 		.append();
 
+	program.add_argument("--process_pass", "-pp")
+		.help("(Optional) Specifies running during the code processing pass. Mainly for debugging.")
+		.default_value(false)
+		.implicit_value(true);
+
 	program.add_argument<std::string>("module_or_tool_name")
 		.help("Module or tool to do preprocessing on.")
 		.default_value<std::string>("");

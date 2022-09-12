@@ -337,45 +337,55 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 	constexpr const char* const k_tool_dir = "src/Tools";
 
 	const std::string name = program.get("module_or_tool_name");
+	const bool process_pass = program.get<bool>("--process_pass");
 	const bool force_module = program.get<bool>("--module");
 	const bool force_engine = program.get<bool>("--engine");
 	const bool force_tool = program.get<bool>("--tool");
 
-	GlobalRuntimeData global_runtime_data;
-
-	int ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
-
-	if (ret) {
-		return ret;
+	if (process_pass && !program.is_used("--file")) {
+		std::cerr << "--process_pass was specified, but not --file." << std::endl;
+		return static_cast<int>(Error::DoPreproc_ProcessPassNoFile);
 	}
 
-	if (force_module) {
-		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+	GlobalRuntimeData global_runtime_data;
+
+	int ret = static_cast<int>(Error::Success);
+
+	if (!process_pass) {
+		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
 
 		if (ret) {
 			return ret;
 		}
 
-	} else if (force_tool) {
-		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
-
-		if (ret) {
-			return ret;
-		}
-
-	} else if (!name.empty()) {
-		if (std::filesystem::is_directory(std::string(k_module_dir) + "/" + name)) {
+		if (force_module) {
 			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
 				return ret;
 			}
 
-		} else if (std::filesystem::is_directory(std::string(k_tool_dir) + "/" + name)) {
+		} else if (force_tool) {
 			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
 
 			if (ret) {
 				return ret;
+			}
+
+		} else if (!name.empty()) {
+			if (std::filesystem::is_directory(std::string(k_module_dir) + "/" + name)) {
+				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+
+				if (ret) {
+					return ret;
+				}
+
+			} else if (std::filesystem::is_directory(std::string(k_tool_dir) + "/" + name)) {
+				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+
+				if (ret) {
+					return ret;
+				}
 			}
 		}
 	}
@@ -387,24 +397,29 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 		}
 
 		const std::string file_name = program.get<std::string>("--file");
+		const bool write_file = !process_pass;
 
 		if (force_module) {
 			const std::string rel_path = std::string(k_module_dir) + "/" + name + "/" + file_name;
 			//const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_module_dir, k_gen_module_dir, rel_path, true);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_module_dir, k_gen_module_dir, rel_path, write_file);
 
 		} else if (force_tool) {
 			const std::string rel_path = std::string(k_tool_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir, rel_path, true);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir, rel_path, write_file);
 
 		} else if (force_engine) {
 			const std::string rel_path = std::string(k_engine_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir, rel_path, true);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir, rel_path, write_file);
+
+		} else {
+			std::cerr << "--module, --tool, or --engine not specified." << std::endl;
+			return static_cast<int>(Error::DoPreproc_NoForceFlagSpecified);
 		}
 
 	} else {

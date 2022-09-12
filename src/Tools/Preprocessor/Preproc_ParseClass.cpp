@@ -173,6 +173,7 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
 		const bool is_anonymous = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Anonymous);
+		const bool is_template = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template);
 		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
 
 		parse_data.class_stack.pop_back();
@@ -184,7 +185,7 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		}
 
 		// We have a template class/struct.
-		if (class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template)) {
+		if (is_template) {
 			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for template class/struct)
 			return;
 		}

@@ -34,7 +34,7 @@ public:
 	Refl::IAttribute* clone(void) const override;
 
 	template <class T, class Var>
-	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true);  }
+	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true); }
 
 	template <class T, class Var, class Ret>
 	void apply(Refl::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setReadOnly(true); }

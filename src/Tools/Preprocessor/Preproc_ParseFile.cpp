@@ -465,6 +465,7 @@ bool Preproc_ParseFile(ParseData& parse_data)
 			Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
 
 			parse_data.flags.clear(ParseData::Flag::LastTokenOnLine);
+			parse_data.prev_substr = substr;
 		}
 
 		parse_data.start_index = parse_data.next_index + 1;
@@ -473,6 +474,7 @@ bool Preproc_ParseFile(ParseData& parse_data)
 
 	const std::string_view substr = parse_data.file_text.substr(parse_data.start_index);
 	Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
+	parse_data.prev_substr = substr;
 
 	return true;
 }

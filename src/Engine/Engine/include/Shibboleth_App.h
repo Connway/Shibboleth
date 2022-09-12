@@ -85,7 +85,7 @@ private:
 	using InitFileSystemModuleFunc = bool (*)(IApp&);
 	using CreateModuleFunc = IModule* (*)(void);
 
-	struct FileSystemData
+	struct FileSystemData final
 	{
 		FileSystemData(void): file_system(nullptr), destroy_func(nullptr), create_func(nullptr) {}
 

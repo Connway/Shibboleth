@@ -230,6 +230,8 @@ struct ParseData final
 	std::string_view file_text;
 	std::string out_text;
 
+	std::string_view prev_substr;
+
 	std::vector<std::string> include_dirs;
 
 	//std::map<size_t, EnumData> enum_data;

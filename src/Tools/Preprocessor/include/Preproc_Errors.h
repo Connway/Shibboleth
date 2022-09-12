@@ -33,5 +33,7 @@ enum class Error
 	DoPreproc_FailedToWriteOutputFile = -5,
 	DoPreproc_FailedToCreateOutputDir = -6,
 	DoPreproc_FailedToProcessFile = -7,
-	DoPreproc_NoModuleOrToolSpecified = -8
+	DoPreproc_NoModuleOrToolSpecified = -8,
+	DoPreproc_ProcessPassNoFile = -9,
+	DoPreproc_NoForceFlagSpecified = -10
 };
