@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Preproc_ParseFile.h"
 #include "Preproc_ParseNamespace.h"
 #include "Preproc_ParseTemplate.h"
+#include "Preproc_ParseFunction.h"
 #include "Preproc_ParseClass.h"
 #include "Preproc_ParseMixin.h"
 #include "Preproc_ParseEnum.h"
@@ -368,7 +369,8 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			ParseMixin,
 			ParseEnum,
 			ParseNamespace,
-			ParseTemplate
+			ParseTemplate,
+			ParseFunction
 		};
 
 		for (ParseFunc parse_func : k_parse_funcs) {
@@ -444,6 +446,17 @@ bool Preproc_ParseFile(ParseData& parse_data)
 				// We found a newline, this is the last token for this line.
 				if (newline_substr.find(parse_data.file_text[index]) != std::string_view::npos) {
 					parse_data.flags.set(ParseData::Flag::LastTokenOnLine);
+
+					// Once we've finished processing the template arguments, clear the template data if we pass 2 newlines
+					// and have not yet had anything consume the template data.
+					if (parse_data.template_runtime.is_template && !parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
+						++parse_data.template_runtime.newline_count;
+
+						if (parse_data.template_runtime.newline_count >= 2) {
+							parse_data.template_runtime.clear();
+						}
+					}
+
 					break;
 				}
 			}

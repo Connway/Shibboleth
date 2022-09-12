@@ -231,6 +231,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Preproces
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Common.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_DoPreproc.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Errors.h" />
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFunction.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseClass.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseEnum.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFile.h" />
@@ -240,6 +241,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Preproces
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_DoPreproc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFunction.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseClass.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseEnum.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFile.cpp" />

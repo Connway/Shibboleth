@@ -38,7 +38,10 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 	// Found the name of the class or struct.
 	if (parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
 		if (substr.back() == ';') {
-			// Just a forward declare. Remove the entry from the stack.
+			// Just a forward declare.
+			// Clear template data.
+			// Remove the entry from the stack.
+			parse_data.template_runtime.clear();
 			parse_data.class_stack.pop_back();
 
 		} else if (!parse_data.class_stack.empty() && parse_data.class_stack.back().name.empty()) {
@@ -52,17 +55,25 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 				class_runtime_data.name = substr;
 			}
 
-			// Add class data to parse data.
-			const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
+			// We currently do not parse template classes.
+			if (parse_data.template_runtime.is_template) {
+				class_runtime_data.template_args = parse_data.template_runtime.args;
+				class_runtime_data.flags.set(ClassRuntimeData::Flag::Template);
+				parse_data.template_runtime.clear();
 
-			if (parse_data.global_runtime->class_data.contains(hash)) {
-				std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
-				parse_data.global_runtime->class_data.erase(hash);
+			} else {
+				// Add class data to parse data.
+				const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
+
+				if (parse_data.global_runtime->class_data.contains(hash)) {
+					std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
+					parse_data.global_runtime->class_data.erase(hash);
+				}
+
+				ClassData& class_data = parse_data.global_runtime->class_data[hash];
+				class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
+				class_data.name = class_runtime_data.name;
 			}
-
-			ClassData& class_data = parse_data.global_runtime->class_data[hash];
-			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
-			class_data.name = class_runtime_data.name;
 
 		} else {
 			std::cerr << "Was parsing a class or struct name, but no class data was present." << std::endl;
@@ -169,6 +180,12 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		// We have an anonymous class/struct.
 		if (is_anonymous) {
 			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for the anonymous class/struct)
+			return;
+		}
+
+		// We have a template class/struct.
+		if (class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template)) {
+			// $TODO: Handle anonymous class/struct. (eg: ensure mixins are done for template class/struct)
 			return;
 		}
 

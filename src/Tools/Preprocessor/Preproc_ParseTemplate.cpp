@@ -31,6 +31,47 @@ bool ParseTemplate(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	GAFF_REF(substr, parse_data);
+	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
+		return false;
+	}
+
+	if (!parse_data.template_runtime.is_template) {
+		const size_t template_index = substr.find("template");
+
+		// If we find ".template", then this is a function call, we don't are about function calls.
+		// Code can be written as ". template", but for now, we have no code written like that.
+		// May wish to fix at a later date.
+		// If template_index == 0, then this isn't a ".template" function call.
+		if (template_index == 0 /*&& substr.find(".template") == std::string_view::npos*/) {
+			parse_data.flags.set(ParseData::Flag::ProcessingTemplate);
+			parse_data.template_runtime.is_template = true;
+		}
+	}
+
+	if (parse_data.template_runtime.is_template) {
+		const size_t open_bracket_index = substr.find('<');
+
+		if (open_bracket_index != std::string_view::npos) {
+			if (parse_data.template_runtime.open_bracket_count == 0) {
+				parse_data.template_runtime.open_bracket_index = open_bracket_index;
+			}
+
+			++parse_data.template_runtime.open_bracket_count;
+		}
+
+		const size_t close_bracket_index = substr.find('>');
+
+		if (close_bracket_index != std::string_view::npos) {
+			--parse_data.template_runtime.open_bracket_count;
+
+			if (parse_data.template_runtime.open_bracket_count == 0) {
+				parse_data.template_runtime.close_bracket_index = close_bracket_index;
+			}
+
+			// $TODO: Process template arguments.
+			parse_data.flags.clear(ParseData::Flag::ProcessingTemplate);
+		}
+	}
+
 	return false;
 }

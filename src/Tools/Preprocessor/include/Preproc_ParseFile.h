@@ -104,10 +104,12 @@ struct ClassRuntimeData final
 	{
 		Struct,
 		Anonymous,
+		Template, // Flag for now, but will be unnecessary when we process template args.
 
 		Count
 	};
 
+	std::vector<std::string> template_args; // $TODO: Process template classes.
 	std::string name;
 	size_t scope_range_index = SIZE_T_FAIL;
 	Visibility curr_visibility = Visibility::Private;
@@ -161,7 +163,22 @@ struct NamespaceRuntimeData final
 struct TemplateRuntimeData final
 {
 	std::vector<std::string> args;
+	size_t open_bracket_index = std::string_view::npos;
+	size_t close_bracket_index = std::string_view::npos;
+	size_t open_bracket_count = 0;
+	size_t newline_count = 0;
 	bool is_template = false;
+
+	void clear(void)
+	{
+		args.clear();
+
+		open_bracket_count = std::string_view::npos;
+		close_bracket_index = std::string_view::npos;
+		open_bracket_count = 0;
+		newline_count = 0;
+		is_template = false;
+	}
 };
 
 // If copying runtime data becomes more of a hassle, use a struct for easy copying.
@@ -192,6 +209,7 @@ struct ParseData final
 		MixinName,
 		EnumName,
 		NamespaceName,
+		FunctionName,
 
 		PreprocFirstToken,
 		PreprocFirstTokenClear,
@@ -203,6 +221,8 @@ struct ParseData final
 
 		DoNotWriteSubstring,
 		WriteFile,
+
+		ProcessingTemplate,
 
 		Count
 	};
