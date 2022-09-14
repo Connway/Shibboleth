@@ -443,20 +443,22 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
 
 			if (ret) {
-				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
-
-				if (ret) {
-					return ret;
-				}
-
-				ret = static_cast<int>(Error::Success);
-				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
+				return ret;
 			}
+
+			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
 
 			if (ret) {
-				ret = static_cast<int>(Error::Success);
-				ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
+				return ret;
 			}
+
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
+
+			if (ret) {
+				return ret;
+			}
+
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 		}
 	}
 

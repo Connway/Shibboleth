@@ -15,9 +15,6 @@
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_Errors.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFunction.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseClass.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -25,6 +22,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFile.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseFunction.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\Preprocessor\include\Preproc_ParseMixin.h">
@@ -39,10 +39,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_DoPreproc.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFunction.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseClass.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseEnum.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFile.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseFunction.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseMixin.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseNamespace.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseTemplate.cpp" />

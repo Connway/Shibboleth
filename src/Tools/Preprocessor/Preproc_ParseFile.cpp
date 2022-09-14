@@ -177,10 +177,6 @@ namespace
 
 	static BlockRange ProcessIgnoreRange(std::string_view substr, ParseData& parse_data)
 	{
-		// Get all ignore ranges and calculate the largest ignore range size.
-		BlockRange ignore_range;
-		ignore_range.end = 0;
-
 		for (int32_t i = 0; i < static_cast<int32_t>(BlockRangeType::IgnoreBlocksCount); ++i) {
 			BlockRange& range = parse_data.block_ranges[i];
 
@@ -190,17 +186,6 @@ namespace
 			} else {
 				ProcessBlockRange(substr, parse_data, range, static_cast<BlockRangeType>(i));
 			}
-
-			ignore_range.start = std::min(ignore_range.start, range.start);
-			ignore_range.end = std::max(
-				ignore_range.end,
-				(parse_data.block_ranges[i].end != std::string_view::npos) ? range.end : 0
-			);
-		}
-
-		// Did not find an end to the range.
-		if (ignore_range.start >= ignore_range.end) {
-			ignore_range.end = std::string_view::npos;
 		}
 
 		// Clear any ranges that are within another ignore range.
@@ -215,15 +200,41 @@ namespace
 				const BlockRange& range_b = parse_data.block_ranges[j];
 
 				if (IsWithinBlockRange(range_b, range_a.start)) {
-					if (IsWithinBlockRange(range_b, range_a.end)) {
+					// If this is a line comment and the start index of the line comment is within another
+					// ignore range, then clear the entire ignore range for the line comment.
+					if (i == static_cast<int32_t>(BlockRangeType::LineComment)) {
 						range_a.start = std::string_view::npos;
+
 					} else {
-						range_a.start = range_a.end;
+						if (IsWithinBlockRange(range_b, range_a.end)) {
+							range_a.start = std::string_view::npos;
+						} else {
+							range_a.start = range_a.end;
+						}
 					}
 
 					range_a.end = std::string_view::npos;
 				}
 			}
+		}
+
+		// Get all ignore ranges and calculate the largest ignore range size.
+		BlockRange ignore_range;
+		ignore_range.end = 0;
+
+		for (int32_t i = 0; i < static_cast<int32_t>(BlockRangeType::IgnoreBlocksCount); ++i) {
+			BlockRange& range = parse_data.block_ranges[i];
+
+			ignore_range.start = std::min(ignore_range.start, range.start);
+			ignore_range.end = std::max(
+				ignore_range.end,
+				(parse_data.block_ranges[i].end != std::string_view::npos) ? range.end : 0
+			);
+		}
+
+		// Did not find an end to the range.
+		if (ignore_range.start >= ignore_range.end) {
+			ignore_range.end = std::string_view::npos;
 		}
 
 		const size_t ignore_start = (ignore_range.start != std::string_view::npos) ?

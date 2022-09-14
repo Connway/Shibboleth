@@ -46,8 +46,8 @@ bool ParseTemplate(std::string_view substr, ParseData& parse_data)
 		// If template_index == 0, then this isn't a ".template" function call.
 		if (template_index == 0 /*&& substr.find(".template") == std::string_view::npos*/) {
 			parse_data.flags.set(ParseData::Flag::ProcessingTemplate);
-			parse_data.template_runtime.is_template = true;
 			parse_data.template_runtime.clear(); // If template hasn't been consumed yet, clear it. We've hit another template declaraction.
+			parse_data.template_runtime.is_template = true;
 
 			processed = true;
 		}
