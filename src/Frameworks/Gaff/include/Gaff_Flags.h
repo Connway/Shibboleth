@@ -118,7 +118,8 @@ public:
 
 	bool testAll(StorageType flags) const;
 	bool testAny(StorageType flags) const;
-	bool testRange(Enum start, Enum end) const;
+	bool testRangeAll(Enum start, Enum end) const;
+	bool testRangeAny(Enum start, Enum end) const;
 	bool empty(void) const;
 	bool any(void) const;
 

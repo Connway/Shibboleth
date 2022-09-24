@@ -31,20 +31,19 @@ bool ParseTemplate(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
+
 		return false;
 	}
 
 	bool processed = false;
 
 	if (!parse_data.flags.testAll(ParseData::Flag::ProcessingTemplate)) {
-		const size_t template_index = substr.find("template");
-
 		// If we find ".template", then this is a function call, we don't are about function calls.
 		// Code can be written as ". template", but for now, we have no code written like that.
 		// May wish to fix at a later date.
-		// If template_index == 0, then this isn't a ".template" function call.
-		if (template_index == 0 /*&& substr.find(".template") == std::string_view::npos*/) {
+		if (substr == "template") {
 			parse_data.flags.set(ParseData::Flag::ProcessingTemplate);
 			parse_data.template_runtime.clear(); // If template hasn't been consumed yet, clear it. We've hit another template declaraction.
 			parse_data.template_runtime.is_template = true;

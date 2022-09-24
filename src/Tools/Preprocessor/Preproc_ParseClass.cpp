@@ -31,7 +31,9 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::ClassStructName)) {
+
 		return false;
 	}
 
@@ -84,45 +86,53 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 	}
 
 	// Process "class" or "struct" tokens.
-	const size_t struct_index = substr.find("struct");
-	const size_t class_index = (struct_index == std::string_view::npos) ? substr.find("class") : std::string_view::npos;
-	const size_t public_index = (class_index == std::string_view::npos) ? substr.find("public") : std::string_view::npos;
-	const size_t private_index = (public_index == std::string_view::npos) ? substr.find("private") : std::string_view::npos;
-	const size_t protected_index = (private_index == std::string_view::npos) ? substr.find("protected") : std::string_view::npos;
+	const bool is_struct = substr == "struct";
+	const bool is_class = substr == "class";
 
-	if (struct_index == 0 || class_index == 0) {
+	if (is_struct || is_class) {
 		parse_data.class_stack.emplace_back();
 
-		if (struct_index != std::string_view::npos) {
-			parse_data.class_stack.back().curr_visibility = ClassRuntimeData::Visibility::Public;
+		if (is_struct) {
 			parse_data.class_stack.back().flags.set(ClassRuntimeData::Flag::Struct);
 		}
 
 		parse_data.flags.set(ParseData::Flag::ClassStructName);
 		return true;
 
-	} else if (public_index == 0) {
-		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-
-		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
-			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Public;
+	} else if (!parse_data.class_stack.empty()) {
+		if (substr == "public" || substr == "public:") {
+			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+			class_runtime_data.curr_access = ClassRuntimeData::Access::Public;
 			return true;
-		}
 
-	} else if (private_index == 0) {
-		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-
-		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
-			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Private;
+		} else if (substr == "private" || substr == "private:") {
+			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+			class_runtime_data.curr_access = ClassRuntimeData::Access::Private;
 			return true;
-		}
 
-	} else if (protected_index == 0) {
-		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+		} else if (substr == "protected" || substr == "protected:") {
+			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+			class_runtime_data.curr_access = ClassRuntimeData::Access::Protected;
 
-		if (class_runtime_data.scope_range_index != SIZE_T_FAIL) {
-			class_runtime_data.curr_visibility = ClassRuntimeData::Visibility::Protected;
-			return true;
+		} else if (parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
+			if (substr == "final") {
+				parse_data.class_stack.back().flags.set(ClassRuntimeData::Flag::Final);
+
+			} else if (substr == "virtual") {
+				parse_data.class_stack.back().flags.set(ClassRuntimeData::Flag::Virtual);
+
+			} else if (substr != ":") {
+				ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+
+				ClassRuntimeData::InheritanceData inherit_data;
+				inherit_data.class_struct_name = substr;
+				inherit_data.is_virtual = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Virtual);
+				inherit_data.access = class_runtime_data.curr_access;
+
+				class_runtime_data.derived_from.emplace_back(std::move(inherit_data));
+				class_runtime_data.curr_access = ClassRuntimeData::Access::Default;
+				class_runtime_data.flags.clear(ClassRuntimeData::Flag::Virtual);
+			}
 		}
 	}
 
@@ -157,6 +167,7 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 		}
 
 
+		class_runtime_data.curr_access = ClassRuntimeData::Access::Default;
 		class_runtime_data.scope_range_index = parse_data.scope_ranges.size() - 1;
 		parse_data.scope_ranges.back().type = ScopeRuntimeData::Type::Class;
 	}

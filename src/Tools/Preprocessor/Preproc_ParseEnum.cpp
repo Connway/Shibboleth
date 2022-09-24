@@ -33,7 +33,9 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::EnumName)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::EnumName)) {
+
 		return false;
 	}
 
@@ -58,15 +60,13 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 	}
 
 	// Process "enum" token.
-	const size_t enum_index = substr.find("enum");
-
-	if (enum_index != 0) {
-		return false;
+	if (substr == "enum") {
+		parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Valid);
+		parse_data.flags.set(ParseData::Flag::EnumName);
+		return true;
 	}
 
-	parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Valid);
-	parse_data.flags.set(ParseData::Flag::EnumName);
-	return true;
+	return false;
 }
 
 void ProcessEnumScopeOpen(ParseData& parse_data)

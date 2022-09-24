@@ -68,13 +68,13 @@ constexpr typename Flags<Enum>::StorageType Flags<Enum>::GetBit(Enum flag)
 template <class Enum>
 constexpr typename Flags<Enum>::StorageType Flags<Enum>::GetBitsRange(Enum start, Enum end, StorageType bits)
 {
-	static_assert(static_cast<uint64_t>(start) <= static_cast<uint64_t>(end), "Flags<Enum>::GetBitsRange - start must be <= end.");
+	//static_assert(static_cast<int32_t>(start) <= static_cast<int32_t>(end), "Flags<Enum>::GetBitsRange - start must be <= end.");
 
-	if constexpr (start == end) {
-		return bits | GetBit(start);
-	} else {
-		return GetBitsRange(static_cast<Enum>(static_cast<uint64_t>(start) + 1), end, bits | GetBit(start));
+	for (int32_t i = static_cast<int32_t>(start); i <= static_cast<int32_t>(end); ++i) {
+		bits |= GetBit(static_cast<Enum>(i));
 	}
+
+	return bits;
 }
 
 template <class Enum>
@@ -167,9 +167,15 @@ bool Flags<Enum>::testAny(StorageType flags) const
 }
 
 template <class Enum>
-bool Flags<Enum>::testRange(Enum start, Enum end) const
+bool Flags<Enum>::testRangeAll(Enum start, Enum end) const
 {
 	return testAll(GetBitsRange(start, end));
+}
+
+template <class Enum>
+bool Flags<Enum>::testRangeAny(Enum start, Enum end) const
+{
+	return testAny(GetBitsRange(start, end));
 }
 
 template <class Enum>

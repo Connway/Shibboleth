@@ -31,7 +31,9 @@ bool ParseFunction(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::FunctionName)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::FunctionName)) {
+
 		return false;
 	}
 

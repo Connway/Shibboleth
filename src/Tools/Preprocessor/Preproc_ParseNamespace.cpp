@@ -30,7 +30,9 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::NamespaceName)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::NamespaceName)) {
+
 		return false;
 	}
 
@@ -43,34 +45,45 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 	}
 
 	// Process "namespace" token.
-	size_t namespace_index = substr.find("namespace");
+	if (substr == "namespace") {
+		parse_data.flags.set(ParseData::Flag::NamespaceName);
+		parse_data.namespace_runtime.valid = true;
+		return true;
 
-	if (namespace_index == std::string_view::npos) {
-		namespace_index = substr.find("NS_");
-
-		// Might be bad to assume NS_* macros will be by themselves on their own lines, but going to assume that for now.
-		if (namespace_index != 0) {
-			return false;
-
-		// $TODO (maybe): May want to have higher level logic parse the NS_* and NS_END scope delimeters.
-		} else if (substr == "NS_END") {
+	// $TODO (maybe): May want to have higher level logic parse the NS_* and NS_END scope delimeters.
+	// Might be bad to assume NS_* macros will be by themselves on their own lines, but going to assume that for now.
+	} else if (substr.find("NS_") == 0) {
+		if (substr == "NS_END") {
 			parse_data.scope_ranges.back().range.end = parse_data.start_index + 6;
 
 			ProcessNamespaceScopeClose(parse_data);
 
 			parse_data.scope_ranges.pop_back();
 
-			return true;
-		}
+		} else {
+			// Parse the part that comes after "NS_". We are assuming all words will be _ separated in the macros.
+			// For example, "namespace MyCoolNamespace {" would be "NS_MY_COOL_NAMESPACE".
 
-		// Parse the part that comes after "NS_". We are assuming all words will be _ separated in the macros.
-		// For example, "namespace MyCoolNamespace {" would be "NS_MY_COOL_NAMESPACE".
+			size_t prev_offset = 2;
+			size_t offset = substr.find('_', 3);
 
-		size_t prev_offset = 2;
-		size_t offset = substr.find('_', 3);
+			while (offset != std::string_view::npos) {
+				std::string name_section(substr.substr(prev_offset + 1, offset - prev_offset - 1));
 
-		while (offset != std::string_view::npos) {
-			std::string name_section(substr.substr(prev_offset + 1, offset - prev_offset - 1));
+				// Lowercase all but the first letter of the word.
+				for (size_t i = 1; i < name_section.size(); ++i) {
+					// $TODO: This is a larger change, but may want to parse these files in UTF-8 so that we can handle names with non-ASCII characters.
+					name_section[i] = static_cast<char>(std::tolower(static_cast<int>(name_section[i])));
+				}
+
+				prev_offset = offset;
+				offset = substr.find('_', offset + 1);
+
+				parse_data.namespace_runtime.name += name_section;
+			}
+
+			// Handle last section.
+			std::string name_section(substr.substr(prev_offset + 1));
 
 			// Lowercase all but the first letter of the word.
 			for (size_t i = 1; i < name_section.size(); ++i) {
@@ -78,38 +91,22 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 				name_section[i] = static_cast<char>(std::tolower(static_cast<int>(name_section[i])));
 			}
 
-			prev_offset = offset;
-			offset = substr.find('_', offset + 1);
-
 			parse_data.namespace_runtime.name += name_section;
+
+			// $TODO (maybe): May want to have higher level logic parse the NS_* and NS_END scope delimeters.
+			ScopeRuntimeData scope_data;
+			scope_data.range.start = parse_data.start_index;
+
+			parse_data.scope_ranges.emplace_back(scope_data);
+			parse_data.namespace_runtime.valid = true;
+
+			ProcessNamespaceScopeOpen(parse_data);
 		}
 
-		// Handle last section.
-		std::string name_section(substr.substr(prev_offset + 1));
-
-		// Lowercase all but the first letter of the word.
-		for (size_t i = 1; i < name_section.size(); ++i) {
-			// $TODO: This is a larger change, but may want to parse these files in UTF-8 so that we can handle names with non-ASCII characters.
-			name_section[i] = static_cast<char>(std::tolower(static_cast<int>(name_section[i])));
-		}
-
-		parse_data.namespace_runtime.name += name_section;
-
-		// $TODO (maybe): May want to have higher level logic parse the NS_* and NS_END scope delimeters.
-		ScopeRuntimeData scope_data;
-		scope_data.range.start = parse_data.start_index;
-
-		parse_data.scope_ranges.emplace_back(scope_data);
-		parse_data.namespace_runtime.valid = true;
-
-		ProcessNamespaceScopeOpen(parse_data);
-
-	} else {
-		parse_data.flags.set(ParseData::Flag::NamespaceName);
-		parse_data.namespace_runtime.valid = true;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void ProcessNamespaceScopeOpen(ParseData& parse_data)

@@ -38,6 +38,7 @@ enum class BlockRangeType
 	BlockComment,
 	LineComment,
 
+	RawStringLiteral,
 	StringLiteral,
 	CharLiteral,
 
@@ -65,6 +66,7 @@ constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)
 	// Ignore Ranges
 	{ "/*", "*/" },
 	{ "//", nullptr },
+	{ "R\"(", ")\"" },
 	{ "\"", "\"" },
 	{ "'", "'" },
 	//{ "template<", ">" },
@@ -93,8 +95,9 @@ struct ClassData final
 
 struct ClassRuntimeData final
 {
-	enum class Visibility
+	enum class Access
 	{
+		Default,
 		Public,
 		Private,
 		Protected
@@ -105,14 +108,34 @@ struct ClassRuntimeData final
 		Struct,
 		Anonymous,
 		Template, // Flag for now, but will be unnecessary when we process template args.
+		Final,
+
+		Virtual, // Temp, runtime flag.
 
 		Count
 	};
 
+	struct InheritanceData final
+	{
+		std::string class_struct_name;
+		Access access = Access::Default;
+		bool is_virtual = false;
+	};
+
+	Access GetAccess(Access access) const
+	{
+		if (access == Access::Default) {
+			return (flags.testAll(Flag::Struct)) ? Access::Public : Access::Private;
+		}
+
+		return access;
+	}
+
 	std::vector<std::string> template_args; // $TODO: Process template classes.
+	std::vector<InheritanceData> derived_from;
 	std::string name;
 	size_t scope_range_index = SIZE_T_FAIL;
-	Visibility curr_visibility = Visibility::Private;
+	Access curr_access = Access::Default;
 	Gaff::Flags<Flag> flags;
 };
 
@@ -217,14 +240,17 @@ struct ParseData final
 		PreprocDefine,
 		PreprocSkipNewline,
 
+		ProcessingTemplate,
+
 		LastTokenOnLine,
 
 		DoNotWriteSubstring,
 		WriteFile,
 
-		ProcessingTemplate,
+		Count,
 
-		Count
+		FirstRuntimeFlag = 0,
+		LastRuntimeFlag = ProcessingTemplate
 	};
 
 	std::string_view file_text;

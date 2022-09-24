@@ -31,7 +31,9 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 		return false;
 	}
 
-	if (parse_data.flags.any() && !parse_data.flags.testAll(ParseData::Flag::MixinName)) {
+	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
+		!parse_data.flags.testAll(ParseData::Flag::MixinName)) {
+
 		return false;
 	}
 
@@ -51,19 +53,17 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 	}
 
 	// Parse "mixin" token.
-	const size_t mixin_index = substr.find("mixin");
+	if (substr == "mixin") {
+		if (parse_data.class_stack.empty()) {
+			std::cerr << "'mixin' used outside of a class or struct scope." << std::endl;
+			return true;
+		}
 
-	if (mixin_index != 0) {
-		return false;
-	}
-
-	if (parse_data.class_stack.empty()) {
-		std::cerr << "'mixin' used outside of a class or struct scope." << std::endl;
+		parse_data.flags.set(ParseData::Flag::MixinName);
 		return true;
 	}
 
-	parse_data.flags.set(ParseData::Flag::MixinName);
-	return true;
+	return false;
 }
 
 void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& class_data)
