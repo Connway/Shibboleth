@@ -42,9 +42,6 @@ enum class BlockRangeType
 	StringLiteral,
 	CharLiteral,
 
-	//TemplateArgs1,
-	//TemplateArgs2,
-
 	PreprocessorDirective,
 
 	// Scope Ranges
@@ -69,8 +66,6 @@ constexpr const char* k_range_markers[static_cast<size_t>(BlockRangeType::Count)
 	{ "R\"(", ")\"" },
 	{ "\"", "\"" },
 	{ "'", "'" },
-	//{ "template<", ">" },
-	//{ "template <", ">" },
 	{ "#", nullptr }, // Requires special processing.
 
 	// Scope Ranges
@@ -88,6 +83,7 @@ struct ClassData final
 	std::string name;
 	std::string declaration_text; // Text between curly braces.
 	std::string definition_text; // Text in cpp file.
+	//std::vector<InheritanceData> inherits;
 	std::vector<std::string> mixin_classes;
 	bool is_struct = false;
 	bool finished = false;
@@ -156,10 +152,11 @@ struct ScopeRuntimeData final
 	Type type = Type::Unknown;
 };
 
-//struct EnumData final
-//{
-//	std::string name;
-//};
+struct EnumData final
+{
+	std::string name;
+	std::vector<std::string> entries;
+};
 
 struct EnumRuntimeData final
 {
@@ -171,8 +168,7 @@ struct EnumRuntimeData final
 		Count
 	};
 
-
-	std::string name;
+	EnumData data;
 	size_t scope_range_index = SIZE_T_FAIL;
 	Gaff::Flags<Flag> flags;
 };
@@ -222,6 +218,7 @@ struct GlobalRuntimeData final
 {
 	//std::map<size_t, FileTextData> file_text;
 	std::map<size_t, ClassData> class_data;
+	std::map<size_t, EnumData> enum_data;
 };
 
 struct ParseData final
@@ -233,6 +230,9 @@ struct ParseData final
 		EnumName,
 		NamespaceName,
 		FunctionName,
+
+		EnumEntries,
+		EnumNextEntry,
 
 		PreprocFirstToken,
 		PreprocFirstTokenClear,
@@ -259,8 +259,6 @@ struct ParseData final
 	std::string_view prev_substr;
 
 	std::vector<std::string> include_dirs;
-
-	//std::map<size_t, EnumData> enum_data;
 
 	// Runtime info.
 	BlockRange block_ranges[static_cast<size_t>(BlockRangeType::IgnoreBlocksCount)];

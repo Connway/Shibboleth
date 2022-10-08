@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Preproc_ParseMixin.h"
-#include "Preproc_ParseFile.h"
+#include "Preproc_ParseFile.h" 
 #include <iostream>
 
 bool ParseMixin(std::string_view substr, ParseData& parse_data)
@@ -44,8 +44,11 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 
 		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(hash));
 
-		ClassData& class_data = parse_data.global_runtime->class_data[hash];
+		if (substr.back() == ';') {
+			substr = substr.substr(0, substr.size() - 1);
+		}
 
+		ClassData& class_data = parse_data.global_runtime->class_data[hash];
 		class_data.mixin_classes.emplace_back(substr);
 
 		parse_data.flags.clear(ParseData::Flag::MixinName);
@@ -84,7 +87,5 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 
 		size_t start_index = class_data.declaration_text.find(mixin_class_name);
 		GAFF_ASSERT(start_index != std::string::npos);
-
-
 	}
 }

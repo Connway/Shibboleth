@@ -64,6 +64,8 @@ bool ParseNamespace(std::string_view substr, ParseData& parse_data)
 			// Parse the part that comes after "NS_". We are assuming all words will be _ separated in the macros.
 			// For example, "namespace MyCoolNamespace {" would be "NS_MY_COOL_NAMESPACE".
 
+			parse_data.namespace_runtime.name.clear();
+
 			size_t prev_offset = 2;
 			size_t offset = substr.find('_', 3);
 

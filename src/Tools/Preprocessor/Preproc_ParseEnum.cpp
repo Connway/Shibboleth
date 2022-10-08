@@ -53,9 +53,51 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 
 		// $TODO: Enum forward declares can take the form of "enum <name> : <type>;". Will need to handle that.
 		// $TODO: Enum names could (worst case) take the form of "enum <name>:<type>". Will need to handle that case.
-		// $TODO: Add enum data.
 
 		parse_data.flags.clear(ParseData::Flag::EnumName);
+		parse_data.enum_runtime.data.name = substr;
+
+		return true;
+
+	} else if (parse_data.flags.testAll(ParseData::Flag::EnumEntries)) {
+		if (parse_data.flags.testAll(ParseData::Flag::EnumNextEntry)) {
+			const size_t comma_index = substr.find(',');
+			parse_data.flags.set(comma_index == std::string_view::npos, ParseData::Flag::EnumNextEntry);
+
+			return true;
+		}
+
+		const size_t assign_index = substr.find('=');
+		const size_t comma_index = substr.find(',');
+
+		std::string_view entry_name;
+
+		if (assign_index != std::string_view::npos && assign_index != 0) {
+			entry_name = substr.substr(0, assign_index - 1);
+
+		} else if (assign_index == std::string_view::npos && comma_index != std::string_view::npos) {
+			entry_name = substr.substr(0, comma_index - 1);
+		}
+
+		// Trim whitespace.
+		if (!entry_name.empty()) {
+			size_t whitespace_index = entry_name.find_first_of(k_whitespace_chars);
+
+			while (whitespace_index != std::string_view::npos) {
+				if (whitespace_index == 0) {
+					entry_name = entry_name.substr(1);
+				}
+				else if (whitespace_index == (entry_name.size() - 1)) {
+					entry_name = entry_name.substr(0, whitespace_index - 1);
+				}
+
+				whitespace_index = entry_name.find_first_of(k_whitespace_chars);
+			}
+
+			parse_data.flags.set(comma_index == std::string_view::npos, ParseData::Flag::EnumNextEntry);
+			parse_data.enum_runtime.data.entries.emplace_back(entry_name);
+		}
+
 		return true;
 	}
 
@@ -81,21 +123,24 @@ void ProcessEnumScopeOpen(ParseData& parse_data)
 			const auto it = parse_data.scope_ranges.end() - 2;
 
 			// Anonymous enum. Just absorb the name of the previous scope.
-			if (parse_data.enum_runtime.name.empty()) {
+			if (parse_data.enum_runtime.data.name.empty()) {
 				parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Anonymous);
 				parse_data.scope_ranges.back().name = it->name;
 
 			} else {
-				parse_data.scope_ranges.back().name = it->name + "::" + parse_data.enum_runtime.name;
+				parse_data.scope_ranges.back().name = it->name + "::" + parse_data.enum_runtime.data.name;
 			}
 
 		// We are the only scope. Just take the enum name.
 		} else {
-			parse_data.scope_ranges.back().name = parse_data.enum_runtime.name;
+			parse_data.scope_ranges.back().name = parse_data.enum_runtime.data.name;
 		}
 
 		parse_data.enum_runtime.scope_range_index = parse_data.scope_ranges.size() - 1;
+		parse_data.enum_runtime.data.name = parse_data.scope_ranges.back().name;
 		parse_data.scope_ranges.back().type = ScopeRuntimeData::Type::Enum;
+
+		parse_data.flags.set(ParseData::Flag::EnumEntries);
 	}
 }
 
@@ -107,6 +152,13 @@ void ProcessEnumScopeClose(ParseData& parse_data)
 	}
 
 	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == (parse_data.scope_ranges.size() - 1)) {
-		parse_data.enum_runtime.flags.clear(EnumRuntimeData::Flag::Valid);
+		// Add enum data to global runtime data.
+		const size_t hash = std::hash<std::string>{}(parse_data.enum_runtime.data.name);
+		parse_data.global_runtime->enum_data[hash] = std::move(parse_data.enum_runtime.data);
+
+		parse_data.enum_runtime.scope_range_index = SIZE_T_FAIL;
+		parse_data.enum_runtime.flags.clear();
+
+		parse_data.flags.clear(ParseData::Flag::EnumEntries, ParseData::Flag::EnumNextEntry);
 	}
 }

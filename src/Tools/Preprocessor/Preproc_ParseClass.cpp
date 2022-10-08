@@ -48,33 +48,12 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 
 		} else if (!parse_data.class_stack.empty() && parse_data.class_stack.back().name.empty()) {
 			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+			class_runtime_data.name = substr;
 
-			if (parse_data.class_stack.size() > 1) {
-				const auto it = parse_data.class_stack.end() - 2;
-				class_runtime_data.name = it->name + "::" + std::string(substr);
-
-			} else {
-				class_runtime_data.name = substr;
-			}
-
-			// We currently do not parse template classes.
 			if (parse_data.template_runtime.is_template) {
 				class_runtime_data.template_args = parse_data.template_runtime.args;
 				class_runtime_data.flags.set(ClassRuntimeData::Flag::Template);
 				parse_data.template_runtime.clear();
-
-			} else {
-				// Add class data to parse data.
-				const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
-
-				if (parse_data.global_runtime->class_data.contains(hash)) {
-					std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
-					parse_data.global_runtime->class_data.erase(hash);
-				}
-
-				ClassData& class_data = parse_data.global_runtime->class_data[hash];
-				class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
-				class_data.name = class_runtime_data.name;
 			}
 
 		} else {
@@ -166,6 +145,22 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 			parse_data.scope_ranges.back().name = class_runtime_data.name;
 		}
 
+		class_runtime_data.name = parse_data.scope_ranges.back().name;
+
+		// Currently we don't add template classes.
+		if (!class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template)) {
+			// Add class data to parse data.
+			const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
+
+			if (parse_data.global_runtime->class_data.contains(hash)) {
+				std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
+				parse_data.global_runtime->class_data.erase(hash);
+			}
+
+			ClassData& class_data = parse_data.global_runtime->class_data[hash];
+			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
+			class_data.name = class_runtime_data.name;
+		}
 
 		class_runtime_data.curr_access = ClassRuntimeData::Access::Default;
 		class_runtime_data.scope_range_index = parse_data.scope_ranges.size() - 1;
