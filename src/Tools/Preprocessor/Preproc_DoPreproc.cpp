@@ -227,8 +227,6 @@ int DoPreproc_ProcessDirectoryAndPopulateClassData(
 			continue;
 		}
 
-		// $TODO: Process class data.
-
 		using ProcessClassStructFunc = void (*)(GlobalRuntimeData&, ClassData&);
 		constexpr ProcessClassStructFunc k_process_funcs[] =
 		{

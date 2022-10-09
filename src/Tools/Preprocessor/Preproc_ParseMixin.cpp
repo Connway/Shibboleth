@@ -80,12 +80,13 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		// Ensure that dependency classes have been processed.
 		ProcessClassStructMixin(global_runtime_data, it->second);
 
-		std::string mixin_declaration = it->second.declaration_text;
+		const std::string& mixin_declaration = it->second.declaration_text;
 
 		// Find line with 'mixin <mixin_class_name>'.
 		// Replace 'mixin <mixin_class_name>' with modified declaration text of dependent class.
-
-		size_t start_index = class_data.declaration_text.find(mixin_class_name);
+		const size_t start_index = class_data.declaration_text.find("mixin " + mixin_class_name);
 		GAFF_ASSERT(start_index != std::string::npos);
+
+		class_data.declaration_text.replace(start_index, strlen("mixin ;") + mixin_class_name.size(), mixin_declaration.data());
 	}
 }

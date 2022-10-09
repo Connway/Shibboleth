@@ -176,8 +176,7 @@ void ProcessClassScopeClose(ParseData& parse_data)
 	}
 
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == (parse_data.scope_ranges.size() - 1)) {
-		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-
+		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 		const bool is_anonymous = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Anonymous);
 		const bool is_template = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template);
 		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
@@ -202,49 +201,54 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
 
 		class_data.declaration_text = parse_data.file_text.substr(scope_data.range.start + 1, scope_data.range.end - scope_data.range.start - 1);
+		class_data.declaration_scope_range = scope_data.range;
 
-		while (!class_data.declaration_text.empty() &&
-			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
+		// $TODO: Process whitespace so we can align it with the class this is potentially mixed in with.
 
-			class_data.declaration_text.pop_back();
-		}
+		//// Trim whitespace in back.
+		//while (!class_data.declaration_text.empty() &&
+		//	std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
 
-		while (!class_data.declaration_text.empty() &&
-			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.front()) != std::string_view::npos) {
+		//	class_data.declaration_text.pop_back();
+		//}
 
-			class_data.declaration_text.erase(0, 1);
-		}
+		//// Trim whitespace in front.
+		//while (!class_data.declaration_text.empty() &&
+		//	std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.front()) != std::string_view::npos) {
 
-		// Process tabs to make the first line match up.
-		size_t tab_count = 0;
+		//	class_data.declaration_text.erase(0, 1);
+		//}
 
-		while (!class_data.declaration_text.empty() && class_data.declaration_text[tab_count] == '\t') {
-			++tab_count;
-		}
+		//// Process tabs to make the first line match up.
+		//size_t tab_count = 0;
 
-		size_t newline_index = class_data.declaration_text.find_first_of(k_newline_chars);
-		size_t prev_newline_index = 0;
+		//while (parse_data.file_text[scope_data.range.start - tab_count - 1] == '\t') {
+		//	++tab_count;
+		//}
 
-		while (newline_index != std::string::npos) {
-			const size_t tab_index = (prev_newline_index == 0) ? 0 : prev_newline_index + 1;
+		//size_t newline_index = class_data.declaration_text.find_first_of(k_newline_chars);
+		//size_t prev_newline_index = 0;
 
-			for (size_t count = 0;
-				!class_data.declaration_text.empty() && class_data.declaration_text[tab_index] == '\t' && count < tab_count;
-				++count) {
+		//while (newline_index != std::string::npos) {
+		//	const size_t tab_index = (prev_newline_index == 0) ? 0 : prev_newline_index + 1;
 
-				class_data.declaration_text.erase(tab_index, 1);
-			}
+		//	for (size_t count = 0;
+		//		!class_data.declaration_text.empty() && class_data.declaration_text[tab_index] == '\t' && count < tab_count;
+		//		++count) {
 
-			prev_newline_index = newline_index;
-			newline_index = class_data.declaration_text.find_first_of(k_newline_chars, newline_index + 1);
-		}
+		//		class_data.declaration_text.erase(tab_index, 1);
+		//	}
 
-		// Don't forget the last line.
-		for (size_t count = 0;
-			!class_data.declaration_text.empty() && class_data.declaration_text[prev_newline_index + 1] == '\t' && count < tab_count;
-			++count) {
+		//	prev_newline_index = newline_index;
+		//	newline_index = class_data.declaration_text.find_first_of(k_newline_chars, newline_index + 1);
+		//}
 
-			class_data.declaration_text.erase(prev_newline_index + 1, 1);
-		}
+		//// Don't forget the last line.
+		//for (size_t count = 0;
+		//	!class_data.declaration_text.empty() && class_data.declaration_text[prev_newline_index + 1] == '\t' && count < tab_count;
+		//	++count) {
+
+		//	class_data.declaration_text.erase(prev_newline_index + 1, 1);
+		//}
 	}
 }

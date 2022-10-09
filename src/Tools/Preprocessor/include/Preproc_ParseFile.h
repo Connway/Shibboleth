@@ -85,6 +85,7 @@ struct ClassData final
 	std::string definition_text; // Text in cpp file.
 	//std::vector<InheritanceData> inherits;
 	std::vector<std::string> mixin_classes;
+	BlockRange declaration_scope_range;
 	bool is_struct = false;
 	bool finished = false;
 };
