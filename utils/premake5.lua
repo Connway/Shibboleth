@@ -99,7 +99,7 @@ if is_project_action == true then
 				group "Project Files"
 					project "Generators"
 						kind "None"
-						files { "../src/**.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
+						files { "../src/**/project_generator.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
 
 					project "Utils"
 						kind "None"

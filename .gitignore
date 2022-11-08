@@ -22,4 +22,7 @@ workingdir/EditorModules/*
 workingdir/tests/*
 workingdir/tools/*
 src/**/.generated/*
+src/Dependencies/LuaJIT/**/*.lib
+src/Dependencies/LuaJIT/**/*.dll
+src/Dependencies/LuaJIT/**/*.exe
 .generated/preproc/*

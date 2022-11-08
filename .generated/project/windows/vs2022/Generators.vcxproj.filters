@@ -10,6 +10,9 @@
     <Filter Include="Dependencies\EASTL">
       <UniqueIdentifier>{9483AAF7-8067-6B4D-E9C7-65A0D5CA55CF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\LuaJIT">
+      <UniqueIdentifier>{648F0301-D0F0-E00E-595E-27C1C5BE17CE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Dependencies\PhysX">
       <UniqueIdentifier>{979987F8-837D-484E-ECDD-42A1D8E032D0}</UniqueIdentifier>
     </Filter>
@@ -27,12 +30,6 @@
     </Filter>
     <Filter Include="Dependencies\civetweb">
       <UniqueIdentifier>{F4605121-60CD-0C1C-29C1-A47995EC2E84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Dependencies\civetweb\src">
-      <UniqueIdentifier>{0B795C3C-773B-90C6-C0EB-1E532CED68A4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Dependencies\civetweb\src\third_party">
-      <UniqueIdentifier>{846FC1FD-F033-C0ED-B999-F0B7251D5C23}</UniqueIdentifier>
     </Filter>
     <Filter Include="Dependencies\glfw">
       <UniqueIdentifier>{AB98560F-17AF-54A5-6026-E0C6CC7B252D}</UniqueIdentifier>
@@ -189,52 +186,10 @@
     <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua">
       <Filter>Dependencies\EASTL</Filter>
     </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\fastxml_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\lowlevel_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\lowlevelaabb_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\lowleveldynamics_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physx_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcharacterkinematic_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcommon_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxcooking_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxextensions_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxfoundation_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxpvdsdk_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxtask_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\physxvehicle_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
+    <None Include="..\..\..\..\src\Dependencies\LuaJIT\project_generator.lua">
+      <Filter>Dependencies\LuaJIT</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\PhysX\project_generator.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\scenequery_files.lua">
-      <Filter>Dependencies\PhysX</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\PhysX\simulationcontroller_files.lua">
       <Filter>Dependencies\PhysX</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\acl\project_generator.lua">
@@ -251,9 +206,6 @@
     </None>
     <None Include="..\..\..\..\src\Dependencies\civetweb\project_generator.lua">
       <Filter>Dependencies\civetweb</Filter>
-    </None>
-    <None Include="..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML.lua">
-      <Filter>Dependencies\civetweb\src\third_party</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\glfw\project_generator.lua">
       <Filter>Dependencies\glfw</Filter>
