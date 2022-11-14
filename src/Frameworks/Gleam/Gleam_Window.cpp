@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Window.h"
-#include "Gleam_Window_Defines.h"
 #include "Gleam_IncludeGLFWNative.h"
 #include <Gaff_Assert.h>
 #include <Gaff_Utils.h>

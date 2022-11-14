@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Utils.h"
-#include <wchar.h>
+#include <cwchar>
 
 NS_GAFF
 

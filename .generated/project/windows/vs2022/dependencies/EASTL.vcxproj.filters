@@ -195,6 +195,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\lru_cache.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\overloaded.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\ring_buffer.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
@@ -205,6 +208,9 @@
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\chrono.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\compare.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\core_allocator.h">
@@ -756,6 +762,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_compound.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_detected.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_fundamental.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
@@ -766,6 +775,9 @@
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_transformations.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_void_t.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\intrusive_hash_map.h">

@@ -204,3 +204,7 @@ enum class KeyCode : uint16_t
 };
 
 NS_END
+
+#ifdef APIENTRY
+	#undef APIENTRY
+#endif

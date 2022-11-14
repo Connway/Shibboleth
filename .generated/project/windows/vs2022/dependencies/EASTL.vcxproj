@@ -231,10 +231,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\intrusive_slist.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\list_map.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\lru_cache.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\overloaded.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\ring_buffer.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sort_extra.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\tuple_vector.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\chrono.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\compare.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\core_allocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\core_allocator_adapter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\deque.h" />
@@ -418,10 +420,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\thread_support.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\tuple_fwd_decls.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_compound.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_detected.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_fundamental.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_pod.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_properties.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_transformations.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\type_void_t.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\intrusive_hash_map.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\intrusive_hash_set.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\intrusive_list.h" />
