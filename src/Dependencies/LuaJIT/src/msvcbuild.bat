@@ -17,7 +17,7 @@
 @set DEBUGCFLAGS=/MDd /Od /Fd"lua51.pdb"
 @rem Add more non-debug flags here
 @set NDEBUGCFLAGS=/MD /O2 /Fd"lua51.pdb"
-@set LJCOMPILE=cl /nologo /c /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set LJCOMPILE=cl /nologo /c /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline /DLUAJIT_NUMMODE=2
 @set LJLINK=link /nologo
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib

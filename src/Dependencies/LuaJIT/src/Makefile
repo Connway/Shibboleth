@@ -108,7 +108,7 @@ XCFLAGS=
 # dual-number (2) mode. Uncomment one of these lines to override the
 # default mode. Please see LJ_ARCH_NUMMODE in lj_arch.h for details.
 #XCFLAGS+= -DLUAJIT_NUMMODE=1
-#XCFLAGS+= -DLUAJIT_NUMMODE=2
+XCFLAGS+= -DLUAJIT_NUMMODE=2
 #
 # Disable LJ_GC64 mode for x64.
 #XCFLAGS+= -DLUAJIT_DISABLE_GC64
