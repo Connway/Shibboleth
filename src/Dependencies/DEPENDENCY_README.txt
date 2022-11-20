@@ -30,9 +30,7 @@ Libraries Affected:
 		Fixed compilation error on Linux with bitvector.
 		Fixed compilation error on Linux with deque.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
-		Fixed compilation error with char8_t when using C++20 standard.
-		Fixed compilation error with GCC when using C++20 standard with destructible_test_function.
-		"Fixed"" compilation error with GCC in eastl::swap about maybe uninitialized variables. "Fix" is to disable the warning for now.
+		"Fixed" compilation error with GCC in eastl::swap about maybe uninitialized variables. "Fix" is to disable the warning for now.
 
 	premake-qt
 		Fixed unnecessarily adding links libs to StaticLib projects.
