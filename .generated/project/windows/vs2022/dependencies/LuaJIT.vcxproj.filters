@@ -249,6 +249,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\lua.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\lua.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\luaconf.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -573,9 +576,6 @@
       <Filter>src\jit</Filter>
     </None>
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\v.lua">
-      <Filter>src\jit</Filter>
-    </None>
-    <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\vmdef.lua">
       <Filter>src\jit</Filter>
     </None>
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\zone.lua">

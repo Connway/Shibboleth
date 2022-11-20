@@ -359,10 +359,15 @@ static int
 lsp_connect(lua_State *L)
 {
 	int num_args = lua_gettop(L);
-	char ebuf[100];
+	struct mg_error_data error;
+	char ebuf[128];
 	SOCKET sock;
 	union usa sa;
 	int ok;
+
+	memset(&error, 0, sizeof(error));
+	error.text = ebuf;
+	error.text_buffer_size = sizeof(ebuf);
 
 	if ((num_args == 3) && lua_isstring(L, 1) && lua_isnumber(L, 2)
 	    && lua_isnumber(L, 3)) {
@@ -371,10 +376,9 @@ lsp_connect(lua_State *L)
 		const int port = (int)lua_tointeger(L, 2);
 		const int is_ssl = (int)lua_tointeger(L, 3);
 
-		ok = connect_socket(
-		    NULL, host, port, is_ssl, ebuf, sizeof(ebuf), &sock, &sa);
+		ok = connect_socket(NULL, host, port, is_ssl, &error, &sock, &sa);
 		if (!ok) {
-			return luaL_error(L, ebuf);
+			return luaL_error(L, error.text);
 		} else {
 			set_blocking_mode(sock);
 			lua_newtable(L);
@@ -2666,7 +2670,6 @@ civetweb_open_lua_libs(lua_State *L)
 		extern void luaL_openlibs(lua_State *);
 		luaL_openlibs(L);
 	}
-
 #if defined(USE_LUA_SQLITE3)
 	{
 		extern int luaopen_lsqlite3(lua_State *);
@@ -2677,7 +2680,6 @@ civetweb_open_lua_libs(lua_State *L)
 	{
 		extern int luaopen_LuaXML_lib(lua_State *);
 		luaopen_LuaXML_lib(L);
-		// lua_pushvalue(L, -1); to copy value
 		lua_setglobal(L, "xml");
 	}
 #endif
@@ -2685,6 +2687,18 @@ civetweb_open_lua_libs(lua_State *L)
 	{
 		extern int luaopen_lfs(lua_State *);
 		luaopen_lfs(L);
+	}
+#endif
+#if defined(USE_LUA_STRUCT)
+	{
+		int luaopen_struct(lua_State * L);
+		luaopen_struct(L);
+	}
+#endif
+#if defined(USE_LUA_SHARED_MEMORY)
+	{
+		extern int luaopen_lsh(lua_State *);
+		luaopen_lsh(L);
 	}
 #endif
 }

@@ -261,6 +261,13 @@ LUA_API int lua_iscfunction(lua_State *L, int idx)
   return tvisfunc(o) && !isluafunc(funcV(o));
 }
 
+LUA_API int lua_isinteger(lua_State* L, int idx)
+{
+    cTValue* o = index2adr(L, idx);
+    TValue tmp;
+    return (tvisint(o) || (tvisstr(o) && lj_strscan_number(strV(o), &tmp) && tvisint(&tmp)));
+}
+
 LUA_API int lua_isnumber(lua_State *L, int idx)
 {
   cTValue *o = index2adr(L, idx);
@@ -807,7 +814,7 @@ LUA_API void lua_gettable(lua_State *L, int idx)
   copyTV(L, L->top-1, v);
 }
 
-LUA_API void lua_getfield(lua_State *L, int idx, const char *k)
+LUA_API int lua_getfield(lua_State *L, int idx, const char *k)
 {
   cTValue *v, *t = index2adr_check(L, idx);
   TValue key;
@@ -821,6 +828,8 @@ LUA_API void lua_getfield(lua_State *L, int idx, const char *k)
   }
   copyTV(L, L->top, v);
   incr_top(L);
+
+  return lua_type(L, -1);
 }
 
 LUA_API void lua_rawget(lua_State *L, int idx)

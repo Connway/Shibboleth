@@ -29,7 +29,8 @@ defines
 	"EA_COMPILER_NO_RTTI",
 	--"GLM_FORCE_SSE42",
 	"GLM_FORCE_INTRINSICS",
-	"ZLIB_COMPAT"
+	"ZLIB_COMPAT",
+	"LUAJIT_NUMMODE=2"
 }
 
 platforms { "x64" }

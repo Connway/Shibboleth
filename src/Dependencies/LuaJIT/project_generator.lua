@@ -1,32 +1,42 @@
+if _OPTIONS["no-luajit"] then
+	return
+end
+
 DepProject "LuaJIT"
 	kind "Makefile"
 
 	language "C"
 
-	files { "**.h", "**.c", "**.lua", "**.dasc" }
+	files { "**.h", "**.hpp", "**.c", "**.lua", "**.dasc" }
+	excludes { "src/jit/vmdef.lua" }
 
-	filter { "system:windows", "platforms:x64" }
+	filter { "system:windows", "platforms:x64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
 
 		buildcommands
 		{
 			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			"msvcbuild.bat & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.dll %{cfg.targetdir}/lua51.dll"
+			"msvcbuild.bat debug static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.pdb %{cfg.targetdir}/lua51.pdb"
 		}
+
+	filter { "system:windows", "platforms:x64", "configurations:not *Debug* or Optimized_Debug" }
+		buildcommands
+		{
+			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
+			"msvcbuild.bat static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib"
+		}
+
+	filter { "system:windows", "platforms:x64" }
 
 		cleancommands
 		{
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/buildvm.exp",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/buildvm.lib",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/lua51.dll",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/lua51.exp",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/luajit.exe",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/luajit.exp",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/luajit.lib",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/minilua.exp",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/minilua.lib",
-			"{DELETE} %{cfg.targetdir}/lua51.lib",
-			"{DELETE} %{cfg.targetdir}/lua51.dll"
+			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/jit/vmdef.lua",
+			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.exe",
+			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.exp",
+			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.lib",
+			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.pdb",
+			--"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.dll",
+			"{DELETE} %{cfg.targetdir}/*.lib",
+			"{DELETE} %{cfg.targetdir}/*.pdb",
 		}
 
 	filter {}

@@ -18,7 +18,7 @@ local GenerateProject = function()
 			source_dir .. "../../Engine/Memory/include",
 			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/lua",
+			base_dir .. "../../Dependencies/" .. GetLuaIncDep(),
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/tracy",
@@ -52,7 +52,8 @@ local GenerateProject = function()
 			"Script",
 			"ECS",
 
-			"Lua"
+			GetLuaDepDep(),
+			GetLuaLinkDep()
 		}
 
 		dependson(deps)
@@ -73,7 +74,8 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "Script")
 	table.insert(deps, "ECS")
-	table.insert(deps, "Lua")
+	table.insert(deps, GetLuaLinkDep())
+	table.insert(deps, GetLuaDepDep())
 
 	dependson(deps)
 	links(deps)

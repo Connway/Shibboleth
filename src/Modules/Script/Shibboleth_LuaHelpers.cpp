@@ -32,6 +32,15 @@ THE SOFTWARE.
 
 namespace
 {
+// LuaJIT
+#if LUA_VERSION_NUM == 501
+	constexpr auto k_lua_geti = lua_rawgeti;
+	constexpr auto k_lua_seti = lua_rawseti;
+#else
+	constexpr auto k_lua_geti = lua_geti;
+	constexpr auto k_lua_seti = lua_seti;
+#endif
+
 	constexpr int32_t k_ref_def_index = lua_upvalueindex(1);
 	constexpr int32_t k_metatable_index = lua_upvalueindex(2);
 	constexpr int32_t k_func_index_index = lua_upvalueindex(2);
@@ -549,7 +558,7 @@ int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, b
 				}
 
 				lua_pushinteger(state, value);
-				lua_seti(state, -1, i);
+				k_lua_seti(state, -1, i);
 				begin += data_size;
 			}
 
@@ -597,7 +606,7 @@ int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, b
 					PushUserTypeReference(state, reinterpret_cast<const void*>(begin), *ret.ref_def);
 				}
 
-				lua_seti(state, -1, i);
+				k_lua_seti(state, -1, i);
 				begin += data_size;
 			}
 
@@ -638,11 +647,11 @@ int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, b
 void RestoreTable(lua_State* state, const TableState& table)
 {
 	for (const auto& pair : table.array_entries) {
-		lua_geti(state, -1, pair.first);
+		k_lua_geti(state, -1, pair.first);
 		
 		if (PushOrUpdateTableValue(state, pair.second)) {
 			lua_remove(state, -2);
-			lua_seti(state, -2, pair.first);
+			k_lua_seti(state, -2, pair.first);
 		} else {
 			lua_pop(state, 1);
 		}
@@ -750,7 +759,7 @@ void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_
 
 		// For reverse lookup.
 		lua_pushstring(state, reinterpret_cast<const char*>(entry_name.getBuffer()));
-		lua_seti(state, -2, entry_value);
+		k_lua_seti(state, -2, entry_value);
 	}
 
 	lua_pop(state, table_count);

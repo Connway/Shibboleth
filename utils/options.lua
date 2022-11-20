@@ -21,3 +21,9 @@ newoption
 	trigger = "generate-preproc",
 	description = "Generate the preprocessor project."
 }
+
+newoption
+{
+	trigger = "no-luajit",
+	description = "Use default Lua intepreter instead of LuaJIT."
+}

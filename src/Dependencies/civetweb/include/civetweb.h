@@ -1366,6 +1366,40 @@ CIVETWEB_API int mg_base64_decode(const char *src,
 CIVETWEB_API char *mg_md5(char buf[33], ...);
 
 
+#if !defined(MG_MATCH_CONTEXT_MAX_MATCHES)
+#define MG_MATCH_CONTEXT_MAX_MATCHES (32)
+#endif
+
+struct mg_match_element {
+	const char *str; /* First character matching wildcard */
+	size_t len;      /* Number of character matching wildcard */
+};
+
+struct mg_match_context {
+	int case_sensitive; /* Input: 1 (case sensitive) or 0 (insensitive) */
+	size_t num_matches; /* Output: Number of wildcard matches returned. */
+	struct mg_match_element match[MG_MATCH_CONTEXT_MAX_MATCHES]; /* Output */
+};
+
+
+#if defined(MG_EXPERIMENTAL_INTERFACES)
+/* Pattern matching and extraction function.
+   Parameters:
+     pat: Pattern string (see UserManual.md)
+     str: String to search for match patterns.
+     mcx: Match context (optional, can be NULL).
+
+   Return:
+     Number of characters matched.
+     -1 if no valid match was found.
+     Note: 0 characters might be a valid match for some patterns.
+*/
+CIVETWEB_API ptrdiff_t mg_match(const char *pat,
+                                const char *str,
+                                struct mg_match_context *mcx);
+#endif
+
+
 /* Print error message to the opened error log stream.
    This utilizes the provided logging configuration.
      conn: connection (not used for sending data, but to get perameters)
@@ -1521,6 +1555,7 @@ CIVETWEB_API int mg_get_response(struct mg_connection *conn,
  *  -1:    parameter error
  *  -2:    invalid connection type
  *  -3:    invalid connection status
+ *  -4:    network error (only if built with NO_RESPONSE_BUFFERING)
  */
 CIVETWEB_API int mg_response_header_start(struct mg_connection *conn,
                                           int status);
@@ -1573,6 +1608,7 @@ CIVETWEB_API int mg_response_header_add_lines(struct mg_connection *conn,
  *  -1:    parameter error
  *  -2:    invalid connection type
  *  -3:    invalid connection status
+ *  -4:    sending failed (network error)
  */
 CIVETWEB_API int mg_response_header_send(struct mg_connection *conn);
 
@@ -1685,10 +1721,79 @@ CIVETWEB_API int mg_get_connection_info(const struct mg_context *ctx,
    Note: Experimental interfaces may change
 */
 struct mg_error_data {
-	unsigned *code;          /* error code (number) */
+	unsigned code;           /* error code (number) */
+	unsigned code_sub;       /* error sub code (number) */
 	char *text;              /* buffer for error text */
 	size_t text_buffer_size; /* size of buffer of "text" */
 };
+
+
+/* Values for error "code" in mg_error_data */
+enum {
+	/* No error */
+	MG_ERROR_DATA_CODE_OK = 0u,
+
+	/* Caller provided invalid parameter */
+	MG_ERROR_DATA_CODE_INVALID_PARAM = 1u,
+
+	/* "configuration_option" contains invalid element */
+	MG_ERROR_DATA_CODE_INVALID_OPTION = 2u,
+
+	/* Initializen TLS / SSL library failed */
+	MG_ERROR_DATA_CODE_INIT_TLS_FAILED = 3u,
+
+	/* Mandatory "configuration_option" missing */
+	MG_ERROR_DATA_CODE_MISSING_OPTION = 4u,
+
+	/* Duplicate "authentication_domain" option */
+	MG_ERROR_DATA_CODE_DUPLICATE_DOMAIN = 5u,
+
+	/* Not enough memory */
+	MG_ERROR_DATA_CODE_OUT_OF_MEMORY = 6u,
+
+	/* Server already stopped */
+	MG_ERROR_DATA_CODE_SERVER_STOPPED = 7u,
+
+	/* mg_init_library must be called first */
+	MG_ERROR_DATA_CODE_INIT_LIBRARY_FAILED = 8u,
+
+	/* Operating system function failed */
+	MG_ERROR_DATA_CODE_OS_ERROR = 9u,
+
+	/* Failed to bind to server ports */
+	MG_ERROR_DATA_CODE_INIT_PORTS_FAILED = 10u,
+
+	/* Failed to switch user (option "run_as_user") */
+	MG_ERROR_DATA_CODE_INIT_USER_FAILED = 11u,
+
+	/* Access Control List error */
+	MG_ERROR_DATA_CODE_INIT_ACL_FAILED = 12u,
+
+	/* Global password file error */
+	MG_ERROR_DATA_CODE_INVALID_PASS_FILE = 13u,
+
+	/* Lua background script init error */
+	MG_ERROR_DATA_CODE_SCRIPT_ERROR = 14u,
+
+	/* Client: Host not found, invalid IP to connect */
+	MG_ERROR_DATA_CODE_HOST_NOT_FOUND = 15u,
+
+	/* Client: TCP connect timeout */
+	MG_ERROR_DATA_CODE_CONNECT_TIMEOUT = 16u,
+
+	/* Client: TCP connect failed */
+	MG_ERROR_DATA_CODE_CONNECT_FAILED = 17u,
+
+	/* Error using TLS client certificate */
+	MG_ERROR_DATA_CODE_TLS_CLIENT_CERT_ERROR = 18u,
+
+	/* Error setting trusted TLS server certificate for client connection */
+	MG_ERROR_DATA_CODE_TLS_SERVER_CERT_ERROR = 19u,
+
+	/* Error establishing TLS connection to HTTPS server */
+	MG_ERROR_DATA_CODE_TLS_CONNECT_ERROR = 20u
+};
+
 
 struct mg_init_data {
 	const struct mg_callbacks *callbacks; /* callback function pointer */

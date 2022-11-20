@@ -436,3 +436,31 @@ function IncludeDirs(dirs)
 		includedirs(dirs)
 	end
 end
+
+function GetLuaIncDep()
+	if _OPTIONS["no-luajit"] then
+		return "lua"
+	else
+		return "LuaJIT/src"
+	end
+end
+
+function GetLuaDepDep()
+	if _OPTIONS["no-luajit"] then
+		return "Lua"
+	else
+		return "LuaJIT"
+	end
+end
+
+function GetLuaLinkDep()
+	if _OPTIONS["no-luajit"] then
+		return "Lua"
+	else
+		if os.target() == "windows" then
+			return "%{cfg.targetdir}/../LuaJIT/lua51.lib"
+		elseif os.target() == "linux" then
+		elseif os.target() == "macosx" then
+		end
+	end
+end

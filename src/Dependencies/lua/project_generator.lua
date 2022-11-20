@@ -2,7 +2,7 @@ DepProject "Lua"
 	language "C"
 	warnings "Extra"
 
-	files { "**.c", "**.h" }
+	files { "**.c", "**.h", "**.hpp" }
 	excludes { "luac.c" }
 
 	filter { "system:linux" }

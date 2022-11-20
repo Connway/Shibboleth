@@ -14,8 +14,10 @@
 
 @setlocal
 @rem Add more debug flags here, e.g. DEBUGCFLAGS=/DLUA_USE_APICHECK
-@set DEBUGCFLAGS=
-@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set DEBUGCFLAGS=/MDd /Od /Fd"lua51.pdb"
+@rem Add more non-debug flags here
+@set NDEBUGCFLAGS=/MD /O2 /Fd"lua51.pdb"
+@set LJCOMPILE=cl /nologo /c /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJLINK=link /nologo
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
@@ -78,7 +80,10 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @set BUILDTYPE=debug
 @set LJCOMPILE=%LJCOMPILE% /Zi %DEBUGCFLAGS%
 @set LJLINK=%LJLINK% /opt:ref /opt:icf /incremental:no
+goto :CONTINUEBUILD
 :NODEBUG
+@set LJCOMPILE=%LJCOMPILE% %NDEBUGCFLAGS%
+:CONTINUEBUILD
 @set LJLINK=%LJLINK% /%BUILDTYPE%
 @if "%1"=="amalg" goto :AMALGDLL
 @if "%1"=="static" goto :STATIC

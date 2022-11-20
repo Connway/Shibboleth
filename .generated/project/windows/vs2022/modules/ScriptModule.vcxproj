@@ -128,8 +128,8 @@
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\Lua.vcxproj">
-      <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
+    <ProjectReference Include="..\dependencies\LuaJIT.vcxproj">
+      <Project>{CEBCA2C1-BA5E-CD97-A319-E1EB8F5A54E8}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>

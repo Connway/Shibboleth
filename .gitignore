@@ -25,4 +25,5 @@ src/**/.generated/*
 src/Dependencies/LuaJIT/**/*.lib
 src/Dependencies/LuaJIT/**/*.dll
 src/Dependencies/LuaJIT/**/*.exe
+src/Dependencies/LuaJIT/**/*.pdb
 .generated/preproc/*

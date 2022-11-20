@@ -27,6 +27,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\http2.inl">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\match.inl">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\md5.inl">
       <Filter>src</Filter>
     </ClInclude>
@@ -52,6 +55,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sha1.inl">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sort.inl">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.h">
@@ -87,6 +93,9 @@
       <Filter>src\third_party</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lsqlite3.c">
+      <Filter>src\third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lua_struct.c">
       <Filter>src\third_party</Filter>
     </ClCompile>
   </ItemGroup>

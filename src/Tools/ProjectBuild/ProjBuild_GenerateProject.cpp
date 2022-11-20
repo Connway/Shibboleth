@@ -27,11 +27,15 @@ THE SOFTWARE.
 #include <chrono>
 #include <thread>
 
-void GenerateProject_AddArguments(argparse::ArgumentParser& /*program*/)
+void GenerateProject_AddArguments(argparse::ArgumentParser& program)
 {
+	program.add_argument("--no-luajit", "-nlj")
+		.help("(Optional) Generates the project with the reference Lua interpreter instead of LuaJIT.")
+		.implicit_value(true)
+		.default_value(false);
 }
 
-int GenerateProject_Run(const argparse::ArgumentParser& /*program*/)
+int GenerateProject_Run(const argparse::ArgumentParser& program)
 {
 	char8_t curr_working_dir[2048] = { 0 };
 	Gaff::GetWorkingDir(curr_working_dir, sizeof(curr_working_dir));
@@ -45,7 +49,13 @@ int GenerateProject_Run(const argparse::ArgumentParser& /*program*/)
 	constexpr const char* const k_premake_action = "gmake2";
 #endif
 
-	std::string proj_gen_cmd = std::string("premake5 ") + k_premake_action + " --generate-preproc";
+	std::string gen_args = " --generate-preproc";
+
+	if (program.get<bool>("--no-luajit")) {
+		gen_args += " --no-luajit";
+	}
+
+	std::string proj_gen_cmd = std::string("premake5 ") + k_premake_action + gen_args;
 
 	const int ret = std::system(proj_gen_cmd.c_str());
 

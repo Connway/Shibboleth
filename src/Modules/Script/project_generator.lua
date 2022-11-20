@@ -18,7 +18,7 @@ local GenerateProject = function()
 			source_dir .. "../../Engine/Memory/include",
 			source_dir .. "../../Engine/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/lua",
+			base_dir .. "../../Dependencies/" .. GetLuaIncDep(),
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -49,7 +49,8 @@ local GenerateProject = function()
 			"Resource",
 			"ECS",
 
-			"Lua",
+			GetLuaLinkDep(),
+			GetLuaDepDep(),
 
 			"Gleam",
 		}
@@ -71,7 +72,8 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "ECS")
 
-	table.insert(deps, "Lua")
+	table.insert(deps, GetLuaLinkDep())
+	table.insert(deps, GetLuaDepDep())
 
 	table.insert(deps, "Gleam")
 

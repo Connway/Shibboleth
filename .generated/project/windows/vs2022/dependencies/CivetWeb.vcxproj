@@ -101,7 +101,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\civetweb\include;..\..\..\..\..\src\Dependencies\civetweb\src\third_party;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\sqlite;..\..\..\..\..\src\Dependencies\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -128,7 +128,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\CivetWeb\$(TargetFi
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\civetweb\include;..\..\..\..\..\src\Dependencies\civetweb\src\third_party;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\sqlite;..\..\..\..\..\src\Dependencies\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -161,7 +161,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\CivetWeb\$(Target
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\civetweb\include;..\..\..\..\..\src\Dependencies\civetweb\src\third_party;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\sqlite;..\..\..\..\..\src\Dependencies\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -194,7 +194,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\CivetWeb\$(Target
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;CIVETWEB_CXX_DLL_EXPORTS;CIVETWEB_DLL_EXPORTS;USE_SERVER_STATS;USE_ZLIB;USE_LUA;NO_CACHING;NO_SSL;NO_CGI;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\civetweb\include;..\..\..\..\..\src\Dependencies\civetweb\src\third_party;..\..\..\..\..\src\Dependencies\zlib-ng;..\..\..\..\..\src\Dependencies\sqlite;..\..\..\..\..\src\Dependencies\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -229,6 +229,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CivetWeb\
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\civetweb_private_lua.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\handle_form.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\http2.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\match.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\md5.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_duktape.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\mod_lua.inl" />
@@ -238,6 +239,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CivetWeb\
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\openssl_dl.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\response.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sha1.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\sort.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\civetweb_lua.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lfs.h" />
@@ -251,6 +253,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CivetWeb\
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\LuaXML_lib.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lfs.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lsqlite3.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lua_struct.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Lua.vcxproj">
