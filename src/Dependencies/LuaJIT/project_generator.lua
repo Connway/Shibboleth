@@ -46,8 +46,9 @@ DepProject "LuaJIT"
 		buildcommands
 		{
 			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			"msvcbuild.bat debug static",
-			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.a %{cfg.targetdir}/lua51.a"
+			linux_make_cmd,
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.a %{cfg.targetdir}/lua51.a",
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.so %{cfg.targetdir}/lua51.so"
 		}
 
 	filter { "system:windows", "platforms:x64" }
@@ -67,6 +68,8 @@ DepProject "LuaJIT"
 	filter { "system:linux", "platforms:x64" }
 		cleancommands
 		{
+			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
+			"make clean"
 		}
 
 	filter {}
