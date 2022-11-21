@@ -89,10 +89,6 @@ namespace acl
 		float get_duration() const;
 
 		//////////////////////////////////////////////////////////////////////////
-		// Returns the finite duration of each track.
-		float get_finite_duration() const;
-
-		//////////////////////////////////////////////////////////////////////////
 		// Returns the sample rate used by each track.
 		float get_sample_rate() const;
 

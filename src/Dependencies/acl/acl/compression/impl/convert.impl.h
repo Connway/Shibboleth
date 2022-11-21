@@ -81,7 +81,7 @@ namespace acl
 		const track_type8 track_type = tracks.get_track_type();
 		const uint32_t num_samples = tracks.get_num_samples_per_track();
 		const float sample_rate = tracks.get_sample_rate();
-		const float duration = tracks.get_finite_duration();
+		const float duration = tracks.get_duration();
 
 		track_array result(allocator, num_tracks);
 		result.set_name(string(allocator, tracks.get_name()));
@@ -148,9 +148,6 @@ namespace acl
 
 			acl_impl::debug_track_writer writer(allocator, track_type, num_tracks);
 
-			if(track_type == track_type8::qvvf)
-				writer.initialize_with_defaults(result);
-
 			for (uint32_t sample_index = 0; sample_index < num_samples; ++sample_index)
 			{
 				const float sample_time = rtm::scalar_min(float(sample_index) / sample_rate, duration);
@@ -197,9 +194,6 @@ namespace acl
 			context.initialize(tracks);
 
 			acl_impl::debug_track_writer writer(allocator, track_type, num_tracks);
-
-			if(track_type == track_type8::qvvf)
-				writer.initialize_with_defaults(result);
 
 			for (uint32_t sample_index = 0; sample_index < num_samples; ++sample_index)
 			{

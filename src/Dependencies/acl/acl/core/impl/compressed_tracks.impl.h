@@ -77,12 +77,6 @@ namespace acl
 		return calculate_duration(header.num_samples, header.sample_rate);
 	}
 
-	inline float compressed_tracks::get_finite_duration() const
-	{
-		const acl_impl::tracks_header& header = acl_impl::get_tracks_header(*this);
-		return calculate_finite_duration(header.num_samples, header.sample_rate);
-	}
-
 	inline float compressed_tracks::get_sample_rate() const { return acl_impl::get_tracks_header(*this).sample_rate; }
 
 	inline bool compressed_tracks::has_database() const { return acl_impl::get_tracks_header(*this).get_has_database(); }
@@ -177,23 +171,10 @@ namespace acl
 		if (!metadata_header.parent_track_indices.is_valid())
 			return false;	// Metadata isn't stored
 
-		const compressed_tracks_version16 version = header.version;
 		const uint32_t* parent_track_indices = metadata_header.get_parent_track_indices(*this);
 		const uint8_t* descriptions = metadata_header.get_track_descriptions(*this);
+		const float* description_data = reinterpret_cast<const float*>(descriptions + (track_index * sizeof(float) * 5));
 
-		// ACL 2.0 track description has:
-		//    precision, shell_distance,
-		//    constant_rotation_threshold_angle, constant_translation_threshold, constant_scale_threshold
-		uint32_t track_description_size = sizeof(float) * 5;
-
-		// ACL 2.1 adds: default_value
-		if (version >= compressed_tracks_version16::v02_01_99)
-			track_description_size += sizeof(float) * 10;
-
-		const float* description_data = reinterpret_cast<const float*>(descriptions + (track_index * track_description_size));
-
-		// Because the data has already been compressed, any track output remapping has already happened
-		// which means the output_index is just the track_index
 		out_description.output_index = track_index;
 		out_description.parent_index = parent_track_indices[track_index];
 		out_description.precision = description_data[0];
@@ -201,17 +182,6 @@ namespace acl
 		out_description.constant_rotation_threshold_angle = description_data[2];
 		out_description.constant_translation_threshold = description_data[3];
 		out_description.constant_scale_threshold = description_data[4];
-
-		if (version >= compressed_tracks_version16::v02_01_99)
-		{
-			out_description.default_value.rotation = rtm::quat_load(description_data + 5);
-			out_description.default_value.translation = rtm::vector_load3(description_data + 9);
-			out_description.default_value.scale = rtm::vector_load3(description_data + 12);
-		}
-		else
-		{
-			out_description.default_value = rtm::qvv_identity();
-		}
 
 		return true;
 	}
