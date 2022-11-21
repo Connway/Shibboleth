@@ -520,7 +520,6 @@
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\dynasm\dynasm.lua">
       <Filter>dynasm</Filter>
     </None>
-    <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\project_generator.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\host\genlibbc.lua">
       <Filter>src\host</Filter>
     </None>

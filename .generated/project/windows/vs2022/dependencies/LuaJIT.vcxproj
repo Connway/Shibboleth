@@ -302,7 +302,6 @@ del ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\*.pdb</NM
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\dynasm\dasm_x64.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\dynasm\dasm_x86.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\dynasm\dynasm.lua" />
-    <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\project_generator.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\host\genlibbc.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\host\genminilua.lua" />
     <None Include="..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\bc.lua" />

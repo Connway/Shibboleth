@@ -31,6 +31,9 @@
     <Filter Include="Dependencies\civetweb">
       <UniqueIdentifier>{F4605121-60CD-0C1C-29C1-A47995EC2E84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\fmt">
+      <UniqueIdentifier>{A25D0A4E-8E56-29A0-B788-0E25A3E008AC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Dependencies\glfw">
       <UniqueIdentifier>{AB98560F-17AF-54A5-6026-E0C6CC7B252D}</UniqueIdentifier>
     </Filter>
@@ -206,6 +209,9 @@
     </None>
     <None Include="..\..\..\..\src\Dependencies\civetweb\project_generator.lua">
       <Filter>Dependencies\civetweb</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\fmt\project_generator.lua">
+      <Filter>Dependencies\fmt</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\glfw\project_generator.lua">
       <Filter>Dependencies\glfw</Filter>

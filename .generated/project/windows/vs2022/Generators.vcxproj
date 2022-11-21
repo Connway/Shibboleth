@@ -138,6 +138,7 @@
     <None Include="..\..\..\..\src\Dependencies\assimp\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\capstone\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\civetweb\project_generator.lua" />
+    <None Include="..\..\..\..\src\Dependencies\fmt\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\glfw\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\glm\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\imgui\project_generator.lua" />
