@@ -26,4 +26,5 @@ src/Dependencies/LuaJIT/**/*.lib
 src/Dependencies/LuaJIT/**/*.dll
 src/Dependencies/LuaJIT/**/*.exe
 src/Dependencies/LuaJIT/**/*.pdb
+src/Dependencies/LuaJIT/src/jit/vmdef.lua
 .generated/preproc/*

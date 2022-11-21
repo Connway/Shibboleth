@@ -8,15 +8,13 @@ DepProject "LuaJIT"
 	language "C"
 
 	files { "**.h", "**.hpp", "**.c", "**.lua", "**.dasc" }
-	excludes { "src/jit/vmdef.lua" }
+	excludes { "src/jit/vmdef.lua", "project_generator.lua" }
 
 	local linux_make_cmd = "make"
 
 	if _OPTIONS["cc"] then
 		linux_make_cmd = "make CC=" .. _OPTIONS["cc"]
 	end
-
-	print(_OPTIONS["cc"])
 
 	filter { "system:windows", "platforms:x64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
 
@@ -36,19 +34,19 @@ DepProject "LuaJIT"
 	filter { "system:linux", "platforms:x64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
 		buildcommands
 		{
-			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			linux_make_cmd .. " CCDEBUG=-g",
-			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.a %{cfg.targetdir}/lua51.a",
-			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.so %{cfg.targetdir}/lua51.so"
+			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src && " .. linux_make_cmd .. " CCDEBUG=-g",
+			"{MKDIR} %{cfg.targetdir}",
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/libluajit.a %{cfg.targetdir}/libluajit.a",
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/libluajit.so %{cfg.targetdir}/libluajit.so"
 		}
 
 	filter { "system:linux", "platforms:x64", "configurations:not *Debug* or Optimized_Debug" }
 		buildcommands
 		{
-			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			linux_make_cmd,
-			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.a %{cfg.targetdir}/lua51.a",
-			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.so %{cfg.targetdir}/lua51.so"
+			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src && " .. linux_make_cmd,
+			"{MKDIR} %{cfg.targetdir}",
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/libluajit.a %{cfg.targetdir}/libluajit.a",
+			"{COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/libluajit.so %{cfg.targetdir}/libluajit.so"
 		}
 
 	filter { "system:windows", "platforms:x64" }
@@ -62,14 +60,13 @@ DepProject "LuaJIT"
 			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.pdb",
 			--"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.dll",
 			"{DELETE} %{cfg.targetdir}/*.lib",
-			"{DELETE} %{cfg.targetdir}/*.pdb",
+			"{DELETE} %{cfg.targetdir}/*.pdb"
 		}
 
-	filter { "system:linux", "platforms:x64" }
+	filter { "system:linux or macosx", "platforms:x64" }
 		cleancommands
 		{
-			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			"make clean"
+			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src && make clean"
 		}
 
 	filter {}
