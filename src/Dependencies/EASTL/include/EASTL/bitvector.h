@@ -64,6 +64,7 @@ namespace eastl
 	public:
 		typedef eastl_size_t size_type;
 		bitvector_reference(Element* ptr, eastl_size_t i);
+		bitvector_reference(const bitvector_reference& reference);
 
 		bitvector_reference& operator=(bool value);
 		bitvector_reference& operator=(const bitvector_reference& rhs);
@@ -112,6 +113,7 @@ namespace eastl
 		bitvector_const_iterator();
 		bitvector_const_iterator(const element_type* p, eastl_size_t i);
 		bitvector_const_iterator(const reference_type& referenceType);
+		bitvector_const_iterator(const bitvector_const_iterator& iterator);
 
 		bitvector_const_iterator& operator++();
 		bitvector_const_iterator  operator++(int);
@@ -167,6 +169,7 @@ namespace eastl
 		bitvector_iterator();
 		bitvector_iterator(element_type* p, eastl_size_t i);
 		bitvector_iterator(reference_type& referenceType);
+		bitvector_iterator(const bitvector_iterator& iterator);
 
 		bitvector_iterator& operator++()    { base_type::operator++(); return *this; }
 		bitvector_iterator& operator--()    { base_type::operator--(); return *this; }
@@ -348,6 +351,14 @@ namespace eastl
 
 
 	template <typename Element>
+	bitvector_reference<Element>::bitvector_reference(const bitvector_reference& reference)
+		: mpBitWord(reference.mpBitWord),
+		mnBitIndex(reference.mnBitIndex)
+	{
+	}
+
+
+	template <typename Element>
 	bitvector_reference<Element>&
 	bitvector_reference<Element>::operator=(bool value)
 	{
@@ -387,6 +398,13 @@ namespace eastl
 	template <typename Element>
 	bitvector_const_iterator<Element>::bitvector_const_iterator()
 		: mReference(0, 0)
+	{
+	}
+
+
+	template <typename Element>
+	bitvector_const_iterator<Element>::bitvector_const_iterator(const bitvector_const_iterator& iterator)
+		: mReference(iterator.mReference)
 	{
 	}
 
@@ -639,6 +657,13 @@ namespace eastl
 	template <typename Element>
 	bitvector_iterator<Element>::bitvector_iterator(Element* p, eastl_size_t i)
 		: base_type(p, i)
+	{
+	}
+
+
+	template <typename Element>
+	bitvector_iterator<Element>::bitvector_iterator(const bitvector_iterator& iterator)
+		: base_type(iterator.mReference)
 	{
 	}
 
