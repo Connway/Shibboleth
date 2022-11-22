@@ -105,6 +105,26 @@ struct ClassData final
 		bool is_virtual = false;
 	};
 
+	const char* GetAccessText(Access access) const
+	{
+		switch (access) {
+			case Access::Default:
+				return (is_struct) ? "public" : "private";
+
+			case Access::Public:
+				return "public";
+
+			case Access::Private:
+				return "private";
+
+			case Access::Protected:
+				return "protected";
+		}
+
+		GAFF_ASSERT(false);
+		return "";
+	}
+
 	Access GetAccess(Access access) const
 	{
 		if (access == Access::Default) {
@@ -115,8 +135,9 @@ struct ClassData final
 	}
 
 	std::string name;
-	std::string declaration_text; // Text between curly braces.
-	std::string definition_text; // Text in .cpp file.
+	std::string declaration_text; // Text between curly braces of class declaration.
+	std::string definition_text; // Function implementations and static class variables.
+	std::string mixin_definition_text; // The definition text accrued from mixins.
 	std::vector<InheritanceData> inherits;
 	std::vector<std::string> mixin_classes;
 	BlockRange declaration_scope_range;

@@ -75,6 +75,7 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		return;
 	}
 
+	// $TODO: Class declaration parsing does not strip out commented out lines. Should strip those out before processing.
 	size_t start_index = class_data.declaration_text.find("mixin");
 
 	while (start_index != std::string::npos) {
@@ -85,16 +86,35 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 			--start_index;
 		}
 
+		if (start_index > 0) {
+			start_index -= strlen(k_newline);
+		}
+
 		// Find end of line.
-		while (end_index < class_data.declaration_text.size() - 1 && k_newline_substr.find(class_data.declaration_text[end_index + 1]) == std::string_view::npos) {
+		while (end_index < class_data.declaration_text.size() && k_newline_substr.find(class_data.declaration_text[end_index]) == std::string_view::npos) {
 			++end_index;
 		}
 
-		class_data.declaration_text.erase(start_index, end_index - start_index);
+		class_data.declaration_text.erase(start_index, end_index - start_index + strlen(k_newline));
 
 		start_index = class_data.declaration_text.find("mixin");
 	}
 
+	// Trim newlines in back.
+	while (!class_data.declaration_text.empty() &&
+			k_newline_substr.find(class_data.declaration_text.back()) != std::string_view::npos) {
+
+		class_data.declaration_text.pop_back();
+	}
+
+	// Trim newlines in front.
+	while (!class_data.declaration_text.empty() &&
+			k_newline_substr.find(class_data.declaration_text.front()) != std::string_view::npos) {
+
+		class_data.declaration_text.erase(0, 1);
+	}
+
+	std::string extra_definitions;
 
 	for (const std::string& mixin_class_name : class_data.mixin_classes) {
 		const size_t hash = std::hash<std::string>{}(mixin_class_name);
@@ -102,16 +122,50 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 
 		GAFF_ASSERT(it != global_runtime_data.class_data.end());
 
-		// Ensure that dependency classes have been processed.
 		ProcessClassStructMixin(global_runtime_data, it->second);
 
-		const std::string& mixin_declaration = it->second.declaration_text;
+		const size_t start_index_declaration = class_data.declaration_text.size();
+		const size_t start_index_definition = class_data.mixin_definition_text.size();
 
-		// Find line with 'mixin <mixin_class_name>'.
-		// Replace 'mixin <mixin_class_name>' with modified declaration text of dependent class.
-		start_index = class_data.declaration_text.find("mixin " + mixin_class_name);
-		GAFF_ASSERT(start_index != std::string::npos);
+		class_data.declaration_text += k_newline;
+		class_data.declaration_text += k_newline;
+		class_data.declaration_text += it->second.GetAccessText(ClassData::Access::Default);
+		class_data.declaration_text += ':';
+		class_data.declaration_text += k_newline;
 
-		class_data.declaration_text.replace(start_index, strlen("mixin ;") + mixin_class_name.size(), mixin_declaration.data());
+		class_data.declaration_text += it->second.declaration_text;
+
+		class_data.mixin_definition_text += it->second.definition_text;
+		class_data.mixin_definition_text += it->second.mixin_definition_text;
+
+		// $TODO: This does not handle code that would have nested scopes, such as namespaces or other nested classes.
+		// eg: Shibboleth::ClassName or Shibboleth::ClassA::ClassB.
+		// Replace all instances of the class name with our name.
+		std::string_view mixin_name = mixin_class_name;
+		std::string_view name = class_data.name;
+
+		if (const size_t index = mixin_name.rfind("::"); index != std::string_view::npos) {
+			mixin_name = mixin_name.substr(index + 2);
+		}
+
+		if (const size_t index = name.rfind("::"); index != std::string_view::npos) {
+			name = name.substr(index + 2);
+		}
+
+		size_t index = class_data.declaration_text.find(mixin_name, start_index_declaration);
+
+		// Replace name in declaration text.
+		while (index != std::string::npos) {
+			class_data.declaration_text.replace(index, mixin_name.size(), name);
+			index = class_data.declaration_text.find(mixin_name);
+		}
+
+		// Replace name in definition text.
+		index = class_data.mixin_definition_text.find(mixin_name, start_index_definition);
+
+		while (index != std::string::npos) {
+			class_data.mixin_definition_text.replace(index, mixin_name.size(), name);
+			index = class_data.mixin_definition_text.find(mixin_name);
+		}
 	}
 }

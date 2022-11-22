@@ -393,51 +393,52 @@ void ProcessClassScopeClose(ParseData& parse_data)
 
 		// $TODO: Process whitespace so we can align it with the class this is potentially mixed in with.
 
-		//// Trim whitespace in back.
-		//while (!class_data.declaration_text.empty() &&
-		//	std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
+		// Trim newlines in back.
+		while (!class_data.declaration_text.empty() &&
+			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
 
-		//	class_data.declaration_text.pop_back();
-		//}
+			class_data.declaration_text.pop_back();
+		}
 
-		//// Trim whitespace in front.
-		//while (!class_data.declaration_text.empty() &&
-		//	std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.front()) != std::string_view::npos) {
+		// Trim newlines in front.
+		while (!class_data.declaration_text.empty() &&
+			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.front()) != std::string_view::npos) {
 
-		//	class_data.declaration_text.erase(0, 1);
-		//}
+			class_data.declaration_text.erase(0, 1);
+		}
 
-		//// Process tabs to make the first line match up.
-		//size_t tab_count = 0;
+		// $TODO: This doesn't work on codebases that use spaces instead of tabs. May wish to re-work this.
+		// Process tabs to make the first line match up.
+		size_t tab_count = 0;
 
-		//while (parse_data.file_text[scope_data.range.start - tab_count - 1] == '\t') {
-		//	++tab_count;
-		//}
+		while (parse_data.file_text[scope_data.range.start - tab_count - 1] == '\t') {
+			++tab_count;
+		}
 
-		//size_t newline_index = class_data.declaration_text.find_first_of(k_newline_chars);
-		//size_t prev_newline_index = 0;
+		size_t newline_index = class_data.declaration_text.find_first_of(k_newline_chars);
+		size_t prev_newline_index = 0;
 
-		//while (newline_index != std::string::npos) {
-		//	const size_t tab_index = (prev_newline_index == 0) ? 0 : prev_newline_index + 1;
+		while (newline_index != std::string::npos) {
+			const size_t tab_index = (prev_newline_index == 0) ? 0 : prev_newline_index + 1;
 
-		//	for (size_t count = 0;
-		//		!class_data.declaration_text.empty() && class_data.declaration_text[tab_index] == '\t' && count < tab_count;
-		//		++count) {
+			for (size_t count = 0;
+				!class_data.declaration_text.empty() && class_data.declaration_text[tab_index] == '\t' && count < tab_count;
+				++count) {
 
-		//		class_data.declaration_text.erase(tab_index, 1);
-		//	}
+				class_data.declaration_text.erase(tab_index, 1);
+			}
 
-		//	prev_newline_index = newline_index;
-		//	newline_index = class_data.declaration_text.find_first_of(k_newline_chars, newline_index + 1);
-		//}
+			prev_newline_index = newline_index;
+			newline_index = class_data.declaration_text.find_first_of(k_newline_chars, newline_index + 1);
+		}
 
-		//// Don't forget the last line.
-		//for (size_t count = 0;
-		//	!class_data.declaration_text.empty() && class_data.declaration_text[prev_newline_index + 1] == '\t' && count < tab_count;
-		//	++count) {
+		// Don't forget the last line.
+		for (size_t count = 0;
+			!class_data.declaration_text.empty() && class_data.declaration_text[prev_newline_index + 1] == '\t' && count < tab_count;
+			++count) {
 
-		//	class_data.declaration_text.erase(prev_newline_index + 1, 1);
-		//}
+			class_data.declaration_text.erase(prev_newline_index + 1, 1);
+		}
 
 		parse_data.class_stack.pop_back();
 	}
