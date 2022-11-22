@@ -44,6 +44,44 @@ namespace Gen::Engine
 
 NS_SHIBBOLETH
 
+struct TestA
+{
+public:
+	enum class Foo
+	{
+		A
+	};
+
+	int16_t a;
+};
+
+struct TestB
+{
+public:
+	float b;
+
+	mixin Shibboleth::TestA;
+
+private:
+	void testFunc(void);
+	static int64_t test_static;
+	static TestA::Foo b2;
+};
+
+struct TestC : public TestA
+{
+public:
+	double c;
+};
+
+struct TestD
+{
+public:
+	int32_t d;
+
+	//mixin Shibboleth::TestC;
+};
+
 class IMainLoop;
 
 class App final : public IApp

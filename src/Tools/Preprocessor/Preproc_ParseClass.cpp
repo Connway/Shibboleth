@@ -94,6 +94,7 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 			parse_data.curr_class_data->definition_text += left;
 			parse_data.curr_class_data->definition_text += ';';
 			parse_data.curr_class_data->definition_text += k_newline;
+			parse_data.curr_class_data->definition_text += k_newline;
 
 			if (!right.empty()) {
 				const size_t start_index = parse_data.start_index;
@@ -261,6 +262,7 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 				// This is a static class variable. Add newline.
 				if (line_until_this_point.back() == ';') {
 					class_data.definition_text += k_newline;
+					class_data.definition_text += k_newline;
 
 					if (!right.empty()) {
 						const size_t start_index = parse_data.start_index;
@@ -296,7 +298,6 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 	if (parse_data.flags.testAll(ParseData::Flag::ClassFunctionDefinitionLine)) {
 		parse_data.flags.clear(ParseData::Flag::ClassFunctionDefinitionLine);
 		parse_data.flags.set(ParseData::Flag::ClassFunctionDefinition);
-		parse_data.curr_class_data = nullptr;
 	}
 
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
@@ -360,6 +361,9 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		parse_data.curr_class_data->definition_text += func_impl;
 		parse_data.curr_class_data->definition_text += "}";
 		parse_data.curr_class_data->definition_text += k_newline;
+		parse_data.curr_class_data->definition_text += k_newline;
+
+		parse_data.curr_class_data = nullptr;
 	}
 
 	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == (parse_data.scope_ranges.size() - 1)) {

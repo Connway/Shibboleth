@@ -356,7 +356,10 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			return ret;
 		}
 
-		if (force_module) {
+		if (force_engine) {
+			return ret;
+
+		} else if (force_module) {
 			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
 
 			if (ret) {

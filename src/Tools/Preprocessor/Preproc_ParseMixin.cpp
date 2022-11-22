@@ -32,7 +32,7 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 	}
 
 	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
-		!parse_data.flags.testAll(ParseData::Flag::MixinName)) {
+		!parse_data.flags.testAny(ParseData::Flag::MixinName)) {
 
 		return false;
 	}
@@ -71,6 +71,31 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 
 void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& class_data)
 {
+	if (class_data.finished) {
+		return;
+	}
+
+	size_t start_index = class_data.declaration_text.find("mixin");
+
+	while (start_index != std::string::npos) {
+		size_t end_index = start_index;
+
+		// Find beginning of line.
+		while (start_index > 0 && k_newline_substr.find(class_data.declaration_text[start_index - 1]) == std::string_view::npos) {
+			--start_index;
+		}
+
+		// Find end of line.
+		while (end_index < class_data.declaration_text.size() - 1 && k_newline_substr.find(class_data.declaration_text[end_index + 1]) == std::string_view::npos) {
+			++end_index;
+		}
+
+		class_data.declaration_text.erase(start_index, end_index - start_index);
+
+		start_index = class_data.declaration_text.find("mixin");
+	}
+
+
 	for (const std::string& mixin_class_name : class_data.mixin_classes) {
 		const size_t hash = std::hash<std::string>{}(mixin_class_name);
 		const auto it = global_runtime_data.class_data.find(hash);
@@ -84,7 +109,7 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 
 		// Find line with 'mixin <mixin_class_name>'.
 		// Replace 'mixin <mixin_class_name>' with modified declaration text of dependent class.
-		const size_t start_index = class_data.declaration_text.find("mixin " + mixin_class_name);
+		start_index = class_data.declaration_text.find("mixin " + mixin_class_name);
 		GAFF_ASSERT(start_index != std::string::npos);
 
 		class_data.declaration_text.replace(start_index, strlen("mixin ;") + mixin_class_name.size(), mixin_declaration.data());
