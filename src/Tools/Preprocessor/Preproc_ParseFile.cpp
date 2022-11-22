@@ -271,8 +271,6 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 
 	// Nothing to ignore.
 	if (ignore_range.start == ignore_range.end) {
-		bool append_text = true;
-
 		const auto marker = k_range_markers[static_cast<size_t>(BlockRangeType::Scope)];
 		size_t open_pos = substr.find(marker[0]);
 		size_t close_pos = substr.find(marker[1]);
@@ -330,7 +328,7 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			parse_data.start_index = start_index;
 			parse_data.next_index = end_index;
 
-			append_text = false;
+			return;
 
 		} else if (close_pos != std::string_view::npos) {
 			const std::string_view before_scope = substr.substr(0, close_pos);
@@ -370,7 +368,7 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			parse_data.start_index = start_index;
 			parse_data.next_index = end_index;
 
-			append_text = false;
+			return;
 		}
 
 		using ParseFunc = bool (*)(std::string_view, ParseData&);
@@ -390,12 +388,10 @@ void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int3
 			}
 		}
 
-		if (append_text) {
-			if (parse_data.flags.testAll(ParseData::Flag::WriteFile) &&
-				!parse_data.flags.testAll(ParseData::Flag::DoNotWriteSubstring)) {
+		if (parse_data.flags.testAll(ParseData::Flag::WriteFile) &&
+			!parse_data.flags.testAll(ParseData::Flag::DoNotWriteSubstring)) {
 
-				parse_data.out_text += substr;
-			}
+			parse_data.out_text += substr;
 		}
 
 	} else {
@@ -445,17 +441,14 @@ bool Preproc_ParseFile(ParseData& parse_data)
 			}
 
 		} else {
-			constexpr std::string_view parse_tokens(k_parse_until_tokens);
-			constexpr std::string_view newline_substr(k_newline_chars);
-
 			for (size_t index = parse_data.next_index; index < parse_data.file_text.size(); ++index) {
 				// Find a valid character. We're done parsing.
-				if (parse_tokens.find(parse_data.file_text[index]) == std::string_view::npos) {
+				if (k_parse_until_substr.find(parse_data.file_text[index]) == std::string_view::npos) {
 					break;
 				}
 
 				// We found a newline, this is the last token for this line.
-				if (newline_substr.find(parse_data.file_text[index]) != std::string_view::npos) {
+				if (k_newline_substr.find(parse_data.file_text[index]) != std::string_view::npos) {
 					parse_data.flags.set(ParseData::Flag::LastTokenOnLine);
 
 					// Once we've finished processing the template arguments, clear the template data if we pass 2 newlines
@@ -475,12 +468,23 @@ bool Preproc_ParseFile(ParseData& parse_data)
 			const std::string_view substr = parse_data.file_text.substr(parse_data.start_index, parse_data.next_index - parse_data.start_index);
 			Preproc_ParseSubstring(substr, parse_data/*, runtime_data*/);
 
-			parse_data.flags.clear(ParseData::Flag::LastTokenOnLine);
 			parse_data.prev_substr = substr;
 		}
 
+		parse_data.prev_index = parse_data.start_index;
 		parse_data.start_index = parse_data.next_index + 1;
 		parse_data.next_index = parse_data.file_text.find_first_of(k_parse_until_tokens, parse_data.start_index);
+
+		if (parse_data.flags.testAll(ParseData::Flag::LastTokenOnLine)) {
+			parse_data.flags.clear(ParseData::Flag::LastTokenOnLine);
+			parse_data.start_of_line_index = parse_data.start_index;
+
+			while (parse_data.start_of_line_index < parse_data.file_text.size() &&
+					k_newline_substr.find(parse_data.file_text[parse_data.start_of_line_index]) != std::string_view::npos) {
+
+				++parse_data.start_of_line_index;
+			}
+		}
 	}
 
 	const std::string_view substr = parse_data.file_text.substr(parse_data.start_index);
@@ -488,4 +492,36 @@ bool Preproc_ParseFile(ParseData& parse_data)
 	parse_data.prev_substr = substr;
 
 	return true;
+}
+
+size_t SplitSubstr(std::string_view substr, const char* delimeter, std::string_view& left, std::string_view& right, bool reverse_find)
+{
+	const size_t index = (reverse_find) ? substr.rfind(delimeter) : substr.find(delimeter);
+
+	if (index != std::string_view::npos) {
+		left = substr.substr(0, index);
+		right = substr.substr(index + strlen(delimeter));
+
+	} else {
+		left = std::string_view();
+		right = std::string_view();
+	}
+
+	return index;
+}
+
+size_t SplitSubstr(std::string_view substr, char delimeter, std::string_view& left, std::string_view& right, bool reverse_find)
+{
+	const size_t index = (reverse_find) ? substr.rfind(delimeter) : substr.find(delimeter);
+
+	if (index != std::string_view::npos) {
+		left = substr.substr(0, index);
+		right = substr.substr(index + 1);
+
+	} else {
+		left = std::string_view();
+		right = std::string_view();
+	}
+
+	return index;
 }

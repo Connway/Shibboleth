@@ -39,5 +39,9 @@ bool ParseFunction(std::string_view substr, ParseData& parse_data)
 
 	GAFF_REF(substr);
 
+	// This is likely not even possible without parsing every include to have a map of all possible types.
+	// Even then, function declarations are sketchy to parse at best. If this becomes necessary information to have,
+	// maybe we'll consider a macro markup to make this easier.
+
 	return false;
 }

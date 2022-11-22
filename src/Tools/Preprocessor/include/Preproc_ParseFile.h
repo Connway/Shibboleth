@@ -27,10 +27,20 @@ THE SOFTWARE.
 #include <vector>
 #include <map>
 
+#ifdef PLATFORM_WINDOWS
+	constexpr const char* const k_newline = "\r\n";
+#else
+	constexpr const char* const k_newline = "\n";
+#endif
+
 // Stop when we hit a newline or a semi-colon.
 constexpr const char* const k_parse_until_tokens = " \n\f\r\t\v";
 constexpr const char* const k_whitespace_chars = " \t\v";
 constexpr const char* const k_newline_chars = "\n\f\r";
+
+constexpr std::string_view k_parse_until_substr(k_parse_until_tokens);
+constexpr std::string_view k_whitespace_substr(k_whitespace_chars);
+constexpr std::string_view k_newline_substr(k_newline_chars);
 
 enum class BlockRangeType
 {
@@ -80,36 +90,12 @@ struct BlockRange final
 
 struct ClassData final
 {
-	std::string name;
-	std::string declaration_text; // Text between curly braces.
-	std::string definition_text; // Text in cpp file.
-	//std::vector<InheritanceData> inherits;
-	std::vector<std::string> mixin_classes;
-	BlockRange declaration_scope_range;
-	bool is_struct = false;
-	bool finished = false;
-};
-
-struct ClassRuntimeData final
-{
 	enum class Access
 	{
 		Default,
 		Public,
 		Private,
 		Protected
-	};
-
-	enum class Flag
-	{
-		Struct,
-		Anonymous,
-		Template, // Flag for now, but will be unnecessary when we process template args.
-		Final,
-
-		Virtual, // Temp, runtime flag.
-
-		Count
 	};
 
 	struct InheritanceData final
@@ -122,17 +108,52 @@ struct ClassRuntimeData final
 	Access GetAccess(Access access) const
 	{
 		if (access == Access::Default) {
-			return (flags.testAll(Flag::Struct)) ? Access::Public : Access::Private;
+			return (is_struct) ? Access::Public : Access::Private;
+		}
+
+		return access;
+	}
+
+	std::string name;
+	std::string declaration_text; // Text between curly braces.
+	std::string definition_text; // Text in .cpp file.
+	std::vector<InheritanceData> inherits;
+	std::vector<std::string> mixin_classes;
+	BlockRange declaration_scope_range;
+	bool is_struct = false;
+	bool finished = false;
+};
+
+struct ClassRuntimeData final
+{
+	enum class Flag
+	{
+		Struct,
+		Anonymous,
+		Template, // Flag for now, but will be unnecessary when we process template args.
+		Final,
+
+		// Temp, runtime flags.
+		ParsingInheritance,
+		Virtual,
+
+		Count
+	};
+
+	ClassData::Access GetAccess(ClassData::Access access) const
+	{
+		if (access == ClassData::Access::Default) {
+			return (flags.testAll(Flag::Struct)) ? ClassData::Access::Public : ClassData::Access::Private;
 		}
 
 		return access;
 	}
 
 	std::vector<std::string> template_args; // $TODO: Process template classes.
-	std::vector<InheritanceData> derived_from;
+	std::vector<ClassData::InheritanceData> inherits;
 	std::string name;
 	size_t scope_range_index = SIZE_T_FAIL;
-	Access curr_access = Access::Default;
+	ClassData::Access curr_access = ClassData::Access::Default;
 	Gaff::Flags<Flag> flags;
 };
 
@@ -227,9 +248,15 @@ struct ParseData final
 	enum class Flag
 	{
 		ClassStructName,
+		ClassFunctionDefinitionLine,
+		ClassFunctionDefinition,
+
 		MixinName,
+
 		EnumName,
+
 		NamespaceName,
+
 		FunctionName,
 
 		EnumEntries,
@@ -269,9 +296,12 @@ struct ParseData final
 	EnumRuntimeData enum_runtime;
 	TemplateRuntimeData template_runtime;
 	GlobalRuntimeData* global_runtime = nullptr;
+	ClassData* curr_class_data = nullptr;
 
 	int32_t preproc_if_count = 0;
 
+	size_t start_of_line_index = 0;
+	size_t prev_index = 0;
 	size_t start_index = 0;
 	size_t next_index = 0;
 
@@ -280,3 +310,7 @@ struct ParseData final
 
 void Preproc_ParseSubstring(std::string_view substr, ParseData& parse_data, int32_t depth = 0);
 bool Preproc_ParseFile(ParseData& parse_data);
+
+// Helpers
+size_t SplitSubstr(std::string_view substr, const char* delimeter, std::string_view& left, std::string_view& right, bool reverse_find = false);
+size_t SplitSubstr(std::string_view substr, char delimeter, std::string_view& left, std::string_view& right, bool reverse_find = false);
