@@ -525,3 +525,29 @@ size_t SplitSubstr(std::string_view substr, char delimeter, std::string_view& le
 
 	return index;
 }
+
+void StripComments(std::string& text)
+{
+	size_t block_comment_start_index = text.find("/*");
+	size_t line_comment_index = text.find("//");
+
+	while (block_comment_start_index != std::string::npos || line_comment_index != std::string::npos) {
+		// Process the earliest comment first.
+		if (block_comment_start_index < line_comment_index) {
+			const size_t block_comment_end_index = text.find("*/");
+
+			if (block_comment_end_index == std::string::npos) {
+				text.erase(block_comment_start_index);
+			} else {
+				text.erase(block_comment_start_index, block_comment_end_index - block_comment_start_index + 2);
+			}
+
+		} else {
+			const size_t end_of_line = text.find('\n', line_comment_index);
+			text.erase(line_comment_index, end_of_line - line_comment_index);
+		}
+
+		block_comment_start_index = text.find("/*");
+		line_comment_index = text.find("//");
+	}
+}
