@@ -551,3 +551,16 @@ void StripComments(std::string& text)
 		line_comment_index = text.find("//");
 	}
 }
+
+void TrimNewlines(std::string& text)
+{
+	// Trim newlines in back.
+	while (!text.empty() && k_newline_substr.find(text.back()) != std::string_view::npos) {
+		text.pop_back();
+	}
+
+	// Trim newlines in front.
+	while (!text.empty() && k_newline_substr.find(text.front()) != std::string_view::npos) {
+		text.erase(0, 1);
+	}
+}

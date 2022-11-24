@@ -393,19 +393,7 @@ void ProcessClassScopeClose(ParseData& parse_data)
 
 		// $TODO: Process whitespace so we can align it with the class this is potentially mixed in with.
 
-		// Trim newlines in back.
-		while (!class_data.declaration_text.empty() &&
-			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.back()) != std::string_view::npos) {
-
-			class_data.declaration_text.pop_back();
-		}
-
-		// Trim newlines in front.
-		while (!class_data.declaration_text.empty() &&
-			std::string_view(k_newline_chars).find_first_of(class_data.declaration_text.front()) != std::string_view::npos) {
-
-			class_data.declaration_text.erase(0, 1);
-		}
+		TrimNewlines(class_data.declaration_text);
 
 		// $TODO: This doesn't work on codebases that use spaces instead of tabs. May wish to re-work this.
 		// Process tabs to make the first line match up.

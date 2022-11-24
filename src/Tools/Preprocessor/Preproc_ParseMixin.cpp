@@ -75,6 +75,10 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		return;
 	}
 
+	if (class_data.mixin_classes.empty()) {
+		return;
+	}
+
 	// $TODO: Class declaration parsing does not strip out commented out lines. Should strip those out before processing.
 	size_t start_index = class_data.declaration_text.find("mixin");
 
@@ -100,19 +104,13 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		start_index = class_data.declaration_text.find("mixin");
 	}
 
-	// Trim newlines in back.
-	while (!class_data.declaration_text.empty() &&
-			k_newline_substr.find(class_data.declaration_text.back()) != std::string_view::npos) {
+	TrimNewlines(class_data.declaration_text);
+	TrimNewlines(class_data.definition_text);
+	TrimNewlines(class_data.mixin_definition_text);
 
-		class_data.declaration_text.pop_back();
-	}
-
-	// Trim newlines in front.
-	while (!class_data.declaration_text.empty() &&
-			k_newline_substr.find(class_data.declaration_text.front()) != std::string_view::npos) {
-
-		class_data.declaration_text.erase(0, 1);
-	}
+	//StripComments(class_data.declaration_text);
+	//StripComments(class_data.definition_text);
+	//StripComments(class_data.mixin_definition_text);
 
 	std::string extra_definitions;
 

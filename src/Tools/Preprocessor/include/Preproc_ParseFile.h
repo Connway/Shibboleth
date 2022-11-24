@@ -336,3 +336,4 @@ bool Preproc_ParseFile(ParseData& parse_data);
 size_t SplitSubstr(std::string_view substr, const char* delimeter, std::string_view& left, std::string_view& right, bool reverse_find = false);
 size_t SplitSubstr(std::string_view substr, char delimeter, std::string_view& left, std::string_view& right, bool reverse_find = false);
 void StripComments(std::string& text);
+void TrimNewlines(std::string& text);
