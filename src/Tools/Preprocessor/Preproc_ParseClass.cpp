@@ -277,6 +277,10 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 					parse_data.flags.set(ParseData::Flag::ClassFunctionDefinitionLine);
 					parse_data.curr_class_data = &class_data;
 				}
+
+				if (class_data.impl_file_path.empty()) {
+					class_data.impl_file_path = parse_data.file_path;
+				}
 			}
 		}
 	}
@@ -427,6 +431,8 @@ void ProcessClassScopeClose(ParseData& parse_data)
 
 			class_data.declaration_text.erase(prev_newline_index + 1, 1);
 		}
+
+		class_data.header_file_path = parse_data.file_path;
 
 		parse_data.class_stack.pop_back();
 	}

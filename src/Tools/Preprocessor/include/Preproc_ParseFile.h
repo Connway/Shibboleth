@@ -138,6 +138,8 @@ struct ClassData final
 	std::string declaration_text; // Text between curly braces of class declaration.
 	std::string definition_text; // Function implementations and static class variables.
 	std::string mixin_definition_text; // The definition text accrued from mixins.
+	std::u8string header_file_path;
+	std::u8string impl_file_path;
 	std::vector<InheritanceData> inherits;
 	std::vector<std::string> mixin_classes;
 	BlockRange declaration_scope_range;
@@ -302,6 +304,7 @@ struct ParseData final
 		LastRuntimeFlag = ProcessingTemplate
 	};
 
+	std::u8string file_path;
 	std::string_view file_text;
 	std::string out_text;
 

@@ -93,6 +93,7 @@ int DoPreproc_ProcessFile(
 	ParseData parse_data;
 	parse_data.flags.set(write_file, ParseData::Flag::WriteFile);
 	parse_data.global_runtime = &global_runtime_data;
+	parse_data.file_path = path.u8string();
 
 	std::string file_text;
 
@@ -200,22 +201,49 @@ int DoPreproc_ProcessDirectoryAndPopulateClassData(
 		return static_cast<int>(Error::DoPreproc_PathNotFound);
 	}
 
+	// Find all header and implementation files.
+	std::vector<std::filesystem::path> header_files;
+	std::vector<std::filesystem::path> impl_files;
+
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
 		if (!entry.is_regular_file()) {
 			continue;
 		}
 
-		if (entry.path().filename() == "project_generator.lua") {
+		const std::filesystem::path& path = entry.path();
+
+		// Ignore these filenames.
+		if (const std::filesystem::path filename = path.filename();
+			filename == "project_generator.lua" || filename == "Gen_ReflectionInit.h" || filename == "Gen_StaticReflectionInit.h") {
+
 			continue;
 		}
 
+		const std::filesystem::path extension = path.extension();
+
+		if (extension == ".h" || extension == ".hpp") {
+			header_files.emplace_back(path);
+		} else if (extension == ".cpp") {
+			impl_files.emplace_back(path);
+		}
+	}
+
+	// Process header files first.
+	for (const std::filesystem::path& path : header_files) {
 		//int ret = static_cast<int>(Error::Success);
 
-		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
-			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
+		/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, path, false);
 
-			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, entry.path(), false);
-		}
+		//if (ret) {
+		//	return ret;
+		//}
+	}
+
+	// Process implementation files second.
+	for (const std::filesystem::path& path : impl_files) {
+		//int ret = static_cast<int>(Error::Success);
+
+		/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, path, false);
 
 		//if (ret) {
 		//	return ret;
@@ -286,31 +314,31 @@ int DoPreproc_ProcessDirectory(
 		return ret;
 	}
 
-	const std::string path = dir + "/" + name;
+	const std::string dir_path = dir + "/" + name;
 
-	if (!std::filesystem::is_directory(path)) {
-		std::cerr << '"' << path << "\" is not a directory." << std::endl;
+	if (!std::filesystem::is_directory(dir_path)) {
+		std::cerr << '"' << dir_path << "\" is not a directory." << std::endl;
 		return static_cast<int>(Error::DoPreproc_PathNotFound);
 	}
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path)) {
 		if (!entry.is_regular_file()) {
 			continue;
 		}
 
-		if (entry.path().filename() == "project_generator.lua") {
-			continue;
-		}
+		const std::filesystem::path& path = entry.path();
+		const std::filesystem::path extension = path.extension();
+		const std::filesystem::path filename = path.filename();
 
 		//int ret = static_cast<int>(Error::Success);
 
-		if ((entry.path().extension() == ".h" || entry.path().extension() == ".hpp" || entry.path().extension() == ".cpp") &&
-			entry.path().filename() != "Gen_ReflectionInit.h" && entry.path().filename() != "Gen_StaticReflectionInit.h") {
+		if ((extension == ".h" || extension == ".hpp" || extension == ".cpp") &&
+			filename != "Gen_ReflectionInit.h" && filename != "Gen_StaticReflectionInit.h") {
 
-			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, entry.path(), true);
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, path, true);
 
 		} else {
-			/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, entry.path());
+			/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, path);
 		}
 
 		//if (ret) {
