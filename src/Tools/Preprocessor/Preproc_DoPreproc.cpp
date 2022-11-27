@@ -31,322 +31,324 @@ THE SOFTWARE.
 #include <argparse.hpp>
 #include <filesystem>
 
-int DoPreproc_CopyFile(
-	const argparse::ArgumentParser& /*program*/,
-	const std::string& /*name*/,
-	const std::string& dir,
-	const std::string& gen_dir,
-	const std::filesystem::path& path)
+namespace
 {
-	std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
+	static int DoPreproc_CopyFile(
+		const argparse::ArgumentParser& /*program*/,
+		const std::string& /*name*/,
+		const std::string& dir,
+		const std::string& gen_dir,
+		const std::filesystem::path& path)
+	{
+		std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
 
-	// Create output directory.
-	size_t pos = output_file_path.find('\\');
+		// Create output directory.
+		size_t pos = output_file_path.find('\\');
 
-	while (pos != std::string::npos) {
-		output_file_path[pos] = '/';
-		pos = output_file_path.find('\\');
-	}
-
-	pos = output_file_path.find('/', pos + 1);
-
-	while (pos != std::string::npos) {
-		const std::string out_dir = output_file_path.substr(0, pos);
-
-		if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
-			std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+		while (pos != std::string::npos) {
+			output_file_path[pos] = '/';
+			pos = output_file_path.find('\\');
 		}
 
 		pos = output_file_path.find('/', pos + 1);
+
+		while (pos != std::string::npos) {
+			const std::string out_dir = output_file_path.substr(0, pos);
+
+			if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
+				std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+			}
+
+			pos = output_file_path.find('/', pos + 1);
+		}
+
+		// Copy file.
+		std::error_code error;
+		std::filesystem::copy(path, output_file_path, std::filesystem::copy_options::overwrite_existing, error);
+
+		if (error) {
+			std::cerr << error.message() << std::endl;
+			return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
+		}
+
+		return static_cast<int>(Error::Success);
 	}
 
-	// Copy file.
-	std::error_code error;
-	std::filesystem::copy(path, output_file_path, std::filesystem::copy_options::overwrite_existing, error);
+	static int DoPreproc_ProcessFile(
+		const argparse::ArgumentParser& program,
+		GlobalRuntimeData& global_runtime_data,
+		const std::string& dir,
+		const std::string& gen_dir,
+		const std::filesystem::path& path,
+		bool write_file)
+	{
+		CONVERT_STRING(char8_t, temp, path.c_str());
+		Gaff::File file(temp, Gaff::File::OpenMode::ReadBinary);
 
-	if (error) {
-		std::cerr << error.message() << std::endl;
-		return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
-	}
+		if (!file.isOpen()) {
+			std::cerr << "Failed to open file '" << path << "'." << std::endl;
+			return static_cast<int>(Error::DoPreproc_FailedToOpenInputFile);
+		}
 
-	return static_cast<int>(Error::Success);
-}
+		ParseData parse_data;
+		parse_data.flags.set(write_file, ParseData::Flag::WriteFile);
+		parse_data.global_runtime = &global_runtime_data;
+		parse_data.file_path = path.u8string();
 
-int DoPreproc_ProcessFile(
-	const argparse::ArgumentParser& program,
-	GlobalRuntimeData& global_runtime_data,
-	const std::string& /*name*/,
-	const std::string& dir,
-	const std::string& gen_dir,
-	const std::filesystem::path& path,
-	bool write_file)
-{
-	CONVERT_STRING(char8_t, temp, path.c_str());
-	Gaff::File file(temp, Gaff::File::OpenMode::ReadBinary);
+		std::string file_text;
 
-	if (!file.isOpen()) {
-		std::cerr << "Failed to open file '" << path << "'." << std::endl;
-		return static_cast<int>(Error::DoPreproc_FailedToOpenInputFile);
-	}
+		file_text.resize(file.getFileSize());
+		file.readEntireFile(file_text.data());
 
-	ParseData parse_data;
-	parse_data.flags.set(write_file, ParseData::Flag::WriteFile);
-	parse_data.global_runtime = &global_runtime_data;
-	parse_data.file_path = path.u8string();
+		parse_data.include_dirs = program.get< std::vector<std::string> >("--include");
+		parse_data.file_text = file_text;
 
-	std::string file_text;
+		if (!Preproc_ParseFile(parse_data)) {
+			std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
+			return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
+		}
 
-	file_text.resize(file.getFileSize());
-	file.readEntireFile(file_text.data());
+		// Check and write output file.
+		std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
 
-	parse_data.include_dirs = program.get< std::vector<std::string> >("--include");
-	parse_data.file_text = file_text;
+		// Create output directory.
+		size_t pos = output_file_path.find('\\');
 
-	if (!Preproc_ParseFile(parse_data)) {
-		std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
-		return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
-	}
-
-	// Check and write output file.
-	std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
-
-	// Create output directory.
-	size_t pos = output_file_path.find('\\');
-
-	while (pos != std::string::npos) {
-		output_file_path[pos] = '/';
-		pos = output_file_path.find('\\');
-	}
-
-	pos = output_file_path.find('/', pos + 1);
-
-	while (pos != std::string::npos) {
-		const std::string out_dir = output_file_path.substr(0, pos);
-
-		if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
-			std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+		while (pos != std::string::npos) {
+			output_file_path[pos] = '/';
+			pos = output_file_path.find('\\');
 		}
 
 		pos = output_file_path.find('/', pos + 1);
-	}
 
-	//const size_t hash = std::hash<std::string>{}(path.string());
+		while (pos != std::string::npos) {
+			const std::string out_dir = output_file_path.substr(0, pos);
 
-	if (write_file) {
-		//GAFF_ASSERT(global_runtime_data.file_text.contains(hash));
+			if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
+				std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+			}
 
-		//FileTextData& file_text_data = global_runtime_data.file_text[hash];
-		//file_text_data.text = std::move(parse_data.out_text);
+			pos = output_file_path.find('/', pos + 1);
+		}
 
-		// Do this check after we have processed the final output text.
+		//const size_t hash = std::hash<std::string>{}(path.string());
 
-		if (std::filesystem::is_regular_file(output_file_path)) {
-			Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+		if (write_file) {
+			//GAFF_ASSERT(global_runtime_data.file_text.contains(hash));
+
+			//FileTextData& file_text_data = global_runtime_data.file_text[hash];
+			//file_text_data.text = std::move(parse_data.out_text);
+
+			// Do this check after we have processed the final output text.
+
+			if (std::filesystem::is_regular_file(output_file_path)) {
+				Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+
+				if (!output_file.isOpen()) {
+					std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
+					return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
+				}
+
+				std::string old_output_file_text;
+				old_output_file_text.resize(output_file.getFileSize());
+
+				if (!output_file.readEntireFile(old_output_file_text.data())) {
+					std::cerr << "Failed to read output file '" << output_file_path << "'." << std::endl;
+					return static_cast<int>(Error::DoPreproc_FailedToReadOutputFile);
+				}
+
+				// Don't write the output file if the resulting output is the same.
+				// $TODO: Database of timestamps to make this more optimal? Could also be used for CodeGenerator.
+				if (parse_data.out_text == old_output_file_text) {
+					return static_cast<int>(Error::Success);
+				}
+
+				output_file.close();
+			}
+
+			Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
 
 			if (!output_file.isOpen()) {
 				std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
 				return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 			}
 
-			std::string old_output_file_text;
-			old_output_file_text.resize(output_file.getFileSize());
-
-			if (!output_file.readEntireFile(old_output_file_text.data())) {
-				std::cerr << "Failed to read output file '" << output_file_path << "'." << std::endl;
-				return static_cast<int>(Error::DoPreproc_FailedToReadOutputFile);
+			if (!output_file.writeString(parse_data.out_text.c_str())) {
+				std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 			}
 
-			// Don't write the output file if the resulting output is the same.
-			// $TODO: Database of timestamps to make this more optimal? Could also be used for CodeGenerator.
-			if (parse_data.out_text == old_output_file_text) {
-				return static_cast<int>(Error::Success);
-			}
+		} //else {
+			//GAFF_ASSERT(!global_runtime_data.file_text.contains(hash));
 
-			output_file.close();
-		}
-
-		Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
-
-		if (!output_file.isOpen()) {
-			std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
-		}
-
-		if (!output_file.writeString(parse_data.out_text.c_str())) {
-			std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
-		}
-
-	} //else {
-		//GAFF_ASSERT(!global_runtime_data.file_text.contains(hash));
-
-		//FileTextData& file_text_data = global_runtime_data.file_text[hash];
-		//file_text_data.output_path = output_file_path;
-		//file_text_data.input_path = path.string();
-	//}
-
-	return static_cast<int>(Error::Success);
-}
-
-int DoPreproc_ProcessDirectoryAndPopulateClassData(
-	const argparse::ArgumentParser& program,
-	GlobalRuntimeData& global_runtime_data,
-	const std::string& dir,
-	const std::string& gen_dir)
-{
-	if (!std::filesystem::is_directory(dir)) {
-		std::cerr << '"' << dir << "\" is not a directory." << std::endl;
-		return static_cast<int>(Error::DoPreproc_PathNotFound);
-	}
-
-	// Find all header and implementation files.
-	std::vector<std::filesystem::path> header_files;
-	std::vector<std::filesystem::path> impl_files;
-
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
-		if (!entry.is_regular_file()) {
-			continue;
-		}
-
-		const std::filesystem::path& path = entry.path();
-
-		// Ignore these filenames.
-		if (const std::filesystem::path filename = path.filename();
-			filename == "project_generator.lua" || filename == "Gen_ReflectionInit.h" || filename == "Gen_StaticReflectionInit.h") {
-
-			continue;
-		}
-
-		const std::filesystem::path extension = path.extension();
-
-		if (extension == ".h" || extension == ".hpp") {
-			header_files.emplace_back(path);
-		} else if (extension == ".cpp") {
-			impl_files.emplace_back(path);
-		}
-	}
-
-	// Process header files first.
-	for (const std::filesystem::path& path : header_files) {
-		//int ret = static_cast<int>(Error::Success);
-
-		/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, path, false);
-
-		//if (ret) {
-		//	return ret;
+			//FileTextData& file_text_data = global_runtime_data.file_text[hash];
+			//file_text_data.output_path = output_file_path;
+			//file_text_data.input_path = path.string();
 		//}
+
+		return static_cast<int>(Error::Success);
 	}
 
-	// Process implementation files second.
-	for (const std::filesystem::path& path : impl_files) {
-		//int ret = static_cast<int>(Error::Success);
-
-		/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, std::string(), dir, gen_dir, path, false);
-
-		//if (ret) {
-		//	return ret;
-		//}
-	}
-
-	for (auto& data : global_runtime_data.class_data) {
-		if (data.second.finished) {
-			continue;
+	static int DoPreproc_ProcessDirectoryAndPopulateClassData(
+		const argparse::ArgumentParser& program,
+		GlobalRuntimeData& global_runtime_data,
+		const std::string& dir,
+		const std::string& gen_dir)
+	{
+		if (!std::filesystem::is_directory(dir)) {
+			std::cerr << '"' << dir << "\" is not a directory." << std::endl;
+			return static_cast<int>(Error::DoPreproc_PathNotFound);
 		}
 
-		using ProcessClassStructFunc = void (*)(GlobalRuntimeData&, ClassData&);
-		constexpr ProcessClassStructFunc k_process_funcs[] =
-		{
-			ProcessClassStructMixin
-		};
+		// Find all header and implementation files.
+		std::vector<std::filesystem::path> header_files;
+		std::vector<std::filesystem::path> impl_files;
 
-		for (ProcessClassStructFunc process_func : k_process_funcs) {
-			process_func(global_runtime_data, data.second);
-		}
-
-		data.second.finished = true;
-	}
-
-	return static_cast<int>(Error::Success);
-}
-
-int DoPreproc_ProcessDirectory(
-	const argparse::ArgumentParser& program,
-	GlobalRuntimeData& global_runtime_data,
-	const std::string& name,
-	const std::string& dir,
-	const std::string& gen_dir)
-{
-	if (name.empty()) {
-		int ret = static_cast<int>(Error::Success);
-
-		// Iterate over all folders in dir.
-		for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-			// Only care about directory names.
-			if (!entry.is_directory()) {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
+			if (!entry.is_regular_file()) {
 				continue;
 			}
 
-			const std::string sub_name = entry.path().stem().string();
-			bool ignore = false;
+			const std::filesystem::path& path = entry.path();
 
-			for (const char* const ignore_name : k_ignore_list) {
-				if (name == ignore_name) {
-					ignore = true;
-					break;
+			// Ignore these filenames.
+			if (const std::filesystem::path filename = path.filename();
+				filename == "project_generator.lua" || filename == "Gen_ReflectionInit.h" || filename == "Gen_StaticReflectionInit.h") {
+
+				continue;
+			}
+
+			const std::filesystem::path extension = path.extension();
+
+			if (extension == ".h" || extension == ".hpp") {
+				header_files.emplace_back(path);
+			} else if (extension == ".cpp") {
+				impl_files.emplace_back(path);
+			}
+		}
+
+		// Process header files first.
+		for (const std::filesystem::path& path : header_files) {
+			//int ret = static_cast<int>(Error::Success);
+
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, dir, gen_dir, path, false);
+
+			//if (ret) {
+			//	return ret;
+			//}
+		}
+
+		// Process implementation files second.
+		for (const std::filesystem::path& path : impl_files) {
+			//int ret = static_cast<int>(Error::Success);
+
+			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, dir, gen_dir, path, false);
+
+			//if (ret) {
+			//	return ret;
+			//}
+		}
+
+		for (auto& data : global_runtime_data.class_data) {
+			if (data.second.finished) {
+				continue;
+			}
+
+			using ProcessClassStructFunc = void (*)(GlobalRuntimeData&, ClassData&);
+			constexpr ProcessClassStructFunc k_process_funcs[] =
+			{
+				ProcessClassStructMixin
+			};
+
+			for (ProcessClassStructFunc process_func : k_process_funcs) {
+				process_func(global_runtime_data, data.second);
+			}
+
+			data.second.finished = true;
+		}
+
+		return static_cast<int>(Error::Success);
+	}
+
+	static int DoPreproc_ProcessDirectory(
+		const argparse::ArgumentParser& program,
+		GlobalRuntimeData& global_runtime_data,
+		const std::string& name,
+		const std::string& dir,
+		const std::string& gen_dir)
+	{
+		if (name.empty()) {
+			int ret = static_cast<int>(Error::Success);
+
+			// Iterate over all folders in dir.
+			for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+				// Only care about directory names.
+				if (!entry.is_directory()) {
+					continue;
+				}
+
+				const std::string sub_name = entry.path().stem().string();
+				bool ignore = false;
+
+				for (const char* const ignore_name : k_ignore_list) {
+					if (name == ignore_name) {
+						ignore = true;
+						break;
+					}
+				}
+
+				if (ignore) {
+					continue;
+				}
+
+				std::cout << "Running Preprocessor for '" << sub_name << '\'' << std::endl;
+
+				const int new_ret = DoPreproc_ProcessDirectory(program, global_runtime_data, sub_name, dir, gen_dir);
+
+				if (new_ret && !ret) {
+					ret = new_ret;
 				}
 			}
 
-			if (ignore) {
+			return ret;
+		}
+
+		const std::string dir_path = dir + "/" + name;
+
+		if (!std::filesystem::is_directory(dir_path)) {
+			std::cerr << '"' << dir_path << "\" is not a directory." << std::endl;
+			return static_cast<int>(Error::DoPreproc_PathNotFound);
+		}
+
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path)) {
+			if (!entry.is_regular_file()) {
 				continue;
 			}
 
-			std::cout << "Running Preprocessor for '" << sub_name << '\'' << std::endl;
+			const std::filesystem::path& path = entry.path();
+			const std::filesystem::path extension = path.extension();
+			const std::filesystem::path filename = path.filename();
 
-			const int new_ret = DoPreproc_ProcessDirectory(program, global_runtime_data, sub_name, dir, gen_dir);
+			//int ret = static_cast<int>(Error::Success);
 
-			if (new_ret && !ret) {
-				ret = new_ret;
+			if ((extension == ".h" || extension == ".hpp" || extension == ".cpp") &&
+				filename != "Gen_ReflectionInit.h" && filename != "Gen_StaticReflectionInit.h") {
+
+				/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, dir, gen_dir, path, true);
+
+			} else {
+				/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, path);
 			}
+
+			//if (ret) {
+			//	return ret;
+			//}
 		}
 
-		return ret;
+		return static_cast<int>(Error::Success);
 	}
-
-	const std::string dir_path = dir + "/" + name;
-
-	if (!std::filesystem::is_directory(dir_path)) {
-		std::cerr << '"' << dir_path << "\" is not a directory." << std::endl;
-		return static_cast<int>(Error::DoPreproc_PathNotFound);
-	}
-
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path)) {
-		if (!entry.is_regular_file()) {
-			continue;
-		}
-
-		const std::filesystem::path& path = entry.path();
-		const std::filesystem::path extension = path.extension();
-		const std::filesystem::path filename = path.filename();
-
-		//int ret = static_cast<int>(Error::Success);
-
-		if ((extension == ".h" || extension == ".hpp" || extension == ".cpp") &&
-			filename != "Gen_ReflectionInit.h" && filename != "Gen_StaticReflectionInit.h") {
-
-			/*ret =*/ DoPreproc_ProcessFile(program, global_runtime_data, name, dir, gen_dir, path, true);
-
-		} else {
-			/*ret =*/ DoPreproc_CopyFile(program, name, dir, gen_dir, path);
-		}
-
-		//if (ret) {
-		//	return ret;
-		//}
-	}
-
-	return static_cast<int>(Error::Success);
 }
 
 void DoPreproc_AddArguments(argparse::ArgumentParser& /*program*/)
@@ -432,19 +434,19 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			const std::string rel_path = std::string(k_module_dir) + "/" + name + "/" + file_name;
 			//const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_module_dir, k_gen_module_dir, rel_path, write_file);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_module_dir, k_gen_module_dir, rel_path, write_file);
 
 		} else if (force_tool) {
 			const std::string rel_path = std::string(k_tool_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir, rel_path, write_file);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_tool_dir, k_gen_tool_dir, rel_path, write_file);
 
 		} else if (force_engine) {
 			const std::string rel_path = std::string(k_engine_dir) + "/" + name + "/" + file_name;
 			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir, rel_path, write_file);
+			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_engine_dir, k_gen_engine_dir, rel_path, write_file);
 
 		} else {
 			std::cerr << "--module, --tool, or --engine not specified." << std::endl;
