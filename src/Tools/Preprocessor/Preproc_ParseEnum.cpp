@@ -153,8 +153,7 @@ void ProcessEnumScopeClose(ParseData& parse_data)
 
 	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == (parse_data.scope_ranges.size() - 1)) {
 		// Add enum data to global runtime data.
-		const size_t hash = std::hash<std::string>{}(parse_data.enum_runtime.data.name);
-		parse_data.global_runtime->enum_data[hash] = std::move(parse_data.enum_runtime.data);
+		parse_data.global_runtime->enum_data[parse_data.enum_runtime.data.name] = std::move(parse_data.enum_runtime.data);
 
 		parse_data.enum_runtime.scope_range_index = SIZE_T_FAIL;
 		parse_data.enum_runtime.flags.clear();

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gaff_Flags.h>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <map>
@@ -259,11 +260,18 @@ struct TemplateRuntimeData final
 //	std::string text;
 //};
 
+
 struct GlobalRuntimeData final
 {
-	//std::map<size_t, FileTextData> file_text;
-	std::map<size_t, ClassData> class_data;
-	std::map<size_t, EnumData> enum_data;
+	struct ClassFileMapData final
+	{
+		bool has_decl = false;
+		bool has_impl = false;
+	};
+
+	std::unordered_map< std::u8string, std::unordered_map<std::string, ClassFileMapData> > class_file_map;
+	std::unordered_map<std::string, ClassData> class_data;
+	std::unordered_map<std::string, EnumData> enum_data;
 };
 
 struct ParseData final

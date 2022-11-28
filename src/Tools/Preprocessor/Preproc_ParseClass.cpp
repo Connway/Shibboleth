@@ -220,17 +220,15 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 		if (size_t index = SplitSubstr(substr, "::", left, right, true); index != std::string_view::npos) {
 			// If the entire substring is a valid class or enum name, then this substring is probably declaring a typename for a variable or return value.
 			std::string name = ((parse_data.scope_ranges.empty()) ? "" : parse_data.scope_ranges.back().name) + "::" + std::string(substr);
-			const size_t substr_hash = std::hash<std::string>{}(name);
 
-			if (parse_data.global_runtime->class_data.contains(substr_hash) || parse_data.global_runtime->enum_data.contains(substr_hash)) {
+			if (parse_data.global_runtime->class_data.contains(name) || parse_data.global_runtime->enum_data.contains(name)) {
 				return false;
 			}
 
 			name = ((parse_data.scope_ranges.empty()) ? "" : parse_data.scope_ranges.back().name) + "::" + std::string(left);
-			const size_t hash = std::hash<std::string>{}(name);
 
 			// We have found a function implementation or a static class variable.
-			if (parse_data.global_runtime->class_data.contains(hash)) {
+			if (parse_data.global_runtime->class_data.contains(name)) {
 				size_t type_index = parse_data.start_index - 1;
 
 				// Find first non-whitespace character.
@@ -255,7 +253,7 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 				}
 
 				const std::string_view line_until_this_point = parse_data.file_text.substr(type_index, parse_data.start_index - type_index + index);
-				ClassData& class_data = parse_data.global_runtime->class_data[hash];
+				ClassData& class_data = parse_data.global_runtime->class_data[name];
 
 				class_data.definition_text += line_until_this_point;
 
@@ -279,6 +277,7 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 				}
 
 				if (class_data.impl_file_path.empty()) {
+					parse_data.global_runtime->class_file_map[parse_data.file_path][name].has_decl = true;
 					class_data.impl_file_path = parse_data.file_path;
 				}
 			}
@@ -329,14 +328,12 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 		// Currently we don't add template classes.
 		if (!class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Template)) {
 			// Add class data to parse data.
-			const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
-
-			if (parse_data.global_runtime->class_data.contains(hash)) {
+			if (parse_data.global_runtime->class_data.contains(class_runtime_data.name)) {
 				std::cerr << "Class/struct data for '" << class_runtime_data.name << "' already exists! Erasing and proceeding from empty class data." << std::endl;
-				parse_data.global_runtime->class_data.erase(hash);
+				parse_data.global_runtime->class_data.erase(class_runtime_data.name);
 			}
 
-			ClassData& class_data = parse_data.global_runtime->class_data[hash];
+			ClassData& class_data = parse_data.global_runtime->class_data[class_runtime_data.name];
 			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
 			class_data.name = class_runtime_data.name;
 		}
@@ -385,10 +382,9 @@ void ProcessClassScopeClose(ParseData& parse_data)
 			return;
 		}
 
-		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
-		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(hash));
+		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(class_runtime_data.name));
 
-		ClassData& class_data = parse_data.global_runtime->class_data[hash];
+		ClassData& class_data = parse_data.global_runtime->class_data[class_runtime_data.name];
 		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
 
 		class_data.declaration_text = parse_data.file_text.substr(scope_data.range.start + 1, scope_data.range.end - scope_data.range.start - 1);
@@ -432,7 +428,9 @@ void ProcessClassScopeClose(ParseData& parse_data)
 			class_data.declaration_text.erase(prev_newline_index + 1, 1);
 		}
 
+		parse_data.global_runtime->class_file_map[parse_data.file_path][class_runtime_data.name].has_decl = true;
 		class_data.decl_file_path = parse_data.file_path;
+
 
 		parse_data.class_stack.pop_back();
 	}

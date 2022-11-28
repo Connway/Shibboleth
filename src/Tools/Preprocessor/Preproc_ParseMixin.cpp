@@ -40,15 +40,14 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 	// Found the name of a mixin.
 	if (parse_data.flags.testAll(ParseData::Flag::MixinName)) {
 		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
-		const size_t hash = std::hash<std::string>{}(class_runtime_data.name);
 
-		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(hash));
+		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(class_runtime_data.name));
 
 		if (substr.back() == ';') {
 			substr = substr.substr(0, substr.size() - 1);
 		}
 
-		ClassData& class_data = parse_data.global_runtime->class_data[hash];
+		ClassData& class_data = parse_data.global_runtime->class_data[class_runtime_data.name];
 		class_data.mixin_classes.emplace_back(substr);
 
 		parse_data.flags.clear(ParseData::Flag::MixinName);
@@ -115,8 +114,7 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 	std::string extra_definitions;
 
 	for (const std::string& mixin_class_name : class_data.mixin_classes) {
-		const size_t hash = std::hash<std::string>{}(mixin_class_name);
-		const auto it = global_runtime_data.class_data.find(hash);
+		const auto it = global_runtime_data.class_data.find(mixin_class_name);
 
 		GAFF_ASSERT(it != global_runtime_data.class_data.end());
 
