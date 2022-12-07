@@ -276,8 +276,8 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 					parse_data.curr_class_data = &class_data;
 				}
 
-				if (class_data.impl_file_path.empty()) {
-					parse_data.global_runtime->class_file_map[parse_data.file_path][name].has_decl = true;
+				if (class_data.impl_file_path.empty() && !parse_data.file_path.ends_with(u8".inl")) {
+					parse_data.global_runtime->class_file_map[parse_data.file_path][name].has_impl = true;
 					class_data.impl_file_path = parse_data.file_path;
 				}
 			}
@@ -335,6 +335,7 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 
 			ClassData& class_data = parse_data.global_runtime->class_data[class_runtime_data.name];
 			class_data.is_struct = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Struct);
+			class_data.is_final = class_runtime_data.flags.testAll(ClassRuntimeData::Flag::Final);
 			class_data.name = class_runtime_data.name;
 		}
 
@@ -388,7 +389,6 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		const ScopeRuntimeData& scope_data = parse_data.scope_ranges.back();
 
 		class_data.declaration_text = parse_data.file_text.substr(scope_data.range.start + 1, scope_data.range.end - scope_data.range.start - 1);
-		class_data.declaration_scope_range = scope_data.range;
 		class_data.inherits = std::move(class_runtime_data.inherits);
 
 		// $TODO: Process whitespace so we can align it with the class this is potentially mixed in with.

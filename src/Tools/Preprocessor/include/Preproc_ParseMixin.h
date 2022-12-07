@@ -30,3 +30,4 @@ struct ParseData;
 
 bool ParseMixin(std::string_view substr, ParseData& parse_data);
 void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& class_data);
+void ModifyOutputMixin(ParseData& parse_data);

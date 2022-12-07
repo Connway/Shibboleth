@@ -143,8 +143,8 @@ struct ClassData final
 	std::u8string impl_file_path;
 	std::vector<InheritanceData> inherits;
 	std::vector<std::string> mixin_classes;
-	BlockRange declaration_scope_range;
 	bool is_struct = false;
+	bool is_final = false;
 	bool finished = false;
 };
 
@@ -269,6 +269,7 @@ struct GlobalRuntimeData final
 		bool has_impl = false;
 	};
 
+	// class_file_map[file_path][class_name]
 	std::unordered_map< std::u8string, std::unordered_map<std::string, ClassFileMapData> > class_file_map;
 	std::unordered_map<std::string, ClassData> class_data;
 	std::unordered_map<std::string, EnumData> enum_data;

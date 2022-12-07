@@ -96,6 +96,13 @@ namespace
 		parse_data.global_runtime = &global_runtime_data;
 		parse_data.file_path = path.u8string();
 
+		size_t separator_index = parse_data.file_path.find(u8'\\');
+
+		while (separator_index != std::u8string::npos) {
+			parse_data.file_path.replace(separator_index, 1, u8"/");
+			separator_index = parse_data.file_path.find(u8'\\');
+		}
+
 		std::string file_text;
 
 		file_text.resize(file.getFileSize());
@@ -103,45 +110,50 @@ namespace
 
 		parse_data.include_dirs = program.get< std::vector<std::string> >("--include");
 		parse_data.file_text = file_text;
+		parse_data.out_text = file_text;
 
-		if (!Preproc_ParseFile(parse_data)) {
-			std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
-			return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
+		// Currently we don't do any processing that can't be done as an insert.
+		if (!write_file) {
+			if (!Preproc_ParseFile(parse_data)) {
+				std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
+				return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
+			}
 		}
 
-		// Check and write output file.
-		std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
+		if (write_file) {
+			using ModifyOutputFunc = void (*)(ParseData&);
+			constexpr ModifyOutputFunc k_modify_output_funcs[] =
+			{
+				ModifyOutputMixin
+			};
 
-		// Create output directory.
-		size_t pos = output_file_path.find('\\');
+			for (ModifyOutputFunc modify_output_func : k_modify_output_funcs) {
+				modify_output_func(parse_data);
+			}
 
-		while (pos != std::string::npos) {
-			output_file_path[pos] = '/';
-			pos = output_file_path.find('\\');
-		}
+			// Check and write output file.
+			std::string output_file_path = path.string().replace(0, dir.size(), gen_dir);
 
-		pos = output_file_path.find('/', pos + 1);
+			// Create output directory.
+			size_t pos = output_file_path.find('\\');
 
-		while (pos != std::string::npos) {
-			const std::string out_dir = output_file_path.substr(0, pos);
-
-			if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
-				std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
-				return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+			while (pos != std::string::npos) {
+				output_file_path[pos] = '/';
+				pos = output_file_path.find('\\');
 			}
 
 			pos = output_file_path.find('/', pos + 1);
-		}
 
-		//const size_t hash = std::hash<std::string>{}(path.string());
+			while (pos != std::string::npos) {
+				const std::string out_dir = output_file_path.substr(0, pos);
 
-		if (write_file) {
-			//GAFF_ASSERT(global_runtime_data.file_text.contains(hash));
+				if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
+					std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
+					return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
+				}
 
-			//FileTextData& file_text_data = global_runtime_data.file_text[hash];
-			//file_text_data.text = std::move(parse_data.out_text);
-
-			// Do this check after we have processed the final output text.
+				pos = output_file_path.find('/', pos + 1);
+			}
 
 			if (std::filesystem::is_regular_file(output_file_path)) {
 				Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
@@ -180,13 +192,7 @@ namespace
 				return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 			}
 
-		} //else {
-			//GAFF_ASSERT(!global_runtime_data.file_text.contains(hash));
-
-			//FileTextData& file_text_data = global_runtime_data.file_text[hash];
-			//file_text_data.output_path = output_file_path;
-			//file_text_data.input_path = path.string();
-		//}
+		}
 
 		return static_cast<int>(Error::Success);
 	}
@@ -370,56 +376,16 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 	const bool force_engine = program.get<bool>("--engine");
 	const bool force_tool = program.get<bool>("--tool");
 
-	if (process_pass && !program.is_used("--file")) {
-		std::cerr << "--process_pass was specified, but not --file." << std::endl;
-		return static_cast<int>(Error::DoPreproc_ProcessPassNoFile);
-	}
+	bool process_engine = false;
+	bool process_module = false;
+	bool process_tool = false;
+	bool modify_engine = false;
+	bool modify_module = false;
+	bool modify_tool = false;
 
-	GlobalRuntimeData global_runtime_data;
-
-	int ret = static_cast<int>(Error::Success);
-
-	if (!process_pass) {
-		ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
-
-		if (ret) {
-			return ret;
-		}
-
-		if (force_engine) {
-			return ret;
-
-		} else if (force_module) {
-			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
-
-			if (ret) {
-				return ret;
-			}
-
-		} else if (force_tool) {
-			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
-
-			if (ret) {
-				return ret;
-			}
-
-		} else if (!name.empty()) {
-			if (std::filesystem::is_directory(std::string(k_module_dir) + "/" + name)) {
-				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
-
-				if (ret) {
-					return ret;
-				}
-
-			} else if (std::filesystem::is_directory(std::string(k_tool_dir) + "/" + name)) {
-				ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
-
-				if (ret) {
-					return ret;
-				}
-			}
-		}
-	}
+	std::string engine_path;
+	std::string file_name;
+	std::string gen_path;
 
 	if (program.is_used("--file")) {
 		if (name.empty()) {
@@ -427,26 +393,25 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 			return static_cast<int>(Error::DoPreproc_NoModuleOrToolSpecified);
 		}
 
-		const std::string file_name = program.get<std::string>("--file");
-		const bool write_file = !process_pass;
+		file_name = program.get<std::string>("--file");
 
-		if (force_module) {
-			const std::string rel_path = std::string(k_module_dir) + "/" + name + "/" + file_name;
-			//const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
+		if (force_engine) {
+			gen_path = k_gen_engine_dir;
+			engine_path = k_engine_dir;
+			process_engine = !process_pass;
 
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_module_dir, k_gen_module_dir, rel_path, write_file);
+		} else if (force_module) {
+			gen_path = k_gen_module_dir;
+			engine_path = k_module_dir;
+			process_engine = true;
+			process_module = !process_pass;
 
 		} else if (force_tool) {
-			const std::string rel_path = std::string(k_tool_dir) + "/" + name + "/" + file_name;
-			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
-
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_tool_dir, k_gen_tool_dir, rel_path, write_file);
-
-		} else if (force_engine) {
-			const std::string rel_path = std::string(k_engine_dir) + "/" + name + "/" + file_name;
-			const std::filesystem::path abs_path = std::filesystem::absolute(rel_path);
-
-			ret = DoPreproc_ProcessFile(program, global_runtime_data, k_engine_dir, k_gen_engine_dir, rel_path, write_file);
+			gen_path = k_gen_tool_dir;
+			engine_path = k_tool_dir;
+			process_engine = true;
+			process_module = true;
+			process_tool = !process_pass;
 
 		} else {
 			std::cerr << "--module, --tool, or --engine not specified." << std::endl;
@@ -454,44 +419,68 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 		}
 
 	} else {
-		if (force_module) {
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
+		process_engine = force_engine || (!force_engine && !force_module && !force_tool);
+		process_module = force_module || (!force_engine && !force_module && !force_tool);
+		process_tool = force_tool || (!force_engine && !force_module && !force_tool);
+		modify_engine = process_engine && !process_pass;
+		modify_module = process_module && !process_pass;
+		modify_tool = process_tool && !process_pass;
+	}
 
-		} else if (force_tool) {
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
+	GlobalRuntimeData global_runtime_data;
 
-		} else if (force_engine) {
+	if (process_engine) {
+		int ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_engine_dir, k_gen_engine_dir);
+
+		if (ret) {
+			return ret;
+		}
+
+		if (modify_engine) {
 			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 
-		} else {
-			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
-
 			if (ret) {
 				return ret;
 			}
-
-			ret = static_cast<int>(Error::Success);
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
-
-			if (ret) {
-				return ret;
-			}
-
-			ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
-
-			if (ret) {
-				return ret;
-			}
-
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
-
-			if (ret) {
-				return ret;
-			}
-
-			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_engine_dir, k_gen_engine_dir);
 		}
 	}
 
-	return ret;
+	if (process_module) {
+		int ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_module_dir, k_gen_module_dir);
+
+		if (ret) {
+			return ret;
+		}
+
+		if (modify_module) {
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_module_dir, k_gen_module_dir);
+
+			if (ret) {
+				return ret;
+			}
+		}
+	}
+
+	if (process_tool) {
+		int ret = DoPreproc_ProcessDirectoryAndPopulateClassData(program, global_runtime_data, k_tool_dir, k_gen_tool_dir);
+
+		if (ret) {
+			return ret;
+		}
+
+		if (modify_tool) {
+			ret = DoPreproc_ProcessDirectory(program, global_runtime_data, name, k_tool_dir, k_gen_tool_dir);
+
+			if (ret) {
+				return ret;
+			}
+		}
+	}
+
+	if (!file_name.empty()) {
+		const std::string rel_path = engine_path + "/" + name + "/" + file_name;
+		return DoPreproc_ProcessFile(program, global_runtime_data, engine_path, gen_path, rel_path, !process_pass);
+	}
+
+	return static_cast<int>(Error::Success);
 }

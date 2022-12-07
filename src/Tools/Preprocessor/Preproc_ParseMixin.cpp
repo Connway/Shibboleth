@@ -24,6 +24,58 @@ THE SOFTWARE.
 #include "Preproc_ParseFile.h" 
 #include <iostream>
 
+namespace
+{
+	static void ModifyDeclaration(ParseData& parse_data, const ClassData& class_data)
+	{
+		const size_t last_namespace_delimeter = class_data.name.rfind("::");
+
+		const std::string class_text_to_find =
+			((class_data.is_struct) ? "struct " : "class ") +
+			((last_namespace_delimeter != std::string::npos) ? class_data.name.substr(last_namespace_delimeter + 2) : class_data.name) +
+			((class_data.is_final) ? " final" : "");
+
+		const size_t class_decl_index = parse_data.out_text.find(class_text_to_find);
+
+		// If we're calling this function, this class declaration should be in this file.
+		GAFF_ASSERT(class_decl_index != std::string::npos);
+
+		// Parse all the scopes until we find the scope that closes out the class/struct.
+		size_t open_scope_index = parse_data.out_text.find('{', class_decl_index);
+		size_t close_scope_index = parse_data.out_text.find('}', class_decl_index);
+		size_t first_open_scope_index = open_scope_index + 1;
+		size_t prev_close_scope_index = close_scope_index;
+		int32_t open_scopes = 0;
+
+		GAFF_ASSERT(open_scope_index != std::string::npos);
+
+		do {
+			while (open_scope_index != std::string::npos && open_scope_index < close_scope_index) {
+				++open_scopes;
+				open_scope_index = parse_data.out_text.find('{', open_scope_index + 1);
+			}
+
+			prev_close_scope_index = close_scope_index;
+			close_scope_index = parse_data.out_text.find('}', close_scope_index + 1);
+
+			--open_scopes;
+		} while (open_scopes > 0);
+
+		// Skip past newlines.
+		while (k_newline_substr.find(parse_data.out_text[first_open_scope_index]) != std::string_view::npos) {
+			++first_open_scope_index;
+		}
+
+		parse_data.out_text.replace(first_open_scope_index, close_scope_index - first_open_scope_index - 1, class_data.declaration_text);
+	}
+
+	static void ModifyDefinition(ParseData& parse_data, const ClassData& class_data)
+	{
+		parse_data.out_text += k_newline;
+		parse_data.out_text += class_data.mixin_definition_text;
+	}
+}
+
 bool ParseMixin(std::string_view substr, ParseData& parse_data)
 {
 	// Currently have no inline modifications to do during file writing.
@@ -160,8 +212,36 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		index = class_data.mixin_definition_text.find(mixin_name, start_index_definition);
 
 		while (index != std::string::npos) {
-			class_data.mixin_definition_text.replace(index, mixin_name.size(), name);
+			// Using fully namespaced class name as we will put definition text outside of namespace scopes.
+			class_data.mixin_definition_text.replace(index, mixin_name.size(), class_data.name);
 			index = class_data.mixin_definition_text.find(mixin_name);
+		}
+	}
+}
+
+void ModifyOutputMixin(ParseData& parse_data)
+{
+	GAFF_REF(parse_data);
+
+	if (!parse_data.global_runtime->class_file_map.contains(parse_data.file_path)) {
+		return;
+	}
+
+	const auto& class_map = parse_data.global_runtime->class_file_map[parse_data.file_path];
+
+	for (const auto& entry : class_map) {
+		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(entry.first));
+
+		const ClassData& class_data = parse_data.global_runtime->class_data[entry.first];
+
+		if (class_data.mixin_classes.empty()) {
+			continue;
+		}
+
+		if (entry.second.has_decl) {
+			ModifyDeclaration(parse_data, class_data);
+		} else if (entry.second.has_impl) {
+			ModifyDefinition(parse_data, class_data);
 		}
 	}
 }
