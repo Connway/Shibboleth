@@ -48,16 +48,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-int64_t TestB::test_static;
-TestA::Foo TestB::b2 = TestA::Foo::A;
-
-
-void TestB::testFunc(void)
-{
-	int i = 0;
-	i += 5;
-}
-
 App::App(void)
 {
 	Gaff::InitializeCrashHandler();

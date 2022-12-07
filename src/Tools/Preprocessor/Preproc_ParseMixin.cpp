@@ -43,7 +43,7 @@ namespace
 		// Parse all the scopes until we find the scope that closes out the class/struct.
 		size_t open_scope_index = parse_data.out_text.find('{', class_decl_index);
 		size_t close_scope_index = parse_data.out_text.find('}', class_decl_index);
-		size_t first_open_scope_index = open_scope_index + 1;
+		const size_t first_open_scope_index = open_scope_index;
 		size_t prev_close_scope_index = close_scope_index;
 		int32_t open_scopes = 0;
 
@@ -61,12 +61,27 @@ namespace
 			--open_scopes;
 		} while (open_scopes > 0);
 
+		open_scope_index = first_open_scope_index + 1;
+
 		// Skip past newlines.
-		while (k_newline_substr.find(parse_data.out_text[first_open_scope_index]) != std::string_view::npos) {
-			++first_open_scope_index;
+		while (k_newline_substr.find(parse_data.out_text[open_scope_index]) != std::string_view::npos) {
+			++open_scope_index;
 		}
 
-		parse_data.out_text.replace(first_open_scope_index, close_scope_index - first_open_scope_index - 1, class_data.declaration_text);
+		parse_data.out_text.replace(open_scope_index, prev_close_scope_index - open_scope_index - strlen(k_newline), class_data.declaration_text);
+
+		// Add ineheritance from mixins.
+		if (!class_data.mixin_inheritance.empty()) {
+			size_t inherit_index = first_open_scope_index - 2; // One before open bracket.
+
+			// Find the first non-whitespace character prior to the opening bracket.
+			while (k_parse_until_substr.find(parse_data.out_text[inherit_index]) != std::string_view::npos) {
+				--inherit_index;
+			}
+
+			const std::string final_inheritance = ((class_data.inherits.empty()) ? " : " : ", ") + class_data.mixin_inheritance;
+			parse_data.out_text.insert(inherit_index + 1, final_inheritance);
+		}
 	}
 
 	static void ModifyDefinition(ParseData& parse_data, const ClassData& class_data)
@@ -216,13 +231,42 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 			class_data.mixin_definition_text.replace(index, mixin_name.size(), class_data.name);
 			index = class_data.mixin_definition_text.find(mixin_name);
 		}
+
+		for (auto& inherit_data : it->second.inherits) {
+			if (!global_runtime_data.class_data.contains(inherit_data.class_struct_name)) {
+				size_t namespace_index = class_data.name.rfind("::");
+
+				while (namespace_index != std::string::npos) {
+					const std::string_view name_substr = std::string_view(class_data.name).substr(0, namespace_index + 2);
+					const std::string full_name = std::string(name_substr) + inherit_data.class_struct_name;
+
+					if (global_runtime_data.class_data.contains(full_name)) {
+						inherit_data.class_struct_name = full_name;
+						break;
+					}
+
+					namespace_index = class_data.name.rfind("::", namespace_index - 1);
+				}
+			}
+
+			if (!class_data.mixin_inheritance.empty()) {
+				class_data.mixin_inheritance += ", ";
+			}
+
+			if (inherit_data.is_virtual) {
+				class_data.mixin_inheritance += "virtual ";
+			} else {
+				class_data.mixin_inheritance += it->second.GetAccessText(inherit_data.access);
+			}
+
+			class_data.mixin_inheritance += " ";
+			class_data.mixin_inheritance += inherit_data.class_struct_name;
+		}
 	}
 }
 
 void ModifyOutputMixin(ParseData& parse_data)
 {
-	GAFF_REF(parse_data);
-
 	if (!parse_data.global_runtime->class_file_map.contains(parse_data.file_path)) {
 		return;
 	}
@@ -240,7 +284,9 @@ void ModifyOutputMixin(ParseData& parse_data)
 
 		if (entry.second.has_decl) {
 			ModifyDeclaration(parse_data, class_data);
-		} else if (entry.second.has_impl) {
+		}
+
+		if (entry.second.has_impl) {
 			ModifyDefinition(parse_data, class_data);
 		}
 	}
