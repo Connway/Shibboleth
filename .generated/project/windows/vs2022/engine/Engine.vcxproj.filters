@@ -201,6 +201,7 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Broadcaster.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_IReflectionObject.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_Image.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_JSONSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Engine\Shibboleth_LogManager.cpp" />

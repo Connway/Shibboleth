@@ -286,7 +286,7 @@ private:
 
 	void renderDebugMenu(DebugMenuEntry& entry);
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

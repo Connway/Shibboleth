@@ -106,7 +106,7 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 
 	// Found the name of a mixin.
 	if (parse_data.flags.testAll(ParseData::Flag::MixinName)) {
-		const ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
+		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
 		GAFF_ASSERT(parse_data.global_runtime->class_data.contains(class_runtime_data.name));
 
@@ -114,8 +114,13 @@ bool ParseMixin(std::string_view substr, ParseData& parse_data)
 			substr = substr.substr(0, substr.size() - 1);
 		}
 
+		if (substr == "no_inherit") {
+			class_runtime_data.flags.set(ClassRuntimeData::Flag::MixinNoInherit);
+			return true;
+		}
+
 		ClassData& class_data = parse_data.global_runtime->class_data[class_runtime_data.name];
-		class_data.mixin_classes.emplace_back(substr);
+		class_data.mixin_classes.emplace_back(ClassData::MixinData{ std::string(substr), class_runtime_data.flags.testAll(ClassRuntimeData::Flag::MixinNoInherit) });
 
 		parse_data.flags.clear(ParseData::Flag::MixinName);
 		return true;
@@ -180,8 +185,8 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 
 	std::string extra_definitions;
 
-	for (const std::string& mixin_class_name : class_data.mixin_classes) {
-		const auto it = global_runtime_data.class_data.find(mixin_class_name);
+	for (const ClassData::MixinData& mixin_data : class_data.mixin_classes) {
+		const auto it = global_runtime_data.class_data.find(mixin_data.class_struct_name);
 
 		GAFF_ASSERT(it != global_runtime_data.class_data.end());
 
@@ -204,7 +209,7 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		// $TODO: This does not handle code that would have nested scopes, such as namespaces or other nested classes.
 		// eg: Shibboleth::ClassName or Shibboleth::ClassA::ClassB.
 		// Replace all instances of the class name with our name.
-		std::string_view mixin_name = mixin_class_name;
+		std::string_view mixin_name = mixin_data.class_struct_name;
 		std::string_view name = class_data.name;
 
 		if (const size_t index = mixin_name.rfind("::"); index != std::string_view::npos) {
@@ -232,35 +237,37 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 			index = class_data.mixin_definition_text.find(mixin_name);
 		}
 
-		for (auto& inherit_data : it->second.inherits) {
-			if (!global_runtime_data.class_data.contains(inherit_data.class_struct_name)) {
-				size_t namespace_index = class_data.name.rfind("::");
+		if (!mixin_data.no_inherit) {
+			for (auto& inherit_data : it->second.inherits) {
+				if (!global_runtime_data.class_data.contains(inherit_data.class_struct_name)) {
+					size_t namespace_index = class_data.name.rfind("::");
 
-				while (namespace_index != std::string::npos) {
-					const std::string_view name_substr = std::string_view(class_data.name).substr(0, namespace_index + 2);
-					const std::string full_name = std::string(name_substr) + inherit_data.class_struct_name;
+					while (namespace_index != std::string::npos) {
+						const std::string_view name_substr = std::string_view(class_data.name).substr(0, namespace_index + 2);
+						const std::string full_name = std::string(name_substr) + inherit_data.class_struct_name;
 
-					if (global_runtime_data.class_data.contains(full_name)) {
-						inherit_data.class_struct_name = full_name;
-						break;
+						if (global_runtime_data.class_data.contains(full_name)) {
+							inherit_data.class_struct_name = full_name;
+							break;
+						}
+
+						namespace_index = class_data.name.rfind("::", namespace_index - 1);
 					}
-
-					namespace_index = class_data.name.rfind("::", namespace_index - 1);
 				}
-			}
 
-			if (!class_data.mixin_inheritance.empty()) {
-				class_data.mixin_inheritance += ", ";
-			}
+				if (!class_data.mixin_inheritance.empty()) {
+					class_data.mixin_inheritance += ", ";
+				}
 
-			if (inherit_data.is_virtual) {
-				class_data.mixin_inheritance += "virtual ";
-			} else {
-				class_data.mixin_inheritance += it->second.GetAccessText(inherit_data.access);
-			}
+				if (inherit_data.is_virtual) {
+					class_data.mixin_inheritance += "virtual ";
+				} else {
+					class_data.mixin_inheritance += it->second.GetAccessText(inherit_data.access);
+				}
 
-			class_data.mixin_inheritance += " ";
-			class_data.mixin_inheritance += inherit_data.class_struct_name;
+				class_data.mixin_inheritance += " ";
+				class_data.mixin_inheritance += inherit_data.class_struct_name;
+			}
 		}
 	}
 }

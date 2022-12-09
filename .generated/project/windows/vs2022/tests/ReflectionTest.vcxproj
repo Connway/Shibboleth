@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tests\ReflectionTest\ReflectionTest.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tests\Shibboleth_TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dependencies\Catch2.vcxproj">

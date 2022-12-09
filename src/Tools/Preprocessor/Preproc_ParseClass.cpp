@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Preproc_ParseClass.h"
 #include "Preproc_ParseFile.h"
+#include <filesystem>
 #include <iostream>
 
 bool ParseClass(std::string_view substr, ParseData& parse_data)
@@ -252,6 +253,27 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 					index = substr.size();
 				}
 
+				size_t return_modifier_index = type_index - 1;
+
+				// Find first non-whitespace character.
+				while (k_parse_until_substr.find(parse_data.file_text[return_modifier_index]) != std::string_view::npos) {
+					--return_modifier_index;
+				}
+
+				// Find next whitespace character.
+				while (type_index > parse_data.start_of_line_index && k_parse_until_substr.find(parse_data.file_text[return_modifier_index]) == std::string_view::npos) {
+					--return_modifier_index;
+				}
+
+				// Start type index on a non-whitespace character.
+				if (k_parse_until_substr.find(parse_data.file_text[return_modifier_index]) != std::string_view::npos) {
+					++return_modifier_index;
+				}
+
+				if (parse_data.file_text.substr(return_modifier_index, type_index - return_modifier_index - 1) == "const") {
+					type_index = return_modifier_index;
+				}
+
 				const std::string_view line_until_this_point = parse_data.file_text.substr(type_index, parse_data.start_index - type_index + index);
 				ClassData& class_data = parse_data.global_runtime->class_data[name];
 
@@ -431,6 +453,29 @@ void ProcessClassScopeClose(ParseData& parse_data)
 		parse_data.global_runtime->class_file_map[parse_data.file_path][class_runtime_data.name].has_decl = true;
 		class_data.decl_file_path = parse_data.file_path;
 
+		// If a corresponding .cpp file exists, assume that is the implementation file.
+		if (parse_data.file_path.ends_with(u8".h")) {
+			std::u8string impl_file_path = parse_data.file_path;
+
+			impl_file_path.replace(impl_file_path.size() - 2, 2, u8".cpp");
+
+			if (std::filesystem::is_regular_file(impl_file_path)) {
+				parse_data.global_runtime->class_file_map[impl_file_path][class_runtime_data.name].has_impl = true;
+				class_data.impl_file_path = impl_file_path;
+
+			} else {
+				constexpr std::u8string_view k_include_text = u8"/include";
+
+				if (const size_t include_index = impl_file_path.find(k_include_text); include_index != std::u8string::npos) {
+					impl_file_path.erase(include_index, k_include_text.size());
+				}
+
+				if (std::filesystem::is_regular_file(impl_file_path)) {
+					parse_data.global_runtime->class_file_map[impl_file_path][class_runtime_data.name].has_impl = true;
+					class_data.impl_file_path = impl_file_path;
+				}
+			}
+		}
 
 		parse_data.class_stack.pop_back();
 	}

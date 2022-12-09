@@ -41,8 +41,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InputManager)
-
 static constexpr int32_t k_keyboard_device = GLFW_JOYSTICK_LAST + 1;
 static constexpr int32_t k_mouse_device = GLFW_JOYSTICK_LAST + 2;
 

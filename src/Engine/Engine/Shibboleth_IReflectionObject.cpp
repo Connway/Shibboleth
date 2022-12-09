@@ -20,45 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_ReflectionDefines.h"
+#include "Shibboleth_IReflectionObject.h"
+#include "Shibboleth_IReflection.h"
 
 NS_REFLECTION
 
-template <class T>
-class Reflection;
-
-class IReflectionDefinition;
-
-class IReflectionObject
+const Refl::IReflectionDefinition& ReflectionObjectMixin::getReflectionDefinition(void) const
 {
-public:
-	virtual ~IReflectionObject(void) {}
-
-	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
-
-	virtual const void* getBasePointer(void) const = 0;
-	virtual void* getBasePointer(void) = 0;
-};
-
-class ReflectionObjectMixin : public Refl::IReflectionObject
-{
-public:
-	const Refl::IReflectionDefinition& getReflectionDefinition(void) const override;
-
-	const void* getBasePointer(void) const override
-	{
-		return this;
-	}
-
-	void* getBasePointer(void) override
-	{
-		return this;
-	}
-
-private:
-	friend class Refl::Reflection<ReflectionObjectMixin>;
-};
+	return Refl::Reflection<ReflectionObjectMixin>::GetReflectionDefinition();
+}
 
 NS_END

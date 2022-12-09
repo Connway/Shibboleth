@@ -66,21 +66,21 @@ int UpdateModifiedDatabase_Run(const argparse::ArgumentParser& /*program*/)
 			pos = dir.find(u8'\\');
 		}
 
-		if (database.getObject(dir.c_str()).isNull()) {
-			database.setObject(dir.c_str(), Gaff::JSON::CreateObject());
+		if (database.getObject(dir.data()).isNull()) {
+			database.setObject(dir.data(), Gaff::JSON::CreateObject());
 		}
 
-		Gaff::JSON db_entry = database.getObject(dir.c_str());
+		Gaff::JSON db_entry = database.getObject(dir.data());
 		
 		const int64_t write_time = entry.last_write_time().time_since_epoch().count();
-		db_entry.setObject(entry.path().filename().u8string().c_str(), Gaff::JSON::CreateInt64(write_time));
+		db_entry.setObject(entry.path().filename().u8string().data(), Gaff::JSON::CreateInt64(write_time));
 	}
 
 	if (std::filesystem::exists(database_file)) {
 		std::filesystem::remove(database_file);
 	}
 
-	database.dumpToFile(database_file.c_str());
+	database.dumpToFile(database_file.data());
 
 	return static_cast<int>(Error::Success);
 }

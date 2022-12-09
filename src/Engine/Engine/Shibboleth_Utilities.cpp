@@ -64,7 +64,7 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path)
 	IFileSystem& fs = GetApp().getFileSystem();
 
 	U8String bin_path = U8String(path) + u8".bin";
-	const IFile* file = fs.openFile(bin_path.c_str());
+	const IFile* file = fs.openFile(bin_path.data());
 
 	if (!file) {
 		file = fs.openFile(path);

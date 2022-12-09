@@ -39,7 +39,7 @@ static int RunStaticCodeGen(const argparse::ArgumentParser& program)
 	Gaff::GetWorkingDir(curr_working_dir, sizeof(curr_working_dir));
 	Gaff::SetWorkingDir(u8"workingdir/tools");
 
-	const int ret = std::system(code_gen_cmd.c_str());
+	const int ret = std::system(code_gen_cmd.data());
 
 	Gaff::SetWorkingDir(curr_working_dir);
 
@@ -87,7 +87,7 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 	int ret = static_cast<int>(Error::Success);
 
 	for (const std::filesystem::path& module_path : directories) {
-		std::wcout << L"Generating Reflection Header for '" << module_path.filename().c_str() << '\'' << std::endl;
+		std::wcout << L"Generating Reflection Header for '" << module_path.filename().wstring() << '\'' << std::endl;
 
 		std::string code_gen_cmd = std::string(k_code_gen_name);
 
@@ -101,7 +101,7 @@ static int RunCodeGen(const argparse::ArgumentParser& program, const std::filesy
 
 		std::wcout.flush();
 
-		ret = std::system(code_gen_cmd.c_str());
+		ret = std::system(code_gen_cmd.data());
 
 		if (ret) {
 			ret = static_cast<int>((is_tool) ? Error::GenerateHeaders_FailedToGenerateTool : Error::GenerateHeaders_FailedToGenerateModule);

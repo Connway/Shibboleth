@@ -29,3 +29,4 @@ struct ParseData;
 bool ParseNamespace(std::string_view substr, ParseData& parse_data);
 void ProcessNamespaceScopeOpen(ParseData& parse_data);
 void ProcessNamespaceScopeClose(ParseData& parse_data);
+void PostProcessNamespaces(ParseData& parse_data);

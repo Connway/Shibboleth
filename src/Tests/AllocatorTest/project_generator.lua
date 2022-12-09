@@ -1,4 +1,5 @@
-local source_dir = GetTestsSourceDirectory("AllocatorTest")
+--local source_dir = GetTestsSourceDirectory("AllocatorTest")
+local source_dir = GetEngineSourceDirectory("Engine")
 local base_dir = GetTestsDirectory("AllocatorTest")
 
 TestProject "AllocatorTest"
@@ -8,11 +9,13 @@ TestProject "AllocatorTest"
 	flags { "FatalWarnings" }
 
 	files { "**.cpp", "**.h" }
+	files { "../Shibboleth_TestMain.cpp" }
 
 	IncludeDirs
 	{
 		base_dir .. "../../Dependencies/Catch2",
 		base_dir .. "../../Dependencies/EASTL/include",
+		base_dir .. "../../Dependencies/rapidjson",
 		base_dir .. "../../Frameworks/Gaff/include",
 		source_dir .. "../../Engine/Engine/include",
 		source_dir .. "../../Engine/Memory/include"

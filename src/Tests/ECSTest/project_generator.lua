@@ -1,4 +1,5 @@
-local source_dir = GetTestsSourceDirectory("ECSTest")
+--local source_dir = GetTestsSourceDirectory("ECSTest")
+local source_dir = GetEngineSourceDirectory("Engine")
 local base_dir = GetTestsDirectory("ECSTest")
 
 TestProject "ECSTest"
@@ -8,6 +9,7 @@ TestProject "ECSTest"
 	flags { "FatalWarnings" }
 
 	files { "**.cpp", "**.h" }
+	files { "../Shibboleth_TestMain.cpp" }
 
 	IncludeDirs
 	{

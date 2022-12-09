@@ -34,7 +34,11 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 	}
 
 	if (parse_data.flags.testRangeAny(ParseData::Flag::FirstRuntimeFlag, ParseData::Flag::LastRuntimeFlag) &&
-		!parse_data.flags.testAll(ParseData::Flag::EnumName)) {
+		!parse_data.flags.testAny(
+			ParseData::Flag::EnumName,
+			ParseData::Flag::EnumStorage,
+			ParseData::Flag::EnumEntries,
+			ParseData::Flag::EnumNextEntry)) {
 
 		return false;
 	}
@@ -48,14 +52,66 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 		} else if (substr.back() == ';') {
 			// Just a forward declare.
 			parse_data.flags.clear(ParseData::Flag::EnumName);
+			parse_data.enum_runtime.flags.clear();
 			return true;
 		}
 
-		// $TODO: Enum forward declares can take the form of "enum <name> : <type>;". Will need to handle that.
-		// $TODO: Enum names could (worst case) take the form of "enum <name>:<type>". Will need to handle that case.
+		// Handle "enum class <name>:<storage>" scenarios.
+		std::string_view left, right;
 
+		if (const size_t index = SplitSubstr(substr, ':', left, right); index != std::string_view::npos) {
+			if (!left.empty()) {
+				ParseEnum(left, parse_data);
+			}
+
+			if (!right.empty()) {
+				const size_t start_index = parse_data.start_index;
+				parse_data.start_index += index + 1;
+
+				ParseEnum(right, parse_data);
+
+				parse_data.start_index = start_index;
+			}
+		}
+
+		parse_data.flags.set(ParseData::Flag::EnumStorage);
 		parse_data.flags.clear(ParseData::Flag::EnumName);
 		parse_data.enum_runtime.data.name = substr;
+
+		return true;
+
+	// We've parsed an "enum <name>" or "enum class <name>" line, but the scope isn't open yet.
+	} else if (parse_data.flags.testAll(ParseData::Flag::EnumStorage)) {
+		if (substr.back() == ';') {
+			// Just a forward declare.
+			parse_data.flags.clear(ParseData::Flag::EnumStorage);
+			parse_data.enum_runtime.data.name.clear();
+			parse_data.enum_runtime.flags.clear();
+
+			return true;
+		}
+
+		std::string_view left, right;
+
+		if (const size_t index = SplitSubstr(substr, ':', left, right); index != std::string_view::npos) {
+			// This should be empty if we've reached this point.
+			if (!left.empty()) {
+				ParseEnum(left, parse_data);
+			}
+
+			if (!right.empty()) {
+				const size_t start_index = parse_data.start_index;
+				parse_data.start_index += index + 1;
+
+				ParseEnum(right, parse_data);
+
+				parse_data.start_index = start_index;
+			}
+
+		} else {
+			parse_data.flags.clear(ParseData::Flag::EnumStorage);
+			parse_data.enum_runtime.data.storage_type = substr;
+		}
 
 		return true;
 
@@ -99,14 +155,12 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 		}
 
 		return true;
-	}
 
-	// Process "enum" token.
-	if (substr == "enum") {
+	} else if (substr == "enum") {
 		parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Valid);
 		parse_data.flags.set(ParseData::Flag::EnumName);
 		return true;
-	}
+	} 
 
 	return false;
 }
@@ -140,6 +194,7 @@ void ProcessEnumScopeOpen(ParseData& parse_data)
 		parse_data.enum_runtime.data.name = parse_data.scope_ranges.back().name;
 		parse_data.scope_ranges.back().type = ScopeRuntimeData::Type::Enum;
 
+		parse_data.flags.clear(ParseData::Flag::EnumStorage);
 		parse_data.flags.set(ParseData::Flag::EnumEntries);
 	}
 }

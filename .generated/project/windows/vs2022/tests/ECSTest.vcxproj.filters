@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ECSTest">
+      <UniqueIdentifier>{205E8965-8C3D-0801-9555-93D701B46E62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Tests\ECSTest\ECSTest.cpp">
+      <Filter>ECSTest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Tests\Shibboleth_TestMain.cpp" />
+  </ItemGroup>
+</Project>

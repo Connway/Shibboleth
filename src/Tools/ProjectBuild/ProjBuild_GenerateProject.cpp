@@ -57,7 +57,7 @@ int GenerateProject_Run(const argparse::ArgumentParser& program)
 
 	std::string proj_gen_cmd = std::string("premake5 ") + k_premake_action + gen_args;
 
-	const int ret = std::system(proj_gen_cmd.c_str());
+	const int ret = std::system(proj_gen_cmd.data());
 
 	Gaff::SetWorkingDir(curr_working_dir);
 

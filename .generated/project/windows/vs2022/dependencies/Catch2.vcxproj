@@ -203,7 +203,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\Catch2\catch_amalgamated.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\Catch2\Shibboleth_TestMain.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\Catch2\catch_amalgamated.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -109,5 +109,5 @@ int BuildProject_Run(const argparse::ArgumentParser& program)
 #endif
 
 
-	return system(final_command.c_str());
+	return system(final_command.data());
 }

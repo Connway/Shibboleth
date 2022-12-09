@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Preproc_DoPreproc.h"
+#include "Preproc_ParseNamespace.h"
 #include "Preproc_ParseMixin.h"
 #include "Preproc_ParseFile.h"
 #include "Preproc_Common.h"
@@ -55,7 +56,7 @@ namespace
 		while (pos != std::string::npos) {
 			const std::string out_dir = output_file_path.substr(0, pos);
 
-			if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
+			if (!Gaff::CreateDir(out_dir.data(), 0777)) {
 				std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
 				return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
 			}
@@ -118,6 +119,16 @@ namespace
 				std::cerr << "Failed to process file '" << path.string() << "'." << std::endl;
 				return static_cast<int>(Error::DoPreproc_FailedToProcessFile);
 			}
+
+			using PostProcessFunc = void (*)(ParseData&);
+			constexpr PostProcessFunc k_post_process_funcs[] =
+			{
+				PostProcessNamespaces
+			};
+
+			for (PostProcessFunc post_process_func : k_post_process_funcs) {
+				post_process_func(parse_data);
+			}
 		}
 
 		if (write_file) {
@@ -129,6 +140,14 @@ namespace
 
 			for (ModifyOutputFunc modify_output_func : k_modify_output_funcs) {
 				modify_output_func(parse_data);
+			}
+
+			// Add warning to source files.
+			if (path.extension() == ".h" || path.extension() == ".hpp" || path.extension() == ".cpp") {
+				parse_data.out_text = std::string("// THIS IS A GENERATED FILE! MODIFICATIONS WILL BE LOST!") +
+					k_newline +
+					k_newline +
+					parse_data.out_text;
 			}
 
 			// Check and write output file.
@@ -147,7 +166,7 @@ namespace
 			while (pos != std::string::npos) {
 				const std::string out_dir = output_file_path.substr(0, pos);
 
-				if (!Gaff::CreateDir(out_dir.c_str(), 0777)) {
+				if (!Gaff::CreateDir(out_dir.data(), 0777)) {
 					std::cerr << "Failed to create output directory '" << out_dir << "'." << std::endl;
 					return static_cast<int>(Error::DoPreproc_FailedToCreateOutputDir);
 				}
@@ -156,7 +175,7 @@ namespace
 			}
 
 			if (std::filesystem::is_regular_file(output_file_path)) {
-				Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::ReadBinary);
+				Gaff::File output_file(output_file_path.data(), Gaff::File::OpenMode::ReadBinary);
 
 				if (!output_file.isOpen()) {
 					std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
@@ -180,14 +199,14 @@ namespace
 				output_file.close();
 			}
 
-			Gaff::File output_file(output_file_path.c_str(), Gaff::File::OpenMode::WriteBinary);
+			Gaff::File output_file(output_file_path.data(), Gaff::File::OpenMode::WriteBinary);
 
 			if (!output_file.isOpen()) {
 				std::cerr << "Failed to open output file '" << output_file_path << "'." << std::endl;
 				return static_cast<int>(Error::DoPreproc_FailedToOpenOutputFile);
 			}
 
-			if (!output_file.writeString(parse_data.out_text.c_str())) {
+			if (!output_file.writeString(parse_data.out_text.data())) {
 				std::cerr << "Failed to write output file '" << output_file_path << "'." << std::endl;
 				return static_cast<int>(Error::DoPreproc_FailedToWriteOutputFile);
 			}
@@ -419,8 +438,8 @@ int DoPreproc_Run(const argparse::ArgumentParser& program)
 		}
 
 	} else {
-		process_engine = force_engine || (!force_engine && !force_module && !force_tool);
-		process_module = force_module || (!force_engine && !force_module && !force_tool);
+		process_engine = (force_engine || force_module || force_tool) || (!force_engine && !force_module && !force_tool);
+		process_module = (force_module || force_tool) || (!force_engine && !force_module && !force_tool);
 		process_tool = force_tool || (!force_engine && !force_module && !force_tool);
 		modify_engine = process_engine && !process_pass;
 		modify_module = process_module && !process_pass;

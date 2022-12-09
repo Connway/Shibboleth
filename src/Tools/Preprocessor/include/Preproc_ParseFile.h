@@ -106,6 +106,12 @@ struct ClassData final
 		bool is_virtual = false;
 	};
 
+	struct MixinData final
+	{
+		std::string class_struct_name;
+		bool no_inherit = false;
+	};
+
 	const char* GetAccessText(Access access) const
 	{
 		switch (access) {
@@ -143,7 +149,7 @@ struct ClassData final
 	std::u8string impl_file_path;
 	std::string mixin_inheritance;
 	std::vector<InheritanceData> inherits;
-	std::vector<std::string> mixin_classes;
+	std::vector<MixinData> mixin_classes;
 	bool is_struct = false;
 	bool is_final = false;
 	bool finished = false;
@@ -157,6 +163,7 @@ struct ClassRuntimeData final
 		Anonymous,
 		Template, // Flag for now, but will be unnecessary when we process template args.
 		Final,
+		MixinNoInherit,
 
 		// Temp, runtime flags.
 		ParsingInheritance,
@@ -202,6 +209,7 @@ struct ScopeRuntimeData final
 struct EnumData final
 {
 	std::string name;
+	std::string storage_type;
 	std::vector<std::string> entries;
 };
 
@@ -254,14 +262,6 @@ struct TemplateRuntimeData final
 //	size_t next_index = 0;
 //};
 
-//struct FileTextData final
-//{
-//	std::string output_path;
-//	std::string input_path;
-//	std::string text;
-//};
-
-
 struct GlobalRuntimeData final
 {
 	struct ClassFileMapData final
@@ -272,6 +272,7 @@ struct GlobalRuntimeData final
 
 	// class_file_map[file_path][class_name]
 	std::unordered_map< std::u8string, std::unordered_map<std::string, ClassFileMapData> > class_file_map;
+	std::unordered_map<std::string, std::string> namespace_mappings;
 	std::unordered_map<std::string, ClassData> class_data;
 	std::unordered_map<std::string, EnumData> enum_data;
 };
@@ -292,6 +293,7 @@ struct ParseData final
 
 		FunctionName,
 
+		EnumStorage,
 		EnumEntries,
 		EnumNextEntry,
 

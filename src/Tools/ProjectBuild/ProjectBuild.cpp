@@ -61,7 +61,7 @@ int main(int argc, const char** argv)
 	}
 
 	const std::string working_dir = program.get("--root_path");
-	CONVERT_STRING(char8_t, temp, working_dir.c_str());
+	CONVERT_STRING(char8_t, temp, working_dir.data());
 	Gaff::SetWorkingDir(temp);
 
 	const std::string action = program.get("action");

@@ -73,22 +73,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)AllocatorTest64d</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)AllocatorTest64</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)AllocatorTest64p</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\..\..\..\..\src\Dependencies\Catch2;..\..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\..\src\Engine\Engine\include;..\..\..\..\..\src\Engine\Memory\include;$(ExternalIncludePath)</ExternalIncludePath>
     <NMakeOutput>$(OutDir)AllocatorTest64od</NMakeOutput>
     <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Tests\AllocatorTest\AllocatorTest.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Tests\Shibboleth_TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dependencies\Catch2.vcxproj">
