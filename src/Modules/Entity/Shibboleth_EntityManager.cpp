@@ -27,9 +27,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityManager)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(EntityManager)
+NS_SHIBBOLETH
 
 static ProxyAllocator s_allocator("Entity");
 

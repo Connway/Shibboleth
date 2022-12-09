@@ -87,10 +87,8 @@ namespace
 	}
 }
 
+
 NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
-
 
 ResourceManager::ResourceManager(void)
 {

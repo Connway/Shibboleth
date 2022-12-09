@@ -48,7 +48,7 @@ private:
 
 	static void ConnectionClosed(const mg_connection* conn);
 
-	SHIB_REFLECTION_CLASS_DECLARE(DevWebServerManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 
 	friend class IDevWebHandler;
 };

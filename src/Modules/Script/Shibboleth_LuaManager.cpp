@@ -43,9 +43,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaManager)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaManager)
+NS_SHIBBOLETH
 
 static ProxyAllocator g_allocator("Lua");
 

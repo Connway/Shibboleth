@@ -59,7 +59,7 @@ public:
 
 	void updateWindows(void) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

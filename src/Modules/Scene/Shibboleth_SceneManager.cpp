@@ -27,9 +27,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
+NS_SHIBBOLETH
 
 SceneManager::~SceneManager(void)
 {

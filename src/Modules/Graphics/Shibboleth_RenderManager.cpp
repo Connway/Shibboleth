@@ -46,9 +46,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(RenderManager)
+NS_SHIBBOLETH
 
 static ProxyAllocator g_allocator("Graphics");
 

@@ -75,12 +75,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>$(OutDir)LuaJIT64d</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\src\Dependencies\LuaJIT\src
-msvcbuild.bat debug static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.lib &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.pdb ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.pdb</NMakeBuildCommandLine>
+if EXIST ../already_built_debug.txt ( echo LuaJIT already built. ) ELSE ( msvcbuild.bat debug static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.lib &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.pdb ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.pdb &amp; type nul &gt; ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_debug.txt )</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>del ..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\vmdef.lua
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
+del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -89,12 +90,13 @@ del ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\*.pdb</NMakeCleanCo
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>$(OutDir)LuaJIT64</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\src\Dependencies\LuaJIT\src
-msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\lua51.lib</NMakeBuildCommandLine>
+if EXIST ../already_built_release.txt ( echo LuaJIT already built. ) ELSE ( msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\lua51.lib &amp; type nul &gt; ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt )</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>del ..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\vmdef.lua
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
+del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -103,12 +105,13 @@ del ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\*.pdb</NMakeClean
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <NMakeOutput>$(OutDir)LuaJIT64p</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\src\Dependencies\LuaJIT\src
-msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\lua51.lib</NMakeBuildCommandLine>
+if EXIST ../already_built_release.txt ( echo LuaJIT already built. ) ELSE ( msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\lua51.lib &amp; type nul &gt; ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt )</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>del ..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\vmdef.lua
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
+del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -117,12 +120,13 @@ del ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\*.pdb</NMakeClean
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <NMakeOutput>$(OutDir)LuaJIT64od</NMakeOutput>
     <NMakeBuildCommandLine>chdir ..\..\..\..\..\src\Dependencies\LuaJIT\src
-msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\lua51.lib</NMakeBuildCommandLine>
+if EXIST ../already_built_release.txt ( echo LuaJIT already built. ) ELSE ( msvcbuild.bat static &amp; copy /B /Y ..\..\..\..\..\src\Dependencies\LuaJIT\src\lua51.lib ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\lua51.lib &amp; type nul &gt; ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt )</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>del ..\..\..\..\..\src\Dependencies\LuaJIT\src\jit\vmdef.lua
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
+del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>

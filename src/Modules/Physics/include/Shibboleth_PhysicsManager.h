@@ -106,7 +106,7 @@ private:
 	physx::PxPvd* _pvd = nullptr;
 #endif
 
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

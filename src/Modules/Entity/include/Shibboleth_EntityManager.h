@@ -140,7 +140,7 @@ private:
 
 	friend class Entity;
 
-	SHIB_REFLECTION_CLASS_DECLARE(EntityManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

@@ -57,7 +57,7 @@ private:
 
 	bool loadLuaManager(const char8_t* file_name, IFile* file);
 
-	SHIB_REFLECTION_CLASS_DECLARE(LuaManager);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

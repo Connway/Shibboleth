@@ -30,10 +30,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DevWebServerManager)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DevWebServerManager)
 
+
 NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(DevWebServerManager)
-
 
 DevWebServerManager::DevWebServerManager(void)
 {
