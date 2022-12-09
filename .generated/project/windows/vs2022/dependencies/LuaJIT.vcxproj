@@ -81,7 +81,8 @@ del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
-del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_debug.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -96,7 +97,8 @@ del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
-del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_debug.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -111,7 +113,8 @@ del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
-del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_debug.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
@@ -126,7 +129,8 @@ del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exe
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.exp
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.lib
 del ..\..\..\..\..\src\Dependencies\LuaJIT\src\*.pdb
-del ..\..\..\..\..\src\Dependencies\LuaJIT\*.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_debug.txt
+del ..\..\..\..\..\src\Dependencies\LuaJIT\already_built_release.txt
 del ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\*.lib
 del ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\*.pdb</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;PROFILE;WIN32;_WINDOWS;WIN64;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
