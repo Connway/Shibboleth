@@ -32,9 +32,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugDrawWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugDrawWebHandler)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugDrawWebHandler)
+NS_SHIBBOLETH
 
 
 static void ReturnError(mg_connection* conn)

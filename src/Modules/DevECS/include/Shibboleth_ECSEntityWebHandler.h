@@ -29,17 +29,17 @@ NS_SHIBBOLETH
 
 class ECSManager;
 
-class ECSEntityWebHandler final : public IDevWebHandler, public Refl::IReflectionObject
+class ECSEntityWebHandler final : public IDevWebHandler
 {
 public:
 	ECSEntityWebHandler(void);
 
 	bool handleGet(CivetServer* server, mg_connection* conn) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
-
 private:
 	ECSManager& _ecs_mgr;
+
+	mixin Refl::ReflectionObjectMixin;
 };
 
 NS_END

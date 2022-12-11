@@ -32,9 +32,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSEntityWebHandler)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSEntityWebHandler)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ECSEntityWebHandler)
+NS_SHIBBOLETH
 
 ECSEntityWebHandler::ECSEntityWebHandler(void):
 	_ecs_mgr(GetManagerTFast<ECSManager>())

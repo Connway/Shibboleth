@@ -28,10 +28,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::DebugMenuClassAttribute, Refl::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::DebugMenuItemAttribute, Refl::IAttribute)
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugMenuClassAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(DebugMenuItemAttribute)
+NS_SHIBBOLETH
 
 Refl::IAttribute* DebugMenuClassAttribute::clone(void) const
 {

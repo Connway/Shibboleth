@@ -49,6 +49,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
 	.func("isLoaded", &Shibboleth::IResource::isLoaded)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
 
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(IResource)

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class DebugDrawWebHandler final : public IDevWebHandler, public Refl::IReflectionObject
+class DebugDrawWebHandler final : public IDevWebHandler
 {
 public:
 	DebugDrawWebHandler(void);
@@ -40,13 +40,13 @@ public:
 
 	void handleConnectionClosed(const mg_connection* conn) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugDrawWebHandler);
-
 private:
 	IDebugManager& _debug_mgr;
 
 	using HandleVector = Vector<IDebugManager::DebugRenderHandle>;
 	VectorMap<const mg_connection*, HandleVector> _debug_handles{ ProxyAllocator("Dev") };
+
+	mixin Refl::ReflectionObjectMixin;
 };
 
 NS_END

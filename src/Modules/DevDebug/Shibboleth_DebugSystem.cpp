@@ -36,10 +36,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugSystem)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugRenderSystem)
-SHIB_REFLECTION_CLASS_DEFINE(DebugSystem)
-
-
 bool DebugRenderSystem::init(void)
 {
 	_debug_mgr = &GetManagerTFast<DebugManager>();

@@ -59,7 +59,7 @@ enum class ResourceState
 	Delayed
 };
 
-class IResource : public Gaff::IRefCounted, public Refl::IReflectionObject
+class IResource : public Gaff::IRefCounted
 {
 public:
 	static constexpr bool Creatable = false;
@@ -95,7 +95,7 @@ private:
 
 	friend class ResourceManager;
 
-	SHIB_REFLECTION_CLASS_DECLARE(IResource);
+	mixin Refl::ReflectionObjectMixin;
 };
 
 NS_END

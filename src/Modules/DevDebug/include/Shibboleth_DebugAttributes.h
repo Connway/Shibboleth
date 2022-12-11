@@ -33,7 +33,7 @@ class DebugMenuClassAttribute final : public Refl::IAttribute
 
 	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuClassAttribute);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 class DebugMenuItemAttribute final : public Refl::IAttribute
@@ -52,7 +52,7 @@ private:
 	U8String _path;
 	bool _is_imgui_update_function;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuItemAttribute);
+	mixin no_inherit Refl::ReflectionObjectMixin;
 };
 
 NS_END

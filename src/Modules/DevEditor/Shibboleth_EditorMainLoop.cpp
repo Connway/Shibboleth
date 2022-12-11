@@ -89,9 +89,8 @@ namespace
 	}
 }
 
-NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(EditorMainLoop)
+NS_SHIBBOLETH
 
 bool EditorMainLoop::init(void)
 {
