@@ -1,4 +1,4 @@
-Group "Dependencies/Unused By Engine"
+Group "Dependencies/Unused by Engine"
 
 DepProject "zstd"
 	language "C"

@@ -16,16 +16,10 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevEditor")
 	local base_dir = GetModulesDirectory("DevEditor")
 
-	ModuleProject "DevEditor"
+	DevModuleProject "DevEditor"
 		qt.enable()
 
 		language "C++"
-
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -42,19 +36,12 @@ local GenerateProject = function()
 
 		QtSettings(qt_modules, base_dir, source_dir)
 
-	ModuleProject("DevEditorModule", "SharedLib")
+	DevModuleProject "DevEditorModule"
 		qt.enable()
 
 		language "C++"
 
 		files { source_dir .. "Shibboleth_DevEditorModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("DevEditor")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy("DevModules")
 
 		local deps =
 		{
@@ -86,10 +73,10 @@ local GenerateProject = function()
 
 		postbuildcommands
 		{
-			"{MKDIR} ../../../../../../workingdir/bin",
-			"{MKDIR} ../../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../../workingdir/bin/platforms"
+			"{MKDIR} ../../../../../workingdir/bin",
+			"{MKDIR} ../../../../../workingdir/bin/platforms",
+			"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../workingdir/bin/platforms",
+			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/bin/platforms"
 		}
 
 		for _, name in ipairs(qt_modules) do
@@ -97,8 +84,8 @@ local GenerateProject = function()
 
 			postbuildcommands
 			{
-				"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../../workingdir/bin",
-				"{COPYFILE} " .. final_name .. extension .." ../../../../../../workingdir/bin"
+				"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../workingdir/bin",
+				"{COPYFILE} " .. final_name .. extension .." ../../../../../workingdir/bin"
 			}
 		end
 end

@@ -40,7 +40,7 @@ private:
 	MainLoop _main_loop;
 	EA::Thread::Thread _qt_thread;
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(EditorMainLoop);
 };
 
 NS_END

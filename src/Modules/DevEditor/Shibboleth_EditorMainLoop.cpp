@@ -34,6 +34,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EditorMainLoop)
 	.ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EditorMainLoop)
 
+
 namespace
 {
 	static intptr_t QtThread(void*)
@@ -91,6 +92,8 @@ namespace
 
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(EditorMainLoop)
 
 bool EditorMainLoop::init(void)
 {

@@ -38,7 +38,7 @@ public:
 private:
 	DebugManager* _debug_mgr = nullptr;
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(DebugRenderSystem);
 };
 
 class DebugSystem final : public ISystem
@@ -50,7 +50,7 @@ public:
 private:
 	DebugManager* _debug_mgr = nullptr;
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(DebugSystem);
 };
 
 NS_END

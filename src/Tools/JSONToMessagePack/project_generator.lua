@@ -25,8 +25,6 @@ ToolProject "JSONToMessagePack"
 	dependson(deps)
 	links(deps)
 
-	flags { "FatalWarnings" }
-
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../../workingdir/tools",

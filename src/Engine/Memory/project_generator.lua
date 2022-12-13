@@ -27,8 +27,6 @@ EngineProject("Memory", "SharedLib")
 	dependson(deps)
 	links(deps)
 
-	flags { "FatalWarnings" }
-
 	filter { "configurations:*Debug* or *Profile*" }
 		dependson({ "TracyClient" })
 		links({ "TracyClient" })
@@ -47,8 +45,8 @@ EngineProject("Memory", "SharedLib")
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
 
 	SetupConfigMap()

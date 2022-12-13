@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 class ECSManager;
 
-class ECSEntityWebHandler final : public IDevWebHandler
+class ECSEntityWebHandler final : public IDevWebHandler, public Refl::IReflectionObject
 {
 public:
 	ECSEntityWebHandler(void);
@@ -39,7 +39,7 @@ public:
 private:
 	ECSManager& _ecs_mgr;
 
-	mixin Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(ECSEntityWebHandler);
 };
 
 NS_END

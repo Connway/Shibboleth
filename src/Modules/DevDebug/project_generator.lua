@@ -2,15 +2,10 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevDebug")
 	local base_dir = GetModulesDirectory("DevDebug")
 
-	ModuleProject "DevDebug"
+	DevModuleProject "DevDebug"
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -34,17 +29,10 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/ECS/include"
 		}
 
-	ModuleProject("DevDebugModule", "SharedLib")
+	DevModuleProject "DevDebugModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_DevDebugModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("DevDebug")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy("DevModules")
 
 		local deps =
 		{	

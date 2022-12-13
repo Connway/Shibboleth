@@ -42,23 +42,4 @@ public:
 	virtual void* getBasePointer(void) = 0;
 };
 
-class ReflectionObjectMixin : public Refl::IReflectionObject
-{
-public:
-	const Refl::IReflectionDefinition& getReflectionDefinition(void) const override;
-
-	const void* getBasePointer(void) const override
-	{
-		return this;
-	}
-
-	void* getBasePointer(void) override
-	{
-		return this;
-	}
-
-private:
-	friend class Refl::Reflection<ReflectionObjectMixin>;
-};
-
 NS_END

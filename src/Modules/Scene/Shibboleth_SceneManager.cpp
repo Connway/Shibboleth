@@ -30,6 +30,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
+
 SceneManager::~SceneManager(void)
 {
 	//_curr_scene = nullptr;

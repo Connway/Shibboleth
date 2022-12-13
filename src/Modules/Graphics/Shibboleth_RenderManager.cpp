@@ -49,6 +49,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(RenderManager)
+
 static ProxyAllocator g_allocator("Graphics");
 
 static consteval Gleam::RendererType GetRendererType(void)

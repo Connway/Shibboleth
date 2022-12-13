@@ -11,8 +11,6 @@ FrameworkProject("Gaff", "StaticLib", true)
 		"../../Dependencies/mpack"
 	}
 
-	flags { "FatalWarnings" }
-
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
@@ -20,5 +18,3 @@ FrameworkProject("Gaff", "StaticLib", true)
 		buildoptions { "-fPIC" }
 
 	filter {}
-
-	SetupConfigMap()

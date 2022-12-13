@@ -37,6 +37,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSManager)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(ECSManager)
+
 ECSManager::~ECSManager(void)
 {
 	_curr_scene = nullptr;

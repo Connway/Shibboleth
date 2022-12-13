@@ -2,15 +2,10 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevGraphics")
 	local base_dir = GetModulesDirectory("DevGraphics")
 
-	ModuleProject "DevGraphics"
+	DevModuleProject "DevGraphics"
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -32,17 +27,10 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gleam/include"
 		}
 
-	ModuleProject("DevGraphicsModule", "SharedLib")
+	DevModuleProject "DevGraphicsModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_DevGraphicsModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("DevGraphics")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy("DevModules")
 
 		local deps =
 		{

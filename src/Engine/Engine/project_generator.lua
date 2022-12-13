@@ -1,8 +1,6 @@
 EngineProject "Engine"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	local source_dir = GetEngineSourceDirectory("Engine")
 	local base_dir = GetEngineDirectory("Engine")
 
@@ -30,6 +28,5 @@ EngineProject "Engine"
 		buildoptions { "-fPIC" }
 
 	filter {}
-
 
 	SetupConfigMap()

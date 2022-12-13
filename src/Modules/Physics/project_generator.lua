@@ -6,11 +6,7 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC", "PX_PHYSX_STATIC_LIB", "_SILENCE_CXX20_CISO646_REMOVED_WARNING" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
+		defines { "PX_PHYSX_STATIC_LIB", "_SILENCE_CXX20_CISO646_REMOVED_WARNING" }
 
 		IncludeDirs
 		{
@@ -32,18 +28,11 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/ECS/include"
 		}
 
-	ModuleProject("PhysicsModule", "SharedLib")
+	ModuleProject "PhysicsModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_PhysicsModule.cpp" }
 		defines { "PX_PHYSX_STATIC_LIB" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("Physics")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy()
 
 		local deps =
 		{

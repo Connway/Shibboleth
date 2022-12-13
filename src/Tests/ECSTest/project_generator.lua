@@ -6,8 +6,6 @@ TestProject "ECSTest"
 	debugdir "../../workingdir/tests"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.cpp", "**.h" }
 	files { "../Shibboleth_TestMain.cpp" }
 
@@ -43,9 +41,6 @@ TestProject "ECSTest"
 
 	dependson(deps)
 	links(deps)
-
-	SetupConfigMap()
-	TestCopy()
 
 	filter { "system:windows" }
 		links { "DbgHelp" }

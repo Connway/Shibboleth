@@ -2,7 +2,7 @@ function DoMainGraphicsModule()
 	local source_dir = GetModulesSourceDirectory("Graphics")
 	local base_dir = GetModulesDirectory("Graphics")
 
-	ModuleProject "GraphicsBase"
+	ModuleProject("GraphicsBase", "Graphics")
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
@@ -13,10 +13,6 @@ function DoMainGraphicsModule()
 			source_dir .. "Shibboleth_RenderManager.cpp",
 			source_dir .. "Shibboleth_GraphicsModule.cpp"
 		}
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -42,7 +38,7 @@ function DoGraphicsModule(renderer)
 	local base_dir = GetModulesDirectory("Graphics")
 	local project_name = "Graphics" .. renderer
 
-	ModuleProject(project_name)
+	ModuleProject(project_name, "Graphics")
 		language "C++"
 
 		files
@@ -52,10 +48,6 @@ function DoGraphicsModule(renderer)
 			source_dir .. "Shibboleth_GraphicsModule.cpp"
 		}
 
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
 		elseif renderer == "Direct3D12" then
@@ -63,8 +55,6 @@ function DoGraphicsModule(renderer)
 		elseif renderer == "Vulkan" then
 			defines { "USE_VULKAN" }
 		end
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -83,7 +73,7 @@ function DoGraphicsModule(renderer)
 			source_dir .. "../../Modules/MainLoop/include"
 		}
 
-	ModuleProject(project_name .. "Module", "SharedLib")
+	ModuleProject(project_name .. "Module", "Graphics")
 		language "C++"
 
 		files { source_dir .. "Shibboleth_GraphicsModule.cpp" }
@@ -94,12 +84,6 @@ function DoGraphicsModule(renderer)
 		elseif renderer == "Vulkan" then
 			defines { "USE_VULKAN" }
 		end
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks(project_name, "Graphics")
-		SetupConfigMap()
-		ModuleCopy()
 
 		deps =
 		{
@@ -120,8 +104,6 @@ function DoGraphicsModule(renderer)
 
 		dependson(deps)
 		links(deps)
-
-		NewDeleteLinkFix()
 end
 
 local GenerateProject = function()

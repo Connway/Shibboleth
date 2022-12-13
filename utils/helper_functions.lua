@@ -36,6 +36,81 @@ function ModuleIncludesAndLinks(module_name, base_name)
 	links(deps)
 end
 
+function StaticHeaderGen()
+	if _OPTIONS["preproc-pipeline"] then
+		return
+	end
+
+	prebuildmessage("Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!")
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header\""
+		}
+
+	filter {}
+
+	dependson { "CodeGenerator" }
+end
+
+function ToolGen(tool_name)
+	if _OPTIONS["preproc-pipeline"] then
+		return
+	end
+
+	prebuildmessage("Generating Gen_ReflectionInit.h for tool " .. tool_name .. "!")
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name .. "\""
+		}
+
+	filter {}
+
+	dependson { "CodeGenerator" }
+end
+
+function ModuleGen(module_name)
+	if _OPTIONS["preproc-pipeline"] then
+		return
+	end
+
+	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
+
+	filter { "system:windows" }
+		prebuildcommands
+		{
+			"{CHDIR} ../../../../../workingdir/tools",
+			"CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
+		}
+
+	filter { "system:not windows" }
+		prebuildcommands
+		{
+			"$(SHELL) $(.SHELLFLAGS) -e \"cd ../../../../../workingdir/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name .. "\""
+		}
+
+	filter {}
+
+	dependson { "CodeGenerator" }
+end
+
 function StaticLinks()
 	local ProcessModule = function(dir)
 		if not os.isfile(dir .. "/project_generator.lua") then
@@ -57,16 +132,16 @@ function ModuleCopy(dir)
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/" .. dir,
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/" .. dir
+		"{MKDIR} ../../../../../workingdir/" .. dir,
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/" .. dir
 	}
 end
 
 function TestCopy()
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/tests",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tests"
+		"{MKDIR} ../../../../../workingdir/tests",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tests"
 	}
 end
 
@@ -93,7 +168,7 @@ function GetActionLocation(no_preproc)
 		no_preproc = false
 	end
 
-	if no_preproc == false and _OPTIONS["generate-preproc"] then
+	if no_preproc == false and _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 		return "../../../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION
 	else
 		return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
@@ -109,7 +184,7 @@ function GetFrameworkLocation()
 end
 
 function GetModulesLocation()
-	if _OPTIONS["generate-preproc"] then
+	if _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 		return "../.generated/preproc/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
 	else
 		return "../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/modules"
@@ -141,7 +216,7 @@ function GetTestsLocation(no_preproc)
 end
 
 function GetModulesSourceDirectory(module_name)
-	if _OPTIONS["generate-preproc"] then
+	if _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 		return "../.generated/preproc/Modules/" .. module_name .. "/"
 	else
 		return "../src/Modules/" .. module_name .. "/"
@@ -157,7 +232,7 @@ function GetModulesDirectory(module_name)
 end
 
 function GetEngineSourceDirectory(module_name)
-	if _OPTIONS["generate-preproc"] then
+	if _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 		return "../../../.generated/preproc/Engine/" .. module_name .. "/"
 	else
 		return "../../Engine/" .. module_name .. "/"
@@ -173,7 +248,7 @@ function GetEngineDirectory(module_name)
 end
 
 function GetToolsSourceDirectory(tool_name)
-	if _OPTIONS["generate-preproc"] then
+	if _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 		return "../../../.generated/preproc/Tools/" .. tool_name .. "/"
 	else
 		return "../../Tools/" .. tool_name .. "/"
@@ -189,7 +264,7 @@ function GetToolsDirectory(tool_name)
 end
 
 function GetTestsSourceDirectory(test_name)
-	--if _OPTIONS["generate-preproc"] then
+	--if _OPTIONS["preproc-pipeline"] and _OPTIONS["generate-preproc"] then
 	--	return "../../.generated/preproc/Tests/" .. test_name .. "/"
 	--else
 		return "../../../src/Tests/" .. test_name .. "/"
@@ -307,6 +382,9 @@ function FrameworkProject(project_name, project_kind)
 
 		kind(project_kind or "StaticLib")
 
+		flags { "FatalWarnings" }
+		SetupConfigMap()
+
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
@@ -341,11 +419,14 @@ function ToolProject(project_name, project_kind, no_preproc)
 	project(project_name)
 		location(GetToolsLocation(no_preproc))
 
-		if _OPTIONS["generate-preproc"] or no_preproc then
+		if not _OPTIONS["preproc-pipeline"] or _OPTIONS["generate-preproc"] or no_preproc then
 			kind(project_kind or "ConsoleApp")
 		else
 			kind "None"
 		end
+
+		flags { "FatalWarnings" }
+		SetupConfigMap()
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -365,11 +446,13 @@ function EngineProject(project_name, project_kind, no_preproc)
 	project(project_name)
 		location(GetEngineLocation(no_preproc))
 
-		if _OPTIONS["generate-preproc"] or no_preproc then
+		if not _OPTIONS["preproc-pipeline"] or _OPTIONS["generate-preproc"] or no_preproc then
 			kind(project_kind or "StaticLib")
 		else
 			kind "None"
 		end
+
+		flags { "FatalWarnings" }
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -379,9 +462,23 @@ function EngineProject(project_name, project_kind, no_preproc)
 		filter {}
 end
 
-function ModuleProject(project_name, project_kind)
+function DevModuleProject(project_name, base_name)
+	ModuleProject(project_name, base_name, "DevModules")
+end
+
+function ModuleProject(project_name, base_name, copy_dir)
+	local lib_name = project_name
+	local project_kind = "StaticLib"
+	local is_base = (base_name and project_name:sub(-4, -1) == "Base")
+	local is_lib = true
+
 	if (project_name:sub(-6, -1) == "Module") then
 		table.insert(all_modules, project_name)
+
+		lib_name = project_name:sub(1, -7)
+		project_kind = "SharedLib"
+		is_lib = false
+
 	else
 		table.insert(all_module_libs, project_name)
 	end
@@ -389,11 +486,29 @@ function ModuleProject(project_name, project_kind)
 	project(project_name)
 		location(GetModulesLocation())
 
-		if _OPTIONS["generate-preproc"] then
-			kind(project_kind or "StaticLib")
+		if not _OPTIONS["preproc-pipeline"] or _OPTIONS["generate-preproc"] then
+			kind(project_kind)
 		else
 			kind "None"
 		end
+
+		if is_lib then
+			if not _OPTIONS["preproc-pipeline"] then
+				if not base_name or is_base then
+					ModuleGen(base_name or project_name)
+				end
+			end
+
+			defines { "SHIB_STATIC" }
+
+		elseif not is_lib then
+			ModuleIncludesAndLinks(lib_name, base_name)
+			NewDeleteLinkFix()
+			ModuleCopy(copy_dir)
+		end
+
+		flags { "FatalWarnings" }
+		SetupConfigMap()
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -409,11 +524,15 @@ function TestProject(project_name, project_kind)
 	project(project_name)
 		location(GetTestsLocation())
 
-		if _OPTIONS["generate-preproc"] then
+		if not _OPTIONS["preproc-pipeline"] or _OPTIONS["generate-preproc"] then
 			kind(project_kind or "ConsoleApp")
 		else
 			kind "None"
 		end
+
+		flags { "FatalWarnings" }
+		SetupConfigMap()
+		TestCopy()
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -424,13 +543,13 @@ function TestProject(project_name, project_kind)
 end
 
 function Group(group_name)
-	--if not _OPTIONS["generate-preproc"] then
+	--if _OPTIONS["preproc-pipeline"] and not _OPTIONS["generate-preproc"] then
 		group(group_name)
 	--end
 end
 
 function IncludeDirs(dirs)
-	if not _OPTIONS["generate-preproc"] then
+	if _OPTIONS["preproc-pipeline"] and not _OPTIONS["generate-preproc"] then
 		externalincludedirs(dirs)
 	else
 		includedirs(dirs)

@@ -6,11 +6,6 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -30,17 +25,10 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/ECS/include"
 		}
 
-	ModuleProject("ScriptModule", "SharedLib")
+	ModuleProject "ScriptModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_ScriptModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("Script")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy()
 
 		local deps =
 		{

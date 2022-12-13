@@ -16,12 +16,4 @@
     <LocalDebuggerWorkingDirectory>..\..\..\..\..\workingdir\tools</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Debug_D3D11|x64'">
-    <LocalDebuggerWorkingDirectory>..\..\..\..\..\workingdir\tools</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static_Release_D3D11|x64'">
-    <LocalDebuggerWorkingDirectory>..\..\..\..\..\workingdir\tools</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  </PropertyGroup>
 </Project>

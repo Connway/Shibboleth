@@ -96,7 +96,6 @@ private:
 	friend class ResourceManager;
 
 	SHIB_REFLECTION_CLASS_DECLARE(IResource);
-	//mixin Refl::ReflectionObjectMixin;
 };
 
 NS_END

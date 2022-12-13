@@ -33,7 +33,7 @@ class GameTimeManager;
 class InputManager;
 class ECSManager;
 
-class FlyCameraProcess final : public Esprit::IProcess
+class FlyCameraProcess final : public Esprit::IProcess, public Refl::IReflectionObject
 {
 public:
 	bool init(const Esprit::StateMachine& owner) override;
@@ -56,7 +56,7 @@ private:
 	int32_t _pitch_index = -1;
 	int32_t _yaw_index = -1;
 
-	mixin Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(FlyCameraProcess);
 };
 
 NS_END

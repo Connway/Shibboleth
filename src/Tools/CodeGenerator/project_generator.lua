@@ -25,10 +25,6 @@ ToolProject("CodeGenerator", "ConsoleApp", true)
 
 	defines { "FMT_HEADER_ONLY" }
 
-	flags { "FatalWarnings" }
-
-	SetupConfigMap()
-
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",

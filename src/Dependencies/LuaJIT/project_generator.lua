@@ -20,15 +20,13 @@ DepProject "LuaJIT"
 
 		buildcommands
 		{
-			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			"if EXIST ../already_built_debug.txt ( {ECHO} LuaJIT already built. ) ELSE ( msvcbuild.bat debug static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.pdb %{cfg.targetdir}/lua51.pdb & type nul > ../../../../../src/Dependencies/LuaJIT/already_built_debug.txt )"
+			"if EXIST %{cfg.targetdir}/lua51.lib ( {ECHO} LuaJIT already built. ) ELSE ( {CHDIR} ../../../../../src/Dependencies/LuaJIT/src & msvcbuild.bat debug static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.pdb %{cfg.targetdir}/lua51.pdb )"
 		}
 
 	filter { "system:windows", "platforms:x64", "configurations:not *Debug* or Optimized_Debug" }
 		buildcommands
 		{
-			"{CHDIR} ../../../../../src/Dependencies/LuaJIT/src",
-			"if EXIST ../already_built_release.txt ( {ECHO} LuaJIT already built. ) ELSE ( msvcbuild.bat static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & type nul > ../../../../../src/Dependencies/LuaJIT/already_built_release.txt )"
+			"if EXIST %{cfg.targetdir}/lua51.lib ( {ECHO} LuaJIT already built. ) ELSE ( {CHDIR} ../../../../../src/Dependencies/LuaJIT/src & msvcbuild.bat static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib )"
 		}
 
 	filter { "system:linux", "platforms:x64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
@@ -59,8 +57,6 @@ DepProject "LuaJIT"
 			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.lib",
 			"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.pdb",
 			--"{DELETE} ../../../../../src/Dependencies/LuaJIT/src/*.dll",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/already_built_debug.txt",
-			"{DELETE} ../../../../../src/Dependencies/LuaJIT/already_built_release.txt",
 			"{DELETE} %{cfg.targetdir}/*.lib",
 			"{DELETE} %{cfg.targetdir}/*.pdb"
 		}

@@ -1,3 +1,7 @@
+if not _OPTIONS["preproc-pipeline"] then
+	Group "Tools/Unused"
+end
+
 ToolProject("Preprocessor", "ConsoleApp", true)
 	debugdir "../../../workingdir/tools"
 	language "C++"
@@ -25,12 +29,12 @@ ToolProject("Preprocessor", "ConsoleApp", true)
 
 	defines { "FMT_HEADER_ONLY" }
 
-	flags { "FatalWarnings" }
-
-	SetupConfigMap()
-
 	postbuildcommands
 	{
 		"{MKDIR} ../../../../../workingdir/tools",
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
 	}
+
+if not _OPTIONS["preproc-pipeline"] then
+	Group "Tools"
+end

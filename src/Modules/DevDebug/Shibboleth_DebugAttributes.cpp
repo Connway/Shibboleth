@@ -31,6 +31,9 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::DebugMenuItemAttribu
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(DebugMenuClassAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(DebugMenuItemAttribute)
+
 Refl::IAttribute* DebugMenuClassAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();

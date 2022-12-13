@@ -2,15 +2,10 @@ local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("DevWebServer")
 	local base_dir = GetModulesDirectory("DevWebServer")
 
-	ModuleProject "DevWebServer"
+	DevModuleProject "DevWebServer"
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -29,17 +24,10 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/Input/include"
 		}
 
-	ModuleProject("DevWebServerModule", "SharedLib")
+	DevModuleProject "DevWebServerModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_DevWebServerModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("DevWebServer")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy("DevModules")
 
 		local deps =
 		{

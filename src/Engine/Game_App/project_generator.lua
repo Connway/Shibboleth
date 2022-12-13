@@ -32,11 +32,12 @@ EngineProject("Game_App", proj_kind)
 		"mpack"
 	}
 
-	dependson("BuildModuleLibraries")
+	if _OPTIONS["preproc-pipeline"] then
+		dependson("BuildModuleLibraries")
+	end
+
 	dependson(deps)
 	links(deps)
-
-	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links { "Dbghelp", "iphlpapi", "psapi", "userenv" }
@@ -55,6 +56,6 @@ EngineProject("Game_App", proj_kind)
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/bin"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}

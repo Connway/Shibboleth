@@ -40,7 +40,7 @@ public:
 
 private:
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(SceneManager);
 };
 
 NS_END

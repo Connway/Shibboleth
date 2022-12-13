@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IManager
+class IManager : public Refl::IReflectionObject
 {
 public:
 	IManager(void) = default;
@@ -40,7 +40,7 @@ public:
 	GAFF_NO_COPY(IManager);
 	GAFF_NO_MOVE(IManager);
 
-	mixin Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(IManager);
 };
 
 NS_END

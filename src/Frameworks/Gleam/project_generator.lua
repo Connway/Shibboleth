@@ -1,8 +1,6 @@
 FrameworkProject "Gleam"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
@@ -19,5 +17,3 @@ FrameworkProject "Gleam"
 		excludes { "**/*_Direct3D11.*", "*_Direct3D11.*" }
 
 	filter {}
-
-	SetupConfigMap()

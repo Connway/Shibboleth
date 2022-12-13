@@ -35,6 +35,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugDrawWebHandler)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(DebugDrawWebHandler)
 
 static void ReturnError(mg_connection* conn)
 {

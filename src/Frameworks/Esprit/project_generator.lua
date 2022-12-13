@@ -1,8 +1,6 @@
 FrameworkProject "Esprit"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
@@ -13,5 +11,3 @@ FrameworkProject "Esprit"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm"
 	}
-
-	SetupConfigMap()

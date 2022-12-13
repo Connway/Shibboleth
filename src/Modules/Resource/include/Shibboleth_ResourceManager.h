@@ -167,7 +167,7 @@ private:
 	friend class ResourceSystem;
 	friend class IResource;
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
 

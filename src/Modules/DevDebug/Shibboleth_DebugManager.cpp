@@ -429,6 +429,7 @@ namespace
 	}
 }
 
+
 GAFF_STATIC_FILE_FUNC
 {
 	ImGui::SetAllocatorFunctions(ImGuiAlloc, ImGuiFree);
@@ -452,6 +453,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager)
 
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(DebugManager)
 
 void DebugManager::HandleKeyboardCharacterInput(Gleam::Window& /*window*/, uint32_t char_code)
 {

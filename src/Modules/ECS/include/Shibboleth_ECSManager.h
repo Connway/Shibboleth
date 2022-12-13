@@ -450,7 +450,7 @@ private:
 	template <class Callback, class... Components, size_t array_size>
 	void iterateInternal(Callback&& callback, const ECSQueryResult* (&query_results)[array_size]);
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
 
 NS_END

@@ -28,7 +28,6 @@ THE SOFTWARE.
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(class_type, data) getInterface<class_type>(CLASS_HASH(class_type), data)
 
-// DEPRECATED: Prefer using mixin instead.
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
 		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \
@@ -43,7 +42,6 @@ THE SOFTWARE.
 	private: \
 		friend class Refl::Reflection<type>
 
-// DEPRECATED: Prefer using mixin instead.
 #define SHIB_REFLECTION_CLASS_DEFINE(type) \
 	const Refl::IReflectionDefinition& type::getReflectionDefinition(void) const \
 	{ \

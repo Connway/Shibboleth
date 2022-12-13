@@ -6,8 +6,6 @@ TestProject "ReflectionTest"
 	debugdir "../../workingdir/tests"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.cpp", "**.h" }
 	files { "../Shibboleth_TestMain.cpp" }
 
@@ -35,9 +33,6 @@ TestProject "ReflectionTest"
 
 	dependson(deps)
 	links(deps)
-
-	SetupConfigMap()
-	TestCopy()
 
 	filter { "system:windows" }
 		links { "DbgHelp" }

@@ -133,7 +133,7 @@ private:
 		VectorMap<Gaff::Hash32, Alias>& alias_values,
 		bool activated);
 
-	mixin no_inherit Refl::ReflectionObjectMixin;
+	SHIB_REFLECTION_CLASS_DECLARE(InputManager);
 };
 
 NS_END

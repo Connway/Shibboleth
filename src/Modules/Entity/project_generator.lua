@@ -6,11 +6,6 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -23,17 +18,10 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 
-	ModuleProject("EntityModule", "SharedLib")
+	ModuleProject "EntityModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_EntityModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("Entity")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy()
 
 		local deps =
 		{

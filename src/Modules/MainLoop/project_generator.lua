@@ -6,11 +6,6 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -24,17 +19,10 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/glm"
 		}
 
-	ModuleProject("MainLoopModule", "SharedLib")
+	ModuleProject "MainLoopModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_MainLoopModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("MainLoop")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy()
 
 		--[[local deps =
 		{

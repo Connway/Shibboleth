@@ -6,11 +6,6 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		defines { "SHIB_STATIC" }
-
-		SetupConfigMap()
-
-		flags { "FatalWarnings" }
 
 		IncludeDirs
 		{
@@ -27,17 +22,10 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/Graphics/include" -- for iterating over windows.
 		}
 
-	ModuleProject("InputModule", "SharedLib")
+	ModuleProject "InputModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_InputModule.cpp" }
-
-		flags { "FatalWarnings" }
-
-		ModuleIncludesAndLinks("Input")
-		NewDeleteLinkFix()
-		SetupConfigMap()
-		ModuleCopy()
 
 		local deps =
 		{

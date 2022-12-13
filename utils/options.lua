@@ -27,3 +27,9 @@ newoption
 	trigger = "no-luajit",
 	description = "Use default Lua intepreter instead of LuaJIT."
 }
+
+newoption
+{
+	trigger = "preproc-pipeline",
+	description = "Generate project using the preprocessor pipeline. WARNING: Copy post-build operations will copy to incorrect directories."
+}
