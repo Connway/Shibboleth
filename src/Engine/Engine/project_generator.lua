@@ -29,4 +29,5 @@ EngineProject "Engine"
 
 	filter {}
 
+	StaticHeaderGen()
 	SetupConfigMap()

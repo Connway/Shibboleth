@@ -57,6 +57,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game_App", "engine\Game_App
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "engine\Engine.vcxproj", "{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB} = {47EBA3A8-B3AB-1FDF-7CE6-685CE86564BB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Memory", "engine\Memory.vcxproj", "{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}"
 	ProjectSection(ProjectDependencies) = postProject

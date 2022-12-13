@@ -118,6 +118,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64d static_header</Command>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,6 +155,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64 static_header</Command>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -182,6 +192,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64p static_header</Command>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
@@ -214,6 +229,11 @@
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
+    <PreBuildEvent>
+      <Command>chdir ..\..\..\..\..\workingdir\tools
+CodeGenerator64od static_header</Command>
+      <Message>Generating Gen_StaticReflectionInit.h and Gen_ReflectionInit.h for static build!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Gen_ReflectionInit.h" />
