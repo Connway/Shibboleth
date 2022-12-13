@@ -31,12 +31,6 @@ if not _OPTIONS["generate-preproc"] then
 
 		defines { "FMT_HEADER_ONLY" }
 
-		postbuildcommands
-		{
-			"{MKDIR} ../../../../../workingdir/tools",
-			"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
-		}
-
 	if _OPTIONS["preproc-pipeline"] then
 		project "RunProjectBuild"
 			location(GetToolsLocation())

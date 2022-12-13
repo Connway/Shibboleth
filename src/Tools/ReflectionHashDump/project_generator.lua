@@ -30,8 +30,6 @@ ToolProject "ReflectionHashDump"
 	dependson(deps)
 	links(deps)
 
-	flags { "FatalWarnings" }
-
 	filter { "system:windows" }
 		-- links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 		links { "Dbghelp" }
@@ -40,9 +38,3 @@ ToolProject "ReflectionHashDump"
 		links { "dl", "pthread" }
 
 	filter {}
-
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tools"
-	}

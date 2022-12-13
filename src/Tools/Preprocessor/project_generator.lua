@@ -29,12 +29,6 @@ ToolProject("Preprocessor", "ConsoleApp", true)
 
 	defines { "FMT_HEADER_ONLY" }
 
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
-	}
-
 if not _OPTIONS["preproc-pipeline"] then
 	Group "Tools"
 end

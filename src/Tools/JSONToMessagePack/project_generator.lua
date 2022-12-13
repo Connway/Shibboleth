@@ -24,9 +24,3 @@ ToolProject "JSONToMessagePack"
 
 	dependson(deps)
 	links(deps)
-
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../../workingdir/tools"
-	}

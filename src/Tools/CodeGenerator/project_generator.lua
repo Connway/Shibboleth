@@ -24,9 +24,3 @@ ToolProject("CodeGenerator", "ConsoleApp", true)
 	links(deps)
 
 	defines { "FMT_HEADER_ONLY" }
-
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../workingdir/tools",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
-	}

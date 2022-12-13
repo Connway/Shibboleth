@@ -145,6 +145,14 @@ function TestCopy()
 	}
 end
 
+function ToolCopy()
+	postbuildcommands
+	{
+		"{MKDIR} ../../../../../workingdir/tools",
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/tools"
+	}
+end
+
 function NewDeleteLinkFix()
 	filter { "system:windows" }
 		ignoredefaultlibraries { "msvcrt.lib", "msvcrtd.lib" }
@@ -427,6 +435,7 @@ function ToolProject(project_name, project_kind, no_preproc)
 
 		flags { "FatalWarnings" }
 		SetupConfigMap()
+		ToolCopy()
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }

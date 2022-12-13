@@ -122,8 +122,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,8 +157,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\ReflectionHashDump\
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -192,8 +192,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\ReflectionHashDum
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -227,8 +227,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\ReflectionHashDum
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ReflectionHashDump\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

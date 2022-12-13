@@ -121,8 +121,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,8 +155,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\JSONToMessagePack\$
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -189,8 +189,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\JSONToMessagePack
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -223,8 +223,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\JSONToMessagePack
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\JSONToMessagePack\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
