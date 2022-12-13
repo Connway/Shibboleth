@@ -35,10 +35,18 @@ namespace
 			((last_namespace_delimeter != std::string::npos) ? class_data.name.substr(last_namespace_delimeter + 2) : class_data.name) +
 			((class_data.is_final) ? " final" : "");
 
-		const size_t class_decl_index = parse_data.out_text.find(class_text_to_find);
+		size_t class_decl_index = parse_data.out_text.find(class_text_to_find);
 
 		// If we're calling this function, this class declaration should be in this file.
 		GAFF_ASSERT(class_decl_index != std::string::npos);
+
+		// This is a forward declaration, skip this and find the next declaration.
+		if (parse_data.out_text[GetNextNonWhitespaceIndex(parse_data.out_text, class_decl_index + class_text_to_find.size())] == ';') {
+			class_decl_index = parse_data.out_text.find(class_text_to_find, class_decl_index + class_text_to_find.size());
+
+			// If we're calling this function, this class declaration should be in this file.
+			GAFF_ASSERT(class_decl_index != std::string::npos);
+		}
 
 		// Parse all the scopes until we find the scope that closes out the class/struct.
 		size_t open_scope_index = parse_data.out_text.find('{', class_decl_index);
@@ -150,7 +158,6 @@ void ProcessClassStructMixin(GlobalRuntimeData& global_runtime_data, ClassData& 
 		return;
 	}
 
-	// $TODO: Class declaration parsing does not strip out commented out lines. Should strip those out before processing.
 	size_t start_index = class_data.declaration_text.find("mixin");
 
 	while (start_index != std::string::npos) {

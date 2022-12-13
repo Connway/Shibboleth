@@ -352,3 +352,4 @@ size_t SplitSubstr(std::string_view substr, const char* delimeter, std::string_v
 size_t SplitSubstr(std::string_view substr, char delimeter, std::string_view& left, std::string_view& right, bool reverse_find = false);
 void StripComments(std::string& text);
 void TrimNewlines(std::string& text);
+size_t GetNextNonWhitespaceIndex(const std::string& str, size_t start_index);

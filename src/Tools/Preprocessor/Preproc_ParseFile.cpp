@@ -564,3 +564,12 @@ void TrimNewlines(std::string& text)
 		text.erase(0, 1);
 	}
 }
+
+size_t GetNextNonWhitespaceIndex(const std::string& str, size_t start_index)
+{
+	while (k_whitespace_substr.find(str[start_index]) != std::string_view::npos) {
+		++start_index;
+	}
+	
+	return start_index;
+}
