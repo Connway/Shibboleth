@@ -32,16 +32,6 @@ NS_SHIBBOLETH
 
 class EntityManager;
 
-using EntityID = int32_t;
-constexpr EntityID EntityID_None = -1;
-
-// Negative IDs are not valid, as we use these as indices.
-constexpr bool ValidEntityID(EntityID id)
-{
-	return id > EntityID_None;
-}
-
-
 class Entity : public IEntityUpdateable
 {
 public:
@@ -140,11 +130,7 @@ public:
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
 	int32_t getNumComponents(void) const;
 
-	EntityID getID(void) const;
-	void setID(EntityID id);
-
-	//void updateAfter(EntityComponent& component);
-	void updateAfter(Entity& entity);
+	void updateAfter(IEntityUpdateable& after);
 
 	void setEnableUpdate(bool enabled);
 	bool canUpdate(void) const;
@@ -162,15 +148,9 @@ private:
 
 	Vector< UniquePtr<EntityComponent> > _components;
 
-	Vector<EntityComponentID> _dependent_on_me_components;
-	Vector<EntityID> _dependent_on_me_entities;
-	Vector<EntityComponentID> _update_after_components;
-	Vector<EntityID> _update_after_entities;
-
-	EntityID _id = EntityID_None;
-
 	Gaff::Flags<Flag> _flags;
 
+	friend class EntityComponent;
 	friend class EntityManager;
 
 	SHIB_REFLECTION_CLASS_DECLARE(Entity);

@@ -213,39 +213,9 @@ int32_t Entity::getNumComponents(void) const
 	return static_cast<int32_t>(_components.size());
 }
 
-EntityID Entity::getID(void) const
+void Entity::updateAfter(IEntityUpdateable& after)
 {
-	return _id;
-}
-
-void Entity::setID(EntityID id)
-{
-	_id = id;
-}
-
-void Entity::updateAfter(Entity& entity)
-{
-	const auto it_other = Gaff::LowerBound(entity._dependent_on_me_entities, _id);
-
-	// We are already dependent on this entity.
-	if (it_other != entity._dependent_on_me_entities.end() && *it_other == _id) {
-		// $TODO: Log error.
-		return;
-	}
-
-	const EntityID id = entity.getID();
-	const auto it_dep = Gaff::LowerBound(_update_after_entities, id);
-
-	// We are already in the dependency list.
-	if (it_dep != _update_after_entities.end() && *it_dep == id) {
-		// $TODO: Log warning.
-		return;
-	}
-
-	entity._dependent_on_me_entities.emplace(it_other, _id);
-	_update_after_entities.emplace(it_dep, id);
-
-	_entity_mgr.updateAfter(*this, entity);
+	_entity_mgr.updateAfter(*this, after);
 }
 
 void Entity::setEnableUpdate(bool enabled)

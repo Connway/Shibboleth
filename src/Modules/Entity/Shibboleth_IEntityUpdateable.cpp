@@ -20,44 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_EntityComponent.h"
+#include "Shibboleth_IEntityUpdateable.h"
 #include "Shibboleth_EntityManager.h"
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(EntityComponent)
-
-bool EntityComponent::init(void)
-{
-	return true;
-}
-
-void EntityComponent::destroy(void)
+void IEntityUpdateable::update(float /*dt*/)
 {
 }
 
-Entity* EntityComponent::getOwner(void) const
+void IEntityUpdateable::setUpdateNode(void* update_node)
 {
-	return _owner;
+	_update_node = update_node;
 }
 
-void EntityComponent::updateAfter(IEntityUpdateable& after)
+const void* IEntityUpdateable::getUpdateNode(void) const
 {
-	GAFF_ASSERT(_owner);
-	_owner->_entity_mgr.updateAfter(*this, after);
-}
-
-void EntityComponent::setEnableUpdate(bool enabled)
-{
-	_flags.set(enabled, Flag::UpdateEnabled);
-}
-
-bool EntityComponent::canUpdate(void) const
-{
-	return _flags.testAll(Flag::UpdateEnabled);
+	return _update_node;
 }
 
 NS_END

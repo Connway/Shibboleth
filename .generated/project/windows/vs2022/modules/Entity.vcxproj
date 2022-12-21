@@ -249,6 +249,7 @@ CodeGenerator64od module_header --module Entity</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_IEntityUpdateable.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

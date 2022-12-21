@@ -31,5 +31,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_IEntityUpdateable.cpp" />
   </ItemGroup>
 </Project>

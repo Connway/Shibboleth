@@ -34,17 +34,6 @@ NS_SHIBBOLETH
 
 class Entity;
 
-using EntityComponentID = int32_t;
-using EntityID = int32_t;
-constexpr EntityComponentID EntityComponentID_None = -1;
-
-// Negative IDs are not valid, as we use these as indices.
-constexpr bool ValidEntityComponentID(EntityComponentID id)
-{
-	return id > EntityComponentID_None;
-}
-
-
 class EntityComponent : public IEntityUpdateable
 {
 	GAFF_NO_COPY(EntityComponent);
@@ -57,8 +46,7 @@ public:
 
 	Entity* getOwner(void) const;
 
-	EntityComponentID getID(void) const;
-	void setID(EntityComponentID id);
+	void updateAfter(IEntityUpdateable& after);
 
 	void setEnableUpdate(bool enabled);
 	bool canUpdate(void) const;
@@ -67,19 +55,12 @@ private:
 	enum class Flag
 	{
 		UpdateEnabled,
+		UpdateOutsideOfEntity,
 
 		Count
 	};
 
-	Vector<EntityComponentID> _dependent_on_me_components;
-	Vector<EntityID> _dependent_on_me_entities;
-	Vector<EntityComponentID> _update_after_components;
-	Vector<EntityID> _update_after_entities;
-
 	Entity* _owner = nullptr;
-
-	//EntityManager& _entity_mgr;
-	EntityComponentID _id = EntityComponentID_None;
 
 	Gaff::Flags<Flag> _flags;
 

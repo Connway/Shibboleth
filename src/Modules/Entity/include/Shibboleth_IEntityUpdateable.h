@@ -23,16 +23,27 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_IReflectionObject.h>
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_Vector.h>
 
 NS_SHIBBOLETH
 
 class IEntityUpdateable : public Refl::IReflectionObject
 {
 public:
-	virtual ~IEntityUpdateable(void) {}
+	virtual ~IEntityUpdateable(void) = default;
 
-	virtual void update(float /*dt*/) {}
+	virtual void update(float dt);
+
+	void setUpdateNode(void* update_node);
+	const void* getUpdateNode(void) const;
+
+private:
+	Vector<const void*> _dependent_on_me;
+	Vector<const void*> _update_after;
+
+	void* _update_node = nullptr;
+
+	friend class EntityManager;
 };
 
 NS_END

@@ -31,6 +31,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class GameTimeManager;
+
 class EntityManager final : public IManager
 {
 public:
@@ -54,19 +56,18 @@ public:
 
 	//~EntityManager(void);
 
-	//bool initAllModulesLoaded(void) override;
+	bool initAllModulesLoaded(void) override;
 
 	Entity* createEntity(const Refl::IReflectionDefinition& ref_def);
 	Entity* createEntity(void);
 
-	void destroyComponent(EntityComponent& comp);
-	void destroyComponent(EntityComponentID id);
-	void destroyEntity(Entity& entity);
-	void destroyEntity(EntityID id);
+	void destroy(IEntityUpdateable& updateable);
 
 	void updateEntitiesAndComponents(UpdatePhase update_phase);
 
-	void changeDefaultUpdatePhase(const Entity& entity, UpdatePhase update_phase);
+	void changeDefaultUpdatePhase(IEntityUpdateable& entity, UpdatePhase update_phase);
+
+	void updateAfter(IEntityUpdateable& updateable, IEntityUpdateable& after);
 
 private:
 	struct UpdateNode final
@@ -105,40 +106,17 @@ private:
 		Vector<UpdateNode*>{ ProxyAllocator("Entity") }
 	};
 
-	// $TODO: Change this to using a page system?
-	Vector< UniquePtr<UpdateNode> > _components{ ProxyAllocator("Entity") };
-	mutable EA::Thread::RWSpinLock _components_lock; // Mutable so const functions can take a lock.
+	Vector< UniquePtr<UpdateNode> > _update_nodes{ ProxyAllocator("Entity") };
+	mutable EA::Thread::RWSpinLock _update_node_lock; // Mutable so const functions can take a lock.
 
-	// $TODO: Change this to using a page system?
-	Vector< UniquePtr<UpdateNode> > _entities{ ProxyAllocator("Entity") };
-	mutable EA::Thread::RWSpinLock _entities_lock; // Mutable so const functions can take a lock.
-
-	EA::Thread::Mutex _free_ids_components_lock;
-	EA::Thread::Mutex _free_ids_entities_lock;
-	Vector<EntityID> _free_ids_components{ ProxyAllocator("Entity") };
-	Vector<EntityID> _free_ids_entities{ ProxyAllocator("Entity") };
-
-	EntityID _next_id_component = 0;
-	EntityID _next_id_entity = 0;
+	const GameTimeManager* _game_time_mgr = nullptr;
 
 	void markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> extra_flags = Gaff::Flags<UpdateNode::Flag>());
-	void markDependentsDirty(const Vector<EntityComponentID>& dep_comps, const Vector<EntityID>& dep_ents);
-
-	void updateAfter(Entity& entity, const Entity& after);
 
 	UpdatePhase getUpdatePhase(const UpdateNode& node) const;
-	int16_t getDepth(const Entity& entity) const;
 
 	void addToGraph(UpdateNode& node);
 	void removeFromGraph(UpdateNode& node);
-
-	void returnComponentID(EntityComponentID id);
-	EntityID allocateComponentID(void);
-
-	void returnEntityID(EntityID id);
-	EntityID allocateEntityID(void);
-
-	friend class Entity;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityManager);
 };

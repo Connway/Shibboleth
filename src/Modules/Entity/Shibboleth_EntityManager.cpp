@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_EntityManager.h"
+#include <Shibboleth_GameTime.h>
+#include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityManager)
 	.base<Shibboleth::IManager>()
@@ -36,7 +38,11 @@ static ProxyAllocator s_allocator("Entity");
 
 //EntityManager::~EntityManager(void);
 
-//bool EntityManager::initAllModulesLoaded(void) override;
+bool EntityManager::initAllModulesLoaded(void)
+{
+	_game_time_mgr = &GetManagerT<GameTimeManager>();
+	return true;
+}
 
 Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
 {
@@ -47,15 +53,6 @@ Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
 
 	if (entity) {
 		// $TODO: Add to world and manage newly created entity.
-		const EntityID id = allocateEntityID();
-		entity->setID(id);
-
-		if (id >= static_cast<int32_t>(_entities.size())) {
-			constexpr int32_t k_entity_padding = 128;
-
-			const EA::Thread::AutoRWSpinLock lock(_entities_lock, EA::Thread::AutoRWSpinLock::kLockTypeWrite);
-			_entities.resize(id + k_entity_padding);
-		}
 
 		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
 
@@ -69,10 +66,6 @@ Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
 		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
 		node->parent = node->root;
 		node->updater = entity;
-
-		// Set lock to read, because we are not actually changing the size of _entities. We are only writing to our owned slot.
-		const EA::Thread::AutoRWSpinLock lock(_entities_lock, EA::Thread::AutoRWSpinLock::kLockTypeRead);
-		_entities[id].reset(node);
 
 		Gaff::Flags extra_flags(UpdateNode::Flag::Removed);
 
@@ -97,46 +90,16 @@ Entity* EntityManager::createEntity(void)
 	return createEntity(Refl::Reflection<Entity>::GetReflectionDefinition());
 }
 
-void EntityManager::destroyComponent(EntityComponent& comp)
+void EntityManager::destroy(IEntityUpdateable& updateable)
 {
-	destroyComponent(comp.getID());
-}
-
-void EntityManager::destroyComponent(EntityComponentID id)
-{
-	// Set lock to read, because we are not actually changing the size of _components. We are only writing to owned slots.
-	_components_lock.ReadLock();
-
-	GAFF_ASSERT(_components[id]);
-	UpdateNode* const node = _components[id].get();
-
-	_components_lock.ReadUnlock();
+	UpdateNode* const node = static_cast<UpdateNode*>(updateable._update_node);
 
 	markDirty(*node, Gaff::Flags(UpdateNode::Flag::Destroy));
 
-	EntityComponent* const comp = static_cast<EntityComponent*>(node->updater);
-	markDependentsDirty(comp->_dependent_on_me_components, comp->_dependent_on_me_entities);
-}
-
-void EntityManager::destroyEntity(Entity& entity)
-{
-	destroyEntity(entity.getID());
-}
-
-void EntityManager::destroyEntity(EntityID id)
-{
-	// Set lock to read, because we are not actually changing the size of _entities. We are only writing to owned slots.
-	_entities_lock.ReadLock();
-
-	GAFF_ASSERT(_entities[id]);
-	UpdateNode* const node = _entities[id].get();
-
-	_entities_lock.ReadUnlock();
-
-	markDirty(*node, Gaff::Flags(UpdateNode::Flag::Destroy));
-
-	Entity* const entity = static_cast<Entity*>(node->updater);
-	markDependentsDirty(entity->_dependent_on_me_components, entity->_dependent_on_me_entities);
+	for (const void* dep_node : updateable._dependent_on_me) {
+		UpdateNode* const dn = static_cast<UpdateNode*>(const_cast<void*>(dep_node));
+		markDirty(*dn);
+	}
 }
 
 void EntityManager::updateEntitiesAndComponents(UpdatePhase update_phase)
@@ -147,7 +110,7 @@ void EntityManager::updateEntitiesAndComponents(UpdatePhase update_phase)
 
 	for (UpdateNode* node : dirty_nodes) {
 		const EA::Thread::AutoRWMutex lock_node(
-			_graph_locks[static_cast<size_t>(getUpdatePhase(*node))],
+			_graph_locks[static_cast<size_t>(update_phase)],
 			EA::Thread::RWMutex::kLockTypeWrite
 		);
 
@@ -156,19 +119,7 @@ void EntityManager::updateEntitiesAndComponents(UpdatePhase update_phase)
 		}
 
 		if (node->flags.testAll(UpdateNode::Flag::Destroy)) {
-			if (node->flags.testAll(UpdateNode::Flag::Component)) {
-				const EntityComponentID id = static_cast<EntityComponent*>(node->updater)->getID();
-
-				_components[id] = nullptr;
-				returnComponentID(id);
-
-			} else {
-				const EntityID id = static_cast<Entity*>(node->updater)->getID();
-				SHIB_FREET(node->updater->getBasePointer(), s_allocator);
-
-				_entities[id] = nullptr;
-				returnEntityID(id);
-			}
+			SHIB_FREET(node, s_allocator);
 
 		} else {
 			addToGraph(*node);
@@ -179,21 +130,38 @@ void EntityManager::updateEntitiesAndComponents(UpdatePhase update_phase)
 
 	dirty_nodes.clear();
 
-	// $TODO: Update all nodes for this phase.
+	// Update all nodes for this phase.
+	const EA::Thread::AutoRWMutex lock_node(
+		_graph_locks[static_cast<size_t>(update_phase)],
+		EA::Thread::RWMutex::kLockTypeRead
+	);
+
+	UpdateNode* root = &_update_roots[static_cast<size_t>(update_phase)];
+	const float dt = _game_time_mgr->getGameTime().getDeltaFloat();
+
+	if (root->updater) {
+		root->updater->update(dt);
+	}
+
+	// Iterate over all pages.
+	for (UpdateNode* node_page = root->first_child; node_page; node_page = node_page->first_child) {
+		// $TODO: Have each node update in a job so this gets multithreaded.
+		// Update each node in the page.
+		for (UpdateNode* node = node_page; node; node = node->next_sibling) {
+			// If there isn't a valid updater, then we should have never made the node.
+			GAFF_ASSERT(node->updater);
+
+			node->updater->update(dt);
+		}
+	}
 }
 
-void EntityManager::changeDefaultUpdatePhase(const Entity& entity, UpdatePhase update_phase)
+void EntityManager::changeDefaultUpdatePhase(IEntityUpdateable& updateable, UpdatePhase update_phase)
 {
 	// Ensure we have not already set dependencies.
-	GAFF_ASSERT(entity._update_after_components.empty() && entity._dependent_on_me_components.empty());
-	GAFF_ASSERT(entity._update_after_entities.empty() && entity._dependent_on_me_entities.empty());
+	GAFF_ASSERT(updateable._update_after.empty() && updateable._dependent_on_me.empty());
 
-	_entities_lock.ReadLock();
-
-	GAFF_ASSERT(_entities[entity.getID()]);
-	UpdateNode* const node = _entities[entity.getID()].get();
-
-	_entities_lock.ReadUnlock();
+	UpdateNode* const node = static_cast<UpdateNode*>(updateable._update_node);
 
 	GAFF_ASSERT(node->flags.testAll(UpdateNode::Flag::Removed, UpdateNode::Flag::Dirty));
 	GAFF_ASSERT(!node->parent->parent); // Make sure that we are attached to a root node.
@@ -206,6 +174,87 @@ void EntityManager::changeDefaultUpdatePhase(const Entity& entity, UpdatePhase u
 	UpdateNode& root = _update_roots[static_cast<size_t>(update_phase)];
 	node->root = &root;
 	node->parent = &root;
+}
+
+void EntityManager::updateAfter(IEntityUpdateable& updateable, IEntityUpdateable& after)
+{
+	// A component or some user introduced type that doesn't get the update node created with the object.
+	if (!updateable._update_node) {
+		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
+
+		if (!node) {
+			// $TODO: Log error.
+			return;
+		}
+
+		// Default to DuringPhysics update phase.
+		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
+		node->parent = node->root;
+		node->updater = &updateable;
+
+		updateable._update_node = node;
+	}
+
+	// A component or some user introduced type that doesn't get the update node created with the object.
+	if (!after._update_node) {
+		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
+
+		if (!node) {
+			// $TODO: Log error.
+			return;
+		}
+
+		// Default to DuringPhysics update phase.
+		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
+		node->parent = node->root;
+		node->updater = &after;
+
+		after._update_node = node;
+	}
+
+	// Check if we already have dependencies set up.
+	const auto it_other = Gaff::LowerBound(after._dependent_on_me, updateable._update_node);
+
+	// We are already dependent on this entity.
+	if (it_other != after._dependent_on_me.end() && *it_other == updateable._update_node) {
+		// $TODO: Log warning.
+		return;
+	}
+
+	const auto it_dep = Gaff::LowerBound(updateable._update_after, after._update_node);
+
+	// We are already in the dependency list.
+	if (it_dep != updateable._update_after.end() && *it_dep == after._update_node) {
+		// $TODO: Log warning.
+		return;
+	}
+
+	after._dependent_on_me.emplace(it_other, updateable._update_node);
+	updateable._update_after.emplace(it_dep, after._update_node);
+
+	// Find largest update depth.
+	UpdateNode* const node_after = static_cast<UpdateNode*>(after._update_node);
+	UpdateNode* const node = static_cast<UpdateNode*>(updateable._update_node);
+	int16_t largest_depth = node_after->depth;
+
+	// Not part of the same update phase.
+	if (node->root != node_after->root) {
+		// $TODO: Log error.
+		return;
+	}
+
+	for (const void* dep_node : updateable._update_after) {
+		UpdateNode* const dn = static_cast<UpdateNode*>(const_cast<void*>(dep_node));
+		const int16_t depth = dn->depth;
+
+		largest_depth = (depth > largest_depth) ? depth : largest_depth;
+	}
+
+	// We have a new depth.
+	if ((largest_depth + 1) != node->depth) {
+		node->depth = largest_depth + 1;
+		markDirty(*node);
+	}
 }
 
 void EntityManager::markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> extra_flags)
@@ -226,84 +275,6 @@ void EntityManager::markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> ex
 	node.flags |= extra_flags;
 }
 
-void EntityManager::markDependentsDirty(const Vector<EntityComponentID>& dep_comps, const Vector<EntityID>& dep_ents)
-{
-	Vector<UpdateNode*> dep_nodes;
-	dep_nodes.reserve(dep_comps.size() + dep_ents.size());
-
-	if (!dep_comps.empty()) {
-		// Set lock to read, because we are not actually changing the size of _components. We are only writing to owned slots.
-		const EA::Thread::AutoRWSpinLock lock(_components_lock, EA::Thread::AutoRWSpinLock::kLockTypeRead);
-
-		for (EntityID dep_id : dep_comps) {
-			GAFF_ASSERT(_components[dep_id]);
-			dep_nodes.push_back(_components[dep_id].get());
-		}
-	}
-
-
-	if (!dep_ents.empty()) {
-		// Set lock to read, because we are not actually changing the size of _entities. We are only writing to owned slots.
-		const EA::Thread::AutoRWSpinLock lock(_entities_lock, EA::Thread::AutoRWSpinLock::kLockTypeRead);
-
-		for (EntityID dep_id : dep_ents) {
-			GAFF_ASSERT(_entities[dep_id]);
-			dep_nodes.push_back(_entities[dep_id].get());
-		}
-	}
-
-	for (UpdateNode* node : dep_nodes) {
-		markDirty(*node);
-	}
-}
-
-void EntityManager::updateAfter(Entity& entity, const Entity& after)
-{
-	GAFF_ASSERT(_entities[entity.getID()]);
-	GAFF_ASSERT(_entities[after.getID()]);
-
-	_entities_lock.ReadLock();
-
-	GAFF_ASSERT(_entities[after.getID()]);
-
-	UpdateNode* const node = _entities[entity.getID()].get();
-	int16_t largest_depth = _entities[after.getID()]->depth;
-
-	// Check entities.
-	for (EntityID id : entity._update_after_entities) {
-		if (id == after.getID()) {
-			continue;
-		}
-
-		GAFF_ASSERT(_entities[id]);
-
-		const int16_t depth = _entities[id]->depth;
-		largest_depth = (depth > largest_depth) ? depth : largest_depth;
-	}
-
-	_entities_lock.ReadUnlock();
-
-	// Check components.
-	if (!entity._update_after_components.empty()) {
-		_components_lock.ReadLock();
-
-		for (EntityComponentID id : entity._update_after_components) {
-			GAFF_ASSERT(_components[id]);
-
-			const int16_t depth = _components[id]->depth;
-			largest_depth = (depth > largest_depth) ? depth : largest_depth;
-		}
-
-		_components_lock.ReadUnlock();
-	}
-
-	// We have a new depth.
-	if ((largest_depth + 1) != node->depth) {
-		node->depth = largest_depth + 1;
-		markDirty(*node);
-	}
-}
-
 EntityManager::UpdatePhase EntityManager::getUpdatePhase(const UpdateNode& node) const
 {
 	const UpdateNode* const root_begin = _update_roots;
@@ -311,14 +282,6 @@ EntityManager::UpdatePhase EntityManager::getUpdatePhase(const UpdateNode& node)
 
 	const int32_t index = static_cast<int32_t>(eastl::distance(root_begin, node_root));
 	return static_cast<UpdatePhase>(index);
-}
-
-int16_t EntityManager::getDepth(const Entity& entity) const
-{
-	const EA::Thread::AutoRWSpinLock lock(_entities_lock, EA::Thread::AutoRWSpinLock::kLockTypeRead);
-
-	GAFF_ASSERT(_entities[entity.getID()]);
-	return _entities[entity.getID()]->depth;
 }
 
 void EntityManager::addToGraph(UpdateNode& node)
@@ -413,54 +376,6 @@ void EntityManager::removeFromGraph(UpdateNode& node)
 	node.parent = node.root;
 
 	node.flags.set(UpdateNode::Flag::Removed);
-}
-
-void EntityManager::returnComponentID(EntityComponentID id)
-{
-	const EA::Thread::AutoMutex lock(_free_ids_components_lock);
-
-	// Sort array from highest to lowest.
-	const auto it = Gaff::UpperBound(_free_ids_components, id);
-	GAFF_ASSERT(it == _free_ids_components.end() || (*it) != id);
-	_free_ids_components.emplace(it, id);
-}
-
-EntityComponentID EntityManager::allocateComponentID(void)
-{
-	const EA::Thread::AutoMutex lock(_free_ids_components_lock);
-
-	if (!_free_ids_components.empty()) {
-		const EntityComponentID id = _free_ids_components.back();
-		_free_ids_components.pop_back();
-
-		return id;
-	}
-
-	return _next_id_component++;
-}
-
-void EntityManager::returnEntityID(EntityID id)
-{
-	const EA::Thread::AutoMutex lock(_free_ids_entities_lock);
-
-	// Sort array from highest to lowest.
-	const auto it = Gaff::UpperBound(_free_ids_entities, id);
-	GAFF_ASSERT(it == _free_ids_entities.end() || (*it) != id);
-	_free_ids_entities.emplace(it, id);
-}
-
-EntityID EntityManager::allocateEntityID(void)
-{
-	const EA::Thread::AutoMutex lock(_free_ids_entities_lock);
-
-	if (!_free_ids_entities.empty()) {
-		const EntityID id = _free_ids_entities.back();
-		_free_ids_entities.pop_back();
-
-		return id;
-	}
-
-	return _next_id_entity++;
 }
 
 NS_END
