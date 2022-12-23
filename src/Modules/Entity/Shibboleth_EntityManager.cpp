@@ -44,42 +44,56 @@ bool EntityManager::initAllModulesLoaded(void)
 	return true;
 }
 
-Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
+IEntityUpdateable* EntityManager::createUpdateable(const Refl::IReflectionDefinition& ref_def)
 {
-	GAFF_ASSERT(ref_def.getFactory<EntityManager&>());
-	GAFF_ASSERT(ref_def.hasInterface<Entity>());
+	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::IEntityUpdateable)));
 
-	Entity* const entity = ref_def.createT<Entity>(s_allocator, *this);
+	IEntityUpdateable* const updateable = (ref_def.getFactory<EntityManager&>() || ref_def.getFactory<const EntityManager&>()) ?
+		ref_def.createT<IEntityUpdateable>(CLASS_HASH(Shibboleth::IEntityUpdateable), s_allocator, *this) :
+		ref_def.createT<IEntityUpdateable>(CLASS_HASH(Shibboleth::IEntityUpdateable), s_allocator);
 
-	if (entity) {
-		// $TODO: Add to world and manage newly created entity.
-
+	if (updateable) {
 		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
 
 		if (!node) {
 			// $TODO: Log error.
-			SHIB_FREET(entity, s_allocator);
+			SHIB_FREET(updateable, s_allocator);
 			return nullptr;
 		}
 
 		// Default to DuringPhysics update phase.
 		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
 		node->parent = node->root;
-		node->updater = entity;
+		node->updater = updateable;
 
-		Gaff::Flags extra_flags(UpdateNode::Flag::Removed);
+		node->flags.set(UpdateNode::Flag::Removed);
+
+		// Mark dirty so it gets inserted in to the graph appropriately.
+		markDirty(*node);
+
+	} else {
+		// $TODO: Log error.
+	}
+
+	return updateable;
+}
+
+Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
+{
+	GAFF_ASSERT(ref_def.hasInterface<Entity>());
+
+	IEntityUpdateable* const updateable = createUpdateable(ref_def);
+	Entity* entity = (updateable) ? static_cast<Entity*>(updateable) : nullptr;
+
+	if (entity) {
+		// $TODO: Add to world and manage newly created entity.
 
 		if (!entity->init()) {
 			// $TODO: Log error.
 
-			extra_flags.set(UpdateNode::Flag::Destroy);
+			destroy(*updateable);
+			entity = nullptr;
 		}
-
-		// Mark dirty so it gets inserted in to the graph appropriately.
-		markDirty(*node, extra_flags);
-
-	} else {
-		// $TODO: Log error.
 	}
 
 	return entity;
@@ -93,8 +107,9 @@ Entity* EntityManager::createEntity(void)
 void EntityManager::destroy(IEntityUpdateable& updateable)
 {
 	UpdateNode* const node = static_cast<UpdateNode*>(updateable._update_node);
+	node->flags.set(UpdateNode::Flag::Destroy);
 
-	markDirty(*node, Gaff::Flags(UpdateNode::Flag::Destroy));
+	markDirty(*node);
 
 	for (const void* dep_node : updateable._dependent_on_me) {
 		UpdateNode* const dn = static_cast<UpdateNode*>(const_cast<void*>(dep_node));
@@ -178,39 +193,8 @@ void EntityManager::changeDefaultUpdatePhase(IEntityUpdateable& updateable, Upda
 
 void EntityManager::updateAfter(IEntityUpdateable& updateable, IEntityUpdateable& after)
 {
-	// A component or some user introduced type that doesn't get the update node created with the object.
-	if (!updateable._update_node) {
-		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
-
-		if (!node) {
-			// $TODO: Log error.
-			return;
-		}
-
-		// Default to DuringPhysics update phase.
-		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
-		node->parent = node->root;
-		node->updater = &updateable;
-
-		updateable._update_node = node;
-	}
-
-	// A component or some user introduced type that doesn't get the update node created with the object.
-	if (!after._update_node) {
-		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);
-
-		if (!node) {
-			// $TODO: Log error.
-			return;
-		}
-
-		// Default to DuringPhysics update phase.
-		node->root = &_update_roots[static_cast<size_t>(UpdatePhase::DuringPhysics)];
-		node->parent = node->root;
-		node->updater = &after;
-
-		after._update_node = node;
-	}
+	GAFF_ASSERT(updateable._update_node);
+	GAFF_ASSERT(after._update_node);
 
 	// Check if we already have dependencies set up.
 	const auto it_other = Gaff::LowerBound(after._dependent_on_me, updateable._update_node);
@@ -257,7 +241,7 @@ void EntityManager::updateAfter(IEntityUpdateable& updateable, IEntityUpdateable
 	}
 }
 
-void EntityManager::markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> extra_flags)
+void EntityManager::markDirty(UpdateNode& node)
 {
 	if (!node.flags.testAll(UpdateNode::Flag::Dirty)) {
 		const int32_t update_phase_index = static_cast<int32_t>(getUpdatePhase(node));
@@ -271,8 +255,6 @@ void EntityManager::markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> ex
 		node.flags.set(UpdateNode::Flag::Dirty);
 		dirty_nodes.emplace(it, &node);
 	}
-
-	node.flags |= extra_flags;
 }
 
 EntityManager::UpdatePhase EntityManager::getUpdatePhase(const UpdateNode& node) const

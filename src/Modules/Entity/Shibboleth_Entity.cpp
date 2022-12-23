@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
+	.BASE(Shibboleth::IEntityUpdateable)
 	.template ctor<Shibboleth::EntityManager&>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
@@ -38,19 +39,26 @@ Entity::Entity(EntityManager& entity_mgr):
 
 bool Entity::init(void)
 {
+	bool success = true;
+
 	for (auto& comp : _components) {
 		if (!comp->init()) {
 			// $TODO: Log error.
-			return false;
+			success = false;
 		}
 	}
 
-	return true;
+	return success;
 }
 
 void Entity::update(float dt)
 {
-	GAFF_REF(dt);
+	// $TODO: Jobify this.
+	for (auto& comp : _components) {
+		if (!comp->getUpdateNode()) {
+			comp->update(dt);
+		}
+	}
 }
 
 void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)

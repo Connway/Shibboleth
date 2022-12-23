@@ -46,6 +46,15 @@ public:
 	};
 
 	template <class T>
+	T* createUpdateable(void)
+	{
+		static_assert(std::is_base_of<IEntityUpdateable, T>::value, "T must be derived from IEntityUpdateable.");
+
+		IEntityUpdateable* const updateable = createUpdateable(Refl::Reflection<T>::GetReflectionDefinition());
+		return (updateable) ? static_cast<T*>(updateable) : nullptr;
+	}
+
+	template <class T>
 	T* createEntity(void)
 	{
 		static_assert(std::is_base_of<Entity, T>::value, "T must be derived from Entity.");
@@ -57,6 +66,8 @@ public:
 	//~EntityManager(void);
 
 	bool initAllModulesLoaded(void) override;
+
+	IEntityUpdateable* createUpdateable(const Refl::IReflectionDefinition& ref_def);
 
 	Entity* createEntity(const Refl::IReflectionDefinition& ref_def);
 	Entity* createEntity(void);
@@ -106,12 +117,9 @@ private:
 		Vector<UpdateNode*>{ ProxyAllocator("Entity") }
 	};
 
-	Vector< UniquePtr<UpdateNode> > _update_nodes{ ProxyAllocator("Entity") };
-	mutable EA::Thread::RWSpinLock _update_node_lock; // Mutable so const functions can take a lock.
-
 	const GameTimeManager* _game_time_mgr = nullptr;
 
-	void markDirty(UpdateNode& node, Gaff::Flags<UpdateNode::Flag> extra_flags = Gaff::Flags<UpdateNode::Flag>());
+	void markDirty(UpdateNode& node);
 
 	UpdatePhase getUpdatePhase(const UpdateNode& node) const;
 

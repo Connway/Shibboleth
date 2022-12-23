@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
+	.BASE(Shibboleth::IEntityUpdateable)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 NS_SHIBBOLETH

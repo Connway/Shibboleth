@@ -55,7 +55,6 @@ private:
 	enum class Flag
 	{
 		UpdateEnabled,
-		UpdateOutsideOfEntity,
 
 		Count
 	};
