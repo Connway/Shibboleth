@@ -23,41 +23,40 @@ THE SOFTWARE.
 #pragma once
 
 //#include "Shibboleth_ECSArchetypeResource.h"
-//#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_IResource.h>
 
-//NS_SHIBBOLETH
+NS_SHIBBOLETH
 
-//class LayerResource final : public IResource
-//{
-//public:
-//	static constexpr bool Creatable = true;
-//
-//	LayerResource(void);
-//	~LayerResource(void);
-//
-//private:
-//	Vector<ECSArchetypeResourcePtr> _archetypes;
-//	Vector<ArchetypeReferencePtr> _archetype_refs;
-//	SerializeReaderWrapper _reader_wrapper;
-//	ResourceCallbackID _callback_id;
-//
-//	bool loadOverrides(
-//		const ISerializeReader& reader,
-//		ECSManager& ecs_mgr,
-//		const ECSArchetype& base_archetype,
-//		Gaff::Hash32 layer_name,
-//		Gaff::Hash32 scene_name,
-//		Gaff::Hash64& outArchetype
-//	);
-//
-//	void archetypeLoaded(const Vector<IResource*>&);
-//	void loadLayer(IFile* file, uintptr_t thread_id_int);
-//
-//	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
-//};
-//
-//using LayerResourcePtr = Gaff::RefPtr<LayerResource>;
+class LayerResource final : public IResource
+{
+public:
+	static constexpr bool Creatable = true;
 
-//NS_END
+	LayerResource(void);
+	~LayerResource(void);
 
-//SHIB_REFLECTION_DECLARE(Shibboleth::LayerResource)
+private:
+	SerializeReaderWrapper _reader_wrapper;
+	ResourceCallbackID _callback_id;
+
+	//bool loadOverrides(
+	//	const ISerializeReader& reader,
+	//	ECSManager& ecs_mgr,
+	//	const ECSArchetype& base_archetype,
+	//	Gaff::Hash32 layer_name,
+	//	Gaff::Hash32 scene_name,
+	//	Gaff::Hash64& outArchetype
+	//);
+
+	//void archetypeLoaded(const Vector<IResource*>&);
+	void loadLayer(IFile* file, uintptr_t thread_id_int);
+
+	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
+};
+
+using LayerResourcePtr = Gaff::RefPtr<LayerResource>;
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::LayerResource)

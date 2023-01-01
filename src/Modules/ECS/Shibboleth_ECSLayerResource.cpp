@@ -31,8 +31,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSLayerResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".layer.bin"),
-		Shibboleth::ResExtAttribute(u8".layer"),
+		Shibboleth::ResExtAttribute(u8".ecslayer.bin"),
+		Shibboleth::ResExtAttribute(u8".ecslayer"),
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSLayerResource::loadLayer)
 	)
 

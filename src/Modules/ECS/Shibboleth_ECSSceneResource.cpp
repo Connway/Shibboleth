@@ -32,8 +32,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSSceneResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".scene.bin"),
-		Shibboleth::ResExtAttribute(u8".scene"),
+		Shibboleth::ResExtAttribute(u8".ecsscene.bin"),
+		Shibboleth::ResExtAttribute(u8".ecsscene"),
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSSceneResource::loadScene)
 	)
 

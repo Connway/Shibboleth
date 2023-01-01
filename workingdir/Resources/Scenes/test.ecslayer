@@ -1,0 +1,78 @@
+{
+	"name": "test",
+
+	"objects": [
+		{
+			"archetype": "Archetypes/test.archetype",
+
+			"overrides":
+			{
+				"components":
+				{
+					"Shibboleth::Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
+					//"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+				}
+			}
+		},
+		{
+			"archetype": "Archetypes/test.archetype",
+
+			"overrides":
+			{
+				"components":
+				{
+					"Shibboleth::Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
+					//"Shibboleth::Rotation": { "value": {"x": 0.25, "y": 0.0, "z": 0.0} },
+					"Shibboleth::StateMachine":
+					{
+						"floats":
+						{
+							"rot_speed": -0.5
+						}
+					}
+				}
+			}
+		},
+		{
+			"archetype": "Archetypes/camera.archetype",
+
+			"overrides":
+			{
+				"shared_components": {},
+				"components":
+				{
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+				}
+			}
+		},
+		// floor
+		{
+			"overrides":
+			{
+				"components":
+				{
+					"Shibboleth::RigidBody": { "shape": "Physics/Shapes/plane.physics_shape", "static": true },
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": -10.0, "z": 0.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
+				}
+			}
+		},
+		// test ninja
+		{
+			"archetype": "Archetypes/test.archetype",
+
+			"overrides":
+			{
+				"components":
+				{
+					"Shibboleth::RigidBody": { "shape": "Physics/Shapes/capsule.physics_shape" },
+					"Shibboleth::Position": { "value": {"x": 0.0, "y": 10.0, "z": 15.0} },
+					"Shibboleth::Rotation": { "value": {"x": 0.1, "y": 0.0, "z": 0.0} },
+					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
+				}
+			}
+		}
+	]
+}

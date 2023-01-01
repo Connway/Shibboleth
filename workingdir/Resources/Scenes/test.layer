@@ -1,17 +1,12 @@
 {
-	"name": "test",
-
-	"objects": [
+	"entities": [
 		{
-			"archetype": "Archetypes/test.archetype",
+			"base": "entities/test.entity",
 
-			"overrides":
+			"components":
 			{
-				"components":
-				{
-					"Shibboleth::Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
-					//"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
-				}
+				"Shibboleth::Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
+				//"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
 			}
 		},
 		{

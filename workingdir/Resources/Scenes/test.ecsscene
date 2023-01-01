@@ -1,0 +1,3 @@
+[
+	{ "name": "Test Layer", "layer_file": "Scenes/test.layer", "delay_load": false }
+]
