@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "CodeGen_ReflectionHeaderGenerator.h"
-#include "CodeGen_ModuleGenerator.h"
 #include <Gaff_String.h>
 #include <Gaff_Utils.h>
 #include <argparse.hpp>
@@ -42,7 +41,6 @@ int main(int argc, const char** argv)
 
 
 	ReflectionHeaderGenerator_AddArguments(program);
-	ModuleGenerator_AddArguments(program);
 
 
 	try {
@@ -62,8 +60,6 @@ int main(int argc, const char** argv)
 
 	if (action == "module_header" || action == "tool_header" || action == "static_header") {
 		return ReflectionHeaderGenerator_Run(program);
-	} else if (action == "create_module" || action == "create_tool") {
-		return ModuleGenerator_Run(program);
 	} else {
 		std::cout << program;
 	}
