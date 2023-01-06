@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ModuleGenerator.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ReflectionHeaderGenerator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -17,7 +14,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ModuleGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ReflectionHeaderGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_Utils.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGenerator.cpp" />

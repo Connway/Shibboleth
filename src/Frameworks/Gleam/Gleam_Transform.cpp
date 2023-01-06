@@ -91,14 +91,14 @@ void TransformRT::setTranslation(const Vec3& translation)
 TransformRT TransformRT::concat(const TransformRT& rhs) const
 {
 	return TransformRT(
-		_translation + rhs._translation,
+		_translation + _rotation * rhs._translation,
 		_rotation * rhs._rotation
 	);
 }
 
 TransformRT TransformRT::inverse(void) const
 {
-	return Transform(
+	return TransformRT(
 		-_translation,
 		glm::inverse(_rotation)
 	);
@@ -106,7 +106,7 @@ TransformRT TransformRT::inverse(void) const
 
 TransformRT& TransformRT::concatThis(const TransformRT& rhs)
 {
-	_translation += rhs._translation;
+	_translation += _rotation * rhs._translation;
 	_rotation *= rhs._rotation;
 	return *this;
 }
@@ -239,9 +239,9 @@ void Transform::setTranslation(const Vec3& translation)
 
 Transform Transform::concat(const Transform& rhs) const
 {
-	// $TODO: This is likely incorrect. Fix this.
 	return Transform(
-		_translation + rhs._translation,
+		// Need to rotate translation so it is appropriately relative to the parent transform.
+		_translation + _rotation * rhs._translation,
 		_rotation * rhs._rotation,
 		_scale * rhs._scale
 	);
@@ -258,8 +258,8 @@ Transform Transform::inverse(void) const
 
 Transform& Transform::concatThis(const Transform& rhs)
 {
-	// $TODO: This is likely incorrect. Fix this.
-	_translation += rhs._translation;
+	// Need to rotate translation so it is appropriately relative to the parent transform.
+	_translation += _rotation * rhs._translation;
 	_rotation *= rhs._rotation;
 	_scale *= rhs._scale;
 	return *this;

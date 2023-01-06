@@ -16,7 +16,8 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/Resource/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
-			base_dir .. "../../Frameworks/Gaff/include"
+			base_dir .. "../../Dependencies/mpack",
+			base_dir .. "../../Frameworks/Gaff/include",
 		}
 
 
@@ -28,7 +29,8 @@ local GenerateProject = function()
 		local deps =
 		{
 			--"MainLoop",
-			"Resource"
+			"Resource",
+			"DevDebug",
 		}
 
 		dependson(deps)
@@ -39,6 +41,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Scene")
 	--table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "DevDebug")
 
 	dependson(deps)
 	links(deps)

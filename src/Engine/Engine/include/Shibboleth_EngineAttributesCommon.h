@@ -165,6 +165,13 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ScriptFlagsAttribute);
 };
 
+class BaseClassAttribute final : public Refl::IAttribute
+{
+public:
+	Refl::IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(BaseClassAttribute);
+};
 
 // Template Attributes
 ////template <class T, class Msg>
@@ -230,6 +237,7 @@ SHIB_REFLECTION_DECLARE(Shibboleth::OptionalAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::UniqueAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::BaseClassAttribute)
 
 //SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 //

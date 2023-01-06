@@ -228,12 +228,10 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CodeGener
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ModuleGenerator.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_ReflectionHeaderGenerator.h" />
     <ClInclude Include="..\..\..\..\..\src\Tools\CodeGenerator\include\CodeGen_Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ModuleGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_ReflectionHeaderGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGen_Utils.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGenerator.cpp" />

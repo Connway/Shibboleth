@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class EntitySceneComponent;
 class EntityManager;
 
 class Entity : public IEntityUpdateable
@@ -147,6 +148,7 @@ private:
 	};
 
 	Vector< UniquePtr<EntityComponent> > _components;
+	EntitySceneComponent* _root_scene_comp = nullptr;
 
 	Gaff::Flags<Flag> _flags;
 

@@ -216,7 +216,7 @@ void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 			return;
 		}
 
-		reader.forEachInArray([&](int32_t index) -> bool
+		reader.forEachInArray([&](int32_t /*index*/) -> bool
 		{
 			//char8_t archetype[256] = { 0 };
 
@@ -249,7 +249,7 @@ void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 			//	}
 			//}
 
-			//return false;
+			return false;
 		});
 	}
 
@@ -262,6 +262,8 @@ void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 	//}
 
 	//_callback_id = res_mgr.registerCallback(resources, callback);
+
+	GAFF_REF(res_mgr);
 }
 
 NS_END

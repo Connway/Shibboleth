@@ -22,49 +22,50 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IEntityUpdateable.h"
-#include <Shibboleth_Reflection.h>
-#include <Gaff_Flags.h>
+#include "Shibboleth_EntityComponent.h"
+#include <Gleam_Transform.h>
 
 NS_SHIBBOLETH
 
-class Entity;
-
-class EntityComponent : public IEntityUpdateable
+class EntitySceneComponent : public EntityComponent
 {
-	GAFF_NO_COPY(EntityComponent);
+	GAFF_NO_COPY(EntitySceneComponent);
 
 public:
-	EntityComponent(void) = default;
+	EntitySceneComponent(void) = default;
 
-	virtual bool init(void);
-	virtual void destroy(void);
+	void setTransformRelative(const Gleam::Transform& transform);
+	const Gleam::Transform& getTransformRelative(void) const;
 
-	Entity* getOwner(void) const;
+	const Gleam::Vec3& getPositionRelative(void) const;
 
-	void updateAfter(IEntityUpdateable& after);
+	const Gleam::Quat& getRotationRelative(void) const;
 
-	void setEnableUpdate(bool enabled);
-	bool canUpdate(void) const;
+	void setTransformWorld(const Gleam::Transform& transform);
+	const Gleam::Transform& getTransformWorld(void) const;
+
+	const Gleam::Vec3& getPositionWorld(void) const;
+	const Gleam::Quat& getRotationWorld(void) const;
+
+	void addChild(EntitySceneComponent& component);
+	void removeFromParent(bool update_to_world = false);
 
 private:
-	enum class Flag
-	{
-		UpdateEnabled,
+	Gleam::Transform _transform_relative;
+	Gleam::Transform _transform_world;
 
-		Count
-	};
+	EntitySceneComponent* _parent = nullptr;
+	EntitySceneComponent* _first_child = nullptr;
+	EntitySceneComponent* _last_child = nullptr;
+	EntitySceneComponent* _next_sibling = nullptr;
+	EntitySceneComponent* _prev_sibling = nullptr;
 
-	Entity* _owner = nullptr;
+	void updateChildrenToWorld(void);
+	void updateToWorld(void);
 
-	Gaff::Flags<Flag> _flags;
-
-	friend class EntityManager;
-	friend class Entity;
-
-	SHIB_REFLECTION_CLASS_DECLARE(EntityComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(EntitySceneComponent);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::EntitySceneComponent)
