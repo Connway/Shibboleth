@@ -102,7 +102,7 @@ void EntitySceneComponent::addChild(EntitySceneComponent& component)
 	GAFF_ASSERT(!component._prev_sibling);
 	GAFF_ASSERT(!component._next_sibling);
 
-#if _DEBUG
+#ifdef GAFF_ASSERT_ENABLED
 	for (EntitySceneComponent* child = _first_child; child; child = child->_next_sibling) {
 		GAFF_ASSERT(child != &component);
 	}
