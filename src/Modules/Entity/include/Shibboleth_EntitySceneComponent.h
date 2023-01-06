@@ -50,7 +50,13 @@ public:
 	const Gleam::Transform& getTransformWorld(void) const;
 
 	const Gleam::Vec3& getPositionWorld(void) const;
+	void setPositionWorld(const Gleam::Vec3& pos);
+
 	const Gleam::Quat& getRotationWorld(void) const;
+	void setRotationWorld(const Gleam::Quat& rot);
+
+	const Gleam::Vec3& getScaleWorld(void) const;
+	void setScaleWorld(const Gleam::Vec3& scale);
 
 	void addChild(EntitySceneComponent& component);
 	void removeFromParent(bool update_to_world = false);

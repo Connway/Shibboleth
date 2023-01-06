@@ -110,9 +110,29 @@ const Gleam::Vec3& EntitySceneComponent::getPositionWorld(void) const
 	return _transform_world.getTranslation();
 }
 
+void EntitySceneComponent::setPositionWorld(const Gleam::Vec3& pos)
+{
+	setTransformWorld(Gleam::Transform(pos, getRotationWorld(), getScaleWorld()));
+}
+
 const Gleam::Quat& EntitySceneComponent::getRotationWorld(void) const
 {
 	return _transform_world.getRotation();
+}
+
+void EntitySceneComponent::setRotationWorld(const Gleam::Quat& rot)
+{
+	setTransformWorld(Gleam::Transform(getPositionWorld(), rot, getScaleWorld()));
+}
+
+const Gleam::Vec3& EntitySceneComponent::getScaleWorld(void) const
+{
+	return _transform_world.getScale();
+}
+
+void EntitySceneComponent::setScaleWorld(const Gleam::Vec3& scale)
+{
+	setTransformWorld(Gleam::Transform(getPositionWorld(), getRotationWorld(), scale));
 }
 
 void EntitySceneComponent::addChild(EntitySceneComponent& component)
