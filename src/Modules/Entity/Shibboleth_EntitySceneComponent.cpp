@@ -60,9 +60,29 @@ const Gleam::Vec3& EntitySceneComponent::getPositionRelative(void) const
 	return _transform_relative.getTranslation();
 }
 
+void EntitySceneComponent::setPositionRelative(const Gleam::Vec3& pos)
+{
+	setTransformRelative(Gleam::Transform(pos, getRotationRelative(), getScaleRelative()));
+}
+
 const Gleam::Quat& EntitySceneComponent::getRotationRelative(void) const
 {
 	return _transform_relative.getRotation();
+}
+
+void EntitySceneComponent::setRotationRelative(const Gleam::Quat& rot)
+{
+	setTransformRelative(Gleam::Transform(getPositionRelative(), rot, getScaleRelative()));
+}
+
+const Gleam::Vec3& EntitySceneComponent::getScaleRelative(void) const
+{
+	return _transform_relative.getScale();
+}
+
+void EntitySceneComponent::setScaleRelative(const Gleam::Vec3& scale)
+{
+	setTransformRelative(Gleam::Transform(getPositionRelative(), getRotationRelative(), scale));
 }
 
 void EntitySceneComponent::setTransformWorld(const Gleam::Transform& transform)

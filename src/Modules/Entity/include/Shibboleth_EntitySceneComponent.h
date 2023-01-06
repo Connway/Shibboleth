@@ -38,8 +38,13 @@ public:
 	const Gleam::Transform& getTransformRelative(void) const;
 
 	const Gleam::Vec3& getPositionRelative(void) const;
+	void setPositionRelative(const Gleam::Vec3& pos);
 
 	const Gleam::Quat& getRotationRelative(void) const;
+	void setRotationRelative(const Gleam::Quat& rot);
+
+	const Gleam::Vec3& getScaleRelative(void) const;
+	void setScaleRelative(const Gleam::Vec3& scale);
 
 	void setTransformWorld(const Gleam::Transform& transform);
 	const Gleam::Transform& getTransformWorld(void) const;
