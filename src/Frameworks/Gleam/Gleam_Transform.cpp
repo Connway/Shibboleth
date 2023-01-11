@@ -78,6 +78,16 @@ void TransformRT::setRotation(const Quat& rotation)
 	_rotation = rotation;
 }
 
+Vec3 TransformRT::getRotationEuler(void) const
+{
+	return glm::eulerAngles(_rotation);
+}
+
+void TransformRT::setRotationEuler(const Vec3& rotation)
+{
+	_rotation = Gleam::Quat(rotation);
+}
+
 const Vec3& TransformRT::getTranslation(void) const
 {
 	return _translation;
@@ -225,6 +235,16 @@ const Quat& Transform::getRotation(void) const
 void Transform::setRotation(const Quat& rotation)
 {
 	_rotation = rotation;
+}
+
+Vec3 Transform::getRotationEuler(void) const
+{
+	return glm::eulerAngles(_rotation);
+}
+
+void Transform::setRotationEuler(const Vec3& rotation)
+{
+	_rotation = Gleam::Quat(rotation);
 }
 
 const Vec3& Transform::getTranslation(void) const

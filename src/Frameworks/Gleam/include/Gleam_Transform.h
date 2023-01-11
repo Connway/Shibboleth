@@ -46,6 +46,8 @@ public:
 
 	const Quat& getRotation(void) const;
 	void setRotation(const Quat& rotation);
+	Vec3 getRotationEuler(void) const;
+	void setRotationEuler(const Vec3& rotation);
 	const Vec3& getTranslation(void) const;
 	void setTranslation(const Vec3& translation);
 
@@ -85,6 +87,8 @@ public:
 	void setScale(float scale);
 	const Quat& getRotation(void) const;
 	void setRotation(const Quat& rotation);
+	Vec3 getRotationEuler(void) const;
+	void setRotationEuler(const Vec3& rotation);
 	const Vec3& getTranslation(void) const;
 	void setTranslation(const Vec3& translation);
 

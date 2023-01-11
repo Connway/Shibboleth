@@ -1,7 +1,7 @@
 {
 	"entities": [
 		{
-			"base": "entities/test.entity",
+			"base": "Entities/test.entity",
 
 			"components":
 			{

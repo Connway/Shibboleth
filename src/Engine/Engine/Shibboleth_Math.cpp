@@ -187,12 +187,19 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
 	.var("t", &Gleam::Vec2::t, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Gleam::Vec2)
 
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::TransformRT)
+	.var("translation", &Gleam::TransformRT::getTranslation, &Gleam::TransformRT::setTranslation)
+	.var("rotation", &Gleam::TransformRT::getRotation, &Gleam::TransformRT::setRotation)
+	.var("rotationEuler", &Gleam::TransformRT::getRotationEuler, &Gleam::TransformRT::setRotationEuler)
+SHIB_REFLECTION_DEFINE_END(Gleam::TransformRT)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)
 	.var("translation", &Gleam::Transform::getTranslation, &Gleam::Transform::setTranslation)
 	.var("rotation", &Gleam::Transform::getRotation, &Gleam::Transform::setRotation)
+	.var("rotationEuler", &Gleam::Transform::getRotationEuler, &Gleam::Transform::setRotationEuler)
 	.var(
 		"scale",
-		static_cast<const Gleam::Vec3& (Gleam::Transform::*)() const>(&Gleam::Transform::getScale),
+		static_cast<const Gleam::Vec3& (Gleam::Transform::*)(void) const>(&Gleam::Transform::getScale),
 		static_cast<void (Gleam::Transform::*)(const Gleam::Vec3&)>(&Gleam::Transform::setScale)
 	)
 SHIB_REFLECTION_DEFINE_END(Gleam::Transform)

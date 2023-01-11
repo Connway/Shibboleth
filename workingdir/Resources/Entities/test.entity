@@ -1,0 +1,36 @@
+{
+	"components":
+	{
+		"test model":
+		{
+			"type": "Shibboleth::ModelComponent",
+
+			// EntitySceneComponent only.
+			"parent": null, 
+			"transformRelative":
+			{
+				"translation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+				"rotationEuler": { "x": 0.0, "y": 0.0, "z": 0.0 }
+			},
+
+			"raster_state_resource": "RasterStates/opaque.raster_state",
+			"model_resource": "Models/ninja.model",
+
+			"material":
+			{
+				"resource": "Materials/test.material",
+
+				"textures_pixel":
+				{
+					"tex": "Models/ninja.texture"
+				}
+			}
+		},
+
+		"test logic":
+		{
+			"type": "Shibboleth::StateMachineComponent",
+			"resource": "StateMachines/test.state_machine"
+		}
+	}
+}
