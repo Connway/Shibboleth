@@ -136,6 +136,10 @@ public:
 	void setEnableUpdate(bool enabled);
 	bool canUpdate(void) const;
 
+	const U8String& getName(void) const;
+	void setName(const U8String& name);
+	void setName(U8String&& name);
+
 protected:
 	EntityManager& _entity_mgr;
 
@@ -150,12 +154,15 @@ private:
 	Vector< UniquePtr<EntityComponent> > _components;
 	EntitySceneComponent* _root_scene_comp = nullptr;
 
+	U8String _name;
+
 	Gaff::Flags<Flag> _flags;
 
 	friend class EntityComponent;
 	friend class EntityManager;
 
 	SHIB_REFLECTION_CLASS_DECLARE(Entity);
+
 	GAFF_NO_MOVE(Entity);
 	GAFF_NO_COPY(Entity);
 };

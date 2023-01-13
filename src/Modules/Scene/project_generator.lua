@@ -1,3 +1,11 @@
+local module_link_deps =
+{
+	"MainLoop",
+	"Resource",
+	"Entity",
+	"DevDebug",
+}
+
 local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Scene")
 	local base_dir = GetModulesDirectory("Scene")
@@ -14,6 +22,7 @@ local GenerateProject = function()
 			source_dir .. "../../Engine/Engine/include",
 			-- source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
+			source_dir .. "../../Modules/Entity/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/mpack",
@@ -26,22 +35,13 @@ local GenerateProject = function()
 
 		files { source_dir .. "Shibboleth_SceneModule.cpp" }
 
-		local deps =
-		{
-			--"MainLoop",
-			"Resource",
-			"DevDebug",
-		}
-
-		dependson(deps)
-		links(deps)
+		dependson(module_link_deps)
+		links(module_link_deps)
 end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Scene")
-	--table.insert(deps, "MainLoop")
-	table.insert(deps, "Resource")
-	table.insert(deps, "DevDebug")
+	deps = table.join(deps, module_link_deps)
 
 	dependson(deps)
 	links(deps)

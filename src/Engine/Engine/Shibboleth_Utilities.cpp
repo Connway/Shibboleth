@@ -42,7 +42,7 @@ IApp& GetApp(void)
 	return *gApp;
 }
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const IFile* file, bool copy_buffer)
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const IFile* file, bool copy_buffer, const char8_t* schema)
 {
 	if (Gaff::EndsWith(path, u8".bin")) {
 		if (copy_buffer) {
@@ -55,11 +55,11 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, c
 			return wrapper.parseMPack(reinterpret_cast<const char*>(file->getBuffer()), file->size(), false);
 		}
 	} else {
-		return wrapper.parseJSON(reinterpret_cast<const char8_t*>(file->getBuffer()));
+		return wrapper.parseJSON(reinterpret_cast<const char8_t*>(file->getBuffer()), schema);
 	}
 }
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path)
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const char8_t* schema)
 {
 	IFileSystem& fs = GetApp().getFileSystem();
 
@@ -71,7 +71,7 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path)
 	}
 
 	if (file) {
-		const bool success = OpenJSONOrMPackFile(wrapper, path, file, true);
+		const bool success = OpenJSONOrMPackFile(wrapper, path, file, true, schema);
 		fs.closeFile(file);
 		return success;
 	}

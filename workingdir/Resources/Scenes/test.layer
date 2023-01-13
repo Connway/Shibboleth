@@ -1,15 +1,23 @@
 {
-	"entities": [
+	"entities":
+	[
 		{
 			"base": "Entities/test.entity",
+			"name": "test_1",
 
 			"components":
 			{
-				"Shibboleth::Position": { "value": {"x": -2.5, "y": -5.0, "z": 5.0} },
-				//"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
+				"test model":
+				{
+					"transformRelative":
+					{
+						"translation": { x": -2.5, "y": -5.0, "z": 5.0 },
+						"rotationEuler": { "x": 0.0, "y": 0.0, "z": 0.0 }
+					}
+				},
 			}
 		},
-		{
+		/*{
 			"archetype": "Archetypes/test.archetype",
 
 			"overrides":
@@ -68,6 +76,6 @@
 					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
-		}
+		}*/
 	]
 }

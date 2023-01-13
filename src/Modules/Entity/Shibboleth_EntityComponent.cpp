@@ -25,6 +25,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
 	.BASE(Shibboleth::IEntityUpdateable)
+
+	.var("name", &Shibboleth::EntityComponent::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 NS_SHIBBOLETH
@@ -59,6 +61,21 @@ void EntityComponent::setEnableUpdate(bool enabled)
 bool EntityComponent::canUpdate(void) const
 {
 	return _flags.testAll(Flag::UpdateEnabled);
+}
+
+const U8String& EntityComponent::getName(void) const
+{
+	return _name;
+}
+
+void EntityComponent::setName(const U8String& name)
+{
+	_name = name;
+}
+
+void EntityComponent::setName(U8String&& name)
+{
+	_name = std::move(name);
 }
 
 NS_END

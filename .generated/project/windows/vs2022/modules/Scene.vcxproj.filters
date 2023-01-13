@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Archetype.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_EntityResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_LayerResource.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -23,6 +26,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_EntityResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_LayerResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp" />

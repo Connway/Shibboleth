@@ -54,7 +54,7 @@ const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
 };
 
-static constexpr const char8_t* const g_graphics_cfg_schema =
+static constexpr const char8_t* const k_graphics_cfg_schema =
 u8R"({
 	"type": "object",
 
@@ -150,7 +150,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, g_graphics_cfg_schema*/)) {
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, k_graphics_cfg_schema*/)) {
 		LogErrorGraphics("Failed to parse config file with error - %s.", config.getErrorText());
 		fs.closeFile(file);
 
@@ -206,7 +206,7 @@ bool RenderManagerBase::init(void)
 
 	Gaff::JSON config;
 
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, g_graphics_cfg_schema*/)) {
+	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, k_graphics_cfg_schema*/)) {
 		const char8_t* const error = config.getErrorText();
 		LogErrorGraphics("Failed to parse config file with error - %s.", error);
 		fs.closeFile(file);

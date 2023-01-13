@@ -22,55 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IEntityUpdateable.h"
-#include <Shibboleth_Reflection.h>
-#include <Gaff_Flags.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_IResource.h>
+#include <Shibboleth_Entity.h>
 
 NS_SHIBBOLETH
 
-class Entity;
-
-class EntityComponent : public IEntityUpdateable
+class EntityResource final : public IResource
 {
-	GAFF_NO_COPY(EntityComponent);
-
 public:
-	EntityComponent(void) = default;
+	EntityResource(void);
+	~EntityResource(void);
 
-	virtual bool init(void);
-	virtual void destroy(void);
-
-	Entity* getOwner(void) const;
-
-	void updateAfter(IEntityUpdateable& after);
-
-	void setEnableUpdate(bool enabled);
-	bool canUpdate(void) const;
-
-	const U8String& getName(void) const;
-	void setName(const U8String& name);
-	void setName(U8String&& name);
+	void load(const ISerializeReader& reader);
+	void save(ISerializeWriter& writer);
 
 private:
-	enum class Flag
-	{
-		UpdateEnabled,
+	void loadEntity(IFile* file, uintptr_t thread_id_int);
 
-		Count
-	};
+	SerializeReaderWrapper _reader_wrapper{ ProxyAllocator("Resource") };
+	Entity _entity_definition;
 
-	Entity* _owner = nullptr;
-
-	U8String _name;
-
-	Gaff::Flags<Flag> _flags;
-
-	friend class EntityManager;
-	friend class Entity;
-
-	SHIB_REFLECTION_CLASS_DECLARE(EntityComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(EntityResource);
 };
+
+using EntityResourcePtr = Gaff::RefPtr<EntityResource>;
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::EntityResource)

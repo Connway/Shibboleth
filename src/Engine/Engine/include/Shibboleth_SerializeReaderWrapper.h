@@ -38,7 +38,7 @@ public:
 	SerializeReaderWrapper& operator=(SerializeReaderWrapper&&);
 
 	bool parseMPack(const char* buffer, size_t size, bool take_ownership = false);
-	bool parseJSON(const char8_t* buffer);
+	bool parseJSON(const char8_t* buffer, const char8_t* schema = nullptr);
 
 	const ISerializeReader* getReader(void) const;
 	const char* getErrorText(void) const;

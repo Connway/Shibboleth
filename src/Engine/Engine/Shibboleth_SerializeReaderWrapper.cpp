@@ -92,11 +92,13 @@ bool SerializeReaderWrapper::parseMPack(const char* buffer, size_t size, bool ta
 	return true;
 }
 
-bool SerializeReaderWrapper::parseJSON(const char8_t* buffer)
+bool SerializeReaderWrapper::parseJSON(const char8_t* buffer, const char8_t* schema)
 {
 	Gaff::JSON json;
 
-	if (!json.parse(buffer)) {
+	const bool success = (schema) ? json.parse(buffer, schema) : json.parse(buffer);
+
+	if (!success) {
 		_error_text = reinterpret_cast<const char*>(json.getErrorText());
 		return false;
 	}

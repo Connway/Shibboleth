@@ -1,4 +1,6 @@
 {
+	"name": "test_entity",
+
 	"components":
 	{
 		"test model":
