@@ -71,10 +71,13 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 
 	// Copy all reflected variables.
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
-		// $TODO: Check if we do not want to copy this variable.
 		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
-		const void* const orig_data = ref_var->getData(getBasePointer());
 
+		if (ref_var->isNoCopy()) {
+			continue;
+		}
+
+		const void* const orig_data = ref_var->getData(getBasePointer());
 		ref_var->setData(new_entity->getBasePointer(), orig_data);
 	}
 

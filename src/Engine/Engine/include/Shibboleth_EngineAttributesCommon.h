@@ -173,6 +173,26 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(BaseClassAttribute);
 };
 
+class NoCopyAttribute final : public Refl::IAttribute
+{
+public:
+	Refl::IAttribute* clone(void) const override;
+
+	template <class T, class Var>
+	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setNoCopy(true); }
+
+	template <class T, class Var, class Ret>
+	void apply(Refl::IReflectionVar& ref_var, Ret (T::*)(void) const, void (T::*)(Var)) { ref_var.setNoCopy(true); }
+
+	template <class T, class Var, class Vec_Allocator, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Gaff::Vector<Var, Vec_Allocator> T::* /*vec*/) { ref_var.setNoCopy(true); }
+
+	template <class T, class Var, size_t size>
+	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setNoCopy(true); }
+
+	SHIB_REFLECTION_CLASS_DECLARE(NoCopyAttribute);
+};
+
 // Template Attributes
 ////template <class T, class Msg>
 ////class GlobalMessageAttribute final : public Refl::IAttribute
@@ -238,6 +258,7 @@ SHIB_REFLECTION_DECLARE(Shibboleth::UniqueAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::BaseClassAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::NoCopyAttribute)
 
 //SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 //

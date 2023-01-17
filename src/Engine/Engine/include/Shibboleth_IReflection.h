@@ -335,12 +335,16 @@ public:
 	void setOptional(bool optional) { _flags.set(optional, Flag::Optional); }
 	bool isOptional(void) const { return _flags.testAll(Flag::Optional); }
 
+	void setNoCopy(bool optional) { _flags.set(optional, Flag::NoCopy); }
+	bool isNoCopy(void) const { return _flags.testAll(Flag::NoCopy); }
+
 private:
 	enum class Flag
 	{
 		NoSerialize,
 		ReadOnly,
 		Optional,
+		NoCopy,
 
 		Count
 	};

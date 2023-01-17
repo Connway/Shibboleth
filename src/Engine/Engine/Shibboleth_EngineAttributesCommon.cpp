@@ -31,6 +31,7 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::RangeAttribute, IAtt
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::OptionalAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ScriptFlagsAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::BaseClassAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::NoCopyAttribute, IAttribute)
 
 
 NS_SHIBBOLETH
@@ -42,6 +43,7 @@ SHIB_REFLECTION_CLASS_DEFINE(RangeAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(OptionalAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(ScriptFlagsAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(BaseClassAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(NoCopyAttribute)
 
 
 
@@ -117,6 +119,14 @@ Refl::IAttribute* BaseClassAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(BaseClassAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+
+Refl::IAttribute* NoCopyAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(NoCopyAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END

@@ -34,7 +34,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)
 		"transformWorld",
 		&Shibboleth::EntitySceneComponent::getTransformWorld,
 		&Shibboleth::EntitySceneComponent::setTransformWorld,
-		Shibboleth::NoSerializeAttribute()
+		Shibboleth::NoSerializeAttribute(),
+		Shibboleth::NoCopyAttribute()
 	)
 
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntitySceneComponent)
