@@ -4,6 +4,7 @@ local module_link_deps =
 	"Resource",
 	"Entity",
 	"DevDebug",
+	"Gleam"
 }
 
 local GenerateProject = function()

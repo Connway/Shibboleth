@@ -273,6 +273,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\SceneModu
     <ProjectReference Include="DevDebug.vcxproj">
       <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
