@@ -43,6 +43,8 @@ public:
 	const ISerializeReader* getReader(void) const;
 	const char* getErrorText(void) const;
 
+	void freeReader(void);
+
 private:
 	ProxyAllocator _allocator;
 

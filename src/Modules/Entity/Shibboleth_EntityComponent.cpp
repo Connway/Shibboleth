@@ -38,6 +38,42 @@ bool EntityComponent::init(void)
 	return true;
 }
 
+bool EntityComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides)
+{
+	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
+
+	new_component = static_cast<EntityComponent*>(_owner->_entity_mgr.createUpdateable(ref_def));
+
+	if (!new_component) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// Copy all reflected variables.
+	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
+		// $TODO: Check if we do not want to copy this variable.
+		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
+		const void* const orig_data = ref_var->getData(getBasePointer());
+
+		ref_var->setData(new_component->getBasePointer(), orig_data);
+	}
+
+	if (overrides) {
+		bool success = true;
+
+		if (!ref_def.load(*overrides, getBasePointer())) {
+			// $TODO: Log error.
+			success = false;
+		}
+
+		if (!success) {
+			return false;
+		}
+	}
+
+	return new_component != nullptr;
+}
+
 void EntityComponent::destroy(void)
 {
 }

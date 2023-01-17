@@ -21,12 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Entity.h"
+#include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
 	.BASE(Shibboleth::IEntityUpdateable)
 	.template ctor<Shibboleth::EntityManager&>()
 
+	//.var("flags", &Shibboleth::Entity::_flags)
 	.var("name", &Shibboleth::Entity::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
@@ -53,6 +55,84 @@ bool Entity::init(void)
 	return success;
 }
 
+bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
+{
+	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
+
+	new_entity = _entity_mgr.createEntity(ref_def);
+
+	if (!new_entity) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	new_entity->_components.reserve(_components.size());
+	new_entity->_flags = _flags;
+
+	// Copy all reflected variables.
+	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
+		// $TODO: Check if we do not want to copy this variable.
+		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
+		const void* const orig_data = ref_var->getData(getBasePointer());
+
+		ref_var->setData(new_entity->getBasePointer(), orig_data);
+	}
+
+	bool success = true;
+
+	// Clone all components
+	for (auto& comp : _components) {
+		if (overrides) {
+			overrides->enterElement(comp->getName().data());
+		}
+
+		EntityComponent* component = nullptr;
+
+		if (!comp->clone(component, (overrides && overrides->isObject()) ? overrides : nullptr)) {
+			// $TODO: Log error.
+			success = false;
+		}
+
+		new_entity->_components.emplace_back(component);
+
+		if (overrides) {
+			overrides->exitElement();
+		}
+	}
+
+	// Set up scene components.
+	for (int32_t i = 0; i < static_cast<int32_t>(_components.size()); ++i) {
+		auto& comp = _components[i];
+
+		EntitySceneComponent* const scene_comp = comp->getReflectionDefinition().getInterface<EntitySceneComponent>(comp->getBasePointer());
+
+		if (!scene_comp) {
+			continue;
+		}
+
+		EntitySceneComponent* const new_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i].get());
+
+		if (scene_comp->_parent) {
+			EntitySceneComponent* const new_parent = static_cast<EntitySceneComponent*>(new_entity->findComponent(scene_comp->_parent->getName()));
+			new_scene_comp->_parent = new_parent;
+
+		// We are the root scene component.
+		} else {
+			if (_root_scene_comp) {
+				// $TODO: Log error.
+			} else {
+				new_entity->_root_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i].get());
+			}
+		}
+	}
+
+	if (new_entity->_root_scene_comp) {
+		new_entity->_root_scene_comp->updateToWorld();
+	}
+
+	return success && new_entity->init();
+}
+
 void Entity::update(float dt)
 {
 	// $TODO: Jobify this.
@@ -63,6 +143,17 @@ void Entity::update(float dt)
 	}
 }
 
+void Entity::addToWorld(void)
+{
+	// _world = world;
+	// broadcast event
+}
+
+void Entity::removeFromWorld(void)
+{
+	// broadcast event
+}
+
 void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
 {
 	for (const Refl::IReflectionDefinition* ref_def : ref_defs) {
@@ -70,7 +161,7 @@ void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_
 	}
 }
 
-void Entity::addComponent(const Refl::IReflectionDefinition& ref_def)
+EntityComponent* Entity::addComponent(const Refl::IReflectionDefinition& ref_def)
 {
 	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::EntityComponent)));
 	GAFF_ASSERT(ref_def.getFactory<>());
@@ -78,7 +169,13 @@ void Entity::addComponent(const Refl::IReflectionDefinition& ref_def)
 	static ProxyAllocator s_allocator("Entity");
 	EntityComponent* const comp = ref_def.createT<EntityComponent>(CLASS_HASH(Shibboleth::EntityComponent), s_allocator);
 
-	addComponent(*comp);
+	if (comp) {
+		addComponent(*comp);
+	} else {
+		// $TODO: Log error.
+	}
+
+	return comp;
 }
 
 void Entity::addComponent(const Vector<EntityComponent*>& components)
@@ -211,6 +308,22 @@ EntityComponent& Entity::getComponent(int32_t index)
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
 	return *_components[index];
+}
+
+const EntityComponent* Entity::findComponent(const U8String& name) const
+{
+	return const_cast<Entity*>(this)->findComponent(name);
+}
+
+EntityComponent* Entity::findComponent(const U8String& name)
+{
+	for (auto& comp : _components) {
+		if (comp->getName() == name) {
+			return comp.get();
+		}
+	}
+
+	return nullptr;
 }
 
 bool Entity::hasComponent(const Refl::IReflectionDefinition& ref_def) const

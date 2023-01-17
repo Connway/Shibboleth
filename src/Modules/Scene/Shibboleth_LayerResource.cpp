@@ -264,6 +264,8 @@ void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 	//_callback_id = res_mgr.registerCallback(resources, callback);
 
 	GAFF_REF(res_mgr);
+
+	_reader_wrapper.freeReader();
 }
 
 NS_END

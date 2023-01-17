@@ -119,4 +119,12 @@ const char* SerializeReaderWrapper::getErrorText(void) const
 	return _error_text;
 }
 
+void SerializeReaderWrapper::freeReader(void)
+{
+	if (_reader) {
+		Gaff::Deconstruct(_reader);
+		_reader = nullptr;
+	}
+}
+
 NS_END

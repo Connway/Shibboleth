@@ -51,10 +51,11 @@ public:
 	}
 
 	template <class T>
-	void addComponent(void)
+	T* addComponent(void)
 	{
 		static_assert(std::is_base_of<EntityComponent, T>::value, "T must be derived from EntityComponent.");
-		addComponent(Refl::Reflection<T>::GetReflectionDefinition());
+		EntityComponent* const component = addComponent(Refl::Reflection<T>::GetReflectionDefinition());
+		return static_cast<T*>(component);
 	}
 
 	template <class T>
@@ -106,10 +107,15 @@ public:
 	~Entity(void) = default;
 
 	virtual bool init(void);
+	virtual bool clone(Entity*& new_entity, const ISerializeReader* overrides);
+
 	void update(float dt) override;
 
+	virtual void addToWorld(void);
+	virtual void removeFromWorld(void);
+
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
-	void addComponent(const Refl::IReflectionDefinition& ref_def);
+	EntityComponent* addComponent(const Refl::IReflectionDefinition& ref_def);
 	void addComponent(const Vector<EntityComponent*>& components);
 	void addComponent(EntityComponent& component);
 
@@ -127,6 +133,9 @@ public:
 	EntityComponent* getComponent(const Refl::IReflectionDefinition& ref_def);
 	const EntityComponent& getComponent(int32_t index) const;
 	EntityComponent& getComponent(int32_t index);
+
+	const EntityComponent* findComponent(const U8String& name) const;
+	EntityComponent* findComponent(const U8String& name);
 
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
 	int32_t getNumComponents(void) const;
@@ -151,6 +160,7 @@ private:
 		Count
 	};
 
+	// Make this a hash map instead to speed up findComponent()?
 	Vector< UniquePtr<EntityComponent> > _components;
 	EntitySceneComponent* _root_scene_comp = nullptr;
 

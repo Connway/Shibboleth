@@ -83,20 +83,19 @@ Entity* EntityManager::createEntity(const Refl::IReflectionDefinition& ref_def)
 	GAFF_ASSERT(ref_def.hasInterface<Entity>());
 
 	IEntityUpdateable* const updateable = createUpdateable(ref_def);
-	Entity* entity = (updateable) ? static_cast<Entity*>(updateable) : nullptr;
+	return static_cast<Entity*>(updateable);
 
-	if (entity) {
-		// $TODO: Add to world and manage newly created entity.
+	// $TODO: Move this to an addToWorld() call or something.
+	//if (entity) {
+	//	// $TODO: Add to world and manage newly created entity.
 
-		if (!entity->init()) {
-			// $TODO: Log error.
+	//	if (!entity->init()) {
+	//		// $TODO: Log error.
 
-			destroy(*updateable);
-			entity = nullptr;
-		}
-	}
-
-	return entity;
+	//		destroy(*updateable);
+	//		entity = nullptr;
+	//	}
+	//}
 }
 
 Entity* EntityManager::createEntity(void)

@@ -163,6 +163,8 @@ void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
 			});
 		}
 	}
+
+	_reader_wrapper.freeReader();
 }
 
 NS_END

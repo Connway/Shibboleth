@@ -38,6 +38,7 @@ public:
 	EntityComponent(void) = default;
 
 	virtual bool init(void);
+	virtual bool clone(EntityComponent*& new_component, const ISerializeReader* overrides);
 	virtual void destroy(void);
 
 	Entity* getOwner(void) const;

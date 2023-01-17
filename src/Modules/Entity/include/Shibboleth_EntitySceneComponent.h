@@ -58,6 +58,7 @@ public:
 	const Gleam::Vec3& getScaleWorld(void) const;
 	void setScaleWorld(const Gleam::Vec3& scale);
 
+	void setParent(EntitySceneComponent& component);
 	void addChild(EntitySceneComponent& component);
 	void removeFromParent(bool update_to_world = false);
 
@@ -73,6 +74,8 @@ private:
 
 	void updateChildrenToWorld(void);
 	void updateToWorld(void);
+
+	friend class Entity;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntitySceneComponent);
 };

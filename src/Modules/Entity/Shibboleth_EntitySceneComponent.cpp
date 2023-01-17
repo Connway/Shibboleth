@@ -22,13 +22,21 @@ THE SOFTWARE.
 
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)
 	.base<Shibboleth::EntityComponent>()
 
 	.var("transformRelative", &Shibboleth::EntitySceneComponent::getTransformRelative, &Shibboleth::EntitySceneComponent::setTransformRelative)
-	.var("transformWorld", &Shibboleth::EntitySceneComponent::getTransformWorld, &Shibboleth::EntitySceneComponent::setTransformWorld)
+
+	.var(
+		"transformWorld",
+		&Shibboleth::EntitySceneComponent::getTransformWorld,
+		&Shibboleth::EntitySceneComponent::setTransformWorld,
+		Shibboleth::NoSerializeAttribute()
+	)
+
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntitySceneComponent)
 
 
@@ -135,6 +143,12 @@ void EntitySceneComponent::setScaleWorld(const Gleam::Vec3& scale)
 	setTransformWorld(Gleam::Transform(getPositionWorld(), getRotationWorld(), scale));
 }
 
+void EntitySceneComponent::setParent(EntitySceneComponent& component)
+{
+	_parent = &component;
+	component.updateToWorld();
+}
+
 void EntitySceneComponent::addChild(EntitySceneComponent& component)
 {
 	// This component should not already be part of a hierarchy.
@@ -160,7 +174,6 @@ void EntitySceneComponent::addChild(EntitySceneComponent& component)
 	_last_child = &component;
 
 	component.updateToWorld();
-	component.updateChildrenToWorld();
 }
 
 void EntitySceneComponent::removeFromParent(bool update_to_world)
@@ -185,7 +198,6 @@ void EntitySceneComponent::removeFromParent(bool update_to_world)
 	// likely re-adding somewhere else in the hierarchy.
 	if (update_to_world) {
 		updateToWorld();
-		updateChildrenToWorld();
 	}
 }
 
@@ -193,7 +205,6 @@ void EntitySceneComponent::updateChildrenToWorld(void)
 {
 	for (EntitySceneComponent* child = _first_child; child; child = child->_next_sibling) {
 		child->updateToWorld();
-		child->updateChildrenToWorld();
 	}
 }
 
