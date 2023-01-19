@@ -23,9 +23,14 @@ THE SOFTWARE.
 #include "Shibboleth_EntityComponent.h"
 #include "Shibboleth_EntityManager.h"
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponentFlag)
+	.entry("Update Enabled", Shibboleth::EntityComponentFlag::UpdateEnabled)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponentFlag)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
 	.BASE(Shibboleth::IEntityUpdateable)
 
+	.var("flags", &Shibboleth::EntityComponent::_flags)
 	.var("name", &Shibboleth::EntityComponent::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
@@ -94,12 +99,12 @@ void EntityComponent::updateAfter(IEntityUpdateable& after)
 
 void EntityComponent::setEnableUpdate(bool enabled)
 {
-	_flags.set(enabled, Flag::UpdateEnabled);
+	_flags.set(enabled, EntityComponentFlag::UpdateEnabled);
 }
 
 bool EntityComponent::canUpdate(void) const
 {
-	return _flags.testAll(Flag::UpdateEnabled);
+	return _flags.testAll(EntityComponentFlag::UpdateEnabled);
 }
 
 const U8String& EntityComponent::getName(void) const

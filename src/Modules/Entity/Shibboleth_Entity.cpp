@@ -24,11 +24,15 @@ THE SOFTWARE.
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityFlag)
+	.entry("Update Enabled", Shibboleth::EntityFlag::UpdateEnabled)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityFlag)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
 	.BASE(Shibboleth::IEntityUpdateable)
 	.template ctor<Shibboleth::EntityManager&>()
 
-	//.var("flags", &Shibboleth::Entity::_flags)
+	.var("flags", &Shibboleth::Entity::_flags)
 	.var("name", &Shibboleth::Entity::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
@@ -67,7 +71,6 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 	}
 
 	new_entity->_components.reserve(_components.size());
-	new_entity->_flags = _flags;
 
 	// Copy all reflected variables.
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
@@ -133,7 +136,7 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 		new_entity->_root_scene_comp->updateToWorld();
 	}
 
-	return success && new_entity->init();
+	return success;
 }
 
 void Entity::update(float dt)
@@ -346,12 +349,12 @@ void Entity::updateAfter(IEntityUpdateable& after)
 
 void Entity::setEnableUpdate(bool enabled)
 {
-	_flags.set(enabled, Flag::UpdateEnabled);
+	_flags.set(enabled, EntityFlag::UpdateEnabled);
 }
 
 bool Entity::canUpdate(void) const
 {
-	return _flags.testAll(Flag::UpdateEnabled);
+	return _flags.testAll(EntityFlag::UpdateEnabled);
 }
 
 const U8String& Entity::getName(void) const

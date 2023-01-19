@@ -33,6 +33,13 @@ NS_SHIBBOLETH
 class EntitySceneComponent;
 class EntityManager;
 
+enum class EntityFlag
+{
+	UpdateEnabled,
+
+	Count
+};
+
 class Entity : public IEntityUpdateable
 {
 public:
@@ -153,20 +160,13 @@ protected:
 	EntityManager& _entity_mgr;
 
 private:
-	enum class Flag
-	{
-		UpdateEnabled,
-
-		Count
-	};
-
 	// Make this a hash map instead to speed up findComponent()?
 	Vector< UniquePtr<EntityComponent> > _components;
 	EntitySceneComponent* _root_scene_comp = nullptr;
 
 	U8String _name;
 
-	Gaff::Flags<Flag> _flags;
+	Gaff::Flags<EntityFlag> _flags;
 
 	friend class EntityComponent;
 	friend class EntityManager;
@@ -179,4 +179,5 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::EntityFlag)
 SHIB_REFLECTION_DECLARE(Shibboleth::Entity)

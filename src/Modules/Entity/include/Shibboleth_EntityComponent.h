@@ -30,6 +30,14 @@ NS_SHIBBOLETH
 
 class Entity;
 
+enum class EntityComponentFlag
+{
+	UpdateEnabled,
+
+	Count
+};
+
+
 class EntityComponent : public IEntityUpdateable
 {
 	GAFF_NO_COPY(EntityComponent);
@@ -53,18 +61,11 @@ public:
 	void setName(U8String&& name);
 
 private:
-	enum class Flag
-	{
-		UpdateEnabled,
-
-		Count
-	};
-
 	Entity* _owner = nullptr;
 
 	U8String _name;
 
-	Gaff::Flags<Flag> _flags;
+	Gaff::Flags<EntityComponentFlag> _flags;
 
 	friend class EntityManager;
 	friend class Entity;
@@ -74,4 +75,5 @@ private:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponentFlag)
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)
