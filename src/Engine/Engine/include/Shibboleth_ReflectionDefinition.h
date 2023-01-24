@@ -755,14 +755,13 @@ private:
 	{
 	public:
 		using IReflectionStaticFunction<Ret, Args...>::getFunc;
+		using IReflectionStaticFunction<Ret, Args...>::numArgs;
 		using IReflectionStaticFunction<Ret, Args...>::call;
 
 		explicit ReflectionStaticFunction(typename IReflectionStaticFunction<Ret, Args...>::Func func):
 			IReflectionStaticFunction<Ret, Args...>(func)
 		{
 		}
-
-		int32_t numArgs(void) const override { return static_cast<int32_t>(sizeof...(Args)); }
 
 		IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const override
 		{

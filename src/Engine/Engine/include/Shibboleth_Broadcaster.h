@@ -32,61 +32,65 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-// Message Hash and Listener ID
-using BroadcastID = std::pair<Gaff::Hash64, size_t>;
-
-class Broadcaster
+class Broadcaster final
 {
 public:
+	struct ID final
+	{
+		Gaff::Hash64 msg_hash;
+		Gaff::Hash64 cb_hash;
+	};
+
 	void init(void);
 
 	template <class Message>
-	BroadcastID listen(const eastl::function<void (const Message&)>& callback);
+	ID listen(const eastl::function<void (const Message&)>& callback);
+
+	template <class Message>
+	ID listen(eastl::function<void (const Message&)>&& callback);
+
+	template <class Message>
+	bool remove(const eastl::function<void (const Message&)>& callback);
+
+	template <class Message>
+	void broadcastAsync(const Message& message);
 
 	template <class Message>
 	void broadcastSync(const Message& message);
 
-	template <class Message>
-	void broadcast(const Message& message);
-
-	void remove(BroadcastID id);
+	bool remove(ID id);
 
 private:
-	struct ListenerData
-	{
-		using Listener = eastl::function<void (const void*)>;
-
-		Vector<Listener> listeners;
-		Vector<size_t> unused_ids;
-	};
+	using Listener = eastl::function<void (const void*)>;
+	using ListenerData = VectorMap<Gaff::Hash64, Listener>;
 
 	VectorMap<Gaff::Hash64, ListenerData> _listeners;
 	EA::Thread::Mutex _listener_lock;
 
 	JobPool* _job_pool = nullptr;
-	Gaff::Counter* _counter = nullptr;
 };
 
-class BroadcastRemover
+class BroadcastRemover final
 {
 public:
-	BroadcastRemover(BroadcastID id, Broadcaster& broadcaster);
-	BroadcastRemover(const BroadcastRemover& remover);
+	BroadcastRemover(Broadcaster::ID id, Broadcaster& broadcaster);
+	BroadcastRemover(const BroadcastRemover& remover) = delete;
+	BroadcastRemover(BroadcastRemover&& remover);
 	BroadcastRemover(void);
 	~BroadcastRemover(void);
 
 	// Takes ownership
-	const BroadcastRemover& operator=(const BroadcastRemover& rhs);
+	const BroadcastRemover& operator=(const BroadcastRemover& rhs) = delete;
+	const BroadcastRemover& operator=(BroadcastRemover&& rhs);
 
 	bool operator==(const BroadcastRemover& rhs) const;
 	bool operator!=(const BroadcastRemover& rhs) const;
 
-	void remove(void);
+	bool remove(void);
 
 private:
-	BroadcastID _id;
+	Broadcaster::ID _id;
 	Broadcaster* _broadcaster = nullptr;
-	bool _valid = false;
 };
 
 #include "Shibboleth_Broadcaster.inl"

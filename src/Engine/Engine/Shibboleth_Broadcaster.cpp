@@ -30,28 +30,35 @@ NS_SHIBBOLETH
 void Broadcaster::init(void)
 {
 	_job_pool = &GetApp().getJobPool();
-	GAFF_REF(_counter);
 }
 
-void Broadcaster::remove(BroadcastID id)
+bool Broadcaster::remove(ID id)
 {
 	const EA::Thread::AutoMutex lock(_listener_lock);
 
-	const auto it = _listeners.find(id.first);
-	GAFF_ASSERT(it != _listeners.end() && it->second.listeners.size() > id.second);
+	const auto it = _listeners.find(id.msg_hash);
 
-	it->second.unused_ids.emplace_back(id.second);
-	it->second.listeners[id.second] = nullptr;
+	if (it == _listeners.end()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	if (!_listeners.erase(id.cb_hash)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	return true;
 }
 
-BroadcastRemover::BroadcastRemover(const BroadcastRemover& remover):
-	_id(remover._id), _broadcaster(remover._broadcaster), _valid(remover._valid)
+BroadcastRemover::BroadcastRemover(BroadcastRemover&& remover):
+	_id(remover._id), _broadcaster(remover._broadcaster)
 {
-	const_cast<BroadcastRemover&>(remover)._valid = false;
+	remover._broadcaster = nullptr;
 }
 
-BroadcastRemover::BroadcastRemover(BroadcastID id, Broadcaster& broadcaster):
-	_id(id), _broadcaster(&broadcaster), _valid(true)
+BroadcastRemover::BroadcastRemover(Broadcaster::ID id, Broadcaster& broadcaster):
+	_id(id), _broadcaster(&broadcaster)
 {
 }
 
@@ -64,22 +71,21 @@ BroadcastRemover::~BroadcastRemover(void)
 	remove();
 }
 
-const BroadcastRemover& BroadcastRemover::operator=(const BroadcastRemover& rhs)
+const BroadcastRemover& BroadcastRemover::operator=(BroadcastRemover&& rhs)
 {
 	remove();
 
 	_id = rhs._id;
 	_broadcaster = rhs._broadcaster;
-	_valid = true;
 
-	const_cast<BroadcastRemover&>(rhs)._valid = false;
+	rhs._broadcaster = nullptr;
 
 	return *this;
 }
 
 bool BroadcastRemover::operator==(const BroadcastRemover& rhs) const
 {
-	return (!_valid == !rhs._valid) || (_broadcaster == rhs._broadcaster && _id.first == rhs._id.first && _id.second == rhs._id.second);
+	return _broadcaster == rhs._broadcaster && _id.msg_hash == rhs._id.msg_hash && _id.cb_hash == rhs._id.cb_hash;
 }
 
 bool BroadcastRemover::operator!=(const BroadcastRemover& rhs) const
@@ -87,12 +93,16 @@ bool BroadcastRemover::operator!=(const BroadcastRemover& rhs) const
 	return !(*this == rhs);
 }
 
-void BroadcastRemover::remove(void)
+bool BroadcastRemover::remove(void)
 {
-	if (_valid) {
-		_broadcaster->remove(_id);
-		_valid = false;
+	bool result = false;
+
+	if (_broadcaster) {
+		result = _broadcaster->remove(_id);
+		_broadcaster = nullptr;
 	}
+
+	return result;
 }
 
 NS_END
