@@ -41,6 +41,7 @@ NS_SHIBBOLETH
 
 class ReflectionManager;
 class IFileSystem;
+class Broadcaster;
 class LogManager;
 class IManager;
 
@@ -65,6 +66,7 @@ public:
 
 	//virtual FileWatcherManager& getFileWatcherManager(void) = 0;
 	virtual DynamicLoader& getDynamicLoader(void) = 0;
+	virtual Broadcaster& getBroadcaster(void) = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
