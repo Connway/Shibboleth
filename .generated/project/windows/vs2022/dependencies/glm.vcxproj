@@ -517,6 +517,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec4.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vector_relational.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\..\..\..\src\Dependencies\glm\util\glm.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

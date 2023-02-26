@@ -131,6 +131,7 @@
     <None Include="..\..\..\..\src\Dependencies\Catch2\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\DEPENDENCY_README.txt" />
     <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua" />
+    <None Include="..\..\..\..\src\Dependencies\JoltPhysics\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\LuaJIT\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\acl\project_generator.lua" />
@@ -148,6 +149,7 @@
     <None Include="..\..\..\..\src\Dependencies\mimalloc\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\minizip-ng\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\mpack\project_generator.lua" />
+    <None Include="..\..\..\..\src\Dependencies\rapidjson\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\sqlite\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\tracy\project_generator.lua" />
     <None Include="..\..\..\..\src\Dependencies\zlib-ng\project_generator.lua" />

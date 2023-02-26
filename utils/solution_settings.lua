@@ -30,7 +30,15 @@ defines
 	--"GLM_FORCE_SSE42",
 	"GLM_FORCE_INTRINSICS",
 	"ZLIB_COMPAT",
-	"LUAJIT_NUMMODE=2"
+	"LUAJIT_NUMMODE=2",
+	"JPH_USE_LZCNT",
+	"JPH_USE_TZCNT",
+	"JPH_USE_FMADD",
+	"JPH_USE_SSE4_1",
+	"JPH_USE_SSE4_2",
+	--[["JPH_USE_AVX2",
+	"JPH_USE_AVX",
+	"JPH_USE_F16C"--]]
 }
 
 platforms { "x64" }
@@ -50,7 +58,15 @@ filter { "configurations:*Debug*" }
 	optimize "Debug"
 	runtime "Debug"
 
-	defines { "_DEBUG", "DEBUG", "PROFILE" }
+	defines
+	{
+		"_DEBUG",
+		"DEBUG",
+		"PROFILE",
+		"JPH_PROFILE_ENABLED",
+		"JPH_DEBUG_RENDERER",
+		"JPH_FLOATING_POINT_EXCEPTIONS_ENABLED"
+	}
 
 filter { "configurations:*Optimized_Debug* or *Release* or *Profile*" }
 	flags { "LinkTimeOptimization" }

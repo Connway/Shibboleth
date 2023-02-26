@@ -9,7 +9,8 @@ DepProject "EASTL"
 		"source/EAThread/*.cpp",
 		"source/*.cpp",
 		"**.h",
-		"**.inl"
+		"**.inl",
+		"**.natvis"
 	}
 
 	includedirs { "include" }

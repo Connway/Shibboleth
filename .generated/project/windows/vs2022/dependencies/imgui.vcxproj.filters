@@ -7,6 +7,9 @@
     <Filter Include="misc\cpp">
       <UniqueIdentifier>{030DBAB9-EFD9-14C5-18F3-026D041F4A53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="misc\debuggers">
+      <UniqueIdentifier>{5821A569-44EF-986F-2D83-099619F074D4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="misc\fonts">
       <UniqueIdentifier>{CA1DA710-B6D5-E85D-1FDD-C1B90BB4834E}</UniqueIdentifier>
     </Filter>
@@ -40,5 +43,10 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\misc\fonts\binary_to_compressed_c.cpp">
       <Filter>misc\fonts</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\..\..\..\src\Dependencies\imgui\misc\debuggers\imgui.natvis">
+      <Filter>misc\debuggers</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

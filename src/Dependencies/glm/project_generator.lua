@@ -13,7 +13,8 @@ project "glm"
 	{
 		"**.hpp",
 		"**.h",
-		"**.inl"
+		"**.inl",
+		"**.natvis"
 	}
 
 	SetupConfigMap()

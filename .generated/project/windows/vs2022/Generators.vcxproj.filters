@@ -10,6 +10,9 @@
     <Filter Include="Dependencies\EASTL">
       <UniqueIdentifier>{9483AAF7-8067-6B4D-E9C7-65A0D5CA55CF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\JoltPhysics">
+      <UniqueIdentifier>{D70A5389-C32F-A209-EC7A-8799D8FEA027}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Dependencies\LuaJIT">
       <UniqueIdentifier>{648F0301-D0F0-E00E-595E-27C1C5BE17CE}</UniqueIdentifier>
     </Filter>
@@ -60,6 +63,9 @@
     </Filter>
     <Filter Include="Dependencies\mpack">
       <UniqueIdentifier>{275B98FA-133F-5950-7C9F-53A368A243D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\rapidjson">
+      <UniqueIdentifier>{254208F7-113C-3149-FAA8-C759E64197B5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Dependencies\sqlite">
       <UniqueIdentifier>{8DEFBA5B-F950-9869-82BE-DE1BEE1ECF28}</UniqueIdentifier>
@@ -189,6 +195,9 @@
     <None Include="..\..\..\..\src\Dependencies\EASTL\project_generator.lua">
       <Filter>Dependencies\EASTL</Filter>
     </None>
+    <None Include="..\..\..\..\src\Dependencies\JoltPhysics\project_generator.lua">
+      <Filter>Dependencies\JoltPhysics</Filter>
+    </None>
     <None Include="..\..\..\..\src\Dependencies\LuaJIT\project_generator.lua">
       <Filter>Dependencies\LuaJIT</Filter>
     </None>
@@ -239,6 +248,9 @@
     </None>
     <None Include="..\..\..\..\src\Dependencies\mpack\project_generator.lua">
       <Filter>Dependencies\mpack</Filter>
+    </None>
+    <None Include="..\..\..\..\src\Dependencies\rapidjson\project_generator.lua">
+      <Filter>Dependencies\rapidjson</Filter>
     </None>
     <None Include="..\..\..\..\src\Dependencies\sqlite\project_generator.lua">
       <Filter>Dependencies\sqlite</Filter>

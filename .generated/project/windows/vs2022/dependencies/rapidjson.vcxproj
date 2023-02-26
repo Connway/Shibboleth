@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4F6F2E00-BBD9-E276-0418-941C70C1C0CB}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>MakeFileProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Debug\rapidjson\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Release\rapidjson\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Profile\rapidjson\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\rapidjson\</IntDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakeOutput>$(OutDir)rapidjson64d</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeOutput>$(OutDir)rapidjson64</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <NMakeOutput>$(OutDir)rapidjson64p</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <NMakeOutput>$(OutDir)rapidjson64od</NMakeOutput>
+    <AdditionalOptions>/Zc:__cplusplus /permissive- /Zc:static_assert- /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\allocators.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\cursorstreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\document.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\encodedstream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\encodings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\error\en.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\error\error.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\filereadstream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\fwd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\biginteger.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\clzll.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\diyfp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\ieee754.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\itoa.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\meta.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\regex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\strtod.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\internal\swap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\memorybuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\memorystream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\pointer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\reader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\schema.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\stream.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\uri.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\writer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\..\..\..\src\Dependencies\rapidjson\rapidjson\contrib\natvis\rapidjson.natvis" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

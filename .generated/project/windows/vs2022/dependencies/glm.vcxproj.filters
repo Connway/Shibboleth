@@ -16,6 +16,9 @@
     <Filter Include="simd">
       <UniqueIdentifier>{32EC9D7C-1E23-9F0D-C70F-8510B3251B0F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{43339F7C-2F6A-A00D-D856-8610C46C1C0F}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\common.hpp" />
@@ -1247,5 +1250,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec3.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec4.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vector_relational.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\..\..\..\src\Dependencies\glm\util\glm.natvis">
+      <Filter>util</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>
