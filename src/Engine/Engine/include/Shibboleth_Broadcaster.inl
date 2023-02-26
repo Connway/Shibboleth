@@ -21,66 +21,95 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class Message>
-BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
+Broadcaster::ID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
 {
 	const EA::Thread::AutoMutex lock(_listener_lock);
 
-	auto& listener_data = _listeners[Refl::Reflection<Message>::GetHash()];
-	BroadcastID id(Refl::Reflection<Message>::GetHash(), 0);
+	const Broadcaster::ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
+	auto& listener_data = _listeners[id.msg_hash];
 
-	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void {
+	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void
+	{
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
 	});
 
-	if (listener_data.unused_ids.empty()) {
-		id.second = listener_data.listeners.size();
-		listener_data.listeners.emplace_back(func);
-	} else {
-		id.second = listener_data.unused_ids.back();
-		listener_data.unused_ids.pop_back();
-		listener_data.listeners[id.second] = func;
-	}
+	// Should we make this a vector? Not a common scenario to register the same function for a message multiple times,
+	// but still a possible scenario.
+	listener_data.listeners[id.cb_hash] = func;
 
 	return id;
 }
 
 template <class Message>
+Broadcaster::ID Broadcaster::listen(eastl::function<void(const Message&)>&& callback)
+{
+	const EA::Thread::AutoMutex lock(_listener_lock);
+
+	const Broadcaster::ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
+	auto& listener_data = _listeners[id.msg_hash];
+
+	const ListenerData::Listener func = Gaff::Func<void(const void*)>([callback](const void* message) -> void
+	{
+		const Message* const msg = reinterpret_cast<const Message*>(message);
+	callback(*msg);
+	});
+
+	// Should we make this a vector? Not a common scenario to register the same function for a message multiple times,
+	// but still a possible scenario.
+	listener_data.listeners[id.cb_hash] = std::move(func);
+
+	return id;
+}
+
+template <class Message>
+bool Broadcaster::remove(const eastl::function<void(const Message&)>& callback)
+{
+	const ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
+	return remove(id);
+}
+
+template <class Message>
+void Broadcaster::broadcastAsync(const Message& message)
+{
+	GAFF_ASSERT_MSG(false, "Broadcaster::broadcastAsync() not implemented yet.");
+	GAFF_REF(message);
+
+	// $TODO: Find a way to make this work. Likely will involve a cache of some sort.
+	//const auto func = [this, message](void*) -> void
+	//{
+	//	const EA::Thread::AutoMutex lock(_listener_lock);
+
+	//	const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
+
+	//	if (it == _listeners.end()) {
+	//		return;
+	//	}
+
+	//	for (const auto cb : it->second) {
+	//		if (cb) {
+	//			cb(message);
+	//		}
+	//	}
+	//};
+
+	//Gaff::JobData data = { func, nullptr };
+	//_job_pool->addJobs(&data, 1);
+}
+
+template <class Message>
 void Broadcaster::broadcastSync(const Message& message)
 {
+	const EA::Thread::AutoMutex lock(_listener_lock);
 	const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
 
 	if (it == _listeners.end()) {
 		return;
 	}
 
-	for (const auto func : it->second.listeners) {
+	for (const auto func : it->second) {
 		if (func) {
 			func(&message);
 		}
 	}
-}
-
-template <class Message>
-void Broadcaster::broadcast(const Message& message)
-{
-	const auto func = [this, message](void*) -> void
-	{
-		const EA::Thread::AutoMutex lock(_listener_lock);
-
-		const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
-
-		if (it == _listeners.end()) {
-			return;
-		}
-
-		for (const auto cb : it->second.listeners) {
-			if (cb) {
-				cb(message);
-			}
-		}
-	};
-
-	Gaff::JobData data = { func, nullptr };
-	_job_pool->addJobs(&data, 1, &_counter);
 }

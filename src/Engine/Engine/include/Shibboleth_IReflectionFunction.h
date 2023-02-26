@@ -113,7 +113,10 @@ template <class Ret, class... Args>
 class IReflectionFunction : public IReflectionFunctionBase
 {
 public:
-	int32_t numArgs(void) const override { return static_cast<int32_t>(sizeof...(Args)); }
+	int32_t numArgs(void) const override
+	{
+		return static_cast<int32_t>(sizeof...(Args));
+	}
 
 	virtual Ret call(const void* object, Args&&... args) const = 0;
 	virtual Ret call(void* object, Args&&... args) const = 0;
@@ -151,6 +154,11 @@ public:
 	explicit IReflectionStaticFunction(Func func):
 		IReflectionStaticFunctionBase(reinterpret_cast<VoidFunc>(func))
 	{
+	}
+
+	int32_t numArgs(void) const override
+	{
+		return static_cast<int32_t>(sizeof...(Args));
 	}
 
 	Func getFunc(void) const

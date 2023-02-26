@@ -278,6 +278,11 @@ DynamicLoader& App::getDynamicLoader(void)
 	return _dynamic_loader;
 }
 
+Broadcaster& App::getBroadcaster(void)
+{
+	return _broadcaster;
+}
+
 bool App::isQuitting(void) const
 {
 	return !_running;
