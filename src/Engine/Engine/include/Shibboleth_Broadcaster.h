@@ -58,9 +58,19 @@ public:
 	template <class Message>
 	void broadcastSync(const Message& message);
 
+	void broadcastSync(Gaff::Hash64 msg_hash, const void* message);
+
 	bool remove(ID id);
 
 private:
+	struct BroadcastData final
+	{
+		void (*deconstructor)(void*) = nullptr;
+		Broadcaster* broadcaster = nullptr;
+		Gaff::Hash64 msg_hash;
+		size_t msg_size = 0;
+	};
+
 	using Listener = eastl::function<void (const void*)>;
 	using ListenerData = VectorMap<Gaff::Hash64, Listener>;
 
@@ -68,6 +78,14 @@ private:
 	EA::Thread::Mutex _listener_lock;
 
 	JobPool* _job_pool = nullptr;
+
+	static ProxyAllocator s_allocator;
+
+
+	ID listenInternal(Gaff::Hash64 msg_hash, Listener&& callback);
+	void broadcastAsyncInternal(BroadcastData& broadcast_data);
+
+	static void BroadcastJobFunc(uintptr_t thread_id, void* data);
 };
 
 class BroadcastRemover final

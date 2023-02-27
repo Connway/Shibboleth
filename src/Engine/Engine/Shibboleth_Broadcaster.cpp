@@ -27,9 +27,25 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+ProxyAllocator Broadcaster::s_allocator("Broadcaster");
+
 void Broadcaster::init(void)
 {
 	_job_pool = &GetApp().getJobPool();
+}
+
+void Broadcaster::broadcastSync(Gaff::Hash64 msg_hash, const void* message)
+{
+	const EA::Thread::AutoMutex lock(_listener_lock);
+	const auto it_listeners = _listeners.find(msg_hash);
+
+	if (it_listeners == _listeners.end()) {
+		return;
+	}
+
+	for (const auto it : it_listeners->second) {
+		it.second(message);
+	}
 }
 
 bool Broadcaster::remove(ID id)
@@ -50,6 +66,42 @@ bool Broadcaster::remove(ID id)
 
 	return true;
 }
+
+Broadcaster::ID Broadcaster::listenInternal(Gaff::Hash64 msg_hash, Listener&& callback)
+{
+	const EA::Thread::AutoMutex lock(_listener_lock);
+
+	const Broadcaster::ID id = { msg_hash, Gaff::FNV1aHash64T(callback) };
+	auto& listener_data = _listeners[msg_hash];
+
+	// Should we make this a vector? Not a common scenario to register the same function for a message multiple times,
+	// but still a possible scenario.
+	listener_data[id.cb_hash] = std::move(callback);
+
+	return id;
+}
+
+void Broadcaster::broadcastAsyncInternal(BroadcastData& broadcast_data)
+{
+	Gaff::JobData data = { BroadcastJobFunc, &broadcast_data };
+	_job_pool->addJobs(&data, 1);
+}
+
+void Broadcaster::BroadcastJobFunc(uintptr_t /*thread_id*/, void* data)
+{
+	const BroadcastData* const broadcast_data = static_cast<BroadcastData*>(data);
+	void* const message = static_cast<uint8_t*>(data) + broadcast_data->msg_size;
+
+	broadcast_data->broadcaster->broadcastSync(broadcast_data->msg_hash, message);
+
+	if (broadcast_data->deconstructor) {
+		broadcast_data->deconstructor(message);
+	}
+
+	SHIB_FREE(data, s_allocator);
+}
+
+
 
 BroadcastRemover::BroadcastRemover(BroadcastRemover&& remover):
 	_id(remover._id), _broadcaster(remover._broadcaster)

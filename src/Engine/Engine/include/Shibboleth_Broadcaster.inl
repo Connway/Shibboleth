@@ -23,93 +23,59 @@ THE SOFTWARE.
 template <class Message>
 Broadcaster::ID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
 {
-	const EA::Thread::AutoMutex lock(_listener_lock);
-
-	const Broadcaster::ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
-	auto& listener_data = _listeners[id.msg_hash];
-
 	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void
 	{
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
 	});
 
-	// Should we make this a vector? Not a common scenario to register the same function for a message multiple times,
-	// but still a possible scenario.
-	listener_data.listeners[id.cb_hash] = func;
-
-	return id;
+	return listenInternal(Hash::ClassHashable<Message>::GetHash(), std::move(func));
 }
 
 template <class Message>
-Broadcaster::ID Broadcaster::listen(eastl::function<void(const Message&)>&& callback)
+Broadcaster::ID Broadcaster::listen(eastl::function<void (const Message&)>&& callback)
 {
-	const EA::Thread::AutoMutex lock(_listener_lock);
-
-	const Broadcaster::ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
-	auto& listener_data = _listeners[id.msg_hash];
-
 	const ListenerData::Listener func = Gaff::Func<void(const void*)>([callback](const void* message) -> void
 	{
 		const Message* const msg = reinterpret_cast<const Message*>(message);
-	callback(*msg);
+		callback(*msg);
 	});
 
-	// Should we make this a vector? Not a common scenario to register the same function for a message multiple times,
-	// but still a possible scenario.
-	listener_data.listeners[id.cb_hash] = std::move(func);
-
-	return id;
+	return listenInternal(Hash::ClassHashable<Message>::GetHash(), std::move(func));
 }
 
 template <class Message>
 bool Broadcaster::remove(const eastl::function<void(const Message&)>& callback)
 {
-	const ID id = { Refl::Reflection<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
+	const ID id = { Hash::ClassHashable<Message>::GetHash(), Gaff::FNV1aHash64T(callback) };
 	return remove(id);
 }
 
 template <class Message>
 void Broadcaster::broadcastAsync(const Message& message)
 {
-	GAFF_ASSERT_MSG(false, "Broadcaster::broadcastAsync() not implemented yet.");
-	GAFF_REF(message);
+	void* const data = SHIB_ALLOC(sizeof(BroadcastData) + sizeof(Message), s_allocator);
 
-	// $TODO: Find a way to make this work. Likely will involve a cache of some sort.
-	//const auto func = [this, message](void*) -> void
-	//{
-	//	const EA::Thread::AutoMutex lock(_listener_lock);
+	BroadcastData* const broadcast_data = static_cast<BroadcastData*>(data);
+	data->msg_hash = Hash::ClassHashable<Message>::GetHash();
+	data->msg_size = sizeof(Message);
+	data->broadcaster = this;
 
-	//	const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
+	if constexpr (std::is_standard_layout<Message>::value && std::is_trivial<Message>::value) {
+		data->deconstructor = [](void* data) -> void
+		{
+			Gaff::Deconstruct(static_cast<Message*>(data));
+		};
+	}
 
-	//	if (it == _listeners.end()) {
-	//		return;
-	//	}
+	Message* const msg = reinterpret_cast<Message*>(static_cast<uint8_t*>(data) + sizeof(BroadcastData));
+	*msg = message;
 
-	//	for (const auto cb : it->second) {
-	//		if (cb) {
-	//			cb(message);
-	//		}
-	//	}
-	//};
-
-	//Gaff::JobData data = { func, nullptr };
-	//_job_pool->addJobs(&data, 1);
+	broadcastAsyncInternal(broadcast_data);
 }
 
 template <class Message>
 void Broadcaster::broadcastSync(const Message& message)
 {
-	const EA::Thread::AutoMutex lock(_listener_lock);
-	const auto it = _listeners.find(Refl::Reflection<Message>::GetHash());
-
-	if (it == _listeners.end()) {
-		return;
-	}
-
-	for (const auto func : it->second) {
-		if (func) {
-			func(&message);
-		}
-	}
+	broadcastSync(Hash::ClassHashable<Message>::GetHash(), &message);
 }
