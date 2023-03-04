@@ -22,3 +22,4 @@ workingdir/EditorModules/*
 workingdir/tests/*
 workingdir/tools/*
 src/**/.generated/*
+**/.DS_Store
