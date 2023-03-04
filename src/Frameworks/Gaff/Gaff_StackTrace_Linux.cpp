@@ -96,7 +96,7 @@ int32_t StackTrace::captureStack(const char* app_name, uint32_t frames_to_captur
 		char command[256] = { 0 };
 
 #ifdef PLATFORM_MAC
-		sprintf(command, "atos -o %s %p", app_name, _stack[i]); // Make a generic way to solve for not hard-coding the "App" part.
+		snprintf(command, sizeof(command), "atos -o %s %p", app_name, _stack[i]); // Make a generic way to solve for not hard-coding the "App" part.
 #else
 		sprintf(command, "addr2line -e %s %p", app_name, _stack[i]); // Make a generic way to solve for not hard-coding the "App" part.
 #endif

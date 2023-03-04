@@ -22,9 +22,15 @@ THE SOFTWARE.
 
 #define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseCommentsFlag | kParseTrailingCommasFlag | kParseNanAndInfFlag | kParseValidateEncodingFlag
 #define RAPIDJSON_ASSERT GAFF_ASSERT
-#define RAPIDJSON_SSE2
 #define RAPIDJSON_ERROR_CHARTYPE char8_t
 #define RAPIDJSON_ERROR_STRING(x) u8##x
+
+#include "Gaff_Platform.h"
+
+#ifdef PLATFORM_X86
+    #define RAPIDJSON_SSE2
+    #define RAPIDJSON_SSE42
+#endif
 
 #include "Gaff_Assert.h"
 #include <rapidjson/rapidjson.h>

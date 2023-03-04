@@ -23,6 +23,7 @@ THE SOFTWARE.
 #ifdef __APPLE__
 
 #include "Gaff_Utils.h"
+#include <malloc/malloc.h>
 #include <sys/sysctl.h>
 #include <unistd.h>
 
@@ -43,6 +44,11 @@ bool IsDebuggerAttached(void)
 	sysctl(items, sizeof(items) / sizeof(*items), &info, &size, nullptr, 0);
 
 	return (info.kp_proc.p_flag & P_TRACED) != 0;
+}
+
+size_t GetUsableSize(void* ptr)
+{
+	return malloc_size(ptr);
 }
 
 NS_END

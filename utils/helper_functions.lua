@@ -590,6 +590,7 @@ function GetLuaLinkDep()
 		elseif os.target() == "linux" then
 			return "%{cfg.targetdir}/../LuaJIT/lua51.a"
 		elseif os.target() == "macosx" then
+			return "%{cfg.targetdir}/../LuaJIT/lua51.a"
 		end
 	end
 end

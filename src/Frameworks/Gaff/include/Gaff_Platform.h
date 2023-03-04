@@ -88,6 +88,12 @@ THE SOFTWARE.
 	#error "Cannot deduce platform bit-age."
 #endif
 
+#if defined(_M_X64) || defined(__x86_64__) || defined(_M_IX86) || defined(__i386__)
+	#define PLATFORM_X86
+#elif defined(__aarch64__) || defined(__arm)
+	#define PLATFORM_ARM
+#endif
+
 #ifdef PLATFORM_COMPILER_MSVC
 	#define MSVC_DISABLE_WARNING_PUSH(warnings) \
 		__pragma(warning(push)) \
@@ -105,7 +111,7 @@ THE SOFTWARE.
 	#define GCC_DISABLE_WARNING_PUSH(warnings) \
 		_Pragma("GCC diagnostic push") \
 		GCC_PRAGMA(GCC diagnostic ignored warnings)
-	
+
 	#define GCC_DISABLE_WARNING_POP() _Pragma("GCC diagnostic pop")
 
 #else

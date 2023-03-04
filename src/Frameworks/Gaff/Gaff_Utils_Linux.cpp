@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 #include "Gaff_String.h"
+#include "Gaff_Math.h"
 #include <EASTL/allocator_malloc.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -99,7 +100,7 @@ void* AlignedRealloc(void* data, size_t size, size_t alignment)
 	}
 
 	void* const new_ptr = AlignedMalloc(size, alignment);
-	memcpy(new_ptr, data, std::min(old_size, size));
+	memcpy(new_ptr, data, Gaff::Min(old_size, size));
 	AlignedFree(data);
 
 	return new_ptr;
@@ -116,11 +117,6 @@ void* AlignedCalloc(size_t num_members, size_t member_size, size_t alignment)
 	return ptr;
 }
 
-size_t GetUsableSize(void* ptr)
-{
-	return malloc_usable_size(ptr);
-}
-
 void DebugBreak(void)
 {
 	raise(SIGTRAP);
@@ -130,7 +126,7 @@ NS_END
 
 #endif
 
-#ifdef __linux__
+#ifdef PLATFORM_LINUX
 
 NS_GAFF
 
@@ -156,6 +152,11 @@ bool IsDebuggerAttached(void)
 	fclose(file);
 
 	return result != EOF && pid != 0;
+}
+
+size_t GetUsableSize(void* ptr)
+{
+	return malloc_usable_size(ptr);
 }
 
 NS_END

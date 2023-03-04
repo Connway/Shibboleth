@@ -9,12 +9,9 @@ function SetIntermediateAndTargetDirs(configuration)
 end
 
 startproject "Game_App"
-defaultplatform "x64"
 
-vectorextensions "SSE4.2"
 exceptionhandling "SEH"
 characterset "Unicode"
-systemversion "latest"
 nativewchar "Default"
 floatingpoint "Fast"
 cppdialect "C++20"
@@ -27,24 +24,42 @@ defines
 {
 	"UNICODE", "_UNICODE",
 	"EA_COMPILER_NO_RTTI",
-	--"GLM_FORCE_SSE42",
 	"GLM_FORCE_INTRINSICS",
 	"ZLIB_COMPAT",
 	"LUAJIT_NUMMODE=2",
 	"JPH_USE_LZCNT",
 	"JPH_USE_TZCNT",
-	"JPH_USE_FMADD",
-	"JPH_USE_SSE4_1",
-	"JPH_USE_SSE4_2",
-	--[["JPH_USE_AVX2",
-	"JPH_USE_AVX",
-	"JPH_USE_F16C"--]]
+	"JPH_USE_FMADD"
 }
 
-platforms { "x64" }
+filter { "system:macosx"}
+	defaultplatform "arm64"
+	platforms { "arm64" }
+
+filter { "system:not macosx" }
+	defaultplatform "x64"
+	platforms { "x64" }
 
 filter { "platforms:x64" }
+	defines
+	{
+		--"GLM_FORCE_SSE42",
+		--"JPH_USE_LZCNT",
+		--"JPH_USE_TZCNT",
+		"JPH_USE_FMADD",
+		"JPH_USE_SSE4_1",
+		"JPH_USE_SSE4_2"
+		--[["JPH_USE_AVX2",
+		"JPH_USE_AVX",
+		"JPH_USE_F16C"--]]
+	}
+
+	vectorextensions "SSE4.2"
 	architecture "x64"
+
+filter { "platforms:arm64" }
+	vectorextensions "Default"
+	architecture "ARM64"
 
 filter {}
 
@@ -89,6 +104,15 @@ filter { "system:windows" }
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
+
+filter { "system:linux" }
+
+filter { "system:windows or linux"}
+	systemversion "latest" -- this breaks on mac
+
+filter { "system:macosx" }
+
+filter { "platforms:x86 or x64" }
 
 filter { "action:vs*" }
 	buildoptions { "/Zc:__cplusplus", "/permissive-", "/Zc:static_assert-" }
