@@ -38,7 +38,7 @@ using ShaderSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID
 using ShaderResourceViewSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11ShaderResourceView* const*);
 using SamplerSetFunction = void (__stdcall ID3D11DeviceContext::*)(UINT, UINT, ID3D11SamplerState* const*);
 
-static ShaderSetFunction g_buffer_set[static_cast<size_t>(IShader::Type::Count)] = {
+static constexpr ShaderSetFunction s_buffer_set[] = {
 	&ID3D11DeviceContext::VSSetConstantBuffers,
 	&ID3D11DeviceContext::PSSetConstantBuffers,
 	&ID3D11DeviceContext::DSSetConstantBuffers,
@@ -47,7 +47,7 @@ static ShaderSetFunction g_buffer_set[static_cast<size_t>(IShader::Type::Count)]
 	&ID3D11DeviceContext::CSSetConstantBuffers
 };
 
-static ShaderResourceViewSetFunction g_resource_set[static_cast<size_t>(IShader::Type::Count)] = {
+static constexpr ShaderResourceViewSetFunction s_resource_set[] = {
 	&ID3D11DeviceContext::VSSetShaderResources,
 	&ID3D11DeviceContext::PSSetShaderResources,
 	&ID3D11DeviceContext::DSSetShaderResources,
@@ -56,7 +56,7 @@ static ShaderResourceViewSetFunction g_resource_set[static_cast<size_t>(IShader:
 	&ID3D11DeviceContext::CSSetShaderResources
 };
 
-static SamplerSetFunction g_sampler_set[static_cast<size_t>(IShader::Type::Count)] = {
+static constexpr SamplerSetFunction s_sampler_set[] = {
 	&ID3D11DeviceContext::VSSetSamplers,
 	&ID3D11DeviceContext::PSSetSamplers,
 	&ID3D11DeviceContext::DSSetSamplers,
@@ -64,6 +64,10 @@ static SamplerSetFunction g_sampler_set[static_cast<size_t>(IShader::Type::Count
 	&ID3D11DeviceContext::HSSetSamplers,
 	&ID3D11DeviceContext::CSSetSamplers
 };
+
+static_assert(ARRAY_SIZE(s_buffer_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_buffer_set) != IShader::Type::Count");
+static_assert(ARRAY_SIZE(s_resource_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_resource_set) != IShader::Type::Count");
+static_assert(ARRAY_SIZE(s_sampler_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_sampler_set) != IShader::Type::Count");
 
 
 // Program Buffers
@@ -198,9 +202,9 @@ void ProgramBuffersD3D11::bind(IRenderDevice& rd, int32_t res_view_offset, int32
 		Vector<ID3D11SamplerState*>& samplers = _samplers[i];
 		Vector<ID3D11Buffer*>& buffers = _buffers[i];
 
-		(context->*g_resource_set[i])(static_cast<UINT>(res_view_offset), static_cast<UINT>(res_views.size()), res_views.data());
-		(context->*g_sampler_set[i])(static_cast<UINT>(sampler_offset), static_cast<UINT>(samplers.size()), samplers.data());
-		(context->*g_buffer_set[i])(static_cast<UINT>(buffer_offset), static_cast<UINT>(buffers.size()), buffers.data());
+		(context->*s_resource_set[i])(static_cast<UINT>(res_view_offset), static_cast<UINT>(res_views.size()), res_views.data());
+		(context->*s_sampler_set[i])(static_cast<UINT>(sampler_offset), static_cast<UINT>(samplers.size()), samplers.data());
+		(context->*s_buffer_set[i])(static_cast<UINT>(buffer_offset), static_cast<UINT>(buffers.size()), buffers.data());
 	}
 }
 
