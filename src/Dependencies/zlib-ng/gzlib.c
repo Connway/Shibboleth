@@ -20,6 +20,12 @@
 #endif
 #endif
 
+#if defined(_WIN32)
+#  define OPEN _open
+#else
+#  define OPEN open
+#endif
+
 /* Local functions */
 static void gz_reset(gz_state *);
 static gzFile gz_open(const void *, int, const char *);
@@ -190,7 +196,7 @@ static gzFile gz_open(const void *path, int fd, const char *mode) {
 #elif __CYGWIN__
         fd == -2 ? open(state->path, oflag, 0666) :
 #endif
-        open((const char *)path, oflag, 0666));
+        OPEN((const char *)path, oflag, 0666));
     if (state->fd == -1) {
         free(state->path);
         zng_free(state);

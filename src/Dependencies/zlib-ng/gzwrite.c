@@ -118,7 +118,7 @@ static int gz_comp(gz_state *state, int flush) {
            doing Z_FINISH then don't write until we get to Z_STREAM_END */
         if (strm->avail_out == 0 || (flush != Z_NO_FLUSH && (flush != Z_FINISH || ret == Z_STREAM_END))) {
             have = (unsigned)(strm->next_out - state->x.next);
-            if (have && ((got = write(state->fd, state->x.next, (unsigned long)have)) < 0 || (unsigned)got != have)) {
+            if (have && ((got = WRITE(state->fd, state->x.next, (unsigned long)have)) < 0 || (unsigned)got != have)) {
                 gz_error(state, Z_ERRNO, zstrerror());
                 return -1;
             }
