@@ -1,9 +1,9 @@
 #ifndef ZLIB_H_
 #define ZLIB_H_
 /* zlib.h -- interface of the 'zlib-ng' compression library
-   Forked from and compatible with zlib 1.2.11
+   Forked from and compatible with zlib 1.2.13
 
-  Copyright (C) 1995-2016 Jean-loup Gailly and Mark Adler
+  Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -34,31 +34,35 @@
 #  error Include zlib-ng.h for zlib-ng API or zlib.h for zlib-compat API but not both
 #endif
 
+#ifndef RC_INVOKED
 #include <stdint.h>
 #include <stdarg.h>
+
 #include "zconf.h"
 
 #ifndef ZCONF_H
 #  error Missing zconf.h add binary output directory to include directories
 #endif
+#endif  /* RC_INVOKED */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define ZLIBNG_VERSION "2.0.2"
-#define ZLIBNG_VERNUM 0x2020
+#define ZLIBNG_VERSION "2.1.0.devel"
+#define ZLIBNG_VERNUM 0x02010000L   /* MMNNRRMS: major minor revision status modified */
 #define ZLIBNG_VER_MAJOR 2
-#define ZLIBNG_VER_MINOR 0
-#define ZLIBNG_VER_REVISION 2
-#define ZLIBNG_VER_SUBREVISION 0
+#define ZLIBNG_VER_MINOR 1
+#define ZLIBNG_VER_REVISION 0
+#define ZLIBNG_VER_STATUS 0         /* 0=devel, 1-E=beta, F=Release */
+#define ZLIBNG_VER_MODIFIED 0       /* non-zero if modified externally from zlib-ng */
 
-#define ZLIB_VERSION "1.2.11.zlib-ng"
-#define ZLIB_VERNUM 0x12bf
+#define ZLIB_VERSION "1.2.13.zlib-ng"
+#define ZLIB_VERNUM 0x12df
 #define ZLIB_VER_MAJOR 1
 #define ZLIB_VER_MINOR 2
-#define ZLIB_VER_REVISION 11
-#define ZLIB_VER_SUBREVISION 0
+#define ZLIB_VER_REVISION 13
+#define ZLIB_VER_SUBREVISION 15    /* 15=fork (0xf) */
 
 /*
     The 'zlib' compression library provides in-memory compression and
@@ -282,7 +286,7 @@ Z_EXTERN int Z_EXPORT deflate(z_stream *strm, int flush);
   == 0), or after each call of deflate().  If deflate returns Z_OK and with
   zero avail_out, it must be called again after making room in the output
   buffer because there might be more output pending. See deflatePending(),
-  which can be used if desired to determine whether or not there is more ouput
+  which can be used if desired to determine whether or not there is more output
   in that case.
 
     Normally the parameter flush is set to Z_NO_FLUSH, which allows deflate to
@@ -664,7 +668,7 @@ Z_EXTERN int Z_EXPORT deflateGetDictionary (z_stream *strm, unsigned char *dicti
    to dictionary.  dictionary must have enough space, where 32768 bytes is
    always enough.  If deflateGetDictionary() is called with dictionary equal to
    Z_NULL, then only the dictionary length is returned, and nothing is copied.
-   Similary, if dictLength is Z_NULL, then it is not set.
+   Similarly, if dictLength is Z_NULL, then it is not set.
 
      deflateGetDictionary() may return a length less than the window size, even
    when more than the window size in input has been provided. It may return up
@@ -901,7 +905,7 @@ Z_EXTERN int Z_EXPORT inflateGetDictionary(z_stream *strm, unsigned char *dictio
    to dictionary.  dictionary must have enough space, where 32768 bytes is
    always enough.  If inflateGetDictionary() is called with dictionary equal to
    NULL, then only the dictionary length is returned, and nothing is copied.
-   Similary, if dictLength is NULL, then it is not set.
+   Similarly, if dictLength is NULL, then it is not set.
 
      inflateGetDictionary returns Z_OK on success, or Z_STREAM_ERROR if the
    stream state is inconsistent.
@@ -1418,7 +1422,7 @@ Z_EXTERN size_t Z_EXPORT gzfread (void *buf, size_t size, size_t nitems, gzFile 
    provided, but could be inferred from the result of gztell().  This behavior
    is the same as the behavior of fread() implementations in common libraries,
    but it prevents the direct use of gzfread() to read a concurrently written
-   file, reseting and retrying on end-of-file, when size is not 1.
+   file, resetting and retrying on end-of-file, when size is not 1.
 */
 
 Z_EXTERN int Z_EXPORT gzwrite(gzFile file, void const *buf, unsigned len);
@@ -1728,19 +1732,18 @@ Z_EXTERN unsigned long Z_EXPORT crc32_combine(unsigned long crc1, unsigned long 
 */
 
 /*
-Z_EXTERN void Z_EXPORT crc32_combine_gen(uint32_t op[32], z_off_t len2);
+Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen(z_off_t len2);
 
-     Generate the operator op corresponding to length len2, to be used with
-   crc32_combine_op(). op must have room for 32 z_crc_t values. (32 is the
-   number of bits in the CRC.)
+     Return the operator corresponding to length len2, to be used with
+   crc32_combine_op().
 */
 
-Z_EXTERN uint32_t Z_EXPORT crc32_combine_op(uint32_t crc1, uint32_t crc2,
-                                          const uint32_t *op);
+Z_EXTERN unsigned long Z_EXPORT crc32_combine_op(unsigned long crc1, unsigned long crc2,
+                                                 const unsigned long op);
 /*
      Give the same result as crc32_combine(), using op in place of len2. op is
    is generated from len2 by crc32_combine_gen(). This will be faster than
-   crc32_combine() if the generated op is used many times.
+   crc32_combine() if the generated op is used more than once.
 */
 
 
@@ -1766,6 +1769,7 @@ Z_EXTERN int Z_EXPORT inflateBackInit_(z_stream *strm, int windowBits, unsigned 
                         inflateBackInit_((strm), (windowBits), (window), ZLIB_VERSION, (int)sizeof(z_stream))
 
 
+#ifndef Z_SOLO
 /* gzgetc() macro and its supporting function and exposed data structure.  Note
  * that the real internal state is much larger than the exposed structure.
  * This abbreviated structure exposes just enough for the gzgetc() macro.  The
@@ -1794,10 +1798,11 @@ Z_EXTERN int Z_EXPORT gzgetc_(gzFile file);  /* backward compatibility */
    Z_EXTERN z_off64_t Z_EXPORT gzoffset64(gzFile);
    Z_EXTERN unsigned long Z_EXPORT adler32_combine64(unsigned long, unsigned long, z_off64_t);
    Z_EXTERN unsigned long Z_EXPORT crc32_combine64(unsigned long, unsigned long, z_off64_t);
-   Z_EXTERN void Z_EXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
+   Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen64(z_off64_t);
+#endif
 #endif
 
-#if !defined(Z_INTERNAL) && defined(Z_WANT64)
+#if !defined(Z_SOLO) && !defined(Z_INTERNAL) && defined(Z_WANT64)
 #    define gzopen gzopen64
 #    define gzseek gzseek64
 #    define gztell gztell64
@@ -1812,16 +1817,18 @@ Z_EXTERN int Z_EXPORT gzgetc_(gzFile file);  /* backward compatibility */
      Z_EXTERN z_off_t Z_EXPORT gzoffset64(gzFile);
      Z_EXTERN unsigned long Z_EXPORT adler32_combine64(unsigned long, unsigned long, z_off_t);
      Z_EXTERN unsigned long Z_EXPORT crc32_combine64(unsigned long, unsigned long, z_off_t);
-     Z_EXTERN void Z_EXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
+     Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen64(z_off64_t);
 #  endif
 #else
+#  ifndef Z_SOLO
    Z_EXTERN gzFile Z_EXPORT gzopen(const char *, const char *);
    Z_EXTERN z_off_t Z_EXPORT gzseek(gzFile, z_off_t, int);
    Z_EXTERN z_off_t Z_EXPORT gztell(gzFile);
    Z_EXTERN z_off_t Z_EXPORT gzoffset(gzFile);
+#  endif
    Z_EXTERN unsigned long Z_EXPORT adler32_combine(unsigned long, unsigned long, z_off_t);
    Z_EXTERN unsigned long Z_EXPORT crc32_combine(unsigned long, unsigned long, z_off_t);
-   Z_EXTERN void Z_EXPORT crc32_combine_gen(uint32_t *op, z_off_t);
+   Z_EXTERN unsigned long Z_EXPORT crc32_combine_gen(z_off_t);
 #endif
 
 /* undocumented functions */
@@ -1834,10 +1841,12 @@ Z_EXTERN unsigned long    Z_EXPORT inflateCodesUsed (z_stream *);
 Z_EXTERN int              Z_EXPORT inflateResetKeep (z_stream *);
 Z_EXTERN int              Z_EXPORT deflateResetKeep (z_stream *);
 
+#ifndef Z_SOLO
 #if defined(_WIN32)
     Z_EXTERN gzFile Z_EXPORT gzopen_w(const wchar_t *path, const char *mode);
 #endif
 Z_EXTERN int Z_EXPORTVA gzvprintf(gzFile file, const char *format, va_list va);
+#endif
 
 #ifdef __cplusplus
 }

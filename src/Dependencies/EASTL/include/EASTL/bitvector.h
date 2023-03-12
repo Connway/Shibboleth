@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// Note: This code is not yet complete: it isn't tested and doesn't yet 
+// Note: This code is not yet complete: it isn't tested and doesn't yet
 //       support containers other than vector.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -169,7 +169,6 @@ namespace eastl
 		bitvector_iterator();
 		bitvector_iterator(element_type* p, eastl_size_t i);
 		bitvector_iterator(reference_type& referenceType);
-		bitvector_iterator(const bitvector_iterator& iterator);
 
 		bitvector_iterator& operator++()    { base_type::operator++(); return *this; }
 		bitvector_iterator& operator--()    { base_type::operator--(); return *this; }
@@ -191,16 +190,16 @@ namespace eastl
 	/// bitvector
 	///
 	/// Implements an array of bits treated as boolean values.
-	/// bitvector is similar to vector<bool> but uses bits instead of bytes and 
+	/// bitvector is similar to vector<bool> but uses bits instead of bytes and
 	/// allows the user to use other containers such as deque instead of vector.
 	/// bitvector is different from bitset in that bitset is less flexible but
 	/// uses less memory and has higher performance.
 	///
-	/// To consider: Rename the Element template parameter to WordType, for 
+	/// To consider: Rename the Element template parameter to WordType, for
 	/// consistency with bitset.
 	///
-	template <typename Allocator = EASTLAllocatorType, 
-			  typename Element   = BitvectorWordType, 
+	template <typename Allocator = EASTLAllocatorType,
+			  typename Element   = BitvectorWordType,
 			  typename Container = eastl::vector<Element, Allocator> >
 	class bitvector
 	{
@@ -243,12 +242,10 @@ namespace eastl
 		explicit bitvector(const allocator_type& allocator);
 		explicit bitvector(size_type n, const allocator_type& allocator = EASTL_BITVECTOR_DEFAULT_ALLOCATOR);
 		bitvector(size_type n, value_type value, const allocator_type& allocator = EASTL_BITVECTOR_DEFAULT_ALLOCATOR);
-		bitvector(const bitvector& copy);
 
 		template <typename InputIterator>
 		bitvector(InputIterator first, InputIterator last);
 
-		bitvector& operator=(const bitvector& x);
 		void swap(this_type& x);
 
 		template <typename InputIterator>
@@ -289,7 +286,7 @@ namespace eastl
 		const_reference back() const;
 
 		bool            test(size_type n, bool defaultValue) const; // Returns true if the bit index is < size() and set. Returns defaultValue if the bit is >= size().
-		void            set(size_type n, bool value);               // Resizes the container to accomodate n if necessary. 
+		void            set(size_type n, bool value);               // Resizes the container to accomodate n if necessary.
 
 		reference       at(size_type n);                    // throws an out_of_range exception if n is invalid.
 		const_reference at(size_type n) const;
@@ -312,7 +309,7 @@ namespace eastl
 
 		element_type*       data() EA_NOEXCEPT;
 		const element_type* data() const EA_NOEXCEPT;
-		
+
 		iterator insert(const_iterator position, value_type value);
 		void     insert(const_iterator position, size_type n, value_type value);
 
@@ -344,7 +341,7 @@ namespace eastl
 
 	template <typename Element>
 	bitvector_reference<Element>::bitvector_reference(Element* p, eastl_size_t i)
-	  : mpBitWord(p), 
+	  : mpBitWord(p),
 		mnBitIndex(i)
 	{
 	}
@@ -524,7 +521,7 @@ namespace eastl
 		return copy;
 	}
 
-	
+
 	template <typename Element>
 	bitvector_const_iterator<Element>
 	bitvector_const_iterator<Element>::operator-(difference_type n) const
@@ -560,7 +557,7 @@ namespace eastl
 	template <typename Element>
 	bool bitvector_const_iterator<Element>::operator<(const this_type& rhs) const
 	{
-		return (mReference.mpBitWord < rhs.mReference.mpBitWord) || 
+		return (mReference.mpBitWord < rhs.mReference.mpBitWord) ||
 			   ((mReference.mpBitWord == rhs.mReference.mpBitWord) && (mReference.mnBitIndex < rhs.mReference.mnBitIndex));
 	}
 
@@ -568,7 +565,7 @@ namespace eastl
 	template <typename Element>
 	bool bitvector_const_iterator<Element>::operator<=(const this_type& rhs) const
 	{
-		return (mReference.mpBitWord < rhs.mReference.mpBitWord) || 
+		return (mReference.mpBitWord < rhs.mReference.mpBitWord) ||
 			   ((mReference.mpBitWord == rhs.mReference.mpBitWord) && (mReference.mnBitIndex <= rhs.mReference.mnBitIndex));
 	}
 
@@ -627,7 +624,7 @@ namespace eastl
 			{
 				const size_type bit     = mReference.mnBitIndex;
 				const size_type lastbit = kBitCount - nExtraBits;
-				
+
 				if(bit == lastbit)
 					return eastl::isf_valid | eastl::isf_current;
 				else if(bit < lastbit)
@@ -662,13 +659,6 @@ namespace eastl
 
 
 	template <typename Element>
-	bitvector_iterator<Element>::bitvector_iterator(const bitvector_iterator& iterator)
-		: base_type(iterator.mReference)
-	{
-	}
-
-
-	template <typename Element>
 	bitvector_iterator<Element>::bitvector_iterator(reference_type& reference)
 		: base_type(reference)
 	{
@@ -692,8 +682,8 @@ namespace eastl
 
 
 	template <typename Element>
-	void MoveBits(bitvector_iterator<Element> start, 
-				  bitvector_iterator<Element> end, 
+	void MoveBits(bitvector_iterator<Element> start,
+				  bitvector_iterator<Element> end,
 				  bitvector_iterator<Element> dest)
 	{
 		// Slow implemenation; could optimize by moving a word at a time.
@@ -750,7 +740,7 @@ namespace eastl
 		return copy;
 	}
 
-	
+
 	template <typename Element>
 	bitvector_iterator<Element>
 	bitvector_iterator<Element>::operator-(difference_type n) const
@@ -970,7 +960,7 @@ namespace eastl
 		push_back();
 		*--end() = value;
 	}
-	
+
 
 	template <typename Allocator, typename Element, typename Container>
 	void bitvector<Allocator, Element, Container>::pop_back()
@@ -1059,8 +1049,8 @@ namespace eastl
 	typename bitvector<Allocator, Element, Container>::reference
 	bitvector<Allocator, Element, Container>::at(size_type n)
 	{
-		// The difference between at and operator[] is that at signals 
-		// if the requested position is out of range by throwing an 
+		// The difference between at and operator[] is that at signals
+		// if the requested position is out of range by throwing an
 		// out_of_range exception.
 
 		#if EASTL_EXCEPTIONS_ENABLED
@@ -1070,7 +1060,7 @@ namespace eastl
 			if(EASTL_UNLIKELY(n >= size()))
 				EASTL_FAIL_MSG("bitvector::at -- out of range");
 		#endif
-		
+
 		return *(begin() + (difference_type)n);
 	}
 
@@ -1086,7 +1076,7 @@ namespace eastl
 			if(EASTL_UNLIKELY(n >= size()))
 				EASTL_FAIL_MSG("bitvector::at -- out of range");
 		#endif
-		
+
 		return *(begin() + (difference_type)n);
 	}
 
@@ -1110,7 +1100,7 @@ namespace eastl
 /*
 	template <typename Allocator, typename Element, typename Container>
 	template <bool value>
-	typename bitvector<Allocator, Element, Container>::iterator 
+	typename bitvector<Allocator, Element, Container>::iterator
 	bitvector<Allocator, Element, Container>::find_first()
 	{
 		return begin();
@@ -1119,7 +1109,7 @@ namespace eastl
 	template <bool value> iterator find_next(const_iterator it);
 	template <bool value> iterator find_last();
 	template <bool value> iterator find_prev(const_iterator it);
-						
+
 	template <bool value> const_iterator find_first() const;
 	template <bool value> const_iterator find_next(const_iterator it) const;
 	template <bool value> const_iterator find_last() const;
@@ -1171,7 +1161,7 @@ namespace eastl
 	{
 		return mContainer.data();
 	}
-	
+
 
 	template <typename Allocator, typename Element, typename Container>
 	const typename bitvector<Allocator, Element, Container>::element_type*
@@ -1232,12 +1222,12 @@ namespace eastl
 
 
 	/*
-	The following is a placeholder for a future implementation. It turns out that a correct implementation of 
-	insert(pos, first, last) is a non-trivial exercise that would take a few hours to implement and test. 
-	The reasons why involve primarily the problem of handling the case where insertion source comes from 
-	within the container itself, and the case that first and last (note they are templated) might not refer 
-	to iterators might refer to a value/count pair. The C++ Standard requires you to handle this case and 
-	I (Paul Pedriana) believe that it applies even for a bitvector, given that bool is an integral type. 
+	The following is a placeholder for a future implementation. It turns out that a correct implementation of
+	insert(pos, first, last) is a non-trivial exercise that would take a few hours to implement and test.
+	The reasons why involve primarily the problem of handling the case where insertion source comes from
+	within the container itself, and the case that first and last (note they are templated) might not refer
+	to iterators might refer to a value/count pair. The C++ Standard requires you to handle this case and
+	I (Paul Pedriana) believe that it applies even for a bitvector, given that bool is an integral type.
 	So you have to set up a compile-time type traits function chooser. See vector, for example.
 
 	template <typename Allocator, typename Element, typename Container>
@@ -1362,20 +1352,8 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	bitvector<Allocator, Element, Container>&
-	bitvector<Allocator, Element, Container>::operator=(const bitvector& rhs)
-	{
-		// The following is OK if (&rhs == this)
-		mContainer = rhs.mContainer;
-		mFreeBitCount = rhs.mFreeBitCount;
-
-		return *this;
-	}
-
-
-	template <typename Allocator, typename Element, typename Container>
 	bitvector<Allocator, Element, Container>::bitvector()
-	  : mContainer(), 
+	  : mContainer(),
 		mFreeBitCount(0)
 	{
 	}
@@ -1383,7 +1361,7 @@ namespace eastl
 
 	template <typename Allocator, typename Element, typename Container>
 	bitvector<Allocator, Element, Container>::bitvector(const allocator_type& allocator)
-	  : mContainer(allocator), 
+	  : mContainer(allocator),
 		mFreeBitCount(0)
 	{
 	}
@@ -1412,17 +1390,9 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	bitvector<Allocator, Element, Container>::bitvector(const bitvector& copy)
-	  : mContainer(copy.mContainer), 
-		mFreeBitCount(copy.mFreeBitCount)
-	{
-	}
-
-
-	template <typename Allocator, typename Element, typename Container>
 	template <typename InputIterator>
 	bitvector<Allocator, Element, Container>::bitvector(InputIterator first, InputIterator last)
-	  : mContainer(), 
+	  : mContainer(),
 		mFreeBitCount(0)
 	{
 		assign(first, last);
@@ -1435,7 +1405,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator==(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator==(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		// To do: Replace this with a smart compare implementation. This is much slower than it needs to be.
@@ -1444,7 +1414,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator!=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator!=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !operator==(a, b);
@@ -1452,7 +1422,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator<(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator<(const bitvector<Allocator, Element, Container>& a,
 						  const bitvector<Allocator, Element, Container>& b)
 	{
 		// To do: Replace this with a smart compare implementation. This is much slower than it needs to be.
@@ -1461,7 +1431,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator>(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator>(const bitvector<Allocator, Element, Container>& a,
 						  const bitvector<Allocator, Element, Container>& b)
 	{
 		return b < a;
@@ -1469,7 +1439,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator<=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator<=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !(b < a);
@@ -1477,7 +1447,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator>=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator>=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !(a < b);

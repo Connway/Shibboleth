@@ -36,9 +36,10 @@
 		#endif
 
 		#if defined(EA_PLATFORM_APPLE) || defined(__APPLE__)
+			#include <EASTL/string.h>
 			#include <dlfcn.h>
 		#endif
-	
+
 		#if defined(EA_PLATFORM_BSD) || defined(EA_PLATFORM_CONSOLE_BSD) || defined(__FreeBSD__)
 			#include <sys/param.h>
 			#include <pthread_np.h>
@@ -47,7 +48,7 @@
 		#if defined(EA_PLATFORM_ANDROID)
 			#include <sys/syscall.h>
 		#endif
-		
+
 	#endif
 
 	namespace EA
@@ -69,7 +70,7 @@
 	{
 		EAThreadDynamicData* const pTDD = EA::Thread::FindThreadDynamicData(id);
 		if(pTDD)
-		{   
+		{
 			return pTDD->mThreadId;
 		}
 
@@ -97,7 +98,7 @@
 						return 0; // 0 is the only native priority permitted with the SCHED_OTHER scheduling scheme.
 				#endif
 
-				// The following needs to be tested on a Unix-by-Unix case. 
+				// The following needs to be tested on a Unix-by-Unix case.
 				const int nMin = sched_get_priority_min(policy);
 				const int nMax = sched_get_priority_max(policy);
 
@@ -127,10 +128,10 @@
 
 		#if defined(EA_PLATFORM_LINUX) && !defined(__CYGWIN__)
 			// We are assuming Kernel 2.6 and later behavior, but perhaps we should dynamically detect.
-			// Linux supports three scheduling policies SCHED_OTHER, SCHED_RR, and SCHED_FIFO. 
+			// Linux supports three scheduling policies SCHED_OTHER, SCHED_RR, and SCHED_FIFO.
 			// The process needs to be run with superuser privileges to use SCHED_RR or SCHED_FIFO.
 			// Thread priorities for SCHED_OTHER do not exist; there is only one allowed thread priority: 0.
-			// Thread priorities for SCHED_RR and SCHED_FIFO are limited to the range of [1, 99] (verified with Linux 2.6.17), 
+			// Thread priorities for SCHED_RR and SCHED_FIFO are limited to the range of [1, 99] (verified with Linux 2.6.17),
 			// despite documentation on the Internet that refers to ranges of 0-99, 1-100, 1-140, etc.
 			// Higher values in this range mean higher priority.
 			// All of the SCHED_RR and SCHED_FIFO privileges are higher than anything running at SCHED_OTHER,
@@ -149,7 +150,7 @@
 
 			result = pthread_setschedparam(currentThreadId, policy, &param);
 		#else
-			// The following needs to be tested on a Unix-by-Unix case. 
+			// The following needs to be tested on a Unix-by-Unix case.
 			result = pthread_getschedparam(currentThreadId, &policy, &param);
 
 			if(result == 0)
@@ -228,7 +229,7 @@
 
 			// See http://www.opengroup.org/onlinepubs/009695399/functions/pthread_attr_getstack.html
 			// stackLow is a constant. It is not the current low location but rather is the lowest allowed location.
-			
+
 			pthread_attr_getstack(&sattr, &stackLow, &stackSize);
 			pthread_attr_destroy(&sattr);
 
@@ -277,7 +278,7 @@
 			// We don't assert on the success, as that could be very noisy for some users.
 
 		#else
-			// Other Unix platforms don't provide a means to specify what processor a thread runs on. 
+			// Other Unix platforms don't provide a means to specify what processor a thread runs on.
 			// You have no choice but to let the OS schedule threads for you.
 			EA_UNUSED(nProcessor);
 		#endif
@@ -323,7 +324,7 @@
 			#endif
 
 		#elif defined(EA_PLATFORM_ANDROID)
-				// return zero until Google provides a alternative to smp_processor_id() 
+				// return zero until Google provides a alternative to smp_processor_id()
 				return 0;
 
 		#elif EA_VALGRIND_ENABLED
@@ -347,13 +348,13 @@
 			cpu_set_t cpus;
 			CPU_ZERO(&cpus);
 			pthread_getaffinity_np(pthread_self(), sizeof(cpus), &cpus);
-			
+
 			for(int i = 0; i < CPU_SETSIZE; i++)
 			{
 				if(CPU_ISSET(i, &cpus))
 					return i;
 			}
-			
+
 			return 0;
 		#else
 			return 0;
@@ -366,7 +367,7 @@
 		if(pTDD)
 		{
 			pTDD->mnThreadAffinityMask = nAffinityMask;
-	
+
 			#if EATHREAD_THREAD_AFFINITY_MASK_SUPPORTED
 				cpu_set_t cpuSetMask;
 				memset(&cpuSetMask, 0, sizeof(cpu_set_t));
@@ -378,21 +379,21 @@
 						CPU_SET(c, &cpuSetMask);
 					}
 				}
-				
+
 					sched_setaffinity(pTDD->mThreadPid, sizeof(cpu_set_t), &cpuSetMask);
 			#endif
 		}
 	}
-	
-	
+
+
 	EATHREADLIB_API EA::Thread::ThreadAffinityMask EA::Thread::GetThreadAffinityMask(const EA::Thread::ThreadId& id)
-	{ 
+	{
 		EAThreadDynamicData* const pTDD = FindThreadDynamicData(id);
 		if(pTDD)
 		{
 			return pTDD->mnThreadAffinityMask;
 		}
-	
+
 		return kThreadAffinityMaskAny;
 	}
 
@@ -406,16 +407,16 @@
 			{
 				#if defined(EA_PLATFORM_LINUX)
 					// http://manpages.courier-mta.org/htmlman2/prctl.2.html
-					// The Linux documentation says PR_SET_NAME sets the process name, but that 
+					// The Linux documentation says PR_SET_NAME sets the process name, but that
 					// documentation is wrong and instead it sets the current thread name.
 
 					// Also: http://0pointer.de/blog/projects/name-your-threads.html
-					// Stefan Kost recently pointed me to the fact that the Linux system call prctl(PR_SET_NAME) 
-					// does not in fact change the process name, but the task name (comm field) -- in contrast 
-					// to what the man page suggests. That makes it very useful for naming threads, since you 
-					// can read back the name you set with PR_SET_NAME earlier from the /proc file system 
-					// (/proc/$PID/task/$TID/comm on newer kernels, /proc/$PID/task/$TID/stat's second field 
-					// on older kernels), and hence distinguish which thread might be responsible for the high 
+					// Stefan Kost recently pointed me to the fact that the Linux system call prctl(PR_SET_NAME)
+					// does not in fact change the process name, but the task name (comm field) -- in contrast
+					// to what the man page suggests. That makes it very useful for naming threads, since you
+					// can read back the name you set with PR_SET_NAME earlier from the /proc file system
+					// (/proc/$PID/task/$TID/comm on newer kernels, /proc/$PID/task/$TID/stat's second field
+					// on older kernels), and hence distinguish which thread might be responsible for the high
 					// CPU load or similar problems.
 					char8_t nameBuf[16]; // Limited to 16 bytes, null terminated if < 16 bytes
 					strncpy(reinterpret_cast<char*>(&nameBuf[0]), reinterpret_cast<const char*>(pName), sizeof(nameBuf));
@@ -435,9 +436,9 @@
 					{
 						// Mac OS X does not expose the length limit of the name, so hardcode it.
 						char8_t nameBuf[63]; // It is not clear what the size limit actually is, though 63 is known to work because it was seen on the Internet.
-						strncpy(nameBuf, pName, sizeof(nameBuf));
+						strncpy(reinterpret_cast<char*>(&nameBuf[0]), reinterpret_cast<const char*>(pName), sizeof(nameBuf));
 						nameBuf[62] = 0;
-						pthread_setname_np_ptr(nameBuf);
+						pthread_setname_np_ptr(reinterpret_cast<char*>(&nameBuf[0]));
 					}
 
 				#elif defined(EA_PLATFORM_BSD) || defined(EA_PLATFORM_CONSOLE_BSD) || defined(__FreeBSD__)
@@ -448,7 +449,7 @@
 
 		#endif
 
-		EA::Thread::ThreadId GetId(EAThreadDynamicData* pTDD) 
+		EA::Thread::ThreadId GetId(EAThreadDynamicData* pTDD)
 		{
 			if(pTDD)
 				return pTDD->mThreadId;
@@ -458,24 +459,42 @@
 
 		void SetThreadName(EAThreadDynamicData* pTDD)
 		{
-			#if defined(EA_PLATFORM_LINUX) || defined(EA_PLATFORM_APPLE)
+			#if defined(EA_PLATFORM_LINUX)
 				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 0);
 				// http://stackoverflow.com/questions/2369738/can-i-set-the-name-of-a-thread-in-pthreads-linux
 				// Under some Unixes you can name only the current thread, so we apply the naming
 				// only if the currently executing thread is the one that is associated with
 				// this class object.
 				if(GetId(pTDD) == EA::Thread::GetThreadId())
-					SetCurrentThreadName(reinterpret_cast<const char8_t*>(&pTDD->mName[0]));
+					SetCurrentThreadName(pTDD->mName);
 
-			#elif defined(EA_PLATFORM_BSD) 
+			#elif defined(EA_PLATFORM_APPLE)
+				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 0);
+				// http://stackoverflow.com/questions/2369738/can-i-set-the-name-of-a-thread-in-pthreads-linux
+				// Under some Unixes you can name only the current thread, so we apply the naming
+				// only if the currently executing thread is the one that is associated with
+				// this class object.
+				if(GetId(pTDD) == EA::Thread::GetThreadId())
+				{
+					char8_t temp[EATHREAD_NAME_SIZE] = { 0 };
+					const char* stringBegin = pTDD->mName;
+					const char* stringEnd = stringBegin + eastl::CharStrlen(pTDD->mName);
+					char8_t* tempBegin = temp;
+					char8_t* tempEnd = temp + EATHREAD_NAME_SIZE;
+					eastl::DecodePart(stringBegin, stringEnd, tempBegin, tempEnd);
+
+					SetCurrentThreadName(temp);
+				}
+
+			#elif defined(EA_PLATFORM_BSD)
 				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 1);
 				// http://www.unix.com/man-page/freebsd/3/PTHREAD_SET_NAME_NP/
 				if(GetId(pTDD) != EA::Thread::kThreadIdInvalid)
 					pthread_set_name_np(GetId(pTDD), pTDD->mName);
-					
+
 			#endif
 		}
-	} // namespace Internal 
+	} // namespace Internal
 
 
 
@@ -498,7 +517,7 @@
 	}
 
 	EATHREADLIB_API const char* EA::Thread::GetThreadName(const EA::Thread::ThreadId& id)
-	{ 
+	{
 		EAThreadDynamicData* const pTDD = FindThreadDynamicData(id);
 		return pTDD ?  pTDD->mName : "";
 	}
@@ -511,7 +530,7 @@
 
 			if(nProcessorCount == 0)
 			{
-				// A better function to use would possibly be KeQueryActiveProcessorCount 
+				// A better function to use would possibly be KeQueryActiveProcessorCount
 				// (NTKERNELAPI ULONG KeQueryActiveProcessorCount(PKAFFINITY ActiveProcessors))
 
 				SYSTEM_INFO systemInfo;
@@ -528,7 +547,7 @@
 			//     int sysctl(int* name, u_int namelen, void* oldp, size_t* oldlenp, void* newp, size_t newlen);
 			//     int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void *newp, size_t newlen);
 
-			#ifdef EA_PLATFORM_BSD 
+			#ifdef EA_PLATFORM_BSD
 			  int  mib[4] = { CTL_HW, HW_NCPU, 0, 0 };
 			#else
 			  int  mib[4] = { CTL_HW, HW_AVAILCPU, 0, 0 };
@@ -538,7 +557,7 @@
 
 			sysctl(mib, 2, &cpuCount, &len, NULL, 0);
 
-			if(cpuCount < 1) 
+			if(cpuCount < 1)
 			{
 				mib[1] = HW_NCPU;
 				sysctl(mib, 2, &cpuCount, &len, NULL, 0);
@@ -553,7 +572,7 @@
 			//
 			// int cpuCount = 0;
 			// size_t len = sizeof(cpuCount);
-			// if(sysctlbyname("hw.ncpu", &cpuCount, &len, NULL, 0) != 0) 
+			// if(sysctlbyname("hw.ncpu", &cpuCount, &len, NULL, 0) != 0)
 			//     cpuCount = 1;
 			// return cpuCount;
 		#else
@@ -598,14 +617,14 @@
 	}
 
 
-	namespace EA 
-	{ 
-		namespace Thread 
-		{ 
-			EAThreadDynamicData* FindThreadDynamicData(ThreadId threadId);     
+	namespace EA
+	{
+		namespace Thread
+		{
+			EAThreadDynamicData* FindThreadDynamicData(ThreadId threadId);
 		}
 	}
-	
+
 	void EA::Thread::ThreadEnd(intptr_t threadReturnValue)
 	{
 		EAThreadDynamicData* const pTDD = FindThreadDynamicData(GetThreadId());
@@ -633,14 +652,14 @@
 			return pthread_mach_thread_np(pthread_self()); // There isn't a self-specific version of pthread_mach_thread_np.
 		}
 	#endif
-	
-	
+
+
 	EA::Thread::ThreadTime EA::Thread::GetThreadTime()
 	{
 		#if defined(EA_PLATFORM_WINDOWS) && !defined(__CYGWIN__)
 			// We use this code instead of GetTickCount or similar because pthreads under
-			// Win32 uses the 'system file time' definition (e.g. GetSystemTimeAsFileTime()) 
-			// for current time. The implementation here is just like that in the 
+			// Win32 uses the 'system file time' definition (e.g. GetSystemTimeAsFileTime())
+			// for current time. The implementation here is just like that in the
 			// pthreads-Win32 ptw32_timespec.c file.
 			int64_t ft;
 			ThreadTime threadTime;
@@ -666,7 +685,7 @@
 			#else
 				timeval temp;
 				gettimeofday(&temp, NULL);
-				return ThreadTime((ThreadTime::seconds_t)temp.tv_sec, (ThreadTime::nseconds_t)temp.tv_usec * 1000);    
+				return ThreadTime((ThreadTime::seconds_t)temp.tv_sec, (ThreadTime::nseconds_t)temp.tv_usec * 1000);
 			#endif
 		#endif
 	}

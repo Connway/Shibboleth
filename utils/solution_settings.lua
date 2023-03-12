@@ -6,6 +6,9 @@ function SetIntermediateAndTargetDirs(configuration)
 
 	filter { "configurations:" .. configuration, "platforms:x64" }
 		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
+
+		filter { "configurations:" .. configuration, "platforms:arm64" }
+		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. configuration)
 end
 
 startproject "Game_App"
@@ -46,7 +49,7 @@ filter { "platforms:x64" }
 		--"GLM_FORCE_SSE42",
 		--"JPH_USE_LZCNT",
 		--"JPH_USE_TZCNT",
-		"JPH_USE_FMADD",
+		--"JPH_USE_FMADD",
 		"JPH_USE_SSE4_1",
 		"JPH_USE_SSE4_2"
 		--[["JPH_USE_AVX2",
@@ -111,8 +114,9 @@ filter { "system:windows or linux"}
 	systemversion "latest" -- this breaks on mac
 
 filter { "system:macosx" }
+	buildoptions { "-fchar8_t" }
 
-filter { "platforms:x86 or x64" }
+filter { "platforms:x64" }
 
 filter { "action:vs*" }
 	buildoptions { "/Zc:__cplusplus", "/permissive-", "/Zc:static_assert-" }

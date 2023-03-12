@@ -1,11 +1,20 @@
 /* gzread.c -- zlib functions for reading gzip files
- * Copyright (C) 2004, 2005, 2010, 2011, 2012, 2013, 2016 Mark Adler
+ * Copyright (C) 2004-2017 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 #include "zbuild.h"
 #include "zutil_p.h"
 #include "gzguts.h"
+
+#if defined(_WIN32)
+#  define CLOSE _close
+#  define READ _read
+#else
+#include <unistd.h>
+#  define CLOSE close
+#  define READ read
+#endif
 
 /* Local functions */
 static int gz_load(gz_state *, unsigned char *, unsigned, unsigned *);
@@ -25,7 +34,7 @@ static int gz_load(gz_state *state, unsigned char *buf, unsigned len, unsigned *
 
     *have = 0;
     do {
-        ret = _read(state->fd, buf + *have, len - *have);
+        ret = READ(state->fd, buf + *have, len - *have);
         if (ret <= 0)
             break;
         *have += (unsigned)ret;
@@ -100,7 +109,7 @@ static int gz_look(gz_state *state) {
         state->strm.opaque = NULL;
         state->strm.avail_in = 0;
         state->strm.next_in = NULL;
-        if (PREFIX(inflateInit2)(&(state->strm), 15 + 16) != Z_OK) {    /* gunzip */
+        if (PREFIX(inflateInit2)(&(state->strm), MAX_WBITS + 16) != Z_OK) {    /* gunzip */
             zng_free(state->out);
             zng_free(state->in);
             state->size = 0;
@@ -145,11 +154,9 @@ static int gz_look(gz_state *state) {
        the output buffer is larger than the input buffer, which also assures
        space for gzungetc() */
     state->x.next = state->out;
-    if (strm->avail_in) {
-        memcpy(state->x.next, strm->next_in, strm->avail_in);
-        state->x.have = strm->avail_in;
-        strm->avail_in = 0;
-    }
+    memcpy(state->x.next, strm->next_in, strm->avail_in);
+    state->x.have = strm->avail_in;
+    strm->avail_in = 0;
     state->how = COPY;
     state->direct = 1;
     return 0;
@@ -432,9 +439,11 @@ int Z_EXPORT PREFIX(gzgetc)(gzFile file) {
     return gz_read(state, buf, 1) < 1 ? -1 : buf[0];
 }
 
+#ifdef ZLIB_COMPAT
 int Z_EXPORT PREFIX(gzgetc_)(gzFile file) {
     return PREFIX(gzgetc)(file);
 }
+#endif
 
 /* -- see zlib.h -- */
 int Z_EXPORT PREFIX(gzungetc)(int c, gzFile file) {
@@ -596,7 +605,7 @@ int Z_EXPORT PREFIX(gzclose_r)(gzFile file) {
     err = state->err == Z_BUF_ERROR ? Z_BUF_ERROR : Z_OK;
     gz_error(state, Z_OK, NULL);
     free(state->path);
-    ret = _close(state->fd);
+    ret = CLOSE(state->fd);
     zng_free(state);
     return ret ? Z_ERRNO : err;
 }
