@@ -2,7 +2,7 @@ DepProject "GLFW"
 	language "C"
 	warnings "Extra"
 
-	files { "**.c", "**.h" }
+	files { "**.c", "**.h", "**.m" }
 
 	filter { "system:not linux", "system:not macosx" }
 		removefiles { "src/posix_*.*", "src/glx_context.c" }
