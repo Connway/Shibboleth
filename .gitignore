@@ -33,3 +33,4 @@ src/Dependencies/LuaJIT/already_built_*.txt
 .generated/preproc/*
 **/.DS_Store
 .vscode/*
+**/.idea/*

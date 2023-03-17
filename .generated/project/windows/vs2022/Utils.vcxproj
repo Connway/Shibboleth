@@ -137,7 +137,8 @@
     <None Include="..\..\..\..\utils\premake-qt\_manifest.lua" />
     <None Include="..\..\..\..\utils\premake-qt\_preload.lua" />
     <None Include="..\..\..\..\utils\premake-qt\qt.lua" />
-    <None Include="..\..\..\..\utils\premake-qt\qtmodules.lua" />
+    <None Include="..\..\..\..\utils\premake-qt\qtmodules.qt5.lua" />
+    <None Include="..\..\..\..\utils\premake-qt\qtmodules.qt6.lua" />
     <None Include="..\..\..\..\utils\premake5.lua" />
     <None Include="..\..\..\..\utils\pull_file_name_actions.lua" />
     <None Include="..\..\..\..\utils\solution_configs.lua" />

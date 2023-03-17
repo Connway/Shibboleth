@@ -27,6 +27,17 @@ premake.api.register {
 }
 
 --
+-- By default, Qt modules' include directories are added as regular include directories,
+-- meaning they might issue warnings.
+-- You can use this option so that the include directories are instead added as "external" ones
+-- so that compilers supporting this won't ever issue any warnings on those includes.
+premake.api.register {
+	name = "qtuseexternalinclude",
+	scope = "config",
+	kind = "boolean"
+}
+
+--
 -- Set the binary path. By default, its `qtpath .. "/bin"`. Use
 -- this command to override it.
 --
@@ -62,6 +73,11 @@ premake.api.register {
 --
 -- Set the prefix of the libraries ("Qt4" or "Qt5" usually)
 --
+-- Note: now by default it's created from the major_version string passed to the enable
+-- function. So if you don't use qtprefix, by default it'll be "Qt5", and if you used
+-- premake.extensions.qt.enable("6") then it'll be "Qt6". This is left here for backward
+-- compatibility and corner cases, but should no longer be needed in most cases.
+--
 premake.api.register {
 	name = "qtprefix",
 	scope = "config",
@@ -79,6 +95,9 @@ premake.api.register {
 
 --
 -- Link the qtmain lib on Windows.
+--
+-- Note: On Qt6, this will no longer work. Instead, the "entrypoint" module should be added.
+-- Using this will automatically add said module (for backward compatibility)
 --
 premake.api.register {
 	name = "qtmain",

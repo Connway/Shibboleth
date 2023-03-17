@@ -2,7 +2,7 @@ DepProject "GLFW"
 	language "C"
 	warnings "Extra"
 
-	files { "**.c", "**.h", "**.m" }
+	files { "**.c", "**.h" }
 
 	filter { "system:not linux", "system:not macosx" }
 		removefiles { "src/posix_*.*", "src/glx_context.c" }
@@ -18,6 +18,7 @@ DepProject "GLFW"
 
 	filter { "system:macosx" }
 		defines { "_GLFW_COCOA" }
+		files { "**.m" }
 
 	filter { "system:linux", "options:not wayland" }
 		removefiles { "src/wl_*.*" }

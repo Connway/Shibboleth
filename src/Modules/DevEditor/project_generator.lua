@@ -80,7 +80,7 @@ local GenerateProject = function()
 		}
 
 		for _, name in ipairs(qt_modules) do
-			local final_name = bin_path .. "/Qt6" .. qt.modules[name].name
+			local final_name = bin_path .. "/Qt6" .. qt.modules.qt6[name].name
 
 			postbuildcommands
 			{

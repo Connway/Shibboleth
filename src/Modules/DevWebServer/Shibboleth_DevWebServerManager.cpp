@@ -50,6 +50,7 @@ bool DevWebServerManager::init(void)
 {
 	const char* options[] =
 	{
+		"num_threads", "5",
 		"listening_ports", "8888", 0
 	};
 

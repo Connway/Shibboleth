@@ -32,7 +32,10 @@
     <None Include="..\..\..\..\utils\premake-qt\qt.lua">
       <Filter>utils\premake-qt</Filter>
     </None>
-    <None Include="..\..\..\..\utils\premake-qt\qtmodules.lua">
+    <None Include="..\..\..\..\utils\premake-qt\qtmodules.qt5.lua">
+      <Filter>utils\premake-qt</Filter>
+    </None>
+    <None Include="..\..\..\..\utils\premake-qt\qtmodules.qt6.lua">
       <Filter>utils\premake-qt</Filter>
     </None>
     <None Include="..\..\..\..\utils\premake5.lua">

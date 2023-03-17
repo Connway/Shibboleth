@@ -15,21 +15,39 @@ premake.extensions.qt = {
 	-- these are private, do not touch
 	--
 	enabled = false,
-	defaultpath = (function() if os.getenv("QTDIR") ~= nil then return "$(QTDIR)" elseif os.getenv("QT_DIR") ~= nil then return "$(QT_DIR)" end end)()
+	defaultpath = (function() if os.getenv("QTDIR") ~= nil then return "$(QTDIR)" elseif os.getenv("QT_DIR") ~= nil then return "$(QT_DIR)" end end)(),
+	major_version = "6"
 }
 
---
 -- include list of modules
---
-include ( "qtmodules.lua" )
+-- note: ideally, I would just include the correct version in premake.extensions.qt.enable but for some
+--       reason when doing it, it fails with a "cannot open file..." although the working dir and filename
+--       are exactly the same as when done from here... so until I find out why, load both.
+premake.extensions.qt.modules = {}
+include ( "qtmodules.qt5.lua" )
+include ( "qtmodules.qt6.lua" )
 
 --
 -- Enable Qt for a project. Be carefull, although this is a method, it will enable Qt
 -- functionalities only in the current configuration.
 --
-function premake.extensions.qt.enable()
+-- @param major_version
+--		This is the major Qt version number used, passed as a string. If omitted, defaults to "5".
+--
+function premake.extensions.qt.enable(major_version)
 
 	local qt = premake.extensions.qt
+
+	-- store the major version if it was provided
+	if major_version ~= nil then
+		if qt.modules["qt" .. major_version] ~= nil then
+			qt.major_version = major_version
+		else
+			printf("No modules file found for version \"%s\". Fallback to module files for version \"5\"", major_version)
+		end
+	end
+
+	-- validate it
 
 	-- enable Qt for the current config
 	qtenabled ( true )
@@ -37,8 +55,8 @@ function premake.extensions.qt.enable()
 	-- setup our overrides if not already done
 	if qt.enabled == false then
 		qt.enabled = true
-		premake.override(premake.oven, "bakeFiles", qt.customBakeFiles)
-		premake.override(premake.oven, "bakeConfig", qt.customBakeConfig)
+		premake.override(premake.oven,       "bakeFiles",  qt.customBakeFiles)
+		premake.override(premake.oven,       "bakeConfig", qt.customBakeConfig)
 		premake.override(premake.fileconfig, "addconfig",  qt.customAddFileConfig)
 	end
 
@@ -158,7 +176,7 @@ end
 function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platform, extraFilters)
 
 	local qt = premake.extensions.qt
-	local modules = qt.modules
+	local modules = qt.modules["qt" .. qt.major_version]
 
 	-- bake
 	local config = base(wks, prj, buildcfg, platform, extraFilters)
@@ -187,11 +205,12 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 	config.qtlibexecpath	= qtlibexec
 
 	-- add the includes and libraries directories
-	table.insert(config.includedirs, qtinclude)
+	local includedirs = iif(config.qtuseexternalinclude, config.externalincludedirs, config.includedirs)
+	table.insert(includedirs, qtinclude)
 	table.insert(config.libdirs, qtlib)
 
 	-- get the prefix and suffix
-	local prefix	= config.qtprefix or ""
+	local prefix	= config.qtprefix or "Qt" .. qt.major_version
 	local suffix	= config.qtsuffix or ""
 
 	-- platform specifics
@@ -213,7 +232,12 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 
 		-- handle the qtmain lib
 		if config.qtmain == true then
-			table.insert(config.links, "qtmain" .. suffix .. ".lib")
+			if qt.major_version == "6" then
+				printf("\"qtmain\" function is deprecated in Qt6, please use the \"entrypoint\" module instead.")
+				table.insert(config.qtmodules, "entrypoint")
+			else
+				table.insert(config.links, "qtmain" .. suffix .. ".lib")
+			end
 		end
 
 	end
@@ -242,8 +266,9 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 			local module = modules[modulename]
 			if module ~= nil then
 				local privatepath = path.join(qt.getIncludeDir(config, module), config.qtversion)
-				table.insert(config.includedirs, privatepath)
-				table.insert(config.includedirs, path.join(privatepath , module.include))
+				local includedirs = iif(config.qtuseexternalinclude, config.externalincludedirs, config.includedirs)
+				table.insert(includedirs, privatepath)
+				table.insert(includedirs, path.join(privatepath , module.include))
 			end
 
 		end
@@ -255,7 +280,8 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 			local libname	= prefix .. module.name .. suffix
 
 			-- configure the module
-			table.insert(config.includedirs, qt.getIncludeDir(config, module))
+			local includedirs = iif(config.qtuseexternalinclude, config.externalincludedirs, config.includedirs)
+			table.insert(includedirs, qt.getIncludeDir(config, module))
 
 			if config.kind ~= "StaticLib" then
 				if _TARGET_OS == "macosx" then
@@ -275,6 +301,8 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 					table.insert(config.links, additionallink)
 				end
 			end
+		else
+			printf("Unknown module \"%s\" used.", modulename)
 		end
 	end
 
@@ -305,31 +333,26 @@ function premake.extensions.qt.customBakeFiles(base, prj)
 		-- ignore this config if Qt is not enabled
 		if cfg.qtenabled == true then
 
-			local mocs		= {}
+			local moc		= {}
 			local qrc		= {}
-			local ui		= false
+			local ui		= {}
 			local objdir	= qt.getGeneratedDir(cfg)
 
 			-- check each file in this configuration
 			table.foreachi(cfg.files, function(filename)
 
 				if qt.isUI(filename) then
-					ui = true
+					table.insert(ui, filename)
 				elseif qt.isQRC(filename) then
 					table.insert(qrc, filename)
 				elseif qt.needMOC(filename) then
-					table.insert(mocs, filename)
+					table.insert(moc, filename)
 				end
 
 			end)
 
-			-- include path for uic generated headers
-			if ui == true then
-				table.insert(cfg.includedirs, objdir)
-			end
-
 			-- the moc files
-			table.foreachi(mocs, function(filename)
+			table.foreachi(moc, function(filename)
 				table.insert(cfg.files, objdir .. "/moc_" .. path.getbasename(filename) .. ".cpp")
 			end)
 
@@ -337,6 +360,16 @@ function premake.extensions.qt.customBakeFiles(base, prj)
 			table.foreachi(qrc, function(filename)
 				table.insert(cfg.files, objdir .. "/qrc_" .. path.getbasename(filename) .. ".cpp")
 			end)
+
+			-- the ui files
+			table.foreachi(ui, function(filename)
+				table.insert(cfg.files, objdir .. "/ui_" .. path.getbasename(filename) .. ".h")
+			end)
+
+			-- include path for uic generated headers
+			if #ui > 0 then
+				table.insert(cfg.includedirs, objdir)
+			end
 
 		end
 	end
@@ -695,7 +728,7 @@ end
 --		The updated command.
 --
 function premake.extensions.qt.handleCommandLineSizeLimit(cfg, fcfg, command, arguments)
-	
+
 	-- check if we need to output to a file
 	local limit = fcfg.config.qtcommandlinesizelimit or iif(_TARGET_OS == "windows", 2047, nil)
 	if limit ~= nil and string.len(command) + string.len(arguments) + 1 > limit then
