@@ -15,6 +15,15 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_AutoHideDockContainer.cpp">
+      <Filter>.generated\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_AutoHideSideBar.cpp">
+      <Filter>.generated\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_AutoHideTab.cpp">
+      <Filter>.generated\windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_DockAreaTabBar.cpp">
       <Filter>.generated\windows</Filter>
     </ClCompile>
@@ -57,9 +66,18 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_FloatingDragPreview.cpp">
       <Filter>.generated\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_PushButton.cpp">
+      <Filter>.generated\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\moc_ResizeHandle.cpp">
+      <Filter>.generated\windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\.generated\windows\qrc_ads.cpp">
       <Filter>.generated\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\AutoHideDockContainer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\AutoHideSideBar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\AutoHideTab.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\DockAreaWidget.cpp" />
@@ -76,9 +94,14 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\IconProvider.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\PushButton.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ResizeHandle.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\ads\ads_globals.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\AutoHideDockContainer.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\AutoHideSideBar.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\AutoHideTab.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTabBar.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\DockAreaTitleBar_p.h" />
@@ -93,6 +116,8 @@
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ElidingLabel.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDockContainer.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\FloatingDragPreview.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\PushButton.h" />
+    <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ResizeHandle.h" />
     <CustomBuild Include="..\..\..\..\..\src\Dependencies\ads\ads.qrc" />
   </ItemGroup>
 </Project>

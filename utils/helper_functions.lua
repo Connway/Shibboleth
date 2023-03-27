@@ -315,22 +315,22 @@ function QtSettingsModule(modules, base_dir, source_dir)
 
 	qtmodules(modules)
 
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Debug", "platforms:x64" }
+	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Debug", "platforms:x64 or arm64" }
 		qtsuffix "d"
 
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Release", "platforms:x64" }
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Release", "platforms:x64 or arm64" }
 	-- 	qtsuffix "64"
 
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Profile", "platforms:x64" }
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Profile", "platforms:x64 or arm64" }
 	-- 	qtsuffix "64p"
 
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Optimized_Debug", "platforms:x64" }
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Optimized_Debug", "platforms:x64 or arm64" }
 	-- 	qtsuffix "64od"
 
-	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Debug*", "platforms:x64" }
+	filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Debug*", "platforms:x64 or arm64" }
 		qtsuffix "d"
 
-	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Release*", "platforms:x64" }
+	-- filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Static_Release*", "platforms:x64 or arm64" }
 	-- 	qtsuffix "64s"
 
 	filter {}
@@ -396,6 +396,9 @@ function FrameworkProject(project_name, project_kind)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}
@@ -412,6 +415,9 @@ function DepProject(project_name, project_kind)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}
@@ -440,6 +446,9 @@ function ToolProject(project_name, project_kind, no_preproc)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}
@@ -466,6 +475,9 @@ function EngineProject(project_name, project_kind, no_preproc)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}
@@ -522,6 +534,9 @@ function ModuleProject(project_name, base_name, copy_dir)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}
@@ -546,6 +561,9 @@ function TestProject(project_name, project_kind)
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
 				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. v .. "/" .. project_name)
+
+			filter { "configurations:" .. v, "platforms:arm64" }
+				targetdir("../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. v .. "/" .. project_name)
 		end
 
 		filter {}

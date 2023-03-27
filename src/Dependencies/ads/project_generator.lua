@@ -14,6 +14,7 @@ DepProject("ads", "SharedLib")
 	QtSettings({ "core", "gui", "widgets" })
 
 	defines { "ADS_SHARED_EXPORT" }
+	includedirs { "." }
 
 	if os.target() == "linux" or os.target() == "macosx" then
 		local version_number = qt.defaultpath
@@ -35,14 +36,11 @@ DepProject("ads", "SharedLib")
 		includedirs { qt.defaultpath .. "/include/QtGui/" .. version_number .. "/QtGui" }
 	end
 
+	filter { "configurations:*Debug*"}
+		defines { "ADS_DEBUG_PRINT" }
+
 	filter { "system:not linux" }
 		removefiles { "linux/*.*" }
-
-	filter { "system:linux" }
-		includedirs { "." }
-
-	filter { "system:macosx" }
-		includedirs { "." }
 
 	filter {}
 
