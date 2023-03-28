@@ -246,7 +246,7 @@ CodeGenerator64od module_header --module DevGraphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_NVENCHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+    <None Include="..\..\..\..\..\src\Modules\DevGraphics\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

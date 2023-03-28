@@ -244,7 +244,7 @@ CodeGenerator64od module_header --module DevECS</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevECS\Shibboleth_ECSEntityWebHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+    <None Include="..\..\..\..\..\src\Modules\DevECS\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

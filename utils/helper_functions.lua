@@ -509,6 +509,17 @@ function ModuleProject(project_name, base_name, copy_dir)
 		table.insert(all_module_libs, project_name)
 	end
 
+	local source_dir = ""
+	--local base_dir = ""
+
+	if base_name then
+		source_dir = GetModulesSourceDirectory(base_name)
+		--base_dir = GetModulesDirectory(base_name)
+	else
+		source_dir = GetModulesSourceDirectory(project_name)
+		--base_dir = GetModulesDirectory(project_name)
+	end
+
 	project(project_name)
 		location(GetModulesLocation())
 
@@ -525,7 +536,7 @@ function ModuleProject(project_name, base_name, copy_dir)
 				end
 			end
 
-			files { "project_generator.lua" }
+			files { source_dir .. "/project_generator.lua" }
 			defines { "SHIB_STATIC" }
 
 		elseif not is_lib then

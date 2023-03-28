@@ -254,7 +254,7 @@ CodeGenerator64od module_header --module DevEditor</Command>
     <ClCompile Include="..\..\..\..\build\windows\vs2022\intermediate\qt\DevEditor\moc_Shibboleth_ToDoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+    <None Include="..\..\..\..\..\src\Modules\DevEditor\project_generator.lua" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorMainWindow.h">

@@ -266,7 +266,7 @@ CodeGenerator64od module_header --module ECS</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\ECS\Shibboleth_ECSSceneResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+    <None Include="..\..\..\..\..\src\Modules\ECS\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

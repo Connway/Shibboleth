@@ -1,53 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Modules">
-      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Modules\Input">
-      <UniqueIdentifier>{B4E84250-20FF-40E6-6976-CC07D5CB116E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Modules\Input\include">
-      <UniqueIdentifier>{2784B71A-9346-EBA4-DCF6-793148F8C382}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Gen_ReflectionInit.h">
-      <Filter>src\Modules\Input\include</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputManager.h">
-      <Filter>src\Modules\Input\include</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputReflection.h">
-      <Filter>src\Modules\Input\include</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputSystem.h">
-      <Filter>src\Modules\Input\include</Filter>
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp">
-      <Filter>src\Modules\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp">
-      <Filter>src\Modules\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp">
-      <Filter>src\Modules\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputSystem.cpp">
-      <Filter>src\Modules\Input</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua">
-      <Filter>utils</Filter>
-    </None>
+    <None Include="..\..\..\..\..\src\Modules\Input\project_generator.lua" />
   </ItemGroup>
 </Project>

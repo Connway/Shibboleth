@@ -278,7 +278,7 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_TextureResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+    <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
