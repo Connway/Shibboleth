@@ -267,6 +267,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\dictBuilder\fastcover.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zstd\dictBuilder\zdict.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\zstd\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

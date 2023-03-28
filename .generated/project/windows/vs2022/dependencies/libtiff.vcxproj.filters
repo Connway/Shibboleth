@@ -75,4 +75,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_zip.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\libtiff\tif_zstd.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\libtiff\project_generator.lua" />
+  </ItemGroup>
 </Project>

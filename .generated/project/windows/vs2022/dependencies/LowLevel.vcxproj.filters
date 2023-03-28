@@ -1,234 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="api">
-      <UniqueIdentifier>{5F5E880B-CB67-887C-54E3-9E7CC0EB937C}</UniqueIdentifier>
+    <Filter Include="physx">
+      <UniqueIdentifier>{01D22410-6DE6-4CC1-3668-F020A23B49F2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="api\include">
-      <UniqueIdentifier>{D274C1F9-3E2A-3AEF-C71E-34C633D330F3}</UniqueIdentifier>
+    <Filter Include="physx\source">
+      <UniqueIdentifier>{0189D322-EDEB-62C7-9671-9B7D82B32E4A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="api\src">
-      <UniqueIdentifier>{F6335A3B-6213-D9D6-6B2B-64ADD7893F38}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel">
+      <UniqueIdentifier>{DABE7838-462B-3433-0F1F-CC907B4A569B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common">
-      <UniqueIdentifier>{AEFEE3F6-9AA0-0ECD-835B-22216F9C951D}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\api">
+      <UniqueIdentifier>{230D2C32-8FCF-5FBC-D87F-EE484481389A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\include">
-      <UniqueIdentifier>{21F423C9-0DC2-17CF-F655-88F5E2C2F333}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\api\include">
+      <UniqueIdentifier>{96A779D7-0216-CF56-4BFF-8956B7ACC4F2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\include\collision">
-      <UniqueIdentifier>{9CA65F16-88CB-AE96-B116-94269D9AADB4}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\api\src">
+      <UniqueIdentifier>{BAA4FF55-26BD-E67F-EF69-76195B417B19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\include\pipeline">
-      <UniqueIdentifier>{866D1EB7-F2A4-664E-FBAE-CA7167658D47}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common">
+      <UniqueIdentifier>{F2667C1E-DE21-6CCA-87D9-E4147373B65A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\include\utils">
-      <UniqueIdentifier>{61DAB5BB-4D69-3F85-F687-5380E2F54F2B}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\include">
+      <UniqueIdentifier>{6560B287-5147-747F-FA97-DA9CE65DEDE5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\src">
-      <UniqueIdentifier>{C5631BB1-B11B-5DFE-1A23-365A06FAF7EE}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\include\collision">
+      <UniqueIdentifier>{E0378567-CCB5-D500-B5AD-9398A1CA1729}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\src\pipeline">
-      <UniqueIdentifier>{AAB5A7B0-1617-85BE-9F84-CB700BE5BB7D}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\include\pipeline">
+      <UniqueIdentifier>{4AE6743D-B656-77B6-7F75-F13EEBA4AFB7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="software">
-      <UniqueIdentifier>{307A2AF4-1C47-85FF-4560-73A7318CBA8D}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\include\utils">
+      <UniqueIdentifier>{A569DDB0-91D1-A37E-FA3C-B894E6C3BA6A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="software\include">
-      <UniqueIdentifier>{A3D1E69D-8FCA-05F0-B8FC-EA74A454E5FB}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\src">
+      <UniqueIdentifier>{094E7643-F59E-6185-1E03-50470AB3F4EE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="software\src">
-      <UniqueIdentifier>{47D0579C-3333-E740-DCB8-1FF7C8FAB2C3}</UniqueIdentifier>
+    <Filter Include="physx\source\lowlevel\common\src\pipeline">
+      <UniqueIdentifier>{6E6CB843-DA86-1BE5-23A9-2B798F0243EC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevel\software">
+      <UniqueIdentifier>{74037E63-6029-48CA-496F-CD9535346D96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevel\software\include">
+      <UniqueIdentifier>{E75EC139-D3B0-9829-BCCF-D539A8C0B112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevel\software\src">
+      <UniqueIdentifier>{8B5B1631-7797-199B-E0A9-3192CC04C2B5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxsMaterialCore.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxsMaterialManager.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvConfig.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvDynamics.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvGeometry.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvGlobals.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvManager.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include\PxvSimStats.h">
-      <Filter>api\include</Filter>
+      <Filter>physx\source\lowlevel\api\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\collision\PxcContactMethodImpl.h">
-      <Filter>common\include\collision</Filter>
+      <Filter>physx\source\lowlevel\common\include\collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcConstraintBlockStream.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcContactCache.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcMaterialMethodImpl.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpBatch.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpCache.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpCacheStreamPair.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpContactPrepShared.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpMemBlockPool.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpThreadContext.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline\PxcNpWorkUnit.h">
-      <Filter>common\include\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\include\pipeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\utils\PxcScratchAllocator.h">
-      <Filter>common\include\utils</Filter>
+      <Filter>physx\source\lowlevel\common\include\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\utils\PxcThreadCoherentCache.h">
-      <Filter>common\include\utils</Filter>
+      <Filter>physx\source\lowlevel\common\include\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsBodySim.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsCCD.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsContactManager.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsContactManagerState.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsContext.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsDefaultMemoryManager.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsHeapMemoryAllocator.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsIncrementalConstraintPartitioning.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsIslandManagerTypes.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsIslandNodeIndex.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsIslandSim.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsKernelWrangler.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsMaterialCombiner.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsMemoryManager.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsNphaseImplementationContext.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsRigidBody.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsShapeSim.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsSimpleIslandManager.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsSimulationController.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxsTransformCache.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include\PxvNphaseImplementationContext.h">
-      <Filter>software\include</Filter>
+      <Filter>physx\source\lowlevel\software\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\src\px_globals.cpp">
-      <Filter>api\src</Filter>
+      <Filter>physx\source\lowlevel\api\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcContactCache.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcContactMethodImpl.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcMaterialHeightField.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcMaterialMesh.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcMaterialMethodImpl.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcMaterialShape.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcNpBatch.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcNpCacheStreamPair.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcNpContactPrepShared.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcNpMemBlockPool.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\src\pipeline\PxcNpThreadContext.cpp">
-      <Filter>common\src\pipeline</Filter>
+      <Filter>physx\source\lowlevel\common\src\pipeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsCCD.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsContactManager.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsContext.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsDefaultMemoryManager.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsIslandSim.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsMaterialCombiner.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsNphaseImplementationContext.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\src\PxsSimpleIslandManager.cpp">
-      <Filter>software\src</Filter>
+      <Filter>physx\source\lowlevel\software\src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
   </ItemGroup>
 </Project>

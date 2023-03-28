@@ -231,6 +231,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\glfw\src\win32_window.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\glfw\src\window.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\glfw\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

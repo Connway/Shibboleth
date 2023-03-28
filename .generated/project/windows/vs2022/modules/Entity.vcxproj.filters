@@ -1,40 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Entity">
+      <UniqueIdentifier>{A15B4D4F-8D3F-0EA5-F69F-08F8E2A2F826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Entity\include">
+      <UniqueIdentifier>{149448C5-00A4-F495-695D-59B4558CE32E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_Entity.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntitySceneComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntitySystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_IEntityUpdateable.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Entity\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_Entity.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySceneComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_IEntityUpdateable.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_Entity.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityComponent.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySceneComponent.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_IEntityUpdateable.cpp">
+      <Filter>src\Modules\Entity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -279,6 +279,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\TracyClie
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\tracy\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

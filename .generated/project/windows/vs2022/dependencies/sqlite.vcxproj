@@ -202,6 +202,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\sqlite\sqlite3.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\sqlite\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

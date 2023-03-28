@@ -11,4 +11,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Tests\Shibboleth_TestMain.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Tests\ECSTest\project_generator.lua">
+      <Filter>ECSTest</Filter>
+    </None>
+  </ItemGroup>
 </Project>

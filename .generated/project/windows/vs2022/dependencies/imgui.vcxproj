@@ -219,6 +219,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\imgui\misc\fonts\binary_to_compressed_c.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\imgui\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <Natvis Include="..\..\..\..\..\src\Dependencies\imgui\misc\debuggers\imgui.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

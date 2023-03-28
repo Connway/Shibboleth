@@ -256,6 +256,9 @@ CodeGenerator64od module_header --module DevWebServer</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

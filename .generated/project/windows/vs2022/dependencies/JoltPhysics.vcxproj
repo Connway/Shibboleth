@@ -590,6 +590,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\TriangleSplitter\TriangleSplitterMorton.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\JoltPhysics\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <Natvis Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Jolt.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

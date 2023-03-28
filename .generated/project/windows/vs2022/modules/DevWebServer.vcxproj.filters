@@ -1,47 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevWebServer">
+      <UniqueIdentifier>{18B3CE2E-04D8-1DAF-2D23-033F19A71CCD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevWebServer\include">
+      <UniqueIdentifier>{8B720906-77C3-F447-A027-E3098CD787B1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DefaultHandler.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebAttributes.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebServerManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_DevWebUtils.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IDevWebHandler.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_IncludeCivetWeb.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevWebServer\include\Shibboleth_WebInputHandler.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevWebServer\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DefaultHandler.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebAttributes.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebUtils.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DefaultHandler.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebAttributes.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerManager.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebServerModule.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebSystem.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_DevWebUtils.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_IDevWebHandler.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevWebServer\Shibboleth_WebInputHandler.cpp">
+      <Filter>src\Modules\DevWebServer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

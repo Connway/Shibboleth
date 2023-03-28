@@ -256,6 +256,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CivetWeb\
     <ClCompile Include="..\..\..\..\..\src\Dependencies\civetweb\src\third_party\lua_struct.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\civetweb\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="Lua.vcxproj">
       <Project>{A705880B-130F-887C-9C8A-9E7C0893937C}</Project>
     </ProjectReference>

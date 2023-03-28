@@ -155,4 +155,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\uncompr.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\zutil.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\zlib-ng\project_generator.lua" />
+  </ItemGroup>
 </Project>

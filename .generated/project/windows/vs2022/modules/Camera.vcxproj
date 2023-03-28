@@ -243,6 +243,9 @@ CodeGenerator64od module_header --module Camera</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_CameraModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_FlyCameraProcess.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

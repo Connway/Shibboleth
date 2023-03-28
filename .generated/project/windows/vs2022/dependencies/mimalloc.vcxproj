@@ -224,6 +224,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\segment.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\stats.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\mimalloc\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

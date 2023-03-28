@@ -349,6 +349,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\cs.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\utils.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\capstone\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

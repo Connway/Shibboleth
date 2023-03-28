@@ -1,92 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Graphics">
+      <UniqueIdentifier>{D540A538-C1CF-2E02-6AEE-42FD565C3FA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Graphics\include">
+      <UniqueIdentifier>{486DFC0F-3428-ECBB-DDDF-6406C979364C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_BufferResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ClearRenderTargetSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfigs.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsLogging.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsResourceComponents.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MaterialComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MaterialResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MeshResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ModelResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ProgramBuffersResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RasterStateResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerBase.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_SamplerStateResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ShaderResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_TextureResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Graphics\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ClearRenderTargetSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsReflection.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsResourceComponents.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ProgramBuffersResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RasterStateResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderCommandSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_SamplerStateResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_TextureResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_BufferResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_CameraSystem.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ClearRenderTargetSystem.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsReflection.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsResourceComponents.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialComponent.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MaterialResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_MeshResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ModelResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ProgramBuffersResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RasterStateResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderCommandSystem.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_SamplerStateResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_TextureResource.cpp">
+      <Filter>src\Modules\Graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -355,6 +355,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Static_Release_D3D11\Game
     <ClCompile Include="..\..\..\..\..\src\Engine\Game_App\Game_Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Engine\Game_App\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\modules\DevWebServer.vcxproj">
       <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
     </ProjectReference>

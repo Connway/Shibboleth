@@ -1,111 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="physx">
+      <UniqueIdentifier>{01D22410-6DE6-4CC1-3668-F020A23B49F2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    <Filter Include="physx\source">
+      <UniqueIdentifier>{0189D322-EDEB-62C7-9671-9B7D82B32E4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\scenequery">
+      <UniqueIdentifier>{D4471ADD-407F-6274-4989-C697B53F896D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\scenequery\include">
+      <UniqueIdentifier>{47030C4C-B3E6-1A8C-BCE9-48C8284CE1DC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\scenequery\src">
+      <UniqueIdentifier>{EBCFFDED-57DD-2BD4-E0C3-27BF4CD0F78A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPruner.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\scenequery\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPrunerMergeData.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\scenequery\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqPruningStructure.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\scenequery\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include\SqSceneQueryManager.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\scenequery\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBPruner.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTree.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTreeUpdateMap.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBounds.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBucketPruner.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruner.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruningPool.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqExtendedBucketPruner.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPruner.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPrunerCore.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBTree.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningPool.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqTypedef.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBPruner.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTree.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqAABBTreeUpdateMap.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBounds.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqBucketPruner.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruner.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqCompoundPruningPool.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqExtendedBucketPruner.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPruner.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBPrunerCore.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqIncrementalAABBTree.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqMetaData.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningPool.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningStructure.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqSceneQueryManager.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\scenequery\src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
   </ItemGroup>
 </Project>

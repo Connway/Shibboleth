@@ -1,35 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Scene">
+      <UniqueIdentifier>{D2A5F150-3EBC-EFE6-8733-7B08F388C06E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Scene\include">
+      <UniqueIdentifier>{457F686F-B141-9CF9-FAF1-2A8666F374D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Archetype.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_EntityResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_LayerResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Scene\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_EntityResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_LayerResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_EntityResource.cpp">
+      <Filter>src\Modules\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_LayerResource.cpp">
+      <Filter>src\Modules\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneManager.cpp">
+      <Filter>src\Modules\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp">
+      <Filter>src\Modules\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneResource.cpp">
+      <Filter>src\Modules\Scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

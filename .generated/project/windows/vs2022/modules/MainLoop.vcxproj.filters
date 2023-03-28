@@ -1,32 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\MainLoop">
+      <UniqueIdentifier>{C30908B8-AF98-9181-58B7-A57C4425A227}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\MainLoop\include">
+      <UniqueIdentifier>{36445855-22FF-4701-CBB6-C04BB7509291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\MainLoop\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTime.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\MainLoop\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTimeSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\MainLoop\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_ISystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\MainLoop\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\MainLoop\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTimeSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp">
+      <Filter>src\Modules\MainLoop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTimeSystem.cpp">
+      <Filter>src\Modules\MainLoop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp">
+      <Filter>src\Modules\MainLoop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp">
+      <Filter>src\Modules\MainLoop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp">
+      <Filter>src\Modules\MainLoop</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

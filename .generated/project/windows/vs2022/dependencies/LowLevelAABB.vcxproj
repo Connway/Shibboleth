@@ -224,6 +224,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpMBPTasks.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpSAPTasks.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

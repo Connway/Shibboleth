@@ -260,6 +260,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lvm.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\lua\lzio.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\lua\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

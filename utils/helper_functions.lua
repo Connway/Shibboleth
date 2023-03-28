@@ -310,7 +310,7 @@ function QtSettingsModule(modules, base_dir, source_dir)
 
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
-	qtgenerateddir(source_dir .. ".generated/" .. os.target())
+	qtgenerateddir("%{cfg.objdir}/qt/%{prj.name}")
 	qtprefix "Qt6"
 
 	qtmodules(modules)
@@ -390,6 +390,8 @@ function FrameworkProject(project_name, project_kind)
 
 		kind(project_kind or "StaticLib")
 
+		files { "project_generator.lua" }
+
 		flags { "FatalWarnings" }
 		SetupConfigMap()
 
@@ -411,6 +413,7 @@ function DepProject(project_name, project_kind)
 		location(GetDependenciesLocation())
 
 		kind(project_kind or "StaticLib")
+		files { "project_generator.lua" }
 
 		for _,v in ipairs(configs) do
 			filter { "configurations:" .. v, "platforms:x64" }
@@ -439,6 +442,7 @@ function ToolProject(project_name, project_kind, no_preproc)
 			kind "None"
 		end
 
+		files { "project_generator.lua" }
 		flags { "FatalWarnings" }
 		SetupConfigMap()
 		ToolCopy()
@@ -470,6 +474,7 @@ function EngineProject(project_name, project_kind, no_preproc)
 			kind "None"
 		end
 
+		files { "project_generator.lua" }
 		flags { "FatalWarnings" }
 
 		for _,v in ipairs(configs) do
@@ -520,6 +525,7 @@ function ModuleProject(project_name, base_name, copy_dir)
 				end
 			end
 
+			files { "project_generator.lua" }
 			defines { "SHIB_STATIC" }
 
 		elseif not is_lib then
@@ -554,6 +560,7 @@ function TestProject(project_name, project_kind)
 			kind "None"
 		end
 
+		files { "project_generator.lua" }
 		flags { "FatalWarnings" }
 		SetupConfigMap()
 		TestCopy()

@@ -602,6 +602,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\EASTL\source\thread_support.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\EASTL\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <Natvis Include="..\..\..\..\..\src\Dependencies\EASTL\doc\EASTL.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

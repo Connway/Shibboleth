@@ -315,6 +315,9 @@ xcopy /Q /E /Y /I ..\..\..\..\..\src\Dependencies\JoltPhysics\Assets ..\..\..\..
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\TestFramework\Utils\ReadData.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\JoltPhysics\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="JoltPhysics.vcxproj">
       <Project>{812AB974-EDDF-316A-76D4-2B41E288286E}</Project>
     </ProjectReference>

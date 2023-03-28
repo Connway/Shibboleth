@@ -237,6 +237,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\minizip-ng\mz_zip.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\minizip-ng\mz_zip_rw.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\minizip-ng\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

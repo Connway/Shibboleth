@@ -237,6 +237,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CodeGener
     <ClCompile Include="..\..\..\..\..\src\Tools\CodeGenerator\CodeGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Tools\CodeGenerator\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>

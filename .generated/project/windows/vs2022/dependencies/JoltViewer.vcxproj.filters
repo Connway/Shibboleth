@@ -270,4 +270,7 @@
       <Filter>TestFramework\Utils</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\JoltPhysics\project_generator.lua" />
+  </ItemGroup>
 </Project>

@@ -1,78 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="physx">
+      <UniqueIdentifier>{01D22410-6DE6-4CC1-3668-F020A23B49F2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    <Filter Include="physx\source">
+      <UniqueIdentifier>{0189D322-EDEB-62C7-9671-9B7D82B32E4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevelaabb">
+      <UniqueIdentifier>{40764732-AC38-7BBC-F5E8-094961EA539A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevelaabb\include">
+      <UniqueIdentifier>{B3DD06FF-1F4C-5C7E-6835-177ED4E2511A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\lowlevelaabb\src">
+      <UniqueIdentifier>{5754B459-C36C-9B83-8C19-2B1DF8F02F1D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\include\BpAABBManager.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\lowlevelaabb\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\include\BpAABBManagerTasks.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\lowlevelaabb\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\include\BpBroadPhase.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\lowlevelaabb\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\include\BpBroadPhaseUpdate.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\lowlevelaabb\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseABP.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseMBP.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseMBPCommon.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseSap.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseSapAux.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseShared.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpMBPTasks.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpSAPTasks.h">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpAABBManager.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhase.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseABP.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseMBP.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseSap.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseSapAux.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpBroadPhaseShared.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpMBPTasks.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\src\BpSAPTasks.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\lowlevelaabb\src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
   </ItemGroup>
 </Project>

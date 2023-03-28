@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="physx">
+      <UniqueIdentifier>{01D22410-6DE6-4CC1-3668-F020A23B49F2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    <Filter Include="physx\source">
+      <UniqueIdentifier>{0189D322-EDEB-62C7-9671-9B7D82B32E4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\fastxml">
+      <UniqueIdentifier>{0F543A49-FBE2-C312-A401-D80D906FD4B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\fastxml\include">
+      <UniqueIdentifier>{821A2686-6ED5-1532-178D-8E7C032760C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx\source\fastxml\src">
+      <UniqueIdentifier>{A6816F47-92A6-BEC7-BBF1-A357A775BDE5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\include\PsFastXml.h">
-      <Filter>include</Filter>
+      <Filter>physx\source\fastxml\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\fastxml\src\PsFastXml.cpp">
-      <Filter>src</Filter>
+      <Filter>physx\source\fastxml\src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
   </ItemGroup>
 </Project>

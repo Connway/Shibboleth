@@ -1,38 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Resource">
+      <UniqueIdentifier>{AC5AB6A0-98E9-3F6A-4108-54652D765010}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Resource\include">
+      <UniqueIdentifier>{1F6E99F4-0B29-89A0-B4E0-01EBA07AD330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceAttributesCommon.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceLogging.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Resource\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceAttributesCommon.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp">
+      <Filter>src\Modules\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceAttributesCommon.cpp">
+      <Filter>src\Modules\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp">
+      <Filter>src\Modules\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp">
+      <Filter>src\Modules\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp">
+      <Filter>src\Modules\Resource</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

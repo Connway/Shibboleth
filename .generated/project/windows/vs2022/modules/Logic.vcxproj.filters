@@ -1,36 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Logic">
+      <UniqueIdentifier>{B2967950-1EAD-77E6-6724-0308D379486E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Logic\include">
+      <UniqueIdentifier>{2550C39C-9112-F726-DAC2-85B346C4CF04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_LuaProcess.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineReflection.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Logic\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LuaProcess.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineReflection.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LuaProcess.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineComponent.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineReflection.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineSystem.cpp">
+      <Filter>src\Modules\Logic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

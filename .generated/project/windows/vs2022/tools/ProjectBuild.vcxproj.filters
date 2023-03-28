@@ -36,4 +36,7 @@
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjBuild_UpdateModifiedDatabase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\ProjectBuild\ProjectBuild.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Tools\ProjectBuild\project_generator.lua" />
+  </ItemGroup>
 </Project>

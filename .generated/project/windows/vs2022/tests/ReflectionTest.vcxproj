@@ -236,6 +236,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Reflectio
     <ClCompile Include="..\..\..\..\..\src\Tests\Shibboleth_TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Tests\ReflectionTest\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\dependencies\Catch2.vcxproj">
       <Project>{7A3E45AB-66E0-6F81-4F9B-83D53BDCF6D1}</Project>
     </ProjectReference>

@@ -99,4 +99,7 @@
       <Filter>src\third_party</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\civetweb\project_generator.lua" />
+  </ItemGroup>
 </Project>

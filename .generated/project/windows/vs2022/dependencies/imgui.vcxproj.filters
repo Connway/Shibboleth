@@ -45,6 +45,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\imgui\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <Natvis Include="..\..\..\..\..\src\Dependencies\imgui\misc\debuggers\imgui.natvis">
       <Filter>misc\debuggers</Filter>
     </Natvis>

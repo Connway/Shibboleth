@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevGraphics">
+      <UniqueIdentifier>{14D820B9-800F-6950-8919-CD73F5CF8F49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevGraphics\include">
+      <UniqueIdentifier>{87D3BEEC-F3B6-CD2C-FCB9-FB68681C947D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevGraphics\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevGraphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevGraphics\include\Shibboleth_CameraStreamHandler.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevGraphics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevGraphics\include\Shibboleth_NVENCHelpers.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevGraphics\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_CameraStreamHandler.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_DevGraphicsModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_NVENCHelpers.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_CameraStreamHandler.cpp">
+      <Filter>src\Modules\DevGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_DevGraphicsModule.cpp">
+      <Filter>src\Modules\DevGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevGraphics\Shibboleth_NVENCHelpers.cpp">
+      <Filter>src\Modules\DevGraphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

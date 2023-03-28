@@ -1,40 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Physics">
+      <UniqueIdentifier>{673D1A7A-D39E-F787-5C0C-3E3AC86C2E47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\Physics\include">
+      <UniqueIdentifier>{DADBA573-46E9-D359-CFCF-CF443BDC9F10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsMaterialResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsResourceComponents.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsShapeResource.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_RigidBodyComponent.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\Physics\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsMaterialResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsResourceComponents.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsShapeResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_RigidBodyComponent.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsManager.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsMaterialResource.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsModule.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsResourceComponents.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsShapeResource.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsSystem.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_RigidBodyComponent.cpp">
+      <Filter>src\Modules\Physics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

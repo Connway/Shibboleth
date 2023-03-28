@@ -130,6 +130,7 @@
   <ItemGroup>
     <None Include="..\..\..\..\.gitignore" />
     <None Include="..\..\..\..\azure-pipelines.yml" />
+    <None Include="..\..\..\..\src\Dependencies\DEPENDENCY_README.txt" />
     <None Include="..\..\..\..\utils\build_actions.lua" />
     <None Include="..\..\..\..\utils\helper_functions.lua" />
     <None Include="..\..\..\..\utils\module_suffix.lua" />

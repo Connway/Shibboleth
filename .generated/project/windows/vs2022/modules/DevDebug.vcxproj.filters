@@ -1,35 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{F5147E3E-61CA-F633-EABE-F00A5673ED37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevDebug">
+      <UniqueIdentifier>{CA0A09B9-B699-9282-5FB8-A67D4B26A328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\DevDebug\include">
+      <UniqueIdentifier>{3D5C3173-2917-211F-D2CE-9969BE686BAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugAttributes.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugDrawWebHandler.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugSystem.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_IDebugManager.h">
-      <Filter>include</Filter>
+      <Filter>src\Modules\DevDebug\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugAttributes.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugDrawWebHandler.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DevDebugModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugAttributes.cpp">
+      <Filter>src\Modules\DevDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugDrawWebHandler.cpp">
+      <Filter>src\Modules\DevDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugManager.cpp">
+      <Filter>src\Modules\DevDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugSystem.cpp">
+      <Filter>src\Modules\DevDebug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DevDebugModule.cpp">
+      <Filter>src\Modules\DevDebug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

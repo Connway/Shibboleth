@@ -216,4 +216,7 @@
       <Filter>dictBuilder</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\zstd\project_generator.lua" />
+  </ItemGroup>
 </Project>

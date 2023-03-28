@@ -381,4 +381,7 @@
       <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\tracy\project_generator.lua" />
+  </ItemGroup>
 </Project>

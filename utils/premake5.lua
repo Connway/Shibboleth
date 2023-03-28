@@ -97,13 +97,9 @@ if is_project_action == true then
 		if not _OPTIONS["generate-preproc"] then
 			if _ACTION ~= "gmake2" then
 				group "Project Files"
-					project "Generators"
-						kind "None"
-						files { "../src/**/project_generator.lua", "../src/Dependencies/DEPENDENCY_README.txt" }
-
 					project "Utils"
 						kind "None"
-						files { "**.lua", "../.gitignore", "../azure-pipelines.yml" }
+						files { "**.lua", "../.gitignore", "../azure-pipelines.yml", "../src/Dependencies/DEPENDENCY_README.txt" }
 			end
 		end
 end

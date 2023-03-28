@@ -347,6 +347,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\TracyProf
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWorker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\tracy\project_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="capstone.vcxproj">
       <Project>{42ED9D11-2EBA-F81C-57D3-E6C443FF2DAB}</Project>
     </ProjectReference>

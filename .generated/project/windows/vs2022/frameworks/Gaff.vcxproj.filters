@@ -192,4 +192,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Windows.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Frameworks\Gaff\project_generator.lua" />
+  </ItemGroup>
 </Project>

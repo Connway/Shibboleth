@@ -241,6 +241,9 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_StateMachineCommonConditions.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Esprit\Esprit_VariableSet.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Frameworks\Esprit\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

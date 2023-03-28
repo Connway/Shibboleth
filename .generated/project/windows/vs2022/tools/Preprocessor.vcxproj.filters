@@ -48,4 +48,7 @@
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preproc_ParseTemplate.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Tools\Preprocessor\Preprocessor.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Tools\Preprocessor\project_generator.lua" />
+  </ItemGroup>
 </Project>

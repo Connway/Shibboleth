@@ -251,6 +251,9 @@ CodeGenerator64od module_header --module Logic</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineSystem.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -326,6 +326,9 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_VulkanWrangler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Window.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Frameworks\Gleam\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

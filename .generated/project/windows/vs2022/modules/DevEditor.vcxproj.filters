@@ -1,46 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include=".generated">
-      <UniqueIdentifier>{E29E030B-CE56-4558-375E-1EB42335E048}</UniqueIdentifier>
+    <Filter Include="..">
+      <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
     </Filter>
-    <Filter Include=".generated\windows">
-      <UniqueIdentifier>{3CA3F226-2887-B37C-91E7-ADCF7DEA9DFE}</UniqueIdentifier>
+    <Filter Include="..\src">
+      <UniqueIdentifier>{F8768876-E418-B34C-CDD3-C6A0B9143A9D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="..\src\Modules">
+      <UniqueIdentifier>{C07BC644-AC49-BA4A-95DD-2A71814A96AF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\src\Modules\DevEditor">
+      <UniqueIdentifier>{95E8740D-810D-C48D-AA58-A91D96DCC2AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\src\Modules\DevEditor\include">
+      <UniqueIdentifier>{08D5D7CE-F425-C310-1D8A-B1D2093A567A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\utils">
+      <UniqueIdentifier>{A186A73A-8D53-0246-B66C-F0EDA29837D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build">
+      <UniqueIdentifier>{D5562E0F-416B-56C0-0AED-F91F76C052F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build\windows">
+      <UniqueIdentifier>{2F9E033C-9B5E-7F72-6499-C8EFD018C44E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build\windows\vs2022">
+      <UniqueIdentifier>{AD148B79-99A3-1443-42C2-283E2E3025E9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build\windows\vs2022\intermediate">
+      <UniqueIdentifier>{974F111F-03BE-669E-4CA7-219EB8545C3A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build\windows\vs2022\intermediate\qt">
+      <UniqueIdentifier>{2B93163D-177A-D834-C0CA-3E52AC90519B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="build\windows\vs2022\intermediate\qt\DevEditor">
+      <UniqueIdentifier>{C081CDBB-ACFF-1D55-95F7-DBEC8114607D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Gen_ReflectionInit.h">
-      <Filter>include</Filter>
+      <Filter>..\src\Modules\DevEditor\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorAttributesCommon.h">
-      <Filter>include</Filter>
+      <Filter>..\src\Modules\DevEditor\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorMainLoop.h">
-      <Filter>include</Filter>
+      <Filter>..\src\Modules\DevEditor\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\windows\moc_Shibboleth_EditorMainWindow.cpp">
-      <Filter>.generated\windows</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp">
+      <Filter>..\src\Modules\DevEditor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\.generated\windows\moc_Shibboleth_ToDoWindow.cpp">
-      <Filter>.generated\windows</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorAttributesCommon.cpp">
+      <Filter>..\src\Modules\DevEditor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorAttributesCommon.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainLoop.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainWindow.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_ToDoWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainLoop.cpp">
+      <Filter>..\src\Modules\DevEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainWindow.cpp">
+      <Filter>..\src\Modules\DevEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_ToDoWindow.cpp">
+      <Filter>..\src\Modules\DevEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\build\windows\vs2022\intermediate\qt\DevEditor\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>build\windows\vs2022\intermediate\qt\DevEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\build\windows\vs2022\intermediate\qt\DevEditor\moc_Shibboleth_ToDoWindow.cpp">
+      <Filter>build\windows\vs2022\intermediate\qt\DevEditor</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\utils\project_generator.lua">
+      <Filter>..\utils</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorMainWindow.h">
-      <Filter>include</Filter>
+      <Filter>..\src\Modules\DevEditor\include</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_ToDoWindow.h">
-      <Filter>include</Filter>
+      <Filter>..\src\Modules\DevEditor\include</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

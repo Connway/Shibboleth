@@ -751,6 +751,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src\pugixml.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\assimp\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

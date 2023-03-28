@@ -1896,4 +1896,7 @@
       <Filter>contrib\pugixml\src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\assimp\project_generator.lua" />
+  </ItemGroup>
 </Project>

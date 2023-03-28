@@ -235,6 +235,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqPruningStructure.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\src\SqSceneQueryManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\PhysX\project_generator.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
