@@ -1,4 +1,4 @@
-DepProject "libpng"
+DependencyProject "libpng"
 	language "C"
 	warnings "Default"
 

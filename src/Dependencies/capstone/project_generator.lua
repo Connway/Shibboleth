@@ -1,6 +1,6 @@
 Group "Dependencies/Unused by Engine"
 
-DepProject "capstone"
+DependencyProject "capstone"
 	language "C"
 	warnings "Extra"
 

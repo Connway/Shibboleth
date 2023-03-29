@@ -5,7 +5,7 @@ end
 require("premake-qt/qt")
 local qt = premake.extensions.qt
 
-DepProject("ads", "SharedLib")
+DependencyProject("ads", "SharedLib")
 	qt.enable()
 
 	language "C++"

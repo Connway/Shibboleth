@@ -1,4 +1,4 @@
-DepProject "assimp"
+DependencyProject "assimp"
 	language "C++"
 	warnings "Default"
 

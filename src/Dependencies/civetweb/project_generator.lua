@@ -1,4 +1,4 @@
-DepProject("CivetWeb", "SharedLib")
+DependencyProject("CivetWeb", "SharedLib")
 	language "C++"
 	warnings "Extra"
 

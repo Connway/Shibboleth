@@ -1,4 +1,4 @@
-DepProject "imgui"
+DependencyProject "imgui"
 	language "C++"
 	warnings "Extra"
 
@@ -9,7 +9,7 @@ DepProject "imgui"
 		"../../Frameworks/Gaff/include",
 		"."
 	}
-	
+
 	removefiles { "misc/freetype/*.*" }
 
 	SetupConfigMap()

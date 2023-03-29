@@ -1,4 +1,4 @@
-DepProject "JoltPhysics"
+DependencyProject "JoltPhysics"
 	language "C++"
 
 	files { "Jolt/**.h", "Jolt/**.cpp", "Jolt/**.natvis" }
@@ -12,7 +12,7 @@ DepProject "JoltPhysics"
 	SetupConfigMap()
 
 if os.target() == "windows" then
-	DepProject("JoltViewer", "WindowedApp")
+	DependencyProject("JoltViewer", "WindowedApp")
 		language "C++"
 		debugdir "../../../workingdir/tools/JoltViewer"
 

@@ -1,4 +1,4 @@
-DepProject "GLFW"
+DependencyProject "GLFW"
 	language "C"
 	warnings "Extra"
 

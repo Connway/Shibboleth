@@ -24,8 +24,8 @@ local GenerateProject = function()
 		IncludeDirs
 		{
 			source_dir .. "include",
-			source_dir .. "../../Engine/Engine/include",
-			source_dir .. "../../Engine/Memory/include",
+			source_dir .. "../../Core/Engine/include",
+			source_dir .. "../../Core/Memory/include",
 			base_dir .. "../../Frameworks/Gaff/include",
 			--source_dir .. "../../Modules/Graphics/include",
 			source_dir .. "../../Modules/MainLoop/include",
@@ -60,34 +60,7 @@ local GenerateProject = function()
 		filter {}
 
 		QtSettingsModule(qt_modules, base_dir, source_dir)
-
-		local plugin_path = qt.defaultpath .. "/plugins"
-		local bin_path = qt.defaultpath .. "/bin"
-		local extension = ".dll" -- Windows extension by default.
-
-		if os.target() == "linux" then
-			extension = ".so"
-		elseif os.target() == "macosx" then
-			extension = ".dylib"
-		end
-
-		postbuildcommands
-		{
-			"{MKDIR} ../../../../../workingdir/bin",
-			"{MKDIR} ../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindowsd" .. extension .. " ../../../../../workingdir/bin/platforms",
-			"{COPYFILE} " .. plugin_path .. "/platforms/qwindows" .. extension .. " ../../../../../workingdir/bin/platforms"
-		}
-
-		for _, name in ipairs(qt_modules) do
-			local final_name = bin_path .. "/Qt6" .. qt.modules.qt6[name].name
-
-			postbuildcommands
-			{
-				"{COPYFILE} " .. final_name .. "d" .. extension .. " ../../../../../workingdir/bin",
-				"{COPYFILE} " .. final_name .. extension .." ../../../../../workingdir/bin"
-			}
-		end
+		CopyQtFilesToBin(qt_modules)
 end
 
 local LinkDependencies = function()

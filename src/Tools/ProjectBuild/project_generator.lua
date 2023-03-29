@@ -1,7 +1,5 @@
-if not _OPTIONS["generate-preproc"] then
-	if not _OPTIONS["preproc-pipeline"] then
-		Group "Tools/Unused"
-	end
+if _OPTIONS["preproc-pipeline"] and not _OPTIONS["generate-preproc"] then
+	Group "Tools/Unused"
 
 	ToolProject("ProjectBuild", "ConsoleApp", true)
 		debugdir "../../../workingdir/tools"
@@ -82,7 +80,5 @@ if not _OPTIONS["generate-preproc"] then
 			dependson(GetAllFrameworks())
 	end
 
-	if not _OPTIONS["preproc-pipeline"] then
-		Group "Tools"
-	end
+	Group "Tools"
 end

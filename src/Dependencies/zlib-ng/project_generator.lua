@@ -1,4 +1,4 @@
-DepProject "zlib-ng"
+DependencyProject "zlib-ng"
 	language "C"
 	warnings "Default"
 
@@ -9,11 +9,11 @@ DepProject "zlib-ng"
 	defines { "WITH_GZFILEOP" }
 
 	filter { "platforms:x64" }
-		excludes { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*" }
+		removefiles { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*" }
 		defines { "X86_FEATURES" }
 
 	filter { "platforms:arm64" }
-		excludes { "arch/x86/*.*", "arch/s390/*.*", "arch/power/*.*" }
+		removefiles { "arch/x86/*.*", "arch/s390/*.*", "arch/power/*.*" }
 		defines { "ARM_FEATURES" }
 
 	filter { "system:windows" }

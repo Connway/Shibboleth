@@ -2,7 +2,7 @@ if _OPTIONS["no-luajit"] then
 	return
 end
 
-DepProject "LuaJIT"
+DependencyProject "LuaJIT"
 	kind "Makefile"
 
 	language "C"

@@ -1,16 +1,3 @@
-function SetIntermediateAndTargetDirs(configuration)
-	objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
-
-	filter { "configurations:" .. configuration, "platforms:x86" }
-		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x86/" .. configuration)
-
-	filter { "configurations:" .. configuration, "platforms:x64" }
-		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
-
-		filter { "configurations:" .. configuration, "platforms:arm64" }
-		targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/arm64/" .. configuration)
-end
-
 startproject "Game_App"
 
 exceptionhandling "SEH"
@@ -66,9 +53,8 @@ filter { "platforms:arm64" }
 
 filter {}
 
-for _,v in ipairs(configs) do
-	SetIntermediateAndTargetDirs(v)
-end
+objdir(GetIntermediateLocation())
+targetdir(GetOutputLocation())
 
 dofile("module_suffix.lua")
 

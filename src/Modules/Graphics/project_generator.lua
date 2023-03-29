@@ -1,13 +1,31 @@
-function DoMainGraphicsModule()
-	local source_dir = GetModulesSourceDirectory("Graphics")
-	local base_dir = GetModulesDirectory("Graphics")
+local deps =
+{
+	"GraphicsBase",
+	"MainLoop",
+	"Resource",
+	"Gleam",
+	"ECS",
+	"assimp",
+	"mpack",
+	"minizip-ng",
+	"zlib-ng",
+	"libpng",
+	"libtiff",
+	"GLFW",
+	"DevDebug"
+}
 
+local source_dir = GetModulesSourceDirectory("Graphics")
+local base_dir = GetModulesDirectory("Graphics")
+
+function DoMainGraphicsModule()
 	ModuleProject("GraphicsBase", "Graphics")
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
-		excludes
+		-- Possibly doesn't support tokens?
+		removefiles
 		{
 			source_dir .. "include/Shibboleth_RenderManager.h",
 			source_dir .. "Shibboleth_RenderManager.cpp",
@@ -17,8 +35,8 @@ function DoMainGraphicsModule()
 		IncludeDirs
 		{
 			source_dir .. "include",
-			source_dir .. "../../Engine/Memory/include",
-			source_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Core/Memory/include",
+			source_dir .. "../../Core/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/assimp/include",
 			base_dir .. "../../Dependencies/glfw/include",
@@ -34,8 +52,6 @@ function DoMainGraphicsModule()
 end
 
 function DoGraphicsModule(renderer)
-	local source_dir = GetModulesSourceDirectory("Graphics")
-	local base_dir = GetModulesDirectory("Graphics")
 	local project_name = "Graphics" .. renderer
 
 	ModuleProject(project_name, "Graphics")
@@ -59,8 +75,8 @@ function DoGraphicsModule(renderer)
 		IncludeDirs
 		{
 			source_dir .. "include",
-			source_dir .. "../../Engine/Memory/include",
-			source_dir .. "../../Engine/Engine/include",
+			source_dir .. "../../Core/Memory/include",
+			source_dir .. "../../Core/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
@@ -81,26 +97,12 @@ function DoGraphicsModule(renderer)
 		if renderer == "Direct3D11" then
 			defines { "USE_D3D11" }
 			links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+		elseif renderer == "Direct3D12" then
+			defines { "USE_D3D12" }
+			-- links { "d3d12", "D3dcompiler", "dxgi", "dxguid" }
 		elseif renderer == "Vulkan" then
 			defines { "USE_VULKAN" }
 		end
-
-		deps =
-		{
-			"GraphicsBase",
-			"MainLoop",
-			"Resource",
-			"Gleam",
-			"ECS",
-			"assimp",
-			"mpack",
-			"minizip-ng",
-			"zlib-ng",
-			"libpng",
-			"libtiff",
-			"GLFW",
-			"DevDebug"
-		}
 
 		dependson(deps)
 		links(deps)
@@ -114,24 +116,12 @@ local GenerateProject = function()
 end
 
 local LinkDependencies = function()
-	local deps = ModuleDependencies("")
-	table.remove(deps) -- remove module name dependency
-	table.insert(deps, "GraphicsBase")
-	table.insert(deps, "MainLoop")
-	table.insert(deps, "Resource")
-	table.insert(deps, "Gleam")
-	table.insert(deps, "ECS")
-	table.insert(deps, "assimp")
-	table.insert(deps, "mpack")
-	table.insert(deps, "minizip-ng")
-	table.insert(deps, "zlib-ng")
-	table.insert(deps, "libpng")
-	table.insert(deps, "libtiff")
-	table.insert(deps, "GLFW")
-	table.insert(deps, "DevDebug")
+	local link_deps = ModuleDependencies("")
+	table.remove(link_deps) -- remove module name dependency
+	table.insertflat(link_deps, deps)
 
-	dependson(deps)
-	links(deps)
+	dependson(link_deps)
+	links(link_deps)
 
 	filter { "configurations:Static_*_D3D11*" }
 		dependson("GraphicsDirect3D11")

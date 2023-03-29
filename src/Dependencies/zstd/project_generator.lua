@@ -1,6 +1,6 @@
 Group "Dependencies/Unused by Engine"
 
-DepProject "zstd"
+DependencyProject "zstd"
 	language "C"
 	warnings "Extra"
 

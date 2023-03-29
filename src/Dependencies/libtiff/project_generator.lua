@@ -1,14 +1,14 @@
-DepProject "libtiff"
+DependencyProject "libtiff"
 	language "C"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
 	includedirs { "port", "../zlib-ng" }
-	excludes { "tif_win32.c" }
+	removefiles { "tif_win32.c" }
 
 	filter { "system:windows" }
 		files { "tif_win32.c" }
-		excludes { "tif_unix.c" }
+		removefiles { "tif_unix.c" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }

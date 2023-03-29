@@ -1,6 +1,4 @@
-if not _OPTIONS["preproc-pipeline"] then
-	Group "Tools/Unused"
-end
+Group "Tools/Unused"
 
 ToolProject("Preprocessor", "ConsoleApp", true)
 	debugdir "../../../workingdir/tools"
@@ -29,6 +27,4 @@ ToolProject("Preprocessor", "ConsoleApp", true)
 
 	defines { "FMT_HEADER_ONLY" }
 
-if not _OPTIONS["preproc-pipeline"] then
-	Group "Tools"
-end
+Group "Tools"

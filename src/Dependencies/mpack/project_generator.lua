@@ -1,4 +1,4 @@
-DepProject "mpack"
+DependencyProject "mpack"
 	language "C"
 	-- warnings "Default"
 

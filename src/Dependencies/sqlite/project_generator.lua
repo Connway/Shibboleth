@@ -1,6 +1,6 @@
 Group "Dependencies/Unused by Engine"
 
-DepProject "sqlite"
+DependencyProject "sqlite"
 	language "C"
 	warnings "Extra"
 

@@ -14,6 +14,6 @@ FrameworkProject "Gleam"
 	}
 
 	filter { "system:not windows" }
-		excludes { "**/*_Direct3D11.*", "*_Direct3D11.*" }
+		removefiles { "**/*_Direct3D11.*", "*_Direct3D11.*" }
 
 	filter {}

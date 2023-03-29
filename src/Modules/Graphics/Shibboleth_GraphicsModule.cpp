@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifndef SHIB_IS_BASE
+
 #include "Gen_ReflectionInit.h"
 
 #ifdef SHIB_STATIC
@@ -105,5 +107,7 @@ THE SOFTWARE.
 	{
 		return Graphics::CreateModule();
 	}
+
+#endif
 
 #endif

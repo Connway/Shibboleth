@@ -486,7 +486,7 @@ int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program)
 		path = "src/Tools/" + program.get(k_arg_tool);
 	
 	} else if (action == "static_header") {
-		path = "src/Engine/Engine";
+		path = "src/Core/Engine";
 
 	} else {
 		std::cerr << "Unknown action '" << action << "'." << std::endl;

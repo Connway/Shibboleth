@@ -1,4 +1,4 @@
-DepProject "EASTL"
+DependencyProject "EASTL"
 	language "C++"
 	warnings "Extra"
 

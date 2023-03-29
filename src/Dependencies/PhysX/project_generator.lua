@@ -1,5 +1,5 @@
 function PhysXProject(proj_name, lib_type)
-	DepProject(proj_name, lib_type)
+	DependencyProject(proj_name, lib_type)
 
 	cppdialect "C++17" -- C++20 breaks this library.
 	language "C++"
@@ -341,7 +341,7 @@ PhysXProject("PhysXCommon", "StaticLib")
 	}
 
 	filter { "system:not windows" }
-		excludes { "physx/source/common/src/windows/*.*" }
+		removefiles { "physx/source/common/src/windows/*.*" }
 
 	filter {}
 
@@ -379,7 +379,7 @@ PhysXProject("PhysXCooking", "StaticLib")
 	}
 
 	filter { "system:not windows" }
-		excludes { "physx/source/physxcooking/src/windows/*.*"}
+		removefiles { "physx/source/physxcooking/src/windows/*.*"}
 
 	filter {}
 
@@ -396,7 +396,7 @@ PhysXProject("PhysXFoundation", "StaticLib")
 		}
 
 	filter { "system:not windows" }
-		excludes { "physx/source/foundation/src/windows/*.*" }
+		removefiles { "physx/source/foundation/src/windows/*.*" }
 		files { "physx/source/foundation/src/unix/*.*" }
 
 	filter {}
@@ -424,7 +424,7 @@ PhysXProject("PhysX", "StaticLib")
 		}
 
 	filter { "system:not windows" }
-		excludes
+		removefiles
 		{
 			"physx/source/physx/src/device/windows/*.*",
 			"physx/source/physx/src/windows/*.*"

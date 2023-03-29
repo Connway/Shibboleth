@@ -1,5 +1,5 @@
 --local source_dir = GetTestsSourceDirectory("ECSTest")
-local source_dir = GetEngineSourceDirectory("Engine")
+local source_dir = GetCoreSourceDirectory("Engine")
 local base_dir = GetTestsDirectory("ECSTest")
 
 TestProject "ECSTest"
@@ -18,8 +18,8 @@ TestProject "ECSTest"
 		base_dir .. "../../Dependencies/mpack",
 		base_dir .. "../../Frameworks/Gaff/include",
 		base_dir .. "../../Frameworks/Gleam/include",
-		source_dir .. "../../Engine/Engine/include",
-		source_dir .. "../../Engine/Memory/include",
+		source_dir .. "../../Core/Engine/include",
+		source_dir .. "../../Core/Memory/include",
 		source_dir .. "../../Modules/Resource/include",
 		source_dir .. "../../Modules/ECS/include"
 	}

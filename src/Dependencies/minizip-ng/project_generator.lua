@@ -1,9 +1,9 @@
-DepProject "minizip-ng"
+DependencyProject "minizip-ng"
 	language "C"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	excludes { "**bzip.*", "**lzma.*", "**openssl.*", "**libcomp.*", "**crypt_win32.*" }
+	removefiles { "**bzip.*", "**lzma.*", "**openssl.*", "**libcomp.*", "**crypt_win32.*" }
 	defines { "HAVE_ZLIB", "MZ_ZIP_NO_MAIN", "MZ_ZIP_SIGNING" }
 
 	includedirs
@@ -13,13 +13,13 @@ DepProject "minizip-ng"
 	}
 
 	filter { "system:not macosx" }
-		excludes { "**apple.*" }
+		removefiles { "**apple.*" }
 
 	filter { "system:not windows" }
-		excludes { "**win32.*"  }
+		removefiles { "**win32.*"  }
 
 	filter { "system:not linux", "system:not macosx" }
-		excludes { "**posix.*" }
+		removefiles { "**posix.*" }
 
 	filter {}
 

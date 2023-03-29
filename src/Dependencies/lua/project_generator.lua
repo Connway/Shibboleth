@@ -1,9 +1,9 @@
-DepProject "Lua"
+DependencyProject "Lua"
 	language "C"
 	warnings "Extra"
 
 	files { "**.c", "**.h", "**.hpp" }
-	excludes { "luac.c" }
+	removefiles { "luac.c" }
 
 	filter { "system:linux" }
 		buildoptions { "-fPIC" }

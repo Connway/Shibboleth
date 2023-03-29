@@ -26,13 +26,15 @@ for _,v in pairs(unsupported_project_actions) do
 	end
 end
 
-dofile("helper_functions.lua")
-dofile("options.lua")
-
 require("premake-qt/qt")
 
-local actions = os.matchfiles("../**/*actions.lua")
-table.foreachi(actions, RunFile)
+local helper_functions = os.matchfiles("*_functions.lua")
+local options = os.matchfiles("*_options.lua")
+local actions = os.matchfiles("*_actions.lua")
+
+table.foreachi(helper_functions, dofile)
+table.foreachi(options, dofile)
+table.foreachi(actions, dofile)
 
 local is_project_action = false
 for _,v in pairs(supported_project_actions) do
@@ -45,7 +47,7 @@ end
 if is_project_action == true then
 	dofile("solution_configs.lua")
 
-	function GenerateModules(file)
+	local generate_modules = function(file)
 		local funcs = dofile(file)
 		funcs.GenerateProject()
 	end
@@ -72,27 +74,27 @@ if is_project_action == true then
 		local dependency_generators = os.matchfiles("../src/Dependencies/**/project_generator.lua")
 		local framework_generators = os.matchfiles("../src/Frameworks/**/project_generator.lua")
 		local module_generators = os.matchfiles("../src/Modules/**/project_generator.lua")
-		local engine_generators = os.matchfiles("../src/Engine/**/project_generator.lua")
+		local core_generators = os.matchfiles("../src/Core/**/project_generator.lua")
 		local tools_generators = os.matchfiles("../src/Tools/**/project_generator.lua")
 		local test_generators = os.matchfiles("../src/Tests/**/project_generator.lua")
 
 		Group "Dependencies"
-		table.foreachi(dependency_generators, RunFile)
+		table.foreachi(dependency_generators, dofile)
 
 		Group "Frameworks"
-		table.foreachi(framework_generators, RunFile)
+		table.foreachi(framework_generators, dofile)
 
 		Group "Core"
-		table.foreachi(engine_generators, RunFile)
+		table.foreachi(core_generators, dofile)
 
 		Group "Modules"
-		table.foreachi(module_generators, GenerateModules)
+		table.foreachi(module_generators, generate_modules)
 
 		Group "Tools"
-		table.foreachi(tools_generators, RunFile)
+		table.foreachi(tools_generators, dofile)
 
 		Group "Tests"
-		table.foreachi(test_generators, RunFile)
+		table.foreachi(test_generators, dofile)
 
 		if not _OPTIONS["generate-preproc"] then
 			if _ACTION ~= "gmake2" then

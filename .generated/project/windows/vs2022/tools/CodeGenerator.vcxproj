@@ -121,8 +121,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\CodeGenerator\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\tools (mkdir $(SolutionDir)\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\CodeGenerator\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,8 +155,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\CodeGenerator\$(Tar
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\CodeGenerator\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\tools (mkdir $(SolutionDir)\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\CodeGenerator\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -189,8 +189,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\CodeGenerator\$(T
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\CodeGenerator\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\tools (mkdir $(SolutionDir)\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\CodeGenerator\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -223,8 +223,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\CodeGenerator\$(T
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\tools (mkdir ..\..\..\..\..\workingdir\tools)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CodeGenerator\$(TargetFileName) ..\..\..\..\..\workingdir\tools</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\tools (mkdir $(SolutionDir)\..\..\..\..\workingdir\tools)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CodeGenerator\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\tools</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

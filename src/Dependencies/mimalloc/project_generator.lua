@@ -1,4 +1,4 @@
-DepProject "mimalloc"
+DependencyProject "mimalloc"
 	language "C++"
 	warnings "Default"
 

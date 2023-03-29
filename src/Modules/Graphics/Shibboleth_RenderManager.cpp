@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifndef SHIB_IS_BASE
+
 #include "Shibboleth_RenderManager.h"
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_DepthStencilState.h>
@@ -173,3 +175,5 @@ void RenderManager::updateWindows(void)
 }
 
 NS_END
+
+#endif

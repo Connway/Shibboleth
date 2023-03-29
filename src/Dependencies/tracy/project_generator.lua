@@ -1,4 +1,4 @@
-DepProject("TracyClient", "SharedLib")
+DependencyProject("TracyClient", "SharedLib")
 	local build_files_in_dir = function(dir)
 		files
 		{
@@ -48,7 +48,7 @@ DepProject("TracyClient", "SharedLib")
 
 	SetupConfigMap()
 
-DepProject("TracyProfiler", "WindowedApp")
+DependencyProject("TracyProfiler", "WindowedApp")
 	local build_files_in_dir = function(dir)
 		files
 		{

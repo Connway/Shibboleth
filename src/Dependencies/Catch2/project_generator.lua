@@ -1,4 +1,4 @@
-DepProject "Catch2"
+DependencyProject "Catch2"
 	language "C++"
 	warnings "Extra"
 
@@ -9,8 +9,8 @@ DepProject "Catch2"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Frameworks/Gaff/include",
-		"../../Engine/Engine/include",
-		"../../Engine/Memory/include"
+		"../../Core/Engine/include",
+		"../../Core/Memory/include"
 	}
 
 	defines
