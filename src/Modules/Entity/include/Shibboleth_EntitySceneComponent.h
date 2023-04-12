@@ -62,6 +62,9 @@ public:
 	void addChild(EntitySceneComponent& component);
 	void removeFromParent(bool update_to_world = false);
 
+	virtual Gleam::Transform getTransformFromGenerator(Gaff::Hash32 generator_name);
+	virtual bool hasTransformGenerator(Gaff::Hash32 generator_name) const;
+
 private:
 	Gleam::Transform _transform_relative;
 	Gleam::Transform _transform_world;

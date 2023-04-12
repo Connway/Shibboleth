@@ -23,7 +23,7 @@ THE SOFTWARE.
 template <class Message>
 Broadcaster::ID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
 {
-	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void
+	const Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void
 	{
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
@@ -35,7 +35,7 @@ Broadcaster::ID Broadcaster::listen(const eastl::function<void (const Message&)>
 template <class Message>
 Broadcaster::ID Broadcaster::listen(eastl::function<void (const Message&)>&& callback)
 {
-	const ListenerData::Listener func = Gaff::Func<void(const void*)>([callback](const void* message) -> void
+	const Listener func = Gaff::Func<void(const void*)>([callback](const void* message) -> void
 	{
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
@@ -57,21 +57,21 @@ void Broadcaster::broadcastAsync(const Message& message)
 	void* const data = SHIB_ALLOC(sizeof(BroadcastData) + sizeof(Message), s_allocator);
 
 	BroadcastData* const broadcast_data = static_cast<BroadcastData*>(data);
-	data->msg_hash = Hash::ClassHashable<Message>::GetHash();
-	data->msg_size = sizeof(Message);
-	data->broadcaster = this;
+	broadcast_data->msg_hash = Hash::ClassHashable<Message>::GetHash();
+	broadcast_data->msg_size = sizeof(Message);
+	broadcast_data->broadcaster = this;
 
-	if constexpr (std::is_standard_layout<Message>::value && std::is_trivial<Message>::value) {
-		data->deconstructor = [](void* data) -> void
+	//if constexpr (std::is_standard_layout<Message>::value && std::is_trivial<Message>::value) {
+		broadcast_data->deconstructor = [](void* data) -> void
 		{
 			Gaff::Deconstruct(static_cast<Message*>(data));
 		};
-	}
+	//}
 
 	Message* const msg = reinterpret_cast<Message*>(static_cast<uint8_t*>(data) + sizeof(BroadcastData));
 	*msg = message;
 
-	broadcastAsyncInternal(broadcast_data);
+	broadcastAsyncInternal(*broadcast_data);
 }
 
 template <class Message>
