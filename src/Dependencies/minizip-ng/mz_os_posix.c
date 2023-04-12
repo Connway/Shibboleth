@@ -34,8 +34,6 @@
 #  include <mach/clock.h>
 #  include <mach/mach.h>
 
-//#  include <unistd.h>
-
 // Just frustrated at this point. All documentation is saying that I just need to include unistd.h, but it's not getting rid of errors.
 // Putting delcarations here to get this damn thing compiling without errors.
 ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize);
