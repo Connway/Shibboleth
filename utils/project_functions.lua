@@ -463,7 +463,13 @@ function ModuleGen(module_name)
 			"CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
 		}
 
-	filter { "system:not windows" }
+	filter { "system:macosx" }
+		prebuildcommands
+		{
+			"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name
+		}
+
+	filter { "system:linux" }
 		prebuildcommands
 		{
 			"$(SHELL) $(.SHELLFLAGS) -e \"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} module_header --module " .. module_name .. "\""
@@ -488,7 +494,13 @@ function StaticHeaderGen()
 			"CodeGenerator%{cfg.buildtarget.suffix} static_header"
 		}
 
-	filter { "system:not windows" }
+	filter { "system:macosx" }
+		prebuildcommands
+		{
+			"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header"
+		}
+
+	filter { "system:linux" }
 		prebuildcommands
 		{
 			"$(SHELL) $(.SHELLFLAGS) -e \"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} static_header\""
@@ -513,7 +525,13 @@ function ToolGen(tool_name)
 			"CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
 		}
 
-	filter { "system:not windows" }
+	filter { "system:macosx" }
+		prebuildcommands
+		{
+			"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name
+		}
+
+	filter { "system:linux" }
 		prebuildcommands
 		{
 			"$(SHELL) $(.SHELLFLAGS) -e \"cd " .. GetWorkingLocation() .. "/tools && ./CodeGenerator%{cfg.buildtarget.suffix} tool_header --tool " .. tool_name .. "\""

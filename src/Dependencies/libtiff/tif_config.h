@@ -73,7 +73,9 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-/* #undef HAVE_UNISTD_H */
+#ifndef _WIN32
+	#define HAVE_UNISTD_H 1
+#endif
 
 /* 8/12 bit libjpeg dual mode enabled */
 /* #undef JPEG_DUAL_MODE_8_12 */

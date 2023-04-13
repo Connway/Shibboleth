@@ -43,8 +43,8 @@ void Broadcaster::broadcastSync(Gaff::Hash64 msg_hash, const void* message)
 		return;
 	}
 
-	for (const auto it : it_listeners->second) {
-		it.second(message);
+	for (const auto& entry : it_listeners->second) {
+		entry.second(message);
 	}
 }
 

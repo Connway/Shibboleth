@@ -225,9 +225,9 @@ static int WriteFile(
 
 	const std::string module_name = (program.is_used(k_arg_module)) ?
 		program.get(k_arg_module) :
-		(program.is_used(k_arg_tool)) ?
-		program.get(k_arg_tool) :
-		"Engine";
+			(program.is_used(k_arg_tool)) ?
+			program.get(k_arg_tool) :
+			"Engine";
 
 	const std::string final_text = GetLicenseText(program) + fmt::format(
 		k_gen_header,
@@ -484,7 +484,7 @@ int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program)
 		}
 
 		path = "src/Tools/" + program.get(k_arg_tool);
-	
+
 	} else if (action == "static_header") {
 		path = "src/Core/Engine";
 
