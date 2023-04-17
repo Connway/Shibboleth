@@ -74,11 +74,19 @@ function GetBinLocation()
 end
 
 function GetModulesGeneratedDirectory(module_name)
-	return GetGeneratedLocation() .. "/preproc/Modules/" .. module_name .. "/"
+	if module_name == nil then
+		return GetGeneratedLocation() .. "/preproc/Modules/"
+	else
+		return GetGeneratedLocation() .. "/preproc/Modules/" .. module_name .. "/"
+	end
 end
 
 function GetModulesDirectory(module_name)
-	return GetGeneratedLocation() .. "/../src/Modules/" .. module_name .. "/"
+	if module_name == nil then
+		return GetGeneratedLocation() .. "/../src/Modules/"
+	else
+		return GetGeneratedLocation() .. "/../src/Modules/" .. module_name .. "/"
+	end
 end
 
 function GetModulesSourceDirectory(module_name)
@@ -90,11 +98,19 @@ function GetModulesSourceDirectory(module_name)
 end
 
 function GetCoreGeneratedDirectory(core_name)
-	return GetGeneratedLocation() .. "/preproc/Core/" .. core_name .. "/"
+	if core_name == nil then
+		return GetGeneratedLocation() .. "/preproc/Core/"
+	else
+		return GetGeneratedLocation() .. "/preproc/Core/" .. core_name .. "/"
+	end
 end
 
 function GetCoreDirectory(core_name)
-	return GetGeneratedLocation() .. "/../src/Core/" .. core_name .. "/"
+	if core_name == nil then
+		return GetGeneratedLocation() .. "/../src/Core/"
+	else
+		return GetGeneratedLocation() .. "/../src/Core/" .. core_name .. "/"
+	end
 end
 
 function GetCoreSourceDirectory(core_name)
@@ -106,11 +122,19 @@ function GetCoreSourceDirectory(core_name)
 end
 
 function GetToolsGeneratedDirectory(tool_name)
-	return GetGeneratedLocation() .. "/preproc/Tools/" .. tool_name .. "/"
+	if tool_name == nil then
+		return GetGeneratedLocation() .. "/preproc/Tools/"
+	else
+		return GetGeneratedLocation() .. "/preproc/Tools/" .. tool_name .. "/"
+	end
 end
 
 function GetToolsDirectory(tool_name)
-	return GetGeneratedLocation() .. "/../src/Tools/" .. tool_name .. "/"
+	if tool_name == nil then
+		return GetGeneratedLocation() .. "/../src/Tools/"
+	else
+		return GetGeneratedLocation() .. "/../src/Tools/" .. tool_name .. "/"
+	end
 end
 
 function GetToolsSourceDirectory(tool_name)
@@ -122,11 +146,19 @@ function GetToolsSourceDirectory(tool_name)
 end
 
 function GetTestsGeneratedDirectory(test_name)
-	return GetGeneratedLocation() .. "/preproc/Tools/" .. test_name .. "/"
+	if test_name == nil then
+		return GetGeneratedLocation() .. "/preproc/Tools/"
+	else
+		return GetGeneratedLocation() .. "/preproc/Tools/" .. test_name .. "/"
+	end
 end
 
 function GetTestsDirectory(test_name)
-	return GetGeneratedLocation() .. "/../src/Tests/" .. test_name .. "/"
+	if test_name == nil then
+		return GetGeneratedLocation() .. "/../src/Tests/"
+	else
+		return GetGeneratedLocation() .. "/../src/Tests/" .. test_name .. "/"
+	end
 end
 
 function GetTestsSourceDirectory(test_name)
@@ -135,6 +167,10 @@ function GetTestsSourceDirectory(test_name)
 	else
 		return GetTestsDirectory(test_name)
 	end
+end
+
+function GetDependenciesDirectory()
+	return GetGeneratedLocation() .. "/../src/Dependencies
 end
 
 
