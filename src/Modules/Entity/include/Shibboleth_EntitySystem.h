@@ -38,7 +38,7 @@ public:
 		return true;
 	}
 
-	void update(uintptr_t /*thread_id_int*/)
+	void update(uintptr_t /*thread_id_int*/) override
 	{
 		_entity_mgr->updateEntitiesAndComponents(update_phase);
 	}

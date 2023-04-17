@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityManager)
 
 

@@ -28,8 +28,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugDrawWebHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/debug_draw"))
 
-	.template BASE(Shibboleth::IDevWebHandler)
-	.ctor<>()
+	.BASE(Shibboleth::IDevWebHandler)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugDrawWebHandler)
 
 
@@ -110,6 +110,9 @@ bool DebugDrawWebHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 			break;
 		case IDebugManager::DebugRenderType::Model:
 			break;
+		default:
+			// $TODO: Log error.
+			break;
 	}
 
 	if (!handle.isValid()) {
@@ -127,7 +130,7 @@ bool DebugDrawWebHandler::handlePut(CivetServer* /*server*/, mg_connection* conn
 	mg_printf(conn, "HTTP/1.1 201 Created\r\n");
 	mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
 	mg_printf(conn, "Connection: close\r\n\r\n");
-	mg_printf(conn, "%s", buffer);
+	mg_printf(conn, "%s", reinterpret_cast<char*>(buffer));
 
 	return true;
 }

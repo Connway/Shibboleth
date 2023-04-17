@@ -37,7 +37,7 @@ public:
 		_pool(pool)
 	{
 	}
-	
+
 	virtual void callCallback(void* object, IFile* file, uintptr_t thread_id_int) const = 0;
 
 	bool doesCallbackCloseFile(void) const
@@ -95,6 +95,6 @@ NS_END
 SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::LoadFileCallbackAttribute, T)
 
 SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::LoadFileCallbackAttribute, T)
-	.template BASE(Shibboleth::ILoadFileCallbackAttribute)
-	.template BASE(Refl::IAttribute)
+	.BASE(Shibboleth::ILoadFileCallbackAttribute)
+	.BASE(Refl::IAttribute)
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::LoadFileCallbackAttribute, T)

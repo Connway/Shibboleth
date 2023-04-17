@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSClassAttribute)
-	.template BASE(Refl::IAttribute)
+	.BASE(Refl::IAttribute)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSClassAttribute)
 
 NS_SHIBBOLETH

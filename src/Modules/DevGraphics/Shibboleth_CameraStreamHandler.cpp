@@ -35,8 +35,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraStreamHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/camera"))
 
-	.template BASE(Shibboleth::IDevWebHandler)
-	.ctor<>()
+	.BASE(Shibboleth::IDevWebHandler)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraStreamHandler)
 
 NS_SHIBBOLETH
@@ -53,7 +53,10 @@ void CameraStreamHandler::destroy(void)
 
 	for (auto& stream_entry : _stream_data) {
 		// Flush encoder before destroying resources and encoder.
-		NV_ENC_PIC_PARAMS pic_params = { 0 };
+		NV_ENC_PIC_PARAMS pic_params;
+		memset(&pic_params, 0, sizeof(NV_ENC_PIC_PARAMS));
+
+		pic_params.version = NV_ENC_PIC_PARAMS_VER;
 		pic_params.encodePicFlags = NV_ENC_PIC_FLAGS::NV_ENC_PIC_FLAG_EOS;
 
 		nvenc_funcs.nvEncEncodePicture(stream_entry.second.encoder, &pic_params);
@@ -92,6 +95,11 @@ bool CameraStreamHandler::createEncoder(Gleam::IRenderOutput& output, int32_t& o
 
 		case Gleam::RendererType::Vulkan:
 			registerVulkanResource(output, out_id);
+			break;
+
+		default:
+			// $TODO: Log error
+			GAFF_ASSERT(false);
 			break;
 	}
 
@@ -170,7 +178,7 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 
 	void* encoder = nullptr;
 	NVENCSTATUS result = nvenc_funcs.nvEncOpenEncodeSessionEx(&params, &encoder);
-	
+
 	if (result != NV_ENC_SUCCESS) {
 		// $TODO: Log error.
 		//const char* const error = nvenc_funcs.nvEncGetLastErrorString(encoder);
@@ -255,15 +263,11 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 			continue;
 		}
 
-		NV_ENC_PRESET_CONFIG temp_preset_config =
-		{
-			NV_ENC_PRESET_CONFIG_VER,
-			{
-				NV_ENC_CONFIG_VER
-			},
-			{ 0 },
-			{ 0 }
-		};
+		NV_ENC_PRESET_CONFIG temp_preset_config;
+		memset(&temp_preset_config, 0, sizeof(NV_ENC_PRESET_CONFIG));
+
+		temp_preset_config.version = NV_ENC_PRESET_CONFIG_VER;
+		temp_preset_config.presetCfg.version = NV_ENC_CONFIG_VER;
 
 		result = nvenc_funcs.nvEncGetEncodePresetConfigEx(encoder, encode_guid, preset_guid_entry, NV_ENC_TUNING_INFO_HIGH_QUALITY, &temp_preset_config);
 

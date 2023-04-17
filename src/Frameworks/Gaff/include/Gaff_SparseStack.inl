@@ -207,7 +207,6 @@ void SparseStack<T, Allocator>::pop(void)
 		_data.pop_back();
 
 	} else {
-		const int32_t size = static_cast<int32_t>(_free_indices.size());
 		int32_t last_index = static_cast<int32_t>(_data.size()) - 1;
 
 		auto it = Find(_free_indices, last_index);

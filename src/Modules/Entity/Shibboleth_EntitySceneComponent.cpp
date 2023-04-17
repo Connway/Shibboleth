@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)
-	.base<Shibboleth::EntityComponent>()
+	.template base<Shibboleth::EntityComponent>()
 
 	.var("transformRelative", &Shibboleth::EntitySceneComponent::getTransformRelative, &Shibboleth::EntitySceneComponent::setTransformRelative)
 

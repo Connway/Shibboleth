@@ -28,8 +28,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSEntityWebHandler)
 	.classAttrs(Shibboleth::DevWebCommandAttribute(u8"/entity"))
 
-	.template BASE(Shibboleth::IDevWebHandler)
-	.ctor<>()
+	.BASE(Shibboleth::IDevWebHandler)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ECSEntityWebHandler)
 
 

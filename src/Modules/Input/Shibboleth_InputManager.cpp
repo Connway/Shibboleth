@@ -34,8 +34,8 @@ THE SOFTWARE.
 #include <EASTL/sort.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 

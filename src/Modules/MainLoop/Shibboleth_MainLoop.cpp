@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <eathread/eathread.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
-	.template BASE(Shibboleth::IMainLoop)
+	.BASE(Shibboleth::IMainLoop)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MainLoop)
 

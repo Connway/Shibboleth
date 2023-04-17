@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(GAFF_STR_U8(class_type))
 #define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char8_t*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR_U8, __VA_ARGS__) })
-#define BASE(type) base<type>(GAFF_STR_U8(type))
+#define BASE(type) template base<type>(GAFF_STR_U8(type))
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(class_type, data) getInterface<class_type>(CLASS_HASH(class_type), data)
 
@@ -157,13 +157,13 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE_NO_INHERITANCE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.template BASE(base_class) \
+		.BASE(base_class) \
 		.template ctor<>() \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(type, base_class) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
-		.template BASE(base_class) \
+		.BASE(base_class) \
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(type, base_class) \

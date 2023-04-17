@@ -9,6 +9,7 @@ local GenerateProject = function()
 
 		IncludeDirs
 		{
+			source_dir,
 			source_dir .. "include",
 			source_dir .. "../../Core/Memory/include",
 			source_dir .. "../../Core/Engine/include",

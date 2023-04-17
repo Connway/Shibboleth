@@ -24,13 +24,13 @@ THE SOFTWARE.
 #include "Shibboleth_DebugManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugRenderSystem)
-	.base<Shibboleth::ISystem>()
-	.ctor<>()
+	.template base<Shibboleth::ISystem>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugRenderSystem)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugSystem)
-	.base<Shibboleth::ISystem>()
-	.ctor<>()
+	.template base<Shibboleth::ISystem>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugSystem)
 
 

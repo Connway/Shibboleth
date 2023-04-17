@@ -33,6 +33,7 @@ class Entity;
 enum class EntityComponentFlag
 {
 	UpdateEnabled,
+	CallInit,
 
 	Count
 };

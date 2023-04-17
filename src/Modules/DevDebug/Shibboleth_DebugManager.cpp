@@ -114,8 +114,8 @@ namespace
 
 			float4 PixelMain(PS_INPUT input) : SV_Target
 			{
-				float4 out_col = input.col * texture0.Sample(sampler0, input.uv); 
-				return out_col; 
+				float4 out_col = input.col * texture0.Sample(sampler0, input.uv);
+				return out_col;
 			}
 		)",
 		R"(
@@ -440,9 +440,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager::DebugFlag)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager::DebugFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
-	.template BASE(Shibboleth::IDebugManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.BASE(Shibboleth::IDebugManager)
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 
 	.var(
 		"Debug Flags",
@@ -877,7 +877,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 						const Gleam::Mat4x4 look_at = glm::lookAt(glm::zero<Gleam::Vec3>(), dir, up);
 						const Gleam::Mat4x4 rotate_forward = glm::eulerAngleX(Gaff::Pi * 0.5f); // Orient top facing forward;
 
-						Gleam::Mat4x4 transform = 
+						Gleam::Mat4x4 transform =
 							final_camera *
 							glm::translate(inst.transform.getTranslation() + dir * 0.5f) *
 							look_at *
@@ -2444,7 +2444,7 @@ void DebugManager::renderDebugMenu(DebugMenuEntry& entry)
 						for (int32_t i = 0; i < num_entries; ++i) {
 							const HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 							bool value = entry.var->getFlagValue(entry.object, i);
-					
+
 							if (ImGui::MenuItem(reinterpret_cast<const char*>(flag_name.getBuffer()), nullptr, value)) {
 								entry.var->setFlagValue(entry.object, i, !value);
 							}

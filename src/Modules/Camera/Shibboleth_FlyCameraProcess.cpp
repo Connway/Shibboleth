@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_FlyCameraProcess.h"
 #include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_InputManager.h>
@@ -34,8 +32,8 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::FlyCameraProcess)
-	.template BASE(Esprit::IProcess)
-	.ctor<>()
+	.BASE(Esprit::IProcess)
+	.template ctor<>()
 
 	.var("angular_speed", &Shibboleth::FlyCameraProcess::_angular_speed)
 	.var("linear_speed", &Shibboleth::FlyCameraProcess::_linear_speed)
@@ -122,7 +120,7 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	}
 
 	const ECSEntityID entity_id = static_cast<ECSEntityID>(variables.integers[_entity_id_index]);
-	
+
 	if (entity_id == ECSEntityID_None) {
 		// $TODO: Log error periodic.
 		return;

@@ -9,6 +9,7 @@ local GenerateProject = function()
 
 		IncludeDirs
 		{
+			source_dir,
 			source_dir .. "include",
 			source_dir .. "../../Core/Memory/include",
 			source_dir .. "../../Core/Engine/include",
@@ -35,7 +36,7 @@ local GenerateProject = function()
 		files { source_dir .. "Shibboleth_DevDebugModule.cpp" }
 
 		local deps =
-		{	
+		{
 			"Assimp",
 			"imgui",
 			"minizip-ng",
