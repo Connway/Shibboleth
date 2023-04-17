@@ -170,7 +170,7 @@ function GetTestsSourceDirectory(test_name)
 end
 
 function GetDependenciesDirectory()
-	return GetGeneratedLocation() .. "/../src/Dependencies
+	return GetGeneratedLocation() .. "/../src/Dependencies"
 end
 
 

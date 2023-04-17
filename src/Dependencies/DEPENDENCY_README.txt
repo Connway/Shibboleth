@@ -11,6 +11,7 @@ Libraries Affected:
 	minizip-ng
 		unzip.h and zip.h added #include <zlib.h>
 		Fixing compilation error with CLOCK_MONOTONIC not being defined.
+		Fixing compilation errors on Mac.
 
 	PhysX
 		Changed #include <typeinfo.h> -> #include <typeinfo>.
@@ -25,10 +26,11 @@ Libraries Affected:
 
 	zlib-ng
 		Fixed compilation error on Linux when compiling on a system that does not support AVX.
+		Fixing compilation errors.
 
 	EASTL
-		Fixed compilation error on Linux with bitvector.
-		Fixed compilation error on Linux with deque.
+		Fixed compilation error on Linux/Mac with bitvector.
+		Fixed compilation error on Linux/Mac with deque.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 		"Fixed" compilation error with GCC in eastl::swap about maybe uninitialized variables. "Fix" is to disable the warning for now.
 
@@ -45,6 +47,7 @@ Libraries Affected:
 
 	GLFW
 		Fixing compilation error with CLOCK_REALTIME and CLOCK_MONOTONIC not being defined.
+		Fixing compilation errors on Mac OS X.
 
 	LuaJIT
 		Modified msvcbuild.bat to use /MDd, /MD, /Od, and /Fd flags.

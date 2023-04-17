@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineSystem)
-	.template BASE(Shibboleth::ISystem)
+	.BASE(Shibboleth::ISystem)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachineSystem)
 

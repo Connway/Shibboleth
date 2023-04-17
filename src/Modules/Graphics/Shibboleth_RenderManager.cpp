@@ -42,8 +42,8 @@ THE SOFTWARE.
 #include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
-	.template BASE(Shibboleth::RenderManagerBase)
-	.template BASE(Shibboleth::IRenderManager)
+	.BASE(Shibboleth::RenderManagerBase)
+	.BASE(Shibboleth::IRenderManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)

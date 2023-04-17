@@ -38,10 +38,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ToDoWindow)
 	.classAttrs(Shibboleth::EditorWindowAttribute())
 	.friendlyName(u8"ToDo")
 
-	.template BASE(QWidget)
+	.BASE(QWidget)
 
 	.CTOR(QWidget*)
-	.ctor<>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ToDoWindow)
 
 

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <lua.hpp>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaProcess)
-	.template BASE(Esprit::IProcess)
+	.BASE(Esprit::IProcess)
 	.template ctor<>()
 
 	.var("script", &Shibboleth::LuaProcess::_script)

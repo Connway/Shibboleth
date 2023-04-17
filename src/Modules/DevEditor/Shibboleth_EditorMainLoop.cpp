@@ -30,8 +30,8 @@ THE SOFTWARE.
 #include <QLibraryInfo>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EditorMainLoop)
-	.template BASE(Shibboleth::IMainLoop)
-	.ctor<>()
+	.BASE(Shibboleth::IMainLoop)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EditorMainLoop)
 
 

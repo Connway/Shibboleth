@@ -70,7 +70,7 @@ SHIB_REFLECTION_DECLARE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE(Derived);
 SHIB_REFLECTION_DEFINE_BEGIN(Derived)
 	.template base<Base>()
-	.template BASE(Base2)
+	.BASE(Base2)
 
 	.var("c", &Derived::c)
 	//.var("cFunc", &Derived::getC, &Derived::setC)

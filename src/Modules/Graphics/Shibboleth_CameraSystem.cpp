@@ -26,13 +26,13 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPreRenderSystem)
-	.template BASE(Shibboleth::ISystem)
-	.ctor<>()
+	.BASE(Shibboleth::ISystem)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPreRenderSystem)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPostRenderSystem)
 	.BASE(Shibboleth::ISystem)
-	.ctor<>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPostRenderSystem)
 
 NS_SHIBBOLETH

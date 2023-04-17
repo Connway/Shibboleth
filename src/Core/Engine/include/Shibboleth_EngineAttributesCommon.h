@@ -263,5 +263,5 @@ SHIB_REFLECTION_DECLARE(Shibboleth::NoCopyAttribute)
 //SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 //
 //SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalMessageAttribute, T, Msg)
-//	.template BASE(Refl::IAttribute)
+//	.BASE(Refl::IAttribute)
 //SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::GlobalMessageAttribute, T, Msg)
