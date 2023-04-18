@@ -36,8 +36,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::LuaResource::loadScript)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaResource)
 
 NS_SHIBBOLETH

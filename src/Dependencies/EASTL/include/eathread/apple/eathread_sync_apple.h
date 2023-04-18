@@ -37,10 +37,13 @@
 
 // EAReadBarrier / EAWriteBarrier / EAReadWriteBarrier
 
-#define EAReadBarrier      OSMemoryBarrier
-#define EAWriteBarrier     OSMemoryBarrier
-#define EAReadWriteBarrier OSMemoryBarrier
+//#define EAReadBarrier      OSMemoryBarrier
+//#define EAWriteBarrier     OSMemoryBarrier
+//#define EAReadWriteBarrier OSMemoryBarrier
 
+#define EAReadBarrier()      std::atomic_thread_fence(std::memory_order_seq_cst)
+#define EAWriteBarrier()     std::atomic_thread_fence(std::memory_order_seq_cst)
+#define EAReadWriteBarrier() std::atomic_thread_fence(std::memory_order_seq_cst)
 
 
 // EACompilerMemoryBarrier

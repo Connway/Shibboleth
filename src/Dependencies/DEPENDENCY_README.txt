@@ -33,6 +33,7 @@ Libraries Affected:
 		Fixed compilation error on Linux/Mac with deque.
 		Fixed a compilation warning with an unreferenced variable in Strlcpy.
 		"Fixed" compilation error with GCC in eastl::swap about maybe uninitialized variables. "Fix" is to disable the warning for now.
+		Fixed compilation error on Mac with barriers. Replaced OSMemoryBarrier with std::atomic_thread_fence.
 
 	premake-qt
 		Fixed unnecessarily adding links libs to StaticLib projects.
