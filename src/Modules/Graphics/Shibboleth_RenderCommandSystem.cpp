@@ -792,7 +792,7 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 						Gleam::ICommandList* cmd_list = nullptr;
 
 						// Grab command list from the cache.
-						if (job_data.rcs->_cmd_lists[cache_index].size() > cmd_list_end) {
+						if (job_data.rcs->_cmd_lists[cache_index].size() > static_cast<size_t>(cmd_list_end)) {
 							cmd_list = job_data.rcs->_cmd_lists[cache_index][cmd_list_end].get();
 
 						// Cache is full, create a new one and add it to the cache.

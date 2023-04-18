@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_CommonHelpers.h"
 #include <Shibboleth_IReflectionFunction.h>
 #include <Shibboleth_IReflection.h>
 #include <Shibboleth_Vector.h>
@@ -33,7 +34,6 @@ struct lua_State;
 NS_SHIBBOLETH
 
 struct TableState;
-struct UserData;
 
 UserData* PushUserTypeReference(lua_State* state, const void* value, const Refl::IReflectionDefinition& ref_def);
 UserData* PushUserType(lua_State* state, const Refl::IReflectionDefinition& ref_def);

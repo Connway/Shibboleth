@@ -36,7 +36,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Material)
 
 	.setInstanceHash(Shibboleth::MaterialComponentHash)
 
-	.base< Shibboleth::ECSComponentBaseShared<Shibboleth::Material> >()
+	.template base< Shibboleth::ECSComponentBaseShared<Shibboleth::Material> >()
 
 	.var("material", &Shibboleth::Material::material)
 
@@ -52,7 +52,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Material)
 	.var("samplers_geometry", &Shibboleth::Material::samplers_geometry, Shibboleth::OptionalAttribute())
 	.var("samplers_hull", &Shibboleth::Material::samplers_hull, Shibboleth::OptionalAttribute())
 
-	.ctor<>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Material)
 
 NS_SHIBBOLETH

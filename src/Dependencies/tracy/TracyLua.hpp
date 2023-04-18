@@ -301,7 +301,7 @@ static inline int LuaZoneBeginN( lua_State* L )
 #endif
 }
 
-static inline int LuaZoneEnd( lua_State* L )
+static inline int LuaZoneEnd( lua_State* /*L*/ )
 {
 #ifdef TRACY_ON_DEMAND
     assert( GetLuaZoneState().counter != 0 );
@@ -422,7 +422,7 @@ static inline void LuaRegister( lua_State* L )
     lua_setglobal( L, "tracy" );
 }
 
-static inline void LuaRemove( char* script ) {}
+static inline void LuaRemove( char* /*script*/ ) {}
 
 }
 

@@ -37,8 +37,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MaterialResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::MaterialResource::loadMaterial)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MaterialResource)
 
 NS_SHIBBOLETH

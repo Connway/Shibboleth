@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static NV_ENCODE_API_FUNCTION_LIST g_nvenc_funcs = { NV_ENCODE_API_FUNCTION_LIST_VER };
+static NV_ENCODE_API_FUNCTION_LIST g_nvenc_funcs;
 
 const NV_ENCODE_API_FUNCTION_LIST& GetNVENCFuncs(void)
 {
@@ -76,6 +76,9 @@ bool InitNVENC(void)
 		// $TODO: Log error.
 		return false;
 	}
+
+	memset(&g_nvenc_funcs, 0, sizeof(g_nvenc_funcs));
+	g_nvenc_funcs.version = NV_ENCODE_API_FUNCTION_LIST_VER;
 
 	status = load_api(&g_nvenc_funcs);
 

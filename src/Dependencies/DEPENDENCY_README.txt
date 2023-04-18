@@ -41,6 +41,7 @@ Libraries Affected:
 	tracy
 		Fixing compilation errors with macros in Tracy.hpp incorrectly constexpr'ing a variable into a non-constexpr constructor.
 		Fixing compilation errors on Linux by adding #include <cpuid.h>.
+		Fixing unused variable warnings on Linux/Mac in TracyLua.hpp.
 
 	argparse
 		Commented out unused variables to fix compilation issues.

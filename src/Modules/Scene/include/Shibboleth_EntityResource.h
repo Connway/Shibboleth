@@ -34,9 +34,6 @@ public:
 	EntityResource(void);
 	~EntityResource(void);
 
-	void load(const ISerializeReader& reader);
-	void save(ISerializeWriter& writer);
-
 private:
 	void loadEntity(IFile* file, uintptr_t thread_id_int);
 

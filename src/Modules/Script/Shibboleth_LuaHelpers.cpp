@@ -46,7 +46,7 @@ namespace
 	constexpr int32_t k_func_index_index = lua_upvalueindex(2);
 	constexpr int32_t k_func_is_static_index = lua_upvalueindex(3);
 
-	constexpr const char* const k_is_type_table_field_name = "__is_type_table";
+	//constexpr const char* const k_is_type_table_field_name = "__is_type_table";
 	constexpr const char* const k_ref_def_field_name = "__ref_def";
 
 	static Shibboleth::ProxyAllocator g_allocator("Lua");
@@ -545,13 +545,13 @@ int32_t PushReturnValue(lua_State* state, const Refl::FunctionStackEntry& ret, b
 			for (int32_t i = 0; i < ret.value.arr.size; ++i) {
 				int64_t value = 0;
 
-				if (data_size <= sizeof(int8_t)) {
+				if (static_cast<size_t>(data_size) <= sizeof(int8_t)) {
 					value = static_cast<int64_t>(*begin);
-				} else if (data_size <= sizeof(int16_t)) {
+				} else if (static_cast<size_t>(data_size) <= sizeof(int16_t)) {
 					value = static_cast<int64_t>(*reinterpret_cast<const int16_t*>(begin));
-				} else if (data_size <= sizeof(int32_t)) {
+				} else if (static_cast<size_t>(data_size) <= sizeof(int32_t)) {
 					value = static_cast<int64_t>(*reinterpret_cast<const int32_t*>(begin));
-				} else if (data_size <= sizeof(int64_t)) {
+				} else if (static_cast<size_t>(data_size) <= sizeof(int64_t)) {
 					value = *reinterpret_cast<const int64_t*>(begin);
 				} else {
 					GAFF_ASSERT_MSG(false, "Enum is larger than 64-bits.");
@@ -648,7 +648,7 @@ void RestoreTable(lua_State* state, const TableState& table)
 {
 	for (const auto& pair : table.array_entries) {
 		k_lua_geti(state, -1, pair.first);
-		
+
 		if (PushOrUpdateTableValue(state, pair.second)) {
 			lua_remove(state, -2);
 			k_lua_seti(state, -2, pair.first);

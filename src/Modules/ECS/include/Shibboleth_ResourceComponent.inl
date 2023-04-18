@@ -33,31 +33,31 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::Resource, T)
 	.staticFunc("IsShared", &Shibboleth::Resource<T>::IsShared)
 
 	.var("value", &Shibboleth::Resource<T>::value)
-	.ctor<>()
+	.template ctor<>()
 SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::Resource, T)
 
 NS_SHIBBOLETH
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value)
 {
 	ecs_mgr.getComponentShared<Resource>(archetype)->value = value;
 }
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value)
 {
 	ecs_mgr.getComponentShared<Resource>(archetype)->value = std::move(value);
 }
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, const typename ResourceType& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, const ResourceType& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = value;
 }
 
 template <class T>
-void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, typename ResourceType&& value)
+void Resource<T>::SetShared(ECSManager& ecs_mgr, ECSEntityID id, ResourceType&& value)
 {
 	ecs_mgr.getComponentShared<Resource>(id)->value = std::move(value);
 }

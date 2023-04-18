@@ -33,7 +33,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Camera)
 		Shibboleth::ECSClassAttribute(nullptr, u8"Graphics")
 	)
 
-	.base< Shibboleth::ECSComponentBaseNonShared<Shibboleth::Camera> >()
+	.template base< Shibboleth::ECSComponentBaseNonShared<Shibboleth::Camera> >()
 
 	.staticFunc("Destructor", Shibboleth::Camera::Destructor)
 
@@ -44,7 +44,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Camera)
 	//.var("focus_distance", &Shibboleth::Camera::focus_distance, Shibboleth::OptionalAttribute())
 	//.var("f_stop", &Shibboleth::Camera::f_stop, Shibboleth::OptionalAttribute())
 
-	.ctor<>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Camera)
 
 NS_SHIBBOLETH

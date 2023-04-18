@@ -212,7 +212,9 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 		return false;
 	}
 
-	const GUID encode_guid = (Gaff::Find(guids, NV_ENC_CODEC_HEVC_GUID) != guids.end()) ?
+	static constexpr auto k_predicate = [](const GUID& lhs, const GUID& rhs) -> bool { return !memcmp(&lhs, &rhs, sizeof(GUID)); };
+
+	const GUID encode_guid = (Gaff::Find(guids, NV_ENC_CODEC_HEVC_GUID, k_predicate) != guids.end()) ?
 		NV_ENC_CODEC_HEVC_GUID :
 		NV_ENC_CODEC_H264_GUID;
 
@@ -259,7 +261,7 @@ bool CameraStreamHandler::createEncoder(uint32_t width, uint32_t height, int32_t
 	bool found = false;
 
 	for (const GUID& preset_guid_entry : preset_guid_priority) {
-		if (Gaff::Find(preset_guids, preset_guid_entry) == preset_guids.end()) {
+		if (Gaff::Find(preset_guids, preset_guid_entry, k_predicate) == preset_guids.end()) {
 			continue;
 		}
 

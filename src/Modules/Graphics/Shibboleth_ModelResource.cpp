@@ -41,8 +41,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ModelResource::loadModel)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelResource)
 
 NS_SHIBBOLETH
@@ -181,7 +181,7 @@ const Gleam::Vec3& ModelResource::getCenteringVector(void) const
 void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 {
 	SerializeReaderWrapper readerWrapper;
-	
+
 	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
 		LogErrorResource("Failed to load mesh '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
 		failed();
@@ -198,19 +198,19 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 
 	{
 		const auto guard = reader.enterElementGuard(u8"devices_tag");
-	
+
 		if (!reader.isNull() && !reader.isString()) {
 			LogErrorResource("Malformed mesh '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
 			failed();
 			return;
 		}
-	
+
 		const char8_t* const tag = reader.readString(u8"main");
 		device_tag = tag;
 		devices = render_mgr.getDevicesByTag(tag);
 		reader.freeString(tag);
 	}
-	
+
 	if (!devices || devices->empty()) {
 		LogErrorResource("Failed to load mesh '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
 		failed();
@@ -219,13 +219,13 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 
 	{
 		const auto guard = reader.enterElementGuard(u8"model_file");
-	
+
 		if (!reader.isString()) {
 			LogErrorResource("Malformed mesh '%s'. 'model_file' element is not a string.", getFilePath().getBuffer());
 			failed();
 			return;
 		}
-	
+
 		const char8_t* const path = reader.readString();
 
 		model_file_path = path;
@@ -251,22 +251,22 @@ void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
 
 
 	const size_t index = model_file_path.rfind(u8'.');
-	
+
 	Assimp::Importer importer;
-	
+
 	// Only load mesh data.
 	importer.SetPropertyInteger(
 		AI_CONFIG_PP_RVC_FLAGS,
 		ignore_flags
 	);
-	
+
 	const aiScene* const scene = importer.ReadFileFromMemory(
 		model_file->getBuffer(),
 		model_file->size(),
 		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | static_cast<unsigned int>(aiProcess_GenBoundingBoxes),
 		reinterpret_cast<const char*>(model_file_path.data() + index)
 	);
-	
+
 	if (!scene) {
 		LogErrorResource("Failed to load mesh '%s' with error '%s'", getFilePath().getBuffer(), importer.GetErrorString());
 		failed();

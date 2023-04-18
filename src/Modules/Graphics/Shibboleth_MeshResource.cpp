@@ -30,8 +30,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)
 	.classAttrs(Shibboleth::CreatableAttribute())
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MeshResource)
 
 NS_SHIBBOLETH

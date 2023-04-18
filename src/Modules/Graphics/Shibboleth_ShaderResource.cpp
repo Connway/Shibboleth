@@ -30,8 +30,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ShaderResource)
 		Shibboleth::CreatableAttribute()
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ShaderResource)
 
 NS_SHIBBOLETH

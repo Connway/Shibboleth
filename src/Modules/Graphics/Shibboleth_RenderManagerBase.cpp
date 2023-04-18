@@ -54,7 +54,7 @@ const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
 };
 
-static constexpr const char8_t* const k_graphics_cfg_schema =
+/*static constexpr const char8_t* const k_graphics_cfg_schema =
 u8R"({
 	"type": "object",
 
@@ -94,13 +94,13 @@ u8R"({
 			}
 		},
 	}
-})";
+})";*/
 
 RenderManagerBase::RenderManagerBase(void)
 {
 	// $TODO: This needs to be rejiggered. This is confusing to follow.
 	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays) + g_display_tags.size());
-	
+
 	const ProxyAllocator allocator("Graphics");
 
 	if constexpr (g_supported_displays[0]) {
@@ -119,8 +119,8 @@ RenderManagerBase::RenderManagerBase(void)
 
 RenderManagerBase::~RenderManagerBase(void)
 {
-	for (int32_t i = 0; i < ARRAY_SIZE(_cached_render_commands); ++i) {
-		for (int32_t j = 0; j < ARRAY_SIZE(_cached_render_commands[i]); ++j) {
+	for (int32_t i = 0; static_cast<size_t>(i) < ARRAY_SIZE(_cached_render_commands); ++i) {
+		for (int32_t j = 0; static_cast<size_t>(j) < ARRAY_SIZE(_cached_render_commands[i]); ++j) {
 			for (auto& pair : _cached_render_commands[i][j]) {
 				for (auto& cmd : pair.second.command_list) {
 					if (!cmd.owns_command) {
@@ -405,8 +405,18 @@ bool RenderManagerBase::init(void)
 					GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
 
 					for (int32_t i = 0; i < monitor_count; ++i) {
+					#ifdef PLATFORM_WINDOWS
 						const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
 						const char* const display_name = glfwGetWin32Monitor(monitors[i]);
+					#elif defined(PLATFORM_LINUX)
+						const char* const adapter_name = nullptr;
+						const char* const display_name = nullptr;
+					#elif defined(PLATFORM_MAC)
+						const char* const adapter_name = nullptr;
+						const char* const display_name = nullptr;
+					#else
+						static_assert(false, "Unknown platform.");
+					#endif
 
 						if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
 							!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
@@ -523,7 +533,10 @@ bool RenderManagerBase::init(void)
 					return false;
 				}
 
-				_window_outputs[window_hash] = eastl::make_pair(std::move(WindowPtr(window)), std::move(OutputPtr(output)));
+				auto& entry = _window_outputs[window_hash];
+				entry.first.reset(window);
+				entry.second.reset(output);
+
 				return false;
 			});
 

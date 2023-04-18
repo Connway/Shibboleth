@@ -38,8 +38,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RasterStateResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::RasterStateResource::loadRasterState)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RasterStateResource)
 
 NS_SHIBBOLETH
@@ -133,7 +133,7 @@ void RasterStateResource::loadRasterState(IFile* file, uintptr_t /*thread_id_int
 	}
 
 	Gleam::IRasterState::Settings raster_state_settings;
-	
+
 	if (!Refl::Reflection<Gleam::IRasterState::Settings>::GetInstance().load(reader, raster_state_settings)) {
 		LogErrorResource("Failed to load raster state '%s'. Failed to deserialize raster settings.", getFilePath().getBuffer());
 		failed();

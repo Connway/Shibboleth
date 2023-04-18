@@ -29,8 +29,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::BufferResource)
 	.classAttrs(Shibboleth::CreatableAttribute())
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::BufferResource)
 
 NS_SHIBBOLETH

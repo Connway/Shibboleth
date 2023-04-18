@@ -39,8 +39,8 @@ MSVC_DISABLE_WARNING_POP()
 
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaManager)
 
 
@@ -145,7 +145,7 @@ bool LuaManager::initAllModulesLoaded(void)
 				RegisterType(state, *ref_def);
 			}
 		}
-		
+
 		// $TODO: Need functions for saving persistent state so that Lua managers can share data between each thread.
 		// Load all Lua files from Scripts/Managers
 		auto func = Gaff::MemberFunc(this, &LuaManager::loadLuaManager);

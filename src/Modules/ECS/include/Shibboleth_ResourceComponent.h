@@ -35,20 +35,20 @@ public:
 	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
 	using ResourceType = Gaff::RefPtr<T>;
 
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, typename ResourceType&& value);
-	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, const typename ResourceType& value);
-	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, typename ResourceType&& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value);
+	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, const ResourceType& value);
+	static void SetShared(ECSManager& ecs_mgr, ECSEntityID id, ResourceType&& value);
 
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
-	static typename ResourceType& GetShared(ECSManager& ecs_mgr, ECSEntityID id);
+	static ResourceType& GetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype);
+	static ResourceType& GetShared(ECSManager& ecs_mgr, ECSEntityID id);
 
 	static void CopyShared(const void* old_value, void* new_value);
 
 	static constexpr bool IsNonShared(void);
 	static constexpr bool IsShared(void);
 
-	typename ResourceType value;
+	ResourceType value;
 };
 
 NS_END

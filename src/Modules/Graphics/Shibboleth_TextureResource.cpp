@@ -41,8 +41,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::TextureResource::loadTexture)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::TextureResource)
 
 NS_SHIBBOLETH

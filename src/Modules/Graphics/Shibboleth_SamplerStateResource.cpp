@@ -38,8 +38,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SamplerStateResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::SamplerStateResource::loadSamplerState)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SamplerStateResource)
 
 NS_SHIBBOLETH
