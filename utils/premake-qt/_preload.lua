@@ -124,7 +124,8 @@ premake.api.register {
 	name = "qtgenerateddir",
 	scope = "config",
 	kind = "path",
-	tokens = true
+	tokens = true,
+	pathVars = true
 }
 
 --
@@ -134,6 +135,28 @@ premake.api.register {
 	name = "qtmocargs",
 	scope = "config",
 	kind = "string-list"
+}
+
+--
+-- Specify a list of custom options to send to the Qt lrelease command line.
+--
+premake.api.register {
+	name = "qtlreleaseargs",
+	scope = "config",
+	kind = "string-list"
+}
+
+--
+-- Specify the path, relative to the current script, where the qm files generated
+-- by Qt will be created. If this command is not used, the default behavior
+-- is to generate those files in the target directory.
+--
+premake.api.register {
+	name = "qtqmgenerateddir",
+	scope = "config",
+	kind = "path",
+	tokens = true,
+	pathVars = true
 }
 
 --

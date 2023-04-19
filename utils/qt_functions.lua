@@ -12,6 +12,7 @@ function QtSettingsModule(modules, base_dir, source_dir)
 
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
+	qtqmgenerateddir("%{cfg.objdir}/qt/%{prj.name}")
 	qtgenerateddir("%{cfg.objdir}/qt/%{prj.name}")
 	qtprefix "Qt6"
 

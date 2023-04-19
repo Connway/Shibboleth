@@ -27,6 +27,7 @@ premake.extensions.qt.modules = {}
 include ( "qtmodules.qt5.lua" )
 include ( "qtmodules.qt6.lua" )
 
+
 --
 -- Enable Qt for a project. Be carefull, although this is a method, it will enable Qt
 -- functionalities only in the current configuration.
@@ -55,12 +56,12 @@ function premake.extensions.qt.enable(major_version)
 	-- setup our overrides if not already done
 	if qt.enabled == false then
 		qt.enabled = true
-		premake.override(premake.oven,       "bakeFiles",  qt.customBakeFiles)
 		premake.override(premake.oven,       "bakeConfig", qt.customBakeConfig)
 		premake.override(premake.fileconfig, "addconfig",  qt.customAddFileConfig)
 	end
 
 end
+
 
 --
 -- Get the include, lib and bin paths
@@ -75,6 +76,7 @@ function premake.extensions.qt.getPaths(cfg)
 		   cfg.qtbinpath or (qtpath and qtpath .. "/bin"),
 		   cfg.qtlibexecpath or (qtpath and qtpath .. "/libexec")
 end
+
 
 --
 -- Get the Qt version number
@@ -122,6 +124,7 @@ function premake.extensions.qt.getVersion(cfg, includepath)
 	return qtversion
 end
 
+
 --
 -- A small function which will get the generated directory for a given config.
 -- If objdir was specified, it will be used. Else, it's the project's location +
@@ -153,6 +156,7 @@ function premake.extensions.qt.getGeneratedDir(cfg)
 	return path.getabsolute(dir)
 
 end
+
 
 --
 -- Override the premake.oven.bakeConfig method to configure the configuration object
@@ -253,7 +257,7 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 			config.qtversion = qt.getVersion(config, qtinclude)
 			if config.qtversion == nil then
 				error(
-					"Cannot add module '" .. modulename .. "' - Unable to determine Qt Version.\n" ..
+					"Cannot add module \"" .. modulename .. "\": unable to determine Qt Version.\n" ..
 					"You can explicitly set the version number using 'qtversion' in your project\n" ..
 					"configuration."
 				)
@@ -311,72 +315,66 @@ function premake.extensions.qt.customBakeConfig(base, wks, prj, buildcfg, platfo
 
 end
 
+
 --
--- Override the premake.oven.bakeFiles method to be able to add the Qt generated
--- files to the project.
+-- Helper function used to merge args coming from file configs and from the project config.
 --
--- @param base
---		The original bakeFiles method.
--- @param prj
---		The current project.
+-- @param ...
+--		List of tables to merge.
 -- @return
---		The table of files.
+--		A list (indexed from 1 to N) of the arguments that were stored in the input tables.
 --
-function premake.extensions.qt.customBakeFiles(base, prj)
-
-	local qt		= premake.extensions.qt
-	local project	= premake.project
-
-	-- parse the configurations for the project
-	for cfg in project.eachconfig(prj) do
-
-		-- ignore this config if Qt is not enabled
-		if cfg.qtenabled == true then
-
-			local moc		= {}
-			local qrc		= {}
-			local ui		= {}
-			local objdir	= qt.getGeneratedDir(cfg)
-
-			-- check each file in this configuration
-			table.foreachi(cfg.files, function(filename)
-
-				if qt.isUI(filename) then
-					table.insert(ui, filename)
-				elseif qt.isQRC(filename) then
-					table.insert(qrc, filename)
-				elseif qt.needMOC(filename) then
-					table.insert(moc, filename)
-				end
-
-			end)
-
-			-- the moc files
-			table.foreachi(moc, function(filename)
-				table.insert(cfg.files, objdir .. "/moc_" .. path.getbasename(filename) .. ".cpp")
-			end)
-
-			-- the qrc files
-			table.foreachi(qrc, function(filename)
-				table.insert(cfg.files, objdir .. "/qrc_" .. path.getbasename(filename) .. ".cpp")
-			end)
-
-			-- the ui files
-			table.foreachi(ui, function(filename)
-				table.insert(cfg.files, objdir .. "/ui_" .. path.getbasename(filename) .. ".h")
-			end)
-
-			-- include path for uic generated headers
-			if #ui > 0 then
-				table.insert(cfg.includedirs, objdir)
+function premake.extensions.qt.combineArgs(...)
+	local result = {}
+	for _, t in ipairs({...}) do
+		if type(t) == "table" then
+			for _, v in ipairs(t) do
+				table.insert(result, v)
 			end
-
 		end
 	end
-
-	return base(prj)
-
+	return result
 end
+
+
+--
+-- Helper function that is used to add a custom command.
+--
+-- @note
+--		This should not be needed. Using the file config's buildmessage, buildcommands, etc.
+--		should work. But for some reason, when doing it like this, gmake2 doesn't get the
+--		custom commands, even though the other generators do (at least VS ones and gmake)
+--		Since this workaround uses an internal Premake-core field, this helper is used to
+--		make future updates easier.
+--
+-- @param fcfg
+--		The file config object on which we want to add the custom command.
+-- @param options
+--		Custom command options. This should be a table, with the following fields:
+--		- message (string)			 : The build message. Mandatory.
+--		- commands (table of strings): The build commands. Mandatory.
+--		- outputs (table of strings) : The output files. Mandatory.
+--		- inputs (table of string)	 : List of files on this this command depends. Optional.
+--		- compile (boolean)			 : If true, the outputs of this command will be compiled. Optional (false by default).
+--
+function premake.extensions.qt.addCustomCommand(fcfg, options)
+	local configset = premake.configset
+	local field		= premake.field
+
+	-- mandatory stuff
+	configset.store(fcfg._cfgset, field.get("buildmessage"),  options.message)
+	configset.store(fcfg._cfgset, field.get("buildcommands"), options.commands)
+	configset.store(fcfg._cfgset, field.get("buildoutputs"),  options.outputs)
+
+	-- optional ones
+	if options["inputs"] ~= nil and #options["inputs"] > 0 then
+		configset.store(fcfg._cfgset, field.get("buildinputs"), options["inputs"])
+	end
+	if options["compile"] == true then
+		configset.store(fcfg._cfgset, field.get("compilebuildoutputs"), true)
+	end
+end
+
 
 --
 -- Override the base premake.fileconfig.addconfig method in order to add our
@@ -411,9 +409,19 @@ function premake.extensions.qt.customAddFileConfig(base, fcfg, cfg)
 	if qt.isUI(config.abspath) then
 		qt.addUICustomBuildRule(config, cfg)
 
+		-- add directory in which the UI headers are generated to the config, if not already.
+		local includedir = qt.getGeneratedDir(cfg)
+		if table.contains(cfg.includedirs, includedir) == false then
+			table.insert(cfg.includedirs, includedir)
+		end
+
 	-- resource files
 	elseif qt.isQRC(config.abspath) then
 		qt.addQRCCustomBuildRule(config, cfg)
+
+	-- translation files
+	elseif qt.isTS(config.abspath) then
+		qt.addTSCustomBuildRule(config, cfg)
 
 	-- moc files
 	elseif qt.needMOC(config.abspath) then
@@ -436,6 +444,7 @@ function premake.extensions.qt.customAddFileConfig(base, fcfg, cfg)
 	end
 
 end
+
 
 --
 -- Checks if a file is a ui file.
@@ -500,22 +509,22 @@ function premake.extensions.qt.addUICustomBuildRule(fcfg, cfg)
 
 	-- build the command
 	local uic_path = qt.findTool("uic", fcfg)
-	local command = "\"" .. uic_path .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\" \"" .. fcfg.relpath.. "\""
+	local command = "\"" .. uic_path .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\" \"" .. fcfg.relpath .. "\""
 
 	-- if we have custom commands, add them
-	if fcfg.config.qtuicargs then
-		table.foreachi(fcfg.config.qtuicargs, function (arg)
-			command = command .. " \"" .. arg .. "\""
-		end)
-	end
+	table.foreachi(qt.combineArgs(fcfg.config.qtuicargs, fcfg.qtuicargs), function (arg)
+		command = command .. " \"" .. arg .. "\""
+	end)
 
 	-- add the custom build rule
-	fcfg.buildmessage	= "Uic'ing " .. fcfg.name
-	fcfg.buildcommands	= { command }
-	fcfg.buildoutputs	= { output }
-	fcfg.buildinputs	= { fcfg.abspath }
-
+	qt.addCustomCommand(fcfg, {
+		message	 = "Running uic on %{file.name}",
+		commands = { command },
+		outputs	 = { output },
+		inputs	 = { fcfg.abspath }
+	})
 end
+
 
 --
 -- Checks if a file is a qrc file.
@@ -528,6 +537,7 @@ end
 function premake.extensions.qt.isQRC(filename)
 	return path.hasextension(filename, { ".qrc" })
 end
+
 
 --
 -- Adds the custom build for qrc files.
@@ -549,11 +559,9 @@ function premake.extensions.qt.addQRCCustomBuildRule(fcfg, cfg)
 	local command = "\"" .. rcc_path .. "\" -name \"" .. fcfg.basename .. "\" -no-compress \"" .. fcfg.relpath .. "\" -o \"" .. path.getrelative(fcfg.project.location, output) .. "\""
 
 	-- if we have custom commands, add them
-	if fcfg.config.qtrccargs then
-		table.foreachi(fcfg.config.qtrccargs, function (arg)
-			command = command .. " \"" .. arg .. "\""
-		end)
-	end
+	table.foreachi(qt.combineArgs(fcfg.config.qtrccargs, fcfg.qtrccargs), function (arg)
+		command = command .. " \"" .. arg .. "\""
+	end)
 
 	-- get the files embedded on the qrc, to add them as input dependencies :
 	-- if we edit a .qml embedded in the qrc, we want the qrc to re-build whenever
@@ -561,14 +569,15 @@ function premake.extensions.qt.addQRCCustomBuildRule(fcfg, cfg)
 	local inputs = qt.getQRCDependencies(fcfg)
 
 	-- add the custom build rule
-	fcfg.buildmessage	= "Rcc'ing " .. fcfg.name
-	fcfg.buildcommands	= { command }
-	fcfg.buildoutputs	= { output }
-	if #inputs > 0 then
-		fcfg.buildinputs = inputs
-	end
-
+	qt.addCustomCommand(fcfg, {
+		message	 = "Running qrc on %{file.name}",
+		commands = { command },
+		outputs	 = { output },
+		inputs	 = inputs,
+		compile	 = true
+	})
 end
+
 
 --
 -- Get the files referenced by a qrc file.
@@ -579,19 +588,15 @@ end
 --		The list of project relative file names of the dependencies
 --
 function premake.extensions.qt.getQRCDependencies(fcfg)
-
 	local dependencies = {}
 	local file = io.open(fcfg.abspath)
 
 	-- ensure the file was correctly opened
 	if file ~= nil then
-
 		local qrcdirectory = path.getdirectory(fcfg.abspath)
-		local projectdirectory = fcfg.project.location
 
 		-- parse the qrc file to find the files it will embed
 		for line in file:lines() do
-
 			-- try to find the <file></file> entries
 			local match = string.match(line, "<file>(.+)</file>")
 			if match == nil then
@@ -599,21 +604,67 @@ function premake.extensions.qt.getQRCDependencies(fcfg)
 			end
 
 			-- if we have one, compute the path of the file, and add it to the dependencies
-			-- note : the QRC files are relative to the folder containing the qrc file.
+			-- NOTE: the QRC files are relative to the folder containing the qrc file.
 			if match ~= nil then
-				table.insert(dependencies, path.getrelative(projectdirectory, qrcdirectory .. "/" .. match))
+				table.insert(dependencies, path.join(qrcdirectory, match))
 			end
-
 		end
 
 		-- close the qrc file
 		io.close(file)
-
 	end
 
 	return dependencies
-
 end
+
+
+--
+-- Checks if a file is a ts file.
+--
+-- @param filename
+--		The file name to check.
+-- @return
+--		true if the file needs to be run through the lrelease tool, false if not.
+--
+function premake.extensions.qt.isTS(filename)
+	return path.hasextension(filename, { ".ts" })
+end
+
+
+--
+-- Adds the custom build for a ts file.
+--
+-- @param fcfg
+--		The config for a single file.
+-- @param cfg
+--		The config of the project ?
+--
+function premake.extensions.qt.addTSCustomBuildRule(fcfg, cfg)
+	local qt = premake.extensions.qt
+
+	-- create the output file name
+	local qtqmgenerateddir	= fcfg.qtqmgenerateddir or fcfg.config.qtqmgenerateddir
+	local outputdir			= qtqmgenerateddir or cfg.targetdir
+	local output			= path.join(outputdir, fcfg.basename .. ".qm")
+
+	-- create the command
+	local lrelease_path = qt.findTool("lrelease", fcfg)
+	local command = "\"" .. lrelease_path .. "\" \"" .. fcfg.relpath .. "\""
+	command = command .. " -qm \"" .. path.getrelative(fcfg.project.location, output) .. "\""
+
+	-- add additional args
+	table.foreachi(qt.combineArgs(cfg.qtlreleaseargs, fcfg.qtlreleaseargs), function (arg)
+		command = command .. " \"" .. arg .. "\""
+	end)
+
+	-- add the custom build rule
+	qt.addCustomCommand(fcfg, {
+		message	 = "Running lrelease on %{file.name}",
+		commands = { command },
+		outputs	 = { output }
+	})
+end
+
 
 --
 -- Checks if a file needs moc'ing.
@@ -649,6 +700,7 @@ function premake.extensions.qt.needMOC(filename)
 	return needmoc
 end
 
+
 --
 -- Adds the custom build for a moc'able file.
 --
@@ -667,7 +719,7 @@ function premake.extensions.qt.addMOCCustomBuildRule(fcfg, cfg)
 	-- create the output file name
 	local output = qt.getGeneratedDir(cfg) .. "/moc_" .. fcfg.basename .. ".cpp"
 
-	-- create the moc command
+	-- create the command
 	local moc_path = qt.findTool("moc", fcfg)
 	local command = "\"" .. moc_path .. "\" \"" .. fcfg.relpath .. "\""
 	command = command .. " -o \"" .. path.getrelative(projectloc, output) .. "\""
@@ -681,34 +733,30 @@ function premake.extensions.qt.addMOCCustomBuildRule(fcfg, cfg)
 	local arguments = ""
 
 	-- append the defines to the arguments
-	if #fcfg.config.defines > 0 then
-		table.foreachi(fcfg.config.defines, function (define)
-			arguments = arguments .. " -D" .. define
-		end)
-	end
+	table.foreachi(qt.combineArgs(fcfg.config.defines, fcfg.defines), function (define)
+		arguments = arguments .. " -D" .. define
+	end)
 
 	-- append the include directories to the arguments
-	if #fcfg.config.includedirs > 0 then
-		table.foreachi(fcfg.config.includedirs, function (include)
-			arguments = arguments .. " -I\"" .. path.getrelative(projectloc, include) .. "\""
-		end)
-	end
+	table.foreachi(qt.combineArgs(fcfg.config.includedirs, fcfg.includedirs), function (include)
+		arguments = arguments .. " -I\"" .. path.getrelative(projectloc, include) .. "\""
+	end)
 
 	-- if we have custom commands, add them
-	if fcfg.config.qtmocargs then
-		table.foreachi(fcfg.config.qtmocargs, function (arg)
-			arguments = arguments .. " \"" .. arg .. "\""
-		end)
-	end
+	table.foreachi(qt.combineArgs(fcfg.config.qtmocargs, fcfg.qtmocargs), function (arg)
+		arguments = arguments .. " \"" .. arg .. "\""
+	end)
 
 	-- handle the command line size limit
 	command = qt.handleCommandLineSizeLimit(cfg, fcfg, command, arguments)
 
 	-- add the custom build rule
-	fcfg.buildmessage	= "Moc'ing " .. fcfg.name
-	fcfg.buildcommands	= { command }
-	fcfg.buildoutputs	= { output }
-
+	qt.addCustomCommand(fcfg, {
+		message	 = "Running moc on %{file.name}",
+		commands = { command },
+		outputs	 = { output },
+		compile	 = true
+	})
 end
 
 
@@ -751,6 +799,7 @@ function premake.extensions.qt.handleCommandLineSizeLimit(cfg, fcfg, command, ar
 
 end
 
+
 --
 -- Merge defines into the configuration, taking care of not adding the
 -- same define twice.
@@ -785,6 +834,7 @@ function premake.extensions.qt.mergeDefines(config, defines)
 	end
 
 end
+
 
 --
 -- Get the include dir for the given module.

@@ -23,7 +23,7 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
 			source_dir .. "../../Modules/Script/include",
-			source_dir .. "../../Modules/ECS/include"
+			source_dir .. "../../Modules/Entity/include"
 		}
 
 	ModuleProject "LogicModule"
@@ -39,7 +39,7 @@ local GenerateProject = function()
 			"MainLoop",
 			"Resource",
 			"Script",
-			"ECS",
+			"Entity",
 
 			GetLuaDepDep(),
 			GetLuaLinkDep()
@@ -62,7 +62,7 @@ local LinkDependencies = function()
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Script")
-	table.insert(deps, "ECS")
+	table.insert(deps, "Entity")
 	table.insert(deps, GetLuaLinkDep())
 	table.insert(deps, GetLuaDepDep())
 
