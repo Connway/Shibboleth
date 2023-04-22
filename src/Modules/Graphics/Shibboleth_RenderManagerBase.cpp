@@ -405,13 +405,15 @@ bool RenderManagerBase::init(void)
 					GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
 
 					for (int32_t i = 0; i < monitor_count; ++i) {
-					#ifdef PLATFORM_WINDOWS
+					#if defined(PLATFORM_WINDOWS)
 						const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
 						const char* const display_name = glfwGetWin32Monitor(monitors[i]);
 					#elif defined(PLATFORM_LINUX)
+						// $TODO: Need to fix this code for non-Windows platforms.
 						const char* const adapter_name = nullptr;
 						const char* const display_name = nullptr;
 					#elif defined(PLATFORM_MAC)
+						// $TODO: Need to fix this code for non-Windows platforms.
 						const char* const adapter_name = nullptr;
 						const char* const display_name = nullptr;
 					#else

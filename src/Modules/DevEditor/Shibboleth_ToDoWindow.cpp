@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_TODOWindow.h"
+#include "Shibboleth_ToDoWindow.h"
 #include "Shibboleth_EditorAttributesCommon.h"
 #include <Shibboleth_AppConfigs.h>
 #include <Gaff_Utils.h>

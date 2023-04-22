@@ -76,6 +76,11 @@ void DebugPrintf(const char* format_string, ...)
 	va_end(vl);
 }
 
+bool GetWorkingDir(char8_t* buffer, size_t size)
+{
+	return getcwd(reinterpret_cast<char*>(buffer), size);
+}
+
 bool SetWorkingDir(const char8_t* directory)
 {
 	return !chdir(reinterpret_cast<const char*>(directory));
