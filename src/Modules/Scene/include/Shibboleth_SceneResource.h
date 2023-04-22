@@ -24,37 +24,37 @@ THE SOFTWARE.
 
 #include "Shibboleth_LayerResource.h"
 
-//NS_SHIBBOLETH
+NS_SHIBBOLETH
 
-//class ECSLayerResource;
-//using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
-//
-//class SceneResource final : public IResource
-//{
-//public:
-//	SceneResource(void);
-//	~SceneResource(void);
-//
-//	void load(const ISerializeReader& reader);
-//	void save(ISerializeWriter& writer);
-//
-//private:
-//	struct LayerData final
-//	{
-//		ECSLayerResourcePtr layer;
-//		HashString64<> layer_name;
-//	};
-//
-//	Vector<LayerData> _layers;
-//
-//	void layerLoaded(const Vector<IResource*>&);
-//	void loadScene(IFile* file, uintptr_t thread_id_int);
-//
-//	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
-//};
-//
-//using SceneResourcePtr = Gaff::RefPtr<SceneResource>;
+class ECSLayerResource;
+using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
 
-//NS_END
+class SceneResource final : public IResource
+{
+public:
+	SceneResource(void);
+	~SceneResource(void) override;
 
-//SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource)
+	void load(const ISerializeReader& reader);
+	void save(ISerializeWriter& writer);
+
+private:
+	struct LayerData final
+	{
+		ECSLayerResourcePtr layer;
+		HashString64<> layer_name;
+	};
+
+	Vector<LayerData> _layers;
+
+	void layerLoaded(const Vector<IResource*>&);
+	void loadScene(IFile* file, uintptr_t thread_id_int);
+
+	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
+};
+
+using SceneResourcePtr = Gaff::RefPtr<SceneResource>;
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource)

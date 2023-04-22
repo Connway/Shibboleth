@@ -187,7 +187,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 }
 
 void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
-{	
+{
 	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true)) {
 		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
 		failed();
@@ -207,7 +207,7 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 			return;
 		}
 
-		reader.readString(name, ARRAY_SIZE(name));
+		reader.readString(name, std::size(name));
 	}
 
 	{
@@ -230,7 +230,7 @@ void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 					return false;
 
 				} else if (!reader.isNull()) {
-					reader.readString(archetype, ARRAY_SIZE(archetype));
+					reader.readString(archetype, std::size(archetype));
 				}
 			}
 

@@ -59,7 +59,7 @@ public:
 
 	~RefPtr(void)
 	{
-		SAFEGAFFRELEASE(_data);
+		GAFF_SAFE_RELEASE(_data);
 	}
 
 	bool operator==(const RefPtr<T>& rhs) const
@@ -94,15 +94,15 @@ public:
 
 	RefPtr<T>& operator=(const RefPtr<T>& rhs)
 	{
-		SAFEGAFFRELEASE(_data);
+		GAFF_SAFE_RELEASE(_data);
 		_data = rhs._data;
-		SAFEGAFFADDREF(_data);
+		GAFF_SAFE_ADD_REF(_data);
 		return *this;
 	}
 
 	RefPtr<T>& operator=(RefPtr<T>&& rhs)
 	{
-		SAFEGAFFRELEASE(_data);
+		GAFF_SAFE_RELEASE(_data);
 		_data = rhs._data;
 		rhs._data = nullptr;
 		return *this;
@@ -110,9 +110,9 @@ public:
 
 	RefPtr<T>& operator=(T* rhs)
 	{
-		SAFEGAFFRELEASE(_data);
+		GAFF_SAFE_RELEASE(_data);
 		_data = rhs;
-		SAFEGAFFADDREF(_data);
+		GAFF_SAFE_ADD_REF(_data);
 		return *this;
 	}
 
@@ -154,7 +154,7 @@ public:
 	// Sets the internal pointer without incrementing the reference count.
 	void reset(T* data)
 	{
-		SAFEGAFFRELEASE(_data);
+		GAFF_SAFE_RELEASE(_data);
 		_data = data;
 	}
 
@@ -205,7 +205,7 @@ public:
 
 	~COMRefPtr(void)
 	{
-		SAFERELEASE(_data);
+		GAFF_COM_SAFE_RELEASE(_data);
 	}
 
 	bool operator==(const COMRefPtr<T>& rhs) const
@@ -230,15 +230,15 @@ public:
 
 	COMRefPtr<T>& operator=(const COMRefPtr<T>& rhs)
 	{
-		SAFERELEASE(_data);
+		GAFF_COM_SAFE_RELEASE(_data);
 		_data = rhs._data;
-		SAFEADDREF(_data);
+		GAFF_COM_SAFE_ADD_REF(_data);
 		return *this;
 	}
 
 	COMRefPtr<T>& operator=(COMRefPtr<T>&& rhs)
 	{
-		SAFERELEASE(_data);
+		GAFF_COM_SAFE_RELEASE(_data);
 		_data = rhs._data;
 		rhs._data = nullptr;
 		return *this;
@@ -246,9 +246,9 @@ public:
 
 	COMRefPtr<T>& operator=(T* rhs)
 	{
-		SAFERELEASE(_data);
+		GAFF_COM_SAFE_RELEASE(_data);
 		_data = rhs;
-		SAFEADDREF(_data);
+		GAFF_COM_SAFE_ADD_REF(_data);
 		return *this;
 	}
 
@@ -290,7 +290,7 @@ public:
 	// Sets the internal pointer without incrementing the reference count.
 	void reset(T* data)
 	{
-		SAFERELEASE(_data);
+		GAFF_COM_SAFE_RELEASE(_data);
 		_data = data;
 	}
 

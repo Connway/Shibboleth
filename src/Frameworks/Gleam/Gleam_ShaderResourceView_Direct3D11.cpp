@@ -128,7 +128,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer, int
 
 void ShaderResourceViewD3D11::destroy(void)
 {
-	SAFERELEASE(_resource_view)
+	GAFF_COM_SAFE_RELEASE(_resource_view)
 }
 
 RendererType ShaderResourceViewD3D11::getRendererType(void) const

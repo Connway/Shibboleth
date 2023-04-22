@@ -47,12 +47,12 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 
 
 	TCHAR dump_format[128] = { 0 };
-	GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, L"dumps/0s_%Y-%m-%d %H-%M-%S.dmp");
+	GetCurrentTimeString(dump_format, std::size(dump_format) - 1, L"dumps/0s_%Y-%m-%d %H-%M-%S.dmp");
 	dump_format[6] = L'%';
 
 	TCHAR dump_file_name[1024] = { 0 };
 
-	_snwprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
+	_snwprintf(dump_file_name, std::size(dump_file_name) - 1, dump_format, process_name + name_begin);
 
 	// Make sure our output folder exists.
 	CreateDir("dumps", 0777);

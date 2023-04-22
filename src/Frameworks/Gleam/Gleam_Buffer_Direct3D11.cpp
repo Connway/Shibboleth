@@ -117,7 +117,7 @@ bool BufferD3D11::init(IRenderDevice& rd, const Settings& buffer_settings)
 
 void BufferD3D11::destroy(void)
 {
-	SAFERELEASE(_buffer)
+	GAFF_COM_SAFE_RELEASE(_buffer)
 }
 
 bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)

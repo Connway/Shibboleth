@@ -99,7 +99,7 @@ u8R"({
 RenderManagerBase::RenderManagerBase(void)
 {
 	// $TODO: This needs to be rejiggered. This is confusing to follow.
-	_render_device_tags.reserve(ARRAY_SIZE(g_supported_displays) + g_display_tags.size());
+	_render_device_tags.reserve(std::size(g_supported_displays) + g_display_tags.size());
 
 	const ProxyAllocator allocator("Graphics");
 
@@ -119,8 +119,8 @@ RenderManagerBase::RenderManagerBase(void)
 
 RenderManagerBase::~RenderManagerBase(void)
 {
-	for (int32_t i = 0; static_cast<size_t>(i) < ARRAY_SIZE(_cached_render_commands); ++i) {
-		for (int32_t j = 0; static_cast<size_t>(j) < ARRAY_SIZE(_cached_render_commands[i]); ++j) {
+	for (int32_t i = 0; static_cast<size_t>(i) < std::size(_cached_render_commands); ++i) {
+		for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i]); ++j) {
 			for (auto& pair : _cached_render_commands[i][j]) {
 				for (auto& cmd : pair.second.command_list) {
 					if (!cmd.owns_command) {
@@ -476,7 +476,7 @@ bool RenderManagerBase::init(void)
 						if (icon_file.readEntireFile(reinterpret_cast<char*>(icon_data.data()))) {
 							const size_t index = Gaff::ReverseFind(icon_path, u8'.');
 
-							if (index != SIZE_T_FAIL) {
+							if (index != GAFF_SIZE_T_FAIL) {
 								Image image;
 
 								if (image.load(icon_data.data(), icon_data.size(), reinterpret_cast<const char*>(icon_path + index))) {

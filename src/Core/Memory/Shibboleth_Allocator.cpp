@@ -389,7 +389,7 @@ const char* Allocator::getPoolName(int32_t pool_index) const
 void Allocator::setLogDir(const char8_t* log_dir)
 {
 	const size_t in_len = eastl::CharStrlen(log_dir) + 1;
-	const size_t log_dir_len = ARRAY_SIZE(_log_dir);
+	const size_t log_dir_len = std::size(_log_dir);
 	const size_t len = (log_dir_len < in_len) ? log_dir_len : in_len;
 
 	memcpy(_log_dir, log_dir, len);
@@ -412,7 +412,7 @@ void Allocator::setHeaderData(
 	// Set the header data.
 	header->alloc_size = size_bytes;
 	header->pool_index = pool_index;
-	strncpy(header->file, file, ARRAY_SIZE(header->file) - 1);
+	strncpy(header->file, file, std::size(header->file) - 1);
 	header->pool_index = pool_index;
 	header->line = line;
 	memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));
@@ -448,7 +448,7 @@ void Allocator::writeAllocationLog(void) const
 	}
 
 	char log_file_name[512] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog.txt", reinterpret_cast<const char*>(_log_dir));
+	snprintf(log_file_name, std::size(log_file_name), "%s/AllocationLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;
 
@@ -511,7 +511,7 @@ void Allocator::writeLeakLog(void) const
 	}
 
 	char log_file_name[512] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog.txt", reinterpret_cast<const char*>(_log_dir));
+	snprintf(log_file_name, std::size(log_file_name), "%s/LeakLog.txt", reinterpret_cast<const char*>(_log_dir));
 
 	Gaff::File log;
 

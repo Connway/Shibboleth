@@ -103,7 +103,7 @@ THE SOFTWARE.
 
 	#include <Gaff_Defines.h>
 
-	DYNAMICEXPORT_C Shibboleth::IModule* CreateModule(void)
+	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
 	{
 		return Graphics::CreateModule();
 	}

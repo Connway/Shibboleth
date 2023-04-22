@@ -46,9 +46,9 @@ RigidBody::~RigidBody(void)
 {
 	if (body.body_dynamic) {
 		if (is_static) {
-			SAFEGAFFRELEASE(body.body_static);
+			GAFF_SAFE_RELEASE(body.body_static);
 		} else {
-			SAFEGAFFRELEASE(body.body_dynamic);
+			GAFF_SAFE_RELEASE(body.body_dynamic);
 		}
 	}
 }
@@ -98,9 +98,9 @@ RigidBody& RigidBody::operator=(const RigidBody& rhs)
 		// Body has an instance. Release it.
 		if (body.body_dynamic) {
 			if (is_static) {
-				SAFEGAFFRELEASE(body.body_static);
+				GAFF_SAFE_RELEASE(body.body_static);
 			} else {
-				SAFEGAFFRELEASE(body.body_dynamic);
+				GAFF_SAFE_RELEASE(body.body_dynamic);
 			}
 		}
 

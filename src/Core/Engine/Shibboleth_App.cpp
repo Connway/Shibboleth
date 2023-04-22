@@ -311,7 +311,7 @@ bool App::initInternal(void)
 		index = Gaff::Find(log_dir + 2, u8'/') + 2;
 	}
 
-	while (index != SIZE_T_FAIL) {
+	while (index != GAFF_SIZE_T_FAIL) {
 		index += prev_index;
 
 		const U8String dir(log_dir, log_dir + prev_index + index - prev_index);
@@ -329,7 +329,7 @@ bool App::initInternal(void)
 	}
 
 	char8_t time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), u8"%Y-%m-%d_%H-%M-%S");
+	Gaff::GetCurrentTimeString(time_string, std::size(time_string), u8"%Y-%m-%d_%H-%M-%S");
 
 	const U8String log_file_with_time(U8String::CtorSprintf(), u8"%s/%s", log_dir, time_string);
 
@@ -491,7 +491,7 @@ bool App::loadMainLoop(void)
 		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
 		return false;
 	}
-	
+
 	if (!_main_loop->init()) {
 		LogErrorDefault("Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
 		return false;
@@ -841,7 +841,7 @@ void App::ModuleChanged(const char8_t* path)
 
 	static_cast<App&>(GetApp())._dynamic_loader.forEachModule([&](const HashString32<>& name, const DynamicLoader::ModulePtr& module_ptr) -> bool
 	{
-		if (Gaff::Find(path, name.getBuffer()) == SIZE_T_FAIL) {
+		if (Gaff::Find(path, name.getBuffer()) == GAFF_SIZE_T_FAIL) {
 			return false;
 		}
 

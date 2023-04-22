@@ -108,7 +108,7 @@ static ID3DBlob* CompileShader(const char* shader_src, SIZE_T shader_size, /*mac
 {
 	GAFF_ASSERT(shader_src && entry_point && target);
 
-	if (shader_size == SIZE_T_FAIL) {
+	if (shader_size == GAFF_SIZE_T_FAIL) {
 		shader_size = strlen(shader_src);
 	}
 
@@ -626,7 +626,7 @@ void ShaderD3D11::destroy(void)
 		_shader = nullptr;
 	}
 
-	SAFERELEASE(_shader_buffer)
+	GAFF_COM_SAFE_RELEASE(_shader_buffer)
 }
 
 ShaderReflection ShaderD3D11::getReflectionData(void) const

@@ -741,11 +741,11 @@ void RegisterEnum(lua_State* state, const Refl::IEnumReflectionDefinition& enum_
 			}
 		}
 
-		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
+		prev_index = (curr_index != GAFF_SIZE_T_FAIL) ? curr_index + 2 : GAFF_SIZE_T_FAIL;
 		curr_index = name.find(':', prev_index);
 
 		++table_count;
-	} while (prev_index != SIZE_T_FAIL);
+	} while (prev_index != GAFF_SIZE_T_FAIL);
 
 	// Add all the enum entries.
 	const int32_t num_entries = enum_ref_def.getNumEntries();
@@ -859,11 +859,11 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 			}
 		}
 
-		prev_index = (curr_index != SIZE_T_FAIL) ? curr_index + 2 : SIZE_T_FAIL;
+		prev_index = (curr_index != GAFF_SIZE_T_FAIL) ? curr_index + 2 : GAFF_SIZE_T_FAIL;
 		curr_index = friendly_name.find(':', prev_index);
 
 		++table_count;
-	} while (prev_index != SIZE_T_FAIL);
+	} while (prev_index != GAFF_SIZE_T_FAIL);
 
 
 	Vector<luaL_Reg> reg(g_allocator);

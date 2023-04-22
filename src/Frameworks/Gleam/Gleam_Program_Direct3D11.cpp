@@ -65,9 +65,9 @@ static constexpr SamplerSetFunction s_sampler_set[] = {
 	&ID3D11DeviceContext::CSSetSamplers
 };
 
-static_assert(ARRAY_SIZE(s_buffer_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_buffer_set) != IShader::Type::Count");
-static_assert(ARRAY_SIZE(s_resource_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_resource_set) != IShader::Type::Count");
-static_assert(ARRAY_SIZE(s_sampler_set) == static_cast<size_t>(IShader::Type::Count), "ARRAY_SIZE(s_sampler_set) != IShader::Type::Count");
+static_assert(std::size(s_buffer_set) == static_cast<size_t>(IShader::Type::Count), "std::size(s_buffer_set) != IShader::Type::Count");
+static_assert(std::size(s_resource_set) == static_cast<size_t>(IShader::Type::Count), "std::size(s_resource_set) != IShader::Type::Count");
+static_assert(std::size(s_sampler_set) == static_cast<size_t>(IShader::Type::Count), "std::size(s_sampler_set) != IShader::Type::Count");
 
 
 // Program Buffers
@@ -236,32 +236,32 @@ void ProgramD3D11::attach(IShader* shader)
 
 	switch (shader->getType()) {
 		case IShader::Type::Vertex:
-			SAFERELEASE(_shader_vertex)
+			GAFF_COM_SAFE_RELEASE(_shader_vertex)
 			_shader_vertex = static_cast<const ShaderD3D11*>(shader)->getVertexShader();
 			break;
 
 		case IShader::Type::Pixel:
-			SAFERELEASE(_shader_pixel)
+			GAFF_COM_SAFE_RELEASE(_shader_pixel)
 			_shader_pixel = static_cast<const ShaderD3D11*>(shader)->getPixelShader();
 			break;
 
 		case IShader::Type::Domain:
-			SAFERELEASE(_shader_domain)
+			GAFF_COM_SAFE_RELEASE(_shader_domain)
 			_shader_domain = static_cast<const ShaderD3D11*>(shader)->getDomainShader();
 			break;
 
 		case IShader::Type::Geometry:
-			SAFERELEASE(_shader_geometry)
+			GAFF_COM_SAFE_RELEASE(_shader_geometry)
 			_shader_geometry = static_cast<const ShaderD3D11*>(shader)->getGeometryShader();
 			break;
 
 		case IShader::Type::Hull:
-			SAFERELEASE(_shader_hull)
+			GAFF_COM_SAFE_RELEASE(_shader_hull)
 			_shader_hull = static_cast<const ShaderD3D11*>(shader)->getHullShader();
 			break;
 
 		case IShader::Type::Compute:
-			SAFERELEASE(_shader_compute)
+			GAFF_COM_SAFE_RELEASE(_shader_compute)
 			_shader_compute = static_cast<const ShaderD3D11*>(shader)->getComputeShader();
 			break;
 
@@ -277,32 +277,32 @@ void ProgramD3D11::detach(IShader::Type shader)
 
 	switch (shader) {
 		case IShader::Type::Vertex:
-			SAFERELEASE(_shader_vertex)
+			GAFF_COM_SAFE_RELEASE(_shader_vertex)
 			_shader_vertex = nullptr;
 			break;
 
 		case IShader::Type::Pixel:
-			SAFERELEASE(_shader_pixel)
+			GAFF_COM_SAFE_RELEASE(_shader_pixel)
 			_shader_pixel = nullptr;
 			break;
 
 		case IShader::Type::Domain:
-			SAFERELEASE(_shader_domain)
+			GAFF_COM_SAFE_RELEASE(_shader_domain)
 			_shader_domain = nullptr;
 			break;
 
 		case IShader::Type::Geometry:
-			SAFERELEASE(_shader_geometry)
+			GAFF_COM_SAFE_RELEASE(_shader_geometry)
 			_shader_geometry = nullptr;
 			break;
 
 		case IShader::Type::Hull:
-			SAFERELEASE(_shader_hull)
+			GAFF_COM_SAFE_RELEASE(_shader_hull)
 			_shader_hull = nullptr;
 			break;
 
 		case IShader::Type::Compute:
-			SAFERELEASE(_shader_compute)
+			GAFF_COM_SAFE_RELEASE(_shader_compute)
 			_shader_compute = nullptr;
 			break;
 

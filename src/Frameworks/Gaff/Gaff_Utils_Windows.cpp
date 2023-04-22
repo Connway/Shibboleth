@@ -86,7 +86,7 @@ void DebugPrintf(const char* format_string, ...)
 bool GetWorkingDir(char8_t* buffer, size_t size)
 {
 	wchar_t temp_buffer[1024] = { 0 };
-	const DWORD ret = GetCurrentDirectoryW(ARRAY_SIZE(temp_buffer), temp_buffer);
+	const DWORD ret = GetCurrentDirectoryW(static_cast<DWORD>(std::size(temp_buffer)), temp_buffer);
 
 	if (ret > 0) {
 		const wchar_t* temp_start = temp_buffer;

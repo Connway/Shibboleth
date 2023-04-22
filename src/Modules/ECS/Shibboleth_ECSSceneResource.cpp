@@ -65,12 +65,12 @@ void ECSSceneResource::loadScene(const ISerializeReader& reader)
 
 		{
 			const auto guard = reader.enterElementGuard(u8"name");
-			reader.readString(name, ARRAY_SIZE(name));
+			reader.readString(name, std::size(name));
 		}
 
 		{
 			const auto guard = reader.enterElementGuard(u8"layer_file");
-			reader.readString(path, ARRAY_SIZE(path));
+			reader.readString(path, std::size(path));
 		}
 
 		{
@@ -124,4 +124,3 @@ void ECSSceneResource::loadScene(IFile* file, uintptr_t /*thread_id_int*/)
 }
 
 NS_END
-

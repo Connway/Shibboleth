@@ -130,7 +130,7 @@ bool LogManager::removeLogCallback(int32_t id)
 		_log_callbacks.erase(it);
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -183,7 +183,7 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char8_t* f
 bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl)
 {
 	char8_t time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), u8"[%H-%M-%S] ");
+	Gaff::GetCurrentTimeString(time_string, std::size(time_string), u8"[%H-%M-%S] ");
 
 	U8String message;
 	message.sprintf_va_list(format, vl);

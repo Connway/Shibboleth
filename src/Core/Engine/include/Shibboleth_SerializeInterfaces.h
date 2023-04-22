@@ -40,7 +40,7 @@ public:
 		char8_t key[256] = {};
 
 		for (int32_t i = 0; i < len; ++i) {
-			getKey(key, ARRAY_SIZE(key), i);
+			getKey(key, std::size(key), i);
 			enterElement(key);
 
 			if (callback(key)) {

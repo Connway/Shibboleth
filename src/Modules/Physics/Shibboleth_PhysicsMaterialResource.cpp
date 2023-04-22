@@ -46,7 +46,7 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsMaterialResource)
 
 PhysicsMaterialResource::~PhysicsMaterialResource(void)
 {
-	SAFEGAFFRELEASE(_material);
+	GAFF_SAFE_RELEASE(_material);
 }
 
 const physx::PxMaterial* PhysicsMaterialResource::getMaterial(void) const

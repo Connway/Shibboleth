@@ -138,18 +138,18 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsManager);
 PhysicsManager::~PhysicsManager(void)
 {
 	for (auto& pair : _scenes) {
-		SAFEGAFFRELEASE(pair.second);
+		GAFF_SAFE_RELEASE(pair.second);
 	}
 
-	SAFEGAFFRELEASE(_physics);
+	GAFF_SAFE_RELEASE(_physics);
 
 #ifdef _DEBUG
 	physx::PxPvdTransport* transport = _pvd->getTransport();
-	SAFEGAFFRELEASE(transport);
-	SAFEGAFFRELEASE(_pvd);
+	GAFF_SAFE_RELEASE(transport);
+	GAFF_SAFE_RELEASE(_pvd);
 #endif
 
-	SAFEGAFFRELEASE(_foundation);
+	GAFF_SAFE_RELEASE(_foundation);
 }
 
 bool PhysicsManager::initAllModulesLoaded(void)
@@ -434,7 +434,7 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 			});
 		}
 
-		for (int32_t i = 0; i < ARRAY_SIZE(handle_indices); ++i) {
+		for (int32_t i = 0; i < std::size(handle_indices); ++i) {
 			_debug_render_handles[i].resize(handle_indices[i]);
 		}
 

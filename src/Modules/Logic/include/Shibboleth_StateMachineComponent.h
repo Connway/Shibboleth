@@ -23,30 +23,45 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_StateMachineResource.h"
-#include <Shibboleth_ECSComponentBase.h>
+#include <Shibboleth_EntityComponent.h>
+// #include <Shibboleth_ECSComponentBase.h>
 
 NS_SHIBBOLETH
 
-class StateMachine final : public ECSComponentBaseBoth<StateMachine, StateMachine&>
+class StateMachineComponent final : public EntityComponent
 {
 public:
-	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
-	static StateMachine& GetInternal(const void* component, int32_t entity_index);
+	bool init(void) override;
+	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides) override;
+	void destroy(void) override;
 
-	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
-	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
-
-	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
-	static bool Load(const ISerializeReader& reader, StateMachine& out);
-
-	StateMachine& operator=(const StateMachine& rhs);
-	StateMachine& operator=(StateMachine&& rhs) = default;
-
-	StateMachineResourcePtr resource;
+private:
 	UniquePtr<Esprit::StateMachine::Instance> instance;
+	StateMachineResourcePtr resource;
+
+	SHIB_REFLECTION_CLASS_DECLARE(StateMachineComponent);
 };
+
+// class StateMachine final : public ECSComponentBaseBoth<StateMachine, StateMachine&>
+// {
+// public:
+// 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+// 	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
+// 	static StateMachine& GetInternal(const void* component, int32_t entity_index);
+//
+// 	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
+// 	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
+//
+// 	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
+// 	static bool Load(const ISerializeReader& reader, StateMachine& out);
+//
+// 	StateMachine& operator=(const StateMachine& rhs);
+// 	StateMachine& operator=(StateMachine&& rhs) = default;
+//
+// 	StateMachineResourcePtr resource;
+// 	UniquePtr<Esprit::StateMachine::Instance> instance;
+// };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::StateMachine)
+SHIB_REFLECTION_DECLARE(Shibboleth::StateMachineComponent)

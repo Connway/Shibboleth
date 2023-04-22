@@ -41,7 +41,7 @@ CommandListD3D11::CommandListD3D11(void)
 
 CommandListD3D11::~CommandListD3D11(void)
 {
-	SAFERELEASE(_command_list);
+	GAFF_COM_SAFE_RELEASE(_command_list);
 }
 
 const ICommandList& CommandListD3D11::operator=(const ICommandList& rhs)
@@ -82,7 +82,7 @@ bool CommandListD3D11::isValid(void) const
 
 void CommandListD3D11::setCommandList(ID3D11CommandList* command_list)
 {
-	SAFERELEASE(_command_list);
+	GAFF_COM_SAFE_RELEASE(_command_list);
 	_command_list = command_list;
 }
 

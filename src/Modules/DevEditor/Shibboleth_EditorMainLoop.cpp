@@ -64,7 +64,7 @@ namespace
 
 		// Element 0 is nullptr because Qt skips over it.
 		char* argv[] = { nullptr, plat_plug_path.data.data(), reinterpret_cast<char*>(working_dir.data.data()) };
-		int argc = ARRAY_SIZE(argv);
+		int argc = static_cast<int>(std::size(argv));
 
 		QApplication a(argc, argv); // Why the heck does this take an int&?
 		QTranslator translator;

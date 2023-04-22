@@ -67,7 +67,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		}
 
 		info.memory = static_cast<int32_t>(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
-		wcsncpy_s(info.adapter_name, ARRAY_SIZE(info.adapter_name), adapter_desc.Description, ARRAY_SIZE(adapter_desc.Description));
+		wcsncpy_s(info.adapter_name, std::size(info.adapter_name), adapter_desc.Description, std::size(adapter_desc.Description));
 
 		for (UINT j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
 			RenderDeviceD3D11::OutputInfo out_info;
@@ -125,7 +125,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 				if (GetMonitorInfo(out_desc.Monitor, &monitor_info) == TRUE) {
 					out_info.curr_rect = monitor_info.rcMonitor;
 					out_info.is_primary = (monitor_info.dwFlags & MONITORINFOF_PRIMARY) != 0;
-					wcsncpy_s(out_info.display_name, ARRAY_SIZE(out_info.display_name), monitor_info.szDevice, ARRAY_SIZE(monitor_info.szDevice));
+					wcsncpy_s(out_info.display_name, std::size(out_info.display_name), monitor_info.szDevice, std::size(monitor_info.szDevice));
 				}
 			}
 
@@ -147,7 +147,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		const wchar_t*  src_begin = adpt_info.adapter_name;
 		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name) + 1;
 		char* dest_begin = adpt.adapter_name;
-		char* dest_end = dest_begin + ARRAY_SIZE(adpt.adapter_name);
+		char* dest_end = dest_begin + std::size(adpt.adapter_name);
 
 		eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
 
@@ -170,7 +170,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 			src_begin = out_info.display_name;
 			src_end = src_begin + eastl::CharStrlen(out_info.display_name) + 1;
 			dest_begin = display.display_name;
-			dest_end = dest_begin + ARRAY_SIZE(display.display_name);
+			dest_end = dest_begin + std::size(display.display_name);
 
 			eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
 

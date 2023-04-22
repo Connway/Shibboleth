@@ -24,101 +24,119 @@ THE SOFTWARE.
 
 #include "Shibboleth_StateMachineComponent.h"
 #include <Shibboleth_ResourceManager.h>
-#include <eathread/eathread_sync.h>
+// #include <eathread/eathread_sync.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachine)
-	.classAttrs(
-		Shibboleth::ECSClassAttribute(nullptr, u8"Logic")
-	)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineComponent)
+	.template base<Shibboleth::EntityComponent>()
+	// .serialize(Shibboleth::StateMachine::Load)
 
-	.base< Shibboleth::ECSComponentBaseBoth<Shibboleth::StateMachine, Shibboleth::StateMachine&> >()
-	.serialize(Shibboleth::StateMachine::Load)
-
-	.staticFunc("Constructor", Shibboleth::StateMachine::Constructor)
-	.staticFunc("Destructor", Shibboleth::StateMachine::Destructor)
-
-	.staticFunc("Load", static_cast<bool (*)(Shibboleth::ECSManager&, Shibboleth::ECSEntityID, const Shibboleth::ISerializeReader&)>(Shibboleth::StateMachine::Load))
-
-	.var("resource", &Shibboleth::StateMachine::resource)
-	.ctor<>()
+	.var("resource", &Shibboleth::StateMachineComponent::resource)
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 
 NS_SHIBBOLETH
 
-void StateMachine::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+bool StateMachineComponent::init()
 {
-	const auto* const old_sm = reinterpret_cast<const StateMachine*>(old_begin) + old_index;
-	auto* const new_sm = reinterpret_cast<StateMachine*>(new_begin) + new_index;
+	EntityComponent::init();
 
-	*new_sm = *old_sm;
-}
-
-void StateMachine::SetInternal(void* component, int32_t comp_index, const StateMachine& value)
-{
-	GetInternal(component, comp_index) = value;
-}
-
-StateMachine& StateMachine::GetInternal(const void* component, int32_t comp_index)
-{
-	return *(reinterpret_cast<StateMachine*>(const_cast<void*>(component)) + comp_index);
-}
-
-void StateMachine::Constructor(ECSEntityID, void* component, int32_t comp_index)
-{
-	new(&GetInternal(component, comp_index)) StateMachine();
-}
-
-void StateMachine::Destructor(ECSEntityID, void* component, int32_t comp_index)
-{
-	GetInternal(component, comp_index).~StateMachine();
-}
-
-bool StateMachine::Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader)
-{
-	StateMachine& sm = GetInternal(ecs_mgr.getComponent<StateMachine>(id), ecs_mgr.getComponentIndex(id));
-
-	if (!sm.resource || sm.resource->hasFailed()) {
-		return false;
-	}
-
-	sm.resource->readValues(reader, sm.instance->variables);
-
-	return true;
-}
-
-bool StateMachine::Load(const ISerializeReader& reader, StateMachine& out)
-{
-	if (!Refl::Reflection<StateMachine>::GetInstance().load(reader, out, true)) {
-		return false;
-	}
-
-	while (out.resource->getState() == ResourceState::Pending) {
+	while (resource->getState() == ResourceState::Pending) {
 		// $TODO: Help out?
 		EA::Thread::ThreadSleep();
 	}
 
-	if (out.resource->hasFailed()) {
+	if (resource->hasFailed()) {
 		return false;
 	}
 
-	const Esprit::StateMachine& sm = *out.resource->getStateMachine();
-	out.instance.reset(sm.createInstanceData());
+	const Esprit::StateMachine& sm = *resource->getStateMachine();
+	instance.reset(sm.createInstanceData());
 
-	out.resource->readValues(reader, out.instance->variables);
+	// resource->readValues(reader, out.instance->variables);
 	return true;
 }
 
-StateMachine& StateMachine::operator=(const StateMachine& rhs)
+bool StateMachineComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides)
 {
-	resource = rhs.resource;
-
-	if (rhs.instance) {
-		instance.reset(rhs.instance->clone());
-	} else if (resource && resource->isLoaded() && resource->getStateMachine()) {
-		instance.reset(resource->getStateMachine()->createInstanceData());
-	}
-
-	return *this;
+	EntityComponent::clone(new_component, overrides);
 }
+
+
+
+// void StateMachine::CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index)
+// {
+// 	const auto* const old_sm = reinterpret_cast<const StateMachine*>(old_begin) + old_index;
+// 	auto* const new_sm = reinterpret_cast<StateMachine*>(new_begin) + new_index;
+//
+// 	*new_sm = *old_sm;
+// }
+//
+// void StateMachine::SetInternal(void* component, int32_t comp_index, const StateMachine& value)
+// {
+// 	GetInternal(component, comp_index) = value;
+// }
+//
+// StateMachine& StateMachine::GetInternal(const void* component, int32_t comp_index)
+// {
+// 	return *(reinterpret_cast<StateMachine*>(const_cast<void*>(component)) + comp_index);
+// }
+//
+// void StateMachine::Constructor(ECSEntityID, void* component, int32_t comp_index)
+// {
+// 	new(&GetInternal(component, comp_index)) StateMachine();
+// }
+//
+// void StateMachine::Destructor(ECSEntityID, void* component, int32_t comp_index)
+// {
+// 	GetInternal(component, comp_index).~StateMachine();
+// }
+//
+// bool StateMachine::Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader)
+// {
+// 	StateMachine& sm = GetInternal(ecs_mgr.getComponent<StateMachine>(id), ecs_mgr.getComponentIndex(id));
+//
+// 	if (!sm.resource || sm.resource->hasFailed()) {
+// 		return false;
+// 	}
+//
+// 	sm.resource->readValues(reader, sm.instance->variables);
+//
+// 	return true;
+// }
+//
+// bool StateMachine::Load(const ISerializeReader& reader, StateMachine& out)
+// {
+// 	if (!Refl::Reflection<StateMachine>::GetInstance().load(reader, out, true)) {
+// 		return false;
+// 	}
+//
+// 	while (out.resource->getState() == ResourceState::Pending) {
+// 		// $TODO: Help out?
+// 		EA::Thread::ThreadSleep();
+// 	}
+//
+// 	if (out.resource->hasFailed()) {
+// 		return false;
+// 	}
+//
+// 	const Esprit::StateMachine& sm = *out.resource->getStateMachine();
+// 	out.instance.reset(sm.createInstanceData());
+//
+// 	out.resource->readValues(reader, out.instance->variables);
+// 	return true;
+// }
+//
+// StateMachine& StateMachine::operator=(const StateMachine& rhs)
+// {
+// 	resource = rhs.resource;
+//
+// 	if (rhs.instance) {
+// 		instance.reset(rhs.instance->clone());
+// 	} else if (resource && resource->isLoaded() && resource->getStateMachine()) {
+// 		instance.reset(resource->getStateMachine()->createInstanceData());
+// 	}
+//
+// 	return *this;
+// }
 
 NS_END
