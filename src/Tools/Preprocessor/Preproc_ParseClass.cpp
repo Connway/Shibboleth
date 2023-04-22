@@ -149,7 +149,7 @@ bool ParseClass(std::string_view substr, ParseData& parse_data)
 			return true;
 
 		// Not opened the class scope yet.
-		} else if (parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
+		} else if (parse_data.class_stack.back().scope_range_index == GAFF_SIZE_T_FAIL) {
 			ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
 			if (class_runtime_data.flags.testAll(ClassRuntimeData::Flag::ParsingInheritance)) {
@@ -325,7 +325,7 @@ void ProcessClassScopeOpen(ParseData& parse_data)
 		parse_data.flags.set(ParseData::Flag::ClassFunctionDefinition);
 	}
 
-	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == SIZE_T_FAIL) {
+	if (!parse_data.class_stack.empty() && parse_data.class_stack.back().scope_range_index == GAFF_SIZE_T_FAIL) {
 		ClassRuntimeData& class_runtime_data = parse_data.class_stack.back();
 
 		if (parse_data.scope_ranges.size() > 1) {

@@ -51,18 +51,18 @@ THE SOFTWARE.
 	x(x&&) = default; \
 	x& operator=(x&&) = default
 
-#define SAFERELEASE(x) if (x) { x->Release(); x = nullptr; } // Safely releases Microsoft COM pointers.
-#define SAFEADDREF(x) if (x) { x->AddRef(); } // Safely adds a reference to Microsoft COM pointers.
+#define GAFF_COM_SAFE_RELEASE(x) if (x) { x->Release(); x = nullptr; } // Safely releases Microsoft COM pointers.
+#define GAFF_COM_SAFE_ADD_REF(x) if (x) { x->AddRef(); } // Safely adds a reference to Microsoft COM pointers.
 
-#define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
-#define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
+#define GAFF_SAFE_RELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
+#define GAFF_SAFE_ADD_REF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
 
 #define GAFF_REF_HELPER(x) ((void)x)
 #define GAFF_REF(...) GAFF_FOR_EACH(GAFF_REF_HELPER, __VA_ARGS__)
 
-#define UFAIL(type) static_cast<type>(-1) // Failure value for a unsigned type.
-#define SIZE_T_FAIL UFAIL(size_t) // Returned from functions that use size_t's, but can potentially fail
-#define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
+#define GAFF_UFAUL(type) static_cast<type>(-1) // Failure value for a unsigned type.
+#define GAFF_SIZE_T_FAIL GAFF_UFAUL(size_t) // Returned from functions that use size_t's, but can potentially fail
+#define GAFF_DYNAMIC_EXPORT_C extern "C" GAFF_DYNAMIC_EXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
@@ -70,7 +70,7 @@ THE SOFTWARE.
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 #define GAFF_STR_U8(x) GAFF_CAT(u8, GAFF_STR(x))
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+#define GAFF_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0])) // Only for scenarios where std::size is causing issues.
 #define GAFF_FLAG_BIT(index) (1 << index)
 
 #define GAFF_FAIL_RETURN(expr, return_value) if (!(expr)) { return return_value; }
@@ -104,6 +104,7 @@ THE SOFTWARE.
 #define GAFF_FOR_EACH_8(what, x, ...) \
   what(x); \
   GAFF_EXPAND(GAFF_FOR_EACH_7(what,  __VA_ARGS__))
+
 #define GAFF_FOR_EACH_(N, what, ...) GAFF_EXPAND(GAFF_CAT_HELPER(GAFF_FOR_EACH_, N)(what, __VA_ARGS__))
 #define GAFF_FOR_EACH(what, ...) GAFF_FOR_EACH_(GAFF_FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
 
@@ -129,6 +130,7 @@ THE SOFTWARE.
 #define GAFF_FOR_EACH_COMMA_8(what, x, ...) \
   what(x), \
   GAFF_EXPAND(GAFF_FOR_EACH_COMMA_7(what,  __VA_ARGS__))
+
 #define GAFF_FOR_EACH_COMMA_(N, what, ...) GAFF_EXPAND(GAFF_CAT_HELPER(GAFF_FOR_EACH_COMMA_, N)(what, __VA_ARGS__))
 #define GAFF_FOR_EACH_COMMA(what, ...) GAFF_FOR_EACH_COMMA_(GAFF_FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
 
@@ -140,24 +142,23 @@ THE SOFTWARE.
 		#define _CRT_SECURE_NO_WARNINGS
 	#endif
 
-	#define DYNAMICEXPORT __declspec(dllexport) // Specifies a symbol for export.
-	#define DYNAMICIMPORT __declspec(dllimport) // Specifies a symbol for import.
-	#define THREAD_LOCAL __declspec(thread) // Specifies a static variable to use thread local storage.
+	#define GAFF_DYNAMIC_EXPORT __declspec(dllexport) // Specifies a symbol for export.
+	#define GAFF_DYNAMIC_IMPORT __declspec(dllimport) // Specifies a symbol for import.
+	#define GAFF_THREAD_LOCAL __declspec(thread) // Specifies a static variable to use thread local storage.
 
-	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
+	#define GAFF_WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
-
-	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
+	#define GAFF_THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
+	#define GAFF_WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 #endif
 
 #ifdef PLATFORM_LINUX
-	#define DYNAMICEXPORT __attribute__((visibility("default"))) // Specifies a symbol for export.
-	#define DYNAMICIMPORT // Specifies a symbol for import.
+	#define GAFF_DYNAMIC_EXPORT __attribute__((visibility("default"))) // Specifies a symbol for export.
+	#define GAFF_DYNAMIC_IMPORT // Specifies a symbol for import.
 #elif defined(PLATFORM_MAC)
-	#define DYNAMICEXPORT // Specifies a symbol for export.
-	#define DYNAMICIMPORT // Specifies a symbol for import.
+	#define GAFF_DYNAMIC_EXPORT // Specifies a symbol for export.
+	#define GAFF_DYNAMIC_IMPORT // Specifies a symbol for import.
 #endif
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
@@ -165,9 +166,14 @@ THE SOFTWARE.
 	#include <sched.h> // For sched_yield
 #endif
 
+
+#include <array> // For std::size
+
 NS_GAFF
-	template <class... Args>
-	void VarArgRef(Args&&...)
-	{
-	}
+
+template <class... Args>
+void VarArgRef(Args&&...)
+{
+}
+
 NS_END

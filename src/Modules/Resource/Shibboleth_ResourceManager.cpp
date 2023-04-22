@@ -197,7 +197,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 
 	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
 
-	if (pos == SIZE_T_FAIL) {
+	if (pos == GAFF_SIZE_T_FAIL) {
 		// $TODO: Log error
 		return IResourcePtr();
 	}
@@ -212,7 +212,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	}
 
 	// Assume all resources always inherit from IResource first.
-	IResource* const resource = reinterpret_cast<IResource*>(it_fact->second(_allocator));
+	IResource* const resource = static_cast<IResource*>(it_fact->second(_allocator));
 	resource->_file_path = name;
 	resource->_res_mgr = this;
 
@@ -271,7 +271,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& r
 	GAFF_ASSERT(Gaff::Find(resources, nullptr) == resources.end());
 	bool already_loaded = true;
 
-	for (IResource* res : resources) {
+	for (const IResource* res : resources) {
 		if (res->getState() == ResourceState::Pending) {
 			already_loaded = false;
 			break;

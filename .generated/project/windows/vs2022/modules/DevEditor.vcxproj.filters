@@ -17,10 +17,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(IntDir)\qt\$(ProjectName)\moc_Shibboleth_EditorMainWindow.cpp">
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Debug\$(ProjectName)\qt\moc_Shibboleth_EditorMainWindow.cpp">
       <Filter>include</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)\qt\$(ProjectName)\moc_Shibboleth_ToDoWindow.cpp">
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Debug\$(ProjectName)\qt\moc_Shibboleth_ToDoWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\$(ProjectName)\qt\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Optimized_Debug\$(ProjectName)\qt\moc_Shibboleth_ToDoWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Profile\$(ProjectName)\qt\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Profile\$(ProjectName)\qt\moc_Shibboleth_ToDoWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Release\$(ProjectName)\qt\moc_Shibboleth_EditorMainWindow.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Release\$(ProjectName)\qt\moc_Shibboleth_ToDoWindow.cpp">
       <Filter>include</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />

@@ -184,7 +184,7 @@ struct ClassRuntimeData final
 	std::vector<std::string> template_args; // $TODO: Process template classes.
 	std::vector<ClassData::InheritanceData> inherits;
 	std::string name;
-	size_t scope_range_index = SIZE_T_FAIL;
+	size_t scope_range_index = GAFF_SIZE_T_FAIL;
 	ClassData::Access curr_access = ClassData::Access::Default;
 	Gaff::Flags<Flag> flags;
 };
@@ -224,7 +224,7 @@ struct EnumRuntimeData final
 	};
 
 	EnumData data;
-	size_t scope_range_index = SIZE_T_FAIL;
+	size_t scope_range_index = GAFF_SIZE_T_FAIL;
 	Gaff::Flags<Flag> flags;
 };
 

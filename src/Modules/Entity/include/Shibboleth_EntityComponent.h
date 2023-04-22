@@ -41,8 +41,6 @@ enum class EntityComponentFlag
 
 class EntityComponent : public IEntityUpdateable
 {
-	GAFF_NO_COPY(EntityComponent);
-
 public:
 	EntityComponent(void) = default;
 
@@ -72,6 +70,7 @@ private:
 	friend class Entity;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityComponent);
+	GAFF_NO_COPY(EntityComponent);
 };
 
 NS_END

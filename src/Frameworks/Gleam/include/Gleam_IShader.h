@@ -120,7 +120,7 @@ public:
 		Geometry,
 		Hull,
 		Compute,
-		
+
 		Count,
 		PipelineCount = Compute
 	};
@@ -138,12 +138,12 @@ public:
 	virtual bool initHull(IRenderDevice&, const char8_t* file_path) = 0;
 	virtual bool initCompute(IRenderDevice&, const char8_t* file_path) = 0;
 
-	virtual bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
-	virtual bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
-	virtual bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
-	virtual bool initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
-	virtual bool initHullSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
-	virtual bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL) = 0;
+	virtual bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
+	virtual bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
+	virtual bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
+	virtual bool initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
+	virtual bool initHullSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
+	virtual bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL) = 0;
 
 	virtual void destroy(void) = 0;
 

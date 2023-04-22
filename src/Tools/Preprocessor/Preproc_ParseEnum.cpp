@@ -160,7 +160,7 @@ bool ParseEnum(std::string_view substr, ParseData& parse_data)
 		parse_data.enum_runtime.flags.set(EnumRuntimeData::Flag::Valid);
 		parse_data.flags.set(ParseData::Flag::EnumName);
 		return true;
-	} 
+	}
 
 	return false;
 }
@@ -172,7 +172,7 @@ void ProcessEnumScopeOpen(ParseData& parse_data)
 		return;
 	}
 
-	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == SIZE_T_FAIL) {
+	if (parse_data.enum_runtime.flags.testAll(EnumRuntimeData::Flag::Valid) && parse_data.enum_runtime.scope_range_index == GAFF_SIZE_T_FAIL) {
 		if (parse_data.scope_ranges.size() > 1) {
 			const auto it = parse_data.scope_ranges.end() - 2;
 
@@ -210,7 +210,7 @@ void ProcessEnumScopeClose(ParseData& parse_data)
 		// Add enum data to global runtime data.
 		parse_data.global_runtime->enum_data[parse_data.enum_runtime.data.name] = std::move(parse_data.enum_runtime.data);
 
-		parse_data.enum_runtime.scope_range_index = SIZE_T_FAIL;
+		parse_data.enum_runtime.scope_range_index = GAFF_SIZE_T_FAIL;
 		parse_data.enum_runtime.flags.clear();
 
 		parse_data.flags.clear(ParseData::Flag::EnumEntries, ParseData::Flag::EnumNextEntry);

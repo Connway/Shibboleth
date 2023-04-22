@@ -91,7 +91,7 @@ EntityResource::~EntityResource(void)
 }
 
 void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
-{	
+{
 	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true, k_entity_resource_schema)) {
 		LogErrorResource("Failed to load entity '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
 		failed();
@@ -131,7 +131,7 @@ void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
 
 				{
 					const auto type_guard = reader.enterElementGuard("type");
-					reader.readString(comp_type, ARRAY_SIZE(comp_type));
+					reader.readString(comp_type, std::size(comp_type));
 				}
 
 				const Refl::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(comp_type));

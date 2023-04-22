@@ -106,7 +106,7 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 
 void LayoutD3D11::destroy(void)
 {
-	SAFERELEASE(_layout)
+	GAFF_COM_SAFE_RELEASE(_layout)
 }
 
 void LayoutD3D11::bind(IRenderDevice& rd)

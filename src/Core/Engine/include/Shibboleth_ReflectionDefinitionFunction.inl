@@ -232,7 +232,7 @@ template <class Callable, class Ret, class First, class... Rest, class... Curren
 bool ReflectionDefinition<T>::CallFuncStackHelper(
 	const Callable& callable,
 	void* object,
-	const FunctionStackEntry* args, 
+	const FunctionStackEntry* args,
 	FunctionStackEntry& ret,
 	int32_t arg_index,
 	IFunctionStackAllocator& allocator,
@@ -264,12 +264,12 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 			str = reinterpret_cast<char*>(entry.value.vp);
 
 		// It's a U8String.
-		} else if (Gaff::Find(entry.ref_def->getReflectionInstance().getName(), u8"U8String") != SIZE_T_FAIL) {
+		} else if (Gaff::Find(entry.ref_def->getReflectionInstance().getName(), u8"U8String") != GAFF_SIZE_T_FAIL) {
 			// I think this *SHOULD* be safe, since the string data is stored in the first part. So even if the allocator is a different size,
 			// the memory for the actual string should be in the same offset.
 			str_u8 = reinterpret_cast<Shibboleth::U8String*>(entry.value.vp)->data();
 		}
-		
+
 		if (!str_u8 && !str) {
 			// $TODO: Log error.
 			return false;

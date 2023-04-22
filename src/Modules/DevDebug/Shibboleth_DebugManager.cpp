@@ -414,7 +414,7 @@ namespace
 		if (key_name && key_name[0] != 0 && key_name[1] == 0) {
 			constexpr const int32_t char_keys[] = { GLFW_KEY_GRAVE_ACCENT, GLFW_KEY_MINUS, GLFW_KEY_EQUAL, GLFW_KEY_LEFT_BRACKET, GLFW_KEY_RIGHT_BRACKET, GLFW_KEY_BACKSLASH, GLFW_KEY_COMMA, GLFW_KEY_SEMICOLON, GLFW_KEY_APOSTROPHE, GLFW_KEY_PERIOD, GLFW_KEY_SLASH, 0 };
 			constexpr const char char_names[] = "`-=[]\\,;\'./";
-			static_assert(ARRAY_SIZE(char_names) == ARRAY_SIZE(char_keys));
+			static_assert(std::size(char_names) == std::size(char_keys));
 
 			if (key_name[0] >= '0' && key_name[0] <= '9') {
 				key_code = static_cast<Gleam::KeyCode>(GLFW_KEY_0 + (key_name[0] - '0'));
@@ -2131,7 +2131,7 @@ bool DebugManager::initImGui(void)
 	}
 #endif
 
-	static_assert(ARRAY_SIZE(_mouse_cursors) == ImGuiMouseCursor_COUNT);
+	static_assert(GAFF_ARRAY_SIZE(_mouse_cursors) == ImGuiMouseCursor_COUNT);
 
 	_mouse_cursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	_mouse_cursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
@@ -2315,7 +2315,7 @@ bool DebugManager::initImGui(void)
 		}
 	};
 
-	if (!_layout->init(*_main_device, layout_description, ARRAY_SIZE(layout_description), *_vertex_shader)) {
+	if (!_layout->init(*_main_device, layout_description, std::size(layout_description), *_vertex_shader)) {
 		// $TODO: Log error.
 		return false;
 	}

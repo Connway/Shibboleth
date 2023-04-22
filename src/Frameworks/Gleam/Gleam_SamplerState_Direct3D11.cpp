@@ -78,7 +78,7 @@ bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings
 
 void SamplerStateD3D11::destroy(void)
 {
-	SAFERELEASE(_sampler_state)
+	GAFF_COM_SAFE_RELEASE(_sampler_state)
 }
 
 RendererType SamplerStateD3D11::getRendererType(void) const

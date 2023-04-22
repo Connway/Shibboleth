@@ -44,12 +44,12 @@ public:
 	bool initHull(IRenderDevice& rd, const char8_t* file_path);
 	bool initCompute(IRenderDevice& rd, const char8_t* file_path);
 
-	bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
-	bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
-	bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
-	bool initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
-	bool initHullSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
-	bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
+	bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
+	bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
+	bool initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
+	bool initHullSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
+	bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = GAFF_SIZE_T_FAIL);
 
 	void destroy(void);
 

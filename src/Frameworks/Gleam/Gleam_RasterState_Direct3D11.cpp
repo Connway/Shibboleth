@@ -62,7 +62,7 @@ bool RasterStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 
 void RasterStateD3D11::destroy(void)
 {
-	SAFERELEASE(_raster_state);
+	GAFF_COM_SAFE_RELEASE(_raster_state);
 }
 
 void RasterStateD3D11::bind(IRenderDevice& rd) const

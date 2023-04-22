@@ -47,7 +47,7 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsShapeResource)
 
 PhysicsShapeResource::~PhysicsShapeResource(void)
 {
-	SAFEGAFFRELEASE(_shape);
+	GAFF_SAFE_RELEASE(_shape);
 }
 
 const physx::PxMaterial* PhysicsShapeResource::getMaterial(void) const
@@ -90,7 +90,7 @@ void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
 
 	{
 		const auto guard = reader.enterElementGuard(u8"material");
-		
+
 		if (!Refl::Reflection<PhysicsMaterialResourcePtr>::GetInstance().load(reader, _material)) {
 			// $TODO: Log error.
 			failed();

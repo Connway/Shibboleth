@@ -12,8 +12,9 @@ function QtSettingsModule(modules, base_dir, source_dir)
 
 	defines { "QT_DISABLE_DEPRECATED_BEFORE=0x060000" }
 
-	qtqmgenerateddir("%{cfg.objdir}/qt/%{prj.name}")
-	qtgenerateddir("%{cfg.objdir}/qt/%{prj.name}")
+	-- Doing this instead of "%{cfg.objdir}/qt", as that is not behaving consistently amongst all project generators.
+	qtqmgenerateddir(GetIntermediateLocation() .. "/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}/qt")
+	qtgenerateddir(GetIntermediateLocation() .. "/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}/qt")
 	qtprefix "Qt6"
 
 	qtmodules(modules)

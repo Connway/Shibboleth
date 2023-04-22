@@ -32,6 +32,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
 
 	.var("flags", &Shibboleth::EntityComponent::_flags)
 	.var("name", &Shibboleth::EntityComponent::_name)
+
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 NS_SHIBBOLETH

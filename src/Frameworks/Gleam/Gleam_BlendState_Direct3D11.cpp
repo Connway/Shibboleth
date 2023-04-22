@@ -64,7 +64,7 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 
 void BlendStateD3D11::destroy(void)
 {
-	SAFERELEASE(_blend_state);
+	GAFF_COM_SAFE_RELEASE(_blend_state);
 }
 
 void BlendStateD3D11::bind(IRenderDevice& rd) const

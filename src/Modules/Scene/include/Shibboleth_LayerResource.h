@@ -34,7 +34,7 @@ public:
 	static constexpr bool Creatable = true;
 
 	LayerResource(void);
-	~LayerResource(void);
+	~LayerResource(void) override;
 
 private:
 	SerializeReaderWrapper _reader_wrapper;

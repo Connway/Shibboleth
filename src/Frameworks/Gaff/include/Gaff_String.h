@@ -56,7 +56,7 @@ template <class T>
 size_t ReverseFind(const T* string, size_t string_size, const T* substring, size_t substring_size)
 {
 	const T* const pos = eastl::CharTypeStringRSearch(string, string + string_size, substring, substring + substring_size);
-	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
+	return (pos == (string + string_size)) ? GAFF_SIZE_T_FAIL : eastl::distance(string, pos);
 }
 
 template <class T>
@@ -81,7 +81,7 @@ template <class T>
 size_t ReverseFind(const T* string, size_t string_size, T character)
 {
 	const T* const pos = eastl::CharTypeStringRFind(string + string_size, string, character);
-	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos - 1);
+	return (pos == (string + string_size)) ? GAFF_SIZE_T_FAIL : eastl::distance(string, pos - 1);
 }
 
 template <class T>
@@ -94,7 +94,7 @@ template <class T>
 size_t Find(const T* string, size_t string_size, const T* substring, size_t substring_size)
 {
 	const T* const pos = eastl::search(string, string + string_size, substring, substring + substring_size);
-	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
+	return (pos == (string + string_size)) ? GAFF_SIZE_T_FAIL : eastl::distance(string, pos);
 }
 
 template <class T>
@@ -119,7 +119,7 @@ template <class T>
 size_t Find(const T* string, size_t string_size, T character)
 {
 	const T* const pos = eastl::find(string, string + string_size, character);
-	return (pos == (string + string_size)) ? SIZE_T_FAIL : eastl::distance(string, pos);
+	return (pos == (string + string_size)) ? GAFF_SIZE_T_FAIL : eastl::distance(string, pos);
 }
 
 template <class T>
@@ -196,7 +196,7 @@ template <class To, class From>
 	const From* from_start = &character;
 	To* start = converted_character;
 
-	eastl::DecodePart(from_start, from_start + 1, start, start + ARRAY_SIZE(converted_character));
+	eastl::DecodePart(from_start, from_start + 1, start, start + std::size(converted_character));
 
 	GAFF_ASSERT(converted_character[1] == 0);
 
@@ -209,22 +209,12 @@ NS_END
 #define STRING_CONVERSION_BUFFER_SIZE 256
 
 #define CONVERT_STRING_ARRAY(ToType, TempBufferName, string) \
-	ToType TempBufferName[ARRAY_SIZE(string)] = { 0 }; \
+	ToType TempBufferName[GAFF_ARRAY_SIZE(string)] = { 0 }; \
 	{ \
 		auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
-		ToType* TempBufferName##_end = TempBufferName + ARRAY_SIZE(string); \
-		eastl::DecodePart(str_start, str_start + ARRAY_SIZE(string), TempBufferName##_begin, TempBufferName##_end); \
-	}
-
-
-#define CONVERT_STRING_CONST(ToType, TempBufferName, string) \
-	ToType TempBufferName[eastl::CharStrlen(string)] = { 0 }; \
-	{ \
-		auto* str_start = string; \
-		ToType* TempBufferName##_begin = TempBufferName; \
-		ToType* TempBufferName##_end = TempBufferName + eastl::CharStrlen(string); \
-		eastl::DecodePart(str_start, str_start + eastl::CharStrlen(string), TempBufferName##_begin, TempBufferName##_end); \
+		ToType* TempBufferName##_end = TempBufferName + GAFF_ARRAY_SIZE(string); \
+		eastl::DecodePart(str_start, str_start + GAFF_ARRAY_SIZE(string), TempBufferName##_begin, TempBufferName##_end); \
 	}
 
 #define CONVERT_STRING(ToType, TempBufferName, string) \

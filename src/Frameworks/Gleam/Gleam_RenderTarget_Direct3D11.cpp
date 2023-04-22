@@ -49,7 +49,7 @@ void RenderTargetD3D11::destroy(void)
 		_render_target_views[i]->Release();
 	}
 
-	SAFERELEASE(_depth_stencil_view)
+	GAFF_COM_SAFE_RELEASE(_depth_stencil_view)
 
 	_render_target_views.clear();
 }
@@ -114,7 +114,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	SAFERELEASE(_depth_stencil_view)
+	GAFF_COM_SAFE_RELEASE(_depth_stencil_view)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	desc.Flags = 0;

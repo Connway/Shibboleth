@@ -71,7 +71,7 @@ bool DepthStencilStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 
 void DepthStencilStateD3D11::destroy(void)
 {
-	SAFERELEASE(_depth_stencil_state);
+	GAFF_COM_SAFE_RELEASE(_depth_stencil_state);
 }
 
 void DepthStencilStateD3D11::bind(IRenderDevice& rd) const

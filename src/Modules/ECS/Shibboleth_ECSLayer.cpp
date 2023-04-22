@@ -48,7 +48,7 @@ void ECSLayer::load(const ISerializeReader& reader)
 		const auto guard = reader.enterElementGuard(u8"name");
 
 		if (reader.isString()) {
-			reader.readString(name, ARRAY_SIZE(name));
+			reader.readString(name, std::size(name));
 		}
 	}
 
@@ -72,7 +72,7 @@ void ECSLayer::load(const ISerializeReader& reader)
 					return false;
 				}
 
-				reader.readString(archetype, ARRAY_SIZE(archetype));
+				reader.readString(archetype, std::size(archetype));
 			}
 
 			{
