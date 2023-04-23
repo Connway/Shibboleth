@@ -38,7 +38,7 @@ function QtSettingsModule(modules, base_dir, source_dir)
 	-- 	qtsuffix "64s"
 
 	filter { "action:gmake2", "system:macosx" }
-		prebuildcommands { "{MKDIR} %{cfg.objdir}/../../../qt/%{prj.name}" }
+		prebuildcommands { "{MKDIR} " .. GetIntermediateLocation() .. "/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}/qt" }
 
 	filter {}
 end
@@ -82,10 +82,10 @@ function CopyQtFilesToBin(qt_modules)
 		}
 
 	filter { "system:macosx" }
-		postbuildcommands
-		{
-			"{COPYFILE} " .. plugin_path .. "/platforms/libqcocoa" .. extension .. " " .. GetBinLocation() .. "/platforms",
-		}
+		--postbuildcommands
+		--{
+		--	"{COPYFILE} " .. plugin_path .. "/platforms/libqcocoa" .. extension .. " " .. GetBinLocation() .. "/platforms",
+		--}
 
 	filter {}
 
