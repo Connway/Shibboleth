@@ -96,7 +96,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::VariableType)
 SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::VariableType)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::CheckVariableCondition)
-	.ctor<>()
+	.template ctor<>()
 
 	.var("var_name", &Esprit::CheckVariableCondition::getVariableName, &Esprit::CheckVariableCondition::setVariableName)
 	.var("var_type", &Esprit::CheckVariableCondition::getVariableType, &Esprit::CheckVariableCondition::setVariableType)

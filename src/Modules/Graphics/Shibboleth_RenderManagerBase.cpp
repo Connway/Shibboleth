@@ -42,6 +42,10 @@ THE SOFTWARE.
 #include <GLFW/glfw3.h>
 #include <Gleam_IncludeGLFWNative.h>
 
+#ifdef PLATFORM_MAC
+	#include <IOKit/graphics/IOGraphicsLib.h>
+#endif
+
 NS_SHIBBOLETH
 
 static ProxyAllocator g_allocator("Graphics");
@@ -408,17 +412,6 @@ bool RenderManagerBase::init(void)
 					#if defined(PLATFORM_WINDOWS)
 						const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
 						const char* const display_name = glfwGetWin32Monitor(monitors[i]);
-					#elif defined(PLATFORM_LINUX)
-						// $TODO: Need to fix this code for non-Windows platforms.
-						const char* const adapter_name = nullptr;
-						const char* const display_name = nullptr;
-					#elif defined(PLATFORM_MAC)
-						// $TODO: Need to fix this code for non-Windows platforms.
-						const char* const adapter_name = nullptr;
-						const char* const display_name = nullptr;
-					#else
-						static_assert(false, "Unknown platform.");
-					#endif
 
 						if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
 							!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
@@ -426,6 +419,23 @@ bool RenderManagerBase::init(void)
 							glfw_monitor_id = i;
 							break;
 						}
+
+					#elif defined(PLATFORM_LINUX)
+						// $TODO: Need to fix this code for non-Windows platforms.
+						const char* const adapter_name = nullptr;
+						const char* const display_name = nullptr;
+
+					#elif defined(PLATFORM_MAC)
+						const char* const display_name = glfwGetMonitorName(monitors[i]);
+
+						if (!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
+							glfw_monitor_id = i;
+							break;
+						}
+
+					#else
+						static_assert(false, "Unknown platform.");
+					#endif
 					}
 
 					if (glfw_monitor_id < 0) {

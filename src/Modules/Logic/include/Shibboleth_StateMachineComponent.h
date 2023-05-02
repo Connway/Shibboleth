@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_StateMachineResource.h"
 #include <Shibboleth_EntityComponent.h>
-// #include <Shibboleth_ECSComponentBase.h>
 
 NS_SHIBBOLETH
 
@@ -35,9 +34,11 @@ public:
 	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides) override;
 	void destroy(void) override;
 
+	void update(float dt) override;
+
 private:
-	UniquePtr<Esprit::StateMachine::Instance> instance;
-	StateMachineResourcePtr resource;
+	UniquePtr<Esprit::StateMachine::Instance> _instance;
+	StateMachineResourcePtr _resource;
 
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineComponent);
 };

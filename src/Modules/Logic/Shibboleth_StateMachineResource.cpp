@@ -35,8 +35,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineResource)
 		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::StateMachineResource::loadStateMachine)
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachineResource)
 
 NS_SHIBBOLETH
@@ -189,7 +189,7 @@ void StateMachineResource::loadStateMachine(IFile* file, uintptr_t /*thread_id_i
 
 				variables.finalize();
 				readValues(reader, variables.getDefaults());
-	
+
 			} else {
 				// $TODO: Log error.
 			}

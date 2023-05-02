@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_StateMachineComponent.h"
 #include <Shibboleth_ResourceManager.h>
 // #include <eathread/eathread_sync.h>
@@ -30,7 +28,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineComponent)
 	.template base<Shibboleth::EntityComponent>()
 	// .serialize(Shibboleth::StateMachine::Load)
 
-	.var("resource", &Shibboleth::StateMachineComponent::resource)
+	.var("resource", &Shibboleth::StateMachineComponent::_resource)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 
@@ -40,17 +38,17 @@ bool StateMachineComponent::init()
 {
 	EntityComponent::init();
 
-	while (resource->getState() == ResourceState::Pending) {
+	while (_resource->getState() == ResourceState::Pending) {
 		// $TODO: Help out?
 		EA::Thread::ThreadSleep();
 	}
 
-	if (resource->hasFailed()) {
+	if (_resource->hasFailed()) {
 		return false;
 	}
 
-	const Esprit::StateMachine& sm = *resource->getStateMachine();
-	instance.reset(sm.createInstanceData());
+	const Esprit::StateMachine& sm = *_resource->getStateMachine();
+	_instance.reset(sm.createInstanceData());
 
 	// resource->readValues(reader, out.instance->variables);
 	return true;
@@ -58,7 +56,36 @@ bool StateMachineComponent::init()
 
 bool StateMachineComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides)
 {
-	EntityComponent::clone(new_component, overrides);
+	return EntityComponent::clone(new_component, overrides);
+}
+
+void StateMachineComponent::update(float /*dt*/)
+{
+	if (!_resource) {
+		// $TODO: Log error
+		return;
+	}
+
+	const Esprit::StateMachine* const sm = _resource->getStateMachine();
+
+	if (!sm) {
+		// $TODO: Log error
+		return;
+	}
+
+	if (!_instance) {
+		// $TODO: Log error
+		return;
+	}
+
+	//const Esprit::VariableSet& vars = sm->getVariables();
+	//const int32_t var_index = vars.getVariableIndex(HashStringView32<>(u8"entity_id"), Esprit::VariableSet::VariableType::Integer);
+
+	//if (var_index > -1) {
+	//	state_machine.instance->variables.integers[var_index] = id;
+	//}
+
+	sm->update(*_instance);
 }
 
 

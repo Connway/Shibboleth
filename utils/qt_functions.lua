@@ -92,10 +92,10 @@ function CopyQtFilesToBin(qt_modules)
 	for _, name in ipairs(qt_modules) do
 		local final_name = bin_path .. "/" .. lib_prefix .. "Qt6" .. qt.modules.qt6[name].name
 
-		postbuildcommands
-		{
-			"{COPYFILE} " .. final_name .. "d" .. extension .. " " .. GetBinLocation(),
-			"{COPYFILE} " .. final_name .. extension .. " " .. GetBinLocation()
-		}
+		--postbuildcommands
+		--{
+		--	"{COPYFILE} " .. final_name .. "d" .. extension .. " " .. GetBinLocation(),
+		--	"{COPYFILE} " .. final_name .. extension .. " " .. GetBinLocation()
+		--}
 	end
 end

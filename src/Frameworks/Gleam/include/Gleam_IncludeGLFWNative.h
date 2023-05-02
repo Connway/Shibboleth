@@ -35,7 +35,7 @@ THE SOFTWARE.
 	#endif
 
 #elif defined(PLATFORM_MAC)
-//	#define GLFW_EXPOSE_NATIVE_COCOA
+	#define GLFW_EXPOSE_NATIVE_COCOA
 
 #else
 	#error "Unsupported platform."
