@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_TextureResource.h"
 #include "Shibboleth_RenderManagerBase.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -33,12 +32,11 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
-		Shibboleth::ResExtAttribute(u8".texture.bin"),
-		Shibboleth::ResExtAttribute(u8".texture"),
-		Shibboleth::ResExtAttribute(u8".png"),
-		Shibboleth::ResExtAttribute(u8".tiff"),
-		Shibboleth::ResExtAttribute(u8".tif"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::TextureResource::loadTexture)
+		Shibboleth::ResourceExtensionAttribute(u8".texture.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".texture"),
+		Shibboleth::ResourceExtensionAttribute(u8".png"),
+		Shibboleth::ResourceExtensionAttribute(u8".tiff"),
+		Shibboleth::ResourceExtensionAttribute(u8".tif")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -82,6 +80,16 @@ static Gleam::ITexture::Format GetTextureFormat(const Image& image)
 	}
 
 	return Gleam::ITexture::Format::SIZE;
+}
+
+void TextureResource::load(const IFile& file, uintptr_t thread_id_int)
+{
+	if (Gaff::EndsWith(getFilePath().getBuffer(), u8".texture") || Gaff::EndsWith(getFilePath().getBuffer(), u8".texture.bin")) {
+		loadTextureJSON(file, thread_id_int);
+	} else {
+		// Create SRV as is. No SRGB conversion.
+		loadTextureImage(file, u8"main", getFilePath().getString(), false);
+	}
 }
 
 Vector<Gleam::IRenderDevice*> TextureResource::getDevices(void) const
@@ -169,29 +177,18 @@ Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::
 	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
 }
 
-void TextureResource::loadTexture(IFile* file, uintptr_t thread_id_int)
+void TextureResource::loadTextureJSON(const IFile& file, uintptr_t thread_id_int)
 {
-	if (Gaff::EndsWith(getFilePath().getBuffer(), u8".texture") || Gaff::EndsWith(getFilePath().getBuffer(), u8".texture.bin")) {
-		loadTextureJSON(file, thread_id_int);
-		GetApp().getFileSystem().closeFile(file);
-	} else {
-		// Create SRV as is. No SRGB conversion.
-		loadTextureImage(file, u8"main", getFilePath().getString(), false);
-	}
-}
+	SerializeReaderWrapper reader_wrapper;
 
-void TextureResource::loadTextureJSON(const IFile* file, uintptr_t thread_id_int)
-{
-	SerializeReaderWrapper readerWrapper;
-
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load material '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+	if (!OpenJSONOrMPackFile(reader_wrapper, getFilePath().getBuffer(), file)) {
+		LogErrorResource("Failed to load material '%s' with error: '%s'", getFilePath().getBuffer(), reader_wrapper.getErrorText());
 		failed();
 		return;
 	}
 
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	const ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *reader_wrapper.getReader();
 	const bool make_linear = reader.readBool(u8"make_linear", false);
 	U8String device_tag;
 
@@ -233,10 +230,10 @@ void TextureResource::loadTextureJSON(const IFile* file, uintptr_t thread_id_int
 		return;
 	}
 
-	loadTextureImage(image_file, device_tag.data(), image_path, make_linear);
+	loadTextureImage(*image_file, device_tag.data(), image_path, make_linear);
 }
 
-void TextureResource::loadTextureImage(const IFile* file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
+void TextureResource::loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
 {
 	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const Vector<Gleam::IRenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
@@ -250,7 +247,7 @@ void TextureResource::loadTextureImage(const IFile* file, const char8_t* device_
 	const size_t index = image_path.rfind('.');
 	Image image;
 
-	if (!image.load(file->getBuffer(), file->size(), image_path.data() + index)) {
+	if (!image.load(file.getBuffer(), file.size(), image_path.data() + index)) {
 		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file '%s'.", getFilePath().getBuffer(), image_path.data());
 		failed();
 		return;

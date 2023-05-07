@@ -36,6 +36,8 @@ class TextureResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const IFile& file, uintptr_t thread_id_int) override;
+
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
 	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
@@ -51,9 +53,8 @@ private:
 	using Data = eastl::pair< UniquePtr<Gleam::ITexture>, UniquePtr<Gleam::IShaderResourceView> >;
 	VectorMap<const Gleam::IRenderDevice*, Data> _texture_data{ ProxyAllocator("Graphics") };
 
-	void loadTexture(IFile* file, uintptr_t thread_id_int);
-	void loadTextureJSON(const IFile* file, uintptr_t thread_id_int);
-	void loadTextureImage(const IFile* file, const char8_t* device_tag, const U8String& image_path, bool make_linear);
+	void loadTextureJSON(const IFile& file, uintptr_t thread_id_int);
+	void loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
 };

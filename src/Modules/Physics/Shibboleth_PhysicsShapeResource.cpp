@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsShapeResource.h"
 #include "Shibboleth_PhysicsManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
@@ -32,13 +31,12 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsShapeResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".physics_shape.bin"),
-		Shibboleth::ResExtAttribute(u8".physics_shape"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::PhysicsShapeResource::loadShape)
+		Shibboleth::ResourceExtensionAttribute(u8".physics_shape.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".physics_shape")
 	)
 
-	.base<Shibboleth::IResource>()
-	.ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsShapeResource)
 
 NS_SHIBBOLETH
@@ -70,18 +68,8 @@ physx::PxShape* PhysicsShapeResource::getShape(void)
 	return _shape;
 }
 
-void PhysicsShapeResource::loadShape(IFile* file, uintptr_t /*thread_id_int*/)
+void PhysicsShapeResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
-	SerializeReaderWrapper readerWrapper;
-
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load physics material '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
-		failed();
-		return;
-	}
-
-	const ISerializeReader& reader = *readerWrapper.getReader();
-
 	if (!reader.isObject()) {
 		// $TODO: Log error.
 		failed();

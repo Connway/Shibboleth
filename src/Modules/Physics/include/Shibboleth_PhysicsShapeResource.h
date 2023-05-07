@@ -44,6 +44,8 @@ public:
 	const physx::PxShape* getShape(void) const;
 	physx::PxShape* getShape(void);
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 private:
 	enum class LoadResult
 	{
@@ -54,8 +56,6 @@ private:
 
 	PhysicsMaterialResourcePtr _material;
 	physx::PxShape* _shape = nullptr;
-
-	void loadShape(IFile* file, uintptr_t thread_id_int);
 
 	LoadResult loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr);
 	LoadResult loadSphere(const ISerializeReader& reader, PhysicsManager& phys_mgr);

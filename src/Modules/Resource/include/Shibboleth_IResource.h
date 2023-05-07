@@ -66,6 +66,8 @@ public:
 
 	void requestLoad(void);
 
+	virtual void load(const ISerializeReader& reader, uintptr_t thread_id_int);
+	virtual void load(const IFile& file, uintptr_t thread_id_int);
 	virtual void load(void);
 
 	void addRef(void) const override;

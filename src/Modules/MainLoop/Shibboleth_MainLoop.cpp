@@ -57,14 +57,14 @@ bool MainLoop::init(void)
 	}
 
 	ProxyAllocator allocator("MainLoop");
-	SerializeReaderWrapper readerWrapper(allocator);
+	SerializeReaderWrapper reader_wrapper(allocator);
 
-	if (!OpenJSONOrMPackFile(readerWrapper, u8"cfg/update_phases.cfg")) {
+	if (!OpenJSONOrMPackFile(reader_wrapper, u8"cfg/update_phases.cfg")) {
 		LogErrorDefault("Failed to read cfg/update_phases.cfg[.bin].");
 		return false;
 	}
 
-	const ISerializeReader& reader = *readerWrapper.getReader();
+	const ISerializeReader& reader = *reader_wrapper.getReader();
 
 	if (!reader.isArray()) {
 		LogErrorDefault("MainLoop: Malformed cfg/update_phases.cfg[.bin]. Root is not a 3-dimensional array of strings.");

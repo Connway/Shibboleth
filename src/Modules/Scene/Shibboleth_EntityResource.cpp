@@ -21,22 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_EntityResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_EntityManager.h>
 #include <Shibboleth_AppUtils.h>
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityResource)
-	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".entity.bin"),
-		Shibboleth::ResExtAttribute(u8".entity"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::EntityResource::loadEntity)
-	)
-
-	.template base<Shibboleth::IResource>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityResource)
 
 namespace
 {
@@ -75,13 +63,23 @@ namespace
 	})";
 }
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityResource)
+	.classAttrs(
+		Shibboleth::ResourceExtensionAttribute(u8".entity.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".entity"),
+		Shibboleth::ResourceSchemaAttribute(k_entity_resource_schema)
+	)
+
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityResource)
+
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(EntityResource)
 
 EntityResource::EntityResource(void):
-	_reader_wrapper(ProxyAllocator("Resource")),
 	_entity_definition(GetManagerTFast<EntityManager>())
 {
 }
@@ -90,16 +88,8 @@ EntityResource::~EntityResource(void)
 {
 }
 
-void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
+void EntityResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
-	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true, k_entity_resource_schema)) {
-		LogErrorResource("Failed to load entity '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
-		failed();
-		return;
-	}
-
-	const auto& reader = *_reader_wrapper.getReader();
-
 	Refl::Reflection<Entity>::GetInstance().load(reader, _entity_definition);
 
 	// Use filename as default name.
@@ -130,7 +120,7 @@ void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
 				char8_t comp_type[512] = { 0 };
 
 				{
-					const auto type_guard = reader.enterElementGuard("type");
+					const auto type_guard = reader.enterElementGuard(u8"type");
 					reader.readString(comp_type, std::size(comp_type));
 				}
 
@@ -163,8 +153,6 @@ void EntityResource::loadEntity(IFile* file, uintptr_t /*thread_id_int*/)
 			});
 		}
 	}
-
-	_reader_wrapper.freeReader();
 }
 
 NS_END

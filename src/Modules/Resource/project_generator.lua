@@ -18,6 +18,7 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Dependencies/imgui",
+			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Frameworks/Gaff/include"
 		}
 

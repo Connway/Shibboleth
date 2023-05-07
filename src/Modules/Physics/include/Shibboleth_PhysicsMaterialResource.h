@@ -39,9 +39,9 @@ public:
 	const physx::PxMaterial* getMaterial(void) const;
 	physx::PxMaterial* getMaterial(void);
 
-private:
-	void loadMaterial(IFile* file, uintptr_t thread_id_int);
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
+private:
 	physx::PxMaterial* _material = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsMaterialResource);

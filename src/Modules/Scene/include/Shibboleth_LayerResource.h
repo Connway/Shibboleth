@@ -36,6 +36,8 @@ public:
 	LayerResource(void);
 	~LayerResource(void) override;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 private:
 	SerializeReaderWrapper _reader_wrapper;
 	ResourceCallbackID _callback_id;
@@ -50,7 +52,6 @@ private:
 	//);
 
 	//void archetypeLoaded(const Vector<IResource*>&);
-	void loadLayer(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };

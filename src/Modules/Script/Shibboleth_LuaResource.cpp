@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LuaManager.h>
@@ -31,9 +30,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
 	.classAttrs(
-		//Shibboleth::ResExtAttribute(u8".lua.bin"),
-		Shibboleth::ResExtAttribute(u8".lua"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::LuaResource::loadScript)
+		//Shibboleth::ResourceExtensionAttribute(u8".lua.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".lua")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -50,11 +48,11 @@ LuaResource::~LuaResource(void)
 	lua_mgr.unloadBuffer(getFilePath().getBuffer());
 }
 
-void LuaResource::loadScript(IFile* file, uintptr_t /*thread_id_int*/)
+void LuaResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
 {
 	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file->getBuffer()), file->size(), getFilePath().getBuffer())) {
+	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file.getBuffer()), file.size(), getFilePath().getBuffer())) {
 		succeeded();
 
 	} else {

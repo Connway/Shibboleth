@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_RenderManagerBase.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -33,9 +32,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SamplerStateResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
-		Shibboleth::ResExtAttribute(u8".sampler_state.bin"),
-		Shibboleth::ResExtAttribute(u8".sampler_state"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::SamplerStateResource::loadSamplerState)
+		Shibboleth::ResourceExtensionAttribute(u8".sampler_state.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".sampler_state")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -45,6 +43,48 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::SamplerStateResource)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(SamplerStateResource)
+
+void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
+{
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	U8String device_tag;
+
+	{
+		const auto guard = reader.enterElementGuard(u8"devices_tag");
+
+		if (!reader.isNull() && !reader.isString()) {
+			LogErrorResource("Malformed shader '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
+			failed();
+			return;
+		}
+
+		const char8_t* const tag = reader.readString(u8"main");
+		device_tag = tag;
+		devices = render_mgr.getDevicesByTag(tag);
+		reader.freeString(tag);
+	}
+
+	if (!devices || devices->empty()) {
+		LogErrorResource("Failed to load shader '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
+		failed();
+		return;
+	}
+
+	Gleam::ISamplerState::Settings sampler_state_settings;
+
+	if (!Refl::Reflection<Gleam::ISamplerState::Settings>::GetInstance().load(reader, sampler_state_settings)) {
+		LogErrorResource("Failed to load sampler state '%s'. Failed to deserialize sampler settings.", getFilePath().getBuffer());
+		failed();
+		return;
+	}
+
+	if (createSamplerState(*devices, sampler_state_settings)) {
+		succeeded();
+	} else {
+		failed();
+	}
+}
 
 Vector<Gleam::IRenderDevice*> SamplerStateResource::getDevices(void) const
 {
@@ -94,57 +134,6 @@ Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRender
 {
 	const auto it = _sampler_states.find(&rd);
 	return (it != _sampler_states.end()) ? it->second.get() : nullptr;
-}
-
-void SamplerStateResource::loadSamplerState(IFile* file, uintptr_t /*thread_id_int*/)
-{
-	SerializeReaderWrapper readerWrapper;
-
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load raster state '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
-		failed();
-		return;
-	}
-
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	const ISerializeReader& reader = *readerWrapper.getReader();
-	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
-	U8String device_tag;
-
-	{
-		const auto guard = reader.enterElementGuard(u8"devices_tag");
-
-		if (!reader.isNull() && !reader.isString()) {
-			LogErrorResource("Malformed shader '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
-			failed();
-			return;
-		}
-
-		const char8_t* const tag = reader.readString(u8"main");
-		device_tag = tag;
-		devices = render_mgr.getDevicesByTag(tag);
-		reader.freeString(tag);
-	}
-
-	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load shader '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
-		failed();
-		return;
-	}
-
-	Gleam::ISamplerState::Settings sampler_state_settings;
-
-	if (!Refl::Reflection<Gleam::ISamplerState::Settings>::GetInstance().load(reader, sampler_state_settings)) {
-		LogErrorResource("Failed to load sampler state '%s'. Failed to deserialize sampler settings.", getFilePath().getBuffer());
-		failed();
-		return;
-	}
-
-	if (createSamplerState(*devices, sampler_state_settings)) {
-		succeeded();
-	} else {
-		failed();
-	}
 }
 
 NS_END

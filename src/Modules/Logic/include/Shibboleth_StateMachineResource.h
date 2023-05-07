@@ -33,6 +33,8 @@ class StateMachineResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 	const Esprit::StateMachine* getStateMachine(void) const;
 	Esprit::StateMachine* getStateMachine(void);
 
@@ -40,8 +42,6 @@ public:
 
 private:
 	UniquePtr<Esprit::StateMachine> _state_machine;
-
-	void loadStateMachine(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineResource);
 };

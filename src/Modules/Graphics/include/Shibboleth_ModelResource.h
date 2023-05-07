@@ -33,6 +33,8 @@ class ModelResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
 	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes);
@@ -50,8 +52,6 @@ public:
 private:
 	Vector<MeshResourcePtr> _meshes{ ProxyAllocator("Graphics") };
 	Gleam::Vec3 _centering_vector = glm::zero<Gleam::Vec3>();
-
-	void loadModel(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };

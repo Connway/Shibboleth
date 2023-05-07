@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelResource.h"
 #include "Shibboleth_RenderManagerBase.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -36,9 +35,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
-		Shibboleth::ResExtAttribute(u8".model.bin"),
-		Shibboleth::ResExtAttribute(u8".model"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ModelResource::loadModel)
+		Shibboleth::ResourceExtensionAttribute(u8".model.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".model")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -54,6 +52,125 @@ static int32_t GetIgnoreFlag(const char (&field)[size], const ISerializeReader& 
 {
 	const auto guard = reader.enterElementGuard(field);
 	return (reader.readBool(false)) ? flag : 0;
+}
+
+void ModelResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
+{
+	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
+	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	const IFile* model_file = nullptr;
+	U8String model_file_path;
+	U8String device_tag;
+
+	{
+		const auto guard = reader.enterElementGuard(u8"devices_tag");
+
+		if (!reader.isNull() && !reader.isString()) {
+			LogErrorResource("Malformed mesh '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
+			failed();
+			return;
+		}
+
+		const char8_t* const tag = reader.readString(u8"main");
+		device_tag = tag;
+		devices = render_mgr.getDevicesByTag(tag);
+		reader.freeString(tag);
+	}
+
+	if (!devices || devices->empty()) {
+		LogErrorResource("Failed to load mesh '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
+		failed();
+		return;
+	}
+
+	{
+		const auto guard = reader.enterElementGuard(u8"model_file");
+
+		if (!reader.isString()) {
+			LogErrorResource("Malformed mesh '%s'. 'model_file' element is not a string.", getFilePath().getBuffer());
+			failed();
+			return;
+		}
+
+		const char8_t* const path = reader.readString();
+
+		model_file_path = path;
+		model_file = res_mgr.loadFileAndWait(path, thread_id_int);
+
+		reader.freeString(path);
+	}
+
+	if (!model_file) {
+		LogErrorResource("Failed to load mesh '%s'. Unable to find or load file '%s'.", getFilePath().getBuffer(), model_file_path.data());
+		failed();
+		return;
+	}
+
+	const int32_t ignore_flags =	aiComponent_ANIMATIONS | aiComponent_CAMERAS |
+									aiComponent_LIGHTS | aiComponent_MATERIALS |
+									aiComponent_TEXTURES |
+									GetIgnoreFlag<aiComponent_BONEWEIGHTS>("ignore_blend_weights", reader) |
+									GetIgnoreFlag<aiComponent_COLORS>("ignore_colors", reader) |
+									GetIgnoreFlag<aiComponent_NORMALS>("ignore_normals", reader) |
+									GetIgnoreFlag<aiComponent_TANGENTS_AND_BITANGENTS>("ignore_tangents", reader) |
+									GetIgnoreFlag<aiComponent_TEXCOORDS>("ignore_uvs", reader);
+
+
+	const size_t index = model_file_path.rfind(u8'.');
+
+	Assimp::Importer importer;
+
+	// Only load mesh data.
+	importer.SetPropertyInteger(
+		AI_CONFIG_PP_RVC_FLAGS,
+		ignore_flags
+	);
+
+	const aiScene* const scene = importer.ReadFileFromMemory(
+		model_file->getBuffer(),
+		model_file->size(),
+		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | static_cast<unsigned int>(aiProcess_GenBoundingBoxes),
+		reinterpret_cast<const char*>(model_file_path.data() + index)
+	);
+
+	if (!scene) {
+		LogErrorResource("Failed to load mesh '%s' with error '%s'", getFilePath().getBuffer(), importer.GetErrorString());
+		failed();
+		return;
+	}
+
+	Vector<int32_t> centering_meshes(ProxyAllocator("Resource"));
+
+	{
+		const auto guard = reader.enterElementGuard(u8"center");
+
+		if (reader.isTrue()) {
+			centering_meshes.set_capacity(scene->mNumMeshes);
+
+			for (int32_t i = 0; i < static_cast<int32_t>(scene->mNumMeshes); ++i) {
+				centering_meshes.emplace_back(i);
+			}
+
+		} else if (reader.isArray()) {
+			reader.forEachInArray([&](int32_t) -> bool
+			{
+				if (!reader.isInt32()) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				centering_meshes.emplace_back(reader.readInt32());
+				return false;
+			});
+		}
+	}
+
+	if (createMesh(*devices, *scene, centering_meshes)) {
+		succeeded();
+	} else {
+		failed();
+	}
 }
 
 Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
@@ -176,134 +293,6 @@ int32_t ModelResource::getNumMeshes(void) const
 const Gleam::Vec3& ModelResource::getCenteringVector(void) const
 {
 	return _centering_vector;
-}
-
-void ModelResource::loadModel(IFile* file, uintptr_t thread_id_int)
-{
-	SerializeReaderWrapper readerWrapper;
-
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load mesh '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
-		failed();
-		return;
-	}
-
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	const ISerializeReader& reader = *readerWrapper.getReader();
-	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
-	const IFile* model_file = nullptr;
-	U8String model_file_path;
-	U8String device_tag;
-
-	{
-		const auto guard = reader.enterElementGuard(u8"devices_tag");
-
-		if (!reader.isNull() && !reader.isString()) {
-			LogErrorResource("Malformed mesh '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
-			failed();
-			return;
-		}
-
-		const char8_t* const tag = reader.readString(u8"main");
-		device_tag = tag;
-		devices = render_mgr.getDevicesByTag(tag);
-		reader.freeString(tag);
-	}
-
-	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load mesh '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
-		failed();
-		return;
-	}
-
-	{
-		const auto guard = reader.enterElementGuard(u8"model_file");
-
-		if (!reader.isString()) {
-			LogErrorResource("Malformed mesh '%s'. 'model_file' element is not a string.", getFilePath().getBuffer());
-			failed();
-			return;
-		}
-
-		const char8_t* const path = reader.readString();
-
-		model_file_path = path;
-		model_file = res_mgr.loadFileAndWait(path, thread_id_int);
-
-		reader.freeString(path);
-	}
-
-	if (!model_file) {
-		LogErrorResource("Failed to load mesh '%s'. Unable to find or load file '%s'.", getFilePath().getBuffer(), model_file_path.data());
-		failed();
-		return;
-	}
-
-	const int32_t ignore_flags =	aiComponent_ANIMATIONS | aiComponent_CAMERAS |
-									aiComponent_LIGHTS | aiComponent_MATERIALS |
-									aiComponent_TEXTURES |
-									GetIgnoreFlag<aiComponent_BONEWEIGHTS>("ignore_blend_weights", reader) |
-									GetIgnoreFlag<aiComponent_COLORS>("ignore_colors", reader) |
-									GetIgnoreFlag<aiComponent_NORMALS>("ignore_normals", reader) |
-									GetIgnoreFlag<aiComponent_TANGENTS_AND_BITANGENTS>("ignore_tangents", reader) |
-									GetIgnoreFlag<aiComponent_TEXCOORDS>("ignore_uvs", reader);
-
-
-	const size_t index = model_file_path.rfind(u8'.');
-
-	Assimp::Importer importer;
-
-	// Only load mesh data.
-	importer.SetPropertyInteger(
-		AI_CONFIG_PP_RVC_FLAGS,
-		ignore_flags
-	);
-
-	const aiScene* const scene = importer.ReadFileFromMemory(
-		model_file->getBuffer(),
-		model_file->size(),
-		aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | static_cast<unsigned int>(aiProcess_GenBoundingBoxes),
-		reinterpret_cast<const char*>(model_file_path.data() + index)
-	);
-
-	if (!scene) {
-		LogErrorResource("Failed to load mesh '%s' with error '%s'", getFilePath().getBuffer(), importer.GetErrorString());
-		failed();
-		return;
-	}
-
-	Vector<int32_t> centering_meshes(ProxyAllocator("Resource"));
-
-	{
-		const auto guard = reader.enterElementGuard(u8"center");
-
-		if (reader.isTrue()) {
-			centering_meshes.set_capacity(scene->mNumMeshes);
-
-			for (int32_t i = 0; i < static_cast<int32_t>(scene->mNumMeshes); ++i) {
-				centering_meshes.emplace_back(i);
-			}
-
-		} else if (reader.isArray()) {
-			reader.forEachInArray([&](int32_t) -> bool
-			{
-				if (!reader.isInt32()) {
-					// $TODO: Log error.
-					return false;
-				}
-
-				centering_meshes.emplace_back(reader.readInt32());
-				return false;
-			});
-		}
-	}
-
-	if (createMesh(*devices, *scene, centering_meshes)) {
-		succeeded();
-	} else {
-		failed();
-	}
 }
 
 NS_END

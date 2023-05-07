@@ -32,6 +32,8 @@ class RasterStateResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
 	bool createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings);
@@ -44,8 +46,6 @@ public:
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states{ ProxyAllocator("Graphics") };
-
-	void loadRasterState(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };

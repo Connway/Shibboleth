@@ -52,25 +52,25 @@ SerializeReaderWrapper::~SerializeReaderWrapper(void)
 	}
 }
 
-SerializeReaderWrapper& SerializeReaderWrapper::operator=(SerializeReaderWrapper&& readerWrapper)
+SerializeReaderWrapper& SerializeReaderWrapper::operator=(SerializeReaderWrapper&& reader_wrapper)
 {
 	if (_reader) {
 		Gaff::Deconstruct(_reader);
 	}
 
-	_allocator = readerWrapper._allocator;
-	_is_mpack = readerWrapper._is_mpack;
-	_error_text = readerWrapper._error_text;
+	_allocator = reader_wrapper._allocator;
+	_is_mpack = reader_wrapper._is_mpack;
+	_error_text = reader_wrapper._error_text;
 
-	if (readerWrapper._reader) {
+	if (reader_wrapper._reader) {
 		if (_is_mpack) {
-			_mpack_reader = std::move(readerWrapper._mpack_reader);
+			_mpack_reader = std::move(reader_wrapper._mpack_reader);
 
 			Construct(&_mpack, _mpack_reader.getRoot(), _allocator);
 			_reader = &_mpack;
 
 		} else {
-			Construct(&_json, std::move(readerWrapper._json));
+			Construct(&_json, std::move(reader_wrapper._json));
 			_reader = &_json;
 		}
 	}

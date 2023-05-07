@@ -425,6 +425,8 @@ bool RenderManagerBase::init(void)
 						const char* const adapter_name = nullptr;
 						const char* const display_name = nullptr;
 
+						static_assert(false, "Fix Linux code.");
+
 					#elif defined(PLATFORM_MAC)
 						const char* const display_name = glfwGetMonitorName(monitors[i]);
 

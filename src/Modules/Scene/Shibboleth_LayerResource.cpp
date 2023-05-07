@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LayerResource.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
@@ -29,9 +28,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".layer.bin"),
-		Shibboleth::ResExtAttribute(u8".layer"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::LayerResource::loadLayer)
+		Shibboleth::ResourceExtensionAttribute(u8".layer.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".layer")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -184,17 +182,9 @@ LayerResource::~LayerResource(void)
 //	succeeded();
 //}
 
-void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
+void LayerResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
-	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true)) {
-		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
-		failed();
-		return;
-	}
-
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	const auto& reader = *_reader_wrapper.getReader();
-
 	char8_t name[256] = { 0 };
 
 	{
@@ -264,8 +254,6 @@ void LayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 	//_callback_id = res_mgr.registerCallback(resources, callback);
 
 	GAFF_REF(res_mgr);
-
-	_reader_wrapper.freeReader();
 }
 
 NS_END

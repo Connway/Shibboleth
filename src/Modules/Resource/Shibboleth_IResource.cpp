@@ -21,10 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_IResource.h"
-#include "Shibboleth_LoadFileCallbackAttribute.h"
+#include "Shibboleth_ResourceAttributesCommon.h"
 #include "Shibboleth_ResourceLogging.h"
 #include "Shibboleth_ResourceManager.h"
 #include <Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Utilities.h>
@@ -56,14 +57,10 @@ SHIB_REFLECTION_CLASS_DEFINE(IResource)
 
 static void LoadJob(uintptr_t thread_id_int, void* data)
 {
-	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
+	eastl::pair<IResource*, const IFile*>* const job_data = static_cast<eastl::pair<IResource*, const IFile*>*>(data);
 
-	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(Shibboleth::ILoadFileCallbackAttribute);
-	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second, thread_id_int);
-
-	if (!cb_attr->doesCallbackCloseFile()) {
-		GetApp().getFileSystem().closeFile(job_data->second);
-	}
+	job_data->first->load(*job_data->second, thread_id_int);
+	GetApp().getFileSystem().closeFile(job_data->second);
 
 	SHIB_FREET(job_data, GetAllocator());
 }
@@ -77,14 +74,31 @@ void IResource::requestLoad(void)
 	_res_mgr->requestLoad(*this);
 }
 
+void IResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
+{
+	getReflectionDefinition().load(reader, getBasePointer());
+}
+
+void IResource::load(const IFile& file, uintptr_t thread_id_int)
+{
+	const ResourceSchemaAttribute* const schema_attr = getReflectionDefinition().GET_CLASS_ATTR(ResourceSchemaAttribute);
+	const char8_t* const schema = (schema_attr) ? schema_attr->getSchema() : nullptr;
+	SerializeReaderWrapper reader_wrapper;
+
+	if (!OpenJSONOrMPackFile(reader_wrapper, getFilePath().getBuffer(), file, false, schema)) {
+		LogErrorResource("Failed to load resource '%s' with error: '%s'", getFilePath().getBuffer(), reader_wrapper.getErrorText());
+		failed();
+		return;
+	}
+
+	load(*reader_wrapper.getReader(), thread_id_int);
+}
+
 void IResource::load(void)
 {
 	const IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {
-		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTR(Shibboleth::ILoadFileCallbackAttribute);
-		GAFF_ASSERT(cb_attr);
-
 		eastl::pair<IResource*, const IFile*>* const res_data = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(eastl::pair<IResource*, const IFile*>),
 			ProxyAllocator("Resource"),
@@ -92,8 +106,14 @@ void IResource::load(void)
 			file
 		);
 
+		const ResourceLoadPoolAttribute* const pool_attr = getReflectionDefinition().GET_CLASS_ATTR(ResourceLoadPoolAttribute);
 		Gaff::JobData job_data = { LoadJob, res_data };
-		GetApp().getJobPool().addJobs(&job_data, 1U, nullptr, cb_attr->getPool());
+
+		if (pool_attr) {
+			GetApp().getJobPool().addJobs(&job_data, 1, nullptr, pool_attr->getPool());
+		} else {
+			GetApp().getJobPool().addJobs(&job_data);
+		}
 
 	} else {
 		failed();

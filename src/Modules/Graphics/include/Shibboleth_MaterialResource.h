@@ -33,6 +33,8 @@ class MaterialResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
 	bool createProgram(
@@ -68,8 +70,6 @@ public:
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
 	ShaderResourcePtr _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
-
-	void loadMaterial(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
 };

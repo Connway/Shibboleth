@@ -32,6 +32,8 @@ class SamplerStateResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+
 	Vector<Gleam::IRenderDevice*> getDevices(void) const;
 
 	bool createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings);
@@ -42,8 +44,6 @@ public:
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
-
-	void loadSamplerState(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };

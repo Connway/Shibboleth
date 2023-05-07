@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_MaterialResource.h"
 #include "Shibboleth_RenderManagerBase.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -32,9 +31,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MaterialResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
-		Shibboleth::ResExtAttribute(u8".material.bin"),
-		Shibboleth::ResExtAttribute(u8".material"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::MaterialResource::loadMaterial)
+		Shibboleth::ResourceExtensionAttribute(u8".material.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".material")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -45,186 +43,10 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(MaterialResource)
 
-Vector<Gleam::IRenderDevice*> MaterialResource::getDevices(void) const
+void MaterialResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
 {
-	for (const auto& shader : _shaders) {
-		if (shader) {
-			return shader->getDevices();
-		}
-	}
-
-	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
-}
-
-bool MaterialResource::createProgram(
-	const Vector<Gleam::IRenderDevice*>& devices,
-	ShaderResourcePtr& vertex,
-	ShaderResourcePtr& pixel,
-	ShaderResourcePtr& domain,
-	ShaderResourcePtr& geometry,
-	ShaderResourcePtr& hull)
-{
-	bool success = true;
-
-	for (Gleam::IRenderDevice* device : devices) {
-		success = success && createProgram(*device, vertex, pixel, domain, geometry, hull);
-	}
-
-	return success;
-}
-
-bool MaterialResource::createProgram(
-	Gleam::IRenderDevice& device,
-	ShaderResourcePtr& vertex,
-	ShaderResourcePtr& pixel,
-	ShaderResourcePtr& domain,
-	ShaderResourcePtr& geometry,
-	ShaderResourcePtr& hull)
-{
-	Gleam::IShader* const vert = (vertex) ? vertex->getShader(device) : nullptr;
-	Gleam::IShader* const pix = (pixel) ? pixel->getShader(device) : nullptr;
-	Gleam::IShader* const dom = (domain) ? domain->getShader(device) : nullptr;
-	Gleam::IShader* const geo = (geometry) ? geometry->getShader(device) : nullptr;
-	Gleam::IShader* const hul = (hull) ? hull->getShader(device) : nullptr;
-
-	if (vertex && !vert) {
-		LogErrorResource("Failed to create material '%s'. Vertex shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), vertex->getFilePath().getBuffer());
-		return false;
-	}
-
-	if (pixel && !pix) {
-		LogErrorResource("Failed to create material '%s'. Pixel shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), pixel->getFilePath().getBuffer());
-		return false;
-	}
-
-	if (domain && !dom) {
-		LogErrorResource("Failed to create material '%s'. Domain shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), domain->getFilePath().getBuffer());
-		return false;
-	}
-
-	if (geometry && !geo) {
-		LogErrorResource("Failed to create material '%s'. Geometry shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), geometry->getFilePath().getBuffer());
-		return false;
-	}
-
-	if (hull && !hul) {
-		LogErrorResource("Failed to create material '%s'. Hull shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), hull->getFilePath().getBuffer());
-		return false;
-	}
-
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IProgram* const program = render_mgr.createProgram();
-
-	if (vert) {
-		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)] = vertex;
-		program->attach(vert);
-	}
-
-	if (pix) {
-		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Pixel)] = pixel;
-		program->attach(pix);
-	}
-
-	if (dom) {
-		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Domain)] = domain;
-		program->attach(dom);
-	}
-
-	if (geo) {
-		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Geometry)] = geometry;
-		program->attach(geo);
-	}
-
-	if (hul) {
-		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Hull)] = hull;
-		program->attach(hul);
-	}
-
-	_programs[&device].reset(program);
-
-	return true;
-}
-
-bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
-{
-	ShaderResourcePtr empty;
-	return createProgram(devices, vertex, pixel, empty, empty, empty);
-}
-
-bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
-{
-	ShaderResourcePtr empty;
-	return createProgram(device, vertex, pixel, empty, empty, empty);
-}
-
-bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute)
-{
-	bool success = true;
-
-	for (Gleam::IRenderDevice* device : devices) {
-		success = success && createProgram(*device, compute);
-	}
-
-	return success;
-}
-
-bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute)
-{
-	Gleam::IShader* const shader = compute->getShader(device);
-
-	if (!shader) {
-		LogErrorResource("Failed to create material '%s'. Compute shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), compute->getFilePath().getBuffer());
-		return false;
-	}
-
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IProgram* const program = render_mgr.createProgram();
-
-	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
-	program->attach(shader);
-
-	_programs[&device].reset(program);
-
-	return true;
-}
-
-const Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device) const
-{
-	const auto it = _programs.find(&device);
-	return (it != _programs.end()) ? it->second.get() : nullptr;
-}
-
-Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device)
-{
-	const auto it = _programs.find(&device);
-	return (it != _programs.end()) ? it->second.get() : nullptr;
-}
-
-const Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device) const
-{
-	const ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
-	return (shader) ? shader->getLayout(device) : nullptr;
-}
-
-Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
-{
-	ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
-	return (shader) ? shader->getLayout(device) : nullptr;
-}
-
-void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
-{
-	SerializeReaderWrapper readerWrapper;
-
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load material '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
-		failed();
-		return;
-	}
-
 	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	const ISerializeReader& reader = *readerWrapper.getReader();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;
 
@@ -394,6 +216,173 @@ void MaterialResource::loadMaterial(IFile* file, uintptr_t thread_id_int)
 	} else {
 		failed();
 	}
+}
+
+Vector<Gleam::IRenderDevice*> MaterialResource::getDevices(void) const
+{
+	for (const auto& shader : _shaders) {
+		if (shader) {
+			return shader->getDevices();
+		}
+	}
+
+	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
+}
+
+bool MaterialResource::createProgram(
+	const Vector<Gleam::IRenderDevice*>& devices,
+	ShaderResourcePtr& vertex,
+	ShaderResourcePtr& pixel,
+	ShaderResourcePtr& domain,
+	ShaderResourcePtr& geometry,
+	ShaderResourcePtr& hull)
+{
+	bool success = true;
+
+	for (Gleam::IRenderDevice* device : devices) {
+		success = success && createProgram(*device, vertex, pixel, domain, geometry, hull);
+	}
+
+	return success;
+}
+
+bool MaterialResource::createProgram(
+	Gleam::IRenderDevice& device,
+	ShaderResourcePtr& vertex,
+	ShaderResourcePtr& pixel,
+	ShaderResourcePtr& domain,
+	ShaderResourcePtr& geometry,
+	ShaderResourcePtr& hull)
+{
+	Gleam::IShader* const vert = (vertex) ? vertex->getShader(device) : nullptr;
+	Gleam::IShader* const pix = (pixel) ? pixel->getShader(device) : nullptr;
+	Gleam::IShader* const dom = (domain) ? domain->getShader(device) : nullptr;
+	Gleam::IShader* const geo = (geometry) ? geometry->getShader(device) : nullptr;
+	Gleam::IShader* const hul = (hull) ? hull->getShader(device) : nullptr;
+
+	if (vertex && !vert) {
+		LogErrorResource("Failed to create material '%s'. Vertex shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), vertex->getFilePath().getBuffer());
+		return false;
+	}
+
+	if (pixel && !pix) {
+		LogErrorResource("Failed to create material '%s'. Pixel shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), pixel->getFilePath().getBuffer());
+		return false;
+	}
+
+	if (domain && !dom) {
+		LogErrorResource("Failed to create material '%s'. Domain shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), domain->getFilePath().getBuffer());
+		return false;
+	}
+
+	if (geometry && !geo) {
+		LogErrorResource("Failed to create material '%s'. Geometry shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), geometry->getFilePath().getBuffer());
+		return false;
+	}
+
+	if (hull && !hul) {
+		LogErrorResource("Failed to create material '%s'. Hull shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), hull->getFilePath().getBuffer());
+		return false;
+	}
+
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	Gleam::IProgram* const program = render_mgr.createProgram();
+
+	if (vert) {
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)] = vertex;
+		program->attach(vert);
+	}
+
+	if (pix) {
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Pixel)] = pixel;
+		program->attach(pix);
+	}
+
+	if (dom) {
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Domain)] = domain;
+		program->attach(dom);
+	}
+
+	if (geo) {
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Geometry)] = geometry;
+		program->attach(geo);
+	}
+
+	if (hul) {
+		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Hull)] = hull;
+		program->attach(hul);
+	}
+
+	_programs[&device].reset(program);
+
+	return true;
+}
+
+bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
+{
+	ShaderResourcePtr empty;
+	return createProgram(devices, vertex, pixel, empty, empty, empty);
+}
+
+bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
+{
+	ShaderResourcePtr empty;
+	return createProgram(device, vertex, pixel, empty, empty, empty);
+}
+
+bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute)
+{
+	bool success = true;
+
+	for (Gleam::IRenderDevice* device : devices) {
+		success = success && createProgram(*device, compute);
+	}
+
+	return success;
+}
+
+bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute)
+{
+	Gleam::IShader* const shader = compute->getShader(device);
+
+	if (!shader) {
+		LogErrorResource("Failed to create material '%s'. Compute shader '%s' was not initialized with the given device.", getFilePath().getBuffer(), compute->getFilePath().getBuffer());
+		return false;
+	}
+
+	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	Gleam::IProgram* const program = render_mgr.createProgram();
+
+	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
+	program->attach(shader);
+
+	_programs[&device].reset(program);
+
+	return true;
+}
+
+const Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device) const
+{
+	const auto it = _programs.find(&device);
+	return (it != _programs.end()) ? it->second.get() : nullptr;
+}
+
+Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device)
+{
+	const auto it = _programs.find(&device);
+	return (it != _programs.end()) ? it->second.get() : nullptr;
+}
+
+const Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device) const
+{
+	const ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
+	return (shader) ? shader->getLayout(device) : nullptr;
+}
+
+Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
+{
+	ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
+	return (shader) ? shader->getLayout(device) : nullptr;
 }
 
 NS_END

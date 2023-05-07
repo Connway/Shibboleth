@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_ECSLayerResource.h"
 #include "Shibboleth_ECSComponentCommon.h"
 #include "Shibboleth_ECSManager.h"
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
@@ -31,9 +30,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSLayerResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".ecslayer.bin"),
-		Shibboleth::ResExtAttribute(u8".ecslayer"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSLayerResource::loadLayer)
+		Shibboleth::ResourceExtensionAttribute(u8".ecslayer.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".ecslayer")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -188,7 +186,7 @@ void ECSLayerResource::archetypeLoaded(const Vector<IResource*>&)
 
 void ECSLayerResource::loadLayer(IFile* file, uintptr_t /*thread_id_int*/)
 {
-	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), file, true)) {
+	if (!OpenJSONOrMPackFile(_reader_wrapper, getFilePath().getBuffer(), *file, true)) {
 		LogErrorResource("Failed to load layer '%s' with error: '%s'", getFilePath().getBuffer(), _reader_wrapper.getErrorText());
 		failed();
 		return;

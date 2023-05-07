@@ -33,8 +33,7 @@ class LuaResource final : public IResource
 public:
 	~LuaResource(void);
 
-private:
-	void loadScript(IFile* file, uintptr_t thread_id_int);
+	void load(const IFile& file, uintptr_t thread_id_int) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(LuaResource);
 };

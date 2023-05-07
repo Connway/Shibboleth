@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ECSSceneResource.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
@@ -32,9 +31,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSSceneResource)
 	.classAttrs(
-		Shibboleth::ResExtAttribute(u8".ecsscene.bin"),
-		Shibboleth::ResExtAttribute(u8".ecsscene"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSSceneResource::loadScene)
+		Shibboleth::ResourceExtensionAttribute(u8".ecsscene.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".ecsscene")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -112,15 +110,15 @@ void ECSSceneResource::layerLoaded(const Vector<IResource*>&)
 
 void ECSSceneResource::loadScene(IFile* file, uintptr_t /*thread_id_int*/)
 {
-	SerializeReaderWrapper readerWrapper;
+	SerializeReaderWrapper reader_wrapper;
 
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load scene '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+	if (!OpenJSONOrMPackFile(reader_wrapper, getFilePath().getBuffer(), *file)) {
+		LogErrorResource("Failed to load scene '%s' with error: '%s'", getFilePath().getBuffer(), reader_wrapper.getErrorText());
 		failed();
 		return;
 	}
 
-	loadScene(*readerWrapper.getReader());
+	loadScene(*reader_wrapper.getReader());
 }
 
 NS_END

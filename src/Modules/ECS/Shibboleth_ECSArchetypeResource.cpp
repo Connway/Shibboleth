@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include <Shibboleth_ECSArchetypeResource.h>
 #include "Shibboleth_ECSManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_AppUtils.h>
@@ -31,9 +30,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ECSArchetypeResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
-		Shibboleth::ResExtAttribute(u8".archetype.bin"),
-		Shibboleth::ResExtAttribute(u8".archetype"),
-		Shibboleth::MakeLoadFileCallbackAttribute(&Shibboleth::ECSArchetypeResource::loadArchetype)
+		Shibboleth::ResourceExtensionAttribute(u8".archetype.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".archetype")
 	)
 
 	.template base<Shibboleth::IResource>()
@@ -59,17 +57,17 @@ const ECSArchetype& ECSArchetypeResource::getArchetype(void) const
 
 void ECSArchetypeResource::loadArchetype(IFile* file, uintptr_t /*thread_id_int*/)
 {
-	SerializeReaderWrapper readerWrapper;
+	SerializeReaderWrapper reader_wrapper;
 
-	if (!OpenJSONOrMPackFile(readerWrapper, getFilePath().getBuffer(), file)) {
-		LogErrorResource("Failed to load archetype '%s' with error: '%s'", getFilePath().getBuffer(), readerWrapper.getErrorText());
+	if (!OpenJSONOrMPackFile(reader_wrapper, getFilePath().getBuffer(), *file)) {
+		LogErrorResource("Failed to load archetype '%s' with error: '%s'", getFilePath().getBuffer(), reader_wrapper.getErrorText());
 		failed();
 		return;
 	}
 
 	ECSArchetype archetype;
 
-	if (!archetype.finalize(*readerWrapper.getReader())) {
+	if (!archetype.finalize(*reader_wrapper.getReader())) {
 		LogErrorResource("Failed to load archetype '%s'.", getFilePath().getBuffer());
 		failed();
 		return;

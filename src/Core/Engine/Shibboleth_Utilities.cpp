@@ -42,20 +42,21 @@ IApp& GetApp(void)
 	return *gApp;
 }
 
-bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const IFile* file, bool copy_buffer, const char8_t* schema)
+bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, const IFile& file, bool copy_buffer, const char8_t* schema)
 {
 	if (Gaff::EndsWith(path, u8".bin")) {
 		if (copy_buffer) {
-			int8_t* const buffer = SHIB_ALLOC_CAST(int8_t*, file->size(), GetAllocator());
-			memcpy(buffer, file->getBuffer(), file->size());
+			int8_t* const buffer = SHIB_ALLOC_CAST(int8_t*, file.size(), GetAllocator());
+			memcpy(buffer, file.getBuffer(), file.size());
 
-			return wrapper.parseMPack(reinterpret_cast<char*>(buffer), file->size(), true);
+			return wrapper.parseMPack(reinterpret_cast<char*>(buffer), file.size(), true);
 
 		} else {
-			return wrapper.parseMPack(reinterpret_cast<const char*>(file->getBuffer()), file->size(), false);
+			return wrapper.parseMPack(reinterpret_cast<const char*>(file.getBuffer()), file.size(), false);
 		}
+
 	} else {
-		return wrapper.parseJSON(reinterpret_cast<const char8_t*>(file->getBuffer()), schema);
+		return wrapper.parseJSON(reinterpret_cast<const char8_t*>(file.getBuffer()), schema);
 	}
 }
 
@@ -71,7 +72,7 @@ bool OpenJSONOrMPackFile(SerializeReaderWrapper& wrapper, const char8_t* path, c
 	}
 
 	if (file) {
-		const bool success = OpenJSONOrMPackFile(wrapper, path, file, true, schema);
+		const bool success = OpenJSONOrMPackFile(wrapper, path, *file, true, schema);
 		fs.closeFile(file);
 		return success;
 	}

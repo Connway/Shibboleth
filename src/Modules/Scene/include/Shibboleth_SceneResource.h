@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ECSLayerResource;
-using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+class LayerResource;
+using LayerResourcePtr = Gaff::RefPtr<LayerResource>;
 
 class SceneResource final : public IResource
 {
@@ -35,20 +35,19 @@ public:
 	SceneResource(void);
 	~SceneResource(void) override;
 
-	void load(const ISerializeReader& reader);
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 	void save(ISerializeWriter& writer);
 
 private:
 	struct LayerData final
 	{
-		ECSLayerResourcePtr layer;
+		LayerResourcePtr layer;
 		HashString64<> layer_name;
 	};
 
 	Vector<LayerData> _layers;
 
 	void layerLoaded(const Vector<IResource*>&);
-	void loadScene(IFile* file, uintptr_t thread_id_int);
 
 	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
 };

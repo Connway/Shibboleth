@@ -118,7 +118,7 @@ bool ResourceManager::init(void)
 		return true;
 	}
 
-	Vector<const ResExtAttribute*> ext_attrs;
+	Vector<const ResourceExtensionAttribute*> ext_attrs;
 	const CreatableAttribute* creatable = nullptr;
 
 	for (const Refl::IReflectionDefinition* ref_def : *type_bucket) {
@@ -128,9 +128,9 @@ bool ResourceManager::init(void)
 		ref_def->getClassAttrs(ext_attrs);
 
 		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
-		GAFF_ASSERT_MSG(creatable || !ext_attrs.empty(), "Resource '%s' is not creatable and does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());
+		GAFF_ASSERT_MSG(creatable || !ext_attrs.empty(), "Resource '%s' is not creatable and does not have any ResourceExtensionAttribute's!", ref_def->getReflectionInstance().getName());
 
-		for (const ResExtAttribute* ext_attr : ext_attrs) {
+		for (const ResourceExtensionAttribute* ext_attr : ext_attrs) {
 			GAFF_ASSERT_MSG(
 				_resource_factories.find(ext_attr->getExtension().getHash()) == _resource_factories.end(),
 				"File extension '%s' already has a resource associated with it!",

@@ -34,10 +34,9 @@ public:
 	EntityResource(void);
 	~EntityResource(void);
 
-private:
-	void loadEntity(IFile* file, uintptr_t thread_id_int);
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
-	SerializeReaderWrapper _reader_wrapper{ ProxyAllocator("Resource") };
+private:
 	Entity _entity_definition;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityResource);

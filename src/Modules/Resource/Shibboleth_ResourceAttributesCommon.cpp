@@ -23,12 +23,16 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::CreatableAttribute, Refl::IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResExtAttribute, Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceExtensionAttribute, Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceLoadPoolAttribute, Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceSchemaAttribute, Refl::IAttribute)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CreatableAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ResExtAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(ResourceExtensionAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(ResourceLoadPoolAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(ResourceSchemaAttribute)
 
 Refl::IAttribute* CreatableAttribute::clone(void) const
 {
@@ -38,20 +42,56 @@ Refl::IAttribute* CreatableAttribute::clone(void) const
 
 
 
-ResExtAttribute::ResExtAttribute(const char8_t* extension):
+ResourceExtensionAttribute::ResourceExtensionAttribute(const char8_t* extension):
 	_extension(extension, eastl::CharStrlen(extension))
 {
 }
 
-const HashStringView32<>& ResExtAttribute::getExtension(void) const
+const HashStringView32<>& ResourceExtensionAttribute::getExtension(void) const
 {
 	return _extension;
 }
 
-Refl::IAttribute* ResExtAttribute::clone(void) const
+Refl::IAttribute* ResourceExtensionAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ResExtAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
+	return SHIB_ALLOCT_POOL(ResourceExtensionAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
+}
+
+
+
+ResourceLoadPoolAttribute::ResourceLoadPoolAttribute(Gaff::Hash32 pool):
+	_pool(pool)
+{
+}
+
+Gaff::Hash32 ResourceLoadPoolAttribute::getPool(void) const
+{
+	return _pool;
+}
+
+Refl::IAttribute* ResourceLoadPoolAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ResourceLoadPoolAttribute, allocator.getPoolIndex("Reflection"), allocator, _pool);
+}
+
+
+
+ResourceSchemaAttribute::ResourceSchemaAttribute(const char8_t* schema):
+	_schema(schema)
+{
+}
+
+const char8_t* ResourceSchemaAttribute::getSchema(void) const
+{
+	return _schema;
+}
+
+Refl::IAttribute* ResourceSchemaAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ResourceSchemaAttribute, allocator.getPoolIndex("Reflection"), allocator, _schema);
 }
 
 NS_END

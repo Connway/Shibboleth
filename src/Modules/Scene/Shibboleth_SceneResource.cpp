@@ -21,10 +21,40 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SceneResource.h"
-// #include <Shibboleth_ResourceAttributesCommon.h>
-// #include <Shibboleth_LoadFileCallbackAttribute.h>
-// #include <Shibboleth_SerializeReaderWrapper.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
 // #include <Shibboleth_ResourceManager.h>
 // #include <Shibboleth_ResourceLogging.h>
 // #include <Shibboleth_Utilities.h>
 // #include <Gaff_Function.h>
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
+	.classAttrs(
+		Shibboleth::ResourceExtensionAttribute(u8".scene.bin"),
+		Shibboleth::ResourceExtensionAttribute(u8".scene")
+	)
+
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource)
+
+NS_SHIBBOLETH
+
+SceneResource::SceneResource(void)
+{
+}
+
+SceneResource::~SceneResource(void)
+{
+}
+
+void SceneResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
+{
+
+}
+
+void SceneResource::save(ISerializeWriter& writer)
+{
+
+}
+
+NS_END
