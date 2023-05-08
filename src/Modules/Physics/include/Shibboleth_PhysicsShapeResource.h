@@ -65,7 +65,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsShapeResource);
 };
 
-using PhysicsShapeResourcePtr = Gaff::RefPtr<PhysicsShapeResource>;
+using PhysicsShapeResourcePtr = ResourcePtr<PhysicsShapeResource>;
 
 NS_END
 

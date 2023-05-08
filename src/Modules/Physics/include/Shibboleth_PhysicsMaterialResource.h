@@ -47,7 +47,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsMaterialResource);
 };
 
-using PhysicsMaterialResourcePtr = Gaff::RefPtr<PhysicsMaterialResource>;
+using PhysicsMaterialResourcePtr = ResourcePtr<PhysicsMaterialResource>;
 
 NS_END
 

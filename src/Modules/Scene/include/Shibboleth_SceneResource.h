@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class LayerResource;
-using LayerResourcePtr = Gaff::RefPtr<LayerResource>;
+using LayerResourcePtr = ResourcePtr<LayerResource>;
 
 class SceneResource final : public IResource
 {
@@ -52,7 +52,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
 };
 
-using SceneResourcePtr = Gaff::RefPtr<SceneResource>;
+using SceneResourcePtr = ResourcePtr<SceneResource>;
 
 NS_END
 

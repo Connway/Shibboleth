@@ -22,9 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include "Shibboleth_ECSArchetypeResource.h"
-#include <Shibboleth_SerializeReaderWrapper.h>
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_EntityResource.h>
 
 NS_SHIBBOLETH
 
@@ -39,8 +37,9 @@ public:
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	SerializeReaderWrapper _reader_wrapper;
-	ResourceCallbackID _callback_id;
+	Vector<EntityResourcePtr> _entity_resources;
+	Vector<Entity*> _entities;
+	//ResourceCallbackID _callback_id;
 
 	//bool loadOverrides(
 	//	const ISerializeReader& reader,
@@ -56,7 +55,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };
 
-using LayerResourcePtr = Gaff::RefPtr<LayerResource>;
+using LayerResourcePtr = ResourcePtr<LayerResource>;
 
 NS_END
 

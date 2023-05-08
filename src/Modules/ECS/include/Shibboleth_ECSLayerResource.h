@@ -56,7 +56,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ECSLayerResource);
 };
 
-using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+using ECSLayerResourcePtr = ResourcePtr<ECSLayerResource>;
 
 NS_END
 

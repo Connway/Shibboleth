@@ -33,7 +33,7 @@ class Resource
 {
 public:
 	static_assert(std::is_base_of<IResource, T>::value, "Resource<T>: T must be derived from IResource.");
-	using ResourceType = Gaff::RefPtr<T>;
+	using ResourceType = ResourcePtr<T>;
 
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, const ResourceType& value);
 	static void SetShared(ECSManager& ecs_mgr, Gaff::Hash64 archetype, ResourceType&& value);

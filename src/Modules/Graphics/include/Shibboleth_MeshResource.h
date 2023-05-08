@@ -57,7 +57,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(MeshResource);
 };
 
-using MeshResourcePtr = Gaff::RefPtr<MeshResource>;
+using MeshResourcePtr = ResourcePtr<MeshResource>;
 
 NS_END
 

@@ -46,7 +46,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineResource);
 };
 
-using StateMachineResourcePtr = Gaff::RefPtr<StateMachineResource>;
+using StateMachineResourcePtr = ResourcePtr<StateMachineResource>;
 
 NS_END
 

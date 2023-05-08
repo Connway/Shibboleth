@@ -22,28 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ResourcePtr.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_HashString.h>
-#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_Vector.h>
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_RefPtr.h>
 #include <EASTL/functional.h>
 
-#define RES_FAIL_MSG(cond, msg, ...) \
-	if (cond) { \
-		LogErrorResource(msg, ##__VA_ARGS__); \
-		failed(); \
-		return; \
-	}
-
 NS_SHIBBOLETH
 
 class ResourceManager;
-class IFile;
-
-class IResource;
-using IResourcePtr = Gaff::RefPtr<IResource>;
+//class IFile;
 
 struct ResourceCallbackID final
 {
@@ -59,7 +49,7 @@ enum class ResourceState
 	Delayed
 };
 
-class IResource : public Gaff::IRefCounted, public Refl::IReflectionObject
+class IResource : public Refl::IReflectionObject
 {
 public:
 	static constexpr bool Creatable = false;
@@ -70,9 +60,9 @@ public:
 	virtual void load(const IFile& file, uintptr_t thread_id_int);
 	virtual void load(void);
 
-	void addRef(void) const override;
-	void release(void) const override;
-	int32_t getRefCount(void) const override;
+	void addRef(void) const;
+	void release(void) const;
+	int32_t getRefCount(void) const;
 
 	const HashString64<>& getFilePath(void) const;
 	ResourceState getState(void) const;
@@ -90,6 +80,9 @@ protected:
 private:
 	mutable eastl::atomic<int32_t> _count = 0;
 
+	//Vector<IResource*> _incoming_references;
+	//Vector<IResource*> _outgoing_references;
+
 	ResourceState _state = ResourceState::Delayed;
 	HashString64<> _file_path;
 
@@ -99,6 +92,8 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(IResource);
 };
+
+using IResourcePtr = ResourcePtr<IResource>;
 
 NS_END
 

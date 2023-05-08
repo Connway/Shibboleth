@@ -44,7 +44,7 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(SamplerStateResource)
 
-void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
+void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
 	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;

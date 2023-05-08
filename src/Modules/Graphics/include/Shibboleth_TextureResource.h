@@ -59,7 +59,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
 };
 
-using TextureResourcePtr = Gaff::RefPtr<TextureResource>;
+using TextureResourcePtr = ResourcePtr<TextureResource>;
 
 NS_END
 

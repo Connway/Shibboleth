@@ -50,7 +50,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };
 
-using RasterStateResourcePtr = Gaff::RefPtr<RasterStateResource>;
+using RasterStateResourcePtr = ResourcePtr<RasterStateResource>;
 
 NS_END
 

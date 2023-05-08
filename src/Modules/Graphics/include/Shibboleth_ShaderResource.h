@@ -52,7 +52,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ShaderResource);
 };
 
-using ShaderResourcePtr = Gaff::RefPtr<ShaderResource>;
+using ShaderResourcePtr = ResourcePtr<ShaderResource>;
 
 NS_END
 

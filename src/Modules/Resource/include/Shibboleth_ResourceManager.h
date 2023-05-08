@@ -47,19 +47,41 @@ public:
 	bool init(void) override;
 
 	template <class T>
-	Gaff::RefPtr<T> requestResourceT(HashStringView64<> name, bool delay_load = false)
+	ResourcePtr<T> requestResourceTFast(HashStringView64<> name, bool delay_load = false)
 	{
 		IResourcePtr old_ptr = requestResource(name, delay_load);
 
 		if (old_ptr) {
-			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
 		} else {
-			return Gaff::RefPtr<T>();
+			return ResourcePtr<T>();
 		}
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> requestResourceT(const char8_t* name, bool delay_load = false)
+	ResourcePtr<T> requestResourceTFast(const char8_t* name, bool delay_load = false)
+	{
+		return requestResourceTFast<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
+	}
+
+	template <class T>
+	ResourcePtr<T> requestResourceT(HashStringView64<> name, bool delay_load = false)
+	{
+		IResourcePtr old_ptr = requestResource(name, delay_load);
+
+		if (old_ptr) {
+			IResource* const resource = old_ptr.get();
+			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
+
+			return ResourcePtr<T>(typed_resource);
+
+		} else {
+			return ResourcePtr<T>();
+		}
+	}
+
+	template <class T>
+	ResourcePtr<T> requestResourceT(const char8_t* name, bool delay_load = false)
 	{
 		return requestResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
@@ -70,21 +92,37 @@ public:
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> createResourceT(HashStringView64<> name)
+	ResourcePtr<T> createResourceTFast(HashStringView64<> name)
 	{
 		static_assert(T::Creatable, "Resource is not a creatable type.");
 		IResourcePtr old_ptr = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
 
 		if (old_ptr) {
-			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
-		}
-		else {
-			return Gaff::RefPtr<T>();
+			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
+		} else {
+			return ResourcePtr<T>();
 		}
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> createResourceT(const char8_t* name)
+	ResourcePtr<T> createResourceT(HashStringView64<> name)
+	{
+		static_assert(T::Creatable, "Resource is not a creatable type.");
+		IResourcePtr old_ptr = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
+
+		if (old_ptr) {
+			IResource* const resource = old_ptr.get();
+			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
+
+			return ResourcePtr<T>(typed_resource);
+
+		} else {
+			return ResourcePtr<T>();
+		}
+	}
+
+	template <class T>
+	ResourcePtr<T> createResourceT(const char8_t* name)
 	{
 		return createResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
@@ -95,19 +133,41 @@ public:
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> getResourceT(HashStringView64<> name)
+	ResourcePtr<T> getResourceTFast(HashStringView64<> name)
 	{
 		IResourcePtr old_ptr = getResource(name);
 
 		if (old_ptr) {
-			return Gaff::RefPtr<T>(static_cast<T*>(old_ptr.release()), false);
+			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
 		} else {
-			return Gaff::RefPtr<T>();
+			return ResourcePtr<T>();
 		}
 	}
 
 	template <class T>
-	Gaff::RefPtr<T> getResourceT(const char8_t* name)
+	ResourcePtr<T> getResourceTFast(const char8_t* name)
+	{
+		return getResourceTFast<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
+	}
+
+	template <class T>
+	ResourcePtr<T> getResourceT(HashStringView64<> name)
+	{
+		IResourcePtr old_ptr = getResource(name);
+
+		if (old_ptr) {
+			IResource* const resource = old_ptr.get();
+			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
+
+			return ResourcePtr<T>(typed_resource);
+
+		} else {
+			return ResourcePtr<T>();
+		}
+	}
+
+	template <class T>
+	ResourcePtr<T> getResourceT(const char8_t* name)
 	{
 		return getResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
@@ -170,12 +230,9 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
-
 template <class T>
-static bool LoadRefPtr(const ISerializeReader& reader, Gaff::RefPtr<T>& out)
+static bool LoadResourcePtr(const ISerializeReader& reader, ResourcePtr<T>& out)
 {
-	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
-
 	if (!reader.isString()) {
 		return false;
 	}
@@ -188,9 +245,8 @@ static bool LoadRefPtr(const ISerializeReader& reader, Gaff::RefPtr<T>& out)
 }
 
 template <class T>
-static void SaveRefPtr(ISerializeWriter& writer, const Gaff::RefPtr<T>& value)
+static void SaveResourcePtr(ISerializeWriter& writer, const ResourcePtr<T>& value)
 {
-	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
 	writer.writeString(value->getFilePath().getBuffer());
 }
 
@@ -198,10 +254,10 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceManager)
 
-// Gaff::RefPtr
-SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T)
+// ResourcePtr
+SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ResourcePtr, T)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Gaff::RefPtr, T)
-	.serialize(Shibboleth::LoadRefPtr<T>, Shibboleth::SaveRefPtr<T>)
-	.func("get", &Gaff::RefPtr<T>::get)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(Gaff::RefPtr, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourcePtr, T)
+	.serialize(Shibboleth::LoadResourcePtr<T>, Shibboleth::SaveResourcePtr<T>)
+	.func("get", &Shibboleth::ResourcePtr<T>::get)
+SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ResourcePtr, T)

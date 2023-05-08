@@ -46,7 +46,7 @@ private:
 	friend class ECSManager;
 };
 
-using ECSArchetypeResourcePtr = Gaff::RefPtr<ECSArchetypeResource>;
+using ECSArchetypeResourcePtr = ResourcePtr<ECSArchetypeResource>;
 
 NS_END
 

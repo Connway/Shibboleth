@@ -48,7 +48,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };
 
-using SamplerStateResourcePtr = Gaff::RefPtr<SamplerStateResource>;
+using SamplerStateResourcePtr = ResourcePtr<SamplerStateResource>;
 
 NS_END
 

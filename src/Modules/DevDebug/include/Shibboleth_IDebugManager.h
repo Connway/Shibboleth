@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_AppUtils.h>
@@ -34,7 +35,7 @@ struct ImGuiContext;
 NS_SHIBBOLETH
 
 class ModelResource;
-using ModelResourcePtr = Gaff::RefPtr<ModelResource>;
+using ModelResourcePtr = ResourcePtr<ModelResource>;
 
 // To force getting the context from the DLL.
 class IDebugManager : public IManager

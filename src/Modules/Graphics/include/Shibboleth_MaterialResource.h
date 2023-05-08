@@ -74,7 +74,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
 };
 
-using MaterialResourcePtr = Gaff::RefPtr<MaterialResource>;
+using MaterialResourcePtr = ResourcePtr<MaterialResource>;
 
 NS_END
 

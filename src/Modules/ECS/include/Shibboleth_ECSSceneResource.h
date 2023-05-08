@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class ECSLayerResource;
-using ECSLayerResourcePtr = Gaff::RefPtr<ECSLayerResource>;
+using ECSLayerResourcePtr = ResourcePtr<ECSLayerResource>;
 
 class ECSSceneResource final : public IResource
 {
@@ -53,7 +53,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ECSSceneResource);
 };
 
-using ECSSceneResourcePtr = Gaff::RefPtr<ECSSceneResource>;
+using ECSSceneResourcePtr = ResourcePtr<ECSSceneResource>;
 
 NS_END
 

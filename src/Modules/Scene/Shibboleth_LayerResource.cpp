@@ -40,17 +40,16 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(LayerResource)
 
-LayerResource::LayerResource(void):
-	_reader_wrapper(ProxyAllocator("Resource"))
+LayerResource::LayerResource(void)
 {
 }
 
 LayerResource::~LayerResource(void)
 {
-	if (_callback_id.cb_id > -1) {
-		ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-		res_mgr.removeCallback(_callback_id);
-	}
+	//if (_callback_id.cb_id > -1) {
+	//	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
+	//	res_mgr.removeCallback(_callback_id);
+	//}
 }
 
 //bool LayerResource::loadOverrides(

@@ -38,7 +38,7 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(LuaResource);
 };
 
-using LuaResourcePtr = Gaff::RefPtr<LuaResource>;
+using LuaResourcePtr = ResourcePtr<LuaResource>;
 
 NS_END
 

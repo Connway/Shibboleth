@@ -56,7 +56,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };
 
-using ModelResourcePtr = Gaff::RefPtr<ModelResource>;
+using ModelResourcePtr = ResourcePtr<ModelResource>;
 
 NS_END
 

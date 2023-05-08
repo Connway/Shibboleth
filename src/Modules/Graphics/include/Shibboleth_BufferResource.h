@@ -47,7 +47,7 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
 };
 
-using BufferResourcePtr = Gaff::RefPtr<BufferResource>;
+using BufferResourcePtr = ResourcePtr<BufferResource>;
 
 NS_END
 
