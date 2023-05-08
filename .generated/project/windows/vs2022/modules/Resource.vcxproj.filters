@@ -12,9 +12,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceAttributesCommon.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -22,6 +19,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtr.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h">

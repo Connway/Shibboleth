@@ -32,6 +32,7 @@ local GenerateProject = function()
 		{
 			"MainLoop",
 			"Resource",
+			"DevDebug",
 			"Gleam"
 		}
 
@@ -43,6 +44,7 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Entity")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
+	table.insert(deps, "DevDebug")
 	table.insert(deps, "Gleam")
 
 	dependson(deps)

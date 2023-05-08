@@ -39,6 +39,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(SceneResource)
+
 SceneResource::SceneResource(void)
 {
 }
@@ -47,12 +49,12 @@ SceneResource::~SceneResource(void)
 {
 }
 
-void SceneResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
+void SceneResource::load(const ISerializeReader& /*reader*/, uintptr_t /*thread_id_int*/)
 {
 
 }
 
-void SceneResource::save(ISerializeWriter& writer)
+void SceneResource::save(ISerializeWriter& /*writer*/)
 {
 
 }

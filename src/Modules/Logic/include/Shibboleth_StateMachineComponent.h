@@ -32,7 +32,7 @@ class StateMachineComponent final : public EntityComponent
 public:
 	bool init(void) override;
 	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides) override;
-	void destroy(void) override;
+	//void destroy(void) override;
 
 	void update(float dt) override;
 

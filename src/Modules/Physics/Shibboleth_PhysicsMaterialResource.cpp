@@ -57,7 +57,7 @@ physx::PxMaterial* PhysicsMaterialResource::getMaterial(void)
 	return _material;
 }
 
-void PhysicsMaterialResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/) override;
+void PhysicsMaterialResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
 	if (!reader.isObject()) {
 		// $TODO: Log error.

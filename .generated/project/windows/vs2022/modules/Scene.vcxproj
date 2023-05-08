@@ -238,13 +238,11 @@ CodeGenerator64od module_header --module Scene</Command>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Archetype.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_EntityResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_LayerResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneResource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_EntityResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_LayerResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\Shibboleth_SceneModule.cpp" />

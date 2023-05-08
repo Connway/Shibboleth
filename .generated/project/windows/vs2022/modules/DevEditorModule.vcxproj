@@ -130,13 +130,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\DevEditorModule\$(T
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin\platforms (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin\platforms)
 copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Core.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -178,13 +172,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\DevEditorModule\$
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin\platforms (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin\platforms)
 copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Core.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -226,13 +214,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\DevEditorModule\$
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin\platforms (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin\platforms)
 copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Core.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -274,13 +256,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevEditor
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
 IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin\platforms (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin\platforms)
 copy /B /Y $(QT_DIR)\plugins\platforms\qwindowsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms
-copy /B /Y $(QT_DIR)\bin\Qt6Cored.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Core.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Guid.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Gui.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgetsd.dll $(SolutionDir)\..\..\..\..\workingdir\bin
-copy /B /Y $(QT_DIR)\bin\Qt6Widgets.dll $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
+copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\workingdir\bin\platforms</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

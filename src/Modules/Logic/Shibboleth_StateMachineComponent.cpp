@@ -34,6 +34,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(StateMachineComponent);
+
 bool StateMachineComponent::init()
 {
 	EntityComponent::init();
