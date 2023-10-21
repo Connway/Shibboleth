@@ -27,8 +27,11 @@ THE SOFTWARE.
 #endif
 
 #include "Gaff_Defines.h"
+
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
 #include <EASTL/string_view.h>
 #include <EASTL/string.h>
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_GAFF
 

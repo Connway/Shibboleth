@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include "Gleam_CommandList_Direct3D11.h"
 #include "Gleam_RenderOutput_Direct3D11.h"
 #include "Gleam_Global.h"
-#include <EASTL/string.h>
+#include "Gleam_String.h"
 
 NS_GLEAM
 

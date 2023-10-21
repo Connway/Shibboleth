@@ -28,7 +28,10 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_Assert.h"
+
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
 #include <EASTL/string.h>
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_GAFF
 

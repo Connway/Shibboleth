@@ -6,7 +6,7 @@
 // This file implements similar functionality to char_traits which is part of
 // the C++ standard STL library specification. This is intended for internal
 // EASTL use only.  Functionality can be accessed through the eastl::string or
-// eastl::string_view types.
+// eastl::string_view types.  
 //
 // http://en.cppreference.com/w/cpp/string/char_traits
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ namespace eastl
 		for(; n > 0; ++p1, ++p2, --n)
 		{
 			if(*p1 != *p2)
-				return (static_cast<typename make_unsigned<T>::type>(*p1) <
+				return (static_cast<typename make_unsigned<T>::type>(*p1) < 
 						static_cast<typename make_unsigned<T>::type>(*p2)) ? -1 : 1;
 		}
 		return 0;
@@ -230,7 +230,10 @@ namespace eastl
 
 	inline int Compare(const char* p1, const char* p2, size_t n)
 	{
-		return memcmp(p1, p2, n);
+		if (n > 0)
+			return memcmp(p1, p2, n);
+		else
+			return 0;
 	}
 
 
@@ -243,7 +246,7 @@ namespace eastl
 			const T c2 = CharToLower(*p2);
 
 			if(c1 != c2)
-				return (static_cast<typename make_unsigned<T>::type>(c1) <
+				return (static_cast<typename make_unsigned<T>::type>(c1) < 
 						static_cast<typename make_unsigned<T>::type>(c2)) ? -1 : 1;
 		}
 		return 0;
@@ -278,6 +281,7 @@ namespace eastl
 	}
 
 
+	// If either pDestination or pSource is an invalid or null pointer, the behavior is undefined, even if (pSourceEnd - pSource) is zero.
 	template <typename T>
 	inline T* CharStringUninitializedCopy(const T* pSource, const T* pSourceEnd, T* pDestination)
 	{
@@ -299,12 +303,12 @@ namespace eastl
 		return pEnd;
 	}
 
-
+    
 	template <typename T>
-	const T* CharTypeStringRSearch(const T* p1Begin, const T* p1End,
+	const T* CharTypeStringRSearch(const T* p1Begin, const T* p1End, 
 								   const T* p2Begin, const T* p2End)
 	{
-		// Test for zero length strings, in which case we have a match or a failure,
+		// Test for zero length strings, in which case we have a match or a failure, 
 		// but the return value is the same either way.
 		if((p1Begin == p1End) || (p2Begin == p2End))
 			return p1Begin;
@@ -326,7 +330,7 @@ namespace eastl
 		{
 			// Search for the last occurrence of *p2Begin.
 			pCurrent1 = CharTypeStringFindEnd(p1Begin, pSearchEnd, *p2Begin);
-			if(pCurrent1 == pSearchEnd) // If the first char of p2 wasn't found,
+			if(pCurrent1 == pSearchEnd) // If the first char of p2 wasn't found, 
 				return p1End;           // then we immediately have failure.
 
 			// In this case, *pTemp == *p2Begin. So compare the rest.

@@ -100,10 +100,12 @@ THE SOFTWARE.
 		__pragma(warning(disable : warnings))
 
 	#define MSVC_DISABLE_WARNING_POP() __pragma(warning(pop))
+	#define MSVC_PRAGMA(x) __pragma(x)
 
 #else
 	#define MSVC_DISABLE_WARNING_PUSH(warnings)
 	#define MSVC_DISABLE_WARNING_POP()
+	#define MSVC_PRAGMA(x)
 #endif
 
 #ifdef PLATFORM_COMPILER_GCC
@@ -117,4 +119,31 @@ THE SOFTWARE.
 #else
 	#define GCC_DISABLE_WARNING_PUSH(warnings)
 	#define GCC_DISABLE_WARNING_POP()
+	#define GCC_PRAGMA(x)
 #endif
+
+#ifdef PLATFORM_COMPILER_CLANG
+	#define CLANG_PRAGMA(x) _Pragma(#x)
+	#define CLANG_DISABLE_WARNING_PUSH(warnings) \
+		_Pragma("clang diagnostic push") \
+		CLANG_PRAGMA(clang diagnostic ignored warnings)
+
+	#define CLANG_DISABLE_WARNING_POP() _Pragma("clang diagnostic pop")
+
+#else
+	#define CLANG_DISABLE_WARNING_PUSH(warnings)
+	#define CLANG_DISABLE_WARNING_POP()
+	#define CLANG_PRAGMA(x)
+#endif
+
+#define GCC_CLANG_DISABLE_WARNING_PUSH(warnings) \
+	GCC_DISABLE_WARNING_PUSH(warnings) \
+	CLANG_DISABLE_WARNING_PUSH(warnings)
+
+#define GCC_CLANG_DISABLE_WARNING_POP() \
+	GCC_DISABLE_WARNING_POP() \
+	CLANG_DISABLE_WARNING_POP()
+
+#define GCC_CLANG_PRAGMA(x) \
+	GCC_PRAGMA(x) \
+	CLANG_PRAGMA(x)

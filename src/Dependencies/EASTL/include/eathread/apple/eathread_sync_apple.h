@@ -37,6 +37,7 @@
 
 // EAReadBarrier / EAWriteBarrier / EAReadWriteBarrier
 
+// $MODIFICATION
 //#define EAReadBarrier      OSMemoryBarrier
 //#define EAWriteBarrier     OSMemoryBarrier
 //#define EAReadWriteBarrier OSMemoryBarrier

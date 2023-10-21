@@ -36,6 +36,7 @@
 		#endif
 
 		#if defined(EA_PLATFORM_APPLE) || defined(__APPLE__)
+			// $MODIFICATION
 			#include <EASTL/string.h>
 			#include <dlfcn.h>
 		#endif
@@ -419,6 +420,7 @@
 					// on older kernels), and hence distinguish which thread might be responsible for the high
 					// CPU load or similar problems.
 					char8_t nameBuf[16]; // Limited to 16 bytes, null terminated if < 16 bytes
+					// $MODIFICATION
 					strncpy(reinterpret_cast<char*>(&nameBuf[0]), reinterpret_cast<const char*>(pName), sizeof(nameBuf));
 					nameBuf[15] = 0;
 					prctl(PR_SET_NAME, (unsigned long)nameBuf, 0, 0, 0);
@@ -436,6 +438,7 @@
 					{
 						// Mac OS X does not expose the length limit of the name, so hardcode it.
 						char8_t nameBuf[63]; // It is not clear what the size limit actually is, though 63 is known to work because it was seen on the Internet.
+					// $MODIFICATION
 						strncpy(reinterpret_cast<char*>(&nameBuf[0]), reinterpret_cast<const char*>(pName), sizeof(nameBuf));
 						nameBuf[62] = 0;
 						pthread_setname_np_ptr(reinterpret_cast<char*>(&nameBuf[0]));
@@ -459,6 +462,7 @@
 
 		void SetThreadName(EAThreadDynamicData* pTDD)
 		{
+			// $MODIFICATION
 			#if defined(EA_PLATFORM_LINUX)
 				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 0);
 				// http://stackoverflow.com/questions/2369738/can-i-set-the-name-of-a-thread-in-pthreads-linux
@@ -468,6 +472,7 @@
 				if(GetId(pTDD) == EA::Thread::GetThreadId())
 					SetCurrentThreadName(pTDD->mName);
 
+			// $MODIFICATION
 			#elif defined(EA_PLATFORM_APPLE)
 				EAT_COMPILETIME_ASSERT(EATHREAD_OTHER_THREAD_NAMING_SUPPORTED == 0);
 				// http://stackoverflow.com/questions/2369738/can-i-set-the-name-of-a-thread-in-pthreads-linux

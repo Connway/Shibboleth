@@ -23,7 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Hash.h"
+
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
 #include <EASTL/array.h>
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_GAFF
 
