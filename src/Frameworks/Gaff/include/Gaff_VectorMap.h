@@ -78,7 +78,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::const_iterator Find(const Ve
 	auto it = eastl::lower_bound(map.begin(), map.end(), value,
 		[](const typename Container::value_type& lhs, const T& rhs) -> bool
 	{
-		return eastl::less_2<Key, T>{}(lhs.first, rhs);
+		return eastl::less{}(lhs.first, rhs);
 	});
 
 	if (it != map.end() && value != it->first) {
@@ -96,7 +96,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::iterator Find(VectorMap<Key,
 	auto it = eastl::lower_bound(map.begin(), map.end(), value,
 	[](const typename Container::value_type& lhs, const T& rhs) -> bool
 	{
-		return eastl::less_2<Key, T>{}(lhs.first, rhs);
+		return eastl::less{}(lhs.first, rhs);
 	});
 
 	if (it != map.end() && value != it->first) {

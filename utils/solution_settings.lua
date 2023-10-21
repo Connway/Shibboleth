@@ -66,7 +66,7 @@ filter { "configurations:*Debug*" }
 	{
 		"_DEBUG",
 		"DEBUG",
-		"PROFILE",
+		"SHIB_PROFILE",
 		"JPH_PROFILE_ENABLED",
 		"JPH_DEBUG_RENDERER",
 		"JPH_FLOATING_POINT_EXCEPTIONS_ENABLED"
@@ -86,7 +86,10 @@ filter { "configurations:*Release* or *Profile*" }
 	}
 
 filter { "configurations:*Profile*" }
-	defines { "PROFILE" }
+	defines { "SHIB_PROFILE" }
+
+filter { "configurations:*Release*" }
+	--defines { "SHIB_NO_EDITOR" }
 
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }

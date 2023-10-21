@@ -26,6 +26,11 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_Utilities.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
+	.serialize(&Shibboleth::LayerEntityData::Load, &Shibboleth::LayerEntityData::Save)
+	.var("Entity Resource", &Shibboleth::LayerEntityData::_entity_resource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
 	.classAttrs(
 		Shibboleth::ResourceExtensionAttribute(u8".layer.bin"),
@@ -38,7 +43,21 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerResource)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(LayerEntityData)
 SHIB_REFLECTION_CLASS_DEFINE(LayerResource)
+
+
+bool LayerEntityData::Load(const ISerializeReader& reader, LayerEntityData& instance)
+{
+	GAFF_REF(reader, instance);
+	return true;
+}
+
+void LayerEntityData::Save(ISerializeWriter& writer, const LayerEntityData& instance)
+{
+	GAFF_REF(writer, instance);
+}
+
 
 LayerResource::LayerResource(void)
 {

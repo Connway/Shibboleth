@@ -49,7 +49,7 @@ namespace
 		SHIB_FREE(ptr, g_allocator);
 	}
 
-	class ModelMapComparison final
+	class ModelMapComparison
 	{
 	public:
 		bool operator()(const Shibboleth::ModelResourcePtr& lhs, const Shibboleth::ModelResource* rhs) const

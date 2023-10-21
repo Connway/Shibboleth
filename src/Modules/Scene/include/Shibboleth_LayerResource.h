@@ -26,6 +26,20 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class LayerEntityData final : public Refl::IReflectionObject
+{
+public:
+
+private:
+	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
+	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
+
+	EntityResourcePtr _entity_resource;
+	// Modifier operations
+
+	SHIB_REFLECTION_CLASS_DECLARE(LayerEntityData);
+};
+
 class LayerResource final : public IResource
 {
 public:
@@ -59,4 +73,5 @@ using LayerResourcePtr = ResourcePtr<LayerResource>;
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::LayerEntityData)
 SHIB_REFLECTION_DECLARE(Shibboleth::LayerResource)

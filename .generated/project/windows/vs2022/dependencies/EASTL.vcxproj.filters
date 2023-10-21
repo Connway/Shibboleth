@@ -504,12 +504,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_pointer.h">
       <Filter>include\EASTL\internal\atomic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_pop_compiler_options.h">
-      <Filter>include\EASTL\internal\atomic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_push_compiler_options.h">
-      <Filter>include\EASTL\internal\atomic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\atomic\atomic_size_aligned.h">
       <Filter>include\EASTL\internal\atomic</Filter>
     </ClInclude>

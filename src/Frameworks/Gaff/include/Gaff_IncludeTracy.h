@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#define TRACY_IMPORTS
 #endif
 
-#ifdef PROFILE
+#ifdef SHIB_PROFILE
 	#define TRACY_ENABLE
 #endif
 

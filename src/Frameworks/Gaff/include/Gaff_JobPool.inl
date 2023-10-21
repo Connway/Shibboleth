@@ -174,7 +174,7 @@ void JobPool<Allocator>::addJobs(const JobData* jobs, int32_t num_jobs, Counter*
 {
 	GAFF_ASSERT(jobs && num_jobs > 0);
 
-	const auto it = _job_pools.find_as(pool, eastl::less_2< Hash32, const HashString32<Allocator> >());
+	const auto it = _job_pools.find_as(pool, eastl::less());
 	GAFF_ASSERT(it != _job_pools.end());
 	JobQueue& job_queue = it->second;
 
