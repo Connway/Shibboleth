@@ -5,48 +5,48 @@
 //////////////////////////////////////////////////////////////////////////////
 // deque design
 //
-// A deque (pronounced "deck") is a double-ended queue, though this is partially 
+// A deque (pronounced "deck") is a double-ended queue, though this is partially
 // of a misnomer. A deque does indeed let you add and remove values from both ends
 // of the container, but it's not usually used for such a thing and instead is used
-// as a more flexible version of a vector. It provides operator[] (random access) 
+// as a more flexible version of a vector. It provides operator[] (random access)
 // and can insert items anywhere and not just at the front and back.
-// 
-// While you can implement a double-ended queue via a doubly-linked list, deque is 
-// instead implemented as a list of arrays. The benefit of this is that memory usage 
-// is lower and that random access can be had with decent efficiency. 
-// 
+//
+// While you can implement a double-ended queue via a doubly-linked list, deque is
+// instead implemented as a list of arrays. The benefit of this is that memory usage
+// is lower and that random access can be had with decent efficiency.
+//
 // Our implementation of deque is just like every other implementation of deque,
-// as the C++ standard all but dictates that you make it work this way. Below 
-// we have a depiction of an array (or vector) of 48 items, with each node being 
-// a '+' character and extra capacity being a '-' character. What we have is one 
+// as the C++ standard all but dictates that you make it work this way. Below
+// we have a depiction of an array (or vector) of 48 items, with each node being
+// a '+' character and extra capacity being a '-' character. What we have is one
 // contiguous block of memory:
-// 
+//
 //     ++++++++++++++++++++++++++++++++++++++++++++++++-----------------
 //     0                                              47
-// 
+//
 // With a deque, the same array of 48 items would be implemented as multiple smaller
 // arrays of contiguous memory, each of fixed size. We will call these "sub-arrays."
 // In the case here, we have six arrays of 8 nodes:
-// 
+//
 //     ++++++++ ++++++++ ++++++++ ++++++++ ++++++++ ++++++++
-// 
-// With an vector, item [0] is the first item and item [47] is the last item. With a 
-// deque, item [0] is usually not the first item and neither is item [47]. There is 
+//
+// With an vector, item [0] is the first item and item [47] is the last item. With a
+// deque, item [0] is usually not the first item and neither is item [47]. There is
 // extra capacity on both the front side and the back side of the deque. So a deque
 // (of 24 items) actually looks like this:
-// 
+//
 //     -------- -----+++ ++++++++ ++++++++ +++++--- --------
 //                   0                         23
-// 
+//
 // To insert items at the front, you move into the capacity on the left, and to insert
 // items at the back, you append items on the right. As you can see, inserting an item
-// at the front doesn't require allocating new memory nor does it require moving any 
+// at the front doesn't require allocating new memory nor does it require moving any
 // items in the container. It merely involves moving the pointer to the [0] item to
 // the left by one node.
-// 
-// We keep track of these sub-arrays by having an array of pointers, with each array 
+//
+// We keep track of these sub-arrays by having an array of pointers, with each array
 // entry pointing to each of the sub-arrays. We could alternatively use a linked
-// list of pointers, but it turns out we can implement our deque::operator[] more 
+// list of pointers, but it turns out we can implement our deque::operator[] more
 // efficiently if we use an array of pointers instead of a list of pointers.
 //
 // To implement deque::iterator, we could keep a struct which is essentially this:
@@ -55,7 +55,7 @@
 //        int subArrayOffset;
 //     }
 //
-// In practice, we implement iterators a little differently, but in reality our 
+// In practice, we implement iterators a little differently, but in reality our
 // implementation isn't much different from the above. It turns out that it's most
 // simple if we also manage the location of item [0] and item [end] by using these
 // same iterators.
@@ -145,7 +145,7 @@ namespace eastl
 
 	/// DequeIterator
 	///
-	/// The DequeIterator provides both const and non-const iterators for deque. 
+	/// The DequeIterator provides both const and non-const iterators for deque.
 	/// It also is used for the tracking of the begin and end for the deque.
 	///
 	template <typename T, typename Pointer, typename Reference, unsigned kDequeSubarraySize>
@@ -163,6 +163,9 @@ namespace eastl
 	public:
 		DequeIterator();
 		DequeIterator(const iterator& x);
+
+		// $MODIFICATION
+		this_type& operator=(const iterator& x);
 
 		pointer   operator->() const;
 		reference operator*() const;
@@ -190,31 +193,31 @@ namespace eastl
 		friend class deque;
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator==(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator==(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator!=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator!=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerU, typename ReferenceU, unsigned kDequeSubarraySizeU>
-		friend bool operator!=(const DequeIterator<U, PointerU, ReferenceU, kDequeSubarraySizeU>& a, 
+		friend bool operator!=(const DequeIterator<U, PointerU, ReferenceU, kDequeSubarraySizeU>& a,
 							   const DequeIterator<U, PointerU, ReferenceU, kDequeSubarraySizeU>& b);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator< (const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator< (const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator> (const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator> (const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator<=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator<=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
-		friend bool operator>=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&, 
+		friend bool operator>=(const DequeIterator<U, PointerA, ReferenceA, kDequeSubarraySizeU>&,
 							   const DequeIterator<U, PointerB, ReferenceB, kDequeSubarraySizeU>&);
 
 		template <typename U, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySizeU>
@@ -238,7 +241,7 @@ namespace eastl
 		DequeIterator(const iterator&       x, Decrement);
 
 		this_type copy(const iterator& first, const iterator& last, true_type);  // true means that value_type has the type_trait is_trivially_copyable,
-		this_type copy(const iterator& first, const iterator& last, false_type); // false means it does not. 
+		this_type copy(const iterator& first, const iterator& last, false_type); // false means it does not.
 
 		void copy_backward(const iterator& first, const iterator& last, true_type);  // true means that value_type has the type_trait is_trivially_copyable,
 		void copy_backward(const iterator& first, const iterator& last, false_type); // false means it does not.
@@ -252,7 +255,7 @@ namespace eastl
 	/// DequeBase
 	///
 	/// The DequeBase implements memory allocation for deque.
-	/// See VectorBase (class vector) for an explanation of why we 
+	/// See VectorBase (class vector) for an explanation of why we
 	/// create this separate base class.
 	///
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
@@ -271,7 +274,7 @@ namespace eastl
 		enum
 		{
 			kMinPtrArraySize = 8,                               /// A new empty deque has a ptrArraySize of 0, but any allocated ptrArrays use this min size.
-			kSubarraySize    = kDequeSubarraySize               /// 
+			kSubarraySize    = kDequeSubarraySize               ///
 		  //kNodeSize        = kDequeSubarraySize * sizeof(T)   /// Disabled because it prevents the ability to do this: struct X{ eastl::deque<X, EASTLAllocatorType, 16> mDequeOfSelf; };
 		};
 
@@ -319,20 +322,20 @@ namespace eastl
 	/// deque
 	///
 	/// Implements a conventional C++ double-ended queue. The implementation used here
-	/// is very much like any other deque implementations you may have seen, as it 
-	/// follows the standard algorithm for deque design. 
+	/// is very much like any other deque implementations you may have seen, as it
+	/// follows the standard algorithm for deque design.
 	///
 	/// Note:
 	/// As of this writing, deque does not support zero-allocation initial emptiness.
 	/// A newly created deque with zero elements will still allocate a subarray
 	/// pointer set. We are looking for efficient and clean ways to get around this,
 	/// but current efforts have resulted in less efficient and more fragile code.
-	/// The logic of this class doesn't lend itself to a clean implementation. 
+	/// The logic of this class doesn't lend itself to a clean implementation.
 	/// It turns out that deques are one of the least likely classes you'd want this
 	/// behaviour in, so until this functionality becomes very important to somebody,
 	/// we will leave it as-is. It can probably be solved by adding some extra code to
 	/// the Do* functions and adding good comments explaining the situation.
-	/// 
+	///
 	template <typename T, typename Allocator = EASTLAllocatorType, unsigned kDequeSubarraySize = DEQUE_DEFAULT_SUBARRAY_SIZE(T)>
 	class deque : public DequeBase<T, Allocator, kDequeSubarraySize>
 	{
@@ -402,7 +405,7 @@ namespace eastl
 		void assign(std::initializer_list<value_type> ilist);
 
 		template <typename InputIterator>                       // It turns out that the C++ std::deque<int, int> specifies a two argument
-		void assign(InputIterator first, InputIterator last);   // version of assign that takes (int size, int value). These are not 
+		void assign(InputIterator first, InputIterator last);   // version of assign that takes (int size, int value). These are not
 																// iterators, so we need to do a template compiler trick to do the right thing.
 
 		iterator       begin() EA_NOEXCEPT;
@@ -421,7 +424,7 @@ namespace eastl
 		const_reverse_iterator rend() const EA_NOEXCEPT;
 		const_reverse_iterator crend() const EA_NOEXCEPT;
 
-		bool      empty() const EA_NOEXCEPT; 
+		bool      empty() const EA_NOEXCEPT;
 		size_type size() const EA_NOEXCEPT;
 
 		void resize(size_type n, const value_type& value);
@@ -551,10 +554,10 @@ namespace eastl
 		  mItEnd(),
 		  mAllocator(EASTL_DEQUE_DEFAULT_NAME)
 	{
-		// It's important to note that DoInit creates space for elements and assigns 
-		// mItBegin/mItEnd to point to them, but these elements are not constructed. 
+		// It's important to note that DoInit creates space for elements and assigns
+		// mItBegin/mItEnd to point to them, but these elements are not constructed.
 		// You need to immediately follow this constructor with code that constructs the values.
-		DoInit(n); 
+		DoInit(n);
 	}
 
 
@@ -566,10 +569,10 @@ namespace eastl
 		  mItEnd(),
 		  mAllocator(allocator)
 	{
-		// It's important to note that DoInit creates space for elements and assigns 
-		// mItBegin/mItEnd to point to them, but these elements are not constructed. 
+		// It's important to note that DoInit creates space for elements and assigns
+		// mItBegin/mItEnd to point to them, but these elements are not constructed.
 		// You need to immediately follow this constructor with code that constructs the values.
-		DoInit(n); 
+		DoInit(n);
 	}
 
 
@@ -641,7 +644,7 @@ namespace eastl
 	void DequeBase<T, Allocator, kDequeSubarraySize>::DoFreeSubarray(T* p)
 	{
 		if(p)
-			EASTLFree(mAllocator, p, kDequeSubarraySize * sizeof(T)); 
+			EASTLFree(mAllocator, p, kDequeSubarraySize * sizeof(T));
 	}
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
@@ -674,7 +677,7 @@ namespace eastl
 	void DequeBase<T, Allocator, kDequeSubarraySize>::DoFreePtrArray(T** pp, size_t n)
 	{
 		if(pp)
-			EASTLFree(mAllocator, pp, n * sizeof(T*)); 
+			EASTLFree(mAllocator, pp, n * sizeof(T*));
 	}
 
 
@@ -682,8 +685,8 @@ namespace eastl
 	typename DequeBase<T, Allocator, kDequeSubarraySize>::iterator
 	DequeBase<T, Allocator, kDequeSubarraySize>::DoReallocSubarray(size_type nAdditionalCapacity, Side allocationSide)
 	{
-		// nAdditionalCapacity refers to the amount of additional space we need to be 
-		// able to store in this deque. Typically this function is called as part of 
+		// nAdditionalCapacity refers to the amount of additional space we need to be
+		// able to store in this deque. Typically this function is called as part of
 		// an insert or append operation. This is the function that makes sure there
 		// is enough capacity for the new elements to be copied into the deque.
 		// The new capacity here is always at the front or back of the deque.
@@ -761,12 +764,12 @@ namespace eastl
 	{
 		// This function is not called unless the capacity is known to require a resize.
 		//
-		// We have an array of pointers (mpPtrArray), of which a segment of them are in use and 
+		// We have an array of pointers (mpPtrArray), of which a segment of them are in use and
 		// at either end of the array are zero or more unused pointers. This function is being
-		// called because we need to extend the capacity on either side of this array by 
+		// called because we need to extend the capacity on either side of this array by
 		// nAdditionalCapacity pointers. However, it's possible that if the user is continually
-		// using push_back and pop_front then the pointer array will continue to be extended 
-		// on the back side and unused on the front side. So while we are doing this resizing 
+		// using push_back and pop_front then the pointer array will continue to be extended
+		// on the back side and unused on the front side. So while we are doing this resizing
 		// here we also take the opportunity to recenter the pointers and thus be balanced.
 		// It man turn out that we don't even need to reallocate the pointer array in order
 		// to increase capacity on one side, as simply moving the pointers to the center may
@@ -815,7 +818,7 @@ namespace eastl
 
 			// The following is equivalent to: eastl::copy(mItBegin.mpCurrentArrayPtr, mItEnd.mpCurrentArrayPtr + 1, pPtrArrayBegin);
 			// It's OK to use memcpy instead of memmove because the destination is guaranteed to non-overlap the source.
-			if(mpPtrArray) // Could also say: 'if(mItBegin.mpCurrentArrayPtr)' 
+			if(mpPtrArray) // Could also say: 'if(mItBegin.mpCurrentArrayPtr)'
 				memcpy(pPtrArrayBegin, mItBegin.mpCurrentArrayPtr, nUsedPtrSpace);
 
 			DoFreePtrArray(mpPtrArray, mnPtrArraySize);
@@ -828,21 +831,21 @@ namespace eastl
 		mItBegin.SetSubarray(pPtrArrayBegin);
 		mItEnd.SetSubarray((pPtrArrayBegin + nUsedPtrCount) - 1);
 	}
-	
+
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
 	void DequeBase<T, Allocator, kDequeSubarraySize>::DoInit(size_type n)
 	{
 		// This code is disabled because it doesn't currently work properly.
-		// We are trying to make it so that a deque can have a zero allocation 
+		// We are trying to make it so that a deque can have a zero allocation
 		// initial empty state, but we (OK, I) am having a hard time making
-		// this elegant and efficient. 
+		// this elegant and efficient.
 		//if(n)
 		//{
 			const size_type nNewPtrArraySize = (size_type)((n / kDequeSubarraySize) + 1); // Always have at least one, even if n is zero.
 			const size_type kMinPtrArraySize_ = kMinPtrArraySize;
 
-			mnPtrArraySize = eastl::max_alt(kMinPtrArraySize_, (nNewPtrArraySize + 2)); 
+			mnPtrArraySize = eastl::max_alt(kMinPtrArraySize_, (nNewPtrArraySize + 2));
 			mpPtrArray     = DoAllocatePtrArray(mnPtrArraySize);
 
 			value_type** const pPtrArrayBegin   = (mpPtrArray + ((mnPtrArraySize - nNewPtrArraySize) / 2)); // Try to place it in the middle.
@@ -940,6 +943,19 @@ namespace eastl
 	}
 
 
+	// $MODIFICATION
+	template <typename T, typename Pointer, typename Reference, unsigned kDequeSubarraySize>
+	typename DequeIterator<T, Pointer, Reference, kDequeSubarraySize>::this_type&
+	DequeIterator<T, Pointer, Reference, kDequeSubarraySize>::operator=(const iterator& x)
+	{
+		mpCurrent = x.mpCurrent;
+		mpBegin = x.mpBegin;
+		mpEnd = x.mpEnd;
+		mpCurrentArrayPtr = x.mpCurrentArrayPtr;
+		return *this;
+	}
+
+
 	template <typename T, typename Pointer, typename Reference, unsigned kDequeSubarraySize>
 	typename DequeIterator<T, Pointer, Reference, kDequeSubarraySize>::pointer
 	DequeIterator<T, Pointer, Reference, kDequeSubarraySize>::operator->() const
@@ -1011,17 +1027,17 @@ namespace eastl
 	{
 		const difference_type subarrayPosition = (mpCurrent - mpBegin) + n;
 
-		// Cast from signed to unsigned (size_t) in order to obviate the need to compare to < 0. 
+		// Cast from signed to unsigned (size_t) in order to obviate the need to compare to < 0.
 		if((size_t)subarrayPosition < (size_t)kDequeSubarraySize) // If the new position is within the current subarray (i.e. >= 0 && < kSubArraySize)...
 			mpCurrent += n;
 		else
 		{
-			// This implementation is a branchless version which works by offsetting 
+			// This implementation is a branchless version which works by offsetting
 			// the math to always be in the positive range. Much of the values here
-			// reduce to constants and both the multiplication and division are of 
-			// power of two sizes and so this calculation ends up compiling down to 
-			// just one addition, one shift and one subtraction. This algorithm has 
-			// a theoretical weakness in that on 32 bit systems it will fail if the 
+			// reduce to constants and both the multiplication and division are of
+			// power of two sizes and so this calculation ends up compiling down to
+			// just one addition, one shift and one subtraction. This algorithm has
+			// a theoretical weakness in that on 32 bit systems it will fail if the
 			// value of n is >= (2^32 - 2^24) or 4,278,190,080 of if kDequeSubarraySize
 			// is >= 2^24 or 16,777,216.
 			EASTL_CT_ASSERT((kDequeSubarraySize & (kDequeSubarraySize - 1)) == 0); // Verify that it is a power of 2.
@@ -1113,7 +1129,7 @@ namespace eastl
 	// Thus we provide additional template paremeters here to support this. The defect report does not
 	// require us to support comparisons between reverse_iterators and const_reverse_iterators.
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator==(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator==(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						   const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return a.mpCurrent == b.mpCurrent;
@@ -1121,17 +1137,17 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator!=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator!=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						   const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return a.mpCurrent != b.mpCurrent;
 	}
 
 
-	// We provide a version of operator!= for the case where the iterators are of the 
+	// We provide a version of operator!= for the case where the iterators are of the
 	// same type. This helps prevent ambiguity errors in the presence of rel_ops.
 	template <typename T, typename Pointer, typename Reference, unsigned kDequeSubarraySize>
-	inline bool operator!=(const DequeIterator<T, Pointer, Reference, kDequeSubarraySize>& a, 
+	inline bool operator!=(const DequeIterator<T, Pointer, Reference, kDequeSubarraySize>& a,
 						   const DequeIterator<T, Pointer, Reference, kDequeSubarraySize>& b)
 	{
 		return a.mpCurrent != b.mpCurrent;
@@ -1139,7 +1155,7 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator<(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator<(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						  const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return (a.mpCurrentArrayPtr == b.mpCurrentArrayPtr) ? (a.mpCurrent < b.mpCurrent) : (a.mpCurrentArrayPtr < b.mpCurrentArrayPtr);
@@ -1147,7 +1163,7 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator>(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator>(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						  const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return (a.mpCurrentArrayPtr == b.mpCurrentArrayPtr) ? (a.mpCurrent > b.mpCurrent) : (a.mpCurrentArrayPtr > b.mpCurrentArrayPtr);
@@ -1155,7 +1171,7 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator<=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator<=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						   const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return (a.mpCurrentArrayPtr == b.mpCurrentArrayPtr) ? (a.mpCurrent <= b.mpCurrent) : (a.mpCurrentArrayPtr <= b.mpCurrentArrayPtr);
@@ -1163,7 +1179,7 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
-	inline bool operator>=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a, 
+	inline bool operator>=(const DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>& a,
 						   const DequeIterator<T, PointerB, ReferenceB, kDequeSubarraySize>& b)
 	{
 		return (a.mpCurrentArrayPtr == b.mpCurrentArrayPtr) ? (a.mpCurrent >= b.mpCurrent) : (a.mpCurrentArrayPtr >= b.mpCurrentArrayPtr);
@@ -1181,7 +1197,7 @@ namespace eastl
 
 
 	// You can only add an integer to an iterator, but you can subtract two iterators.
-	// The C++ defect report #179 mentioned above specifically refers to 
+	// The C++ defect report #179 mentioned above specifically refers to
 	// operator - and states that we support the subtraction of const and non-const iterators.
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB, unsigned kDequeSubarraySize>
 	inline typename DequeIterator<T, PointerA, ReferenceA, kDequeSubarraySize>::difference_type
@@ -1280,18 +1296,18 @@ namespace eastl
 		// Call destructors. Parent class will free the memory.
 		for(iterator itCurrent(mItBegin); itCurrent != mItEnd; ++itCurrent)
 			itCurrent.mpCurrent->~value_type();
-	} 
+	}
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	typename deque<T, Allocator, kDequeSubarraySize>::this_type& 
+	typename deque<T, Allocator, kDequeSubarraySize>::this_type&
 	deque<T, Allocator, kDequeSubarraySize>::operator=(const this_type& x)
 	{
 		if(&x != this) // If not assigning to ourselves...
 		{
-			// If (EASTL_ALLOCATOR_COPY_ENABLED == 1) and the current contents are allocated by an 
-			// allocator that's unequal to x's allocator, we need to reallocate our elements with 
-			// our current allocator and reallocate it with x's allocator. If the allocators are 
+			// If (EASTL_ALLOCATOR_COPY_ENABLED == 1) and the current contents are allocated by an
+			// allocator that's unequal to x's allocator, we need to reallocate our elements with
+			// our current allocator and reallocate it with x's allocator. If the allocators are
 			// equal then we can use a more optimal algorithm that doesn't reallocate our elements
 			// but instead can copy them in place.
 
@@ -1303,8 +1319,8 @@ namespace eastl
 
 			if(bSlowerPathwayRequired)
 			{
-				// We can't currently use set_capacity(0) or shrink_to_fit, because they 
-				// leave a remaining allocation with our old allocator. So we do a similar 
+				// We can't currently use set_capacity(0) or shrink_to_fit, because they
+				// leave a remaining allocation with our old allocator. So we do a similar
 				// thing but set our allocator to x.mAllocator while doing so.
 				this_type temp(x.mAllocator);
 				DoSwap(temp);
@@ -1319,7 +1335,7 @@ namespace eastl
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::this_type& 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::this_type&
 	deque<T, Allocator, kDequeSubarraySize>::operator=(this_type&& x)
 	{
 		if(this != &x)
@@ -1327,12 +1343,12 @@ namespace eastl
 			set_capacity(0); // To consider: Are we really required to clear here? x is going away soon and will clear itself in its dtor.
 			swap(x);         // member swap handles the case that x has a different allocator than our allocator by doing a copy.
 		}
-		return *this; 
+		return *this;
 	}
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::this_type& 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::this_type&
 	deque<T, Allocator, kDequeSubarraySize>::operator=(std::initializer_list<value_type> ilist)
 	{
 		DoAssign(ilist.begin(), ilist.end(), false_type());
@@ -1356,7 +1372,7 @@ namespace eastl
 
 	// It turns out that the C++ std::deque specifies a two argument
 	// version of assign that takes (int size, int value). These are not
-	// iterators, so we need to do a template compiler trick to do the right thing. 
+	// iterators, so we need to do a template compiler trick to do the right thing.
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
 	template <typename InputIterator>
 	inline void deque<T, Allocator, kDequeSubarraySize>::assign(InputIterator first, InputIterator last)
@@ -1366,7 +1382,7 @@ namespace eastl
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::iterator 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::iterator
 	deque<T, Allocator, kDequeSubarraySize>::begin() EA_NOEXCEPT
 	{
 		return mItBegin;
@@ -1374,7 +1390,7 @@ namespace eastl
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::const_iterator 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::const_iterator
 	deque<T, Allocator, kDequeSubarraySize>::begin() const EA_NOEXCEPT
 	{
 		return mItBegin;
@@ -1382,7 +1398,7 @@ namespace eastl
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::const_iterator 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::const_iterator
 	deque<T, Allocator, kDequeSubarraySize>::cbegin() const EA_NOEXCEPT
 	{
 		return mItBegin;
@@ -1390,7 +1406,7 @@ namespace eastl
 
 
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
-	inline typename deque<T, Allocator, kDequeSubarraySize>::iterator 
+	inline typename deque<T, Allocator, kDequeSubarraySize>::iterator
 	deque<T, Allocator, kDequeSubarraySize>::end() EA_NOEXCEPT
 	{
 		return mItEnd;
@@ -1506,9 +1522,9 @@ namespace eastl
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
 	inline void deque<T, Allocator, kDequeSubarraySize>::set_capacity(size_type n)
 	{
-		// Currently there isn't a way to remove all allocations from a deque, as it 
+		// Currently there isn't a way to remove all allocations from a deque, as it
 		// requires a single starting allocation for the subarrays. So we can't just
-		// free all memory without leaving it in a bad state. So the best means of 
+		// free all memory without leaving it in a bad state. So the best means of
 		// implementing set_capacity() is to do what we do below.
 
 		if(n == 0)
@@ -1520,10 +1536,10 @@ namespace eastl
 		{
 			// We currently ignore the request to reduce capacity. To do: Implement this
 			// and do it in a way that doesn't result in temporarily ~doubling our memory usage.
-			// That might involve trimming unused subarrays from the front or back of 
+			// That might involve trimming unused subarrays from the front or back of
 			// the container.
 			resize(n);
-		}        
+		}
 	}
 
 
@@ -2051,7 +2067,7 @@ namespace eastl
 	template <typename T, typename Allocator, unsigned kDequeSubarraySize>
 	void deque<T, Allocator, kDequeSubarraySize>::clear()
 	{
-		// Destroy all values and all subarrays they belong to, except for the first one, 
+		// Destroy all values and all subarrays they belong to, except for the first one,
 		// as we need to reserve some space for a valid mItBegin/mItEnd.
 		if(mItBegin.mpCurrentArrayPtr != mItEnd.mpCurrentArrayPtr) // If there are multiple subarrays (more often than not, this will be so)...
 		{
@@ -2082,14 +2098,14 @@ namespace eastl
 	//template <typename T, typename Allocator, unsigned kDequeSubarraySize>
 	//void deque<T, Allocator, kDequeSubarraySize>::reset_lose_memory()
 	//{
-	//    // The reset_lose_memory function is a special extension function which unilaterally 
-	//    // resets the container to an empty state without freeing the memory of 
-	//    // the contained objects. This is useful for very quickly tearing down a 
+	//    // The reset_lose_memory function is a special extension function which unilaterally
+	//    // resets the container to an empty state without freeing the memory of
+	//    // the contained objects. This is useful for very quickly tearing down a
 	//    // container built into scratch memory.
 	//
-	//    // Currently we are unable to get this reset_lose_memory operation to work correctly 
+	//    // Currently we are unable to get this reset_lose_memory operation to work correctly
 	//    // as we haven't been able to find a good way to have a deque initialize
-	//    // without allocating memory. We can lose the old memory, but DoInit 
+	//    // without allocating memory. We can lose the old memory, but DoInit
 	//    // would necessarily do a ptrArray allocation. And this is not within
 	//    // our definition of how reset_lose_memory works.
 	//    base_type::DoInit(0);
@@ -2112,8 +2128,8 @@ namespace eastl
 	#else
 		// NOTE(rparolin): The previous implementation required T to be copy-constructible in the fall-back case where
 		// allocators with unique instances copied elements.  This was an unnecessary restriction and prevented the common
-		// usage of deque with non-copyable types (eg. eastl::deque<non_copyable> or eastl::deque<unique_ptr>). 
-		// 
+		// usage of deque with non-copyable types (eg. eastl::deque<non_copyable> or eastl::deque<unique_ptr>).
+		//
 		// The previous implementation violated the following requirements of deque::swap so the fall-back code has
 		// been removed.  EASTL implicitly defines 'propagate_on_container_swap = false' therefore the fall-back case is
 		// undefined behaviour.  We simply swap the contents and the allocator as that is the common expectation of
@@ -2129,7 +2145,7 @@ namespace eastl
 	template <typename Integer>
 	void deque<T, Allocator, kDequeSubarraySize>::DoInit(Integer n, Integer value, true_type)
 	{
-		base_type::DoInit(n);  // Call the base uninitialized init function. 
+		base_type::DoInit(n);  // Call the base uninitialized init function.
 		DoFillInit(value);
 	}
 
@@ -2153,11 +2169,11 @@ namespace eastl
 			try
 			{
 		#endif
-				// We have little choice but to iterate through the source iterator and call 
-				// push_back for each item. It can be slow because it will keep reallocating the 
+				// We have little choice but to iterate through the source iterator and call
+				// push_back for each item. It can be slow because it will keep reallocating the
 				// container memory as we go (every kDequeSubarraySize elements). We are not allowed to use distance() on an InputIterator.
 				for(; first != last; ++first)   // InputIterators by definition actually only allow you to iterate through them once.
-				{                               // Thus the standard *requires* that we do this (inefficient) implementation.  
+				{                               // Thus the standard *requires* that we do this (inefficient) implementation.
 					push_back(*first);          // Luckily, InputIterators are in practice almost never used, so this code will likely never get executed.
 				}
 		#if EASTL_EXCEPTIONS_ENABLED
@@ -2350,7 +2366,7 @@ namespace eastl
 	{
 		const size_type n = (size_type)eastl::distance(first, last);
 
-		// This implementation is nearly identical to DoInsertValues below. 
+		// This implementation is nearly identical to DoInsertValues below.
 		// If you make a bug fix to one, you will likely want to fix the other.
 		if(position.mpCurrent == mItBegin.mpCurrent) // If inserting at the beginning or into an empty container...
 		{
@@ -2360,7 +2376,7 @@ namespace eastl
 				try
 				{
 			#endif
-					// We would like to use move here instead of copy when possible, which would be useful for 
+					// We would like to use move here instead of copy when possible, which would be useful for
 					// when inserting from a std::initializer_list, for example.
 					// To do: solve this by having a template or runtime parameter which specifies move vs copy.
 					eastl::uninitialized_copy(first, last, itNewBegin);
@@ -2385,7 +2401,7 @@ namespace eastl
 				try
 				{
 			#endif
-					// We would like to use move here instead of copy when possible, which would be useful for 
+					// We would like to use move here instead of copy when possible, which would be useful for
 					// when inserting from a std::initializer_list, for example.
 					// To do: solve this by having a template or runtime parameter which specifies move vs copy.
 					eastl::uninitialized_copy(first, last, mItEnd);
@@ -2500,7 +2516,7 @@ namespace eastl
 				EASTL_FAIL_MSG("deque::insert -- invalid iterator");
 		#endif
 
-		// This implementation is nearly identical to DoInsertFromIterator above. 
+		// This implementation is nearly identical to DoInsertFromIterator above.
 		// If you make a bug fix to one, you will likely want to fix the other.
 		if(position.mpCurrent == mItBegin.mpCurrent) // If inserting at the beginning...
 		{
@@ -2510,7 +2526,7 @@ namespace eastl
 				try
 				{
 			#endif
-					// Note that we don't make a temp copy of 'value' here. This is because in a 
+					// Note that we don't make a temp copy of 'value' here. This is because in a
 					// deque, insertion at either the front or back doesn't cause a reallocation
 					// or move of data in the middle. That's a key feature of deques, in fact.
 					eastl::uninitialized_fill(itNewBegin, mItBegin, value);
@@ -2535,7 +2551,7 @@ namespace eastl
 				try
 				{
 			#endif
-					// Note that we don't make a temp copy of 'value' here. This is because in a 
+					// Note that we don't make a temp copy of 'value' here. This is because in a
 					// deque, insertion at either the front or back doesn't cause a reallocation
 					// or move of data in the middle. That's a key feature of deques, in fact.
 					eastl::uninitialized_fill(mItEnd, itNewEnd, value);
@@ -2553,11 +2569,11 @@ namespace eastl
 		}
 		else
 		{
-			// A key purpose of a deque is to implement insertions and removals more efficiently 
-			// than with a vector. We are inserting into the middle of the deque here. A quick and 
-			// dirty implementation of this would be to reallocate the subarrays and simply push 
+			// A key purpose of a deque is to implement insertions and removals more efficiently
+			// than with a vector. We are inserting into the middle of the deque here. A quick and
+			// dirty implementation of this would be to reallocate the subarrays and simply push
 			// all values in the middle upward like you would do with a vector. Instead we implement
-			// the minimum amount of reallocations needed but may need to do some value moving, 
+			// the minimum amount of reallocations needed but may need to do some value moving,
 			// as the subarray sizes need to remain constant and can have no holes in them.
 			const difference_type nInsertionIndex = position - mItBegin;
 			const size_type       nSize = size();
@@ -2743,7 +2759,7 @@ namespace eastl
 	template <class T, class Allocator, class U>
 	typename deque<T, Allocator>::size_type erase(deque<T, Allocator>& c, const U& value)
 	{
-		// Erases all elements that compare equal to value from the container. 
+		// Erases all elements that compare equal to value from the container.
 		auto origEnd = c.end();
 		auto newEnd = eastl::remove(c.begin(), origEnd, value);
 		auto numRemoved = eastl::distance(newEnd, origEnd);
@@ -2761,7 +2777,7 @@ namespace eastl
 	template <class T, class Allocator, class Predicate>
 	typename deque<T, Allocator>::size_type erase_if(deque<T, Allocator>& c, Predicate predicate)
 	{
-		// Erases all elements that satisfy the predicate pred from the container. 
+		// Erases all elements that satisfy the predicate pred from the container.
 		auto origEnd = c.end();
 		auto newEnd = eastl::remove_if(c.begin(), origEnd, predicate);
 		auto numRemoved = eastl::distance(newEnd, origEnd);
