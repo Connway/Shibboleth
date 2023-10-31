@@ -23,22 +23,17 @@ THE SOFTWARE.
 #ifndef SHIB_IS_BASE
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
+
+SHIB_DEFINE_MODULE_BEGIN(Graphics)
 
 #ifdef SHIB_STATIC
-
-	#include <Shibboleth_LogManager.h>
-	#include <Shibboleth_IModule.h>
-	#include <Gleam_Global.h>
-
 	namespace Graphics
 	{
-		class Module final : public Shibboleth::IModule
+		class Module final : public Shibboleth::Module
 		{
 		public:
 			bool preInit(Shibboleth::IApp& app) override;
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
 		};
 
 		//static void* GraphicsAlloc(size_t size)
@@ -67,47 +62,18 @@ THE SOFTWARE.
 			// $TODO: Fix crash in shutdown due to static destruction order.
 			static Shibboleth::ProxyAllocator g_graphics_allocator("Graphics");
 
-			IModule::preInit(app);
+			if (!Shibboleth::Module::preInit(app)) {
+				return false;
+			}
 
 			Gleam::SetAllocator(&g_graphics_allocator);
 			Gleam::SetLogFunc(GraphicsLog);
 
 			return true;
 		}
-
-		void Module::initReflectionEnums(void)
-		{
-			// Should NOT add other code here.
-			Gen::Graphics::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			// Should NOT add other code here.
-			Gen::Graphics::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			// Should NOT add other code here.
-			Gen::Graphics::InitReflection(InitMode::Classes);
-		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(Graphics::Module, Shibboleth::ProxyAllocator("Graphics"));
-		}
 	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return Graphics::CreateModule();
-	}
-
 #endif
+
+SHIB_DEFINE_MODULE_END(Graphics)
 
 #endif

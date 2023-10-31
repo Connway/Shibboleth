@@ -21,60 +21,28 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
+
+SHIB_DEFINE_MODULE_BEGIN(DevGraphics)
 
 #ifdef SHIB_STATIC
-
-	#include "Shibboleth_NVENCHelpers.h"
-	#include <Shibboleth_IModule.h>
-
 	namespace DevGraphics
 	{
-		class Module final : public Shibboleth::IModule
+		class Module final : public Shibboleth::Module
 		{
 		public:
 			bool preInit(Shibboleth::IApp& app) override;
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
 		};
 
 		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			IModule::preInit(app);
+			if (!Shibboleth::Module::preInit(app)) {
+				return false;
+			}
+
 			return Shibboleth::InitNVENC();
 		}
-
-		void Module::initReflectionEnums(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevGraphics::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevGraphics::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevGraphics::InitReflection(InitMode::Classes);
-		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(DevGraphics::Module, Shibboleth::ProxyAllocator("DevGraphics"));
-		}
 	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return DevGraphics::CreateModule();
-	}
-
 #endif
+
+SHIB_DEFINE_MODULE_END(DevGraphics)

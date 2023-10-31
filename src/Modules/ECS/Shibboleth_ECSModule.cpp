@@ -21,59 +21,25 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
+
+SHIB_DEFINE_MODULE_BEGIN(ECS)
 
 #ifdef SHIB_STATIC
-
-	#include <Shibboleth_IModule.h>
-
 	namespace ECS
 	{
-		class Module final : public Shibboleth::IModule
+		class Module final : public Shibboleth::Module
 		{
 		public:
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
 			bool postInit(void) override;
 		};
-
-		void Module::initReflectionEnums(void)
-		{
-			// Should NOT add other code here.
-			Gen::ECS::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			// Should NOT add other code here.
-			Gen::ECS::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			// Should NOT add other code here.
-			Gen::ECS::InitReflection(InitMode::Classes);
-		}
 
 		bool Module::postInit(void)
 		{
 			Shibboleth::GetApp().getReflectionManager().registerAttributeBucket<Shibboleth::ECSClassAttribute>();
 			return true;
 		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(ECS::Module, Shibboleth::ProxyAllocator("ECS"));
-		}
 	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return ECS::CreateModule();
-	}
-
 #endif
+
+SHIB_DEFINE_MODULE_END(ECS)

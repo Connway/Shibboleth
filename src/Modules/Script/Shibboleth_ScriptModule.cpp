@@ -21,28 +21,24 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
+
+SHIB_DEFINE_MODULE_BEGIN(Script)
 
 #ifdef SHIB_STATIC
-
-	#include "Shibboleth_ScriptConfigs.h"
-	#include <Shibboleth_JobPool.h>
-	#include <Shibboleth_IModule.h>
-	#include <Gaff_JSON.h>
-
 	namespace Script
 	{
-		class Module final : public Shibboleth::IModule
+		class Module final : public Shibboleth::Module
 		{
 		public:
 			bool preInit(Shibboleth::IApp& app) override;
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
 		};
 
 		bool Module::preInit(Shibboleth::IApp& app)
 		{
-			IModule::preInit(app);
+			if (!Shibboleth::Module::preInit(app)) {
+				return false;
+			}
 
 			const Gaff::JSON script_threads = app.getConfigs().getObject(Shibboleth::k_config_script_threads);
 			const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
@@ -51,35 +47,7 @@ THE SOFTWARE.
 
 			return true;
 		}
-
-		void Module::initReflectionEnums(void)
-		{
-			Gen::Script::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			Gen::Script::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			Gen::Script::InitReflection(InitMode::Classes);
-		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(Script::Module, Shibboleth::ProxyAllocator("Script"));
-		}
 	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return Script::CreateModule();
-	}
-
 #endif
+
+SHIB_DEFINE_MODULE_END(Script)

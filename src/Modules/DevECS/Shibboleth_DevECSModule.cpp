@@ -23,4 +23,4 @@ THE SOFTWARE.
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_ModuleMacros.h>
 
-SHIB_DEFINE_MODULE(DevECS)
+SHIB_DEFINE_BASIC_MODULE(DevECS)

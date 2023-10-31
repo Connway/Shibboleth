@@ -21,52 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
 
-#ifdef SHIB_STATIC
-
-	#include <Shibboleth_IModule.h>
-
-	namespace Camera
-	{
-		class Module final : public Shibboleth::IModule
-		{
-		public:
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
-		};
-
-		void Module::initReflectionEnums(void)
-		{
-			// Should NOT add other code here.
-			Gen::Camera::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			// Should NOT add other code here.
-			Gen::Camera::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			// Should NOT add other code here.
-			Gen::Camera::InitReflection(InitMode::Classes);
-		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(Camera::Module, Shibboleth::ProxyAllocator("Camera"));
-		}
-	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return Camera::CreateModule();
-	}
-
-#endif
+SHIB_DEFINE_BASIC_MODULE(Camera)

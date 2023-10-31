@@ -25,10 +25,9 @@ THE SOFTWARE.
 #ifdef SHIB_STATIC
 	#include "Shibboleth_IModule.h"
 
-	#define SHIB_DEFINE_MODULE(ModuleName) \
-		namespace ModuleName \
-		{ \
-			class Module final : public Shibboleth::IModule \
+	#define SHIB_DEFINE_MODULE_BEGIN(ModuleName) \
+		NS_SHIBBOLETH \
+			class Module : public Shibboleth::IModule \
 			{ \
 			public: \
 				void initReflectionEnums(void) override; \
@@ -47,18 +46,37 @@ THE SOFTWARE.
 			{ \
 				Gen::ModuleName::InitReflection(InitMode::Classes); \
 			} \
+		NS_END
+
+	#define SHIB_DEFINE_MODULE_END(ModuleName) \
+		namespace ModuleName \
+		{ \
 			Shibboleth::IModule* CreateModule(void) \
 			{ \
 				return SHIB_ALLOCT(ModuleName::Module, Shibboleth::ProxyAllocator(#ModuleName)); \
 			} \
 		}
 
+	#define SHIB_DEFINE_BASIC_MODULE(ModuleName) \
+		SHIB_DEFINE_MODULE_BEGIN(ModuleName) \
+		namespace ModuleName \
+		{ \
+			class Module final : public Shibboleth::Module \
+			{ \
+			}; \
+		} \
+		SHIB_DEFINE_MODULE_END(ModuleName) \
+
 #else
 	#include <Gaff_Defines.h>
 
-	#define SHIB_DEFINE_MODULE(ModuleName) \
+	#define SHIB_DEFINE_MODULE_BEGIN(ModuleName)
+	#define SHIB_DEFINE_MODULE_END(ModuleName) \
 		GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void) \
 		{ \
 			return ModuleName::CreateModule(); \
 		}
+
+	#define SHIB_DEFINE_BASIC_MODULE(ModuleName) SHIB_DEFINE_MODULE_END(ModuleName)
+
 #endif
