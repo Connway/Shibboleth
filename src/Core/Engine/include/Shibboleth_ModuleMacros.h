@@ -22,33 +22,43 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
+#ifdef SHIB_STATIC
+	#include "Shibboleth_IModule.h"
 
-//namespace physx
-//{
-//	class PxMaterial;
-//}
+	#define SHIB_DEFINE_MODULE(ModuleName) \
+		namespace ModuleName \
+		{ \
+			class Module final : public Shibboleth::IModule \
+			{ \
+			public: \
+				void initReflectionEnums(void) override; \
+				void initReflectionAttributes(void) override; \
+				void initReflectionClasses(void) override; \
+			}; \
+			void Module::initReflectionEnums(void) \
+			{ \
+				Gen::ModuleName::InitReflection(InitMode::Enums); \
+			} \
+			void Module::initReflectionAttributes(void) \
+			{ \
+				Gen::ModuleName::InitReflection(InitMode::Attributes); \
+			} \
+			void Module::initReflectionClasses(void) \
+			{ \
+				Gen::ModuleName::InitReflection(InitMode::Classes); \
+			} \
+			Shibboleth::IModule* CreateModule(void) \
+			{ \
+				return SHIB_ALLOCT(ModuleName::Module, Shibboleth::ProxyAllocator(#ModuleName)); \
+			} \
+		}
 
-NS_SHIBBOLETH
+#else
+	#include <Gaff_Defines.h>
 
-class PhysicsMaterialResource final : public IResource
-{
-public:
-	~PhysicsMaterialResource(void);
-
-	//const physx::PxMaterial* getMaterial(void) const;
-	//physx::PxMaterial* getMaterial(void);
-
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
-
-private:
-	//physx::PxMaterial* _material = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(PhysicsMaterialResource);
-};
-
-using PhysicsMaterialResourcePtr = ResourcePtr<PhysicsMaterialResource>;
-
-NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsMaterialResource)
+	#define SHIB_DEFINE_MODULE(ModuleName) \
+		GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void) \
+		{ \
+			return ModuleName::CreateModule(); \
+		}
+#endif

@@ -24,10 +24,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsMaterialResource.h"
 
-namespace physx
-{
-	class PxShape;
-}
+// namespace physx
+// {
+// 	class PxShape;
+// }
 
 NS_SHIBBOLETH
 
@@ -38,11 +38,11 @@ class PhysicsShapeResource final : public IResource
 public:
 	~PhysicsShapeResource(void);
 
-	const physx::PxMaterial* getMaterial(void) const;
-	physx::PxMaterial* getMaterial(void);
+	// const physx::PxMaterial* getMaterial(void) const;
+	// physx::PxMaterial* getMaterial(void);
 
-	const physx::PxShape* getShape(void) const;
-	physx::PxShape* getShape(void);
+	// const physx::PxShape* getShape(void) const;
+	// physx::PxShape* getShape(void);
 
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
@@ -55,7 +55,7 @@ private:
 	};
 
 	PhysicsMaterialResourcePtr _material;
-	physx::PxShape* _shape = nullptr;
+	// physx::PxShape* _shape = nullptr;
 
 	LoadResult loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr);
 	LoadResult loadSphere(const ISerializeReader& reader, PhysicsManager& phys_mgr);

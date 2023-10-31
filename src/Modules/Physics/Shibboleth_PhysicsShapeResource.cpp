@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_Math.h>
-#include <PxPhysicsAPI.h>
+// #include <PxPhysicsAPI.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsShapeResource)
 	.classAttrs(
@@ -45,28 +45,28 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsShapeResource)
 
 PhysicsShapeResource::~PhysicsShapeResource(void)
 {
-	GAFF_SAFE_RELEASE(_shape);
+	// GAFF_SAFE_RELEASE(_shape);
 }
 
-const physx::PxMaterial* PhysicsShapeResource::getMaterial(void) const
-{
-	return _material->getMaterial();
-}
+// const physx::PxMaterial* PhysicsShapeResource::getMaterial(void) const
+// {
+// 	return _material->getMaterial();
+// }
 
-physx::PxMaterial* PhysicsShapeResource::getMaterial(void)
-{
-	return _material->getMaterial();
-}
+// physx::PxMaterial* PhysicsShapeResource::getMaterial(void)
+// {
+// 	return _material->getMaterial();
+// }
 
-const physx::PxShape* PhysicsShapeResource::getShape(void) const
-{
-	return _shape;
-}
+// const physx::PxShape* PhysicsShapeResource::getShape(void) const
+// {
+// 	return _shape;
+// }
 
-physx::PxShape* PhysicsShapeResource::getShape(void)
-{
-	return _shape;
-}
+// physx::PxShape* PhysicsShapeResource::getShape(void)
+// {
+// 	return _shape;
+// }
 
 void PhysicsShapeResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
@@ -105,17 +105,17 @@ void PhysicsShapeResource::load(const ISerializeReader& reader, uintptr_t /*thre
 		}
 	}
 
-	if (_shape) {
-		_shape->setLocalPose(physx::PxTransform(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f))));
-		succeeded();
+	// if (_shape) {
+	// 	_shape->setLocalPose(physx::PxTransform(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f))));
+	// 	succeeded();
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
+	// } else {
+	// 	// $TODO: Log error.
+	// 	failed();
+	// }
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const ISerializeReader& reader, PhysicsManager& /*phys_mgr*/)
 {
 	const auto capsule_guard = reader.enterElementGuard(u8"capsule");
 
@@ -133,23 +133,23 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadCapsule(const ISerial
 		return LoadResult::Error;
 	}
 
-	const float half_height = reader.readFloat(u8"half_height", 0.25f);
-	const float radius = reader.readFloat(u8"radius", 0.25f);
+	// const float half_height = reader.readFloat(u8"half_height", 0.25f);
+	// const float radius = reader.readFloat(u8"radius", 0.25f);
 
 	// Do we need to lock here?
-	_shape = phys_mgr.getPhysics()->createShape(physx::PxCapsuleGeometry(radius, half_height), *_material->getMaterial());
+	// _shape = phys_mgr.getPhysics()->createShape(physx::PxCapsuleGeometry(radius, half_height), *_material->getMaterial());
 
-	if (!_shape) {
-		// $TODO: Log error.
-		return LoadResult::Error;
-	}
+	// if (!_shape) {
+	// 	// $TODO: Log error.
+	// 	return LoadResult::Error;
+	// }
 
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const ISerializeReader& reader, PhysicsManager& /*phys_mgr*/)
 {
-	const auto plane_guard = reader.enterElementGuard(u8"sphere");
+	const auto sphere_guard = reader.enterElementGuard(u8"sphere");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -165,20 +165,20 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadSphere(const ISeriali
 		return LoadResult::Error;
 	}
 
-	const float radius = reader.readFloat(u8"radius", 0.5f);
+	// const float radius = reader.readFloat(u8"radius", 0.5f);
 
 	// Do we need to lock here?
-	_shape = phys_mgr.getPhysics()->createShape(physx::PxSphereGeometry(radius), *_material->getMaterial(), false);
+	// _shape = phys_mgr.getPhysics()->createShape(physx::PxSphereGeometry(radius), *_material->getMaterial(), false);
 
-	if (!_shape) {
-		// $TODO: Log error.
-		return LoadResult::Error;
-	}
+	// if (!_shape) {
+	// 	// $TODO: Log error.
+	// 	return LoadResult::Error;
+	// }
 
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const ISerializeReader& reader, PhysicsManager& /*phys_mgr*/)
 {
 	const auto plane_guard = reader.enterElementGuard(u8"plane");
 
@@ -197,19 +197,19 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadPlane(const ISerializ
 	}
 
 	// Do we need to lock here?
-	_shape = phys_mgr.getPhysics()->createShape(physx::PxPlaneGeometry(), *_material->getMaterial(), false);
+	// _shape = phys_mgr.getPhysics()->createShape(physx::PxPlaneGeometry(), *_material->getMaterial(), false);
 
-	if (!_shape) {
-		// $TODO: Log error.
-		return LoadResult::Error;
-	}
+	// if (!_shape) {
+	// 	// $TODO: Log error.
+	// 	return LoadResult::Error;
+	// }
 
 	return LoadResult::Success;
 }
 
-PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const ISerializeReader& reader, PhysicsManager& phys_mgr)
+PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const ISerializeReader& reader, PhysicsManager& /*phys_mgr*/)
 {
-	const auto plane_guard = reader.enterElementGuard(u8"box");
+	const auto box_guard = reader.enterElementGuard(u8"box");
 
 	if (reader.isNull()) {
 		return LoadResult::Skip;
@@ -225,27 +225,27 @@ PhysicsShapeResource::LoadResult PhysicsShapeResource::loadBox(const ISerializeR
 		return LoadResult::Error;
 	}
 
-	float hx = 0.5f;
-	float hy = 0.5f;
-	float hz = 0.5f;
+	// float hx = 0.5f;
+	// float hy = 0.5f;
+	// float hz = 0.5f;
 
-	{
-		const auto size_guard = reader.enterElementGuard(u8"half_extents");
+	// {
+	// 	const auto size_guard = reader.enterElementGuard(u8"half_extents");
 
-		if (reader.isObject()) {
-			hx = reader.readFloat(u8"x", 0.5f);
-			hy = reader.readFloat(u8"y", 0.5f);
-			hz = reader.readFloat(u8"z", 0.5f);
-		}
-	}
+	// 	if (reader.isObject()) {
+	// 		hx = reader.readFloat(u8"x", 0.5f);
+	// 		hy = reader.readFloat(u8"y", 0.5f);
+	// 		hz = reader.readFloat(u8"z", 0.5f);
+	// 	}
+	// }
 
 	// Do we need to lock here?
-	_shape = phys_mgr.getPhysics()->createShape(physx::PxBoxGeometry(hx, hy, hz), *_material->getMaterial(), false);
+	// _shape = phys_mgr.getPhysics()->createShape(physx::PxBoxGeometry(hx, hy, hz), *_material->getMaterial(), false);
 
-	if (!_shape) {
-		// $TODO: Log error.
-		return LoadResult::Error;
-	}
+	// if (!_shape) {
+	// 	// $TODO: Log error.
+	// 	return LoadResult::Error;
+	// }
 
 	return LoadResult::Success;
 }

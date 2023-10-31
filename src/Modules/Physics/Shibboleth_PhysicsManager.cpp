@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Gaff_IncludeTracy.h>
 #include <Gaff_Math.h>
-#include <PxPhysicsAPI.h>
+//#include <PxPhysicsAPI.h>
 
 #ifdef _DEBUG
 	#include <Shibboleth_DebugAttributes.h>
@@ -39,8 +39,8 @@ THE SOFTWARE.
 #endif
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager)
-	.base<Shibboleth::IManager>()
-	.ctor<>()
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
 
 #ifdef _DEBUG
 	.var(
@@ -55,7 +55,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager)
 
 namespace
 {
-	class PhysicsAllocator final : public physx::PxAllocatorCallback
+	/*class PhysicsAllocator final : public physx::PxAllocatorCallback
 	{
 	public:
 		void* allocate(size_t size, const char* type_name, const char* filename, int line) override
@@ -71,18 +71,18 @@ namespace
 
 	private:
 		Shibboleth::ProxyAllocator _allocator{ "Physics" };
-	};
+	};*/
 
-	class PhysicsErrorHandler final : public physx::PxErrorCallback
+	/*class PhysicsErrorHandler final : public physx::PxErrorCallback
 	{
 	public:
 		void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
 		{
 			GAFF_REF(code, message, file, line);
 		}
-	};
+	};*/
 
-	class PhysicsTaskDispatcher final : public physx::PxCpuDispatcher
+	/*class PhysicsTaskDispatcher final : public physx::PxCpuDispatcher
 	{
 	public:
 		void init(void)
@@ -104,20 +104,20 @@ namespace
 	private:
 		Shibboleth::JobPool* _job_pool = nullptr;
 
-		static void RunTask(uintptr_t /*thread_id_int*/, void* data)
+		static void RunTask(uintptr_t thread_id_int, void* data)
 		{
 			physx::PxBaseTask& task = *reinterpret_cast<physx::PxBaseTask*>(data);
 			task.run();
 			task.release();
 		}
-	};
+	};*/
 
-	static PhysicsTaskDispatcher g_physics_task_dispatcher;
-	static PhysicsErrorHandler g_physics_error_handler;
-	static PhysicsAllocator g_physics_allocator;
+	//static PhysicsTaskDispatcher g_physics_task_dispatcher;
+	//static PhysicsErrorHandler g_physics_error_handler;
+	//static PhysicsAllocator g_physics_allocator;
 
 #ifdef _DEBUG
-	static constexpr Shibboleth::IDebugManager::DebugRenderType k_render_type_map[] =
+	/*static constexpr Shibboleth::IDebugManager::DebugRenderType k_render_type_map[] =
 	{
 		Shibboleth::IDebugManager::DebugRenderType::Sphere,
 		Shibboleth::IDebugManager::DebugRenderType::Plane,
@@ -126,7 +126,7 @@ namespace
 		Shibboleth::IDebugManager::DebugRenderType::Count, // Convex Mesh
 		Shibboleth::IDebugManager::DebugRenderType::Count, // Triangle Mesh
 		Shibboleth::IDebugManager::DebugRenderType::Count  // Height field
-	};
+	};*/
 #endif
 }
 
@@ -137,19 +137,19 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsManager);
 
 PhysicsManager::~PhysicsManager(void)
 {
-	for (auto& pair : _scenes) {
-		GAFF_SAFE_RELEASE(pair.second);
-	}
+//	for (auto& pair : _scenes) {
+//		GAFF_SAFE_RELEASE(pair.second);
+//	}
 
-	GAFF_SAFE_RELEASE(_physics);
+//	GAFF_SAFE_RELEASE(_physics);
 
-#ifdef _DEBUG
-	physx::PxPvdTransport* transport = _pvd->getTransport();
-	GAFF_SAFE_RELEASE(transport);
-	GAFF_SAFE_RELEASE(_pvd);
-#endif
+//#ifdef _DEBUG
+//	physx::PxPvdTransport* transport = _pvd->getTransport();
+//	GAFF_SAFE_RELEASE(transport);
+//	GAFF_SAFE_RELEASE(_pvd);
+//#endif
 
-	GAFF_SAFE_RELEASE(_foundation);
+//	GAFF_SAFE_RELEASE(_foundation);
 }
 
 bool PhysicsManager::initAllModulesLoaded(void)
@@ -162,38 +162,38 @@ bool PhysicsManager::init(void)
 {
 	_job_pool = &GetApp().getJobPool();
 
-	g_physics_task_dispatcher.init();
+	//g_physics_task_dispatcher.init();
 
-	_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, g_physics_allocator, g_physics_error_handler);
-	physx::PxPvd* pvd = nullptr;
-	bool track_allocs = false;
+	//_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, g_physics_allocator, g_physics_error_handler);
+	//physx::PxPvd* pvd = nullptr;
+	//bool track_allocs = false;
 
 #ifdef _DEBUG
 	_debug_mgr = &GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 
-	_pvd = PxCreatePvd(*_foundation);
-	physx::PxPvdTransport* const transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	_pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+	//_pvd = PxCreatePvd(*_foundation);
+	//physx::PxPvdTransport* const transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	//_pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
-	track_allocs = true;
-	pvd = _pvd;
+	//track_allocs = true;
+	//pvd = _pvd;
 #endif
 
-	_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_foundation, physx::PxTolerancesScale(), track_allocs, pvd);
+	//_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_foundation, physx::PxTolerancesScale(), track_allocs, pvd);
 
-	physx::PxSceneDesc scene_desc(_physics->getTolerancesScale());
-	scene_desc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
-	scene_desc.cpuDispatcher = &g_physics_task_dispatcher;
-	scene_desc.filterShader = physx::PxDefaultSimulationFilterShader;
-	physx::PxScene* main_scene = _physics->createScene(scene_desc);
+	//physx::PxSceneDesc scene_desc(_physics->getTolerancesScale());
+	//scene_desc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	//scene_desc.cpuDispatcher = &g_physics_task_dispatcher;
+	//scene_desc.filterShader = physx::PxDefaultSimulationFilterShader;
+	//physx::PxScene* main_scene = _physics->createScene(scene_desc);
 
-	_scenes[Gaff::FNV1aHash32Const(u8"main")] = main_scene;
+	//_scenes[Gaff::FNV1aHash32Const(u8"main")] = main_scene;
 
-	if (physx::PxPvdSceneClient* pvd_client = main_scene->getScenePvdClient()) {
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
+	//if (physx::PxPvdSceneClient* pvd_client = main_scene->getScenePvdClient()) {
+	//	pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+	//	pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+	//	pvd_client->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	//}
 
 	//gMaterial = _physics->createMaterial(0.5f, 0.5f, 0.6f);
 
@@ -206,51 +206,51 @@ bool PhysicsManager::init(void)
 	//if (!interactive)
 	//	createDynamic(PxTransform(PxVec3(0, 40, 100)), PxSphereGeometry(10), PxVec3(0, -50, -100));
 
-	ECSQuery rb_query;
-	rb_query.addShared(_scene_comps);
-	rb_query.add<RigidBody>(_rigid_bodies);
-	rb_query.add<Position>(_positions);
-	rb_query.add<Rotation>(_rotations);
-	rb_query.add<Scale>(_scales);
+	//ECSQuery rb_query;
+	//rb_query.addShared(_scene_comps);
+	//rb_query.add<RigidBody>(_rigid_bodies);
+	//rb_query.add<Position>(_positions);
+	//rb_query.add<Rotation>(_rotations);
+	//rb_query.add<Scale>(_scales);
 
-	_ecs_mgr = &GetManagerTFast<ECSManager>();
-	_ecs_mgr->registerQuery(std::move(rb_query));
+	//_ecs_mgr = &GetManagerTFast<ECSManager>();
+	//_ecs_mgr->registerQuery(std::move(rb_query));
 
 	return true;
 }
 
-void PhysicsManager::update(uintptr_t thread_id_int)
+void PhysicsManager::update(uintptr_t /*thread_id_int*/)
 {
 	ZoneScoped;
 
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	//const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	// $TODO: Add to a config file.
 	constexpr float k_frame_step = 1.0f / 60.0f;
 
 	_remaining_time += _game_time->getDeltaFloat();
 
 	while (_remaining_time > k_frame_step) {
-		for (auto& pair : _scenes) {
-			pair.second->simulate(k_frame_step);
-		}
+		//for (auto& pair : _scenes) {
+		//	pair.second->simulate(k_frame_step);
+		//}
 
 		_remaining_time -= k_frame_step;
 
 		// $TODO: While the sim is running, run threads to create new bodies.
 
-		for (auto& pair : _scenes) {
-			while (!pair.second->fetchResults()) {
-				_job_pool->help(thread_id);
-				EA::Thread::ThreadSleep();
-			}
-		}
+		//for (auto& pair : _scenes) {
+		//	while (!pair.second->fetchResults()) {
+		//		_job_pool->help(thread_id);
+		//		EA::Thread::ThreadSleep();
+		//	}
+		//}
 	}
 
 	// Create new bodies and update transforms.
-	const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
+	//const int32_t num_bodies = static_cast<int32_t>(_rigid_bodies.size());
 
 	// $TODO: Thread this loop.
-	for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
+	/*for (int32_t rb_index = 0; rb_index < num_bodies; ++rb_index) {
 		_ecs_mgr->iterate<RigidBody, Position, Rotation, Scale>(
 			_rigid_bodies[rb_index],
 			_positions[rb_index],
@@ -308,21 +308,21 @@ void PhysicsManager::update(uintptr_t thread_id_int)
 				}
 			}
 		);
-	}
+	}*/
 }
 
-physx::PxFoundation* PhysicsManager::getFoundation(void)
-{
-	return _foundation;
-}
+//physx::PxFoundation* PhysicsManager::getFoundation(void)
+//{
+//	return _foundation;
+//}
 
-physx::PxPhysics* PhysicsManager::getPhysics(void)
-{
-	return _physics;
-}
+//physx::PxPhysics* PhysicsManager::getPhysics(void)
+//{
+//	return _physics;
+//}
 
-#ifdef _DEBUG
-void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
+/*#ifdef _DEBUG
+void PhysicsManager::updateDebug(uintptr_t thread_id_int)
 {
 	ZoneScoped;
 
@@ -444,6 +444,6 @@ void PhysicsManager::updateDebug(uintptr_t /*thread_id_int*/)
 		}
 	}
 }
-#endif
+#endif*/
 
 NS_END

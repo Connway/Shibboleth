@@ -25,47 +25,47 @@ THE SOFTWARE.
 #include "Shibboleth_PhysicsShapeResource.h"
 #include <Shibboleth_ECSComponentBase.h>
 
-namespace physx
-{
-	class PxRigidDynamic;
-	class PxRigidStatic;
-}
+// namespace physx
+// {
+// 	class PxRigidDynamic;
+// 	class PxRigidStatic;
+// }
 
 NS_SHIBBOLETH
 
-class RigidBody final : public ECSComponentBaseBoth<RigidBody, RigidBody&>
-{
-public:
-	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-	static void SetInternal(void* component, int32_t entity_index, const RigidBody& value);
-	static RigidBody& GetInternal(const void* component, int32_t entity_index);
+// class RigidBody final : public ECSComponentBaseBoth<RigidBody, RigidBody&>
+// {
+// public:
+// 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
+// 	static void SetInternal(void* component, int32_t entity_index, const RigidBody& value);
+// 	static RigidBody& GetInternal(const void* component, int32_t entity_index);
 
-	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
-	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
+// 	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
+// 	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
 
-	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
-	static bool Load(const ISerializeReader& reader, RigidBody& out);
+// 	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
+// 	static bool Load(const ISerializeReader& reader, RigidBody& out);
 
-	~RigidBody(void);
+// 	~RigidBody(void);
 
-	RigidBody& operator=(const RigidBody& rhs);
-	RigidBody& operator=(RigidBody&& rhs) = default;
+// 	RigidBody& operator=(const RigidBody& rhs);
+// 	RigidBody& operator=(RigidBody&& rhs) = default;
 
 
-	union Body final
-	{
-		physx::PxRigidDynamic* body_dynamic = nullptr;
-		physx::PxRigidStatic* body_static;
-	};
+// 	union Body final
+// 	{
+// 		physx::PxRigidDynamic* body_dynamic = nullptr;
+// 		physx::PxRigidStatic* body_static;
+// 	};
 
-	PhysicsShapeResourcePtr shape;
-	float density = 1.0f;
-	bool is_static = false;
-	Body body;
+// 	PhysicsShapeResourcePtr shape;
+// 	float density = 1.0f;
+// 	bool is_static = false;
+// 	Body body;
 
-	// Enum value for dynamic, static, or kinematic.
-};
+// 	// Enum value for dynamic, static, or kinematic.
+// };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::RigidBody)
+// SHIB_REFLECTION_DECLARE(Shibboleth::RigidBody)

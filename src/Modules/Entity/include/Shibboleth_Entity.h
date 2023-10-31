@@ -147,6 +147,9 @@ public:
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
 	int32_t getNumComponents(void) const;
 
+	const EntitySceneComponent* getRootComponent(void) const;
+	EntitySceneComponent* getRootComponent(void);
+
 	void updateAfter(IEntityUpdateable& after);
 
 	void setEnableUpdate(bool enabled);

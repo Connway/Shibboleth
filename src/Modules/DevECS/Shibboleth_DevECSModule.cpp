@@ -21,52 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_ModuleMacros.h>
 
-#ifdef SHIB_STATIC
-
-	#include <Shibboleth_IModule.h>
-
-	namespace DevECS
-	{
-		class Module final : public Shibboleth::IModule
-		{
-		public:
-			void initReflectionEnums(void) override;
-			void initReflectionAttributes(void) override;
-			void initReflectionClasses(void) override;
-		};
-
-		void Module::initReflectionEnums(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevECS::InitReflection(InitMode::Enums);
-		}
-
-		void Module::initReflectionAttributes(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevECS::InitReflection(InitMode::Attributes);
-		}
-
-		void Module::initReflectionClasses(void)
-		{
-			// Should NOT add other code here.
-			Gen::DevECS::InitReflection(InitMode::Classes);
-		}
-
-		Shibboleth::IModule* CreateModule(void)
-		{
-			return SHIB_ALLOCT(DevECS::Module, Shibboleth::ProxyAllocator("DevECS"));
-		}
-	}
-
-#else
-
-	#include <Gaff_Defines.h>
-
-	GAFF_DYNAMIC_EXPORT_C Shibboleth::IModule* CreateModule(void)
-	{
-		return DevECS::CreateModule();
-	}
-
-#endif
+SHIB_DEFINE_MODULE(DevECS)

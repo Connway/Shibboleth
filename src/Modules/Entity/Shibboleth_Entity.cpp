@@ -342,6 +342,16 @@ int32_t Entity::getNumComponents(void) const
 	return static_cast<int32_t>(_components.size());
 }
 
+const EntitySceneComponent* Entity::getRootComponent(void) const
+{
+	return _root_scene_comp;
+}
+
+EntitySceneComponent* Entity::getRootComponent(void)
+{
+	return _root_scene_comp;
+}
+
 void Entity::updateAfter(IEntityUpdateable& after)
 {
 	_entity_mgr.updateAfter(*this, after);

@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_AppUtils.h>
-#include <PxPhysicsAPI.h>
+// #include <PxPhysicsAPI.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsMaterialResource)
 	.classAttrs(
@@ -44,18 +44,18 @@ SHIB_REFLECTION_CLASS_DEFINE(PhysicsMaterialResource)
 
 PhysicsMaterialResource::~PhysicsMaterialResource(void)
 {
-	GAFF_SAFE_RELEASE(_material);
+	// GAFF_SAFE_RELEASE(_material);
 }
 
-const physx::PxMaterial* PhysicsMaterialResource::getMaterial(void) const
-{
-	return _material;
-}
+//const physx::PxMaterial* PhysicsMaterialResource::getMaterial(void) const
+//{
+//	return _material;
+//}
 
-physx::PxMaterial* PhysicsMaterialResource::getMaterial(void)
-{
-	return _material;
-}
+// physx::PxMaterial* PhysicsMaterialResource::getMaterial(void)
+// {
+// 	return _material;
+// }
 
 void PhysicsMaterialResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
@@ -65,21 +65,21 @@ void PhysicsMaterialResource::load(const ISerializeReader& reader, uintptr_t /*t
 		return;
 	}
 
-	const float static_friction = reader.readFloat(u8"static_friction", 0.5f);
-	const float dynamic_friction = reader.readFloat(u8"dynamic_friction", 0.5f);
-	const float restitution = reader.readFloat(u8"restitution", 0.5f);
+	// const float static_friction = reader.readFloat(u8"static_friction", 0.5f);
+	// const float dynamic_friction = reader.readFloat(u8"dynamic_friction", 0.5f);
+	// const float restitution = reader.readFloat(u8"restitution", 0.5f);
 
 	// Do we need to lock here?
-	PhysicsManager& phys_mgr = GetManagerTFast<PhysicsManager>();
-	_material = phys_mgr.getPhysics()->createMaterial(static_friction, dynamic_friction, restitution);
+	// PhysicsManager& phys_mgr = GetManagerTFast<PhysicsManager>();
+	// _material = phys_mgr.getPhysics()->createMaterial(static_friction, dynamic_friction, restitution);
 
-	if (_material) {
-		succeeded();
+	// if (_material) {
+	// 	succeeded();
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
+	// } else {
+	// 	// $TODO: Log error.
+	// 	failed();
+	// }
 }
 
 NS_END
