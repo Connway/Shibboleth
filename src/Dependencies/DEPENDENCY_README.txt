@@ -13,11 +13,6 @@ Libraries Affected:
 		Fixing compilation error with CLOCK_MONOTONIC not being defined.
 		Fixing compilation errors on Mac.
 
-	PhysX
-		Changed #include <typeinfo.h> -> #include <typeinfo>.
-		Changed GetModuleHandle() -> GetModuleHandleA().
-		Fixed compilation error in GuGJKType.h not returning a const reference.
-
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
 

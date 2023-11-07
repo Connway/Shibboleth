@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include "Shibboleth_ScriptConfigs.h"
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_ModuleMacros.h>
 
 SHIB_DEFINE_MODULE_BEGIN(Script)

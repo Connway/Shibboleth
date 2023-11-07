@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_ECSEntity.h>
+//#include <Shibboleth_ECSEntity.h>
 #include <Esprit_IProcess.h>
 #include <Gleam_Vec3.h>
 
@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 
 class GameTimeManager;
 class InputManager;
-class ECSManager;
+//class ECSManager;
 
 class FlyCameraProcess final : public Esprit::IProcess, public Refl::IReflectionObject
 {
@@ -40,21 +40,21 @@ public:
 	void update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::Instance& variables) override;
 
 private:
-	GameTimeManager* _time_mgr = nullptr;
-	InputManager* _input_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
+	//GameTimeManager* _time_mgr = nullptr;
+	//InputManager* _input_mgr = nullptr;
+	//ECSManager* _ecs_mgr = nullptr;
 
 	Gleam::Vec3 _angular_speed = Gleam::Vec3{ 1.0f, 1.0f, 1.0f };
 	float _linear_speed = 1.0f;
 
-	int32_t _entity_id_index = -1;
+	//int32_t _entity_id_index = -1;
 
-	int32_t _camera_vert_alias_index = -1;
-	int32_t _horiz_alias_index = -1;
-	int32_t _vert_alias_index = -1;
+	//int32_t _camera_vert_alias_index = -1;
+	//int32_t _horiz_alias_index = -1;
+	//int32_t _vert_alias_index = -1;
 
-	int32_t _pitch_index = -1;
-	int32_t _yaw_index = -1;
+	//int32_t _pitch_index = -1;
+	//int32_t _yaw_index = -1;
 
 	SHIB_REFLECTION_CLASS_DECLARE(FlyCameraProcess);
 };

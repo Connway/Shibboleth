@@ -21,9 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_FlyCameraProcess.h"
-#include <Shibboleth_ECSComponentCommon.h>
+//#include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_InputManager.h>
-#include <Shibboleth_ECSManager.h>
+//#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
 #include <Esprit_StateMachine.h>
@@ -44,9 +44,9 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(FlyCameraProcess)
 
-bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
+bool FlyCameraProcess::init(const Esprit::StateMachine& /*owner*/)
 {
-	const Esprit::VariableSet& variables = owner.getVariables();
+	/*const Esprit::VariableSet& variables = owner.getVariables();
 	_entity_id_index = variables.getVariableIndex(HashStringView32<>(u8"entity_id"), Esprit::VariableSet::VariableType::Integer);
 
 	if (_entity_id_index < 0) {
@@ -90,12 +90,14 @@ bool FlyCameraProcess::init(const Esprit::StateMachine& owner)
 		return false;
 	}
 
+	return true;*/
+
 	return true;
 }
 
-void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::Instance& variables)
+void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::VariableSet::Instance& /*variables*/)
 {
-	if (_camera_vert_alias_index < 0) {
+	/*if (_camera_vert_alias_index < 0) {
 		return;
 	}
 
@@ -174,7 +176,7 @@ void FlyCameraProcess::update(const Esprit::StateMachine& /*owner*/, Esprit::Var
 	position.value += camera_dir * _linear_speed * dt;
 
 	Position::Set(*_ecs_mgr, entity_id, position);
-	Rotation::Set(*_ecs_mgr, entity_id, rotation);
+	Rotation::Set(*_ecs_mgr, entity_id, rotation);*/
 }
 
 NS_END

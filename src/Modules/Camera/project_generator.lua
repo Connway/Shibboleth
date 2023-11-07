@@ -14,7 +14,6 @@ local GenerateProject = function()
 			source_dir .. "../../Core/Memory/include",
 			source_dir .. "../../Core/Engine/include",
 			base_dir .. "../../Dependencies/EASTL/include",
-			base_dir .. "../../Dependencies/glfw/include",
 			base_dir .. "../../Dependencies/glm",
 			base_dir .. "../../Dependencies/mpack",
 			base_dir .. "../../Dependencies/rapidjson",
@@ -23,8 +22,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Esprit/include",
 			source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
-			source_dir .. "../../Modules/Input/include",
-			source_dir .. "../../Modules/ECS/include"
+			source_dir .. "../../Modules/Input/include"
 		}
 
 	ModuleProject "CameraModule"
@@ -40,8 +38,6 @@ local GenerateProject = function()
 			"DevDebug",
 			"Resource",
 			"Input",
-			"ECS",
-			"GLFW"
 		}
 
 		dependson(deps)
@@ -56,8 +52,6 @@ local LinkDependencies = function()
 	table.insert(deps, "DevDebug")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
-	table.insert(deps, "ECS")
-	table.insert(deps, "GLFW")
 
 	dependson(deps)
 	links(deps)
