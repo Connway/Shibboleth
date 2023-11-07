@@ -20,26 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
-#include <Shibboleth_ModuleMacros.h>
+#pragma once
 
-SHIB_DEFINE_MODULE_BEGIN(ECS)
+#include "Gaff_Defines.h"
 
-#ifdef SHIB_STATIC
-	namespace ECS
-	{
-		class Module final : public Shibboleth::Module
-		{
-		public:
-			bool postInit(void) override;
-		};
+NS_GAFF
 
-		bool Module::postInit(void)
-		{
-			Shibboleth::GetApp().getReflectionManager().registerAttributeBucket<Shibboleth::ECSClassAttribute>();
-			return true;
-		}
-	}
-#endif
+struct GUID final
+{
+	static GUID Generate();
 
-SHIB_DEFINE_MODULE_END(ECS)
+	GUID(const GUID& guid) = default;
+	GUID(void) = default;
+
+	bool IsValid() const;
+
+	bool operator==(const GUID& rhs) const;
+	bool operator!=(const GUID& rhs) const;
+	GUID& operator=(const GUID& rhs) = default;
+
+	uint32_t byte_0 = 0;
+	uint32_t byte_1 = 0;
+	uint32_t byte_2 = 0;
+	uint32_t byte_3 = 0;
+};
+
+NS_END

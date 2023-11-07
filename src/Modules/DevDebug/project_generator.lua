@@ -21,8 +21,6 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/imgui",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
-			base_dir .. "../../Dependencies/CivetWeb/include",
-			source_dir .. "../../Modules/DevWebServer/include",
 			source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
 			source_dir .. "../../Modules/Graphics/include",
@@ -43,12 +41,10 @@ local GenerateProject = function()
 			"zlib-ng",
 			"libpng",
 			"libtiff",
-			"CivetWeb",
 			"GLFW",
 
 			"Gleam",
 
-			"DevWebServer",
 			"GraphicsBase",
 			"MainLoop",
 			"Resource",
@@ -68,12 +64,10 @@ local LinkDependencies = function()
 	table.insert(deps, "zlib-ng")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
-	table.insert(deps, "CivetWeb")
 	table.insert(deps, "GLFW")
 
 	table.insert(deps, "Gleam")
 
-	table.insert(deps, "DevWebServer")
 	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")

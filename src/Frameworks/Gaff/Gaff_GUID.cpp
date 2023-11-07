@@ -20,35 +20,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Gaff_GUID.h"
 
-#include <Shibboleth_IDevWebHandler.h>
-#include <Shibboleth_IDebugManager.h>
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_VectorMap.h>
-#include <Shibboleth_Vector.h>
+#ifdef PLATFORM_WINDOWS
+	#include "Gaff_IncludeWindows.h"
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	#include <uuid/uuid.h>
+#endif
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class DebugDrawWebHandler final : public IDevWebHandler, public Refl::IReflectionObject
+GUID GUID::Generate()
 {
-public:
-	DebugDrawWebHandler(void);
+	GUID result;
 
-	//bool handleGet(CivetServer* server, mg_connection* conn) override;
-	bool handlePut(CivetServer* server, mg_connection* conn) override;
+#ifdef PLATFORM_WINDOWS
+	GAFF_ASSERT(CoCreateGuid(reinterpret_cast<::GUID*>(&result)) == S_OK);
 
-	void handleConnectionClosed(const mg_connection* conn) override;
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	uuid_t uuid;
+	uuid_generate(uuid);
 
-private:
-	IDebugManager& _debug_mgr;
+	result.byte_0 = uuid[0];
+	result.byte_1 = uuid[1];
+	result.byte_2 = uuid[2];
+	result.byte_3 = uuid[3];
+#endif
 
-	using HandleVector = Vector<IDebugManager::DebugRenderHandle>;
-	VectorMap<const mg_connection*, HandleVector> _debug_handles{ ProxyAllocator("Dev") };
+	return result;
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugDrawWebHandler);
-};
+bool GUID::IsValid() const
+{
+	return byte_0 != 0 || byte_1 != 0 || byte_2 != 0 || byte_3 != 0;
+}
+
+bool GUID::operator==(const GUID& rhs) const
+{
+	return byte_0 == rhs.byte_0 && byte_1 == rhs.byte_1 && byte_2 == rhs.byte_2 && byte_3 == rhs.byte_3;
+}
+
+bool GUID::operator!=(const GUID& rhs) const
+{
+	return byte_0 != rhs.byte_0 || byte_1 != rhs.byte_1 || byte_2 != rhs.byte_2 || byte_3 != rhs.byte_3;
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::DebugDrawWebHandler)
