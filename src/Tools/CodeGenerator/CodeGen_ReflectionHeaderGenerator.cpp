@@ -127,17 +127,56 @@ namespace Gen::Engine
 #endif
 )";
 
-
-
-static void ProcessLine(std::vector<std::u8string>& file_classes, std::u8string_view line)
+struct RuntimeData final
 {
+	bool in_ignore_block = false;
+};
+
+
+static std::u8string_view RemoveWhitespace(const std::u8string_view& str)
+{
+	std::u8string_view result = str;
+
+	while (isspace(result[0])) {
+		result = result.substr(1);
+	}
+
+	while (isspace(result.back())) {
+		result = result.substr(0, result.size() - 1);
+	}
+
+	return result;
+}
+
+static void ProcessLine(std::vector<std::u8string>& file_classes, std::u8string_view line, RuntimeData& runtime_data)
+{
+	// $TODO: Make this data defined instead of hardcoded.
+	constexpr const std::u8string_view k_two_param_macro_list[] = { u8"SHIB_DECLARE_SIMPLE_ATTRIBUTE" };
 	constexpr const std::u8string_view k_refl_decl = u8"SHIB_REFLECTION_DECLARE";
 
-	if (line.find(u8"#define") != std::u8string_view::npos) {
+	if (runtime_data.in_ignore_block) {
+		runtime_data.in_ignore_block = line.find(u8"\\") != std::u8string_view::npos;
 		return;
 	}
 
-	size_t start = line.find(k_refl_decl);
+	if (line.find(u8"#define") != std::u8string_view::npos) {
+		runtime_data.in_ignore_block = line.find(u8'\\') != std::u8string_view::npos;
+		return;
+	}
+
+	bool is_two_param_macro = false;
+	size_t start = 0;
+
+	for (const std::u8string_view& two_param_macro : k_two_param_macro_list) {
+		start = line.find(two_param_macro);
+
+		if (start != std::u8string_view::npos) {
+			is_two_param_macro = true;
+			break;
+		}
+	}
+
+	start = (is_two_param_macro) ? start : line.find(k_refl_decl);
 
 	if (start == std::u8string_view::npos) {
 		return;
@@ -146,20 +185,26 @@ static void ProcessLine(std::vector<std::u8string>& file_classes, std::u8string_
 	// Line is commented out, don't init the reflection.
 	if (const size_t comment_index = line.find(u8"//");
 		comment_index != std::u8string_view::npos && comment_index < start) {
+
 		return;
 	}
 
 	start = line.find(u8'(', start) + 1;
 	const size_t end = line.find(u8')', start);
 
-	std::u8string_view class_name = line.substr(start, end - start);
+	std::u8string class_name;
 
-	while (isspace(class_name[0])) {
-		class_name = class_name.substr(1);
-	}
+	if (is_two_param_macro) {
+		const size_t second_param_start = line.find(u8',', start) + 1;
+		std::u8string_view namespace_name = line.substr(second_param_start, end - second_param_start);
 
-	while (isspace(class_name.back())) {
-		class_name = class_name.substr(0, class_name.size() - 1);
+		class_name = RemoveWhitespace(namespace_name);
+		class_name += u8"::";
+		class_name += RemoveWhitespace(line.substr(start, second_param_start - start - 1));
+
+	} else {
+		class_name = line.substr(start, end - start);
+		class_name = RemoveWhitespace(class_name);
 	}
 
 	file_classes.emplace_back(class_name);
@@ -433,9 +478,11 @@ static int GenerateReflectionHeader(
 		size_t index = text.find(u8'\n', offset);
 		std::vector<std::u8string> file_classes;
 
+		RuntimeData runtime_data;
+
 		while (index != std::u8string::npos) {
 			const std::u8string_view line(text.begin() + offset, text.begin() + index);
-			ProcessLine(file_classes, line);
+			ProcessLine(file_classes, line, runtime_data);
 
 			offset = index + 1;
 			index = text.find(u8'\n', offset);

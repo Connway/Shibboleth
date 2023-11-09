@@ -69,3 +69,29 @@ public:
 };
 
 NS_END
+
+#define SHIB_DECLARE_SIMPLE_ATTRIBUTE(AttributeName, Namespace) \
+	namespace Namespace \
+	{ \
+		class AttributeName final : public Refl::IAttribute \
+		{ \
+		public: \
+			Refl::IAttribute* clone(void) const override; \
+			SHIB_REFLECTION_CLASS_DECLARE(AttributeName); \
+		}; \
+	} \
+	SHIB_REFLECTION_DECLARE(Namespace::AttributeName)
+
+
+#define SHIB_DEFINE_SIMPLE_ATTRIBUTE(AttributeName, Namespace) \
+	SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Namespace::AttributeName, IAttribute) \
+	namespace Namespace \
+	{ \
+		SHIB_REFLECTION_CLASS_DEFINE(AttributeName) \
+		Refl::IAttribute* AttributeName::clone(void) const \
+		{ \
+			IAllocator& allocator = GetAllocator(); \
+			return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator); \
+		} \
+	}
+
