@@ -20,41 +20,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_Config.h"
 
-#include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigDirectoryAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::GlobalConfigAttribute, IAttribute)
 
 NS_SHIBBOLETH
 
-class IFile
+SHIB_REFLECTION_CLASS_DEFINE(ConfigDirectoryAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(GlobalConfigAttribute)
+
+
+
+ConfigDirectoryAttribute::ConfigDirectoryAttribute(const char8_t* directory):
+	_directory(directory)
 {
-public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
+}
 
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
-
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
-
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
-};
-
-class IFileSystem
+const char8_t* ConfigDirectoryAttribute::getDirectory(void) const
 {
-public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
+	return _directory;
+}
 
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
+Refl::IAttribute* ConfigDirectoryAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ConfigDirectoryAttribute, allocator.getPoolIndex("Reflection"), allocator, _directory);
+}
 
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
 
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
-};
+
+
+GlobalConfigAttribute::GlobalConfigAttribute(const IConfig* config):
+	_config(config)
+{
+}
+
+void GlobalConfigAttribute::setConfig(const IConfig* config)
+{
+	_config = config;
+}
+
+const IConfig* GlobalConfigAttribute::getConfig(void) const
+{
+	return _config;
+}
+
+Refl::IAttribute* GlobalConfigAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(GlobalConfigAttribute, allocator.getPoolIndex("Reflection"), allocator, _config);
+}
 
 NS_END

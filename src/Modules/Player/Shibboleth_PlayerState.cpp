@@ -20,41 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_PlayerState.h"
 
-#include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerState)
+	.var(u8"player_name", &Shibboleth::PlayerState::_player_name)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerState)
+
 
 NS_SHIBBOLETH
 
-class IFile
+SHIB_REFLECTION_CLASS_DEFINE(PlayerState)
+
+const Player& PlayerState::getPlayer(void) const
 {
-public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
+	return const_cast<PlayerState*>(this)->getPlayer();
+}
 
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
-
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
-
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
-};
-
-class IFileSystem
+Player& PlayerState::getPlayer(void)
 {
-public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
+	GAFF_ASSERT(_owning_player);
+	return *_owning_player;
+}
 
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
-
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
-
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
-};
+void PlayerState::setPlayer(Player* player)
+{
+	_owning_player = player;
+}
 
 NS_END

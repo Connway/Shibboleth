@@ -22,39 +22,37 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_Config.h>
 
 NS_SHIBBOLETH
 
-class IFile
+struct InputAlias final
 {
 public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
+	enum class Flag
+	{
+		ConsumeInput,
 
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
+		Count
+	};
 
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
-
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
+	HashString64<> name;
+	Gaff::Flags<Flag> flags;
 };
 
-class IFileSystem
+
+class InputAliasConfig final : public IConfig
 {
 public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
+	Vector<InputAlias> aliases;
 
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
-
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
-
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
+	SHIB_REFLECTION_CLASS_DECLARE(InputAliasConfig);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::InputAliasConfig)
+
+SHIB_REFLECTION_DECLARE(Shibboleth::InputAlias::Flag)
+SHIB_REFLECTION_DECLARE(Shibboleth::InputAlias)

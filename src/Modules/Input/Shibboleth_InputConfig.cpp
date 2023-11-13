@@ -20,41 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_InputConfig.h"
 
-#include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAliasConfig)
+	.BASE(Shibboleth::IConfig)
+	.template ctor<>()
+
+	.classAttrs(
+		Shibboleth::GlobalConfigAttribute()
+	)
+
+	.var(u8"aliases", &Shibboleth::InputAliasConfig::aliases)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAliasConfig)
+
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAlias::Flag)
+	.entry(u8"consume_input", Shibboleth::InputAlias::Flag::ConsumeInput)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAlias::Flag)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAlias)
+	.template ctor<>()
+
+	.var(u8"name", &Shibboleth::InputAlias::name)
+	.var(u8"flags", &Shibboleth::InputAlias::flags)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAlias)
+
 
 NS_SHIBBOLETH
 
-class IFile
-{
-public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
-
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
-
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
-
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
-};
-
-class IFileSystem
-{
-public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
-
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
-
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
-
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
-};
+SHIB_REFLECTION_CLASS_DEFINE(InputAliasConfig)
 
 NS_END

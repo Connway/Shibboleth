@@ -22,39 +22,61 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_Reflection.h"
 #include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
 
 NS_SHIBBOLETH
 
-class IFile
+class IConfig : public Refl::IReflectionObject
 {
-public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
-
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
-
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
-
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
 };
 
-class IFileSystem
+
+
+class ConfigDirectoryAttribute final : public Refl::IAttribute
 {
 public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
+	ConfigDirectoryAttribute(const char8_t* directory);
 
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
+	const char8_t* getDirectory(void) const;
 
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
+	IAttribute* clone(void) const override;
 
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
+private:
+	const char8_t* const _directory = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ConfigDirectoryAttribute);
 };
+
+class GlobalConfigAttribute final : public Refl::IAttribute
+{
+public:
+	GlobalConfigAttribute(const IConfig* config);
+	GlobalConfigAttribute(void) = default;
+
+	void setConfig(const IConfig* config);
+	const IConfig* getConfig(void) const;
+
+	IAttribute* clone(void) const override;
+
+private:
+	const IConfig* _config = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(GlobalConfigAttribute);
+};
+
+template <class T>
+const T* GetConfig(void)
+{
+	static_assert(std::is_base_of_v<IConfig, T>, "Passed in class is not an IConfig.");
+
+	const Refl::IReflectionDefinition& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
+	const auto* const attr = ref_def.template getClassAttr<GlobalConfigAttribute>();
+
+	return (attr) ? static_cast<const T*>(attr->getConfig()) : nullptr;
+}
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ConfigDirectoryAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)

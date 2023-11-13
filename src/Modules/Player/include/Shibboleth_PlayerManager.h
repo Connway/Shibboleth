@@ -22,39 +22,46 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <EASTL/functional.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class IFile
+class LocalPlayer;
+class Player;
+
+class PlayerManager final : public IManager
 {
 public:
-	IFile(void) {}
-	virtual ~IFile(void) {}
+	template <class T>
+	int32_t getNumPlayersT(void) const;
 
-	// Only used for files opened for read
-	virtual size_t size(void) const = 0;
+	template <class T>
+	const T& getPlayerT(int32_t index) const;
 
-	virtual const int8_t* getBuffer(void) const = 0;
-	virtual int8_t* getBuffer(void) = 0;
+	template <class T>
+	T& getPlayerT(int32_t index);
 
-	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
-};
+	bool initAllModulesLoaded(void) override;
 
-class IFileSystem
-{
-public:
-	//enum OpenMode { OT_READ = 0, OT_WRITE };
+	const Player& getPlayer(int32_t index) const;
+	Player& getPlayer(int32_t index);
+	int32_t getNumPlayers(void) const;
 
-	IFileSystem(void) {}
-	virtual ~IFileSystem(void) {}
+	// $TODO: If networking is ever added, add remote/proxy player class.
 
-	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
-	virtual void closeFile(const IFile* file) = 0;
+	const LocalPlayer& getLocalPlayer(int32_t index) const;
+	LocalPlayer& getLocalPlayer(int32_t index);
+	LocalPlayer& addLocalPlayer(void);
+	int32_t getNumLocalPlayers(void) const;
 
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, const char8_t* extension, bool recursive = false) = 0;
-	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
+private:
+	Vector< UniquePtr<Player> > _players{ ProxyAllocator("Player") };
+	Vector<LocalPlayer*> _local_players{ ProxyAllocator("Player") };
+
+	SHIB_REFLECTION_CLASS_DECLARE(PlayerManager);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::PlayerManager)

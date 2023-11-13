@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputManager.h"
 #include "Shibboleth_InputReflection.h"
+#include "Shibboleth_InputConfig.h"
 #include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -74,6 +75,12 @@ static void UpdateWindows(uintptr_t, void* data)
 
 bool InputManager::initAllModulesLoaded(void)
 {
+	const auto* const alias_config = GetConfig<InputAliasConfig>();
+
+	for (const InputAlias& alias : alias_config->aliases) {
+		GAFF_REF(alias);
+	}
+
 	// Load bindings.
 	IFile* const input_file = GetApp().getFileSystem().openFile(u8"cfg/input_bindings.cfg");
 

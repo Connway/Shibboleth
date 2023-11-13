@@ -27,6 +27,7 @@ THE SOFTWARE.
 #define BASE(type) template base<type>(GAFF_STR_U8(type))
 #define CTOR(...) template ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 #define GET_INTERFACE(class_type, data) template getInterface<class_type>(CLASS_HASH(class_type), data)
+#define CREATET(class_type, allocator, ...) template createT<class_type>(CLASS_HASH(class_type), allocator, ##__VA_ARGS__)
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \

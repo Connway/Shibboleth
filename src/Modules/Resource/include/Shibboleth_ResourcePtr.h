@@ -29,6 +29,16 @@ NS_SHIBBOLETH
 
 class IResource;
 
+/*class IResourcePtr
+{
+public:
+	static bool Load(const ISerializeReader& reader, IResourcePtr& out);
+	static void Save(ISerializeWriter& writer, const IResourcePtr& value);
+
+protected:
+	Gaff::RefPtr<IResource> _resource;
+};*/
+
 template <class T>
 class ResourcePtr final
 {
