@@ -55,8 +55,8 @@ public:
 	const char* get_name() const override;
 	void set_name(const char* pName) override;
 
-	void addOnFreeCallback(OnFreeCallback callback, void* data) override;
-	void removeOnFreeCallback(OnFreeCallback callback, void* data) override;
+	//void addOnFreeCallback(OnFreeCallback callback, void* data) override;
+	//void removeOnFreeCallback(OnFreeCallback callback, void* data) override;
 
 	int32_t getPoolIndex(const char* pool_name) override;
 	size_t getUsableSize(const void* data) const override;
@@ -82,7 +82,7 @@ public:
 	size_t getTotalBytesAllocated(size_t pool_index) const;
 	size_t getNumAllocations(size_t pool_index) const;
 	size_t getNumFrees(size_t pool_index) const;
-	const char* getPoolName(int32_t pool_index) const;
+	const char* getPoolName(int32_t pool_index) const override;
 
 	void setLogDir(const char8_t* log_dir);
 

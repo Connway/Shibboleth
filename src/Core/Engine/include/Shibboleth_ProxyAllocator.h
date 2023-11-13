@@ -34,8 +34,8 @@ public:
 
 	explicit ProxyAllocator(const char* pool_tag);
 
-	ProxyAllocator(void) = default;
 	ProxyAllocator(const ProxyAllocator& allocator) = default;
+	ProxyAllocator(void) = default;
 
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs);
 	bool operator==(const ProxyAllocator& rhs) const;
@@ -65,7 +65,6 @@ public:
 
 private:
 	Shibboleth::IAllocator& _allocator = GetAllocator();
-	const char* _pool_tag = nullptr;
 	int32_t _pool_index = 0;
 };
 

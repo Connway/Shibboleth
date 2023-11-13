@@ -31,17 +31,15 @@ ProxyAllocator& ProxyAllocator::GetGlobal(void)
 	return g_global_proxy;
 }
 
-ProxyAllocator::ProxyAllocator(const char* pool_tag):
-	_pool_tag(pool_tag)
+ProxyAllocator::ProxyAllocator(const char* pool_tag)
 {
-	if (_pool_tag) {
-		_pool_index = _allocator.getPoolIndex(_pool_tag);
+	if (pool_tag) {
+		_pool_index = _allocator.getPoolIndex(pool_tag);
 	}
 }
 
 const ProxyAllocator& ProxyAllocator::operator=(const ProxyAllocator& rhs)
 {
-	_pool_tag = rhs._pool_tag;
 	_pool_index = rhs._pool_index;
 	return *this;
 }
@@ -111,7 +109,7 @@ void ProxyAllocator::deallocate(void* p, size_t)
 
 const char* ProxyAllocator::get_name() const
 {
-	return _pool_tag;
+	return _allocator.getPoolName(_pool_index);
 }
 
 void ProxyAllocator::set_name(const char*)

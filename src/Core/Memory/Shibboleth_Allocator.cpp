@@ -53,8 +53,8 @@ struct alignas(16) AllocationHeader
 	int line = 0;
 
 	// Not a huge fan of adding this to the header data.
-	static constexpr int32_t k_num_free_callbacks = 4;
-	Allocator::OnFreeCallback free_callbacks[k_num_free_callbacks] = { nullptr };
+	//static constexpr int32_t k_num_free_callbacks = 4;
+	//Allocator::OnFreeCallback free_callbacks[k_num_free_callbacks] = { nullptr };
 
 #if REQUIRES_HEADER_LIST
 	AllocationHeader* next = nullptr;
@@ -110,7 +110,7 @@ void Allocator::set_name(const char*)
 {
 }
 
-void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
+/*void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
 {
 	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 
@@ -134,7 +134,7 @@ void Allocator::removeOnFreeCallback(OnFreeCallback callback, void* data)
 			break;
 		}
 	}
-}
+}*/
 
 int32_t Allocator::getPoolIndex(const char* pool_name)
 {
@@ -279,11 +279,11 @@ void Allocator::free(void* data)
 	mem_pool_info.curr_bytes_allocated -= header->alloc_size;
 	++mem_pool_info.num_frees;
 
-	for (OnFreeCallback callback : header->free_callbacks) {
+	/*for (OnFreeCallback callback : header->free_callbacks) {
 		if (callback) {
 			callback(data);
 		}
-	}
+	}*/
 
 	mi_free(header);
 
@@ -415,7 +415,7 @@ void Allocator::setHeaderData(
 	strncpy(header->file, file, std::size(header->file) - 1);
 	header->pool_index = pool_index;
 	header->line = line;
-	memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));
+	//memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));
 
 #if REQUIRES_HEADER_LIST
 	header->next = header->prev = nullptr;
