@@ -22,13 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include "Shibboleth_PlayerSubsystem.h"
+#include <Shibboleth_SubsystemCollector.h>
+#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
 class Player
 {
 public:
+	virtual ~Player(void) {}
+
+	virtual void init(void);
+
+	const U8String& getName(void) const;
+	void setName(const U8String& name);
+	void setName(U8String&& name);
+
+private:
+	SubsystemCollector<PlayerSubsystem> _player_subsystems{ ProxyAllocator("Player") };
+
+	U8String _name{ ProxyAllocator("Player") };
 };
 
 NS_END

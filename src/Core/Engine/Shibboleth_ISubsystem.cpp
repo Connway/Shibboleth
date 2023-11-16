@@ -20,29 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ISubsystem.h"
 
-#include <Shibboleth_Reflection.h>
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ShouldCreateSubsystemAttribute, IAttribute)
+
 
 NS_SHIBBOLETH
 
-class Player;
+SHIB_REFLECTION_CLASS_DEFINE(ShouldCreateSubsystemAttribute)
 
-class PlayerState : public Refl::IReflectionObject
+
+ShouldCreateSubsystemAttribute::ShouldCreateSubsystemAttribute(ShouldCreateFunc should_create_func):
+	_should_create_func(should_create_func)
 {
-public:
-	const Player& getPlayer(void) const;
-	Player& getPlayer(void);
-	void setPlayer(Player* player);
+	GAFF_ASSERT(_should_create_func);
+}
 
-private:
-	Player* _owning_player = nullptr;
+Refl::IAttribute* ShouldCreateSubsystemAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ShouldCreateSubsystemAttribute, allocator.getPoolIndex("Reflection"), allocator, _should_create_func);
+}
 
-	HashString64<> _player_name;
+bool ShouldCreateSubsystemAttribute::canInherit(void) const
+{
+	return false;
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(PlayerState);
-};
+bool ShouldCreateSubsystemAttribute::shouldCreate(void) const
+{
+	return _should_create_func();
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::PlayerState)

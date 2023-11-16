@@ -20,20 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_PlayerSubsystem.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 
-#include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
-
-NS_SHIBBOLETH
-
-class LocalPlayer final : public Player
-{
-public:
-	void init(void) override;
-
-private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
-};
-
-NS_END
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerSubsystem)
+	.BASE(Shibboleth::ISubsystem)
+	.classAttrs(Shibboleth::ClassBucketAttribute())
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerSubsystem)

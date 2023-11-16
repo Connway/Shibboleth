@@ -20,31 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_PlayerState.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerState)
-	.var(u8"player_name", &Shibboleth::PlayerState::_player_name)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerState)
-
+#include <Shibboleth_ISubsystem.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(PlayerState)
-
-const Player& PlayerState::getPlayer(void) const
+class LocalPlayerSubsystem : public ISubsystem
 {
-	return const_cast<PlayerState*>(this)->getPlayer();
-}
-
-Player& PlayerState::getPlayer(void)
-{
-	GAFF_ASSERT(_owning_player);
-	return *_owning_player;
-}
-
-void PlayerState::setPlayer(Player* player)
-{
-	_owning_player = player;
-}
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::LocalPlayerSubsystem)

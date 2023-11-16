@@ -20,20 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
+#include "Shibboleth_LocalPlayer.h"
 
 NS_SHIBBOLETH
 
-class LocalPlayer final : public Player
+void LocalPlayer::init(void)
 {
-public:
-	void init(void) override;
-
-private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
-};
+	Player::init();
+	_local_player_subsystems.init();
+}
 
 NS_END

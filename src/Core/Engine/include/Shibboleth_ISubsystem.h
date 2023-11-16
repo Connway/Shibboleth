@@ -22,18 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
+#include "Shibboleth_Reflection.h"
 
 NS_SHIBBOLETH
 
-class LocalPlayer final : public Player
+class SubsystemCollectorBase;
+
+class ISubsystem : public Refl::IReflectionObject
 {
 public:
-	void init(void) override;
+	virtual ~ISubsystem(void) {}
+
+	virtual void init(const SubsystemCollectorBase& /*collector*/) {}
+	virtual void destroy(const SubsystemCollectorBase& /*collector*/) {}
+};
+
+
+
+class ShouldCreateSubsystemAttribute final : public Refl::IAttribute
+{
+public:
+	using ShouldCreateFunc = bool (*)(void);
+
+	ShouldCreateSubsystemAttribute(ShouldCreateFunc should_create_func);
+
+	Refl::IAttribute* clone(void) const override;
+	bool canInherit(void) const override;
+
+	bool shouldCreate(void) const;
 
 private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
+	ShouldCreateFunc _should_create_func = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ShouldCreateSubsystemAttribute);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ShouldCreateSubsystemAttribute)

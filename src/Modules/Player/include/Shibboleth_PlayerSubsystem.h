@@ -22,18 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
+#include <Shibboleth_ISubsystem.h>
 
 NS_SHIBBOLETH
 
-class LocalPlayer final : public Player
+class PlayerSubsystem : public ISubsystem
 {
-public:
-	void init(void) override;
-
-private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::PlayerSubsystem)

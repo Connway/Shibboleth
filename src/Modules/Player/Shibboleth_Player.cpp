@@ -20,20 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
 
 NS_SHIBBOLETH
 
-class LocalPlayer final : public Player
+void Player::init(void)
 {
-public:
-	void init(void) override;
+	_player_subsystems.init();
+}
 
-private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
-};
+const U8String& Player::getName(void) const
+{
+	return _name;
+}
+
+void Player::setName(const U8String& name)
+{
+	_name = name;
+}
+
+void Player::setName(U8String&& name)
+{
+	_name = std::move(name);
+}
 
 NS_END

@@ -22,18 +22,50 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Player.h"
-#include "Shibboleth_LocalPlayerSubsystem.h"
+#include "Shibboleth_ISubsystem.h"
+#include "Shibboleth_Reflection.h"
 
 NS_SHIBBOLETH
 
-class LocalPlayer final : public Player
+class SubsystemCollectorBase
 {
 public:
-	void init(void) override;
+	SubsystemCollectorBase(const ProxyAllocator& allocator = ProxyAllocator());
+
+	const ISubsystem* getSubsystem(const Refl::IReflectionDefinition& ref_def) const;
+	ISubsystem* getSubsystem(const Refl::IReflectionDefinition& ref_def);
+
+	void init(const Refl::IReflectionDefinition& ref_def);
+	void destroy(void);
 
 private:
-	SubsystemCollector<LocalPlayerSubsystem> _local_player_subsystems{ ProxyAllocator("Player") };
+	Vector< UniquePtr<ISubsystem> > _subsystems;
+	ProxyAllocator _allocator;
+};
+
+template <class T>
+class SubsystemCollector final : public SubsystemCollectorBase
+{
+	static_assert(std::is_base_of_v<ISubsystem, T>, "Type must derive from ISubsystem.");
+
+public:
+	template <class U>
+	const U* getSubsystem(void) const
+	{
+		return const_cast<SubsystemCollector*>(this)->template getSubsystem<U>();
+	}
+
+	template <class U>
+	U* getSubsystem(void)
+	{
+		static_assert(std::is_base_of_v<T, U>, "Type must derive from collector type.");
+		return getSubsystem(Refl::Reflection<U>::GetReflectionDefinition());
+	}
+
+	void init(void)
+	{
+		SubsystemCollectorBase::init(Refl::Reflection<T>::GetReflectionDefinition());
+	}
 };
 
 NS_END
