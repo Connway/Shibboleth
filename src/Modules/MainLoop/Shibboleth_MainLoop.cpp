@@ -117,7 +117,7 @@ bool MainLoop::init(void)
 				const Gaff::Hash64 hash =  Gaff::FNV1aHash64String(system_name);
 				const auto it = eastl::lower_bound(systems->begin(), systems->end(), hash, ReflectionManager::CompareRefHash);
 
-				if (it == systems->end() || hash != (*it)->getReflectionInstance().getHash()) {
+				if (it == systems->end() || hash != (*it)->getReflectionInstance().getNameHash()) {
 					if (optional) {
 						LogErrorDefault("MainLoop: Could not find system '%s'.", system_name);
 						reader.freeString(system_name - 1);

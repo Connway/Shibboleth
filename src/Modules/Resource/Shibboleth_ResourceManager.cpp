@@ -108,11 +108,11 @@ bool ResourceManager::init(void)
 	IApp& app = GetApp();
 	ReflectionManager& refl_mgr = app.getReflectionManager();
 
-	refl_mgr.registerTypeBucket(Refl::Reflection<IResource>::GetHash());
+	refl_mgr.registerTypeBucket(Refl::Reflection<IResource>::GetNameHash());
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_resource));
 
 	const Vector<const Refl::IReflectionDefinition*>* type_bucket =
-		refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetHash());
+		refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetNameHash());
 
 	if (!type_bucket) {
 		return true;

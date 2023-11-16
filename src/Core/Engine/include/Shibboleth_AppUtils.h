@@ -31,7 +31,7 @@ template <class T>
 static T& GetManagerTFast(void)
 {
 	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-	return *static_cast<T*>(GetApp().getManager(Refl::Reflection<T>::GetHash()));
+	return *static_cast<T*>(GetApp().getManager(Refl::Reflection<T>::GetNameHash()));
 }
 
 template <class T>
@@ -45,7 +45,7 @@ template <class T>
 static T& GetManagerT(void)
 {
 	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-	IManager* const manager = GetApp().getManager(Refl::Reflection<T>::GetHash());
+	IManager* const manager = GetApp().getManager(Refl::Reflection<T>::GetNameHash());
 	return *Refl::ReflectionCast<T>(*manager);
 }
 

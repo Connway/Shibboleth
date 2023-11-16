@@ -257,7 +257,7 @@ namespace
 			}
 
 			const auto* const ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, -1));
-			Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getHash());
+			Shibboleth::IManager* const manager = Shibboleth::GetApp().getManager(ref_def->getReflectionInstance().getNameHash());
 
 			if (!manager) {
 				// $TODO: Log error.

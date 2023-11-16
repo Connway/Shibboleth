@@ -30,12 +30,12 @@ NS_SHIBBOLETH
 
 static bool CompareRefDef(const Refl::IReflectionDefinition* lhs, const Refl::IReflectionDefinition* rhs)
 {
-	return lhs->getReflectionInstance().getHash() < rhs->getReflectionInstance().getHash();
+	return lhs->getReflectionInstance().getNameHash() < rhs->getReflectionInstance().getNameHash();
 }
 
 bool ReflectionManager::CompareRefHash(const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
 {
-	return lhs->getReflectionInstance().getHash() < rhs;
+	return lhs->getReflectionInstance().getNameHash() < rhs;
 }
 
 ReflectionManager::ReflectionManager(void)
@@ -80,7 +80,7 @@ Vector<const Refl::IEnumReflectionDefinition*> ReflectionManager::getEnumReflect
 
 void ReflectionManager::registerEnumReflection(Refl::IEnumReflectionDefinition* ref_def)
 {
-	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+	const Gaff::Hash64 name = ref_def->getReflectionInstance().getNameHash();
 
 	GAFF_ASSERT(_enum_reflection_map.find(name) == _enum_reflection_map.end());
 	_enum_reflection_map[name].reset(ref_def);
@@ -116,7 +116,7 @@ const Refl::IReflectionDefinition* ReflectionManager::getReflection(Gaff::Hash64
 
 void ReflectionManager::registerReflection(Refl::IReflectionDefinition* ref_def)
 {
-	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+	const Gaff::Hash64 name = ref_def->getReflectionInstance().getNameHash();
 
 	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
 	_reflection_map[name].reset(ref_def);
@@ -142,7 +142,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char8_t* m
 	for (const auto& bucket_pair : _type_buckets) {
 		const auto it = eastl::lower_bound(bucket_pair.second.begin(), bucket_pair.second.end(), name, CompareRefHash);
 
-		if (it != bucket_pair.second.end() && (*it)->getReflectionInstance().getHash() == name) {
+		if (it != bucket_pair.second.end() && (*it)->getReflectionInstance().getNameHash() == name) {
 			const auto it_bucket = module_types.find(bucket_pair.first);
 			TypeBucket& type_bucket = (it_bucket == module_types.end()) ? module_types[bucket_pair.first] : it_bucket->second;
 
@@ -153,6 +153,16 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char8_t* m
 			insertType(module_types[bucket_pair.first], it_refl->second.get());
 		}
 	}
+}
+
+const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(const Refl::IReflectionDefinition& ref_def, Gaff::Hash64 module_name) const
+{
+	return getTypeBucket(ref_def.getReflectionInstance().getNameHash(), module_name);
+}
+
+const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(const Refl::IReflectionDefinition& ref_def) const
+{
+	return getTypeBucket(ref_def.getReflectionInstance().getNameHash());
 }
 
 const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
@@ -180,7 +190,7 @@ const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(Gaff::Hash
 
 void ReflectionManager::registerTypeBucket(const Refl::IReflectionDefinition& ref_def)
 {
-	registerTypeBucket(ref_def.getReflectionInstance().getHash());
+	registerTypeBucket(ref_def.getReflectionInstance().getNameHash());
 }
 
 void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
@@ -197,7 +207,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 
 	for (const auto& ref_map_pair : _reflection_map) {
 		const UniquePtr<Refl::IReflectionDefinition>& ref_def = ref_map_pair.second;
-		const Gaff::Hash64 class_hash = ref_def->getReflectionInstance().getHash();
+		const Gaff::Hash64 class_hash = ref_def->getReflectionInstance().getNameHash();
 
 		// Don't care about the concrete version of class. Only reflected types that inherit from the class.
 		if (name != class_hash && ref_def->hasInterface(name)) {
@@ -217,7 +227,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 
 		// Iterate through the all types registered to this module.
 		for (auto it = all_types.begin(); it != all_types.end(); ++it) {
-			const Gaff::Hash64 class_hash = (*it)->getReflectionInstance().getHash();
+			const Gaff::Hash64 class_hash = (*it)->getReflectionInstance().getNameHash();
 
 			if (name != class_hash && (*it)->hasInterface(name)) {
 				types.emplace_back(*it);
@@ -309,7 +319,7 @@ Vector< HashString64<> > ReflectionManager::getModules(void) const
 
 void ReflectionManager::insertType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def)
 {
-	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def->getReflectionInstance().getHash(), CompareRefHash);
+	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def->getReflectionInstance().getNameHash(), CompareRefHash);
 	bucket.insert(it, ref_def);
 }
 
@@ -345,7 +355,7 @@ void ReflectionManager::addToTypeBuckets(const Refl::IReflectionDefinition* ref_
 
 	// Check if this type implements an interface that has a type bucket request.
 	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
-		if (ref_def->getReflectionInstance().getHash() != it->first && ref_def->hasInterface(it->first)) {
+		if (ref_def->getReflectionInstance().getNameHash() != it->first && ref_def->hasInterface(it->first)) {
 			insertType(it->second, ref_def);
 			was_inserted = true;
 		}

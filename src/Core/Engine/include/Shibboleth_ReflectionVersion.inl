@@ -110,7 +110,7 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 	const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 
-	_hash = Gaff::FNV1aHash64T(Reflection<Base>::GetHash(), _hash);
+	_hash = Gaff::FNV1aHash64T(Reflection<Base>::GetNameHash(), _hash);
 	_hash = Gaff::FNV1aHash64T(offset, _hash);
 	_hash = Gaff::FNV1aHash64T(version, _hash);
 

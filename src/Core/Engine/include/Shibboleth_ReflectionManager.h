@@ -120,6 +120,8 @@ public:
 	void registerReflection(Refl::IReflectionDefinition* ref_def);
 	void registerOwningModule(Gaff::Hash64 name, const char8_t* module_name);
 
+	const TypeBucket* getTypeBucket(const Refl::IReflectionDefinition& ref_def, Gaff::Hash64 module_name) const;
+	const TypeBucket* getTypeBucket(const Refl::IReflectionDefinition& ref_def) const;
 	const TypeBucket* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	const TypeBucket* getTypeBucket(Gaff::Hash64 name) const;
 	void registerTypeBucket(const Refl::IReflectionDefinition& ref_def);

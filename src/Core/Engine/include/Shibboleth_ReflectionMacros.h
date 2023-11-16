@@ -71,7 +71,7 @@ THE SOFTWARE.
 			static const auto name = Hash::ClassHashable<type>::GetName(); \
 			return name.data.data(); \
 		} \
-		static constexpr Gaff::Hash64 GetHash(void) \
+		static constexpr Gaff::Hash64 GetNameHash(void) \
 		{ \
 			return Hash::ClassHashable<type>::GetHash(); \
 		} \
@@ -79,9 +79,9 @@ THE SOFTWARE.
 		{ \
 			return GetName(); \
 		} \
-		Gaff::Hash64 getHash(void) const override \
+		Gaff::Hash64 getNameHash(void) const override \
 		{ \
-			return GetHash(); \
+			return GetNameHash(); \
 		} \
 		void init(void) override \
 		{ \
@@ -113,9 +113,9 @@ NS_END
 			const RefDefInterface<type>* ref_def_interface = nullptr; \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
 			if constexpr (std::is_enum<type>::value) { \
-				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getEnumReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getEnumReflection(GetNameHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 			} else { \
-				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getReflection(GetHash())); /* To calm the compiler, even though this should be compiled out ... */ \
+				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getReflection(GetNameHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 			} \
 			g_instance._ref_def = static_cast<RefDefType<type>*>( \
 				const_cast<RefDefInterface<type>*>(ref_def_interface) \
@@ -203,7 +203,7 @@ NS_END
 			GAFF_ASSERT(!g_instance._ref_def); \
 			BuildReflection(g_instance._version); \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
-			const IReflectionDefinition* ref_def_interface = app.getReflectionManager().getReflection(GetHash()); \
+			const IReflectionDefinition* ref_def_interface = app.getReflectionManager().getReflection(GetNameHash()); \
 			g_instance._ref_def = static_cast<ReflectionDefinition<type<__VA_ARGS__> >*>( \
 				const_cast<IReflectionDefinition*>(ref_def_interface) \
 			); \

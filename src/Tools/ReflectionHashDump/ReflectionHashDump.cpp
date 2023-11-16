@@ -59,7 +59,7 @@ int main(int argc, const char** argv)
 	csv_out.printf("Class Name,Hash\n");
 
 	for (const Refl::IReflectionDefinition* ref_def : *class_refl) {
-		const Gaff::Hash64 hash = ref_def->getReflectionInstance().getHash();
+		const Gaff::Hash64 hash = ref_def->getReflectionInstance().getNameHash();
 		const char8_t* const name = ref_def->getReflectionInstance().getName();
 
 		csv_out.printf("%s,%llu\n", name, hash);

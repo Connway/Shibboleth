@@ -484,7 +484,7 @@ bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibbole
 	GAFF_ASSERT(_setter);
 
 	VarType var;
-		
+
 	if (!Reflection<RetType>::GetInstance().load(reader, var)) {
 		return false;
 	}
@@ -1775,7 +1775,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::setInstanceHash(InstanceHashFu
 template <class T>
 const void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, const void* object) const
 {
-	if (class_hash == Reflection<T>::GetHash()) {
+	if (class_hash == Reflection<T>::GetNameHash()) {
 		return object;
 	}
 
@@ -1797,7 +1797,7 @@ void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, void* objec
 template <class T>
 bool ReflectionDefinition<T>::hasInterface(Gaff::Hash64 class_hash) const
 {
-	if (class_hash == Reflection<T>::GetHash()) {
+	if (class_hash == Reflection<T>::GetNameHash()) {
 		return true;
 	}
 
@@ -2265,7 +2265,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
 	// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
-	if (_base_class_offsets.find(Reflection<Base>::GetHash()) == _base_class_offsets.end()) {
+	if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
 		base<Base>(Reflection<Base>::GetName());
 	}
 
@@ -2275,7 +2275,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 		// For calling base class functions.
 		_base_classes.emplace(
-			Reflection<Base>::GetHash(),
+			Reflection<Base>::GetNameHash(),
 			&base_ref_def
 		);
 
@@ -2955,7 +2955,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
 			FuncData()
 		).first;
-		
+
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
 
@@ -3458,7 +3458,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(A
 	attrs.emplace_back(IAttributePtr(clone));
 
 	clone->apply(func);
-	
+
 	if constexpr (sizeof...(Rest) > 0) {
 		return addAttributes(func, attrs, rest...);
 	} else {

@@ -44,7 +44,7 @@ public:
 	virtual bool isEnum(void) const = 0;
 
 	virtual const char8_t* getName(void) const = 0;
-	virtual Gaff::Hash64 getHash(void) const = 0;
+	virtual Gaff::Hash64 getNameHash(void) const = 0;
 	virtual Gaff::Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
@@ -102,7 +102,7 @@ public:
 		return u8"Unknown";
 	}
 
-	Gaff::Hash64 getHash(void) const override
+	Gaff::Hash64 getNameHash(void) const override
 	{
 		GAFF_ASSERT_MSG(false, "Unknown object type.");
 		return Gaff::Hash64(0);

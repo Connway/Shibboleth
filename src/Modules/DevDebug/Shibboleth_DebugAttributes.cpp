@@ -44,7 +44,7 @@ void DebugMenuClassAttribute::instantiated(void* object, const Refl::IReflection
 {
 	// If we are the DebugManager, then just call register on ourselves.
 	// Otherwise, get the DebugManager from the manager registry.
-	IDebugManager* const debug_mgr = (ref_def.getReflectionInstance().getHash() == CLASS_HASH(Shibboleth::DebugManager)) ?
+	IDebugManager* const debug_mgr = (ref_def.getReflectionInstance().getNameHash() == CLASS_HASH(Shibboleth::DebugManager)) ?
 		reinterpret_cast<IDebugManager*>(object) :
 		&GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager);
 

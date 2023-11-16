@@ -59,9 +59,9 @@ namespace Gen::{}
 	void RegisterOwningModule(void)
 	{{
 		if constexpr (std::is_enum<T>::value) {{
-			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Refl::Reflection<T>::GetHash(), u8"{}");
+			Shibboleth::GetApp().getReflectionManager().registerEnumOwningModule(Refl::Reflection<T>::GetNameHash(), u8"{}");
 		}} else {{
-			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Refl::Reflection<T>::GetHash(), u8"{}");
+			Shibboleth::GetApp().getReflectionManager().registerOwningModule(Refl::Reflection<T>::GetNameHash(), u8"{}");
 		}}
 	}}
 

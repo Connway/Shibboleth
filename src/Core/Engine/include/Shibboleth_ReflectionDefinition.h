@@ -467,7 +467,7 @@ private:
 			GetterMemberFunc _getter_member = nullptr;
 			GetterFunc _getter;
 		};
-		
+
 		union
 		{
 			SetterMemberFunc _setter_member = nullptr;
@@ -719,7 +719,7 @@ private:
 			GAFF_ASSERT(isConst());
 
 			const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-			const void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
+			const void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getNameHash(), obj);
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
@@ -736,7 +736,7 @@ private:
 			}
 
 			const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getHash(), obj);
+			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getNameHash(), obj);
 
 			if (_func->isBase()) {
 				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);

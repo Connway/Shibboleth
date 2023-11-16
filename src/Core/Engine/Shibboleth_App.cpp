@@ -164,11 +164,11 @@ void App::destroy(void)
 				value.freeString(module_name);
 
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), module_name_hash);
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), module_name_hash);
 
 				if (manager_refls) {
 					for (const Refl::IReflectionDefinition* ref_def : *manager_refls) {
-						const auto it = _manager_map.find(ref_def->getReflectionInstance().getHash());
+						const auto it = _manager_map.find(ref_def->getReflectionInstance().getNameHash());
 
 						if (it != _manager_map.end()) {
 							_manager_map.erase(it);
@@ -628,7 +628,7 @@ bool App::loadModules(void)
 
 				const char8_t* const module_name = module_row.getString();
 				const Vector<const Refl::IReflectionDefinition*>* const manager_bucket =
-					_reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+					_reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), Gaff::FNV1aHash64String(module_name));
 
 				if (manager_bucket) {
 					if (!createManagersInternal(*manager_bucket)) {
@@ -642,7 +642,7 @@ bool App::loadModules(void)
 		}
 
 		// Create the rest of the managers.
-		const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash());
+		const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
@@ -672,11 +672,11 @@ bool App::loadModules(void)
 			}
 
 			const char8_t* const module_name = module_row.getString();
-			const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetHash(), Gaff::FNV1aHash64String(module_name));
+			const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), Gaff::FNV1aHash64String(module_name));
 
 			if (manager_bucket) {
 				for (const Refl::IReflectionDefinition* ref_def : *manager_bucket) {
-					if (!_manager_map[ref_def->getReflectionInstance().getHash()]->initAllModulesLoaded()) {
+					if (!_manager_map[ref_def->getReflectionInstance().getNameHash()]->initAllModulesLoaded()) {
 						LogErrorDefault("Failed to initialize manager after all modules loaded '%s'!", ref_def->getReflectionInstance().getName());
 						return false;
 					}
@@ -784,7 +784,7 @@ bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*
 	ProxyAllocator allocator;
 
 	for (const Refl::IReflectionDefinition* ref_def : managers) {
-		if (hasManager(ref_def->getReflectionInstance().getHash())) {
+		if (hasManager(ref_def->getReflectionInstance().getNameHash())) {
 			continue;
 		}
 
@@ -805,7 +805,7 @@ bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*
 			return false;
 		}
 
-		const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+		const Gaff::Hash64 name = ref_def->getReflectionInstance().getNameHash();
 
 		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
 		_manager_map[name].reset(manager);
