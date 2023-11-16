@@ -178,6 +178,11 @@ const ReflectionManager::TypeBucket* ReflectionManager::getTypeBucket(Gaff::Hash
 	return (it == _type_buckets.end()) ? nullptr : &it->second;
 }
 
+void ReflectionManager::registerTypeBucket(const Refl::IReflectionDefinition& ref_def)
+{
+	registerTypeBucket(ref_def.getReflectionInstance().getHash());
+}
+
 void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 {
 	GAFF_ASSERT(_type_buckets.find(name) == _type_buckets.end());

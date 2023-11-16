@@ -28,6 +28,12 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+template <class Ret, class... Args>
+class IReflectionStaticFunction;
+
+template <class Ret, class... Args>
+class IReflectionFunction;
+
 class IEnumReflectionDefinition;
 class IReflectionVar;
 
@@ -48,13 +54,13 @@ public:
 
 	// Attributes that are applied to functions need to implement these template functions.
 	template <class T, class Ret, class... Args>
-	void apply(Ret (T::* /*func*/)(Args...) const) {}
+	void apply(IReflectionFunction<Ret, Args...>& /*ref_func*/, Ret (T::* /*func*/)(Args...) const) {}
 	template <class T, class Ret, class... Args>
-	void apply(Ret (T::* /*func*/)(Args...)) {}
+	void apply(IReflectionFunction<Ret, Args...>& /*ref_func*/, Ret (T::* /*func*/)(Args...)) {}
 
 	// Attributes that are applied to static class functions need to implement this template function.
 	template <class T, class Ret, class... Args>
-	void apply(Ret (* /*func*/)(Args...)) {}
+	void apply(IReflectionStaticFunction<Ret, Args...>& /*ref_func*/, Ret (* /*func*/)(Args...)) {}
 
 	// Attributes that are applied to variables need to implement these template functions,
 	// or at least the ones they apply to.

@@ -122,6 +122,7 @@ public:
 
 	const TypeBucket* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	const TypeBucket* getTypeBucket(Gaff::Hash64 name) const;
+	void registerTypeBucket(const Refl::IReflectionDefinition& ref_def);
 	void registerTypeBucket(Gaff::Hash64 name);
 
 	const TypeBucket* getAttributeBucket(Gaff::Hash64 name) const;
