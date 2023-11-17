@@ -23,7 +23,8 @@ THE SOFTWARE.
 #include "Gaff_GUID.h"
 
 #ifdef PLATFORM_WINDOWS
-	#include "Gaff_IncludeWindows.h"
+	#include "Gaff_Assert.h"
+	#include <objbase.h>
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#include <uuid/uuid.h>
 #endif

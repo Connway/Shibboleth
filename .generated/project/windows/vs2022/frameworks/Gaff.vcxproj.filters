@@ -66,6 +66,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Function.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_GUID.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hash.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -181,6 +184,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_FileWatcher_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_GUID.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Hash.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Math.cpp" />

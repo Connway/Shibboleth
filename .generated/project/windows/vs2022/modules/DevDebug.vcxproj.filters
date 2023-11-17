@@ -12,9 +12,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugAttributes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugDrawWebHandler.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevDebug\include\Shibboleth_DebugManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -27,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugAttributes.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugDrawWebHandler.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DebugSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\DevDebug\Shibboleth_DevDebugModule.cpp" />

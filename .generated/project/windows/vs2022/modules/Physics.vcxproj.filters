@@ -15,9 +15,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsMaterialResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsResourceComponents.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Physics\include\Shibboleth_PhysicsShapeResource.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -32,7 +29,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsMaterialResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsResourceComponents.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsShapeResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Physics\Shibboleth_RigidBodyComponent.cpp" />

@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\DevDebugModule\DevDebugModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -155,7 +155,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\DevDebugModule\$(Ta
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebugModule\DevDebugModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -192,7 +192,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebugModule\$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\DevDebugModule\DevDebugModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -229,7 +229,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\DevDebugModule\$(
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevDebugModule\DevDebugModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -279,17 +279,11 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevDebugM
     <ProjectReference Include="..\dependencies\libtiff.vcxproj">
       <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\CivetWeb.vcxproj">
-      <Project>{9E6C36FE-8A39-9109-B352-7FB19F7EC697}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="DevWebServer.vcxproj">
-      <Project>{D9FDC8E0-C560-5885-6EE6-903B5A282408}</Project>
     </ProjectReference>
     <ProjectReference Include="GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
@@ -302,9 +296,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\DevDebugM
     </ProjectReference>
     <ProjectReference Include="Input.vcxproj">
       <Project>{953A660D-014F-8EBE-CAD0-311E36A48AEF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysicsModule\PhysicsModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -155,7 +155,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\PhysicsModule\$(Tar
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Physics\Physics64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevel\LowLevel64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelAABB\LowLevelAABB64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LowLevelDynamics\LowLevelDynamics64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCharacterKinematic\PhysXCharacterKinematic64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXFoundation\PhysXFoundation64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXExtensions\PhysXExtensions64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXVehicle\PhysXVehicle64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCooking\PhysXCooking64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXCommon\PhysXCommon64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXPvdSDK\PhysXPvdSDK64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysXTask\PhysXTask64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\PhysX\PhysX64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SceneQuery\SceneQuery64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\SimulationController\SimulationController64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\ECS\ECS64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Physics\Physics64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\PhysicsModule\PhysicsModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -195,7 +195,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\PhysicsModule\$(T
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysicsModule\PhysicsModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -232,7 +232,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\PhysicsModule\$(T
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysicsModule\PhysicsModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -267,48 +267,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysicsMo
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevel.vcxproj">
-      <Project>{4F63ED1A-3B30-4826-6449-36CE50757DB4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevelAABB.vcxproj">
-      <Project>{B534A1CE-A197-3073-4A1D-6929365FFCF5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LowLevelDynamics.vcxproj">
-      <Project>{87D47AF5-73CD-9947-9CFF-7ECC88577953}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCharacterKinematic.vcxproj">
-      <Project>{83304542-EF67-8DD9-F871-F1FC6428B4D2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXFoundation.vcxproj">
-      <Project>{584C81A5-C4D7-EE69-CDE8-715E39F34A6A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXExtensions.vcxproj">
-      <Project>{311D5C31-9DA8-C9F5-A6B9-4CEA12C425F6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXVehicle.vcxproj">
-      <Project>{A1CA1E15-8D2D-AEB9-36B3-E66F22F5793C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCooking.vcxproj">
-      <Project>{ABBC5F76-971F-EF1A-40A5-27D12CE7BA9D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXCommon.vcxproj">
-      <Project>{4A347687-B6E9-EE7C-3FDE-E853AB92E580}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXPvdSDK.vcxproj">
-      <Project>{4D8C42A6-B941-BB9B-4236-B572AEEAB19F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysXTask.vcxproj">
-      <Project>{F475AEC8-60E0-623F-A91E-14E515C84094}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\PhysX.vcxproj">
-      <Project>{C1C1E10D-2DD6-09BF-F657-AD1E622B06F0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\SceneQuery.vcxproj">
-      <Project>{89654ECC-751D-9019-DE24-6975CAFB2A0A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\SimulationController.vcxproj">
-      <Project>{AEFD6AD8-9A8C-F4A1-43AB-089D2F190548}</Project>
-    </ProjectReference>
     <ProjectReference Include="MainLoop.vcxproj">
       <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
     </ProjectReference>
@@ -317,9 +275,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\PhysicsMo
     </ProjectReference>
     <ProjectReference Include="DevDebug.vcxproj">
       <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="ECS.vcxproj">
-      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\TracyClient.vcxproj">
       <Project>{27069401-93BB-0CF7-1CB0-06CE886403FB}</Project>

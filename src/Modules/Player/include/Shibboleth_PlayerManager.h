@@ -22,13 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include "Shibboleth_Player.h"
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
 class LocalPlayer;
-class Player;
 
 class PlayerManager final : public IManager
 {

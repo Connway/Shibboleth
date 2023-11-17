@@ -59,16 +59,16 @@ void SubsystemCollectorBase::init(const Refl::IReflectionDefinition& ref_def)
 
 	_subsystems.reserve(type_bucket->size());
 
-	for (const Refl::IReflectionDefinition* ref_def : *type_bucket) {
-		const ShouldCreateSubsystemAttribute* const attr = ref_def->getClassAttr<ShouldCreateSubsystemAttribute>();
+	for (const Refl::IReflectionDefinition* type_ref_def : *type_bucket) {
+		const ShouldCreateSubsystemAttribute* const attr = type_ref_def->getClassAttr<ShouldCreateSubsystemAttribute>();
 
 		if (!attr->shouldCreate()) {
 			continue;
 		}
 
-		ISubsystem* const subsystem = ref_def->CREATET(Shibboleth::ISubsystem, _allocator);
+		ISubsystem* const subsystem = type_ref_def->CREATET(Shibboleth::ISubsystem, _allocator);
 
-		const auto it = Gaff::LowerBound(_subsystems, *ref_def, SubsystemSearchPredicate);
+		const auto it = Gaff::LowerBound(_subsystems, *type_ref_def, SubsystemSearchPredicate);
 		_subsystems.emplace(it, subsystem);
 	}
 

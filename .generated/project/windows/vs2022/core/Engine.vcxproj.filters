@@ -27,6 +27,9 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Broadcaster.inl">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Config.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Curve.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -40,6 +43,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EngineAttributesCommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EnumIterator.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EnumReflectionDefinition.h">
@@ -90,6 +96,9 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_IReflectionObject.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ISubsystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Image.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -112,6 +121,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_MessagePackSerializeWriter.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ModuleMacros.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ProxyAllocator.h">
@@ -174,6 +186,9 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReaderWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeablePtr.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -181,6 +196,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_String.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SubsystemCollector.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ThreadAllocator.h">
@@ -199,8 +217,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_Broadcaster.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_Config.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_IManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_ISubsystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_Image.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_JSONSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_LogManager.cpp" />
@@ -214,6 +234,8 @@
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_RuntimeVarManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_SerializeReaderWrapper.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_SerializeablePtr.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_SubsystemCollector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>

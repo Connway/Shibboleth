@@ -28,10 +28,7 @@ THE SOFTWARE.
 #include <Gaff_File.h>
 #include <argparse.hpp>
 #include <filesystem>
-
-MSVC_DISABLE_WARNING_PUSH(4189)
 #include <fmt/core.h>
-MSVC_DISABLE_WARNING_POP()
 
 static constexpr const char/*8_t*/* const k_gen_header =
 /*u8*/R"(// This file is generated! Any modifications will be lost in subsequent builds!

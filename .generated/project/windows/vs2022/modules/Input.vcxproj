@@ -237,11 +237,13 @@ CodeGenerator64od module_header --module Input</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputConfig.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputConfig.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp" />
