@@ -102,6 +102,12 @@ const LocalPlayer& PlayerManager::getLocalPlayer(int32_t index) const
 	return const_cast<PlayerManager*>(this)->getLocalPlayer(index);
 }
 
+int32_t PlayerManager::getLocalPlayerIndex(const LocalPlayer& player) const
+{
+	const auto it = Gaff::Find(_local_players, &player);
+	return (it == _local_players.end()) ? -1 : static_cast<int32_t>(eastl::distance(_local_players.begin(), it));
+}
+
 LocalPlayer& PlayerManager::getLocalPlayer(int32_t index)
 {
 	GAFF_ASSERT(index >= 0 && index < getNumLocalPlayers());
@@ -111,6 +117,8 @@ LocalPlayer& PlayerManager::getLocalPlayer(int32_t index)
 LocalPlayer& PlayerManager::addLocalPlayer(void)
 {
 	LocalPlayer* const player = SHIB_ALLOCT(LocalPlayer, g_allocator);
+
+	player->init();
 
 	_local_players.emplace_back(player);
 	_players.emplace_back(player);

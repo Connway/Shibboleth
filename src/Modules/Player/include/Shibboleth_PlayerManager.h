@@ -51,6 +51,7 @@ public:
 	// $TODO: If networking is ever added, add remote/proxy player class.
 
 	const LocalPlayer& getLocalPlayer(int32_t index) const;
+	int32_t getLocalPlayerIndex(const LocalPlayer& player) const;
 	LocalPlayer& getLocalPlayer(int32_t index);
 	LocalPlayer& addLocalPlayer(void);
 	int32_t getNumLocalPlayers(void) const;
