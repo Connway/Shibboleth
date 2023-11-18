@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Esprit_ProxyAllocator.h"
-#include <EASTL/bitvector.h>
+#include <Gaff_BitVector.h>
 
 NS_ESPRIT
 
-using BitVector = eastl::bitvector<ProxyAllocator>;
+using BitVector = Gaff::BitVector<ProxyAllocator>;
 
 NS_END

@@ -76,7 +76,7 @@ enum class Operator
 
 	Minus,
 	Plus,
-	
+
 	Call,
 	Index,
 
@@ -85,7 +85,7 @@ enum class Operator
 	Count
 };
 
-static constexpr const char8_t* k_op_names[static_cast<size_t>(Operator::Count)] = {
+static constexpr const char8_t* k_op_names[] = {
 	OP_ADD_NAME,
 	OP_SUB_NAME,
 	OP_MUL_NAME,
@@ -110,6 +110,7 @@ static constexpr const char8_t* k_op_names[static_cast<size_t>(Operator::Count)]
 	OP_INDEX_NAME,
 	OP_TO_STRING_NAME
 };
+static_assert(std::size(k_op_names) == static_cast<size_t>(Operator::Count));
 
 static constexpr const char8_t* GetOpName(Operator op) { return k_op_names[static_cast<size_t>(op)]; }
 static constexpr Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op), eastl::CharStrlen(GetOpName(op))); }

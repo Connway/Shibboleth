@@ -107,6 +107,24 @@ typename Vector<T, Allocator>::iterator Find(Vector<T, Allocator>& vec, const V&
 	return eastl::find(vec.begin(), vec.end(), value);
 }
 
+template <class T, class V, class Allocator, class Predicate>
+typename Vector<T, Allocator>::iterator Contains(Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	return Find(vec, value, predicate) != vec.end();
+}
+
+template <class T, class V, class Allocator>
+bool Contains(Vector<T, Allocator>& vec, const V& value)
+{
+	return Find(vec, value) != vec.end();
+}
+
+template <class T, class Allocator>
+bool Contains(Vector<T, Allocator>& vec, const T& value)
+{
+	return Find(vec, value) != vec.end();
+}
+
 template <class T, class Allocator>
 void Sort(Vector<T, Allocator>& vec)
 {
@@ -131,6 +149,27 @@ bool PushBackUnique(Vector<T, Allocator>& vec, const T& value)
 	}
 
 	return false;
+}
+
+template <class IndexType = int32_t, class T, class Allocator>
+IndexType IndexOf(const Vector<T, Allocator>& vec, const T& value)
+{
+	const auto it = Find(vec, value);
+	return (it == vec.end()) ? static_cast<IndexType>(-1) : static_cast<IndexType>(eastl::distance(vec.begin(), it));
+}
+
+template <class IndexType = int32_t, class T, class V, class Allocator>
+IndexType IndexOf(const Vector<T, Allocator>& vec, const V& value)
+{
+	const auto it = Find(vec, value);
+	return (it == vec.end()) ? static_cast<IndexType>(-1) : static_cast<IndexType>(eastl::distance(vec.begin(), it));
+}
+
+template <class IndexType = int32_t, class T, class V, class Allocator, class Predicate>
+IndexType IndexOf(const Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	const auto it = Find(vec, value, predicate);
+	return (it == vec.end()) ? static_cast<IndexType>(-1) : static_cast<IndexType>(eastl::distance(vec.begin(), it));
 }
 
 NS_END

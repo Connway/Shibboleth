@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
+#include "Gaff_BitVector.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Math.h"
@@ -43,6 +44,12 @@ public:
 
 		SparseStack* getStack(void) const;
 		int32_t getIndex(void) const;
+		bool valid(void) const;
+
+		Iterator operator+(int32_t offset) const;
+		Iterator& operator+=(int32_t offset);
+		Iterator operator-(int32_t offset) const;
+		Iterator& operator-=(int32_t offset);
 
 		Iterator operator++(int);
 		Iterator& operator++();
@@ -90,7 +97,14 @@ public:
 		ConstIterator& operator=(const ConstIterator& rhs) = default;
 		ConstIterator& operator=(const Iterator& rhs) { _iterator = rhs; return *this; }
 
+		const SparseStack* getStack(void) const { return _iterator.getStack(); }
+		int32_t getIndex(void) const { return _iterator.getIndex(); }
 		bool valid(void) const { return _iterator.valid(); }
+
+		ConstIterator operator+(int32_t offset) const { return ConstIterator(_iterator + offset); }
+		ConstIterator& operator+=(int32_t offset) { _iterator += offset; return *this; }
+		ConstIterator operator-(int32_t offset) const { return ConstIterator(_iterator - offset); }
+		ConstIterator& operator-=(int32_t offset) { _iterator -= offset; return *this; }
 
 		ConstIterator operator++(int) { return ConstIterator(_iterator++); }
 		ConstIterator& operator++() { ++_iterator; return *this; }
@@ -125,7 +139,13 @@ public:
 	bool validIndex(int32_t index) const;
 	bool empty(void) const;
 
-	int32_t find(const T& value) const;
+	template <class U, class Predicate>
+	int32_t find(const U& value, Predicate predicate) const;
+
+	template <class U>
+	int32_t find(const U& value) const;
+
+	int32_t getValidSize(void) const;
 
 	ConstIterator begin(void) const;
 	ConstIterator end(void) const;
@@ -137,8 +157,11 @@ public:
 	T& operator[](int32_t index);
 
 private:
-	Vector<int32_t, Allocator> _free_indices;
+	BitVector<Allocator> _free_indices;
 	Vector<T, Allocator> _data;
+
+	int32_t _first_free_index = -1;
+	int32_t _free_index_count = 0;
 
 	int32_t getPreviousIndex(int32_t index) const;
 	int32_t getNextIndex(int32_t index) const;

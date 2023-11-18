@@ -22,11 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ProxyAllocator.h"
-#include <Gaff_BitVector.h>
+#include "Gaff_DefaultAllocator.h"
+#include <EASTL/bitvector.h>
 
-NS_GLEAM
+NS_GAFF
 
-using BitVector = Gaff::BitVector<ProxyAllocator>;
+template <class Allocator = DefaultAllocator>
+using BitVector = eastl::bitvector<Allocator>;
 
 NS_END

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Player.h"
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_SparseStack.h>
 
 NS_SHIBBOLETH
 
@@ -46,18 +47,20 @@ public:
 	const Player& getPlayer(int32_t index) const;
 	Player& getPlayer(int32_t index);
 	int32_t getNumPlayers(void) const;
+	void removePlayer(Player& player);
+	void removePlayer(int32_t index);
 
 	// $TODO: If networking is ever added, add remote/proxy player class.
 
 	const LocalPlayer& getLocalPlayer(int32_t index) const;
-	int32_t getLocalPlayerIndex(const LocalPlayer& player) const;
 	LocalPlayer& getLocalPlayer(int32_t index);
-	LocalPlayer& addLocalPlayer(void);
+	int32_t getLocalPlayerIndex(const LocalPlayer& player) const;
 	int32_t getNumLocalPlayers(void) const;
+	LocalPlayer& addLocalPlayer(void);
 
 private:
-	Vector< UniquePtr<Player> > _players{ ProxyAllocator("Player") };
-	Vector<LocalPlayer*> _local_players{ ProxyAllocator("Player") };
+	SparseStack< UniquePtr<Player> > _players{ ProxyAllocator("Player") };
+	SparseStack<LocalPlayer*> _local_players{ ProxyAllocator("Player") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(PlayerManager);
 };

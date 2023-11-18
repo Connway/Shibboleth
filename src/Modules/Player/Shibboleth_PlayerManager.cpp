@@ -88,24 +88,37 @@ const Player& PlayerManager::getPlayer(int32_t index) const
 
 Player& PlayerManager::getPlayer(int32_t index)
 {
-	GAFF_ASSERT(index >= 0 && index < getNumPlayers());
+	GAFF_ASSERT(_players.validIndex(index));
 	return *_players[index];
 }
 
 int32_t PlayerManager::getNumPlayers(void) const
 {
-	return static_cast<int32_t>(_players.size());
+	return _players.getValidSize();
+}
+
+void PlayerManager::removePlayer(Player& player)
+{
+	const int32_t index = _players.find(&player, [](const UniquePtr<Player>& lhs, const Player* rhs) -> bool { return lhs.get() == rhs; })		;
+	removePlayer(index);
+}
+
+void PlayerManager::removePlayer(int32_t index)
+{
+	const Player* const player = _players[index].get();
+	// Since we're not dereferencing, this should be safe, even if player is not a LocalPlayer.
+	const int32_t local_index = _local_players.find(static_cast<const LocalPlayer*>(player));
+
+	if (local_index != -1) {
+		_local_players.remove(local_index);
+	}
+
+	_players.remove(index);
 }
 
 const LocalPlayer& PlayerManager::getLocalPlayer(int32_t index) const
 {
 	return const_cast<PlayerManager*>(this)->getLocalPlayer(index);
-}
-
-int32_t PlayerManager::getLocalPlayerIndex(const LocalPlayer& player) const
-{
-	const auto it = Gaff::Find(_local_players, &player);
-	return (it == _local_players.end()) ? -1 : static_cast<int32_t>(eastl::distance(_local_players.begin(), it));
 }
 
 LocalPlayer& PlayerManager::getLocalPlayer(int32_t index)
@@ -114,21 +127,26 @@ LocalPlayer& PlayerManager::getLocalPlayer(int32_t index)
 	return *_local_players[index];
 }
 
+int32_t PlayerManager::getLocalPlayerIndex(const LocalPlayer& player) const
+{
+	return _local_players.find(&player);
+}
+
+int32_t PlayerManager::getNumLocalPlayers(void) const
+{
+	return static_cast<int32_t>(_local_players.getValidSize());
+}
+
 LocalPlayer& PlayerManager::addLocalPlayer(void)
 {
 	LocalPlayer* const player = SHIB_ALLOCT(LocalPlayer, g_allocator);
 
 	player->init();
 
-	_local_players.emplace_back(player);
-	_players.emplace_back(player);
+	_local_players.emplace(player);
+	_players.emplace(player);
 
 	return *player;
-}
-
-int32_t PlayerManager::getNumLocalPlayers(void) const
-{
-	return static_cast<int32_t>(_local_players.size());
 }
 
 NS_END
