@@ -19,7 +19,9 @@ local GenerateProject = function()
 			base_dir .. "../../Dependencies/rapidjson",
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
+			source_dir .. "../../Modules/Player/include",
 			source_dir .. "../../Modules/MainLoop/include",
+			source_dir .. "../../Modules/Resource/include",
 			source_dir .. "../../Modules/Graphics/include" -- for iterating over windows.
 		}
 
@@ -33,6 +35,8 @@ local GenerateProject = function()
 			"Gleam",
 			"MainLoop",
 			"GraphicsBase",
+			"Player",
+			"Resource",
 
 			"GLFW"
 		}
@@ -46,6 +50,8 @@ local LinkDependencies = function()
 	table.insert(deps, "Gleam")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "GraphicsBase")
+	table.insert(deps, "Player")
+	table.insert(deps, "Resource")
 	table.insert(deps, "GLFW")
 
 	dependson(deps)

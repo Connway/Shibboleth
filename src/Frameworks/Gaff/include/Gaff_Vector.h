@@ -136,6 +136,7 @@ bool EmplaceBackUnique(Vector<T, Allocator>& vec, T&& value)
 {
 	if (Find(vec, value) == vec.end()) {
 		vec.emplace_back(std::move(value));
+		return true;
 	}
 
 	return false;
@@ -146,6 +147,7 @@ bool PushBackUnique(Vector<T, Allocator>& vec, const T& value)
 {
 	if (Find(vec, value) == vec.end()) {
 		vec.push_back(value);
+		return true;
 	}
 
 	return false;

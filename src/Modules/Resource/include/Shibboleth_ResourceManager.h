@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ResourcePtr.h"
 #include "Shibboleth_IResource.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
@@ -46,37 +47,20 @@ public:
 
 	bool init(void) override;
 
-	template <class T>
-	ResourcePtr<T> requestResourceTFast(HashStringView64<> name, bool delay_load = false)
+
+	template <class T, class U = T>
+	ResourcePtr<U> requestResourceT(HashStringView64<> name, bool delay_load = false)
 	{
 		IResourcePtr old_ptr = requestResource(name, delay_load);
 
-		if (old_ptr) {
-			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
-		} else {
-			return ResourcePtr<T>();
-		}
-	}
+		if (old_ptr._resource) {
+			IResource* const resource = old_ptr._resource.get();
+			U* const typed_resource = Refl::ReflectionCast<U>(*resource);
 
-	template <class T>
-	ResourcePtr<T> requestResourceTFast(const char8_t* name, bool delay_load = false)
-	{
-		return requestResourceTFast<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
-	}
-
-	template <class T>
-	ResourcePtr<T> requestResourceT(HashStringView64<> name, bool delay_load = false)
-	{
-		IResourcePtr old_ptr = requestResource(name, delay_load);
-
-		if (old_ptr) {
-			IResource* const resource = old_ptr.get();
-			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
-
-			return ResourcePtr<T>(typed_resource);
+			return ResourcePtr<U>(typed_resource);
 
 		} else {
-			return ResourcePtr<T>();
+			return ResourcePtr<U>();
 		}
 	}
 
@@ -91,40 +75,33 @@ public:
 		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
 
-	template <class T>
-	ResourcePtr<T> createResourceTFast(HashStringView64<> name)
+	template <class T, class U = T>
+	ResourcePtr<U> createResourceT(HashStringView64<> name)
 	{
 		static_assert(T::Creatable, "Resource is not a creatable type.");
 		IResourcePtr old_ptr = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
 
-		if (old_ptr) {
-			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
+		if (old_ptr._resource) {
+			IResource* const resource = old_ptr._resource.get();
+			U* typed_resource = nullptr;
+
+			if constexpr (std::is_same_v<T, U>) {
+				typed_resource = static_cast<U*>(old_ptr._resource.get());
+			} else {
+				typed_resource = Refl::ReflectionCast<U>(*resource);
+			}
+
+			return ResourcePtr<U>(typed_resource);
+
 		} else {
-			return ResourcePtr<T>();
+			return ResourcePtr<U>();
 		}
 	}
 
-	template <class T>
-	ResourcePtr<T> createResourceT(HashStringView64<> name)
-	{
-		static_assert(T::Creatable, "Resource is not a creatable type.");
-		IResourcePtr old_ptr = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
-
-		if (old_ptr) {
-			IResource* const resource = old_ptr.get();
-			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
-
-			return ResourcePtr<T>(typed_resource);
-
-		} else {
-			return ResourcePtr<T>();
-		}
-	}
-
-	template <class T>
+	template <class T, class U = T>
 	ResourcePtr<T> createResourceT(const char8_t* name)
 	{
-		return createResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
+		return createResourceT<T, U>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
 	IResourcePtr createResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
@@ -133,30 +110,12 @@ public:
 	}
 
 	template <class T>
-	ResourcePtr<T> getResourceTFast(HashStringView64<> name)
-	{
-		IResourcePtr old_ptr = getResource(name);
-
-		if (old_ptr) {
-			return ResourcePtr<T>(static_cast<T*>(old_ptr.get()));
-		} else {
-			return ResourcePtr<T>();
-		}
-	}
-
-	template <class T>
-	ResourcePtr<T> getResourceTFast(const char8_t* name)
-	{
-		return getResourceTFast<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
-	}
-
-	template <class T>
 	ResourcePtr<T> getResourceT(HashStringView64<> name)
 	{
 		IResourcePtr old_ptr = getResource(name);
 
-		if (old_ptr) {
-			IResource* const resource = old_ptr.get();
+		if (old_ptr._resource) {
+			IResource* const resource = old_ptr._resource.get();
 			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
 
 			return ResourcePtr<T>(typed_resource);
@@ -230,34 +189,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
-template <class T>
-static bool LoadResourcePtr(const ISerializeReader& reader, ResourcePtr<T>& out)
-{
-	if (!reader.isString()) {
-		return false;
-	}
-
-	const char8_t* const res_path = reader.readString();
-	out = GetManagerTFast<ResourceManager>().requestResourceT<T>(res_path);
-	reader.freeString(res_path);
-
-	return out;
-}
-
-template <class T>
-static void SaveResourcePtr(ISerializeWriter& writer, const ResourcePtr<T>& value)
-{
-	writer.writeString(value->getFilePath().getBuffer());
-}
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceManager)
-
-// ResourcePtr
-SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::ResourcePtr, T)
-
-SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourcePtr, T)
-	.serialize(Shibboleth::LoadResourcePtr<T>, Shibboleth::SaveResourcePtr<T>)
-	.func("get", &Shibboleth::ResourcePtr<T>::get)
-SHIB_TEMPLATE_REFLECTION_DEFINE_END(Shibboleth::ResourcePtr, T)

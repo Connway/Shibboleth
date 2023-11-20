@@ -69,5 +69,10 @@ void ISerializeablePtr::Save(ISerializeWriter& writer, const ISerializeablePtr& 
 	}
 }
 
+ISerializeablePtr::ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator):
+	_allocator(allocator), _ptr(ptr)
+{
+}
+
 NS_END
 

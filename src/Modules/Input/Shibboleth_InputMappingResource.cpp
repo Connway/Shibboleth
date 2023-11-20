@@ -20,27 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_InputMappingResource.h"
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_ISystem.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+
+	.var(u8"config", &Shibboleth::InputMappingResource::_config)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingResource)
 
 NS_SHIBBOLETH
 
-class InputManagerOld;
+SHIB_REFLECTION_CLASS_DEFINE(InputMappingResource)
 
-class InputSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	InputManagerOld* _input_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
-};
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::InputSystem)

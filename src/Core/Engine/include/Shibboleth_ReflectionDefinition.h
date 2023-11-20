@@ -887,19 +887,19 @@ private:
 
 	// Variables
 	template <class Var, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionVar* ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionVar& ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 	template <class Var, class Ret, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionVar& ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 
 	// Functions
 	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 
 	// Static Functions
 	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(IReflectionStaticFunction<Ret, Args...>& ref_func, Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 
 	// Non-apply() call version.
 	template <class First, class... Rest>

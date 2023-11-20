@@ -22,37 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_Config.h>
+#include <Shibboleth_LocalPlayerSubsystem.h>
 
 NS_SHIBBOLETH
 
-struct InputAlias final
+class PlayerInputSubsystem final : public LocalPlayerSubsystem
 {
 public:
-	enum class Flag
-	{
-		ConsumeInput,
+	void init(const SubsystemCollectorBase& /*collector*/) override;
+	void destroy(const SubsystemCollectorBase& /*collector*/) override;
 
-		Count
-	};
+private:
 
-	HashString64<> name;
-	Gaff::Flags<Flag> flags;
-};
-
-
-class InputAliasConfig final : public IConfig
-{
-public:
-	Vector<InputAlias> aliases;
-
-	SHIB_REFLECTION_CLASS_DECLARE(InputAliasConfig);
+	SHIB_REFLECTION_CLASS_DECLARE(PlayerInputSubsystem);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::InputAliasConfig)
-
-SHIB_REFLECTION_DECLARE(Shibboleth::InputAlias::Flag)
-SHIB_REFLECTION_DECLARE(Shibboleth::InputAlias)
+SHIB_REFLECTION_DECLARE(Shibboleth::PlayerInputSubsystem)

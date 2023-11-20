@@ -20,34 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InputConfig.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAliasConfig)
-	.BASE(Shibboleth::IConfig)
-	.template ctor<>()
-
-	.classAttrs(
-		Shibboleth::GlobalConfigAttribute()
-	)
-
-	.var(u8"aliases", &Shibboleth::InputAliasConfig::aliases)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAliasConfig)
-
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAlias::Flag)
-	.entry(u8"consume_input", Shibboleth::InputAlias::Flag::ConsumeInput)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAlias::Flag)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputAlias)
-	.template ctor<>()
-
-	.var(u8"name", &Shibboleth::InputAlias::name)
-	.var(u8"flags", &Shibboleth::InputAlias::flags)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputAlias)
-
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_Config.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InputAliasConfig)
+struct InputMapping final
+{
+	enum class Flag
+	{
+		ConsumeInput,
+
+		Count
+	};
+
+	HashString64<> alias_name;
+	Gaff::Flags<Flag> flags{ Flag::ConsumeInput };
+};
+
+
+class InputMappingConfig final : public IConfig
+{
+public:
+	Vector<InputMapping> mappings;
+
+	SHIB_REFLECTION_CLASS_DECLARE(InputMappingConfig);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::InputMappingConfig)
+
+SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping::Flag)
+SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping)

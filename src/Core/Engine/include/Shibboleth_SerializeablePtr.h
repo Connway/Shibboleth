@@ -34,10 +34,7 @@ public:
 	static void Save(ISerializeWriter& writer, const ISerializeablePtr& value);
 
 protected:
-	ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator):
-		_allocator(allocator), _ptr(ptr)
-	{
-	}
+	ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator);
 
 	ProxyAllocator _allocator;
 	Refl::IReflectionObject* _ptr = nullptr;

@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ResourcePtr.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_Vector.h>
@@ -92,8 +91,6 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(IResource);
 };
-
-using IResourcePtr = ResourcePtr<IResource>;
 
 NS_END
 

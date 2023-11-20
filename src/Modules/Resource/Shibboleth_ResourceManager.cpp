@@ -43,7 +43,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 
 	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, bool)>(&Shibboleth::ResourceManager::requestResource))
 	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::requestResource))
-	//.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
+	.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
 	.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::getResource))
 
 #ifdef _DEBUG
@@ -155,7 +155,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
-		return IResourcePtr();
+		return IResourcePtr(ref_def);
 	}
 
 	const EA::Thread::AutoMutex lock(_res_lock);
@@ -163,7 +163,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return IResourcePtr(*it_res);
+		return IResourcePtr(*it_res, ref_def);
 	}
 
 	// create instance
@@ -171,7 +171,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 
 	if (!factory) {
 		LogErrorResource("Resource type '%s' does not have a default constructor.", ref_def.getReflectionInstance().getName());
-		return IResourcePtr();
+		return IResourcePtr(ref_def);
 	}
 
 	void* const data = factory(_allocator);
@@ -182,7 +182,7 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 
 	_resources.insert(it_res, resource);
 
-	return IResourcePtr(resource);
+	return IResourcePtr(resource, ref_def);
 }
 
 IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool delay_load)
@@ -192,7 +192,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return IResourcePtr(*it_res);
+		return IResourcePtr(*it_res, (*it_res)->getReflectionDefinition());
 	}
 
 	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
@@ -222,7 +222,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 		requestLoad(*resource);
 	}
 
-	return IResourcePtr(resource);
+	return IResourcePtr(resource, resource->getReflectionDefinition());
 }
 
 IResourcePtr ResourceManager::requestResource(HashStringView64<> name)
@@ -237,7 +237,7 @@ IResourcePtr ResourceManager::getResource(HashStringView64<> name)
 	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return IResourcePtr(*it_res);
+		return IResourcePtr(*it_res, (*it_res)->getReflectionDefinition());
 	}
 
 	return IResourcePtr();

@@ -2476,7 +2476,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), ptr, attrs, attributes...);
+		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2510,7 +2510,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), ptr, attrs, attributes...);
+		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2588,7 +2588,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
+		addAttributes(*pair.second, getter, setter, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2645,7 +2645,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
+		addAttributes(*pair.second, getter, setter, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2683,7 +2683,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), vec, attrs, attributes...);
+		addAttributes(*pair.second, vec, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2721,7 +2721,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), arr, attrs, attributes...);
+		addAttributes(*pair.second, arr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2764,7 +2764,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), vec_map, attrs, attributes...);
+		addAttributes(*pair.second, vec_map, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2807,7 +2807,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), ptr, attrs, attributes...);
+		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2850,7 +2850,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(pair.second.get(), ptr, attrs, attributes...);
+		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -2874,8 +2874,10 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
 
+	ReflectionFunction<true, Ret, Args...>* ref_func = nullptr;
+
 	if (it == _funcs.end()) {
-		ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 			_allocator,
 			ptr
@@ -2892,13 +2894,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 
 	} else {
 		FuncData& func_data = it->second;
-		bool found = false;
 
 		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<true, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
 					_allocator,
 					ptr
@@ -2906,12 +2907,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 
 				func_data.func[i].reset(ref_func);
 				func_data.hash[i] = arg_hash;
-				found = true;
 				break;
 			}
 		}
 
-		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
 	}
 
 	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
@@ -2921,7 +2921,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(ptr, attrs, attributes...);
+		addAttributes(*ref_func, ptr, attrs, attributes...);
 	}
 
 	return *this;
@@ -2944,8 +2944,10 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
 
+	ReflectionFunction<false, Ret, Args...>* ref_func = nullptr;
+
 	if (it == _funcs.end()) {
-		ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 			_allocator,
 			ptr
@@ -2961,13 +2963,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 
 	} else {
 		FuncData& func_data = it->second;
-		bool found = false;
 
 		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ReflectionFunction<false, Ret, Args...>* const ref_func = SHIB_ALLOCT(
+				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
 					_allocator,
 					ptr
@@ -2975,12 +2976,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 
 				func_data.func[i].reset(ref_func);
 				func_data.hash[i] = arg_hash;
-				found = true;
 				break;
 			}
 		}
 
-		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
 	}
 
 	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
@@ -2990,7 +2990,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(ptr, attrs, attributes...);
+		addAttributes(*ref_func, ptr, attrs, attributes...);
 	}
 
 	return *this;
@@ -3014,6 +3014,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 	auto it = _static_funcs.find(Gaff::FNV1aHash32Const(name));
 
 	using StaticFuncType = ReflectionStaticFunction<Ret, Args...>;
+	StaticFuncType* ref_func = nullptr;
 
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
@@ -3021,12 +3022,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 			StaticFuncData(_allocator)
 		).first;
 
-		it->second.func[0].reset(SHIB_ALLOCT(StaticFuncType, _allocator, func));
+		ref_func = SHIB_ALLOCT(StaticFuncType, _allocator, func);
+		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
 
 	} else {
 		StaticFuncData& func_data = it->second;
-		bool found = false;
 
 		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
 			// Replace an open slot or replace an already existing overload.
@@ -3034,13 +3035,13 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 				continue;
 			}
 
-			func_data.func[i].reset(SHIB_ALLOCT(StaticFuncType, _allocator, func));
+			ref_func = SHIB_ALLOCT(StaticFuncType, _allocator, func);
+			func_data.func[i].reset(ref_func);
 			func_data.hash[i] = arg_hash;
-			found = true;
 			break;
 		}
 
-		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
 	}
 
 	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
@@ -3050,7 +3051,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(func, attrs, attributes...);
+		addAttributes(*ref_func, func, attrs, attributes...);
 	}
 
 	return *this;
@@ -3419,12 +3420,12 @@ void ReflectionDefinition<T>::RegisterBaseVariables(void)
 // Variables
 template <class T>
 template <class Var, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar& ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(*ref_var, var);
+	clone->apply(ref_var, var);
 
 	if constexpr (sizeof...(Rest) > 0) {
 		return addAttributes(ref_var, var, attrs, rest...);
@@ -3435,12 +3436,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* 
 
 template <class T>
 template <class Var, class Ret, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar& ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(*ref_var, getter, setter);
+	clone->apply(ref_var, getter, setter);
 
 	if constexpr (sizeof...(Rest) > 0) {
 		return addAttributes(ref_var, getter, setter, attrs, rest...);
@@ -3452,15 +3453,15 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar* 
 // Functions
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(func);
+	clone->apply(ref_func, func);
 
 	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(func, attrs, rest...);
+		return addAttributes(ref_func, func, attrs, rest...);
 	} else {
 		return *this;
 	}
@@ -3468,15 +3469,15 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(A
 
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(func);
+	clone->apply(ref_func, func);
 
 	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(func, attrs, rest...);
+		return addAttributes(ref_func, func, attrs, rest...);
 	} else {
 		return *this;
 	}
@@ -3485,15 +3486,15 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (T::*func)(A
 // Static Functions
 template <class T>
 template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionStaticFunction<Ret, Args...>& ref_func, Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(func);
+	clone->apply(ref_func, func);
 
 	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(func, attrs, rest...);
+		return addAttributes(ref_func, func, attrs, rest...);
 	} else {
 		return *this;
 	}

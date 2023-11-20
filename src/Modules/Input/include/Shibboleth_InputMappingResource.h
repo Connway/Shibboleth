@@ -22,25 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_ISystem.h>
+#include "Shibboleth_InputMapping.h"
+#include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
 
-class InputManagerOld;
-
-class InputSystem final : public ISystem
+class InputMappingResource final : public IResource
 {
 public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
 
 private:
-	InputManagerOld* _input_mgr = nullptr;
+	InputMappingConfig _config;
 
-	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(InputMappingResource);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::InputSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::InputMappingResource)

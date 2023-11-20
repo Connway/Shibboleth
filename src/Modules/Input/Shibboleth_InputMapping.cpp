@@ -20,27 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_InputMapping.h"
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_ISystem.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingConfig)
+	.BASE(Shibboleth::IConfig)
+	.template ctor<>()
+
+	.classAttrs(
+		Shibboleth::GlobalConfigAttribute()
+	)
+
+	.var(u8"mappings", &Shibboleth::InputMappingConfig::mappings)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingConfig)
+
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMapping::Flag)
+	.entry(u8"consume_input", Shibboleth::InputMapping::Flag::ConsumeInput)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping::Flag)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMapping)
+	.template ctor<>()
+
+	.var(u8"alias_name", &Shibboleth::InputMapping::alias_name)
+	.var(u8"flags", &Shibboleth::InputMapping::flags)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping)
+
 
 NS_SHIBBOLETH
 
-class InputManagerOld;
-
-class InputSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	InputManagerOld* _input_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
-};
+SHIB_REFLECTION_CLASS_DEFINE(InputMappingConfig)
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::InputSystem)

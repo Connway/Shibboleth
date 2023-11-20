@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InputSystem.h"
-#include "Shibboleth_InputManager.h"
+#include "Shibboleth_InputManagerOld.h"
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::InputSystem, Shibboleth::ISystem)
@@ -32,7 +32,7 @@ SHIB_REFLECTION_CLASS_DEFINE(InputSystem)
 
 bool InputSystem::init(void)
 {
-	_input_mgr = &GetManagerTFast<InputManager>();
+	_input_mgr = &GetManagerTFast<InputManagerOld>();
 	_input_mgr->resetTimer();
 	return true;
 }

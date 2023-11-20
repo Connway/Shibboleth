@@ -20,27 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_PlayerInputSubsystem.h"
+#include "Shibboleth_InputManager.h"
+#include "Shibboleth_InputMapping.h"
+#include <Shibboleth_AppUtils.h>
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_ISystem.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerInputSubsystem)
+	.template base<Shibboleth::LocalPlayerSubsystem>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerInputSubsystem)
+
 
 NS_SHIBBOLETH
 
-class InputManagerOld;
+SHIB_REFLECTION_CLASS_DEFINE(PlayerInputSubsystem)
 
-class InputSystem final : public ISystem
+
+void PlayerInputSubsystem::init(const SubsystemCollectorBase& /*collector*/)
 {
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
+	InputManager& input_mgr = GetManagerTFast<InputManager>();
+	GAFF_REF(input_mgr);
 
-private:
-	InputManagerOld* _input_mgr = nullptr;
+	const auto* const default_mapping_config = GetConfig<InputMappingConfig>();
 
-	SHIB_REFLECTION_CLASS_DECLARE(InputSystem);
-};
+	for (const InputMapping& mapping : default_mapping_config->mappings) {
+		GAFF_REF(mapping);
+	}
+}
+
+void PlayerInputSubsystem::destroy(const SubsystemCollectorBase& /*collector*/)
+{
+}
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::InputSystem)
