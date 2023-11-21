@@ -22,18 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputMapping.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingConfig)
-	.BASE(Shibboleth::IConfig)
-	.template ctor<>()
-
-	.classAttrs(
-		Shibboleth::GlobalConfigAttribute()
-	)
-
-	.var(u8"mappings", &Shibboleth::InputMappingConfig::mappings)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingConfig)
-
-
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMapping::Flag)
 	.entry(u8"consume_input", Shibboleth::InputMapping::Flag::ConsumeInput)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping::Flag)
@@ -41,13 +29,12 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping::Flag)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMapping)
 	.template ctor<>()
 
+	.template varUsingBase<Shibboleth::ISerializeablePtr>(u8"activators", &Shibboleth::InputMapping::activators)
 	.var(u8"alias_name", &Shibboleth::InputMapping::alias_name)
 	.var(u8"flags", &Shibboleth::InputMapping::flags)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping)
 
 
 NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(InputMappingConfig)
 
 NS_END

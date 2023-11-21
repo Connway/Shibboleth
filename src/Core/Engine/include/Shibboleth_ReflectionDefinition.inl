@@ -167,6 +167,82 @@ void ReflectionDefinition<T>::IVar::setElementMoveT(T& object, int32_t index, Da
 
 
 
+// VarUsingBasePtr
+template <class T>
+template <class Var, class Base>
+ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::VarUsingBasePtr(Var T::*ptr):
+	_ptr(ptr)
+{
+	GAFF_ASSERT(ptr);
+}
+
+template <class T>
+template <class Var, class Base>
+const IReflection& ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::getReflection(void) const
+{
+	return Reflection<Base>::GetInstance();
+}
+
+template <class T>
+template <class Var, class Base>
+const void* ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::getData(const void* object) const
+{
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base>
+void* ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::getData(void* object)
+{
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base>
+void ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::setData(void* object, const void* data)
+{
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr) = *reinterpret_cast<const Var*>(data);
+}
+
+template <class T>
+template <class Var, class Base>
+void ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::setDataMove(void* object, void* data)
+{
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr) = std::move(*reinterpret_cast<Var*>(data));
+}
+
+template <class T>
+template <class Var, class Base>
+bool ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	Base* const var = &(object.*_ptr);
+	return Reflection<Base>::GetInstance().load(reader, *var);
+}
+
+template <class T>
+template <class Var, class Base>
+void ReflectionDefinition<T>::VarUsingBasePtr<Var, Base>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const Base* const var = &(object.*_ptr);
+	Reflection<Base>::GetInstance().save(writer, *var);
+}
+
+
+
 // VarPtr
 template <class T>
 template <class Var>
@@ -850,6 +926,402 @@ template <class Base>
 void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	_base_var->save(writer, object);
+}
+
+
+
+// ArrayUsingBasePtr
+template <class T>
+template <class Var, class Base, size_t array_size>
+ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::ArrayUsingBasePtr(Var (T::*ptr)[array_size]):
+	_ptr(ptr)
+{
+	GAFF_ASSERT(ptr);
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+const IReflection& ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::getReflection(void) const
+{
+	return Reflection<Base>::GetInstance();
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+const void* ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::getData(const void* object) const
+{
+	GAFF_ASSERT(object);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return (obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void* ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	return (obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::setData(void* object, const void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const Var* const vars = reinterpret_cast<const Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		(obj->*_ptr)[i] = vars[i];
+	}
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::setDataMove(void* object, void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const Var* const vars = reinterpret_cast<Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		(obj->*_ptr)[i] = std::move(vars[i]);
+	}
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+const void* ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::getElement(const void* object, int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void* ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::setElement(void* object, int32_t index, const void* data)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr)[index] = *reinterpret_cast<const Var*>(data);
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::setElementMove(void* object, int32_t index, void* data)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr)[index] = std::move(*reinterpret_cast<Var*>(data));
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::swap(void* object, int32_t index_a, int32_t index_b)
+{
+	GAFF_ASSERT(index_a < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(index_b < static_cast<int32_t>(array_size));
+	GAFF_ASSERT(object);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::resize(void*, size_t)
+{
+	GAFF_ASSERT_MSG(false, "Reflection variable is a fixed size array!");
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+bool ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	constexpr int32_t size = static_cast<int32_t>(array_size);
+	GAFF_ASSERT(reader.size() == size);
+
+	bool success = true;
+
+	for (int32_t i = 0; i < size; ++i) {
+		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
+		success = success && Reflection<Base>::GetInstance().load(reader, static_cast<Base&>((object.*_ptr)[i]));
+	}
+
+	return success;
+}
+
+template <class T>
+template <class Var, class Base, size_t array_size>
+void ReflectionDefinition<T>::ArrayUsingBasePtr<Var, Base, array_size>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	constexpr int32_t size = static_cast<int32_t>(array_size);
+	writer.startArray(static_cast<uint32_t>(array_size));
+
+	for (int32_t i = 0; i < size; ++i) {
+		Reflection<Base>::GetInstance().save(writer, static_cast<const Base&>((object.*_ptr)[i]));
+	}
+
+	writer.endArray();
+}
+
+
+
+// VectorUsingBasePtr
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::VectorUsingBasePtr(Gaff::Vector<Var, Vec_Allocator> (T::*ptr)):
+	_ptr(ptr)
+{
+	GAFF_ASSERT(ptr);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+const IReflection& ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::getReflection(void) const
+{
+	return Reflection<Base>::GetInstance();
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+const void* ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::getData(const void* object) const
+{
+	GAFF_ASSERT(object);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void* ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::setData(void* object, const void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const Var* const vars = reinterpret_cast<const Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	int32_t arr_size = size(object);
+
+	for (int32_t i = 0; i < arr_size; ++i) {
+		(obj->*_ptr)[i] = vars[i];
+	}
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::setDataMove(void* object, void* data)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	const Var* const vars = reinterpret_cast<Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
+	int32_t arr_size = size(object);
+
+	for (int32_t i = 0; i < arr_size; ++i) {
+		(obj->*_ptr)[i] = std::move(vars[i]);
+	}
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+int32_t ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::size(const void* object) const
+{
+	GAFF_ASSERT(object);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return static_cast<int32_t>((obj->*_ptr).size());
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+const void* ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::getElement(const void* object, int32_t index) const
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void* ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::setElement(void* object, int32_t index, const void* data)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr)[index] = *reinterpret_cast<const Var*>(data);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::setElementMove(void* object, int32_t index, void* data)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(data);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr)[index] = std::move(*reinterpret_cast<Var*>(data));
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::swap(void* object, int32_t index_a, int32_t index_b)
+{
+	GAFF_ASSERT(index_a < size(object));
+	GAFF_ASSERT(index_b < size(object));
+	GAFF_ASSERT(object);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::resize(void* object, size_t new_size)
+{
+	GAFF_ASSERT(object);
+
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr).resize(new_size);
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+bool ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	const int32_t size = reader.size();
+	(object.*_ptr).resize(static_cast<size_t>(size));
+
+	bool success = true;
+
+	for (int32_t i = 0; i < size; ++i) {
+		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
+		success = success && Reflection<Base>::GetInstance().load(reader, static_cast<Base&>((object.*_ptr)[i]));
+	}
+
+	return success;
+}
+
+template <class T>
+template <class Var, class Base, class Vec_Allocator>
+void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const int32_t size = static_cast<int32_t>((object.*_ptr).size());
+	writer.startArray(static_cast<uint32_t>(size));
+
+	for (int32_t i = 0; i < size; ++i) {
+		Reflection<Base>::GetInstance().save(writer, static_cast<const Base&>((object.*_ptr)[i]));
+	}
+
+	writer.endArray();
 }
 
 
@@ -2453,6 +2925,121 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(void)
 {
 	constexpr Gaff::Hash64 hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 	return ctor<Args...>(hash);
+}
+
+template <class T>
+template <class Base, class Var, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
+{
+	static_assert(std::is_base_of_v<Base, Var>, "Base must be a base class for Var.");
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(Reflection<Base>::HasReflection, "Base type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	using PtrType = VarUsingBasePtr<Var, Base>;
+
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, ptr))
+	);
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(*pair.second, ptr, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+	return *this;
+}
+
+template <class T>
+template <class Base, class Var, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return varUsingBase<Base>(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <class Base, class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char8_t (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes)
+{
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(Reflection<Base>::HasReflection, "Vector data type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	using PtrType = VectorUsingBasePtr<Var, Base, Vec_Allocator>;
+
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, vec))
+	);
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(*pair.second, vec, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+	return *this;
+}
+
+template <class T>
+template <class Base, class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return varUsingBase<Base>(temp_name, vec, attributes...);
+}
+
+template <class T>
+template <class Base, class Var, size_t array_size, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char8_t (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
+{
+	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
+	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
+	static_assert(Reflection<Base>::HasReflection, "Array data type is not reflected!");
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	using PtrType = ArrayUsingBasePtr<Var, Base, array_size>;
+
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+		IVarPtr(SHIB_ALLOCT(PtrType, _allocator, arr))
+	);
+
+	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(*pair.second, arr, attrs, attributes...);
+	}
+
+	_vars.insert(std::move(pair));
+	return *this;
+}
+
+template <class T>
+template <class Base, class Var, size_t array_size, size_t name_size, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::varUsingBase(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return varUsingBase<Base>(temp_name, arr, attributes...);
 }
 
 template <class T>

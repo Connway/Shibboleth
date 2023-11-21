@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_Config.h>
+#include "Shibboleth_InputActivator.h"
+#include <Shibboleth_SerializeablePtr.h>
 
 NS_SHIBBOLETH
 
@@ -36,22 +36,12 @@ struct InputMapping final
 		Count
 	};
 
+	Vector< SerializeablePtr<InputActivator> > activators{ ProxyAllocator("Input") };
 	HashString64<> alias_name;
 	Gaff::Flags<Flag> flags{ Flag::ConsumeInput };
 };
 
-
-class InputMappingConfig final : public IConfig
-{
-public:
-	Vector<InputMapping> mappings;
-
-	SHIB_REFLECTION_CLASS_DECLARE(InputMappingConfig);
-};
-
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::InputMappingConfig)
 
 SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping::Flag)
 SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping)

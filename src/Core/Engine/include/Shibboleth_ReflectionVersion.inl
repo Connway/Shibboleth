@@ -35,19 +35,19 @@ ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::enumAttrs(const Attrs&... at
 }
 
 template <class T>
-template <size_t size, class... Attrs>
-ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char8_t (&name)[size], T value)
+template <size_t name_size, class... Attrs>
+ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char8_t (&name)[name_size], T value)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::FNV1aHash64T(value, _hash);
 
 	return *this;
 }
 
 template <class T>
-template <size_t size, class... Attrs>
-ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char (&name)[size], T value)
+template <size_t name_size, class... Attrs>
+ReflectionVersionEnum<T>& ReflectionVersionEnum<T>::entry(const char (&name)[name_size], T value)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return entry(temp_name, value);
@@ -141,11 +141,36 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::ctor(void)
 }
 
 template <class T>
-template <class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Var T::*ptr, const Attrs&... attributes)
+template <class Base, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::varUsingBase(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
+	_hash = Gaff::FNV1aHash64T(ptr, _hash);
+	// $TODO: Hash base class?
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
+		_hash = getAttributeHashes(_hash, attributes...);
+	}
+
+	return *this;
+}
+
+template <class T>
+template <class Base, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::varUsingBase(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return varUsingBase<Base>(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
+{
+	const char8_t* const temp_name = name;
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::FNV1aHash64T(ptr, _hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -157,19 +182,19 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[
 }
 
 template <class T>
-template <class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
+template <class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, ptr, attributes...);
 }
 
 template <class T>
-template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Ret (T::*/*getter*/)(void) const, void (T::*/*setter*/)(Var), const Attrs&... attributes)
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[name_size], Ret (T::*/*getter*/)(void) const, void (T::*/*setter*/)(Var), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::CalcTemplateHash<Ret, Var>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -181,19 +206,19 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[
 }
 
 template <class T>
-template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, getter, setter, attributes...);
 }
 
 template <class T>
-template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[size], Ret (*/*getter*/)(const T&), void (*/*setter*/)(T&, Var), const Attrs&... attributes)
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[name_size], Ret (*/*getter*/)(const T&), void (*/*setter*/)(T&, Var), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::CalcTemplateHash<Ret, Var>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -205,19 +230,19 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[
 }
 
 template <class T>
-template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
+template <class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, getter, setter, attributes...);
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...) const, const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[name_size], Ret (T::*/*ptr*/)(Args...) const, const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -229,19 +254,19 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[size], Ret (T::*/*ptr*/)(Args...), const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[name_size], Ret (T::*/*ptr*/)(Args...), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -253,19 +278,19 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char8_t (&name)[size], Ret (*/*func*/)(Args...), const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char8_t (&name)[name_size], Ret (*/*func*/)(Args...), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), size - 1, _hash);
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
 	_hash = Gaff::CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -277,8 +302,8 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char8_t (
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes)
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return staticFunc(temp_name, func, attributes...);

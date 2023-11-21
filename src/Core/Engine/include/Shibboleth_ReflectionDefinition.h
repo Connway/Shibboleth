@@ -193,6 +193,26 @@ public:
 	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
+	// This is meant to be used for scenarios like SerializeablePtr, where we don't want a ReflectionDefinition for every template instantiation.
+	template <class Base, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
+
+	template <class Base, class Var, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
+
+	template <class Base, class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char8_t (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
+
+	template <class Base, class Var, class Vec_Allocator, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char (&name)[name_size], Gaff::Vector<Var, Vec_Allocator> T::* vec, const Attrs&... attributes);
+
+	template <class Base, class Var, size_t array_size, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char8_t (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
+
+	template <class Base, class Var, size_t array_size, size_t name_size, class... Attrs>
+	ReflectionDefinition& varUsingBase(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
+
+
 	template <class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
 
@@ -348,6 +368,25 @@ public:
 	void finish(void);
 
 private:
+	template <class Var, class Base>
+	class VarUsingBasePtr final : public IVar
+	{
+	public:
+		VarUsingBasePtr(Var T::*ptr);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Var T::* _ptr = nullptr;
+	};
+
 	template <class Var>
 	class VarPtr final : public IVar
 	{
@@ -509,6 +548,64 @@ private:
 
 	private:
 		typename ReflectionDefinition<Base>::IVar* _base_var;
+	};
+
+	template <class Var, class Base, size_t array_size>
+	class ArrayUsingBasePtr final : public IVar
+	{
+	public:
+		ArrayUsingBasePtr(Var (T::*ptr)[array_size]);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isFixedArray(void) const override { return true; }
+		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Var (T::*_ptr)[array_size] = nullptr;
+	};
+
+	template <class Var, class Base, class Vec_Allocator>
+	class VectorUsingBasePtr final : public IVar
+	{
+	public:
+		VectorUsingBasePtr(Gaff::Vector<Var, Vec_Allocator> T::*ptr);
+
+		const IReflection& getReflection(void) const override;
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isVector(void) const override { return true; }
+		int32_t size(const void* object) const override;
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		Gaff::Vector<Var, Vec_Allocator> T::* _ptr = nullptr;
 	};
 
 	template <class Var, size_t array_size>

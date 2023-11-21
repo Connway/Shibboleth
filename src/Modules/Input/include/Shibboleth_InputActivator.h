@@ -20,29 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_PlayerInputSubsystem.h"
-#include "Shibboleth_InputManager.h"
-#include "Shibboleth_InputMapping.h"
-#include <Shibboleth_AppUtils.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerInputSubsystem)
-	.template base<Shibboleth::LocalPlayerSubsystem>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerInputSubsystem)
+#include <Shibboleth_Reflection.h>
 
+namespace Gleam
+{
+	class Vec3;
+}
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(PlayerInputSubsystem)
-
-
-void PlayerInputSubsystem::init(const SubsystemCollectorBase& /*collector*/)
+class InputActivator : public Refl::IReflectionObject
 {
-}
+public:
+	virtual bool check(const Gleam::Vec3& input_value) const;
 
-void PlayerInputSubsystem::destroy(const SubsystemCollectorBase& /*collector*/)
-{
-}
+private:
+
+	SHIB_REFLECTION_CLASS_DECLARE(InputActivator);
+};
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::InputActivator)

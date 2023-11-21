@@ -32,7 +32,7 @@ class InputMappingResource final : public IResource
 public:
 
 private:
-	InputMappingConfig _config;
+	Vector<InputMapping> _mappings;
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputMappingResource);
 };

@@ -55,6 +55,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 #endif
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceManager)
 
+
 namespace
 {
 	static constexpr Gaff::Hash32 k_read_file_pool = Gaff::FNV1aHash32StringConst(Shibboleth::k_config_app_read_file_pool_name);
