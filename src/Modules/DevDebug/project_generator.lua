@@ -1,4 +1,6 @@
 local GenerateProject = function()
+	Group "Modules/Dev"
+
 	local source_dir = GetModulesSourceDirectory("DevDebug")
 	local base_dir = GetModulesDirectory("DevDebug")
 
@@ -54,6 +56,8 @@ local GenerateProject = function()
 
 		dependson(deps)
 		links(deps)
+
+	Group "Modules"
 end
 
 local LinkDependencies = function()

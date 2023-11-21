@@ -13,6 +13,8 @@ local qt_modules =
 }
 
 local GenerateProject = function()
+	Group "Modules/Dev"
+
 	local source_dir = GetModulesSourceDirectory("DevEditor")
 	local base_dir = GetModulesDirectory("DevEditor")
 
@@ -62,6 +64,8 @@ local GenerateProject = function()
 
 		QtSettingsModule(qt_modules, base_dir, source_dir)
 		CopyQtFilesToBin(qt_modules)
+
+	Group "Modules"
 end
 
 local LinkDependencies = function()

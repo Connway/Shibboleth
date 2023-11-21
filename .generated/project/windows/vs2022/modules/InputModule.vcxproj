@@ -270,6 +270,12 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\InputModu
     <ProjectReference Include="GraphicsBase.vcxproj">
       <Project>{F1CA734A-DD2D-03EF-86B3-3BA572F5CE71}</Project>
     </ProjectReference>
+    <ProjectReference Include="Player.vcxproj">
+      <Project>{724E55CA-5EF0-7FA0-47AB-93F433EC06F1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Resource.vcxproj">
+      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\dependencies\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
     </ProjectReference>
