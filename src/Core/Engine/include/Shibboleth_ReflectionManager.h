@@ -37,8 +37,6 @@ class ReflectionManager final
 public:
 	using TypeBucket = Vector<const Refl::IReflectionDefinition*>;
 
-	static bool CompareRefHash(const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs);
-
 	template <class T>
 	void registerEnumOwningModule(const char8_t* module_name)
 	{

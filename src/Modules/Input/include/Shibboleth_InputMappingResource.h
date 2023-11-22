@@ -30,6 +30,7 @@ NS_SHIBBOLETH
 class InputMappingResource final : public IResource
 {
 public:
+	const Vector<InputMapping>& getMappings(void) const;
 
 private:
 	Vector<InputMapping> _mappings;

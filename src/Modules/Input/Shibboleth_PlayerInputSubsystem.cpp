@@ -21,14 +21,20 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_PlayerInputSubsystem.h"
+#include "Shibboleth_InputMappingResource.h"
 #include "Shibboleth_InputManager.h"
-#include "Shibboleth_InputMapping.h"
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerInputSubsystem)
 	.template base<Shibboleth::LocalPlayerSubsystem>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerInputSubsystem)
+
+
+namespace
+{
+	Shibboleth::ProxyAllocator g_allocator("Input");
+}
 
 
 NS_SHIBBOLETH
@@ -42,6 +48,44 @@ void PlayerInputSubsystem::init(const SubsystemCollectorBase& /*collector*/)
 
 void PlayerInputSubsystem::destroy(const SubsystemCollectorBase& /*collector*/)
 {
+}
+
+void PlayerInputSubsystem::addInputMapping(const InputMappingResource& input_mapping, int32_t priority)
+{
+	BoundInputMapping bound_mapping;
+	bound_mapping.instances.reserve(input_mapping.getMappings().size());
+	bound_mapping.source = &input_mapping;
+	bound_mapping.priority = priority;
+
+	for (const InputMapping& mapping : input_mapping.getMappings()) {
+		InputMapping instance;
+		instance.activators.reserve(mapping.activators.size());
+		//instance.modifiers.reserve(mapping.modifiers.size());
+		instance.alias_name = mapping.alias_name;
+		instance.flags = mapping.flags;
+
+		_alias_values[mapping.alias_name]; // Ensure alias exists.
+
+		for (const InputActivator* activator : mapping.activators) {
+			const Refl::IReflectionDefinition& ref_def = activator->getReflectionDefinition();
+			InputActivator* const copy = ref_def.template duplicateT<InputActivator>(activator->getBasePointer(), g_allocator);
+			GAFF_ASSERT(copy);
+
+			instance.activators.emplace_back(copy);
+		}
+	}
+
+	const auto it = Gaff::UpperBound(_mappings, priority);
+	_mappings.emplace(it, std::move(bound_mapping));
+}
+
+void PlayerInputSubsystem::removeInputMapping(const InputMappingResource& input_mapping)
+{
+	const auto it = Gaff::Find(_mappings, &input_mapping);
+
+	if (it != _mappings.end()) {
+		_mappings.erase(it);
+	}
 }
 
 NS_END

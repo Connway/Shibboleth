@@ -37,7 +37,7 @@ struct InputMapping final
 	};
 
 	Vector< SerializeablePtr<InputActivator> > activators{ ProxyAllocator("Input") };
-	HashString64<> alias_name;
+	HashString32<> alias_name;
 	Gaff::Flags<Flag> flags{ Flag::ConsumeInput };
 };
 

@@ -1160,18 +1160,26 @@ void ReflectionDefinition<T>::VectorUsingBasePtr<Var, Base, Vec_Allocator>::setD
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
+	// This is not detecting deleted assignment operators.
+	//constexpr bool k_has_copy_assignment = requires(T& lhs, const T& rhs) { lhs = rhs; };
 
-	const Var* const vars = reinterpret_cast<const Var*>(data);
-	T* const obj = reinterpret_cast<T*>(object);
-	int32_t arr_size = size(object);
+	//if constexpr (k_has_copy_assignment) {
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
 
-	for (int32_t i = 0; i < arr_size; ++i) {
-		(obj->*_ptr)[i] = vars[i];
-	}
+		const Var* const vars = reinterpret_cast<const Var*>(data);
+		T* const obj = reinterpret_cast<T*>(object);
+		int32_t arr_size = size(object);
+
+		for (int32_t i = 0; i < arr_size; ++i) {
+			(obj->*_ptr)[i] = vars[i];
+		}
+
+	//} else {
+	//	GAFF_ASSERT_MSG(false, "VectorUsingBasePtr<Var, Base, Vec_Allocator>::setData was called on a type that doesn't support assignment.");
+	//}
 }
 
 template <class T>
@@ -2137,13 +2145,6 @@ void ReflectionDefinition<T>::Hash32Ptr::save(Shibboleth::ISerializeWriter& writ
 
 // ReflectionDefinition
 template <class T>
-template <class... Args>
-T* ReflectionDefinition<T>::create(Args&&... args) const
-{
-	return createT<T>(_allocator, std::forward<Args>(args)...);
-}
-
-template <class T>
 const char8_t* ReflectionDefinition<T>::getFriendlyName(void) const
 {
 	return _friendly_name.data();
@@ -2682,6 +2683,39 @@ IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(Gaff::Hash32 name, Gaf
 	}
 
 	return nullptr;
+}
+
+template <class T>
+void* ReflectionDefinition<T>::duplicate(const void* object, Gaff::IAllocator& allocator) const
+{
+	Gaff::Hash64 copy_ctor_hash = Gaff::FNV1aHash64Const(u8"const ");
+	copy_ctor_hash = Gaff::FNV1aHash64String(getReflectionInstance().getName(), copy_ctor_hash);
+	copy_ctor_hash = Gaff::FNV1aHash64Const(u8"&", copy_ctor_hash);
+
+	void* copy = create(
+		copy_ctor_hash,
+		allocator,
+		object
+	);
+
+	if (!copy) {
+		copy = create(allocator);
+
+		const int32_t num_vars = getNumVars();
+
+		for (int32_t i = 0; i < num_vars; ++i) {
+			Refl::IReflectionVar* const var = getVar(i);
+
+			if (var->isNoCopy()) {
+				continue;
+			}
+
+			const void* const orig_data = var->getData(object);
+			var->setData(copy, orig_data);
+		}
+	}
+
+	return copy;
 }
 
 template <class T>

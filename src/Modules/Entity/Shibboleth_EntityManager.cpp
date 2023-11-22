@@ -49,8 +49,8 @@ IEntityUpdateable* EntityManager::createUpdateable(const Refl::IReflectionDefini
 	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::IEntityUpdateable)));
 
 	IEntityUpdateable* const updateable = (ref_def.getFactory<EntityManager&>() || ref_def.getFactory<const EntityManager&>()) ?
-		ref_def.createT<IEntityUpdateable>(CLASS_HASH(Shibboleth::IEntityUpdateable), s_allocator, *this) :
-		ref_def.createT<IEntityUpdateable>(CLASS_HASH(Shibboleth::IEntityUpdateable), s_allocator);
+		ref_def.CREATET(Shibboleth::IEntityUpdateable, s_allocator, *this) :
+		ref_def.CREATET(Shibboleth::IEntityUpdateable, s_allocator);
 
 	if (updateable) {
 		UpdateNode* const node = SHIB_ALLOCT(UpdateNode, s_allocator);

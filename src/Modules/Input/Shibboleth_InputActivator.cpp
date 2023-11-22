@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputActivator)
+	.BASE(IReflectionObject)
+
 	.classAttrs(
 		Shibboleth::ClassBucketAttribute()
 	)
@@ -34,9 +36,18 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(InputActivator)
 
-bool InputActivator::check(const Gleam::Vec3& /*input_value*/) const
+void InputActivator::update(const PlayerInputSubsystem& /*input_subsystem*/, const Gleam::Vec3& /*input_value*/, float /*dt*/) const
 {
-	return false;
+}
+
+bool InputActivator::isTriggered(void) const
+{
+	return _flags.testAll(Flag::Triggered);
+}
+
+void InputActivator::setTriggered(bool triggered)
+{
+	_flags.set(triggered, Flag::Triggered);
 }
 
 NS_END

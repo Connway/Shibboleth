@@ -108,21 +108,27 @@ typename Vector<T, Allocator>::iterator Find(Vector<T, Allocator>& vec, const V&
 }
 
 template <class T, class V, class Allocator, class Predicate>
-typename Vector<T, Allocator>::iterator Contains(Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+bool Contains(const Vector<T, Allocator>& vec, const V& value, Predicate predicate)
 {
 	return Find(vec, value, predicate) != vec.end();
 }
 
 template <class T, class V, class Allocator>
-bool Contains(Vector<T, Allocator>& vec, const V& value)
+bool Contains(const Vector<T, Allocator>& vec, const V& value)
 {
 	return Find(vec, value) != vec.end();
 }
 
 template <class T, class Allocator>
-bool Contains(Vector<T, Allocator>& vec, const T& value)
+bool Contains(const Vector<T, Allocator>& vec, const T& value)
 {
 	return Find(vec, value) != vec.end();
+}
+
+template <class T, class Allocator, class Predicate>
+void Sort(Vector<T, Allocator>& vec, Predicate predicate)
+{
+	return eastl::sort(vec.begin(), vec.end(), predicate);
 }
 
 template <class T, class Allocator>

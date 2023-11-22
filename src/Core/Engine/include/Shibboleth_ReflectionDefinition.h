@@ -174,6 +174,8 @@ public:
 	IReflectionFunctionBase* getFunc(int32_t name_index, int32_t override_index) const override;
 	IReflectionFunctionBase* getFunc(Gaff::Hash32 name, Gaff::Hash64 args) const override;
 
+	void* duplicate(const void* object, Gaff::IAllocator& allocator) const override;
+
 	void destroyInstance(void* data) const override;
 
 	IVar* getVarT(int32_t index) const;
@@ -1137,6 +1139,7 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		IReflectionStaticFunctionBase* getStaticFunc(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
 		IReflectionFunctionBase* getFunc(int32_t, int32_t) const override { return nullptr; } \
 		IReflectionFunctionBase* getFunc(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
+		void* duplicate(const void*, Gaff::IAllocator&) const override { return nullptr; } \
 		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \
 		void setAllocator(const Shibboleth::ProxyAllocator&) {} \
 		void finish(void) {} \

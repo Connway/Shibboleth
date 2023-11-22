@@ -35,4 +35,10 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(InputMappingResource)
 
 
+const Vector<InputMapping>& InputMappingResource::getMappings(void) const
+{
+	return _mappings;
+}
+
+
 NS_END

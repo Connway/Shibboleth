@@ -26,17 +26,20 @@ THE SOFTWARE.
 #include "Shibboleth_IReflection.h"
 #include <EASTL/sort.h>
 
+namespace
+{
+	static bool CompareRefHash(const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
+	{
+		return lhs->getReflectionInstance().getNameHash() < rhs;
+	}
+
+	static bool CompareRefDef(const Refl::IReflectionDefinition* lhs, const Refl::IReflectionDefinition* rhs)
+	{
+		return lhs->getReflectionInstance().getNameHash() < rhs->getReflectionInstance().getNameHash();
+	}
+}
+
 NS_SHIBBOLETH
-
-static bool CompareRefDef(const Refl::IReflectionDefinition* lhs, const Refl::IReflectionDefinition* rhs)
-{
-	return lhs->getReflectionInstance().getNameHash() < rhs->getReflectionInstance().getNameHash();
-}
-
-bool ReflectionManager::CompareRefHash(const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
-{
-	return lhs->getReflectionInstance().getNameHash() < rhs;
-}
 
 ReflectionManager::ReflectionManager(void)
 {
@@ -217,7 +220,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	}
 
 	// Sort the list for quicker lookup.
-	eastl::sort(global_types.begin(), global_types.end(), CompareRefDef);
+	Gaff::Sort(global_types, CompareRefDef);
 
 	// For each module type bucket, add the new types to the type bucket list.
 	for (auto& mod_pair : _module_owners) {
@@ -264,7 +267,7 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	}
 
 	// Sort the list for quicker lookup.
-	eastl::sort(bucket.begin(), bucket.end(), CompareRefDef);
+	Gaff::Sort(bucket, CompareRefDef);
 }
 
 ReflectionManager::TypeBucket ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
@@ -319,13 +322,13 @@ Vector< HashString64<> > ReflectionManager::getModules(void) const
 
 void ReflectionManager::insertType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def)
 {
-	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def->getReflectionInstance().getNameHash(), CompareRefHash);
+	const auto it = Gaff::LowerBound(bucket, ref_def->getReflectionInstance().getNameHash(), CompareRefHash);
 	bucket.insert(it, ref_def);
 }
 
 void ReflectionManager::removeType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def)
 {
-	const auto it = eastl::lower_bound(bucket.begin(), bucket.end(), ref_def, CompareRefDef);
+	const auto it = Gaff::LowerBound(bucket, ref_def->getReflectionInstance().getNameHash(), CompareRefHash);
 
 	if (it != bucket.end() && *it == ref_def) {
 		bucket.erase(it);

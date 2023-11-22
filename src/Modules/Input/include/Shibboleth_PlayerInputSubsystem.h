@@ -22,9 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_InputMapping.h"
 #include <Shibboleth_LocalPlayerSubsystem.h>
+#include <gtc/constants.hpp>
 
 NS_SHIBBOLETH
+
+class InputMappingResource;
 
 class PlayerInputSubsystem final : public LocalPlayerSubsystem
 {
@@ -32,7 +36,43 @@ public:
 	void init(const SubsystemCollectorBase& /*collector*/) override;
 	void destroy(const SubsystemCollectorBase& /*collector*/) override;
 
+	void addInputMapping(const InputMappingResource& input_mapping, int32_t priority);
+	void removeInputMapping(const InputMappingResource& input_mapping);
+
 private:
+	struct BoundInputMapping final
+	{
+		Vector<InputMapping> instances{ ProxyAllocator("Input") };
+
+		const InputMappingResource* source;
+		int32_t priority;
+
+		bool operator==(const InputMappingResource* rhs) const
+		{
+			return source == rhs;
+		}
+
+		std::strong_ordering operator<=>(int32_t rhs) const
+		{
+			if (priority == rhs) {
+				return std::strong_ordering::equal;
+			} else if (priority < rhs) {
+				return std::strong_ordering::less;
+			} else {
+				return std::strong_ordering::greater;
+			}
+		}
+	};
+
+	struct AliasData final
+	{
+		Gleam::Vec3 value = glm::zero<Gleam::Vec3>();
+	};
+
+	VectorMap< HashString32<>, Gleam::Vec3 > _alias_values{ ProxyAllocator("Input") };
+	Vector<BoundInputMapping> _mappings{ ProxyAllocator("Input") };
+
+	Gleam::Vec3& getOrAddAlias(const HashString32<>& alias);
 
 	SHIB_REFLECTION_CLASS_DECLARE(PlayerInputSubsystem);
 };

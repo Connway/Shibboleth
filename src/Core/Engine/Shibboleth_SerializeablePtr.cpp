@@ -43,8 +43,8 @@ bool ISerializeablePtr::Load(const ISerializeReader& reader, ISerializeablePtr& 
 		const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(class_name));
 
 		if (ref_def) {
-			out._ptr = ref_def->CREATET(Refl::IReflectionObject, out._allocator);
-			ref_def->load(reader, out._ptr);
+			out._ptr.reset(ref_def->CREATET(Refl::IReflectionObject, out._allocator));
+			ref_def->load(reader, out._ptr.get());
 
 		} else {
 			// $TODO: Log error.
@@ -62,17 +62,24 @@ void ISerializeablePtr::Save(ISerializeWriter& writer, const ISerializeablePtr& 
 
 		writer.writeString(u8"class", ref_def.getReflectionInstance().getName());
 		writer.writeKey(u8"data");
-		ref_def.save(writer, value._ptr);
+		ref_def.save(writer, value._ptr.get());
 
 	} else {
 		writer.writeString(u8"class", u8"");
 	}
 }
 
-ISerializeablePtr::ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator):
-	_allocator(allocator), _ptr(ptr)
+ISerializeablePtr::ISerializeablePtr(UniquePtr<Refl::IReflectionObject>&& ptr, const ProxyAllocator& allocator):
+	_ptr(std::move(ptr)), _allocator(allocator)
 {
 }
 
-NS_END
+ISerializeablePtr::ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator):
+	_ptr(ptr), _allocator(allocator)
+{
+}
 
+ISerializeablePtr::ISerializeablePtr(const ProxyAllocator& allocator):
+	_ptr(nullptr), _allocator(allocator)
+{
+}

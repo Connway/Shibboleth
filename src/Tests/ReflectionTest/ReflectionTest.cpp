@@ -378,8 +378,8 @@ SHIB_REFLECTION_DEFINE_END(CtorTest)
 TEST_CASE("shibboleth_factory")
 {
 	Refl::Reflection<CtorTest>::Init();
-	CtorTest* test_a = Refl::Reflection<CtorTest>::GetReflectionDefinition().create();
-	CtorTest* test_b = Refl::Reflection<CtorTest>::GetReflectionDefinition().create(100);
+	CtorTest* test_a = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>();
+	CtorTest* test_b = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>(100);
 
 	REQUIRE(test_a->a == 200);
 	REQUIRE(test_b->a == 100);

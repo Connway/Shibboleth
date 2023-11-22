@@ -34,10 +34,13 @@ public:
 	static void Save(ISerializeWriter& writer, const ISerializeablePtr& value);
 
 protected:
+	ISerializeablePtr(UniquePtr<Refl::IReflectionObject>&& ptr, const ProxyAllocator& allocator);
 	ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator);
+	ISerializeablePtr(const ProxyAllocator& allocator);
+	ISerializeablePtr(void) = default;
 
+	UniquePtr<Refl::IReflectionObject> _ptr;
 	ProxyAllocator _allocator;
-	Refl::IReflectionObject* _ptr = nullptr;
 };
 
 template <class T>
@@ -60,61 +63,69 @@ public:
 	}
 
 	template <class U>
-	SerializeablePtr(const SerializeablePtr<U>& serializeable_ptr):
-		ISerializeablePtr(const_cast<U*>(serializeable_ptr.get()), serializeable_ptr._allocator)
+	explicit SerializeablePtr(SerializeablePtr<U>&& serializeable_ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		ISerializeablePtr(std::move(serializeable_ptr._ptr), allocator)
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+	}
+
+	explicit SerializeablePtr(SerializeablePtr<T>&& serializeable_ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		ISerializeablePtr(std::move(serializeable_ptr._ptr), allocator)
+	{
 	}
 
 	SerializeablePtr(const SerializeablePtr<T>& serializeable_ptr):
-		ISerializeablePtr(serializeable_ptr._ptr, serializeable_ptr._allocator)
+		ISerializeablePtr(nullptr, serializeable_ptr._allocator)
 	{
+		// Below code is not working in ReflectionDefinition.
+		// constexpr bool k_has_copy_assignment = requires(T& lhs, const T& rhs) { lhs = rhs; };
+		// k_has_copy_assignment is returning true, even though the functions are deleted.
+
+		GAFF_ASSERT_MSG(false, "SerializeablePtr copy constructor is not allowed. See comment for why this function is not deleted.");
 	}
 
-	SerializeablePtr(const ProxyAllocator& allocator = ProxyAllocator()):
-		ISerializeablePtr(nullptr, allocator)
-	{
-	}
+	SerializeablePtr(void) = default;
 
 	T* get(void) const
 	{
-		return static_cast<T*>(_ptr);
-	}
-
-	operator T*(void) const
-	{
-		return get();
+		return static_cast<T*>(_ptr.get());
 	}
 
 	template <class U>
-	SerializeablePtr& operator=(const SerializeablePtr<U>& rhs)
+	void reset(U* ptr)
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
-
-		_allocator = rhs._allocator;
-		_ptr = rhs._ptr;
-		return *this;
+		_ptr.reset(ptr);
 	}
 
-	SerializeablePtr& operator=(const SerializeablePtr<T>& rhs)
+	void reset(T* ptr)
 	{
-		_allocator = rhs._allocator;
-		_ptr = rhs._ptr;
+		_ptr.reset(ptr);
+	}
+
+	SerializeablePtr& operator=(const SerializeablePtr<T>&)
+	{
+		// Below code is not working in ReflectionDefinition.
+		// constexpr bool k_has_copy_assignment = requires(T& lhs, const T& rhs) { lhs = rhs; };
+		// k_has_copy_assignment is returning true, even though the functions are deleted.
+
+		GAFF_ASSERT_MSG(false, "SerializeablePtr copy operator is not allowed. See comment for why this function is not deleted.");
+
 		return *this;
 	}
 
 	template <class U>
-	SerializeablePtr& operator=(U* rhs)
+	SerializeablePtr& operator=(SerializeablePtr<U>&& rhs)
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 
-		_ptr = rhs;
+		_ptr = std::move(rhs._ptr);
 		return *this;
 	}
 
-	SerializeablePtr& operator=(T* rhs)
+	SerializeablePtr& operator=(SerializeablePtr<T>&& rhs)
 	{
-		_ptr = rhs;
+		_ptr = std::move(rhs._ptr);
 		return *this;
 	}
 
@@ -168,6 +179,16 @@ public:
 	}
 
 	T* operator->(void)
+	{
+		return get();
+	}
+
+	operator const T*(void) const
+	{
+		return get();
+	}
+
+	operator T*(void)
 	{
 		return get();
 	}

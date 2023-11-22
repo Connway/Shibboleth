@@ -571,12 +571,19 @@ public:
 	{
 		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 		IReflectionStaticFunctionBase* const func = getStaticFunc(name, arg_hash);
-		
+
 		if (func) {
 			return static_cast<IReflectionStaticFunction<Ret, Args...>*>(func);
 		}
 
 		return nullptr;
+	}
+
+	template <class T>
+	T* duplicateT(const void* object, Gaff::IAllocator& allocator) const
+	{
+		void* const copy = duplicate(object, allocator);
+		return (copy) ? getInterface<T>(copy) : nullptr;
 	}
 
 	virtual ~IReflectionDefinition(void) {}
@@ -646,6 +653,8 @@ public:
 	virtual IReflectionStaticFunctionBase* getStaticFunc(Gaff::Hash32 name, Gaff::Hash64 args) const = 0;
 	virtual IReflectionFunctionBase* getFunc(int32_t name_index, int32_t override_index) const = 0;
 	virtual IReflectionFunctionBase* getFunc(Gaff::Hash32 name, Gaff::Hash64 args) const = 0;
+
+	virtual void* duplicate(const void* object, Gaff::IAllocator& allocator) const = 0;
 
 	virtual void destroyInstance(void* data) const = 0;
 

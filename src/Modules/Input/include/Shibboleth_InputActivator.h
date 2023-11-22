@@ -23,20 +23,33 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-
-namespace Gleam
-{
-	class Vec3;
-}
+#include <Gleam_Vec3.h>
 
 NS_SHIBBOLETH
+
+class PlayerInputSubsystem;
 
 class InputActivator : public Refl::IReflectionObject
 {
 public:
-	virtual bool check(const Gleam::Vec3& input_value) const;
+	InputActivator(const InputActivator& activator) = default;
+
+	virtual void update(const PlayerInputSubsystem& input_subsystem, const Gleam::Vec3& input_value, float dt) const;
+
+	bool isTriggered(void) const;
+
+protected:
+	void setTriggered(bool triggered);
 
 private:
+	enum class Flag
+	{
+		Triggered,
+
+		Count
+	};
+
+	Gaff::Flags<Flag> _flags;
 
 	SHIB_REFLECTION_CLASS_DECLARE(InputActivator);
 };
