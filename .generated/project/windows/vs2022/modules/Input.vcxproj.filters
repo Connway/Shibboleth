@@ -9,10 +9,19 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputConfig.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputActivator.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputManagerOld.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputMapping.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputMappingResource.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputReflection.h">
@@ -21,13 +30,20 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_InputSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Input\include\Shibboleth_PlayerInputSubsystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputConfig.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputActivator.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputManagerOld.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputMapping.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputMappingResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_InputSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Input\Shibboleth_PlayerInputSubsystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Input\project_generator.lua" />
