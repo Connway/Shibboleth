@@ -83,3 +83,5 @@ ISerializeablePtr::ISerializeablePtr(const ProxyAllocator& allocator):
 	_ptr(nullptr), _allocator(allocator)
 {
 }
+
+NS_END
