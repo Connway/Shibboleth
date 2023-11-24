@@ -36,135 +36,6 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args)
 	return SHIB_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }
 
-// IVar
-template <class T>
-template <class DataType>
-const DataType& ReflectionDefinition<T>::IVar::getDataT(const T& object) const
-{
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-
-	return *reinterpret_cast<const DataType*>(getData(&object));
-}
-
-template <class T>
-template <class DataType>
-void ReflectionDefinition<T>::IVar::setDataT(T& object, const DataType& data)
-{
-	if (isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-
-	setData(&object, &data);
-}
-
-template <class T>
-template <class DataType>
-void ReflectionDefinition<T>::IVar::setDataMoveT(T& object, DataType&& data)
-{
-	if (isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-	GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-
-	setDataMove(&object, &data);
-}
-
-template <class T>
-template <class DataType>
-const DataType& ReflectionDefinition<T>::IVar::getElementT(const T& object, int32_t index) const
-{
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-
-	if constexpr (std::is_enum<Type>::value) {
-		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
-	} else {
-		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-	}
-
-	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-	return *reinterpret_cast<const DataType*>(getElement(&object, index));
-}
-
-template <class T>
-template <class DataType>
-void ReflectionDefinition<T>::IVar::setElementT(T& object, int32_t index, const DataType& data)
-{
-	if (isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-
-	if constexpr (std::is_enum<Type>::value) {
-		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
-	} else {
-		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-	}
-
-	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-	setElement(&object, index, &data);
-}
-
-template <class T>
-template <class DataType>
-void ReflectionDefinition<T>::IVar::setElementMoveT(T& object, int32_t index, DataType&& data)
-{
-	if (isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	using Type = typename std::remove_reference<DataType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
-	const auto& refl = getReflection();
-
-	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
-
-	if constexpr (std::is_enum<Type>::value) {
-		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
-	} else {
-		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
-	}
-
-	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-	setElementMove(&object, index, &data);
-}
-
 
 
 // VarUsingBasePtr
@@ -736,7 +607,7 @@ Ret ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::callGetter(const T& object) c
 // BaseVarPtr
 template <class T>
 template <class Base>
-ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(typename ReflectionDefinition<Base>::IVar* base_var):
+ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(IVar<Base>* base_var):
 	_base_var(base_var)
 {
 }
@@ -2726,14 +2597,14 @@ void ReflectionDefinition<T>::destroyInstance(void* data) const
 }
 
 template <class T>
-typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(int32_t index) const
+IVar<T>* ReflectionDefinition<T>::getVarT(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
 	return (_vars.begin() + index)->second.get();
 }
 
 template <class T>
-typename ReflectionDefinition<T>::IVar* ReflectionDefinition<T>::getVarT(Gaff::Hash32 name) const
+IVar<T>* ReflectionDefinition<T>::getVarT(Gaff::Hash32 name) const
 {
 	const auto it = _vars.find(name);
 	return (it == _vars.end()) ? nullptr : it->second.get();
@@ -3137,7 +3008,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	_vars.insert(std::move(pair));
 
 	// For each reflected entry in Enum, add a reflection var for that entry.
-	const IEnumReflectionDefinition& ref_def = Reflection<Enum>::GetReflectionDefinition();
+	const EnumReflectionDefinition<Enum>& ref_def = Reflection<Enum>::GetReflectionDefinition();
 	const int32_t num_entries = ref_def.getNumEntries();
 
 	for (int32_t i = 0; i < num_entries; ++i) {
@@ -3173,6 +3044,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 {
 	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
 
+	// $TODO: Use std::decay instead.
 	using RetNoRef = typename std::remove_reference<Ret>::type;
 	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
 	using RetNoConst = typename std::remove_const<RetNoPointer>::type;

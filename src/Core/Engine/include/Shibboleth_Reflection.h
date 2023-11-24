@@ -188,3 +188,4 @@ SHIB_REFLECTION_DECLARE(Shibboleth::HashStringView64<>)
 
 #include "Shibboleth_ReflectionDefinition.inl"
 #include "Shibboleth_ReflectionDefinitionFunction.inl"
+#include "Reflection/Shibboleth_ReflectionDefinitionVariable.inl"

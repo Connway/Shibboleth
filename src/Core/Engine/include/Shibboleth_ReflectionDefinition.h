@@ -22,9 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Reflection/Shibboleth_ReflectionDefinitionVariable.h"
 #include "Shibboleth_IReflectionDefinition.h"
-#include "Shibboleth_SerializeInterfaces.h"
-#include "Shibboleth_IReflection.h"
 #include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_Utilities.h"
@@ -64,33 +63,6 @@ public:
 	using LoadFunc = bool (*)(const Shibboleth::ISerializeReader&, T&);
 	using SaveFunc = void (*)(Shibboleth::ISerializeWriter&, const T&);
 	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
-
-	class IVar : public IReflectionVar
-	{
-	public:
-		virtual ~IVar(void) {}
-
-		template <class DataType>
-		const DataType& getDataT(const T& object) const;
-
-		template <class DataType>
-		void setDataT(T& object, const DataType& data);
-
-		template <class DataType>
-		void setDataMoveT(T& object, DataType&& data);
-
-		template <class DataType>
-		const DataType& getElementT(const T& object, int32_t index) const;
-
-		template <class DataType>
-		void setElementT(T& object, int32_t index, const DataType& data);
-
-		template <class DataType>
-		void setElementMoveT(T& object, int32_t index, DataType&& data);
-
-		virtual bool load(const Shibboleth::ISerializeReader& reader, T& object) = 0;
-		virtual void save(Shibboleth::ISerializeWriter& writer, const T& object) = 0;
-	};
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
 	GAFF_NO_COPY(ReflectionDefinition);
@@ -178,8 +150,8 @@ public:
 
 	void destroyInstance(void* data) const override;
 
-	IVar* getVarT(int32_t index) const;
-	IVar* getVarT(Gaff::Hash32 name) const;
+	IVar<T>* getVarT(int32_t index) const;
+	IVar<T>* getVarT(Gaff::Hash32 name) const;
 
 	ReflectionDefinition& friendlyName(const char8_t* name);
 
@@ -371,7 +343,7 @@ public:
 
 private:
 	template <class Var, class Base>
-	class VarUsingBasePtr final : public IVar
+	class VarUsingBasePtr final : public IVar<T>
 	{
 	public:
 		VarUsingBasePtr(Var T::*ptr);
@@ -390,7 +362,7 @@ private:
 	};
 
 	template <class Var>
-	class VarPtr final : public IVar
+	class VarPtr final : public IVar<T>
 	{
 	public:
 		VarPtr(Var T::*ptr);
@@ -414,7 +386,7 @@ private:
 	};
 
 	template <class Enum>
-	class VarFlagPtr final : public IVar
+	class VarFlagPtr final : public IVar<T>
 	{
 	public:
 		VarFlagPtr(Gaff::Flags<Enum> T::* ptr, uint8_t flag_index);
@@ -435,7 +407,7 @@ private:
 	};
 
 	template <class Ret, class Var>
-	class VarFuncPtrWithCache final : public IVar
+	class VarFuncPtrWithCache final : public IVar<T>
 	{
 	public:
 		using GetterMemberFunc = Ret (T::*)(void) const;
@@ -480,7 +452,7 @@ private:
 	};
 
 	template <class Ret, class Var>
-	class VarFuncPtr final : public IVar
+	class VarFuncPtr final : public IVar<T>
 	{
 	public:
 		using GetterMemberFunc = Ret (T::*)(void) const;
@@ -522,10 +494,10 @@ private:
 	};
 
 	template <class Base>
-	class BaseVarPtr final : public IVar
+	class BaseVarPtr final : public IVar<T>
 	{
 	public:
-		BaseVarPtr(typename ReflectionDefinition<Base>::IVar* base_var);
+		BaseVarPtr(IVar<Base>* base_var);
 
 		const IReflection& getReflection(void) const override;
 		const void* getData(const void* object) const override;
@@ -549,11 +521,11 @@ private:
 		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
 	private:
-		typename ReflectionDefinition<Base>::IVar* _base_var;
+		IVar<Base>* _base_var;
 	};
 
 	template <class Var, class Base, size_t array_size>
-	class ArrayUsingBasePtr final : public IVar
+	class ArrayUsingBasePtr final : public IVar<T>
 	{
 	public:
 		ArrayUsingBasePtr(Var (T::*ptr)[array_size]);
@@ -582,7 +554,7 @@ private:
 	};
 
 	template <class Var, class Base, class Vec_Allocator>
-	class VectorUsingBasePtr final : public IVar
+	class VectorUsingBasePtr final : public IVar<T>
 	{
 	public:
 		VectorUsingBasePtr(Gaff::Vector<Var, Vec_Allocator> T::*ptr);
@@ -611,7 +583,7 @@ private:
 	};
 
 	template <class Var, size_t array_size>
-	class ArrayPtr final : public IVar
+	class ArrayPtr final : public IVar<T>
 	{
 	public:
 		ArrayPtr(Var (T::*ptr)[array_size]);
@@ -640,7 +612,7 @@ private:
 	};
 
 	template <class Var, class Vec_Allocator>
-	class VectorPtr final : public IVar
+	class VectorPtr final : public IVar<T>
 	{
 	public:
 		VectorPtr(Gaff::Vector<Var, Vec_Allocator> T::*ptr);
@@ -669,7 +641,7 @@ private:
 	};
 
 	template <class Key, class Value, class VecMap_Allocator>
-	class VectorMapPtr final : public IVar
+	class VectorMapPtr final : public IVar<T>
 	{
 	public:
 		VectorMapPtr(Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* ptr);
@@ -699,7 +671,7 @@ private:
 	};
 
 	// These are intended for use only when in editor mode.
-	class Hash64Ptr final : public IVar
+	class Hash64Ptr final : public IVar<T>
 	{
 	public:
 		Hash64Ptr(Gaff::Hash64 T::* ptr);
@@ -718,7 +690,7 @@ private:
 		Gaff::Hash64 T::* _ptr = nullptr;
 	};
 
-	class Hash32Ptr final : public IVar
+	class Hash32Ptr final : public IVar<T>
 	{
 	public:
 		Hash32Ptr(Gaff::Hash32 T::* ptr);
@@ -885,7 +857,7 @@ private:
 	};
 
 
-	using IVarPtr = Shibboleth::UniquePtr<IVar>;
+	using IVarPtr = Shibboleth::UniquePtr< IVar<T> >;
 
 	struct FuncData final
 	{
