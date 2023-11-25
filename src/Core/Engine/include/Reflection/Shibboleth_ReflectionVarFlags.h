@@ -83,7 +83,7 @@ struct VarPtrTypeHelper< T, Gaff::Flags<Enum> > final
 	static IVar<T>* Create(
 		eastl::u8string_view name,
 		Gaff::Flags<Enum> T::* ptr,
-		const Shibboleth::ProxyAllocator& allocator,
+		Shibboleth::ProxyAllocator& allocator,
 		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
 	);
 };

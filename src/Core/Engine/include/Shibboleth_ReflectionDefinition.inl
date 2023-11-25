@@ -2951,15 +2951,15 @@ template <class T>
 template <class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
 {
-	static_assert(!std::is_reference<Var>::value, "Cannot reflect references.");
-	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
-	static_assert(!std::is_const<Var>::value, "Cannot reflect const values.");
-	static_assert(Reflection<Var>::HasReflection, "Var type is not reflected!");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> > extra_vars;
+
+	IVar<T>* const var = VarPtrTypeHelper<T, Var>::Create(name, ptr, _allocator, extra_vars);
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(SHIB_ALLOCT(VarPtr<Var>, _allocator, ptr))
+		IVarPtr(var)
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -2972,67 +2972,20 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	}
 
 	_vars.insert(std::move(pair));
+
+	for (auto& entry : extra_vars) {
+		pair.first = std::move(entry.first);
+		pair.second.reset(entry.second);
+
+		_vars.insert(std::move(pair));
+	}
+
 	return *this;
 }
 
 template <class T>
 template <class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <class Enum, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes)
-{
-	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
-	static_assert(Reflection<Enum>::HasReflection, "Enum is not reflected!");
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(SHIB_ALLOCT(VarPtr< Gaff::Flags<Enum> >, _allocator, ptr))
-	);
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, ptr, attrs, attributes...);
-	}
-
-	_vars.insert(std::move(pair));
-
-	// For each reflected entry in Enum, add a reflection var for that entry.
-	const EnumReflectionDefinition<Enum>& ref_def = Reflection<Enum>::GetReflectionDefinition();
-	const int32_t num_entries = ref_def.getNumEntries();
-
-	for (int32_t i = 0; i < num_entries; ++i) {
-		const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
-		const int32_t flag_index = ref_def.getEntryValue(i);
-
-		Shibboleth::U8String flag_path(_allocator);
-		flag_path.append_sprintf(u8"%s/%s", name, flag_name.getBuffer());
-
-		eastl::pair<Shibboleth::HashString32<>, IVarPtr> flag_pair(
-			Shibboleth::HashString32<>(flag_path),
-			IVarPtr(SHIB_ALLOCT(VarFlagPtr<Enum>, _allocator, ptr, static_cast<uint8_t>(flag_index)))
-		);
-
-		flag_pair.second->setNoSerialize(true);
-		_vars.insert(std::move(flag_pair));
-	}
-
-	return *this;
-}
-
-template <class T>
-template <class Enum, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Flags<Enum> T::* ptr, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, ptr, attributes...);

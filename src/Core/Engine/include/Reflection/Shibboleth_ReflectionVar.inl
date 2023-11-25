@@ -246,7 +246,7 @@ template <class T, class VarType>
 IVar<T>* VarPtrTypeHelper<T, VarType>::Create(
 	eastl::u8string_view name,
 	VarType T::* ptr,
-	const Shibboleth::ProxyAllocator& allocator,
+	Shibboleth::ProxyAllocator& allocator,
 	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >&)
 {
 	static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");

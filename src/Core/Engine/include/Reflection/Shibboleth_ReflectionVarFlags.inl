@@ -207,7 +207,7 @@ template <class T, class Enum>
 IVar<T>* VarPtrTypeHelper< T, Gaff::Flags<Enum> >::Create(
 	eastl::u8string_view name,
 	Gaff::Flags<Enum> T::* ptr,
-	const Shibboleth::ProxyAllocator& allocator,
+	Shibboleth::ProxyAllocator& allocator,
 	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars)
 {
 	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");

@@ -90,7 +90,7 @@ struct VarPtrTypeHelper final
 	static IVar<T>* Create(
 		eastl::u8string_view name,
 		VarType T::* ptr,
-		const Shibboleth::ProxyAllocator& allocator,
+		Shibboleth::ProxyAllocator& allocator,
 		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
 	);
 };
