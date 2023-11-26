@@ -87,12 +87,6 @@ public:
 	template <class... Args>
 	ReflectionVersionClass& ctor(void);
 
-	template <class Base, class Var, size_t name_size, class... Attrs>
-	ReflectionVersionClass& varUsingBase(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
-
-	template <class Base, class Var, size_t name_size, class... Attrs>
-	ReflectionVersionClass& varUsingBase(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
-
 	template <class Var, size_t name_size, class... Attrs>
 	ReflectionVersionClass& var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes);
 

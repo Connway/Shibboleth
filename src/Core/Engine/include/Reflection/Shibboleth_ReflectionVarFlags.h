@@ -76,7 +76,6 @@ private:
 
 
 
-
 template <class T, class Enum>
 struct VarPtrTypeHelper< T, Gaff::Flags<Enum> > final
 {

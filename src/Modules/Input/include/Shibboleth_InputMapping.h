@@ -45,3 +45,5 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping::Flag)
 SHIB_REFLECTION_DECLARE(Shibboleth::InputMapping)
+
+SHIB_REFLECTION_VAR_NO_COPY(Shibboleth::InputMapping)

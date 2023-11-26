@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Reflection/Shibboleth_ReflectionVarNoCopy.h"
 #include "Shibboleth_Reflection.h"
 
 NS_SHIBBOLETH
@@ -74,16 +75,6 @@ public:
 	{
 	}
 
-	SerializeablePtr(const SerializeablePtr<T>& serializeable_ptr):
-		ISerializeablePtr(nullptr, serializeable_ptr._allocator)
-	{
-		// Below code is not working in ReflectionDefinition.
-		// constexpr bool k_has_copy_assignment = requires(T& lhs, const T& rhs) { lhs = rhs; };
-		// k_has_copy_assignment is returning true, even though the functions are deleted.
-
-		GAFF_ASSERT_MSG(false, "SerializeablePtr copy constructor is not allowed. See comment for why this function is not deleted.");
-	}
-
 	SerializeablePtr(void) = default;
 
 	T* get(void) const
@@ -101,17 +92,6 @@ public:
 	void reset(T* ptr)
 	{
 		_ptr.reset(ptr);
-	}
-
-	SerializeablePtr& operator=(const SerializeablePtr<T>&)
-	{
-		// Below code is not working in ReflectionDefinition.
-		// constexpr bool k_has_copy_assignment = requires(T& lhs, const T& rhs) { lhs = rhs; };
-		// k_has_copy_assignment is returning true, even though the functions are deleted.
-
-		GAFF_ASSERT_MSG(false, "SerializeablePtr copy operator is not allowed. See comment for why this function is not deleted.");
-
-		return *this;
 	}
 
 	template <class U>
@@ -202,3 +182,72 @@ public:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ISerializeablePtr)
+
+
+NS_REFLECTION
+
+template <class T, class VarType>
+struct VarPtrTypeHelper< T, Shibboleth::SerializeablePtr<VarType> > final
+{
+	static IVar<T>* Create(
+		eastl::u8string_view name,
+		Shibboleth::SerializeablePtr<VarType> T::* ptr,
+		Shibboleth::ProxyAllocator& allocator,
+		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/)
+	{
+		static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
+		static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
+		static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
+
+		GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
+
+		IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VarNoCopy<T, Shibboleth::SerializeablePtr<VarType>, Shibboleth::ISerializeablePtr>), allocator, ptr);
+
+		return var_ptr;
+	}
+};
+
+template <class T, class VarType, class Vec_Allocator>
+struct VarPtrTypeHelper< T, Gaff::Vector<Shibboleth::SerializeablePtr<VarType>, Vec_Allocator> > final
+{
+	static IVar<T>* Create(
+		eastl::u8string_view name,
+		Gaff::Vector<Shibboleth::SerializeablePtr<VarType>, Vec_Allocator> T::* ptr,
+		Shibboleth::ProxyAllocator& allocator,
+		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/)
+	{
+		static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
+		static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
+		static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
+
+		GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
+
+		IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VectorVarNoCopy<T, Shibboleth::SerializeablePtr<VarType>, Shibboleth::ISerializeablePtr, Vec_Allocator>), allocator, ptr);
+
+		return var_ptr;
+	}
+};
+
+template <class T, class VarType, size_t array_size>
+struct VarPtrTypeHelper< T, Shibboleth::SerializeablePtr<VarType> (T::*)[array_size] > final
+{
+	static IVar<T>* Create(
+		eastl::u8string_view name,
+		Shibboleth::SerializeablePtr<VarType> (T::*arr)[array_size],
+		Shibboleth::ProxyAllocator& allocator,
+		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/)
+	{
+		static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
+		static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
+		static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
+		static_assert(array_size > 0, "Cannot reflect a zero size array.");
+
+		GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
+
+		IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(ArrayVarNoCopy<T, Shibboleth::SerializeablePtr<VarType>, Shibboleth::ISerializeablePtr, array_size>), allocator, arr);
+
+		return var_ptr;
+	}
+};
+
+NS_END

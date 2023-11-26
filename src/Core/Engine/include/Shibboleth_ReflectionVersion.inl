@@ -141,31 +141,6 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::ctor(void)
 }
 
 template <class T>
-template <class Base, class Var, size_t name_size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::varUsingBase(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
-{
-	const char8_t* const temp_name = name;
-	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
-	_hash = Gaff::FNV1aHash64T(ptr, _hash);
-	// $TODO: Hash base class?
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
-		_hash = getAttributeHashes(_hash, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <class Base, class Var, size_t name_size, class... Attrs>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::varUsingBase(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return varUsingBase<Base>(temp_name, ptr, attributes...);
-}
-
-template <class T>
 template <class Var, size_t name_size, class... Attrs>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
 {
