@@ -856,7 +856,7 @@ const RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands
 
 RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index)
 {
-	GAFF_ASSERT(Gaff::Between(cache_index, 0, 1));
+	GAFF_ASSERT(Gaff::ValidIndex(cache_index, 1));
 	const auto it = _cached_render_commands[static_cast<int32_t>(order)][cache_index].find(&device);
 	GAFF_ASSERT(it != _cached_render_commands[static_cast<int32_t>(order)][cache_index].end());
 

@@ -71,7 +71,7 @@ bool StateMachine::isActive(const Instance& instance) const
 
 void StateMachine::update(Instance& instance) const
 {
-	if (!Gaff::Between(instance.current_state, 0, static_cast<int32_t>(_states.size()))) {
+	if (!Gaff::ValidIndex(instance.current_state, static_cast<int32_t>(_states.size()))) {
 		// $TODO: Log error.
 		return;
 	}
@@ -179,7 +179,7 @@ int32_t StateMachine::addProcess(const HashStringView32<>& name, IProcess* proce
 
 int32_t StateMachine::addProcess(int32_t state_index, IProcess* process)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return -1;
 	}
 
@@ -206,7 +206,7 @@ bool StateMachine::removeProcess(const HashStringView32<>& name, IProcess* proce
 
 bool StateMachine::removeProcess(int32_t state_index, IProcess* process)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
@@ -243,7 +243,7 @@ bool StateMachine::removeProcess(const HashStringView32<>& name, int32_t process
 
 bool StateMachine::removeProcess(int32_t state_index, int32_t process_index)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
@@ -254,7 +254,7 @@ bool StateMachine::removeProcess(int32_t state_index, int32_t process_index)
 
 	auto& processes = _states[state_index].processes;
 
-	if (!Gaff::Between(process_index, 0, static_cast<int32_t>(processes.size() - 1))) {
+	if (!Gaff::ValidIndex(process_index, static_cast<int32_t>(processes.size()))) {
 		return false;
 	}
 
@@ -280,11 +280,11 @@ int32_t StateMachine::addEdge(const HashStringView32<>& start_state_name, const 
 
 int32_t StateMachine::addEdge(int32_t start_state_index, int32_t end_state_index)
 {
-	if (!Gaff::Between(start_state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(start_state_index, static_cast<int32_t>(_states.size()))) {
 		return -1;
 	}
 
-	if (!Gaff::Between(end_state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(end_state_index, static_cast<int32_t>(_states.size()))) {
 		return -1;
 	}
 
@@ -327,11 +327,11 @@ bool StateMachine::removeEdge(const HashStringView32<>& start_state_name, const 
 
 bool StateMachine::removeEdge(int32_t start_state_index, int32_t end_state_index)
 {
-	if (!Gaff::Between(start_state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(start_state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
-	if (!Gaff::Between(end_state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(end_state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
@@ -361,11 +361,11 @@ int32_t StateMachine::addCondition(const HashStringView32<>& state_name, int32_t
 
 int32_t StateMachine::addCondition(int32_t state_index, int32_t edge_index, ICondition* condition)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return -1;
 	}
 
-	if (!Gaff::Between(edge_index, 0, static_cast<int32_t>(_states[state_index].edges.size() - 1))) {
+	if (!Gaff::ValidIndex(edge_index, static_cast<int32_t>(_states[state_index].edges.size()))) {
 		return -1;
 	}
 
@@ -386,11 +386,11 @@ bool StateMachine::removeCondition(const HashStringView32<>& state_name, int32_t
 
 bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, ICondition* condition)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
-	if (!Gaff::Between(edge_index, 0, static_cast<int32_t>(_states[state_index].edges.size() - 1))) {
+	if (!Gaff::ValidIndex(edge_index, static_cast<int32_t>(_states[state_index].edges.size()))) {
 		return false;
 	}
 
@@ -421,17 +421,17 @@ bool StateMachine::removeCondition(const HashStringView32<>& state_name, int32_t
 
 bool StateMachine::removeCondition(int32_t state_index, int32_t edge_index, int32_t condition_index)
 {
-	if (!Gaff::Between(state_index, 0, static_cast<int32_t>(_states.size() - 1))) {
+	if (!Gaff::ValidIndex(state_index, static_cast<int32_t>(_states.size()))) {
 		return false;
 	}
 
-	if (!Gaff::Between(edge_index, 0, static_cast<int32_t>(_states[state_index].edges.size() - 1))) {
+	if (!Gaff::ValidIndex(edge_index, static_cast<int32_t>(_states[state_index].edges.size()))) {
 		return false;
 	}
 
 	auto& conditions = _states[state_index].edges[edge_index].conditions;
 
-	if (!Gaff::Between(edge_index, 0, static_cast<int32_t>(conditions.size() - 1))) {
+	if (!Gaff::ValidIndex(edge_index, static_cast<int32_t>(conditions.size()))) {
 		return false;
 	}
 

@@ -26,8 +26,43 @@ THE SOFTWARE.
 #include "Shibboleth_IReflection.h"
 #include "Shibboleth_HashString.h"
 #include <EASTL/string_view.h>
+#include <EASTL/array.h>
 
 NS_REFLECTION
+
+template <class T>
+class IVar;
+
+template <class T, class VarType>
+class Var;
+
+template <class T, class VarType, class Vec_Allocator>
+class VectorVar;
+
+template <class T, class VarType, size_t array_size>
+class ArrayVar;
+
+
+
+template <class T, class VarType>
+struct VarTypeHelper final
+{
+	using Type = Var<T, VarType>;
+};
+
+template <class T, class VarType, class Vec_Allocator>
+struct VarTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
+{
+	using Type = VectorVar<T, VarType, Vec_Allocator>;
+};
+
+template <class T, class VarType, size_t array_size>
+struct VarTypeHelper< T, VarType (T::*)[array_size] > final
+{
+	using Type = ArrayVar<T, VarType, array_size>;
+};
+
+
 
 template <class T>
 class IVar : public IReflectionVar
@@ -63,7 +98,9 @@ template <class T, class VarType>
 class Var final : public IVar<T>
 {
 public:
-	Var(VarType T::*ptr);
+	explicit Var(ptrdiff_t offset);
+	explicit Var(VarType T::*ptr);
+	Var(void) = default;
 
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
@@ -74,13 +111,10 @@ public:
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
-	bool isFlags(void) const override;
-
-	void setFlagValue(void* object, int32_t flag_index, bool value) override;
-	bool getFlagValue(void* object, int32_t flag_index) const override;
+	void setOffset(ptrdiff_t offset);
 
 private:
-	VarType T::* _ptr = nullptr;
+	ptrdiff_t _offset = -1;
 };
 
 template <class T, class VarType, class Vec_Allocator>
@@ -106,11 +140,22 @@ public:
 	void setElementMove(void* object, int32_t index, void* data) override;
 	void swap(void* object, int32_t index_a, int32_t index_b) override;
 	void resize(void* object, size_t new_size) override;
+	void remove(void* object, int32_t index) override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
+	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	void setSubVarBaseName(eastl::u8string_view base_name) override;
+	void regenerateSubVars(int32_t range_begin, int32_t range_end);
+
 private:
+	using RefVarType = VarTypeHelper<T, VarType>::Type;
+
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
+	eastl::u8string_view _base_name;
+
 	VectorType T::* _ptr = nullptr;
 };
 
@@ -138,43 +183,16 @@ public:
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
+	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	void setSubVarBaseName(eastl::u8string_view base_name) override;
+
 private:
+	using RefVarType = VarTypeHelper<T, VarType>::Type;
+
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	eastl::array<RefVarType, array_size> _elements;
+
 	VarType (T::*_ptr)[array_size] = nullptr;
-};
-
-
-
-template <class T, class VarType>
-struct VarPtrTypeHelper final
-{
-	static IVar<T>* Create(
-		eastl::u8string_view name,
-		VarType T::* ptr,
-		Shibboleth::ProxyAllocator& allocator,
-		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
-	);
-};
-
-template <class T, class VarType, class Vec_Allocator>
-struct VarPtrTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
-{
-	static IVar<T>* Create(
-		eastl::u8string_view name,
-		Gaff::Vector<VarType, Vec_Allocator> T::* ptr,
-		Shibboleth::ProxyAllocator& allocator,
-		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
-	);
-};
-
-template <class T, class VarType, size_t array_size>
-struct VarPtrTypeHelper< T, VarType (T::*)[array_size] > final
-{
-	static IVar<T>* Create(
-		eastl::u8string_view name,
-		VarType (T::*arr)[array_size],
-		Shibboleth::ProxyAllocator& allocator,
-		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
-	);
 };
 
 NS_END

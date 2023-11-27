@@ -24,12 +24,82 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+// VarFlagBit
+template <class T, class Enum>
+VarFlagBit<T, Enum>::VarFlagBit(Gaff::Flags<Enum> T::*ptr, uint8_t flag_index):
+	_ptr(ptr), _flag_index(flag_index)
+{
+	GAFF_ASSERT(ptr);
+}
+
+template <class T, class Enum>
+const IReflection& VarFlagBit<T, Enum>::getReflection(void) const
+{
+	return Reflection<bool>::GetInstance();
+}
+
+template <class T, class Enum>
+const void* VarFlagBit<T, Enum>::getData(const void* object) const
+{
+	return const_cast<VarFlagBit<T, Enum>*>(this)->getData(const_cast<void*>(object));
+}
+
+template <class T, class Enum>
+void* VarFlagBit<T, Enum>::getData(void* object)
+{
+	T* const obj = reinterpret_cast<T*>(object);
+	_cache = (obj->*_ptr).testAll(static_cast<Enum>(_flag_index));
+	return &_cache;
+}
+
+template <class T, class Enum>
+void VarFlagBit<T, Enum>::setData(void* object, const void* data)
+{
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr).set(*reinterpret_cast<const bool*>(data), static_cast<Enum>(_flag_index));
+}
+
+template <class T, class Enum>
+void VarFlagBit<T, Enum>::setDataMove(void* object, void* data)
+{
+	setData(object, data);
+}
+
+template <class T, class Enum>
+bool VarFlagBit<T, Enum>::load(const Shibboleth::ISerializeReader& /*reader*/, T& /*object*/)
+{
+	GAFF_ASSERT_MSG(false, "VarFlagBit::load() should never be called.");
+	return false;
+}
+
+template <class T, class Enum>
+void VarFlagBit<T, Enum>::save(Shibboleth::ISerializeWriter& /*writer*/, const T& /*object*/)
+{
+	GAFF_ASSERT_MSG(false, "VarFlagBit::save() should never be called.");
+}
+
+
+
 // VarFlags
 template <class T, class Enum>
 VarFlags<T, Enum>::VarFlags(Gaff::Flags<Enum> T::*ptr):
 	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
+
+	_cached_element_vars.resize(static_cast<size_t>(Enum::Count));
+
+	for (int32_t i = 0; i < static_cast<int32_t>(Enum::Count); ++i) {
+		_elements[i] = VarFlagBit<T, Enum>(ptr, static_cast<uint8_t>(i));
+		_cached_element_vars[i].second = &_elements[i];
+
+		_elements[i].setNoSerialize(true);
+	}
 }
 
 template <class T, class Enum>
@@ -140,104 +210,27 @@ bool VarFlags<T, Enum>::getFlagValue(void* object, int32_t flag_index) const
 	return (reinterpret_cast<T*>(object)->*_ptr).testAll(static_cast<Enum>(flag_index));
 }
 
-
-
-// VarFlagBit
 template <class T, class Enum>
-VarFlagBit<T, Enum>::VarFlagBit(Gaff::Flags<Enum> T::*ptr, uint8_t flag_index):
-	_ptr(ptr), _flag_index(flag_index), _cache(false)
+const Shibboleth::Vector<IReflectionVar::SubVarData>& VarFlags<T, Enum>::getSubVars(void)
 {
-	GAFF_ASSERT(ptr);
+	return _cached_element_vars;
 }
 
 template <class T, class Enum>
-const IReflection& VarFlagBit<T, Enum>::getReflection(void) const
+void VarFlags<T, Enum>::setSubVarBaseName(eastl::u8string_view base_name)
 {
-	return Reflection<bool>::GetInstance();
-}
-
-template <class T, class Enum>
-const void* VarFlagBit<T, Enum>::getData(const void* object) const
-{
-	return const_cast<VarFlagBit<T, Enum>*>(this)->getData(const_cast<void*>(object));
-}
-
-template <class T, class Enum>
-void* VarFlagBit<T, Enum>::getData(void* object)
-{
-	T* const obj = reinterpret_cast<T*>(object);
-	_cache = (obj->*_ptr).testAll(static_cast<Enum>(_flag_index));
-	return &_cache;
-}
-
-template <class T, class Enum>
-void VarFlagBit<T, Enum>::setData(void* object, const void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr).set(*reinterpret_cast<const bool*>(data), static_cast<Enum>(_flag_index));
-}
-
-template <class T, class Enum>
-void VarFlagBit<T, Enum>::setDataMove(void* object, void* data)
-{
-	setData(object, data);
-}
-
-template <class T, class Enum>
-bool VarFlagBit<T, Enum>::load(const Shibboleth::ISerializeReader& /*reader*/, T& /*object*/)
-{
-	GAFF_ASSERT_MSG(false, "VarFlagBit::load() should never be called.");
-	return false;
-}
-
-template <class T, class Enum>
-void VarFlagBit<T, Enum>::save(Shibboleth::ISerializeWriter& /*writer*/, const T& /*object*/)
-{
-	GAFF_ASSERT_MSG(false, "VarFlagBit::save() should never be called.");
-}
-
-
-
-template <class T, class Enum>
-IVar<T>* VarPtrTypeHelper< T, Gaff::Flags<Enum> >::Create(
-	eastl::u8string_view name,
-	Gaff::Flags<Enum> T::* ptr,
-	Shibboleth::ProxyAllocator& allocator,
-	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars)
-{
-	static_assert(std::is_enum<Enum>::value, "Flags does not contain an enum.");
-	static_assert(Reflection<Enum>::HasReflection, "Enum is not reflected!");
-
-	GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
-
-	IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VarFlags<T, Enum>), allocator, ptr);
-
 	// For each reflected entry in Enum, add a reflection var for that entry.
 	const EnumReflectionDefinition<Enum>& ref_def = Reflection<Enum>::GetReflectionDefinition();
 	const int32_t num_entries = ref_def.getNumEntries();
 
 	for (int32_t i = 0; i < num_entries; ++i) {
 		const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
-		const int32_t flag_index = ref_def.getEntryValue(i);
 
-		Shibboleth::U8String flag_path(allocator);
-		flag_path.append_sprintf(u8"%s/%s", name.data(), flag_name.getBuffer());
+		Shibboleth::U8String flag_path(Shibboleth::ProxyAllocator("Reflection"));
+		flag_path.append_sprintf(u8"%s/%s", base_name.data(), flag_name.getBuffer());
 
-		eastl::pair<Shibboleth::HashString32<>, IVar<T>*> flag_pair(
-			Shibboleth::HashString32<>(flag_path),
-			SHIB_ALLOCT(GAFF_SINGLE_ARG(VarFlagBit<T, Enum>), allocator, ptr, static_cast<uint8_t>(flag_index))
-		);
-
-		flag_pair.second->setNoSerialize(true);
-		extra_vars.emplace_back(std::move(flag_pair));
+		_cached_element_vars[i].first = Shibboleth::HashString32<>(flag_path);
 	}
-
-	return var_ptr;
 }
 
 NS_END

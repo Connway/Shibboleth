@@ -22,6 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ReflectionVar.inl"
-#include "Shibboleth_ReflectionVarFlags.inl"
-#include "Shibboleth_ReflectionVarHash.inl"
+#include "Shibboleth_ReflectionVar.h"
+#include "Shibboleth_String.h"
+
+NS_REFLECTION
+
+template <class T, class HashStorage>
+class VarHash final : public IVar<T>
+{
+public:
+	VarHash(Gaff::Hash<HashStorage> T::* ptr);
+
+	const IReflection& getReflection(void) const override;
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+private:
+	Shibboleth::U8String _string;
+	Gaff::Hash<HashStorage> T::* _ptr = nullptr;
+};
+
+
+
+template <class T, class HashStorage>
+struct VarTypeHelper< T, Gaff::Hash<HashStorage> > final
+{
+	static_assert(std::is_same_v<HashStorage, Gaff::Hash32Storage> || std::is_same_v<HashStorage, Gaff::Hash32Storage>, "Hash storage is not 32-bit or 64-bit.");
+
+	using Type = VarHash<T, HashStorage>;
+};
+
+NS_END

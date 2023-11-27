@@ -731,182 +731,6 @@ void ReflectionDefinition<T>::VectorMapPtr<Key, Value, VecMap_Allocator>::save(S
 
 
 
-// Hash64Ptr
-template <class T>
-ReflectionDefinition<T>::Hash64Ptr::Hash64Ptr(Gaff::Hash64 T::* ptr):
-	_ptr(ptr)
-{
-	GAFF_ASSERT(ptr);
-}
-
-template <class T>
-const IReflection& ReflectionDefinition<T>::Hash64Ptr::getReflection(void) const
-{
-	return Reflection<Shibboleth::U8String>::GetInstance();
-}
-
-template <class T>
-const void* ReflectionDefinition<T>::Hash64Ptr::getData(const void* /*object*/) const
-{
-	//GAFF_REF(object);
-	return &_string;
-}
-
-template <class T>
-void* ReflectionDefinition<T>::Hash64Ptr::getData(void* /*object*/)
-{
-	//GAFF_REF(object);
-	return &_string;
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash64Ptr::setData(void* object, const void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	_string = *reinterpret_cast<const Shibboleth::U8String*>(data);
-
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = Gaff::FNV1aHash64String(_string.data());
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash64Ptr::setDataMove(void* object, void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	_string = std::move(*reinterpret_cast<Shibboleth::U8String*>(data));
-
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = Gaff::FNV1aHash64String(_string.data());
-}
-
-template <class T>
-bool ReflectionDefinition<T>::Hash64Ptr::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	const Shibboleth::ScopeGuard guard = reader.enterElementGuard("string");
-
-	const bool ret = Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string);
-
-	if (ret) {
-		(object.*_ptr) = Gaff::FNV1aHash64String(_string.data());
-	}
-
-	return ret;
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash64Ptr::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	writer.startObject(3);
-
-	writer.writeUInt64(u8"version", Reflection<Gaff::Hash64>::GetInstance().getVersion().getHash());
-
-	writer.writeKey(u8"string");
-	Reflection<Shibboleth::U8String>::GetInstance().save(writer, _string);
-
-	writer.writeKey(u8"hash");
-	Reflection<Gaff::Hash64Storage>::GetInstance().save(writer, (object.*_ptr).getHash());
-
-	writer.endObject();
-}
-
-
-
-// Hash32Ptr
-template <class T>
-ReflectionDefinition<T>::Hash32Ptr::Hash32Ptr(Gaff::Hash32 T::* ptr) :
-	_ptr(ptr)
-{
-	GAFF_ASSERT(ptr);
-}
-
-template <class T>
-const IReflection& ReflectionDefinition<T>::Hash32Ptr::getReflection(void) const
-{
-	return Reflection<Shibboleth::U8String>::GetInstance();
-}
-
-template <class T>
-const void* ReflectionDefinition<T>::Hash32Ptr::getData(const void* object) const
-{
-	GAFF_REF(object);
-	return &_string;
-}
-
-template <class T>
-void* ReflectionDefinition<T>::Hash32Ptr::getData(void* object)
-{
-	GAFF_REF(object);
-	return &_string;
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash32Ptr::setData(void* object, const void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	_string = *reinterpret_cast<const Shibboleth::U8String*>(data);
-
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = Gaff::FNV1aHash32String(_string.data());
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash32Ptr::setDataMove(void* object, void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	_string = std::move(*reinterpret_cast<Shibboleth::U8String*>(data));
-
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = Gaff::FNV1aHash32String(_string.data());
-}
-
-template <class T>
-bool ReflectionDefinition<T>::Hash32Ptr::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	const Shibboleth::ScopeGuard guard = reader.enterElementGuard("string");
-
-	const bool ret = Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string);
-
-	if (ret) {
-		(object.*_ptr) = Gaff::FNV1aHash32String(_string.data());
-	}
-
-	return ret;
-}
-
-template <class T>
-void ReflectionDefinition<T>::Hash32Ptr::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	writer.startObject(3);
-
-	writer.writeUInt64(u8"version", Reflection<Gaff::Hash32>::GetInstance().getVersion().getHash());
-
-	writer.writeKey(u8"string");
-	Reflection<Shibboleth::U8String>::GetInstance().save(writer, _string);
-
-	writer.writeKey(u8"hash");
-	Reflection<Gaff::Hash32Storage>::GetInstance().save(writer, (object.*_ptr).getHash());
-
-	writer.endObject();
-}
-
-
-
 // ReflectionDefinition
 template <class T>
 const char8_t* ReflectionDefinition<T>::getFriendlyName(void) const
@@ -1072,15 +896,7 @@ template <class T>
 const IReflection& ReflectionDefinition<T>::getReflectionInstance(void) const
 {
 	return Reflection<T>::GetInstance();
-	//GAFF_ASSERT(_ref_inst);
-	//return *_ref_inst;
 }
-
-//template <class T>
-//void ReflectionDefinition<T>::setReflectionInstance(const IReflection& ref_inst)
-//{
-//	_ref_inst = &ref_inst;
-//}
 
 template <class T>
 int32_t ReflectionDefinition<T>::size(void) const
@@ -1103,14 +919,31 @@ bool ReflectionDefinition<T>::isBuiltIn(void) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumVars(void) const
 {
-	return static_cast<int32_t>(_vars.size());
+	return _num_vars;
 }
 
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return Shibboleth::HashStringView32<>((_vars.begin() + index)->first);
+	GAFF_ASSERT(index >= 0 && index < _num_vars);
+
+	int32_t index_begin = 0;
+
+	for (const auto& entry : _vars) {
+		const auto& sub_vars = entry.second->getSubVars();
+		const int32_t index_end = index_begin + 1 + static_cast<int32_t>(sub_vars.size());
+
+		if (Gaff::Between(index, index_begin, index_end - 1)) {
+			if (index == index_begin) {
+				return Shibboleth::HashStringView32<>(entry.first);
+			} else {
+				return sub_vars[index - index_begin + 1].first;
+			}
+		}
+	}
+
+	GAFF_ASSERT(false);
+	return Shibboleth::HashStringView32<>();
 }
 
 template <class T>
@@ -1731,13 +1564,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 {
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
-	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> > extra_vars;
-
-	IVar<T>* const var = VarPtrTypeHelper<T, Var>::Create(name, ptr, _allocator, extra_vars);
+	using RefVarType = VarTypeHelper<T, Var>::Type;
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(var)
+		IVarPtr(SHIB_ALLOCT(RefVarType, _allocator, ptr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -1749,14 +1580,10 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
+	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
+	pair.second->setSubVarBaseName(name);
+
 	_vars.insert(std::move(pair));
-
-	for (auto& entry : extra_vars) {
-		pair.first = std::move(entry.first);
-		pair.second.reset(entry.second);
-
-		_vars.insert(std::move(pair));
-	}
 
 	return *this;
 }
@@ -1925,92 +1752,6 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, vec_map, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::Hash64 T::* ptr, const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
-
-	if (Shibboleth::GetApp().getConfigs().getObject(Shibboleth::k_config_app_editor_mode).getBool(false)) {
-		pair = eastl::make_pair(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(Hash64Ptr, _allocator, ptr))
-		);
-
-	// Register as regular var.
-	} else {
-		pair = eastl::make_pair(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(GAFF_SINGLE_ARG(Var<T, Gaff::Hash64>), _allocator, ptr))
-		);
-	}
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, ptr, attrs, attributes...);
-	}
-
-	_vars.insert(std::move(pair));
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Hash64 T::* ptr, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Gaff::Hash32 T::* ptr, const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
-
-	if (Shibboleth::GetApp().getConfigs().getObject(Shibboleth::k_config_app_editor_mode).getBool(false)) {
-		pair = eastl::make_pair(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(Hash32Ptr, _allocator, ptr))
-		);
-
-	// Register as regular var.
-	} else {
-		pair = eastl::make_pair(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(GAFF_SINGLE_ARG(Var<T, Gaff::Hash32>), _allocator, ptr))
-		);
-	}
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, ptr, attrs, attributes...);
-	}
-
-	_vars.insert(std::move(pair));
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Gaff::Hash32 T::* ptr, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, ptr, attributes...);
 }
 
 template <class T>

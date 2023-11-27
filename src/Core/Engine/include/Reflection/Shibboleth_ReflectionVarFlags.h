@@ -24,8 +24,31 @@ THE SOFTWARE.
 
 #include "Shibboleth_ReflectionVar.h"
 #include "Shibboleth_String.h"
+#include <Gaff_Flags.h>
 
 NS_REFLECTION
+
+template <class T, class Enum>
+class VarFlagBit final : public IVar<T>
+{
+public:
+	VarFlagBit(Gaff::Flags<Enum> T::* ptr, uint8_t flag_index);
+	VarFlagBit(void) = default;
+
+	const IReflection& getReflection(void) const override;
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+private:
+	Gaff::Flags<Enum> T::* _ptr = nullptr;
+	uint8_t _flag_index = static_cast<uint8_t>(-1); // Unless flags have the craziest amount of flags, this should hold all possible flag values.
+	bool _cache = false;
+};
 
 template <class T, class Enum>
 class VarFlags final : public IVar<T>
@@ -47,44 +70,25 @@ public:
 	void setFlagValue(void* object, int32_t flag_index, bool value) override;
 	bool getFlagValue(void* object, int32_t flag_index) const override;
 
+	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	void setSubVarBaseName(eastl::u8string_view base_name) override;
+	void regenerateSubVars(int32_t range_begin, int32_t range_end);
+
 private:
+	using RefVarType = VarFlagBit<T, Enum>;
+
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	eastl::array<RefVarType, static_cast<size_t>(Enum::Count)> _elements;
+
 	Gaff::Flags<Enum> T::* _ptr = nullptr;
 };
 
 
 
 template <class T, class Enum>
-class VarFlagBit final : public IVar<T>
+struct VarTypeHelper< T, Gaff::Flags<Enum> > final
 {
-public:
-	VarFlagBit(Gaff::Flags<Enum> T::* ptr, uint8_t flag_index);
-
-	const IReflection& getReflection(void) const override;
-	const void* getData(const void* object) const override;
-	void* getData(void* object) override;
-	void setData(void* object, const void* data) override;
-	void setDataMove(void* object, void* data) override;
-
-	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
-	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-
-private:
-	Gaff::Flags<Enum> T::* _ptr = nullptr;
-	uint8_t _flag_index = static_cast<uint8_t>(-1); // Unless flags have the craziest amount of flags, this should hold all possible flag values.
-	bool _cache = false;
-};
-
-
-
-template <class T, class Enum>
-struct VarPtrTypeHelper< T, Gaff::Flags<Enum> > final
-{
-	static IVar<T>* Create(
-		eastl::u8string_view name,
-		Gaff::Flags<Enum> T::* ptr,
-		Shibboleth::ProxyAllocator& allocator,
-		Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& extra_vars
-	);
+	using Type = VarFlags<T, Enum>;
 };
 
 NS_END

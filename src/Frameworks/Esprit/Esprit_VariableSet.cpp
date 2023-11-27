@@ -93,7 +93,7 @@ bool VariableSet::getVariable(const Instance& variables, int32_t index, void*& r
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -106,7 +106,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, void* value) c
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Reference)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -119,7 +119,7 @@ bool VariableSet::getVariable(const Instance& variables, int32_t index, const U8
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -144,7 +144,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, const U8String
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -157,7 +157,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, U8String&& val
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::String)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -170,7 +170,7 @@ bool VariableSet::getVariable(const Instance& variables, int32_t index, float& r
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Float)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -183,7 +183,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, float value) c
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Float)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -196,7 +196,7 @@ bool VariableSet::getVariable(const Instance& variables, int32_t index, int64_t&
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Integer)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -209,7 +209,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, int64_t value)
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Integer)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -222,7 +222,7 @@ bool VariableSet::getVariable(const Instance& variables, int32_t index, bool& re
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Bool)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}
@@ -235,7 +235,7 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, bool value) co
 {
 	const auto& names = _names[static_cast<int32_t>(VariableType::Bool)];
 
-	if (!Gaff::Between(index, 0, static_cast<int32_t>(names.size()))) {
+	if (!Gaff::ValidIndex(index, static_cast<int32_t>(names.size()))) {
 		// $TODO: Log error.
 		return false;
 	}

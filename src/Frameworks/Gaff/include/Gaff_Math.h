@@ -91,10 +91,18 @@ constexpr T Lerp(const T& begin, const T& end, float t)
 	return begin + t * (end - begin);
 }
 
+// Check if val is in range [min_val, max_val]
 template <class T>
 constexpr bool Between(const T& val, const T& min_val, const T& max_val)
 {
 	return val >= min_val && val <= max_val;
+}
+
+// Check if val is in range [min_val, max_val)
+template <class T>
+constexpr bool ValidIndex(const T& val, const T& size)
+{
+	return val >= 0 && val < size;
 }
 
 template <class T>

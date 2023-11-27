@@ -44,8 +44,10 @@ public:
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
+	void setOffset(ptrdiff_t offset);
+
 private:
-	VarType T::* _ptr = nullptr;
+	ptrdiff_t _offset = -1;
 };
 
 template <class T, class VarType, class ReflectionType, class Vec_Allocator>
@@ -73,11 +75,22 @@ public:
 	void setElementMove(void* object, int32_t index, void* data) override;
 	void swap(void* object, int32_t index_a, int32_t index_b) override;
 	void resize(void* object, size_t new_size) override;
+	void remove(void* object, int32_t index) override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
+	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	void setSubVarBaseName(eastl::u8string_view base_name) override;
+	void regenerateSubVars(int32_t range_begin, int32_t range_end);
+
 private:
+	using RefVarType = VarTypeHelper<T, VarType>::Type;
+
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
+	eastl::u8string_view _base_name;
+
 	VectorType T::* _ptr = nullptr;
 };
 
@@ -105,7 +118,15 @@ public:
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
+	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	void setSubVarBaseName(eastl::u8string_view base_name) override;
+
 private:
+	using RefVarType = VarTypeHelper<T, VarType>::Type;
+
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	eastl::array<RefVarType, array_size> _elements;
+
 	VarType (T::*_ptr)[array_size] = nullptr;
 };
 
@@ -115,159 +136,57 @@ NS_END
 #define SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY_WITH_BASE(ClassType, BaseType) \
 	NS_REFLECTION \
 	template <class T, class VarType> \
-	struct VarPtrTypeHelper< T, ClassType<VarType> > final \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType<VarType> T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VarNoCopy<T, ClassType<VarType>, BaseType>), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VarNoCopy<T, ClassType<VarType>, BaseType>; \
 	}; \
 	template <class T, class VarType, class Vec_Allocator> \
-	struct VarPtrTypeHelper< T, Gaff::Vector<ClassType<VarType>, Vec_Allocator> > final \
+	struct VarTypeHelper< T, Gaff::Vector<ClassType<VarType>, Vec_Allocator> > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			Gaff::Vector<ClassType<VarType>, Vec_Allocator> T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VectorVarNoCopy<T, ClassType<VarType>, BaseType, Vec_Allocator>), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VectorVarNoCopy<T, ClassType<VarType>, BaseType, Vec_Allocator>; \
 	}; \
 	template <class T, class VarType, size_t array_size> \
-	struct VarPtrTypeHelper< T, ClassType<VarType> (T::*)[array_size] > final \
+	struct VarTypeHelper< T, ClassType<VarType> (T::*)[array_size] > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType<VarType> (T::*arr)[array_size], \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			static_assert(array_size > 0, "Cannot reflect a zero size array."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(ArrayVarNoCopy<T, ClassType<VarType>, BaseType, array_size>), allocator, arr); \
-			return var_ptr; \
-		} \
+		using Type = ArrayVarNoCopy<T, ClassType<VarType>, BaseType, array_size>; \
 	}; \
 	NS_END
 
 #define SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY(ClassType) \
 	NS_REFLECTION \
 	template <class T, class VarType> \
-	struct VarPtrTypeHelper< T, ClassType<VarType> > final \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType<VarType> T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VarNoCopy< T, ClassType<VarType>, ClassType<VarType> >), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VarNoCopy< T, ClassType<VarType>, ClassType<VarType> >; \
 	}; \
 	template <class T, class VarType, class Vec_Allocator> \
-	struct VarPtrTypeHelper< T, Gaff::Vector<ClassType<VarType>, Vec_Allocator> > final \
+	struct VarTypeHelper< T, Gaff::Vector<ClassType<VarType>, Vec_Allocator> > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			Gaff::Vector<ClassType<VarType>, Vec_Allocator> T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VectorVarNoCopy<T, ClassType<VarType>, ClassType<VarType>, Vec_Allocator>), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VectorVarNoCopy<T, ClassType<VarType>, ClassType<VarType>, Vec_Allocator>; \
 	}; \
 	template <class T, class VarType, size_t array_size> \
-	struct VarPtrTypeHelper< T, ClassType<VarType> (T::*)[array_size] > final \
+	struct VarTypeHelper< T, ClassType<VarType> (T::*)[array_size] > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType<VarType> (T::*arr)[array_size], \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(!std::is_reference<VarType>::value, "Cannot reflect references."); \
-			static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers."); \
-			static_assert(!std::is_const<VarType>::value, "Cannot reflect const values."); \
-			static_assert(array_size > 0, "Cannot reflect a zero size array."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(ArrayVarNoCopy<T, ClassType<VarType>, ClassType<VarType>, array_size>), allocator, arr); \
-			return var_ptr; \
-		} \
+		using Type = ArrayVarNoCopy<T, ClassType<VarType>, ClassType<VarType>, array_size>; \
 	}; \
 	NS_END
 
 #define SHIB_REFLECTION_VAR_NO_COPY_WITH_BASE(ClassType, BaseType) \
 	NS_REFLECTION \
 	template <class T> \
-	struct VarPtrTypeHelper<T, ClassType> final \
+	struct VarTypeHelper<T, ClassType> final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VarNoCopy< T, ClassType, BaseType>), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VarNoCopy<T, ClassType, BaseType>; \
 	}; \
 	template <class T, class Vec_Allocator> \
-	struct VarPtrTypeHelper< T, Gaff::Vector<ClassType, Vec_Allocator> > final \
+	struct VarTypeHelper< T, Gaff::Vector<ClassType, Vec_Allocator> > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			Gaff::Vector<ClassType, Vec_Allocator> T::* ptr, \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VectorVarNoCopy<T, ClassType, BaseType, Vec_Allocator>), allocator, ptr); \
-			return var_ptr; \
-		} \
+		using Type = VectorVarNoCopy<T, ClassType, BaseType, Vec_Allocator>; \
 	}; \
 	template <class T, size_t array_size> \
-	struct VarPtrTypeHelper< T, ClassType (T::*)[array_size] > final \
+	struct VarTypeHelper< T, ClassType (T::*)[array_size] > final \
 	{ \
-		static IVar<T>* Create( \
-			eastl::u8string_view name, \
-			ClassType (T::*arr)[array_size], \
-			Shibboleth::ProxyAllocator& allocator, \
-			Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >& /*extra_vars*/) \
-		{ \
-			static_assert(array_size > 0, "Cannot reflect a zero size array."); \
-			GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string."); \
-			IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(ArrayVarNoCopy<T, ClassType, BaseType, array_size>), allocator, arr); \
-			return var_ptr; \
-		} \
+		using Type = ArrayVarNoCopy<T, ClassType, BaseType, array_size>; \
 	}; \
 	NS_END
 

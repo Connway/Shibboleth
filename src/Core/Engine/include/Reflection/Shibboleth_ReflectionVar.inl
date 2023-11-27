@@ -172,8 +172,15 @@ void IVar<T>::IVar::setElementMoveT(T& object, int32_t index, VarType&& data)
 
 // Var
 template <class T, class VarType>
+Var<T, VarType>::Var(ptrdiff_t offset):
+	_offset(offset)
+{
+	GAFF_ASSERT(offset >= 0);
+}
+
+template <class T, class VarType>
 Var<T, VarType>::Var(VarType T::*ptr):
-	_ptr(ptr)
+	_offset(Gaff::OffsetOfMember(ptr))
 {
 	GAFF_ASSERT(ptr);
 }
@@ -181,25 +188,19 @@ Var<T, VarType>::Var(VarType T::*ptr):
 template <class T, class VarType>
 const IReflection& Var<T, VarType>::getReflection(void) const
 {
-	if constexpr (Gaff::IsFlags<VarType>()) {
-		return Reflection<typename Gaff::GetFlagsEnum<VarType>::Enum>::GetInstance();
-	} else {
-		return Reflection<VarType>::GetInstance();
-	}
+	return Reflection<VarType>::GetInstance();
 }
 
 template <class T, class VarType>
 const void* Var<T, VarType>::getData(const void* object) const
 {
-	const T* const obj = reinterpret_cast<const T*>(object);
-	return &(obj->*_ptr);
+	return reinterpret_cast<const VarType*>(reinterpret_cast<const int8_t*>(object) + _offset);
 }
 
 template <class T, class VarType>
 void* Var<T, VarType>::getData(void* object)
 {
-	T* const obj = reinterpret_cast<T*>(object);
-	return &(obj->*_ptr);
+	return reinterpret_cast<VarType*>(reinterpret_cast<int8_t*>(object) + _offset);
 }
 
 template <class T, class VarType>
@@ -210,8 +211,8 @@ void Var<T, VarType>::setData(void* object, const void* data)
 		return;
 	}
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = *reinterpret_cast<const VarType*>(data);
+	VarType* const var = reinterpret_cast<VarType*>(reinterpret_cast<int8_t*>(object) + _offset);
+	*var = *reinterpret_cast<const VarType*>(data);
 }
 
 template <class T, class VarType>
@@ -222,22 +223,28 @@ void Var<T, VarType>::setDataMove(void* object, void* data)
 		return;
 	}
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = std::move(*reinterpret_cast<VarType*>(data));
+	VarType* const var = reinterpret_cast<VarType*>(reinterpret_cast<int8_t*>(object) + _offset);
+	*var = std::move(*reinterpret_cast<const VarType*>(data));
 }
 
 template <class T, class VarType>
 bool Var<T, VarType>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
-	VarType* const var = &(object.*_ptr);
+	VarType* const var = reinterpret_cast<VarType*>(reinterpret_cast<int8_t*>(&object) + _offset);
 	return Reflection<VarType>::GetInstance().load(reader, *var);
 }
 
 template <class T, class VarType>
 void Var<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const VarType* const var = &(object.*_ptr);
+	const VarType* const var = reinterpret_cast<const VarType*>(reinterpret_cast<const int8_t*>(&object) + _offset);
 	Reflection<VarType>::GetInstance().save(writer, *var);
+}
+
+template <class T, class VarType>
+void Var<T, VarType>::setOffset(ptrdiff_t offset)
+{
+	_offset = offset;
 }
 
 
@@ -360,6 +367,9 @@ void VectorVar<T, VarType, Vec_Allocator>::swap(void* object, int32_t index_a, i
 
 	T* const obj = reinterpret_cast<T*>(object);
 	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
+	eastl::swap(_elements[index_a], _elements[index_b]);
+	_cached_element_vars[index_a].second = &_elements[index_a];
+	_cached_element_vars[index_b].second = &_elements[index_b];
 }
 
 template <class T, class VarType, class Vec_Allocator>
@@ -372,6 +382,32 @@ void VectorVar<T, VarType, Vec_Allocator>::resize(void* object, size_t new_size)
 
 	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr).resize(new_size);
+
+	const size_t old_size = _elements.size();
+
+	_cached_element_vars.resize(new_size);
+	_elements.resize(new_size);
+
+	if (new_size > old_size) {
+		regenerateSubVars(old_size + 1, new_size);
+	}
+}
+
+template <class T, class VarType, class Vec_Allocator>
+void VectorVar<T, VarType, Vec_Allocator>::remove(void* object, int32_t index)
+{
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_ptr).erase((obj->*_ptr).begin() + index);
+
+	_cached_element_vars.erase(_cached_element_vars.begin() + index);
+	_elements.erase(_elements.begin() + index);
+
+	regenerateSubVars(index, static_cast<int32_t>(_elements.size()));
 }
 
 template <class T, class VarType, class Vec_Allocator>
@@ -391,6 +427,10 @@ bool VectorVar<T, VarType, Vec_Allocator>::load(const Shibboleth::ISerializeRead
 		}
 	}
 
+	_cached_element_vars.resize(static_cast<size_t>(size));
+	_elements.resize(static_cast<size_t>(size));
+	regenerateSubVars(0, size);
+
 	return success;
 }
 
@@ -407,14 +447,49 @@ void VectorVar<T, VarType, Vec_Allocator>::save(Shibboleth::ISerializeWriter& wr
 	writer.endArray();
 }
 
+template <class T, class VarType, class Vec_Allocator>
+const Shibboleth::Vector<IReflectionVar::SubVarData>& VectorVar<T, VarType, Vec_Allocator>::getSubVars(void)
+{
+	return _cached_element_vars;
+}
+
+template <class T, class VarType, class Vec_Allocator>
+void VectorVar<T, VarType, Vec_Allocator>::setSubVarBaseName(eastl::u8string_view base_name)
+{
+	_base_name = base_name;
+	regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+}
+
+template <class T, class VarType, class Vec_Allocator>
+void VectorVar<T, VarType, Vec_Allocator>::regenerateSubVars(int32_t range_begin, int32_t range_end)
+{
+	for (int32_t i = range_begin; i < range_end; ++i) {
+		Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
+		element_path.append_sprintf(u8"%s[%i]", _base_name.data(), i);
+
+		_elements[i].setOffset(static_cast<ptrdiff_t>(i * sizeof(VarType)));
+		_elements[i].setNoSerialize(true);
+		_cached_element_vars[i].first = Shibboleth::HashString32<>(element_path);
+		_cached_element_vars[i].second = &_elements[i];
+	}
+}
+
 
 
 // ArrayVar
 template <class T, class VarType, size_t array_size>
 ArrayVar<T, VarType, array_size>::ArrayVar(VarType (T::*ptr)[array_size]):
-	_ptr(ptr)
+	 _ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
+
+	_cached_element_vars.resize(array_size);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		_elements[i].setOffset(static_cast<ptrdiff_t>(i * sizeof(VarType)));
+		_elements[i].setNoSerialize(true);
+		_cached_element_vars[i].second = &_elements[i];
+	}
 }
 
 template <class T, class VarType, size_t array_size>
@@ -527,17 +602,19 @@ void ArrayVar<T, VarType, array_size>::swap(void* object, int32_t index_a, int32
 
 	T* const obj = reinterpret_cast<T*>(object);
 	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
+	eastl::swap(_elements[index_a], _elements[index_b]);
+	_cached_element_vars[index_a].second = &_elements[index_a];
+	_cached_element_vars[index_b].second = &_elements[index_b];
 }
 
 template <class T, class VarType, size_t array_size>
 bool ArrayVar<T, VarType, array_size>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
-	const int32_t size = reader.size();
-	(object.*_ptr).resize(static_cast<size_t>(size));
+	GAFF_ASSERT(reader.size() == static_cast<int32_t>(array_size));
 
 	bool success = true;
 
-	for (int32_t i = 0; i < size; ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
 		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 
 		if (!Reflection<VarType>::GetInstance().load(reader, (object.*_ptr)[i])) {
@@ -562,64 +639,21 @@ void ArrayVar<T, VarType, array_size>::save(Shibboleth::ISerializeWriter& writer
 	writer.endArray();
 }
 
-
-
-template <class T, class VarType>
-IVar<T>* VarPtrTypeHelper<T, VarType>::Create(
-	eastl::u8string_view name,
-	VarType T::* ptr,
-	Shibboleth::ProxyAllocator& allocator,
-	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >&)
+template <class T, class VarType, size_t array_size>
+const Shibboleth::Vector<IReflectionVar::SubVarData>& ArrayVar<T, VarType, array_size>::getSubVars(void)
 {
-	static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
-	static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
-	static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
-	static_assert(Reflection<VarType>::HasReflection, "Var type is not reflected!");
-
-	GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
-
-	IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(Var<T, VarType>), allocator, ptr);
-
-	return var_ptr;
-}
-
-template <class T, class VarType, class Vec_Allocator>
-IVar<T>* VarPtrTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> >::Create(
-	eastl::u8string_view name,
-	Gaff::Vector<VarType, Vec_Allocator> T::* ptr,
-	Shibboleth::ProxyAllocator& allocator,
-	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >&)
-{
-	static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
-	static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
-	static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
-	static_assert(Reflection<VarType>::HasReflection, "Var type is not reflected!");
-
-	GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
-
-	IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(VectorVar<T, VarType, Vec_Allocator>), allocator, ptr);
-
-	return var_ptr;
+	return _cached_element_vars;
 }
 
 template <class T, class VarType, size_t array_size>
-IVar<T>* VarPtrTypeHelper< T, VarType (T::*)[array_size] >::Create(
-	eastl::u8string_view name,
-	VarType (T::*arr)[array_size],
-	Shibboleth::ProxyAllocator& allocator,
-	Shibboleth::Vector< eastl::pair<Shibboleth::HashString32<>, IVar<T>*> >&)
+void ArrayVar<T, VarType, array_size>::setSubVarBaseName(eastl::u8string_view base_name)
 {
-	static_assert(!std::is_reference<VarType>::value, "Cannot reflect references.");
-	static_assert(!std::is_pointer<VarType>::value, "Cannot reflect pointers.");
-	static_assert(!std::is_const<VarType>::value, "Cannot reflect const values.");
-	static_assert(Reflection<VarType>::HasReflection, "Var type is not reflected!");
-	static_assert(array_size > 0, "Cannot reflect a zero size array.");
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
+		element_path.append_sprintf(u8"%s[%i]", base_name.data(), i);
 
-	GAFF_ASSERT_MSG(!name.empty(), "Name cannot be an empty string.");
-
-	IVar<T>* const var_ptr = SHIB_ALLOCT(GAFF_SINGLE_ARG(ArrayVar<T, VarType, array_size>), allocator, arr);
-
-	return var_ptr;
+		_cached_element_vars[i].first = Shibboleth::HashString32<>(element_path);
+	}
 }
 
 NS_END

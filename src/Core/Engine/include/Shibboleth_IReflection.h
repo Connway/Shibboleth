@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionDefines.h"
+#include "Shibboleth_HashString.h"
 #include "Shibboleth_Vector.h"
 #include <Gaff_Assert.h>
 #include <Gaff_Flags.h>
@@ -314,6 +315,11 @@ public:
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
 	}
 
+	virtual void remove(void*, int32_t)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
+	}
+
 	virtual void setFlagValue(void*, int32_t, bool)
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
@@ -324,6 +330,17 @@ public:
 		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
 		return false;
 	}
+
+	using SubVarData = eastl::pair<Shibboleth::HashString32<>, IReflectionVar*>;
+
+	// Pointers should not be cached. Not guaranteed to remain valid.
+	virtual const Shibboleth::Vector<SubVarData>& getSubVars(void)
+	{
+		static const Shibboleth::Vector<SubVarData> k_no_sub_vars;
+		return k_no_sub_vars;
+	}
+
+	virtual void setSubVarBaseName(eastl::u8string_view /*base_name*/) {}
 
 
 	void setReadOnly(bool read_only) { _flags.set(read_only, Flag::ReadOnly); }
