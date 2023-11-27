@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_CommonHelpers.h"
-#include <Shibboleth_IReflectionFunction.h>
-#include <Shibboleth_IReflection.h>
+#include <Reflection/Shibboleth_IReflectionFunction.h>
+#include <Reflection/Shibboleth_IReflection.h>
 #include <Shibboleth_Vector.h>
 #include <Gaff_Hash.h>
 #include <lua.hpp>

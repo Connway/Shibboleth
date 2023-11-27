@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ISystem.h"
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Shibboleth_IMainLoop.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Vector.h>

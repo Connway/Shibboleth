@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_RuntimeVarManagerFwd.h"
 #include "Shibboleth_DynamicLoaderFwd.h"
-#include "Shibboleth_ReflectionUtils.h"
+#include "Reflection/Shibboleth_ReflectionUtils.h"
 #include "Shibboleth_JobPoolFwd.h"
 #include "Shibboleth_String.h"
 

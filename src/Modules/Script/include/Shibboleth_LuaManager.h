@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 #include <eathread/eathread_futex.h>
 

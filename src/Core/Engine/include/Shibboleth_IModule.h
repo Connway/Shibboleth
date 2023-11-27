@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_RuntimeVarManager.h"
-#include "Shibboleth_ReflectionBase.h"
+#include "Reflection/Shibboleth_ReflectionBase.h"
 #include "Shibboleth_Utilities.h"
 
 NS_SHIBBOLETH

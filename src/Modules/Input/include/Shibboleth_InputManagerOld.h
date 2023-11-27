@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_SparseStack.h>
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_IManager.h>

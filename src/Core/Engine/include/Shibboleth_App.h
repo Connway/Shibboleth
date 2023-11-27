@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ReflectionManager.h"
+#include "Reflection/Shibboleth_ReflectionManager.h"
 #include "Shibboleth_RuntimeVarManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Shibboleth_IMainLoop.h>
 #include <Shibboleth_MainLoop.h>
 #include <eathread/eathread.h>

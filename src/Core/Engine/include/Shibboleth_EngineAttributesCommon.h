@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 //#include "Shibboleth_Broadcaster.h"
-#include "Shibboleth_Reflection.h"
+#include "Reflection/Shibboleth_Reflection.h"
 #include <limits>
 
 NS_SHIBBOLETH

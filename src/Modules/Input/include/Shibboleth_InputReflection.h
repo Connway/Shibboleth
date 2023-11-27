@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Gleam_Window_Defines.h>
 
 SHIB_REFLECTION_DECLARE(Gleam::MouseButton)

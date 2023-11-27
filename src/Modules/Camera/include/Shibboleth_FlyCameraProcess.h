@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 //#include <Shibboleth_ECSEntity.h>
 #include <Esprit_IProcess.h>
 #include <Gleam_Vec3.h>

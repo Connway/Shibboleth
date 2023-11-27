@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Reflection.h"
+#include "Reflection/Shibboleth_Reflection.h"
 #include "Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE(int8_t)

@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CommonHelpers.h"
-#include <Shibboleth_IReflectionFunction.h>
-#include <Shibboleth_IReflection.h>
+#include <Reflection/Shibboleth_IReflectionFunction.h>
+#include <Reflection/Shibboleth_IReflection.h>
 #include <Shibboleth_HashString.h>
 
 NS_SHIBBOLETH

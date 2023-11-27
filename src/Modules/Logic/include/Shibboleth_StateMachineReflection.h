@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Esprit_StateMachineCommonConditions.h>
 #include <Esprit_StateMachine.h>
 

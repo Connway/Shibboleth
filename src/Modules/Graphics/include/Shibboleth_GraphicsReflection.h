@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Reflection/Shibboleth_Reflection.h>
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IShader.h>

@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ReflectionManager.h"
-#include "Shibboleth_IEnumReflectionDefinition.h"
-#include "Shibboleth_IReflectionDefinition.h"
-#include "Shibboleth_IReflection.h"
+#include "Reflection/Shibboleth_ReflectionManager.h"
+#include "Reflection/Shibboleth_IEnumReflectionDefinition.h"
+#include "Reflection/Shibboleth_IReflectionDefinition.h"
+#include "Reflection/Shibboleth_IReflection.h"
 #include <EASTL/sort.h>
 
 namespace

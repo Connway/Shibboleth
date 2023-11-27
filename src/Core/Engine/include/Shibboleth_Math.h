@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Reflection.h"
+#include "Reflection/Shibboleth_Reflection.h"
 #include <Gleam_Transform.h>
 #include <Gleam_Plane.h>
 #include <Gleam_AABB.h>
