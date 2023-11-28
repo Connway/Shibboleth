@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Reflection/Shibboleth_ReflectionVarNoCopy.h"
 #include "Reflection/Shibboleth_Reflection.h"
 
 NS_SHIBBOLETH

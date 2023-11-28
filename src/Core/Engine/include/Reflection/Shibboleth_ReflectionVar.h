@@ -33,13 +33,13 @@ NS_REFLECTION
 template <class T>
 class IVar;
 
-template <class T, class VarType>
+template <class T, class VarType, class ReflectionType = VarType>
 class Var;
 
-template <class T, class VarType, class Vec_Allocator>
+template <class T, class VarType, class ReflectionType, class Vec_Allocator>
 class VectorVar;
 
-template <class T, class VarType, size_t array_size>
+template <class T, class VarType, class ReflectionType, size_t array_size>
 class ArrayVar;
 
 
@@ -47,19 +47,25 @@ class ArrayVar;
 template <class T, class VarType>
 struct VarTypeHelper final
 {
-	using Type = Var<T, VarType>;
+	using ReflectionType = VarType;
+	using Type = Var<T, VarType, ReflectionType>;
+	static constexpr bool k_can_copy = true;
 };
 
 template <class T, class VarType, class Vec_Allocator>
 struct VarTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
 {
-	using Type = VectorVar<T, VarType, Vec_Allocator>;
+	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using Type = VectorVar<T, VarType, ReflectionType, Vec_Allocator>;
+	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
 };
 
 template <class T, class VarType, size_t array_size>
 struct VarTypeHelper< T, VarType (T::*)[array_size] > final
 {
-	using Type = ArrayVar<T, VarType, array_size>;
+	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using Type = ArrayVar<T, VarType, ReflectionType, array_size>;
+	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
 };
 
 
@@ -94,13 +100,17 @@ public:
 
 
 
-template <class T, class VarType>
-class Var final : public IVar<T>
+template <class T, class VarType, class ReflectionType>
+class Var : public IVar<T>
 {
 public:
+	static_assert(Reflection<ReflectionType>::HasReflection);
+
 	explicit Var(ptrdiff_t offset);
 	explicit Var(VarType T::*ptr);
 	Var(void) = default;
+
+	static const Reflection<ReflectionType>& GetReflection(void);
 
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
@@ -113,17 +123,21 @@ public:
 
 	void setOffset(ptrdiff_t offset);
 
-private:
+protected:
 	ptrdiff_t _offset = -1;
 };
 
-template <class T, class VarType, class Vec_Allocator>
-class VectorVar final : public IVar<T>
+template <class T, class VarType, class ReflectionType, class Vec_Allocator>
+class VectorVar : public IVar<T>
 {
 public:
+	static_assert(Reflection<ReflectionType>::HasReflection);
+
 	using VectorType = Gaff::Vector<VarType, Vec_Allocator>;
 
 	VectorVar(VectorType T::*ptr);
+
+	static const Reflection<ReflectionType>& GetReflection(void);
 
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
@@ -149,7 +163,7 @@ public:
 	void setSubVarBaseName(eastl::u8string_view base_name) override;
 	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
-private:
+protected:
 	using RefVarType = VarTypeHelper<T, VarType>::Type;
 
 	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
@@ -159,11 +173,17 @@ private:
 	VectorType T::* _ptr = nullptr;
 };
 
-template <class T, class VarType, size_t array_size>
-class ArrayVar final : public IVar<T>
+template <class T, class VarType, class ReflectionType, size_t array_size>
+class ArrayVar : public IVar<T>
 {
 public:
+	static_assert(Reflection<ReflectionType>::HasReflection);
+
+	using ArrayType = VarType (T::*)[array_size];
+
 	ArrayVar(VarType (T::*ptr)[array_size]);
+
+	static const Reflection<ReflectionType>& GetReflection(void);
 
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
@@ -196,3 +216,40 @@ private:
 };
 
 NS_END
+
+
+
+#define SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY_WITH_BASE(ClassType, BaseType) \
+	NS_REFLECTION \
+	template <class T, class VarType> \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
+	{ \
+		using ReflectionType = BaseType; \
+		using Type = Var<T, ClassType<VarType>, ReflectionType>; \
+		static constexpr bool k_can_copy = false; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY(ClassType) \
+	NS_REFLECTION \
+	template <class T, class VarType> \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
+	{ \
+		using ReflectionType = ClassType<VarType>; \
+		using Type = Var<T, ClassType<VarType>, ReflectionType>; \
+		static constexpr bool k_can_copy = false; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_VAR_NO_COPY_WITH_BASE(ClassType, BaseType) \
+	NS_REFLECTION \
+	template <class T> \
+	struct VarTypeHelper<T, ClassType> final \
+	{ \
+		using ReflectionType = BaseType; \
+		using Type = Var<T, ClassType, BaseType>; \
+		static constexpr bool k_can_copy = false; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_VAR_NO_COPY(ClassType) SHIB_REFLECTION_VAR_NO_COPY_WITH_BASE(ClassType, ClassType)
