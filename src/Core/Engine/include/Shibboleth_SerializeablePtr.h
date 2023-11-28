@@ -180,6 +180,5 @@ public:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ISerializeablePtr)
-
 SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY_WITH_BASE(Shibboleth::SerializeablePtr, Shibboleth::ISerializeablePtr)
+SHIB_REFLECTION_DECLARE(Shibboleth::ISerializeablePtr)

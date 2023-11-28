@@ -219,6 +219,43 @@ NS_END
 
 
 
+#define SHIB_REFLECTION_TEMPLATE_VAR_WITH_BASE(ClassType, BaseType) \
+	NS_REFLECTION \
+	template <class T, class VarType> \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
+	{ \
+		using ReflectionType = BaseType; \
+		using Type = Var<T, ClassType<VarType>, ReflectionType>; \
+		static constexpr bool k_can_copy = true; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_TEMPLATE_VAR(ClassType) \
+	NS_REFLECTION \
+	template <class T, class VarType> \
+	struct VarTypeHelper< T, ClassType<VarType> > final \
+	{ \
+		using ReflectionType = ClassType<VarType>; \
+		using Type = Var<T, ClassType<VarType>, ReflectionType>; \
+		static constexpr bool k_can_copy = true; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_VAR_WITH_BASE(ClassType, BaseType) \
+	NS_REFLECTION \
+	template <class T> \
+	struct VarTypeHelper<T, ClassType> final \
+	{ \
+		using ReflectionType = BaseType; \
+		using Type = Var<T, ClassType, BaseType>; \
+		static constexpr bool k_can_copy = true; \
+	}; \
+	NS_END
+
+#define SHIB_REFLECTION_VAR(ClassType) SHIB_REFLECTION_VAR_WITH_BASE(ClassType, ClassType)
+
+
+
 #define SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY_WITH_BASE(ClassType, BaseType) \
 	NS_REFLECTION \
 	template <class T, class VarType> \

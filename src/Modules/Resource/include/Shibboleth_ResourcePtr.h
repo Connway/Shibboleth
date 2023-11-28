@@ -167,4 +167,5 @@ public:
 
 NS_END
 
+SHIB_REFLECTION_TEMPLATE_VAR_WITH_BASE(Shibboleth::ResourcePtr, Shibboleth::IResourcePtr)
 SHIB_REFLECTION_DECLARE(Shibboleth::IResourcePtr)
