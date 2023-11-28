@@ -314,8 +314,8 @@ void Var<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const T& object
 
 
 // VectorVar
-template <class T, class VarType, class Vec_Allocator>
-VectorVar<T, VarType, Vec_Allocator>::VectorVar(VectorType T::*ptr):
+template <class T, class ContainerType>
+VectorVar<T, ContainerType>::VectorVar(ContainerType T::*ptr):
 	IVar<T>(ptr)
 {
 	GAFF_ASSERT(ptr);
@@ -325,95 +325,107 @@ VectorVar<T, VarType, Vec_Allocator>::VectorVar(VectorType T::*ptr):
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-VectorVar<T, VarType, Vec_Allocator>::VectorVar(void)
+template <class T, class ContainerType>
+VectorVar<T, ContainerType>::VectorVar(void)
 {
 	if constexpr (!std::is_enum_v<ReflectionType> && !ReflectionDefinition<ReflectionType>::IsBuiltIn()) {
 		static_assert(std::is_base_of_v<ReflectionType, VarType>);
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-const Reflection<typename VectorVar<T, VarType, Vec_Allocator>::ReflectionType>& VectorVar<T, VarType, Vec_Allocator>::GetReflection(void)
+template <class T, class ContainerType>
+const Reflection<typename VectorVar<T, ContainerType>::ReflectionType>& VectorVar<T, ContainerType>::GetReflection(void)
 {
 	return Reflection<ReflectionType>::GetInstance();
 }
 
-template <class T, class VarType, class Vec_Allocator>
-const IReflection& VectorVar<T, VarType, Vec_Allocator>::getReflection(void) const
+template <class T, class ContainerType>
+const IReflection& VectorVar<T, ContainerType>::getReflection(void) const
 {
 	return GetReflection();
 }
 
-template <class T, class VarType, class Vec_Allocator>
-const void* VectorVar<T, VarType, Vec_Allocator>::getData(const void* object) const
+template <class T, class ContainerType>
+const void* VectorVar<T, ContainerType>::getData(const void* object) const
 {
-	return const_cast<VectorVar<T, VarType, Vec_Allocator>*>(this)->getData(const_cast<void*>(object));
+	return const_cast<VectorVar<T, ContainerType>*>(this)->getData(const_cast<void*>(object));
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void* VectorVar<T, VarType, Vec_Allocator>::getData(void* object)
+template <class T, class ContainerType>
+void* VectorVar<T, ContainerType>::getData(void* object)
 {
-	return IVar<T>::template get<VectorType>(object);
+	return IVar<T>::template get<ContainerType>(object);
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::setData(void* object, const void* data)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::setData(void* object, const void* data)
 {
-	if constexpr (VarTypeHelper<T, VectorType>::k_can_copy) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_can_copy) {
 		if (IReflectionVar::isReadOnly()) {
 			// $TODO: Log error.
 			return;
 		}
 
-		*IVar<T>::template get<VectorType>(object) = *reinterpret_cast<const VectorType*>(data);
+		*IVar<T>::template get<ContainerType>(object) = *reinterpret_cast<const ContainerType*>(data);
 
 	} else {
 		GAFF_REF(object, data);
 
 		GAFF_ASSERT_MSG(
 			false,
-			"VectorVar<T, VarType, Vec_Allocator>::setData() was called with ReflectionType of '%s'. Element name: '%s'.",
+			"VectorVar<T, ContainerType>::setData() was called with ReflectionType of '%s'. Element name: '%s'.",
 			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName()),
 			reinterpret_cast<const char*>(_base_name.data())
 		);
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::setDataMove(void* object, void* data)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::setDataMove(void* object, void* data)
 {
 	if (IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
 
-	*IVar<T>::template get<VectorType>(object) = std::move(*reinterpret_cast<VectorType*>(data));
+	*IVar<T>::template get<ContainerType>(object) = std::move(*reinterpret_cast<ContainerType*>(data));
 }
 
-template <class T, class VarType, class Vec_Allocator>
-int32_t VectorVar<T, VarType, Vec_Allocator>::size(const void* object) const
+template <class T, class ContainerType>
+bool VectorVar<T, ContainerType>::isVector(void) const
 {
-	return IVar<T>::template get<VectorType>(object)->size();
+	return !VarTypeHelper<T, ContainerType>::k_is_fixed_array;
 }
 
-template <class T, class VarType, class Vec_Allocator>
-const void* VectorVar<T, VarType, Vec_Allocator>::getElement(const void* object, int32_t index) const
+template <class T, class ContainerType>
+bool VectorVar<T, ContainerType>::isFixedArray(void) const
 {
-	return const_cast<VectorVar<T, VarType, Vec_Allocator>*>(this)->getElement(const_cast<void*>(object), index);
+	return VarTypeHelper<T, ContainerType>::k_is_fixed_array;
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void* VectorVar<T, VarType, Vec_Allocator>::getElement(void* object, int32_t index)
+template <class T, class ContainerType>
+int32_t VectorVar<T, ContainerType>::size(const void* object) const
+{
+	return IVar<T>::template get<ContainerType>(object)->size();
+}
+
+template <class T, class ContainerType>
+const void* VectorVar<T, ContainerType>::getElement(const void* object, int32_t index) const
+{
+	return const_cast<VectorVar<T, ContainerType>*>(this)->getElement(const_cast<void*>(object), index);
+}
+
+template <class T, class ContainerType>
+void* VectorVar<T, ContainerType>::getElement(void* object, int32_t index)
 {
 	GAFF_ASSERT(index >= 0 && index < size(object));
-	return &(IVar<T>::template get<VectorType>(object))[index];
+	return &(IVar<T>::template get<ContainerType>(object))[index];
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::setElement(void* object, int32_t index, const void* data)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::setElement(void* object, int32_t index, const void* data)
 {
-	if constexpr (VarTypeHelper<T, VectorType>::k_can_copy) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_can_copy) {
 		GAFF_ASSERT(index >= 0 && index < size(object));
 
 		if (IReflectionVar::isReadOnly()) {
@@ -421,22 +433,22 @@ void VectorVar<T, VarType, Vec_Allocator>::setElement(void* object, int32_t inde
 			return;
 		}
 
-		(*IVar<T>::template get<VectorType>(object))[index] = *reinterpret_cast<const VarType*>(data);
+		(*IVar<T>::template get<ContainerType>(object))[index] = *reinterpret_cast<const VarType*>(data);
 
 	} else {
 		GAFF_REF(object, index, data);
 
 		GAFF_ASSERT_MSG(
 			false,
-			"VectorVar<T, VarType, Vec_Allocator>::setElement() was called with ReflectionType of '%s'. Element name: '%s'.",
+			"VectorVar<T, ContainerType>::setElement() was called with ReflectionType of '%s'. Element name: '%s'.",
 			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName()),
 			reinterpret_cast<const char*>(_base_name.data())
 		);
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::setElementMove(void* object, int32_t index, void* data)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::setElementMove(void* object, int32_t index, void* data)
 {
 	GAFF_ASSERT(index >= 0 && index < size(object));
 
@@ -445,11 +457,11 @@ void VectorVar<T, VarType, Vec_Allocator>::setElementMove(void* object, int32_t 
 		return;
 	}
 
-	(*IVar<T>::template get<VectorType>(object))[index] = std::move(*reinterpret_cast<VarType*>(data));
+	(*IVar<T>::template get<ContainerType>(object))[index] = std::move(*reinterpret_cast<VarType*>(data));
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::swap(void* object, int32_t index_a, int32_t index_b)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::swap(void* object, int32_t index_a, int32_t index_b)
 {
 	GAFF_ASSERT(index_a >= 0 && index_a < size(object));
 	GAFF_ASSERT(index_b >= 0 && index_b < size(object));
@@ -459,22 +471,22 @@ void VectorVar<T, VarType, Vec_Allocator>::swap(void* object, int32_t index_a, i
 		return;
 	}
 
-	VectorType& vec = *IVar<T>::template get<VectorType>(object);
+	ContainerType& vec = *IVar<T>::template get<ContainerType>(object);
 	eastl::swap(vec[index_a], vec[index_b]);
 	eastl::swap(_elements[index_a], _elements[index_b]);
 	_cached_element_vars[index_a].second = &_elements[index_a];
 	_cached_element_vars[index_b].second = &_elements[index_b];
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::resize(void* object, size_t new_size)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::resize(void* object, size_t new_size)
 {
-	if constexpr (VarTypeHelper<T, VectorType>::k_is_fixed_array) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_is_fixed_array) {
 		GAFF_REF(object, new_size);
 
 		GAFF_ASSERT_MSG(
 			false,
-			"VectorVar<T, VarType, Vec_Allocator>::resize() was called with ReflectionType of '%s' on a fixed size array. Element name: '%s'.",
+			"VectorVar<T, ContainerType>::resize() was called with ReflectionType of '%s' on a fixed size array. Element name: '%s'.",
 			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName()),
 			reinterpret_cast<const char*>(_base_name.data())
 		);
@@ -485,7 +497,7 @@ void VectorVar<T, VarType, Vec_Allocator>::resize(void* object, size_t new_size)
 			return;
 		}
 
-		IVar<T>::template get<VectorType>(object)->resize(new_size);
+		IVar<T>::template get<ContainerType>(object)->resize(new_size);
 
 		const size_t old_size = _elements.size();
 
@@ -498,15 +510,15 @@ void VectorVar<T, VarType, Vec_Allocator>::resize(void* object, size_t new_size)
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::remove(void* object, int32_t index)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::remove(void* object, int32_t index)
 {
-	if constexpr (VarTypeHelper<T, VectorType>::k_is_fixed_array) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_is_fixed_array) {
 		GAFF_REF(object, index);
 
 		GAFF_ASSERT_MSG(
 			false,
-			"VectorVar<T, VarType, Vec_Allocator>::remove() was called with ReflectionType of '%s' on a fixed size array. Element name: '%s'.",
+			"VectorVar<T, ContainerType>::remove() was called with ReflectionType of '%s' on a fixed size array. Element name: '%s'.",
 			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName()),
 			reinterpret_cast<const char*>(_base_name.data())
 		);
@@ -517,7 +529,7 @@ void VectorVar<T, VarType, Vec_Allocator>::remove(void* object, int32_t index)
 			return;
 		}
 
-		VectorType& vec = *IVar<T>::template get<VectorType>(object);
+		ContainerType& vec = *IVar<T>::template get<ContainerType>(object);
 		vec.erase(vec.begin() + index);
 
 		_cached_element_vars.erase(_cached_element_vars.begin() + index);
@@ -527,13 +539,13 @@ void VectorVar<T, VarType, Vec_Allocator>::remove(void* object, int32_t index)
 	}
 }
 
-template <class T, class VarType, class Vec_Allocator>
-bool VectorVar<T, VarType, Vec_Allocator>::load(const Shibboleth::ISerializeReader& reader, T& object)
+template <class T, class ContainerType>
+bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	const int32_t size = reader.size();
-	VectorType& vec = *IVar<T>::template get<VectorType>(&object);
+	ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
 
-	if constexpr (VarTypeHelper<T, VectorType>::k_is_fixed_array) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_is_fixed_array) {
 		GAFF_ASSERT(size == static_cast<int32_t>(vec.size()));
 	} else {
 		vec.resize(static_cast<size_t>(size));
@@ -557,10 +569,10 @@ bool VectorVar<T, VarType, Vec_Allocator>::load(const Shibboleth::ISerializeRead
 	return success;
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const VectorType& vec = *IVar<T>::template get<VectorType>(&object);
+	const ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
 	const int32_t size = static_cast<int32_t>(vec.size());
 	writer.startArray(static_cast<uint32_t>(size));
 
@@ -571,21 +583,21 @@ void VectorVar<T, VarType, Vec_Allocator>::save(Shibboleth::ISerializeWriter& wr
 	writer.endArray();
 }
 
-template <class T, class VarType, class Vec_Allocator>
-const Shibboleth::Vector<IReflectionVar::SubVarData>& VectorVar<T, VarType, Vec_Allocator>::getSubVars(void)
+template <class T, class ContainerType>
+const Shibboleth::Vector<IReflectionVar::SubVarData>& VectorVar<T, ContainerType>::getSubVars(void)
 {
 	return _cached_element_vars;
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::setSubVarBaseName(eastl::u8string_view base_name)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::setSubVarBaseName(eastl::u8string_view base_name)
 {
 	_base_name = base_name;
 	regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
 }
 
-template <class T, class VarType, class Vec_Allocator>
-void VectorVar<T, VarType, Vec_Allocator>::regenerateSubVars(int32_t range_begin, int32_t range_end)
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::regenerateSubVars(int32_t range_begin, int32_t range_end)
 {
 	for (int32_t i = range_begin; i < range_end; ++i) {
 		Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
@@ -596,221 +608,6 @@ void VectorVar<T, VarType, Vec_Allocator>::regenerateSubVars(int32_t range_begin
 		_elements[i].setNoSerialize(true);
 		_cached_element_vars[i].first = Shibboleth::HashString32<>(element_path);
 		_cached_element_vars[i].second = &_elements[i];
-	}
-}
-
-
-
-// ArrayVar
-template <class T, class VarType, size_t array_size>
-ArrayVar<T, VarType, array_size>::ArrayVar(ArrayType ptr):
-	IVar<T>(ptr)
-{
-	GAFF_ASSERT(ptr);
-
-	if constexpr (!std::is_enum_v<ReflectionType> && !ReflectionDefinition<ReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<ReflectionType, VarType>);
-	}
-}
-
-template <class T, class VarType, size_t array_size>
-ArrayVar<T, VarType, array_size>::ArrayVar(void)
-{
-	if constexpr (!std::is_enum_v<ReflectionType> && !ReflectionDefinition<ReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<ReflectionType, VarType>);
-	}
-}
-
-template <class T, class VarType, size_t array_size>
-const Reflection<typename ArrayVar<T, VarType, array_size>::ReflectionType>& ArrayVar<T, VarType, array_size>::GetReflection(void)
-{
-	return Reflection<ReflectionType>::GetInstance();
-}
-
-template <class T, class VarType, size_t array_size>
-const IReflection& ArrayVar<T, VarType, array_size>::getReflection(void) const
-{
-	return GetReflection();
-}
-
-template <class T, class VarType, size_t array_size>
-const void* ArrayVar<T, VarType, array_size>::getData(const void* object) const
-{
-	return const_cast<ArrayVar<T, VarType, array_size>*>(this)->getData(const_cast<void*>(object));
-}
-
-template <class T, class VarType, size_t array_size>
-void* ArrayVar<T, VarType, array_size>::getData(void* object)
-{
-	return *IVar<T>::template get<ArrayType>(object);
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::setData(void* object, const void* data)
-{
-	if constexpr (VarTypeHelper<T, ArrayType>::k_can_copy) {
-		if (IReflectionVar::isReadOnly()) {
-			// $TODO: Log error.
-			return;
-		}
-
-		const VarType* const vars = reinterpret_cast<const VarType*>(data);
-		ArrayType& arr = *IVar<T>::template get<ArrayType>(object);
-
-		for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
-			arr[i] = vars[i];
-		}
-
-	} else {
-		GAFF_REF(object, data);
-
-		GAFF_ASSERT_MSG(
-			false,
-			"ArrayVar<T, VarType, array_size>::setData() was called with ReflectionType of '%s'.",
-			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
-		);
-	}
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::setDataMove(void* object, void* data)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	VarType* const vars = reinterpret_cast<VarType*>(data);
-	ArrayType& arr = *IVar<T>::template get<ArrayType>(object);
-
-	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
-		arr[i] = std::move(vars[i]);
-	}
-}
-
-template <class T, class VarType, size_t array_size>
-const void* ArrayVar<T, VarType, array_size>::getElement(const void* object, int32_t index) const
-{
-	return const_cast<ArrayVar<T, VarType, array_size>*>(this)->getElement(const_cast<void*>(object), index);
-}
-
-template <class T, class VarType, size_t array_size>
-void* ArrayVar<T, VarType, array_size>::getElement(void* object, int32_t index)
-{
-	GAFF_ASSERT(index >= 0 && index < size(object));
-	return &(*IVar<T>::template get<ArrayType>(object))[index];
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::setElement(void* object, int32_t index, const void* data)
-{
-	if constexpr (VarTypeHelper<T, ArrayType>::k_can_copy) {
-		GAFF_ASSERT(index >= 0 && index < size(object));
-
-		if (IReflectionVar::isReadOnly()) {
-			// $TODO: Log error.
-			return;
-		}
-
-		(*IVar<T>::template get<ArrayType>(object))[index] = *reinterpret_cast<const VarType*>(data);
-
-	} else {
-		GAFF_REF(object, data);
-
-		GAFF_ASSERT_MSG(
-			false,
-			"ArrayVar<T, VarType, array_size>::setElement() was called with ReflectionType of '%s'.",
-			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
-		);
-	}
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::setElementMove(void* object, int32_t index, void* data)
-{
-	GAFF_ASSERT(index >= 0 && index < size(object));
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	(*IVar<T>::template get<ArrayType>(object))[index] = std::move(*reinterpret_cast<VarType*>(data));
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::swap(void* object, int32_t index_a, int32_t index_b)
-{
-	GAFF_ASSERT(index_a >= 0 && index_a < size(object));
-	GAFF_ASSERT(index_b >= 0 && index_b < size(object));
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	ArrayType& arr = *IVar<T>::template get<ArrayType>(object);
-	eastl::swap(arr[index_a], arr[index_b]);
-	eastl::swap(_elements[index_a], _elements[index_b]);
-	_cached_element_vars[index_a].second = &_elements[index_a];
-	_cached_element_vars[index_b].second = &_elements[index_b];
-}
-
-template <class T, class VarType, size_t array_size>
-bool ArrayVar<T, VarType, array_size>::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	GAFF_ASSERT(reader.size() == static_cast<int32_t>(array_size));
-
-	ArrayType& arr = *IVar<T>::template get<ArrayType>(&object);
-	bool success = true;
-
-	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
-		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
-
-		if (!Reflection<ReflectionType>::GetInstance().load(reader, arr[i])) {
-			// $TODO: Log error.
-			success = false;
-		}
-	}
-
-	return success;
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	const ArrayType& arr = *IVar<T>::template get<ArrayType>(&object);
-	const int32_t size = static_cast<int32_t>(arr.size());
-	writer.startArray(static_cast<uint32_t>(size));
-
-	for (int32_t i = 0; i < size; ++i) {
-		Reflection<ReflectionType>::GetInstance().save(writer, arr[i]);
-	}
-
-	writer.endArray();
-}
-
-template <class T, class VarType, size_t array_size>
-const Shibboleth::Vector<IReflectionVar::SubVarData>& ArrayVar<T, VarType, array_size>::getSubVars(void)
-{
-	return _cached_element_vars;
-}
-
-template <class T, class VarType, size_t array_size>
-void ArrayVar<T, VarType, array_size>::setSubVarBaseName(eastl::u8string_view base_name)
-{
-	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
-		_elements[i].setOffset(static_cast<ptrdiff_t>(i * sizeof(VarType)));
-		_elements[i].setParent(this);
-		_elements[i].setNoSerialize(true);
-
-		Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
-		element_path.append_sprintf(u8"%s[%i]", base_name.data(), i);
-
-		_cached_element_vars.emplace_back(
-			Shibboleth::HashString32<>(element_path),
-			&_elements[i]
-		);
 	}
 }
 

@@ -44,7 +44,6 @@ public:
 
 private:
 	Shibboleth::U8String _string;
-	Gaff::Hash<HashStorage> T::* _ptr = nullptr;
 };
 
 

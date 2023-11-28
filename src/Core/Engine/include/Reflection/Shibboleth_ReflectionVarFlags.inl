@@ -26,13 +26,6 @@ NS_REFLECTION
 
 // VarFlagBit
 template <class T, class Enum>
-VarFlagBit<T, Enum>::VarFlagBit(Gaff::Flags<Enum> T::*ptr, uint8_t flag_index):
-	_ptr(ptr), _flag_index(flag_index)
-{
-	GAFF_ASSERT(ptr);
-}
-
-template <class T, class Enum>
 const IReflection& VarFlagBit<T, Enum>::getReflection(void) const
 {
 	return Reflection<bool>::GetInstance();
@@ -47,8 +40,9 @@ const void* VarFlagBit<T, Enum>::getData(const void* object) const
 template <class T, class Enum>
 void* VarFlagBit<T, Enum>::getData(void* object)
 {
-	T* const obj = reinterpret_cast<T*>(object);
-	_cache = (obj->*_ptr).testAll(static_cast<Enum>(_flag_index));
+	GAFF_ASSERT(IVar<T>::_parent);
+
+	_cache = IVar<T>::_parent->template get< Gaff::Flags<Enum> >(object)->testAll(static_cast<Enum>(IVar<T>::_offset));
 	return &_cache;
 }
 
@@ -60,8 +54,10 @@ void VarFlagBit<T, Enum>::setData(void* object, const void* data)
 		return;
 	}
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr).set(*reinterpret_cast<const bool*>(data), static_cast<Enum>(_flag_index));
+	GAFF_ASSERT(IVar<T>::_parent);
+
+	Gaff::Flags<Enum>& flags = *IVar<T>::_parent->template get< Gaff::Flags<Enum> >(object);
+	flags.set(*reinterpret_cast<const bool*>(data), static_cast<Enum>(IVar<T>::_offset));
 }
 
 template <class T, class Enum>
@@ -88,17 +84,16 @@ void VarFlagBit<T, Enum>::save(Shibboleth::ISerializeWriter& /*writer*/, const T
 // VarFlags
 template <class T, class Enum>
 VarFlags<T, Enum>::VarFlags(Gaff::Flags<Enum> T::*ptr):
-	_ptr(ptr)
+	IVar<T>(ptr)
 {
-	GAFF_ASSERT(ptr);
-
 	_cached_element_vars.resize(static_cast<size_t>(Enum::Count));
 
 	for (int32_t i = 0; i < static_cast<int32_t>(Enum::Count); ++i) {
-		_elements[i] = VarFlagBit<T, Enum>(ptr, static_cast<uint8_t>(i));
-		_cached_element_vars[i].second = &_elements[i];
-
+		_elements[i].setOffset(static_cast<ptrdiff_t>(i));
+		_elements[i].setParent(this);
 		_elements[i].setNoSerialize(true);
+
+		_cached_element_vars[i].second = &_elements[i];
 	}
 }
 
@@ -111,15 +106,13 @@ const IReflection& VarFlags<T, Enum>::getReflection(void) const
 template <class T, class Enum>
 const void* VarFlags<T, Enum>::getData(const void* object) const
 {
-	const T* const obj = reinterpret_cast<const T*>(object);
-	return &(obj->*_ptr);
+	return const_cast<VarFlags<T, Enum>*>(this)->getData(const_cast<void*>(object));
 }
 
 template <class T, class Enum>
 void* VarFlags<T, Enum>::getData(void* object)
 {
-	T* const obj = reinterpret_cast<T*>(object);
-	return &(obj->*_ptr);
+	return IVar<T>::template get< Gaff::Flags<Enum> >(object);
 }
 
 template <class T, class Enum>
@@ -130,8 +123,7 @@ void VarFlags<T, Enum>::setData(void* object, const void* data)
 		return;
 	}
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = *reinterpret_cast<const Gaff::Flags<Enum>*>(data);
+	*IVar<T>::template get< Gaff::Flags<Enum> >(object) = *reinterpret_cast<const Gaff::Flags<Enum>*>(data);
 }
 
 template <class T, class Enum>
@@ -142,14 +134,13 @@ void VarFlags<T, Enum>::setDataMove(void* object, void* data)
 		return;
 	}
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = std::move(*reinterpret_cast<Gaff::Flags<Enum>*>(data));
+	*IVar<T>::template get< Gaff::Flags<Enum> >(object) = std::move(*reinterpret_cast<Gaff::Flags<Enum>*>(data));
 }
 
 template <class T, class Enum>
 bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
-	Gaff::Flags<Enum>* const var = &(object.*_ptr);
+	Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
 
 	// Iterate over all the flags and read values.
 	const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -168,7 +159,7 @@ bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& obje
 		}
 
 		const bool value = reader.readBool(false);
-		var->set(value, static_cast<Enum>(flag_index));
+		flags.set(value, static_cast<Enum>(flag_index));
 	}
 
 	return success;
@@ -177,7 +168,7 @@ bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& obje
 template <class T, class Enum>
 void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const Gaff::Flags<Enum>* const var = &(object.*_ptr);
+	const Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
 
 	// Iterate over all the flags and write values.
 	const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -186,7 +177,7 @@ void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const T& obje
 	for (int32_t i = 0; i < num_entries; ++i) {
 		const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 		const int32_t flag_index = ref_def.getEntryValue(i);
-		const bool value = var->testAll(static_cast<Enum>(flag_index));
+		const bool value = flags.testAll(static_cast<Enum>(flag_index));
 
 		writer.writeBool(flag_name.getBuffer(), value);
 	}
@@ -201,13 +192,13 @@ bool VarFlags<T, Enum>::isFlags(void) const
 template <class T, class Enum>
 void VarFlags<T, Enum>::setFlagValue(void* object, int32_t flag_index, bool value)
 {
-	(reinterpret_cast<T*>(object)->*_ptr).set(value, static_cast<Enum>(flag_index));
+	IVar<T>::template get< Gaff::Flags<Enum> >(object)->set(value, static_cast<Enum>(flag_index));
 }
 
 template <class T, class Enum>
 bool VarFlags<T, Enum>::getFlagValue(void* object, int32_t flag_index) const
 {
-	return (reinterpret_cast<T*>(object)->*_ptr).testAll(static_cast<Enum>(flag_index));
+	return IVar<T>::template get< Gaff::Flags<Enum> >(object)->testAll(static_cast<Enum>(flag_index));
 }
 
 template <class T, class Enum>

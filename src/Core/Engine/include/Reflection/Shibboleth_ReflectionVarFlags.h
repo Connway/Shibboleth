@@ -32,9 +32,6 @@ template <class T, class Enum>
 class VarFlagBit final : public IVar<T>
 {
 public:
-	VarFlagBit(Gaff::Flags<Enum> T::* ptr, uint8_t flag_index);
-	VarFlagBit(void) = default;
-
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
 	void* getData(void* object) override;
@@ -45,8 +42,6 @@ public:
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
 private:
-	Gaff::Flags<Enum> T::* _ptr = nullptr;
-	uint8_t _flag_index = static_cast<uint8_t>(-1); // Unless flags have the craziest amount of flags, this should hold all possible flag values.
 	bool _cache = false;
 };
 
@@ -55,6 +50,7 @@ class VarFlags final : public IVar<T>
 {
 public:
 	VarFlags(Gaff::Flags<Enum> T::* ptr);
+	VarFlags(void) = default;
 
 	const IReflection& getReflection(void) const override;
 	const void* getData(const void* object) const override;
@@ -72,15 +68,12 @@ public:
 
 	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;
-	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
 private:
 	using RefVarType = VarFlagBit<T, Enum>;
 
 	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
 	eastl::array<RefVarType, static_cast<size_t>(Enum::Count)> _elements;
-
-	Gaff::Flags<Enum> T::* _ptr = nullptr;
 };
 
 
@@ -88,7 +81,9 @@ private:
 template <class T, class Enum>
 struct VarTypeHelper< T, Gaff::Flags<Enum> > final
 {
+	using ReflectionType = VarFlags<T, Enum>;
 	using Type = VarFlags<T, Enum>;
+	static constexpr bool k_can_copy = true;
 };
 
 NS_END

@@ -27,7 +27,7 @@ NS_REFLECTION
 // Var Hash
 template <class T, class HashStorage>
 VarHash<T, HashStorage>::VarHash(Gaff::Hash<HashStorage> T::* ptr) :
-	_ptr(ptr)
+	IVar<T>(ptr)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -63,12 +63,12 @@ void VarHash<T, HashStorage>::setData(void* object, const void* data)
 
 	_string = *reinterpret_cast<const Shibboleth::U8String*>(data);
 
-	T* const obj = reinterpret_cast<T*>(object);
+	Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
 
 	if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash32>) {
-		(obj->*_ptr) = Gaff::FNV1aHash32String(_string.data());
+		hash = Gaff::FNV1aHash32String(_string.data());
 	} else if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash64>) {
-		(obj->*_ptr) = Gaff::FNV1aHash64String(_string.data());
+		hash = Gaff::FNV1aHash64String(_string.data());
 	}
 }
 
@@ -82,8 +82,13 @@ void VarHash<T, HashStorage>::setDataMove(void* object, void* data)
 
 	_string = std::move(*reinterpret_cast<Shibboleth::U8String*>(data));
 
-	T* const obj = reinterpret_cast<T*>(object);
-	(obj->*_ptr) = Gaff::FNV1aHash32String(_string.data());
+	Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+
+	if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash32>) {
+		hash = Gaff::FNV1aHash32String(_string.data());
+	} else if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash64>) {
+		hash = Gaff::FNV1aHash64String(_string.data());
+	}
 }
 
 template <class T, class HashStorage>
@@ -94,10 +99,12 @@ bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, T
 	const bool ret = Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string);
 
 	if (ret) {
+		Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+
 		if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash32>) {
-			(object.*_ptr) = Gaff::FNV1aHash32String(_string.data());
+			hash = Gaff::FNV1aHash32String(_string.data());
 		}  else if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash64>) {
-			(object.*_ptr) = Gaff::FNV1aHash64String(_string.data());
+			hash = Gaff::FNV1aHash64String(_string.data());
 		}
 	}
 
@@ -107,6 +114,8 @@ bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, T
 template <class T, class HashStorage>
 void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
+	const Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+
 	writer.startObject(3);
 
 	writer.writeUInt64(u8"version", Reflection<Gaff::Hash32>::GetInstance().getVersion().getHash());
@@ -115,7 +124,7 @@ void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T
 	Reflection<Shibboleth::U8String>::GetInstance().save(writer, _string);
 
 	writer.writeKey(u8"hash");
-	Reflection<HashStorage>::GetInstance().save(writer, (object.*_ptr).getHash());
+	Reflection<HashStorage>::GetInstance().save(writer, hash.getHash());
 
 	writer.endObject();
 }
