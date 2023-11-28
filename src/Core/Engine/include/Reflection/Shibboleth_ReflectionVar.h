@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Shibboleth_IReflection.h"
 #include "Shibboleth_HashString.h"
 #include <EASTL/string_view.h>
-#include <EASTL/array.h>
 
 NS_REFLECTION
 
@@ -36,9 +35,6 @@ class IVar;
 template <class T, class VarType>
 class Var;
 
-template <class T, class ContainerType>
-class VectorVar;
-
 
 
 template <class T, class VarType>
@@ -47,30 +43,6 @@ struct VarTypeHelper final
 	using ReflectionType = VarType;
 	using Type = Var<T, VarType>;
 	static constexpr bool k_can_copy = true;
-};
-
-template <class T, class VarType, class Vec_Allocator>
-struct VarTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
-{
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
-	using ContainerType = Gaff::Vector<VarType, Vec_Allocator>;
-	using VariableType = VarType;
-	using Type = VectorVar<T, ContainerType>;
-
-	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
-	static constexpr bool k_is_fixed_array = false;
-};
-
-template <class T, class VarType, size_t array_size>
-struct VarTypeHelper< T, eastl::array<VarType, array_size> > final
-{
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
-	using ContainerType = eastl::array<VarType, array_size>;
-	using VariableType = VarType;
-	using Type = VectorVar<T, ContainerType>;
-
-	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
-	static constexpr bool k_is_fixed_array = true;
 };
 
 
@@ -148,53 +120,6 @@ public:
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-};
-
-template <class T, class ContainerType>
-class VectorVar final : public IVar<T>
-{
-public:
-	using ReflectionType = VarTypeHelper<T, ContainerType>::ReflectionType;
-	using VarType = VarTypeHelper<T, ContainerType>::VariableType;
-
-	static_assert(Reflection<ReflectionType>::HasReflection);
-
-	explicit VectorVar(ContainerType T::*ptr);
-	VectorVar(void);
-
-	static const Reflection<ReflectionType>& GetReflection(void);
-	const IReflection& getReflection(void) const override;
-
-	const void* getData(const void* object) const override;
-	void* getData(void* object) override;
-	void setData(void* object, const void* data) override;
-	void setDataMove(void* object, void* data) override;
-
-	bool isVector(void) const override;
-	bool isFixedArray(void) const override;
-	int32_t size(const void* object) const override;
-
-	const void* getElement(const void* object, int32_t index) const override;
-	void* getElement(void* object, int32_t index) override;
-	void setElement(void* object, int32_t index, const void* data) override;
-	void setElementMove(void* object, int32_t index, void* data) override;
-	void swap(void* object, int32_t index_a, int32_t index_b) override;
-	void resize(void* object, size_t new_size) override;
-	void remove(void* object, int32_t index) override;
-
-	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
-	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-
-	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
-	void setSubVarBaseName(eastl::u8string_view base_name) override;
-	void regenerateSubVars(int32_t range_begin, int32_t range_end);
-
-private:
-	using RefVarType = VarTypeHelper<T, VarType>::Type;
-
-	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
-	eastl::u8string_view _base_name;
 };
 
 NS_END

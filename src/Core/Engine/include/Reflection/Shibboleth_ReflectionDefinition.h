@@ -385,7 +385,9 @@ private:
 	public:
 		BaseVarPtr(IVar<Base>* base_var);
 
+		const IReflection& getReflectionKey(void) const override;
 		const IReflection& getReflection(void) const override;
+
 		const void* getData(const void* object) const override;
 		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
@@ -394,6 +396,7 @@ private:
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
 		bool isFlags(void) const override;
+		bool isMap(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -402,6 +405,10 @@ private:
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
+		void remove(void* object, int32_t index) override;
+
+		void setFlagValue(void* object, int32_t flag_index, bool value) override;
+		bool getFlagValue(const void* object, int32_t flag_index) const override;
 
 		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;

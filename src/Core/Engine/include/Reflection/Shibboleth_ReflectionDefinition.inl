@@ -307,6 +307,13 @@ ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(IVar<Base>* base_var):
 
 template <class T>
 template <class Base>
+const IReflection& ReflectionDefinition<T>::BaseVarPtr<Base>::getReflectionKey(void) const
+{
+	return _base_var->getReflectionKey();
+}
+
+template <class T>
+template <class Base>
 const IReflection& ReflectionDefinition<T>::BaseVarPtr<Base>::getReflection(void) const
 {
 	return _base_var->getReflection();
@@ -476,6 +483,46 @@ void ReflectionDefinition<T>::BaseVarPtr<Base>::resize(void* object, size_t new_
 
 	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->resize(obj, new_size);
+}
+
+template <class T>
+template <class Base>
+void ReflectionDefinition<T>::BaseVarPtr<Base>::remove(void* object, int32_t index)
+{
+	GAFF_ASSERT(object);
+
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	Base* const obj = reinterpret_cast<T*>(object);
+	_base_var->remove(obj, index);
+}
+
+template <class T>
+template <class Base>
+void ReflectionDefinition<T>::BaseVarPtr<Base>::setFlagValue(void* object, int32_t flag_index, bool value)
+{
+	GAFF_ASSERT(object);
+
+	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	Base* const obj = reinterpret_cast<T*>(object);
+	_base_var->setFlagValue(obj, flag_index, value);
+}
+
+template <class T>
+template <class Base>
+bool ReflectionDefinition<T>::BaseVarPtr<Base>::getFlagValue(const void* object, int32_t flag_index) const
+{
+	GAFF_ASSERT(object);
+
+	const Base* const obj = reinterpret_cast<const T*>(object);
+	return _base_var->getFlagValue(obj, flag_index);
 }
 
 template <class T>

@@ -23,5 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionVar.inl"
+#include "Shibboleth_ReflectionVarVector.inl"
 #include "Shibboleth_ReflectionVarFlags.inl"
 #include "Shibboleth_ReflectionVarHash.inl"

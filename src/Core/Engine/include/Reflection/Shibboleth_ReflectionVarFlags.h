@@ -58,13 +58,15 @@ public:
 	void setData(void* object, const void* data) override;
 	void setDataMove(void* object, void* data) override;
 
+	int32_t size(const void* object) const override;
+
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
 	bool isFlags(void) const override;
 
 	void setFlagValue(void* object, int32_t flag_index, bool value) override;
-	bool getFlagValue(void* object, int32_t flag_index) const override;
+	bool getFlagValue(const void* object, int32_t flag_index) const override;
 
 	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;

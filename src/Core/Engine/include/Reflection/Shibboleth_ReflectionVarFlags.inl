@@ -138,6 +138,12 @@ void VarFlags<T, Enum>::setDataMove(void* object, void* data)
 }
 
 template <class T, class Enum>
+int32_t VarFlags<T, Enum>::size(const void* /*object*/) const
+{
+	return static_cast<int32_t>(Enum::Count);
+}
+
+template <class T, class Enum>
 bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
@@ -196,7 +202,7 @@ void VarFlags<T, Enum>::setFlagValue(void* object, int32_t flag_index, bool valu
 }
 
 template <class T, class Enum>
-bool VarFlags<T, Enum>::getFlagValue(void* object, int32_t flag_index) const
+bool VarFlags<T, Enum>::getFlagValue(const void* object, int32_t flag_index) const
 {
 	return IVar<T>::template get< Gaff::Flags<Enum> >(object)->testAll(static_cast<Enum>(flag_index));
 }

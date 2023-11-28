@@ -325,7 +325,7 @@ public:
 		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
 	}
 
-	virtual bool getFlagValue(void*, int32_t) const
+	virtual bool getFlagValue(const void*, int32_t) const
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not flags!");
 		return false;
