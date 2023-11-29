@@ -42,7 +42,8 @@ struct VarTypeHelper< T, Gaff::VectorMap<KeyType, ValueType, VecMap_Allocator> >
 	using ContainerType = Gaff::VectorMap<KeyType, ValueType, VecMap_Allocator>;
 	using Type = MapVar<T, ContainerType>;
 
-	static constexpr bool k_can_copy = VarTypeHelper<T, KeyType>::k_can_copy && VarTypeHelper<T, ValueType>::k_can_copy;
+	static constexpr bool k_key_can_copy = VarTypeHelper<T, KeyType>::k_can_copy;
+	static constexpr bool k_value_can_copy = VarTypeHelper<T, ValueType>::k_can_copy;
 };
 
 
@@ -65,6 +66,10 @@ public:
 	const IReflection& getReflectionKey(void) const override;
 	const IReflection& getReflection(void) const override;
 
+	int32_t getMapEntryIndex(const void* object, const void* key) override;
+	void addMapEntry(void* object, const void* key) override;
+	void addMapEntryMove(void* object, void* key) override;
+
 	const void* getData(const void* object) const override;
 	void* getData(void* object) override;
 	void setData(void* object, const void* data) override;
@@ -78,7 +83,6 @@ public:
 	void setElement(void* object, int32_t index, const void* data) override;
 	void setElementMove(void* object, int32_t index, void* data) override;
 	void swap(void* object, int32_t index_a, int32_t index_b) override;
-	void resize(void* object, size_t new_size) override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;

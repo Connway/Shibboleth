@@ -49,6 +49,50 @@ const IReflection& MapVar<T, ContainerType>::getReflection(void) const
 }
 
 template <class T, class ContainerType>
+int32_t MapVar<T, ContainerType>::getMapEntryIndex(const void* object, const void* key)
+{
+	const ContainerType& map = *IVar<T>::template get<ContainerType>(object);
+	const auto it = map.find(*reinterpret_cast<const KeyVarType*>(key));
+
+	return static_cast<int32_t>(eastl::distance(map.begin(), it));
+}
+
+template <class T, class ContainerType>
+void MapVar<T, ContainerType>::addMapEntry(void* object, const void* key)
+{
+	if constexpr (VarTypeHelper<T, ContainerType>::k_key_can_copy) {
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
+		(*IVar<T>::template get<ContainerType>(object))[*reinterpret_cast<const KeyVarType*>(key)];
+
+	} else {
+		GAFF_REF(object, key);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"MapVar<T, ContainerType>::addMapEntry() was called with [Key/Value]ReflectionType of '%s'. Element name: '%s'.",
+			reinterpret_cast<const char*>(Reflection<KeyReflectionType>::GetName()),
+			reinterpret_cast<const char*>(Reflection<ValueReflectionType>::GetName()),
+			reinterpret_cast<const char*>(_base_name.data())
+		);
+	}
+}
+
+template <class T, class ContainerType>
+void MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key)
+{
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<const KeyVarType*>(key))];
+}
+
+template <class T, class ContainerType>
 const void* MapVar<T, ContainerType>::getData(const void* object) const
 {
 	return const_cast<MapVar<T, ContainerType>*>(this)->getData(const_cast<void*>(object));
@@ -63,7 +107,7 @@ void* MapVar<T, ContainerType>::getData(void* object)
 template <class T, class ContainerType>
 void MapVar<T, ContainerType>::setData(void* object, const void* data)
 {
-	if constexpr (VarTypeHelper<T, ContainerType>::k_can_copy) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_key_can_copy && VarTypeHelper<T, ContainerType>::k_value_can_copy) {
 		if (IReflectionVar::isReadOnly()) {
 			// $TODO: Log error.
 			return;
@@ -123,7 +167,7 @@ void* MapVar<T, ContainerType>::getElement(void* object, int32_t index)
 template <class T, class ContainerType>
 void MapVar<T, ContainerType>::setElement(void* object, int32_t index, const void* data)
 {
-	if constexpr (VarTypeHelper<T, ContainerType>::k_can_copy) {
+	if constexpr (VarTypeHelper<T, ContainerType>::k_value_can_copy) {
 		GAFF_ASSERT(Gaff::ValidIndex(index, size(object)));
 
 		if (IReflectionVar::isReadOnly()) {
@@ -170,40 +214,20 @@ void MapVar<T, ContainerType>::swap(void* object, int32_t index_a, int32_t index
 		return;
 	}
 
-	ContainerType& vec_map = *IVar<T>::template get<ContainerType>(object);
-	eastl::swap(vec_map.at(index_a).second, vec_map.at(index_b).second);
+	ContainerType& map = *IVar<T>::template get<ContainerType>(object);
+	eastl::swap(map.at(index_a).second, map.at(index_b).second);
 	//eastl::swap(_elements[index_a], _elements[index_b]);
 	//_cached_element_vars[index_a].second = &_elements[index_a];
 	//_cached_element_vars[index_b].second = &_elements[index_b];
 }
 
 template <class T, class ContainerType>
-void MapVar<T, ContainerType>::resize(void* object, size_t new_size)
-{
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	IVar<T>::template get<ContainerType>(object)->resize(new_size);
-
-	//const size_t old_size = _elements.size();
-
-	//_cached_element_vars.resize(new_size);
-	//_elements.resize(new_size);
-
-	//if (new_size > old_size) {
-	//	regenerateSubVars(old_size + 1, new_size);
-	//}
-}
-
-template <class T, class ContainerType>
 bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	const int32_t size = reader.size();
-	ContainerType& vec_map = *IVar<T>::template get<ContainerType>(&object);
+	ContainerType& map = *IVar<T>::template get<ContainerType>(&object);
 
-	vec_map.reserve(static_cast<size_t>(size));
+	map.reserve(static_cast<size_t>(size));
 
 	bool success = true;
 
@@ -221,7 +245,7 @@ bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, 
 		if (key_loaded)
 		{
 			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard(u8"value");
-			success = Reflection<ValueReflectionType>::GetInstance().load(reader, vec_map[key]) && success;
+			success = Reflection<ValueReflectionType>::GetInstance().load(reader, map[key]) && success;
 
 		} else {
 			// $TODO: log error.

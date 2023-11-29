@@ -271,43 +271,58 @@ public:
 
 	virtual const IReflection& getReflectionKey(void) const
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector map!");
-		// To calm down Clang.
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+
 		IReflection* const ptr = nullptr;
 		return *ptr;
 	}
 
+	virtual int32_t getMapEntryIndex(const void*, const void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+	}
+
+	virtual void addMapEntry(void*, const void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+	}
+
+	virtual void addMapEntryMove(void*, void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+	}
+
 	virtual int32_t size(const void*) const
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector or map!");
 		return 0;
 	}
 
 	virtual const void* getElement(const void*, int32_t) const
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vectorv!");
 		return nullptr;
 	}
 
 	virtual void* getElement(void*, int32_t)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector or map!");
 		return nullptr;
 	}
 
 	virtual void setElement(void*, int32_t, const void*)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector or map!");
 	}
 
 	virtual void setElementMove(void*, int32_t, void*)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector or map!");
 	}
 
 	virtual void swap(void*, int32_t, int32_t)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector or map!");
 	}
 
 	virtual void resize(void*, size_t)
@@ -317,7 +332,7 @@ public:
 
 	virtual void remove(void*, int32_t)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector or map!");
 	}
 
 	virtual void setFlagValue(void*, int32_t, bool)
