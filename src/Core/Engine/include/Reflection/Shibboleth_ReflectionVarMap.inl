@@ -25,15 +25,42 @@ THE SOFTWARE.
 NS_REFLECTION
 
 template <class T, class ContainerType>
+MapVar<T, ContainerType>::MapVar(ContainerType T::*ptr):
+	IVar<T>(ptr)
+{
+	GAFF_ASSERT(ptr);
+
+	if constexpr (!std::is_enum_v<KeyReflectionType> && !ReflectionDefinition<KeyReflectionType>::IsBuiltIn()) {
+		static_assert(std::is_base_of_v<KeyReflectionType, KeyVarType>);
+	}
+
+	if constexpr (!std::is_enum_v<ValueReflectionType> && !ReflectionDefinition<ValueReflectionType>::IsBuiltIn()) {
+		static_assert(std::is_base_of_v<ValueReflectionType, ValueVarType>);
+	}
+}
+
+template <class T, class ContainerType>
+MapVar<T, ContainerType>::MapVar(void)
+{
+	if constexpr (!std::is_enum_v<KeyReflectionType> && !ReflectionDefinition<KeyReflectionType>::IsBuiltIn()) {
+		static_assert(std::is_base_of_v<KeyReflectionType, KeyVarType>);
+	}
+
+	if constexpr (!std::is_enum_v<ValueReflectionType> && !ReflectionDefinition<ValueReflectionType>::IsBuiltIn()) {
+		static_assert(std::is_base_of_v<ValueReflectionType, ValueVarType>);
+	}
+}
+
+template <class T, class ContainerType>
 const Reflection<typename MapVar<T, ContainerType>::KeyReflectionType>& MapVar<T, ContainerType>::GetReflectionKey(void)
 {
-	return Reflection<KeyReflectionType>::GetReflection();
+	return Reflection<KeyReflectionType>::GetInstance();
 }
 
 template <class T, class ContainerType>
 const Reflection<typename MapVar<T, ContainerType>::ValueReflectionType>& MapVar<T, ContainerType>::GetReflectionValue(void)
 {
-	return Reflection<ValueReflectionType>::GetReflection();
+	return Reflection<ValueReflectionType>::GetInstance();
 }
 
 template <class T, class ContainerType>
@@ -89,7 +116,7 @@ void MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key)
 		return;
 	}
 
-	(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<const KeyVarType*>(key))];
+	(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
 }
 
 template <class T, class ContainerType>
@@ -200,7 +227,7 @@ void MapVar<T, ContainerType>::setElementMove(void* object, int32_t index, void*
 		return;
 	}
 
-	IVar<T>::template get<ContainerType>(object)->at(index).second = std::move(*reinterpret_cast<const ValueVarType*>(data));
+	IVar<T>::template get<ContainerType>(object)->at(index).second = std::move(*reinterpret_cast<ValueVarType*>(data));
 }
 
 template <class T, class ContainerType>
@@ -242,8 +269,7 @@ bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, 
 			success = success && key_loaded;
 		}
 
-		if (key_loaded)
-		{
+		if (key_loaded) {
 			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard(u8"value");
 			success = Reflection<ValueReflectionType>::GetInstance().load(reader, map[key]) && success;
 

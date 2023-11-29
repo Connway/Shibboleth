@@ -60,6 +60,9 @@ public:
 	static_assert(Reflection<KeyReflectionType>::HasReflection);
 	static_assert(Reflection<ValueReflectionType>::HasReflection);
 
+	explicit MapVar(ContainerType T::*ptr);
+	MapVar(void);
+
 	static const Reflection<KeyReflectionType>& GetReflectionKey(void);
 	static const Reflection<ValueReflectionType>& GetReflectionValue(void);
 
