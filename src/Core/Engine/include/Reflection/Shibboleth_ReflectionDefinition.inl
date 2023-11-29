@@ -401,6 +401,30 @@ int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::size(const void* object) cons
 
 template <class T>
 template <class Base>
+int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntryIndex(const void* object, const void* key)
+{
+	const Base* const obj = reinterpret_cast<const T*>(object);
+	return _base_var->getMapEntryIndex(obj, key);
+}
+
+template <class T>
+template <class Base>
+void ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	_base_var->addMapEntry(obj, key);
+}
+
+template <class T>
+template <class Base>
+void ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	_base_var->addMapEntryMove(obj, key);
+}
+
+template <class T>
+template <class Base>
 const void* ReflectionDefinition<T>::BaseVarPtr<Base>::getElement(const void* object, int32_t index) const
 {
 	GAFF_ASSERT(index < size(object));
