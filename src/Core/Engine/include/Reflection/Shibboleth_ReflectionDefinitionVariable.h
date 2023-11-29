@@ -24,5 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ReflectionVar.h"
 #include "Shibboleth_ReflectionVarVector.h"
+#include "Shibboleth_ReflectionVarMap.h"
 #include "Shibboleth_ReflectionVarFlags.h"
 #include "Shibboleth_ReflectionVarHash.h"

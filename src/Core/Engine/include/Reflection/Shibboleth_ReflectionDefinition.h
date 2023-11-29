@@ -185,12 +185,6 @@ public:
 	template <class Ret, class Var, size_t name_size, class... Attrs>
 	ReflectionDefinition& var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes);
 
-	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char8_t (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
-
-	template <class Key, class Value, class VecMap_Allocator, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[name_size], Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* vec_map, const Attrs&... attributes);
-
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
@@ -415,36 +409,6 @@ private:
 
 	private:
 		IVar<Base>* _base_var;
-	};
-
-	template <class Key, class Value, class VecMap_Allocator>
-	class VectorMapPtr final : public IVar<T>
-	{
-	public:
-		VectorMapPtr(Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* ptr);
-
-		const IReflection& getReflection(void) const override;
-		const IReflection& getReflectionKey(void) const override;
-		const void* getData(const void* object) const override;
-		void* getData(void* object) override;
-		void setData(void* object, const void* data) override;
-		void setDataMove(void* object, void* data) override;
-
-		bool isMap(void) const override { return true; }
-		int32_t size(const void* object) const override;
-
-		const void* getElement(const void* object, int32_t index) const override;
-		void* getElement(void* object, int32_t index) override;
-		void setElement(void* object, int32_t index, const void* data) override;
-		void setElementMove(void* object, int32_t index, void* data) override;
-		void swap(void* object, int32_t index_a, int32_t index_b) override;
-		void resize(void* object, size_t new_size) override;
-
-		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
-		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-
-	private:
-		Gaff::VectorMap<Key, Value, VecMap_Allocator> T::* _ptr = nullptr;
 	};
 
 
