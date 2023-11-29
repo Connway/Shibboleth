@@ -409,18 +409,50 @@ int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntryIndex(const void* 
 
 template <class T>
 template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key)
+const void* ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntry(const void* object, const void* key) const
 {
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->addMapEntry(obj, key);
+	const Base* const obj = reinterpret_cast<const T*>(object);
+	return _base_var->getMapEntry(obj, key);
 }
 
 template <class T>
 template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key)
+void* ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntry(void* object, const void* key)
 {
 	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->addMapEntryMove(obj, key);
+	return _base_var->getMapEntry(obj, key);
+}
+
+template <class T>
+template <class Base>
+void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key, const void* value)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	return _base_var->addMapEntry(obj, key, value);
+}
+
+template <class T>
+template <class Base>
+void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key, void* value)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	return _base_var->addMapEntryMove(obj, key, value);
+}
+
+template <class T>
+template <class Base>
+void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	return _base_var->addMapEntry(obj, key);
+}
+
+template <class T>
+template <class Base>
+void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key)
+{
+	Base* const obj = reinterpret_cast<T*>(object);
+	return _base_var->addMapEntryMove(obj, key);
 }
 
 template <class T>

@@ -261,20 +261,20 @@ bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reade
 		vec.resize(static_cast<size_t>(size));
 	}
 
+	_cached_element_vars.resize(static_cast<size_t>(size));
+	_elements.resize(static_cast<size_t>(size));
+	regenerateSubVars(0, size);
+
 	bool success = true;
 
 	for (int32_t i = 0; i < size; ++i) {
 		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 
-		if (!Reflection<ReflectionType>::GetInstance().load(reader, vec[i])) {
+		if (!_elements[i].load(reader, object)) {
 			// $TODO: Log error.
 			success = false;
 		}
 	}
-
-	_cached_element_vars.resize(static_cast<size_t>(size));
-	_elements.resize(static_cast<size_t>(size));
-	regenerateSubVars(0, size);
 
 	return success;
 }
@@ -282,12 +282,13 @@ bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reade
 template <class T, class ContainerType>
 void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
-	const int32_t size = static_cast<int32_t>(vec.size());
+	GAFF_ASSERT(static_cast<size_t>(size(&object)) == _elements.size());
+
+	const int32_t size = static_cast<int32_t>(_elements.size());
 	writer.startArray(static_cast<uint32_t>(size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		Reflection<ReflectionType>::GetInstance().save(writer, vec[i]);
+		_elements[i].save(writer, object);
 	}
 
 	writer.endArray();

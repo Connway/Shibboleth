@@ -280,16 +280,43 @@ public:
 	virtual int32_t getMapEntryIndex(const void*, const void*)
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return -1;
 	}
 
-	virtual void addMapEntry(void*, const void*)
+	virtual const void* getMapEntry(const void*, const void*) const
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
 	}
 
-	virtual void addMapEntryMove(void*, void*)
+	virtual void* getMapEntry(void*, const void*)
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
+	}
+
+	virtual void* addMapEntry(void*, const void*, const void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
+	}
+
+	virtual void* addMapEntryMove(void*, void*, void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
+	}
+
+	virtual void* addMapEntry(void*, const void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
+	}
+
+	virtual void* addMapEntryMove(void*, void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a map!");
+		return nullptr;
 	}
 
 	virtual int32_t size(const void*) const

@@ -70,8 +70,13 @@ public:
 	const IReflection& getReflection(void) const override;
 
 	int32_t getMapEntryIndex(const void* object, const void* key) override;
-	void addMapEntry(void* object, const void* key) override;
-	void addMapEntryMove(void* object, void* key) override;
+	const void* getMapEntry(const void* object, const void* key) const override;
+	void* getMapEntry(void* object, const void* key) override;
+
+	void* addMapEntry(void* object, const void* key, const void* value) override;
+	void* addMapEntryMove(void* object, void* key, void* value) override;
+	void* addMapEntry(void* object, const void* key) override;
+	void* addMapEntryMove(void* object, void* key) override;
 
 	const void* getData(const void* object) const override;
 	void* getData(void* object) override;
@@ -92,7 +97,7 @@ public:
 
 	//const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;
-	//void regenerateSubVars(int32_t range_begin, int32_t range_end);
+	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
 private:
 	//using RefVarType = VarTypeHelper<T, VarType>::Type;

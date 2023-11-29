@@ -394,8 +394,13 @@ private:
 		int32_t size(const void*) const override;
 
 		int32_t getMapEntryIndex(const void* object, const void* key) override;
-		void addMapEntry(void* object, const void* key) override;
-		void addMapEntryMove(void* object, void* key) override;
+		const void* getMapEntry(const void* object, const void* key) const override;
+		void* getMapEntry(void* object, const void* key) override;
+
+		void* addMapEntry(void* object, const void* key, const void* value) override;
+		void* addMapEntryMove(void* object, void* key, void* value) override;
+		void* addMapEntry(void* object, const void* key) override;
+		void* addMapEntryMove(void* object, void* key) override;
 
 		const void* getElement(const void* object, int32_t index) const override;
 		void* getElement(void* object, int32_t index) override;

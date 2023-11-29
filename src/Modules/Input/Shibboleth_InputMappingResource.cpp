@@ -40,5 +40,4 @@ const Vector<InputMapping>& InputMappingResource::getMappings(void) const
 	return _mappings;
 }
 
-
 NS_END
