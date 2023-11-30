@@ -51,6 +51,9 @@ template <class T>
 class IVar : public IReflectionVar
 {
 public:
+	using IReflectionVar::load;
+	using IReflectionVar::save;
+
 	template <class VarType>
 	IVar(VarType T::*ptr);
 
@@ -117,6 +120,9 @@ public:
 	void* getData(void* object) override;
 	void setData(void* object, const void* data) override;
 	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;

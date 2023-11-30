@@ -29,6 +29,12 @@ THE SOFTWARE.
 #include <Gaff_Flags.h>
 #include <Gaff_Hash.h>
 
+NS_SHIBBOLETH
+	class ISerializeReader;
+	class ISerializeWriter;
+
+NS_END
+
 NS_REFLECTION
 
 class IEnumReflectionDefinition;
@@ -257,6 +263,9 @@ public:
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
 		setElementMove(object, index, &data);
 	}
+
+	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object) = 0;
+	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object) = 0;
 
 	virtual const IReflection& getReflection(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;

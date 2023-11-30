@@ -118,27 +118,47 @@ void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::setDataMove(void* o
 
 template <class T>
 template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
 	GAFF_ASSERT(_getter);
 	GAFF_ASSERT(_setter);
 
-	VarType var;
+	VarType* const var = reinterpret_cast<VarType*>(object);
 
-	if (!Reflection<RetType>::GetInstance().load(reader, var)) {
+	if (!Reflection<RetType>::GetInstance().load(reader, *var)) {
 		return false;
 	}
 
-	callSetter(object, var);
 	return true;
+}
+
+template <class T>
+template <class Ret, class Var>
+void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+{
+	GAFF_ASSERT(_getter);
+
+	const VarType* const var = reinterpret_cast<const VarType*>(object);
+	Reflection<RetType>::GetInstance().save(writer, *var);
+}
+
+template <class T>
+template <class Ret, class Var>
+bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	VarType var;
+	const bool ret = load(reader, &var);
+
+	callSetter(object, var);
+	return ret;
 }
 
 template <class T>
 template <class Ret, class Var>
 void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	GAFF_ASSERT(_getter);
-	Reflection<RetType>::GetInstance().save(writer, callGetter(object));
+	const RetType value = callGetter(object);
+	save(writer, &value);
 }
 
 template <class T>
@@ -249,17 +269,33 @@ void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::setDataMove(void* object, vo
 
 template <class T>
 template <class Ret, class Var>
+bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, void* object)
+{
+	RetType* const value = reinterpret_cast<RetType*>(object);
+	return Reflection<RetType>::GetInstance().load(reader, *value);
+}
+
+template <class T>
+template <class Ret, class Var>
+void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+{
+	const RetType* const value = reinterpret_cast<const RetType*>(object);
+	Reflection<RetType>::GetInstance().save(writer, *value);
+}
+
+template <class T>
+template <class Ret, class Var>
 bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	GAFF_ASSERT(_getter);
 
 	if constexpr (std::is_reference<Ret>::value) {
-		RetType& val = const_cast<RetType&>(callGetter(object));
-		return Reflection<RetType>::GetInstance().load(reader, val);
+		RetType& value = const_cast<RetType&>(callGetter(object));
+		return load(reader, &value);
 
 	} else {
-		RetType* const val = const_cast<RetType*>(callGetter(object));
-		return Reflection<RetType>::GetInstance().load(reader, *val);
+		RetType* const value = const_cast<RetType*>(callGetter(object));
+		return load(reader, value);
 	}
 }
 
@@ -270,12 +306,12 @@ void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeW
 	GAFF_ASSERT(_getter);
 
 	if constexpr (std::is_reference<Ret>::value) {
-		const RetType& val = callGetter(object);
-		Reflection<RetType>::GetInstance().save(writer, val);
+		const RetType& value = callGetter(object);
+		Reflection<RetType>::GetInstance().save(writer, value);
 
 	} else {
-		const RetType* const val = callGetter(object);
-		Reflection<RetType>::GetInstance().save(writer, *val);
+		const RetType* const value = callGetter(object);
+		Reflection<RetType>::GetInstance().save(writer, value);
 	}
 }
 
@@ -579,6 +615,20 @@ bool ReflectionDefinition<T>::BaseVarPtr<Base>::getFlagValue(const void* object,
 
 	const Base* const obj = reinterpret_cast<const T*>(object);
 	return _base_var->getFlagValue(obj, flag_index);
+}
+
+template <class T>
+template <class Base>
+bool ReflectionDefinition<T>::BaseVarPtr<Base>::load(const Shibboleth::ISerializeReader& reader, void* object)
+{
+	return _base_var->load(reader, object);
+}
+
+template <class T>
+template <class Base>
+void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+{
+	_base_var->save(writer, object);
 }
 
 template <class T>

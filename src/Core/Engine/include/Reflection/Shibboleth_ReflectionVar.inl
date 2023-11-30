@@ -209,6 +209,8 @@ void* IVar<T>::adjust(void* object)
 
 		if (_parent->isVector() || _parent->isFixedArray()) {
 			object = _parent->getElement(object, 0);
+		} else if (_parent->isMap()) {
+			return _parent->getElement(object, static_cast<int32_t>(_offset));
 		}
 	}
 
@@ -298,17 +300,31 @@ void Var<T, VarType>::setDataMove(void* object, void* data)
 }
 
 template <class T, class VarType>
+bool Var<T, VarType>::load(const Shibboleth::ISerializeReader& reader, void* object)
+{
+	VarType* const var = reinterpret_cast<VarType*>(object);
+	return Reflection<ReflectionType>::GetInstance().load(reader, *var);
+}
+
+template <class T, class VarType>
+void Var<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+{
+	const VarType* const var = reinterpret_cast<const VarType*>(object);
+	Reflection<ReflectionType>::GetInstance().save(writer, *var);
+}
+
+template <class T, class VarType>
 bool Var<T, VarType>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
 	VarType* const var = IVar<T>::template get<VarType>(&object);
-	return Reflection<ReflectionType>::GetInstance().load(reader, *var);
+	return load(reader, var);
 }
 
 template <class T, class VarType>
 void Var<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	const VarType* const var = IVar<T>::template get<VarType>(&object);
-	Reflection<ReflectionType>::GetInstance().save(writer, *var);
+	save(writer, var);
 }
 
 NS_END

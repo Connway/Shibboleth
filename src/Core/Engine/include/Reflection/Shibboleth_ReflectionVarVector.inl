@@ -250,10 +250,10 @@ void VectorVar<T, ContainerType>::remove(void* object, int32_t index)
 }
 
 template <class T, class ContainerType>
-bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
+	ContainerType& vec = *reinterpret_cast<ContainerType*>(object);
 	const int32_t size = reader.size();
-	ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
 
 	if constexpr (VarTypeHelper<T, ContainerType>::k_is_fixed_array) {
 		GAFF_ASSERT(size == static_cast<int32_t>(vec.size()));
@@ -270,7 +270,7 @@ bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reade
 	for (int32_t i = 0; i < size; ++i) {
 		Shibboleth::ScopeGuard scope = reader.enterElementGuard(i);
 
-		if (!_elements[i].load(reader, object)) {
+		if (!_elements[i].load(reader, &vec[i])) {
 			// $TODO: Log error.
 			success = false;
 		}
@@ -280,18 +280,33 @@ bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reade
 }
 
 template <class T, class ContainerType>
-void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
 	GAFF_ASSERT(static_cast<size_t>(size(&object)) == _elements.size());
 
+	const ContainerType& vec = *reinterpret_cast<const ContainerType*>(object);
 	const int32_t size = static_cast<int32_t>(_elements.size());
 	writer.startArray(static_cast<uint32_t>(size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		_elements[i].save(writer, object);
+		_elements[i].save(writer, &vec[i]);
 	}
 
 	writer.endArray();
+}
+
+template <class T, class ContainerType>
+bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
+	return load(reader, &vec);
+}
+
+template <class T, class ContainerType>
+void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
+	save(writer, &vec);
 }
 
 template <class T, class ContainerType>

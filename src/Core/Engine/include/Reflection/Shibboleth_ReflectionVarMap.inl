@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+// MapVar
 template <class T, class ContainerType>
 MapVar<T, ContainerType>::MapVar(ContainerType T::*ptr):
 	IVar<T>(ptr)
@@ -309,12 +310,20 @@ void MapVar<T, ContainerType>::swap(void* object, int32_t index_a, int32_t index
 }
 
 template <class T, class ContainerType>
-bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
+	ContainerType& map = *reinterpret_cast<ContainerType*>(object);
 	const int32_t size = reader.size();
-	ContainerType& map = *IVar<T>::template get<ContainerType>(&object);
 
-	map.reserve(static_cast<size_t>(size));
+	static constexpr bool k_has_reserve = requires(ContainerType& container, size_t container_size) { container.reserve(container_size); };
+
+	if constexpr (k_has_reserve) {
+		map.reserve(static_cast<size_t>(size));
+	}
+
+	//_cached_element_vars.resize(static_cast<size_t>(size));
+	_elements.resize(static_cast<size_t>(size));
+	regenerateSubVars(0, size);
 
 	bool success = true;
 
@@ -325,35 +334,31 @@ bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, 
 
 		{
 			Shibboleth::ScopeGuard guard_key = reader.enterElementGuard(u8"key");
-			key_loaded = Reflection<KeyReflectionType>::GetInstance().load(reader, key);
+			key_loaded = _elements[i].first.load(reader, &key);
 			success = success && key_loaded;
 		}
 
 		if (key_loaded) {
 			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard(u8"value");
-			success = Reflection<ValueReflectionType>::GetInstance().load(reader, map[key]) && success;
+			success = _elements[i].second.load(reader, &map[std::move(key)]) && success;
 
 		} else {
 			// $TODO: log error.
 		}
 	}
 
-	//_cached_element_vars.resize(static_cast<size_t>(size));
-	//_elements.resize(static_cast<size_t>(size));
-	//regenerateSubVars(0, size);
-
 	return success;
 }
 
 template <class T, class ContainerType>
-void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
-	const ContainerType& vec = *IVar<T>::template get<ContainerType>(&object);
-	const int32_t size = static_cast<int32_t>(vec.size());
+	const ContainerType& map = *reinterpret_cast<const ContainerType*>(object);
+	const int32_t size = static_cast<int32_t>(map.size());
 	writer.startArray(static_cast<uint32_t>(size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		const auto& entry = *(vec.begin() + i);
+		const auto& entry = *(map.begin() + i);
 
 		writer.startObject(2);
 
@@ -369,6 +374,20 @@ void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const 
 	writer.endArray();
 }
 
+template <class T, class ContainerType>
+bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	ContainerType& map = *IVar<T>::template get<ContainerType>(&object);
+	return load(reader, &map);
+}
+
+template <class T, class ContainerType>
+void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const ContainerType& map = *IVar<T>::template get<ContainerType>(&object);
+	save(writer, &map);
+}
+
 //template <class T, class ContainerType>
 //const Shibboleth::Vector<IReflectionVar::SubVarData>& MapVar<T, ContainerType>::getSubVars(void)
 //{
@@ -379,7 +398,7 @@ template <class T, class ContainerType>
 void MapVar<T, ContainerType>::setSubVarBaseName(eastl::u8string_view base_name)
 {
 	_base_name = base_name;
-	//regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+	regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
 }
 
 template <class T, class ContainerType>
@@ -389,9 +408,13 @@ void MapVar<T, ContainerType>::regenerateSubVars(int32_t range_begin, int32_t ra
 		//Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
 		//element_path.append_sprintf(u8"%s[%s]", _base_name.data(), i);
 
-		//_elements[i].setOffset(static_cast<ptrdiff_t>(i * sizeof(VarType)));
-		//_elements[i].setParent(this);
-		//_elements[i].setNoSerialize(true);
+		_elements[i].first.setOffset(static_cast<ptrdiff_t>(i));
+		_elements[i].second.setOffset(static_cast<ptrdiff_t>(i));
+		_elements[i].first.setParent(this);
+		_elements[i].second.setParent(this);
+		_elements[i].first.setNoSerialize(true);
+		_elements[i].second.setNoSerialize(true);
+
 		//_cached_element_vars[i].first = Shibboleth::HashString32<>(element_path);
 		//_cached_element_vars[i].second = &_elements[i];
 	}

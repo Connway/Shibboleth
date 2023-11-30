@@ -38,6 +38,8 @@ public:
 	void setData(void* object, const void* data) override;
 	void setDataMove(void* object, void* data) override;
 
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
@@ -60,6 +62,8 @@ public:
 
 	int32_t size(const void* object) const override;
 
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 

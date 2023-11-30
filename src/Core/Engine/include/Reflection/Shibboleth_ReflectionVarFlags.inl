@@ -67,6 +67,19 @@ void VarFlagBit<T, Enum>::setDataMove(void* object, void* data)
 }
 
 template <class T, class Enum>
+bool VarFlagBit<T, Enum>::load(const Shibboleth::ISerializeReader& /*reader*/, void* /*object*/)
+{
+	GAFF_ASSERT_MSG(false, "VarFlagBit::load() should never be called.");
+	return false;
+}
+
+template <class T, class Enum>
+void VarFlagBit<T, Enum>::save(Shibboleth::ISerializeWriter& /*writer*/, const void* /*object*/)
+{
+	GAFF_ASSERT_MSG(false, "VarFlagBit::save() should never be called.");
+}
+
+template <class T, class Enum>
 bool VarFlagBit<T, Enum>::load(const Shibboleth::ISerializeReader& /*reader*/, T& /*object*/)
 {
 	GAFF_ASSERT_MSG(false, "VarFlagBit::load() should never be called.");
@@ -144,9 +157,9 @@ int32_t VarFlags<T, Enum>::size(const void* /*object*/) const
 }
 
 template <class T, class Enum>
-bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
-	Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
+	Gaff::Flags<Enum>& flags = *reinterpret_cast<Gaff::Flags<Enum>*>(object);
 
 	// Iterate over all the flags and read values.
 	const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -172,9 +185,9 @@ bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& obje
 }
 
 template <class T, class Enum>
-void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
-	const Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
+	const Gaff::Flags<Enum>& flags = *reinterpret_cast<const Gaff::Flags<Enum>*>(object);
 
 	// Iterate over all the flags and write values.
 	const IEnumReflectionDefinition& ref_def = getReflection().getEnumReflectionDefinition();
@@ -187,6 +200,20 @@ void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const T& obje
 
 		writer.writeBool(flag_name.getBuffer(), value);
 	}
+}
+
+template <class T, class Enum>
+bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
+	return load(reader, &flags);
+}
+
+template <class T, class Enum>
+void VarFlags<T, Enum>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const Gaff::Flags<Enum>& flags = *IVar<T>::template get< Gaff::Flags<Enum> >(&object);
+	save(writer, &flags);
 }
 
 template <class T, class Enum>

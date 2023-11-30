@@ -90,6 +90,8 @@ public:
 	void resize(void* object, size_t new_size) override;
 	void remove(void* object, int32_t index) override;
 
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 

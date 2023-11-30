@@ -92,29 +92,29 @@ void VarHash<T, HashStorage>::setDataMove(void* object, void* data)
 }
 
 template <class T, class HashStorage>
-bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
 	const Shibboleth::ScopeGuard guard = reader.enterElementGuard("string");
 
-	const bool ret = Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string);
-
-	if (ret) {
-		Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
-
-		if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash32>) {
-			hash = Gaff::FNV1aHash32String(_string.data());
-		}  else if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash64>) {
-			hash = Gaff::FNV1aHash64String(_string.data());
-		}
+	if (!Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string)) {
+		return false;
 	}
 
-	return ret;
+	Gaff::Hash<HashStorage>& hash = *reinterpret_cast<Gaff::Hash<HashStorage>*>(object);
+
+	if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash32>) {
+		hash = Gaff::FNV1aHash32String(_string.data());
+	}  else if constexpr (std::is_same_v<Gaff::Hash<HashStorage>, Gaff::Hash64>) {
+		hash = Gaff::FNV1aHash64String(_string.data());
+	}
+
+	return true;
 }
 
 template <class T, class HashStorage>
-void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
-	const Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+	const Gaff::Hash<HashStorage>& hash = *reinterpret_cast<const Gaff::Hash<HashStorage>*>(object);
 
 	writer.startObject(3);
 
@@ -127,6 +127,20 @@ void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T
 	Reflection<HashStorage>::GetInstance().save(writer, hash.getHash());
 
 	writer.endObject();
+}
+
+template <class T, class HashStorage>
+bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, T& object)
+{
+	Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+	return load(reader, &hash);
+}
+
+template <class T, class HashStorage>
+void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+{
+	const Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+	save(writer, &hash);
 }
 
 NS_END

@@ -48,6 +48,15 @@ struct VarTypeHelper< T, Gaff::VectorMap<KeyType, ValueType, VecMap_Allocator> >
 
 
 
+template <class T, class ContainerType, class RefType>
+class MapVarKey final : public RefType
+{
+public:
+	//void* adjust(void* object) override;
+};
+
+
+
 template <class T, class ContainerType>
 class MapVar final : public IVar<T>
 {
@@ -92,6 +101,8 @@ public:
 	void setElementMove(void* object, int32_t index, void* data) override;
 	void swap(void* object, int32_t index_a, int32_t index_b) override;
 
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
@@ -100,10 +111,12 @@ public:
 	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
 private:
-	//using RefVarType = VarTypeHelper<T, VarType>::Type;
+	using RefKeyVarType = VarTypeHelper<T, KeyVarType>::Type;
+	using RefValueVarType = VarTypeHelper<T, ValueVarType>::Type;
+	using RefVarType = eastl::pair<RefKeyVarType, RefValueVarType>;
 
 	//Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
-	//Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
 	eastl::u8string_view _base_name;
 };
 
