@@ -48,15 +48,6 @@ struct VarTypeHelper< T, Gaff::VectorMap<KeyType, ValueType, VecMap_Allocator> >
 
 
 
-template <class T, class ContainerType, class RefType>
-class MapVarKey final : public RefType
-{
-public:
-	//void* adjust(void* object) override;
-};
-
-
-
 template <class T, class ContainerType>
 class MapVar final : public IVar<T>
 {
