@@ -41,6 +41,7 @@ template <class T, class VarType>
 struct VarTypeHelper final
 {
 	using ReflectionType = VarType;
+	using VariableType = VarType;
 	using Type = Var<T, VarType>;
 	static constexpr bool k_can_copy = true;
 };
@@ -138,6 +139,7 @@ NS_END
 	struct VarTypeHelper< T, ClassType<VarType> > final \
 	{ \
 		using ReflectionType = BaseType; \
+		using VariableType = ClassType<VarType>; \
 		using Type = Var< T, ClassType<VarType> >; \
 		static constexpr bool k_can_copy = true; \
 	}; \
@@ -149,6 +151,7 @@ NS_END
 	struct VarTypeHelper<T, ClassType> final \
 	{ \
 		using ReflectionType = BaseType; \
+		using VariableType = ClassType; \
 		using Type = Var<T, ClassType>; \
 		static constexpr bool k_can_copy = true; \
 	}; \
@@ -165,6 +168,7 @@ NS_END
 	struct VarTypeHelper< T, ClassType<VarType> > final \
 	{ \
 		using ReflectionType = BaseType; \
+		using VariableType = ClassType<VarType>; \
 		using Type = Var< T, ClassType<VarType> >; \
 		static constexpr bool k_can_copy = false; \
 	}; \
@@ -176,6 +180,7 @@ NS_END
 	struct VarTypeHelper<T, ClassType> final \
 	{ \
 		using ReflectionType = BaseType; \
+		using VariableType = ClassType; \
 		using Type = Var<T, ClassType>; \
 		static constexpr bool k_can_copy = false; \
 	}; \

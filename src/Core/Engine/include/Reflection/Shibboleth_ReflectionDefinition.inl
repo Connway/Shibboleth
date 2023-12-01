@@ -38,301 +38,6 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args)
 
 
 
-// VarFuncPtrWithCache
-template <class T>
-template <class Ret, class Var>
-ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::VarFuncPtrWithCache(GetterMemberFunc getter, SetterMemberFunc setter):
-	_getter_member(getter), _setter_member(setter), _member_func(true)
-{
-	GAFF_ASSERT(getter);
-}
-
-template <class T>
-template <class Ret, class Var>
-ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::VarFuncPtrWithCache(GetterFunc getter, SetterFunc setter):
-	_getter(getter), _setter(setter), _member_func(false)
-{
-	GAFF_ASSERT(getter);
-}
-
-template <class T>
-template <class Ret, class Var>
-const IReflection& ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::getReflection(void) const
-{
-	return Reflection<RetType>::GetInstance();
-}
-
-template <class T>
-template <class Ret, class Var>
-const void* ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::getData(const void* object) const
-{
-	return const_cast<ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>*>(this)->getData(const_cast<void*>(object));
-}
-
-template <class T>
-template <class Ret, class Var>
-void* ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::getData(void* object)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_getter);
-
-	const T* const obj = reinterpret_cast<const T*>(object);
-	_cache = callGetter(*obj);
-
-	return &_cache;
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::setData(void* object, const void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_setter);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	T* const obj = reinterpret_cast<T*>(object);
-	callSetter(*obj, *reinterpret_cast<const VarType*>(data));
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::setDataMove(void* object, void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_setter);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	T* const obj = reinterpret_cast<T*>(object);
-	callSetter(*obj, std::move(*reinterpret_cast<VarType*>(data)));
-}
-
-template <class T>
-template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, void* object)
-{
-	GAFF_ASSERT(_getter);
-	GAFF_ASSERT(_setter);
-
-	VarType* const var = reinterpret_cast<VarType*>(object);
-
-	if (!Reflection<RetType>::GetInstance().load(reader, *var)) {
-		return false;
-	}
-
-	return true;
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const void* object)
-{
-	GAFF_ASSERT(_getter);
-
-	const VarType* const var = reinterpret_cast<const VarType*>(object);
-	Reflection<RetType>::GetInstance().save(writer, *var);
-}
-
-template <class T>
-template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	VarType var;
-	const bool ret = load(reader, &var);
-
-	callSetter(object, var);
-	return ret;
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	const RetType value = callGetter(object);
-	save(writer, &value);
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::callSetter(T& object, Var value) const
-{
-	GAFF_ASSERT(_setter);
-	return (_member_func) ? (object.*_setter_member)(value) : _setter(object, value);
-}
-
-template <class T>
-template <class Ret, class Var>
-Ret ReflectionDefinition<T>::VarFuncPtrWithCache<Ret, Var>::callGetter(const T& object) const
-{
-	GAFF_ASSERT(_getter);
-	return (_member_func) ? (object.*_getter_member)() : _getter(object);
-}
-
-
-
-// VarFuncPtr
-template <class T>
-template <class Ret, class Var>
-ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::VarFuncPtr(GetterMemberFunc getter, SetterMemberFunc setter):
-	_getter_member(getter),
-	_setter_member(setter),
-	_member_func(true)
-{
-	GAFF_ASSERT(getter);
-}
-
-template <class T>
-template <class Ret, class Var>
-ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::VarFuncPtr(GetterFunc getter, SetterFunc setter) :
-	_getter(getter),
-	_setter(setter),
-	_member_func(false)
-{
-	GAFF_ASSERT(getter);
-}
-
-template <class T>
-template <class Ret, class Var>
-const IReflection& ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::getReflection(void) const
-{
-	return Reflection<RetType>::GetInstance();
-}
-
-template <class T>
-template <class Ret, class Var>
-const void* ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::getData(const void* object) const
-{
-	return const_cast<ReflectionDefinition<T>::VarFuncPtr<Ret, Var>*>(this)->getData(const_cast<void*>(object));
-}
-
-template <class T>
-template <class Ret, class Var>
-void* ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::getData(void* object)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_getter);
-
-	T* const obj = reinterpret_cast<T*>(object);
-
-	if constexpr (std::is_reference<Ret>::value) {
-		const Ret& val = callGetter(*obj);
-		RetType* const ptr = const_cast<RetType*>(&val);
-		return ptr;
-
-	} else if (std::is_pointer<Ret>::value) {
-		return const_cast<RetType*>(callGetter(*obj));
-	}
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::setData(void* object, const void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_setter);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	T* const obj = reinterpret_cast<T*>(object);
-	callSetter(*obj, *reinterpret_cast<const RetType*>(data));
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::setDataMove(void* object, void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(_setter);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	T* const obj = reinterpret_cast<T*>(object);
-	callSetter(*obj, std::move(*reinterpret_cast<RetType*>(data)));
-}
-
-template <class T>
-template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, void* object)
-{
-	RetType* const value = reinterpret_cast<RetType*>(object);
-	return Reflection<RetType>::GetInstance().load(reader, *value);
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const void* object)
-{
-	const RetType* const value = reinterpret_cast<const RetType*>(object);
-	Reflection<RetType>::GetInstance().save(writer, *value);
-}
-
-template <class T>
-template <class Ret, class Var>
-bool ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	GAFF_ASSERT(_getter);
-
-	if constexpr (std::is_reference<Ret>::value) {
-		RetType& value = const_cast<RetType&>(callGetter(object));
-		return load(reader, &value);
-
-	} else {
-		RetType* const value = const_cast<RetType*>(callGetter(object));
-		return load(reader, value);
-	}
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	GAFF_ASSERT(_getter);
-
-	if constexpr (std::is_reference<Ret>::value) {
-		const RetType& value = callGetter(object);
-		Reflection<RetType>::GetInstance().save(writer, value);
-
-	} else {
-		const RetType* const value = callGetter(object);
-		Reflection<RetType>::GetInstance().save(writer, value);
-	}
-}
-
-template <class T>
-template <class Ret, class Var>
-void ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::callSetter(T& object, Var value) const
-{
-	GAFF_ASSERT(_setter);
-	return (_member_func) ? (object.*_setter_member)(value) : _setter(object, value);
-}
-
-template <class T>
-template <class Ret, class Var>
-Ret ReflectionDefinition<T>::VarFuncPtr<Ret, Var>::callGetter(const T& object) const
-{
-	GAFF_ASSERT(_getter);
-	return (_member_func) ? (object.*_getter_member)() : _getter(object);
-}
-
-
-
 // BaseVarPtr
 template <class T>
 template <class Base>
@@ -1516,38 +1221,17 @@ template <class T>
 template <class Ret, class Var, size_t name_size, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
-	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
-
-	// $TODO: Use std::decay instead.
-	using RetNoRef = typename std::remove_reference<Ret>::type;
-	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
-	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-
-	using VarNoRef = typename std::remove_reference<Var>::type;
-	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-
-	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
-	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
+	using GetFunc = decltype(getter);
+	using SetFunc = decltype(setter);
+	using FuncStorage = GetterSetterFuncs<GetFunc, SetFunc>;
+	using RefVarType = VarTypeHelper<T, FuncStorage>::Type;
 
-	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
-		using PtrType = VarFuncPtr<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	} else {
-		using PtrType = VarFuncPtrWithCache<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	}
+	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+		IVarPtr(SHIB_ALLOCT(RefVarType, _allocator, FuncStorage(getter, setter)))
+	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
@@ -1558,7 +1242,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 		addAttributes(*pair.second, getter, setter, attrs, attributes...);
 	}
 
+	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
+	pair.second->setSubVarBaseName(name);
+
 	_vars.insert(std::move(pair));
+
 	return *this;
 }
 

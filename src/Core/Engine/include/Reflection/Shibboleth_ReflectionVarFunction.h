@@ -39,22 +39,21 @@ template <class T, class FunctionPair, bool returns_reference>
 struct VarFunctionData;
 
 
-
 template <class T, class GetType, class SetType>
-struct VarFuncTypeHelper< GetterSetterFuncs<GetType (T::*)(void), void (T::*)(SetType)> > final
+struct VarFuncTypeHelper< GetterSetterFuncs<GetType (T::*)(void) const, void (T::*)(SetType)> > final
 {
-	using GetVarType = GetType;
-	using SetVarType = SetType;
+	using GetVariableType = GetType;
+	using SetVariableType = SetType;
 };
 
 template <class T, class GetterFunc, class SetterFunc>
 struct VarTypeHelper< T, GetterSetterFuncs<GetterFunc, SetterFunc> > final
 {
-	using GetVarType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::GetVarType;
-	using SetVarType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::SetVarType;
+	using GetVariableType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::GetVariableType;
+	using SetVariableType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::SetVariableType;
 
-	using ReflectionType = VarTypeHelper< T, std::decay_t<GetVarType> >::ReflectionType;
-	using VarType = VarTypeHelper< T, std::decay_t<GetVarType> >::VarType;
+	using ReflectionType = VarTypeHelper< T, std::decay_t<GetVariableType> >::ReflectionType;
+	using VariableType = VarTypeHelper< T, std::decay_t<GetVariableType> >::VariableType;
 
 	using Type = VarFunction< T, GetterSetterFuncs<GetterFunc, SetterFunc> >;
 };
@@ -64,27 +63,33 @@ struct VarTypeHelper< T, GetterSetterFuncs<GetterFunc, SetterFunc> > final
 template <class T, class FunctionPair>
 struct VarFunctionData<T, FunctionPair, true> final
 {
+	VarFunctionData<T, FunctionPair, true>(const FunctionPair& funcs): get_set_funcs(funcs) {}
+
 	FunctionPair get_set_funcs{ nullptr, nullptr };
 };
 
 template <class T, class FunctionPair>
 struct VarFunctionData<T, FunctionPair, false> final
 {
+	VarFunctionData<T, FunctionPair, false>(const FunctionPair& funcs): get_set_funcs(funcs) {}
+
 	FunctionPair get_set_funcs{ nullptr, nullptr };
-	VarTypeHelper<T, FunctionPair>::VarType cached_value;
+	VarTypeHelper<T, FunctionPair>::VariableType cached_value;
 };
 
 
 
+// VarFunction has a limitation in that it doesn't support containers. Might be worth supporting,
+// but at this time, I don't see a great use-case for it.
 template <class T, class FunctionPair>
 class VarFunction final : public IVar<T>
 {
 public:
-	using GetVarType = VarTypeHelper<T, FunctionPair>::GetVarType;
-	using SetVarType = VarTypeHelper<T, FunctionPair>::SetVarType;
+	using GetVarType = VarTypeHelper<T, FunctionPair>::GetVariableType;
+	using SetVarType = VarTypeHelper<T, FunctionPair>::SetVariableType;
 
 	using ReflectionType = VarTypeHelper<T, FunctionPair>::ReflectionType;
-	using VarType = VarTypeHelper<T, FunctionPair>::VarType;
+	using VarType = VarTypeHelper<T, FunctionPair>::VariableType;
 
 	static_assert(std::is_same_v< std::decay_t<GetVarType>, std::decay_t<SetVarType> >, "VarFunction getter and setter base type is not the same.");
 	static_assert(!std::is_pointer_v<GetVarType>, "VarFunction does not support getters that take pointers.");

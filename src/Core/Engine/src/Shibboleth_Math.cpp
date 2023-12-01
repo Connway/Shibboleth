@@ -199,7 +199,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Transform)
 	.var("rotationEuler", &Gleam::Transform::getRotationEuler, &Gleam::Transform::setRotationEuler)
 	.var(
 		"scale",
-		static_cast<const Gleam::Vec3& (Gleam::Transform::*)(void) const>(&Gleam::Transform::getScale),
+		&Gleam::Transform::getScale,
 		static_cast<void (Gleam::Transform::*)(const Gleam::Vec3&)>(&Gleam::Transform::setScale)
 	)
 SHIB_REFLECTION_DEFINE_END(Gleam::Transform)

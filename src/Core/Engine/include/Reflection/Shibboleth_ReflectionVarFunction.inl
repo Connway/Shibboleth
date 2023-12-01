@@ -27,7 +27,7 @@ NS_REFLECTION
 // VarFunction
 template <class T, class FunctionPair>
 VarFunction<T, FunctionPair>::VarFunction(const FunctionPair& get_set_funcs):
-	_data(FuncData{ get_set_funcs })
+	_data(get_set_funcs)
 {
 	GAFF_ASSERT(get_set_funcs.first);
 
@@ -62,7 +62,7 @@ void* VarFunction<T, FunctionPair>::getData(void* object)
 
 	if constexpr (std::is_reference<GetVarType>::value) {
 		const auto& value = (obj->*_data.get_set_funcs.first)();
-		return &value;
+		return const_cast<VarType*>(&value);
 
 	} else {
 		_data.cached_value = (obj->*_data.get_set_funcs.first)();
@@ -131,7 +131,7 @@ template <class T, class FunctionPair>
 void VarFunction<T, FunctionPair>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
 	const VarType* const value = reinterpret_cast<const VarType*>(getData(&object));
-	save(writer, *value);
+	save(writer, value);
 }
 
 NS_END
