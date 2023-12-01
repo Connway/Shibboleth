@@ -1571,63 +1571,6 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_si
 }
 
 template <class T>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
-{
-	//static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
-
-	using RetNoRef = typename std::remove_reference<Ret>::type;
-	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
-	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-
-	using VarNoRef = typename std::remove_reference<Var>::type;
-	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-
-	static_assert(Reflection<RetNoConst>::HasReflection, "Getter return type is not reflected!");
-	static_assert(Reflection<VarNoConst>::HasReflection, "Setter arg type is not reflected!");
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair;
-
-	if constexpr (std::is_reference<Ret>::value || std::is_pointer<Ret>::value) {
-		using PtrType = VarFuncPtr<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	} else {
-		using PtrType = VarFuncPtrWithCache<Ret, Var>;
-
-		pair = eastl::pair<Shibboleth::HashString32<>, IVarPtr>(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			IVarPtr(SHIB_ALLOCT(PtrType, _allocator, getter, setter))
-		);
-	}
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, getter, setter, attrs, attributes...);
-	}
-
-	_vars.insert(std::move(pair));
-	return *this;
-}
-
-template <class T>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Ret (*getter)(const T&), void (*setter)(T&, Var), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, getter, setter, attributes...);
-}
-
-template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {

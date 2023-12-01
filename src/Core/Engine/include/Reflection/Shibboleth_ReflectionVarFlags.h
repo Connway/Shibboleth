@@ -87,7 +87,6 @@ private:
 template <class T, class Enum>
 struct VarTypeHelper< T, Gaff::Flags<Enum> > final
 {
-	using ReflectionType = VarFlags<T, Enum>;
 	using Type = VarFlags<T, Enum>;
 	static constexpr bool k_can_copy = true;
 };

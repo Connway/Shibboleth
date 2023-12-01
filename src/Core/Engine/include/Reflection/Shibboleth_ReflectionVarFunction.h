@@ -1,0 +1,116 @@
+/************************************************************************************
+Copyright (C) 2023 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#pragma once
+
+#include "Shibboleth_ReflectionVar.h"
+
+NS_REFLECTION
+
+template <class GetterFunc, class SetterFunc>
+using GetterSetterFuncs = eastl::pair<GetterFunc, SetterFunc>;
+
+template <class GetSetFuncs>
+struct VarFuncTypeHelper;
+
+template <class T, class VarType>
+class VarFunction;
+
+template <class T, class FunctionPair, bool returns_reference>
+struct VarFunctionData;
+
+
+
+template <class T, class GetType, class SetType>
+struct VarFuncTypeHelper< GetterSetterFuncs<GetType (T::*)(void), void (T::*)(SetType)> > final
+{
+	using GetVarType = GetType;
+	using SetVarType = SetType;
+};
+
+template <class T, class GetterFunc, class SetterFunc>
+struct VarTypeHelper< T, GetterSetterFuncs<GetterFunc, SetterFunc> > final
+{
+	using GetVarType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::GetVarType;
+	using SetVarType = VarFuncTypeHelper< GetterSetterFuncs<GetterFunc, SetterFunc> >::SetVarType;
+
+	using ReflectionType = VarTypeHelper< T, std::decay_t<GetVarType> >::ReflectionType;
+	using VarType = VarTypeHelper< T, std::decay_t<GetVarType> >::VarType;
+
+	using Type = VarFunction< T, GetterSetterFuncs<GetterFunc, SetterFunc> >;
+};
+
+
+
+template <class T, class FunctionPair>
+struct VarFunctionData<T, FunctionPair, true> final
+{
+	FunctionPair get_set_funcs{ nullptr, nullptr };
+};
+
+template <class T, class FunctionPair>
+struct VarFunctionData<T, FunctionPair, false> final
+{
+	FunctionPair get_set_funcs{ nullptr, nullptr };
+	VarTypeHelper<T, FunctionPair>::VarType cached_value;
+};
+
+
+
+template <class T, class FunctionPair>
+class VarFunction final : public IVar<T>
+{
+public:
+	using GetVarType = VarTypeHelper<T, FunctionPair>::GetVarType;
+	using SetVarType = VarTypeHelper<T, FunctionPair>::SetVarType;
+
+	using ReflectionType = VarTypeHelper<T, FunctionPair>::ReflectionType;
+	using VarType = VarTypeHelper<T, FunctionPair>::VarType;
+
+	static_assert(std::is_same_v< std::decay_t<GetVarType>, std::decay_t<SetVarType> >, "VarFunction getter and setter base type is not the same.");
+	static_assert(!std::is_pointer_v<GetVarType>, "VarFunction does not support getters that take pointers.");
+	static_assert(!std::is_pointer_v<SetVarType>, "VarFunction does not support setters that take pointers.");
+	static_assert(Reflection<ReflectionType>::HasReflection);
+
+	explicit VarFunction(const FunctionPair& get_set_funcs);
+	VarFunction(void) = default;
+
+	static const Reflection<ReflectionType>& GetReflection(void);
+	const IReflection& getReflection(void) const override;
+
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+private:
+	using FuncData = VarFunctionData< T, FunctionPair, std::is_reference_v<GetVarType> >;
+	FuncData _data;
+};
+
+NS_END
