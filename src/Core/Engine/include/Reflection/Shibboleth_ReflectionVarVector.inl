@@ -116,7 +116,7 @@ bool VectorVar<T, ContainerType>::isFixedArray(void) const
 template <class T, class ContainerType>
 int32_t VectorVar<T, ContainerType>::size(const void* object) const
 {
-	return IVar<T>::template get<ContainerType>(object)->size();
+	return static_cast<int32_t>(IVar<T>::template get<ContainerType>(object)->size());
 }
 
 template <class T, class ContainerType>
@@ -215,7 +215,7 @@ void VectorVar<T, ContainerType>::resize(void* object, size_t new_size)
 		_elements.resize(new_size);
 
 		if (new_size > old_size) {
-			regenerateSubVars(old_size + 1, new_size);
+			regenerateSubVars(static_cast<int32_t>(old_size + 1), static_cast<int32_t>(new_size));
 		}
 	}
 }
