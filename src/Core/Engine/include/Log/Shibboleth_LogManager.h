@@ -83,8 +83,9 @@ private:
 
 	EA::Thread::Thread _log_thread;
 
-	U8String _log_dir{ k_config_app_default_log_dir, ProxyAllocator("Log") };
+	U8String _log_dir{ u8"./logs", ProxyAllocator("Log") };
 
+	void removeExtraLogs(void);
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl);
 	void notifyLogCallbacks(const char8_t* message, LogType type);

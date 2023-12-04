@@ -20,45 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LogManager.h"
+#include "Log/Shibboleth_LogManager.h"
 #include <Shibboleth_Utilities.h>
 #include "Shibboleth_IApp.h"
 #include <EASTL/algorithm.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
+#include <filesystem>
 
 NS_SHIBBOLETH
-
-intptr_t LogManager::LogThread(void* args)
-{
-	LogManager& lm = *reinterpret_cast<LogManager*>(args);
-
-	while (!lm._shutdown) {
-		lm._log_lock.Wait();
-
-		lm._log_queue_lock.Lock();
-
-		if (!lm._logs.empty()) {
-			LogTask task = std::move(lm._logs.front());
-			lm._logs.pop();
-
-			lm._log_queue_lock.Unlock();
-
-			Gaff::File file(task.file);
-			file.writeString(task.message.data());
-			file.writeChar(u8'\n');
-			file.flush();
-			file.release(); // We don't want to close the file.
-
-			lm.notifyLogCallbacks(task.message.data(), task.type);
-
-		} else {
-			lm._log_queue_lock.Unlock();
-		}
-	}
-
-	return 0;
-}
 
 LogManager::LogManager(void):
 	_shutdown(false)
@@ -72,7 +42,55 @@ LogManager::~LogManager(void)
 
 bool LogManager::init(const char8_t* log_dir)
 {
-	_log_dir = log_dir;
+	if (log_dir) {
+		_log_dir = log_dir;
+	}
+
+	// Ensure our log directory path starts with "./".
+	if (_log_dir.find(u8"./") != 0) {
+		_log_dir = u8"./" + _log_dir;
+	}
+
+	// Ensure our log directory path ends with a forward slash.
+	if (_log_dir.back() != u8'/') {
+		_log_dir.push_back(u8'/');
+	}
+
+	// Create all directories in log path.
+	size_t prev_index = 2; // Skip "./" at the beginning of the path.
+	size_t index = _log_dir.find(u8'/', prev_index);
+
+	while (index != GAFF_SIZE_T_FAIL) {
+		const U8String dir = _log_dir.substr(0, index);
+
+		if (!Gaff::CreateDir(dir.data(), 0777)) {
+			return false;
+		}
+
+		prev_index = index + 1;
+		index = _log_dir.find(u8'/', prev_index);
+	}
+
+	if (!Gaff::CreateDir(_log_dir.data(), 0777)) {
+		return false;
+	}
+
+	// Create timestamped log directory.
+	char8_t time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, std::size(time_string), u8"%Y-%m-%d_%H-%M-%S");
+
+	const U8String log_file_with_time(U8String::CtorSprintf(), u8"%s/%s", _log_dir.data(), time_string);
+
+	if (!Gaff::CreateDir(log_file_with_time.data(), 0777)) {
+		return false;
+	}
+
+	SetLogDir(log_file_with_time.data());
+	_log_dir = log_file_with_time;
+
+	removeExtraLogs();
+
+
 
 	addChannel(HashStringView32<>(k_log_channel_name_default));
 
@@ -180,6 +198,37 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char8_t* f
 	va_end(vl);
 }
 
+void LogManager::removeExtraLogs(void)
+{
+	int32_t dir_count = 0;
+
+	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"..").data())) {
+		if (!dir_entry.is_directory()) {
+			continue;
+		}
+
+		++dir_count;
+	}
+
+	if (dir_count <= 10) {
+		return;
+	}
+
+	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"..").data())) {
+		if (!dir_entry.is_directory()) {
+			continue;
+		}
+
+		const std::filesystem::path& path = dir_entry.path();
+		std::filesystem::remove_all(path);
+		--dir_count;
+
+		if (dir_count <= 10) {
+			break;
+		}
+	}
+}
+
 bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char8_t* format, va_list& vl)
 {
 	char8_t time_string[64] = { 0 };
@@ -214,6 +263,37 @@ void LogManager::notifyLogCallbacks(const char8_t* message, LogType type)
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		it->second(message, type);
 	}
+}
+
+intptr_t LogManager::LogThread(void* args)
+{
+	LogManager& lm = *reinterpret_cast<LogManager*>(args);
+
+	while (!lm._shutdown) {
+		lm._log_lock.Wait();
+
+		lm._log_queue_lock.Lock();
+
+		if (!lm._logs.empty()) {
+			LogTask task = std::move(lm._logs.front());
+			lm._logs.pop();
+
+			lm._log_queue_lock.Unlock();
+
+			Gaff::File file(task.file);
+			file.writeString(task.message.data());
+			file.writeChar(u8'\n');
+			file.flush();
+			file.release(); // We don't want to close the file.
+
+			lm.notifyLogCallbacks(task.message.data(), task.type);
+
+		} else {
+			lm._log_queue_lock.Unlock();
+		}
+	}
+
+	return 0;
 }
 
 NS_END

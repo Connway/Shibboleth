@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_MainLoop.h"
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_AppConfigs.h>
-#include <Shibboleth_LogManager.h>
+#include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_AppUtils.h>

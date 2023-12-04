@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceAttributesCommon.h"
 #include "Shibboleth_ResourceLogging.h"
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LogManager.h>
+#include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>

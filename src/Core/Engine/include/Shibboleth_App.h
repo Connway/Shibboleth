@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_DynamicLoader.h"
 //#include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_Broadcaster.h"
-#include "Shibboleth_LogManager.h"
+#include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_IModule.h"
@@ -133,12 +133,11 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
-	void removeExtraLogs(void);
-
 	bool createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers);
 	bool hasManager(Gaff::Hash64 name) const;
 
 	bool createModule(CreateModuleFunc create_func, const char8_t* module_name);
+	bool createConfigs(void);
 
 	static void ModuleChanged(const char8_t* path);
 	static void ThreadInit(uintptr_t thread_id);

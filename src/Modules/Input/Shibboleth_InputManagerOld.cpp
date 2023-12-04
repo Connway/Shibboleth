@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_InputReflection.h"
 #include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LogManager.h>
+#include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
 #include <Shibboleth_JobPool.h>

@@ -20,45 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Log/Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_AppUtils.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
-	.classAttrs(
-		//Shibboleth::ResourceExtensionAttribute(u8".lua.bin"),
-		Shibboleth::ResourceExtensionAttribute(u8".lua")
-	)
-
-	.template base<Shibboleth::IResource>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaResource)
+#include "Shibboleth_String.h"
+#include <Gaff_Error.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
-
-LuaResource::~LuaResource(void)
-{
-	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
-}
-
-void LuaResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
-{
-	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
-
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file.getBuffer()), file.size(), getFilePath().getBuffer())) {
-		succeeded();
-
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
-}
+using ErrorString = Gaff::ErrorWithData<U8String>;
+using Error = Gaff::Error;
 
 NS_END

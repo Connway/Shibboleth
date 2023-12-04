@@ -23,13 +23,12 @@ THE SOFTWARE.
 #include "Shibboleth_App.h"
 #include "Shibboleth_EngineAttributesCommon.h"
 #include "Shibboleth_LooseFileSystem.h"
+#include "Shibboleth_SerializeReader.h"
 #include "Shibboleth_AppConfigs.h"
 #include "Shibboleth_IMainLoop.h"
-#include "Shibboleth_IManager.h"
 #include "Gen_StaticReflectionInit.h"
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Utils.h>
-#include <Gaff_JSON.h>
 #include <Gaff_File.h>
 #include <eathread/eathread_thread.h>
 #include <filesystem>
@@ -302,48 +301,11 @@ RuntimeVarManager& App::getRuntimeVarManager(void)
 
 bool App::initInternal(void)
 {
-	const char8_t* const log_dir = _configs.getObject(k_config_app_log_dir).getString(k_config_app_default_log_dir);
-
-	size_t prev_index = 0;
-	size_t index = Gaff::Find(log_dir, u8'/');
-
-	if (log_dir[0] == '.' && index == 1) {
-		index = Gaff::Find(log_dir + 2, u8'/') + 2;
-	}
-
-	while (index != GAFF_SIZE_T_FAIL) {
-		index += prev_index;
-
-		const U8String dir(log_dir, log_dir + prev_index + index - prev_index);
-
-		if (!Gaff::CreateDir(dir.data(), 0777)) {
-			return false;
-		}
-
-		prev_index = index + 1;
-		index = Gaff::Find(log_dir + prev_index, u8'/');
-	}
-
-	if (!Gaff::CreateDir(log_dir, 0777)) {
-		return false;
-	}
-
-	char8_t time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, std::size(time_string), u8"%Y-%m-%d_%H-%M-%S");
-
-	const U8String log_file_with_time(U8String::CtorSprintf(), u8"%s/%s", log_dir, time_string);
-
-	if (!Gaff::CreateDir(log_file_with_time.data(), 0777)) {
-		return false;
-	}
-
-	SetLogDir(log_file_with_time.data());
-
-	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
-
 	EA::Thread::SetAllocator(&_thread_allocator);
 
-	if (!_log_mgr.init(log_file_with_time.data())) {
+	const char8_t* const log_dir = _configs.getObject(k_config_app_log_dir).getString(nullptr);
+
+	if (!_log_mgr.init(log_dir)) {
 		return false;
 	}
 
@@ -364,10 +326,16 @@ bool App::initInternal(void)
 	_reflection_mgr.registerTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
 	_reflection_mgr.registerTypeBucket<IManager>();
+	_reflection_mgr.registerTypeBucket<IConfig>();
 
 	// Init engine reflection.
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
 		Gen::Engine::InitReflection(static_cast<InitMode>(mode_count));
+	}
+
+	// Initialize engine configs.
+	if (!createConfigs()) {
+		return false;
 	}
 
 	if (!loadModules()) {
@@ -599,7 +567,7 @@ bool App::loadModules(void)
 
 	for (auto& entry : _module_map) {
 		if (!entry.second->postInit()) {
-			//LogErrorDefault("Module::preInit() failed for module '%s'.", entry.first.getBuffer());
+			//LogErrorDefault("Module::postInit() failed for module '%s'.", entry.first.getBuffer());
 			return false;
 		}
 	}
@@ -632,7 +600,6 @@ bool App::loadModules(void)
 
 				if (manager_bucket) {
 					if (!createManagersInternal(*manager_bucket)) {
-						// $TODO: Log error.
 						return false;
 					}
 				}
@@ -642,11 +609,10 @@ bool App::loadModules(void)
 		}
 
 		// Create the rest of the managers.
-		const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash());
+		const Vector<const Refl::IReflectionDefinition*>* const manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash());
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
-				// $TODO: Log error.
 				return false;
 			}
 		}
@@ -655,6 +621,13 @@ bool App::loadModules(void)
 	_manager_map.shrink_to_fit();
 
 	_job_pool.run();
+
+
+	// Initialize any newly loaded configs.
+	if (!createConfigs()) {
+		return false;
+	}
+
 
 	// Call initAllModulesLoaded() on all managers.
 	Vector<const Refl::IReflectionDefinition*> already_initialized_managers;
@@ -746,39 +719,6 @@ bool App::initApp(void)
 	return true;
 }
 
-void App::removeExtraLogs(void)
-{
-	const Gaff::JSON log_dir_holder = _configs.getObject(k_config_app_log_dir); // Need to hold this otherwise the string gets deallocated.
-	const char8_t* const log_dir = log_dir_holder.getString(k_config_app_default_log_dir);
-	int32_t dir_count = 0;
-
-	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_directory()) {
-			continue;
-		}
-
-		++dir_count;
-	}
-
-	if (dir_count <= 10) {
-		return;
-	}
-
-	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_directory()) {
-			continue;
-		}
-
-		const std::filesystem::path& path = dir_entry.path();
-		std::filesystem::remove_all(path);
-		--dir_count;
-
-		if (dir_count <= 10) {
-			break;
-		}
-	}
-}
-
 bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers)
 {
 	ProxyAllocator allocator;
@@ -828,6 +768,33 @@ bool App::createModule(CreateModuleFunc create_func, const char8_t* module_name)
 	if (!module_ptr_it->second) {
 		LogWarningDefault("Failed to allocate IModule for module '%s'.", module_name);
 		return false;
+	}
+
+	return true;
+}
+
+bool App::createConfigs(void)
+{
+	const auto* const configs = _reflection_mgr.getTypeBucket<IConfig>();
+
+	if (!configs) {
+		return true;
+	}
+
+	for (const Refl::IReflectionDefinition* ref_def : *configs) {
+		GlobalConfigAttribute* const attr = const_cast<GlobalConfigAttribute*>(ref_def->getClassAttr<GlobalConfigAttribute>());
+
+		if (!attr || attr->getConfig()) {
+			continue;
+		}
+
+		if (const auto error = attr->createAndLoadConfig(*ref_def); error) {
+			if (error.isFatal()) {
+				return false;
+			}
+
+			continue;
+		}
 	}
 
 	return true;

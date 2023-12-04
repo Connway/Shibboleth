@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Reflection/Shibboleth_Reflection.h"
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_Error.h"
 
 NS_SHIBBOLETH
 
@@ -57,6 +57,8 @@ public:
 	void setConfig(const IConfig* config);
 	const IConfig* getConfig(void) const;
 
+	Error createAndLoadConfig(const Refl::IReflectionDefinition& ref_def);
+
 	IAttribute* clone(void) const override;
 
 private:
@@ -80,3 +82,7 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ConfigDirectoryAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Shibboleth::IConfig);
+NS_END

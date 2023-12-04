@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Image.h"
-#include "Shibboleth_LogManager.h"
+#include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
@@ -254,7 +254,7 @@ bool Image::loadTIFF(const void* buffer, size_t size)
 		_bit_depth = 8;
 		_num_channels = 4;
 	}
-	
+
 	return success;
 }
 

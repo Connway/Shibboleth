@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Config.h"
+#include "Config/Shibboleth_Config.h"
+#include "Log/Shibboleth_LogManager.h"
+#include "Shibboleth_SerializeReader.h"
 
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigDirectoryAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::GlobalConfigAttribute, IAttribute)
@@ -64,6 +66,57 @@ void GlobalConfigAttribute::setConfig(const IConfig* config)
 const IConfig* GlobalConfigAttribute::getConfig(void) const
 {
 	return _config;
+}
+
+Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefinition& ref_def)
+{
+	static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
+	U8String config_path = ref_def.getReflectionInstance().getName();
+
+	if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
+		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
+	}
+
+	config_path = u8"cfg/" + config_path + u8".cfg";
+
+	ProxyAllocator allocator; // $TODO: Set a real allocator.
+	IConfig* const config_instance = ref_def.CREATET(Shibboleth::IConfig, allocator);
+
+	if (!config_instance) {
+		LogErrorDefault(
+			"GlobalConfigAttribute::createAndLoadConfig: Failed to create config instance of type '%s'.",
+			reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
+		);
+
+		return Error::k_fatal_error;
+	}
+
+	setConfig(config_instance);
+
+	Gaff::JSON config_data;
+
+	if (!config_data.parseFile(config_path.data())) {
+		LogErrorDefault(
+			"GlobalConfigAttribute::createAndLoadConfig: Failed to parse config '%s'. %s",
+			reinterpret_cast<const char*>(config_path.data()),
+			reinterpret_cast<const char*>(config_data.getErrorText())
+		);
+
+		return Error::k_simple_error;
+	}
+
+	auto reader = MakeSerializeReader(config_data);
+
+	if (!ref_def.load(reader, config_instance->getBasePointer())) {
+		LogErrorDefault(
+			"GlobalConfigAttribute::createAndLoadConfig: Failed to load config of type '%s'.",
+			reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
+		);
+
+		return Error::k_simple_error;
+	}
+
+	return Error::k_no_error;
 }
 
 Refl::IAttribute* GlobalConfigAttribute::clone(void) const

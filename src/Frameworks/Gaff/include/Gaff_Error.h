@@ -20,45 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaResource.h"
-#include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_LuaManager.h>
-#include <Log/Shibboleth_LogManager.h>
-#include <Shibboleth_Utilities.h>
-#include <Shibboleth_AppUtils.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaResource)
-	.classAttrs(
-		//Shibboleth::ResourceExtensionAttribute(u8".lua.bin"),
-		Shibboleth::ResourceExtensionAttribute(u8".lua")
-	)
+#include "Gaff_Flags.h"
 
-	.template base<Shibboleth::IResource>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaResource)
+NS_GAFF
 
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(LuaResource)
-
-LuaResource::~LuaResource(void)
+struct Error
 {
-	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
-	lua_mgr.unloadBuffer(getFilePath().getBuffer());
-}
+	enum class Flag
+	{
+		HasError,
+		Fatal,
 
-void LuaResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
+		Count
+	};
+
+	bool hasError(void) const { return flags.testAll(Flag::HasError); }
+	bool isFatal(void) const { return flags.testAll(Flag::Fatal); }
+
+	operator bool(void) const { return hasError(); }
+
+	Gaff::Flags<Flag> flags;
+
+	static const Error k_fatal_error;
+	static const Error k_simple_error;
+	static const Error k_no_error;
+};
+
+template <class ErrorData>
+struct ErrorWithData final : public Error
 {
-	LuaManager& lua_mgr = GetManagerTFast<LuaManager>();
+	ErrorData error;
 
-	if (lua_mgr.loadBuffer(reinterpret_cast<const char*>(file.getBuffer()), file.size(), getFilePath().getBuffer())) {
-		succeeded();
+	static const ErrorWithData<ErrorData> k_no_error;
+};
 
-	} else {
-		// $TODO: Log error.
-		failed();
-	}
-}
+template <class ErrorData>
+const ErrorWithData<ErrorData> ErrorWithData<ErrorData>::k_no_error{};
 
 NS_END
