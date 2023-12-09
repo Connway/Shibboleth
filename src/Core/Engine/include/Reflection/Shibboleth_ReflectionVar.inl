@@ -44,14 +44,12 @@ template <class T>
 template <class VarType>
 const VarType& IVar<T>::IVar::getDataT(const T& object) const
 {
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
@@ -69,14 +67,12 @@ void IVar<T>::IVar::setDataT(T& object, const VarType& data)
 		return;
 	}
 
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
@@ -94,14 +90,12 @@ void IVar<T>::IVar::setDataMoveT(T& object, VarType&& data)
 		return;
 	}
 
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
@@ -114,14 +108,12 @@ template <class T>
 template <class VarType>
 const VarType& IVar<T>::IVar::getElementT(const T& object, int32_t index) const
 {
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
@@ -140,14 +132,12 @@ void IVar<T>::IVar::setElementT(T& object, int32_t index, const VarType& data)
 		return;
 	}
 
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());
@@ -166,14 +156,12 @@ void IVar<T>::IVar::setElementMoveT(T& object, int32_t index, VarType&& data)
 		return;
 	}
 
-	using Type = typename std::remove_reference<VarType>::type;
-
-	const auto& other_refl = Reflection<Type>::GetInstance();
+	const auto& other_refl = Reflection<VarType>::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
 
-	if constexpr (std::is_enum<Type>::value) {
+	if constexpr (std::is_enum<VarType>::value) {
 		GAFF_ASSERT(&refl.getEnumReflectionDefinition() == &other_refl.getEnumReflectionDefinition());
 	} else {
 		GAFF_ASSERT(&refl.getReflectionDefinition() == &other_refl.getReflectionDefinition());

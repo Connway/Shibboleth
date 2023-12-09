@@ -22,10 +22,40 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ReflectionVar.inl"
-#include "Shibboleth_ReflectionVarVector.inl"
-#include "Shibboleth_ReflectionVarMap.inl"
-#include "Shibboleth_ReflectionVarFlags.inl"
-#include "Shibboleth_ReflectionVarHash.inl"
-#include "Shibboleth_ReflectionVarFunction.inl"
-#include "Shibboleth_ReflectionVarReflectionDefinition.inl"
+#include "Shibboleth_ReflectionVar.h"
+#include "Shibboleth_Utilities.h"
+#include "Shibboleth_IApp.h"
+
+NS_REFLECTION
+
+template <class T>
+class VarReflectionDefinition final : public IVar<T>
+{
+public:
+	VarReflectionDefinition(const IReflectionDefinition* T::* ptr);
+	VarReflectionDefinition(void) = default;
+
+	bool hasReflection(void) const override { return false; }
+	const IReflection& getReflection(void) const override;
+
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
+	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+};
+
+
+
+template <class T>
+struct VarTypeHelper< T, const IReflectionDefinition* > final
+{
+	using Type = VarReflectionDefinition<T>;
+	static constexpr bool k_can_copy = true;
+};
+
+NS_END

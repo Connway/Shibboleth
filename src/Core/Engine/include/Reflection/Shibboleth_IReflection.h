@@ -267,7 +267,9 @@ public:
 	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object) = 0;
 	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object) = 0;
 
+	virtual bool hasReflection(void) const { return true; }
 	virtual const IReflection& getReflection(void) const = 0;
+
 	virtual const void* getData(const void* object) const = 0;
 	virtual void* getData(void* object) = 0;
 	virtual void setData(void* object, const void* data) = 0;
