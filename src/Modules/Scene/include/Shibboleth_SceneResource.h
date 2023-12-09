@@ -27,7 +27,6 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class LayerResource;
-using LayerResourcePtr = ResourcePtr<LayerResource>;
 
 class SceneResource final : public IResource
 {
@@ -41,7 +40,7 @@ public:
 private:
 	struct LayerData final
 	{
-		LayerResourcePtr layer;
+		ResourcePtr<LayerResource> layer;
 		HashString64<> layer_name;
 	};
 
@@ -51,8 +50,6 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
 };
-
-using SceneResourcePtr = ResourcePtr<SceneResource>;
 
 NS_END
 

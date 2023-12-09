@@ -59,8 +59,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(TextureResource);
 };
 
-using TextureResourcePtr = ResourcePtr<TextureResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::TextureResource)

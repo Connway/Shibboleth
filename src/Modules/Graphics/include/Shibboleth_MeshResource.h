@@ -48,16 +48,14 @@ public:
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
-	BufferResourcePtr _vertex_data;
-	BufferResourcePtr _indice_data;
+	ResourcePtr<BufferResource> _vertex_data;
+	ResourcePtr<BufferResource≥ _indice_data;
 	Gleam::AABB _aabb;
 
 	void loadMesh(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(MeshResource);
 };
-
-using MeshResourcePtr = ResourcePtr<MeshResource>;
 
 NS_END
 

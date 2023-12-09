@@ -4,7 +4,7 @@ local deps =
 	"MainLoop",
 	"Resource",
 	"Gleam",
-	"ECS",
+	"Entity",
 	"assimp",
 	"mpack",
 	"minizip-ng",
@@ -46,7 +46,7 @@ function DoMainGraphicsModule()
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			source_dir .. "../../Modules/Resource/include",
-			source_dir .. "../../Modules/ECS/include",
+			source_dir .. "../../Modules/Entity/include",
 			source_dir .. "../../Modules/MainLoop/include"
 		}
 end
@@ -65,11 +65,11 @@ function DoGraphicsModule(renderer)
 		}
 
 		if renderer == "Direct3D11" then
-			defines { "USE_D3D11" }
+			defines { "SHIB_USE_D3D11" }
 		elseif renderer == "Direct3D12" then
-			defines { "USE_D3D12" }
+			defines { "SHIB_USE_D3D12" }
 		elseif renderer == "Vulkan" then
-			defines { "USE_VULKAN" }
+			defines { "SHIB_USE_VULKAN" }
 		end
 
 		IncludeDirs
@@ -85,7 +85,7 @@ function DoGraphicsModule(renderer)
 			base_dir .. "../../Frameworks/Gaff/include",
 			base_dir .. "../../Frameworks/Gleam/include",
 			source_dir .. "../../Modules/Resource/include",
-			source_dir .. "../../Modules/ECS/include",
+			source_dir .. "../../Modules/Entity/include",
 			source_dir .. "../../Modules/MainLoop/include"
 		}
 
@@ -126,17 +126,17 @@ local LinkDependencies = function()
 	filter { "configurations:Static_*_D3D11*" }
 		dependson("GraphicsDirect3D11")
 		links { "GraphicsDirect3D11", "d3d11", "D3dcompiler", "dxgi", "dxguid" }
-		defines { "USE_D3D11" }
+		defines { "SHIB_USE_D3D11" }
 
 	filter { "configurations:Static_*_D3D12*" }
 		dependson("GraphicsDirect3D12")
 		links { "GraphicsDirect3D12", "d3d12", "D3dcompiler", "dxgi", "dxguid" }
-		defines { "USE_D3D12" }
+		defines { "SHIB_USE_D3D12" }
 
 	filter { "configurations:Static_*_Vulkan*" }
 		dependson("GraphicsVulkan")
 		links("GraphicsVulkan")
-		defines { "USE_VULKAN" }
+		defines { "SHIB_USE_VULKAN" }
 
 	filter {}
 end

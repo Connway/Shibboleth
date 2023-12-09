@@ -42,6 +42,12 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
+	.BASE(Refl::IReflectionObject)
+
+	.classAttrs(
+		Shibboleth::ClassBucketAttribute()
+	)
+
 	.func("requestLoad", &Shibboleth::IResource::requestLoad)
 	.func("getFilePath", &Shibboleth::IResource::getFilePath)
 	.func("getState", &Shibboleth::IResource::getState)

@@ -74,8 +74,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
 };
 
-using MaterialResourcePtr = ResourcePtr<MaterialResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::MaterialResource)

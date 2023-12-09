@@ -134,6 +134,12 @@ void MessagePackSerializeWriter::writeString(const char8_t* key, const char8_t* 
 	_writer.writeUTF8(key, value);
 }
 
+void MessagePackSerializeWriter::writeNull(const char8_t* key)
+{
+	_writer.writeKey(key);
+	_writer.writeNull();
+}
+
 void MessagePackSerializeWriter::writeInt8(int8_t value)
 {
 	_writer.write(value);
@@ -192,6 +198,11 @@ void MessagePackSerializeWriter::writeBool(bool value)
 void MessagePackSerializeWriter::writeString(const char8_t* value)
 {
 	_writer.writeUTF8(value);
+}
+
+void MessagePackSerializeWriter::writeNull(void)
+{
+	_writer.writeNull();
 }
 
 NS_END

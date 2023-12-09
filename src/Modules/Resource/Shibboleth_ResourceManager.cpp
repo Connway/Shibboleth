@@ -41,10 +41,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 
-	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, bool)>(&Shibboleth::ResourceManager::requestResource))
-	.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::requestResource))
-	.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
-	.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>)>(&Shibboleth::ResourceManager::getResource))
+	//.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&, bool)>(&Shibboleth::ResourceManager::requestResource))
+	//.func("requestResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::requestResource))
+	//.func("createResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::createResource))
+	//.func("getResource", static_cast<Shibboleth::IResourcePtr (Shibboleth::ResourceManager::*)(Shibboleth::HashStringView64<>, const Refl::IReflectionDefinition&)>(&Shibboleth::ResourceManager::getResource))
 
 #ifdef _DEBUG
 	.func(
@@ -99,30 +99,37 @@ ResourceManager::ResourceManager(void)
 
 ResourceManager::~ResourceManager(void)
 {
-	for (const IResource* res : _resources) {
-		LogWarningResource("Resource Leaked: %s", res->getFilePath().getBuffer());
+	for (const ResourceBucket& bucket : _resource_buckets) {
+		for (const IResource* res : bucket.resources) {
+			LogWarningResource("Resource Leaked: %s", res->getFilePath().getBuffer());
+		}
 	}
 }
 
-bool ResourceManager::init(void)
+bool ResourceManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	ReflectionManager& refl_mgr = app.getReflectionManager();
 
-	refl_mgr.registerTypeBucket(Refl::Reflection<IResource>::GetNameHash());
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_resource));
 
-	const Vector<const Refl::IReflectionDefinition*>* type_bucket =
-		refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetNameHash());
+	ReflectionManager& refl_mgr = app.getReflectionManager();
+	const auto* const type_bucket = refl_mgr.getTypeBucket(Refl::Reflection<IResource>::GetNameHash());
 
 	if (!type_bucket) {
 		return true;
 	}
 
+	ProxyAllocator allocator("Resource");
+	_resource_buckets = ArrayPtr<ResourceBucket>(SHIB_ALLOC_ARRAYT(ResourceBucket, type_bucket->size(), allocator), type_bucket->size());
+
+	Vector<const Refl::IReflectionDefinition*> sorted_type_bucket = *type_bucket;
 	Vector<const ResourceExtensionAttribute*> ext_attrs;
 	const CreatableAttribute* creatable = nullptr;
 
-	for (const Refl::IReflectionDefinition* ref_def : *type_bucket) {
+	Gaff::Sort(sorted_type_bucket);
+
+	for (int32_t i = 0; i < static_cast<int32_t>(sorted_type_bucket.size()); ++i) {
+		const Refl::IReflectionDefinition* const ref_def = sorted_type_bucket[i];
 		FactoryFunc factory_func = ref_def->template getFactory<>();
 
 		creatable = ref_def->getClassAttr<CreatableAttribute>();
@@ -143,6 +150,8 @@ bool ResourceManager::init(void)
 
 		creatable = nullptr;
 		ext_attrs.clear();
+
+		_resource_buckets[i].ref_def = ref_def;
 	}
 
 #ifdef _DEBUG
@@ -159,11 +168,13 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 		return IResourcePtr(ref_def);
 	}
 
-	const EA::Thread::AutoMutex lock(_res_lock);
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
+	const EA::Thread::AutoMutex lock(it_bucket->lock);
+	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
-	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res, ref_def);
 	}
 
@@ -181,18 +192,20 @@ IResourcePtr ResourceManager::createResource(HashStringView64<> name, const Refl
 	resource->_file_path = name;
 	resource->_res_mgr = this;
 
-	_resources.insert(it_res, resource);
+	it_bucket->resources.insert(it_res, resource);
 
 	return IResourcePtr(resource, ref_def);
 }
 
-IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool delay_load)
+IResourcePtr ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load)
 {
-	const EA::Thread::AutoMutex lock(_res_lock);
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
+	const EA::Thread::AutoMutex lock(it_bucket->lock);
+	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
-	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res, (*it_res)->getReflectionDefinition());
 	}
 
@@ -217,7 +230,7 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	resource->_file_path = name;
 	resource->_res_mgr = this;
 
-	_resources.insert(it_res, resource);
+	it_bucket->resources.insert(it_res, resource);
 
 	if (!delay_load) {
 		requestLoad(*resource);
@@ -226,18 +239,20 @@ IResourcePtr ResourceManager::requestResource(HashStringView64<> name, bool dela
 	return IResourcePtr(resource, resource->getReflectionDefinition());
 }
 
-IResourcePtr ResourceManager::requestResource(HashStringView64<> name)
+IResourcePtr ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
-	return requestResource(name, false);
+	return requestResource(name, ref_def, false);
 }
 
-IResourcePtr ResourceManager::getResource(HashStringView64<> name)
+IResourcePtr ResourceManager::getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
-	const EA::Thread::AutoMutex lock(_res_lock);
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-	const auto it_res = Gaff::LowerBound(_resources, name.getHash(), ResourceHashCompare);
+	const EA::Thread::AutoMutex lock(it_bucket->lock);
+	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
-	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
 		return IResourcePtr(*it_res, (*it_res)->getReflectionDefinition());
 	}
 
@@ -334,12 +349,15 @@ void ResourceManager::checkAndRemoveResources(void)
 				return;
 			}
 
-			// Remove and free the resource.
-			const EA::Thread::AutoMutex res_lock(_res_lock);
-			const auto it_res = Gaff::LowerBound(_resources, resource->getFilePath().getHash(), ResourceHashCompare);
+			const Refl::IReflectionDefinition& ref_def = resource->getReflectionDefinition();
+			const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+			GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-			if (it_res != _resources.end() && *it_res == resource) {
-				_resources.erase(it_res);
+			const EA::Thread::AutoMutex lock(it_bucket->lock);
+			const auto it_res = Gaff::LowerBound(it_bucket->resources, resource->getFilePath().getHash(), ResourceHashCompare);
+
+			if (it_res != it_bucket->resources.end() && *it_res == resource) {
+				it_bucket->resources.erase(it_res);
 			}
 
 			SHIB_FREET(resource, GetAllocator());
@@ -386,12 +404,15 @@ void ResourceManager::removeResource(const IResource& resource)
 		_pending_removals.emplace_back(&resource);
 
 	} else {
-		const EA::Thread::AutoMutex lock(_res_lock);
+		const Refl::IReflectionDefinition& ref_def = resource.getReflectionDefinition();
+		const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+		GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-		const auto it_res = Gaff::LowerBound(_resources, resource.getFilePath().getHash(), ResourceHashCompare);
+		const EA::Thread::AutoMutex lock(it_bucket->lock);
+		const auto it_res = Gaff::LowerBound(it_bucket->resources, resource.getFilePath().getHash(), ResourceHashCompare);
 
-		if (it_res != _resources.end() && *it_res == &resource) {
-			_resources.erase(it_res);
+		if (it_res != it_bucket->resources.end() && *it_res == &resource) {
+			it_bucket->resources.erase(it_res);
 			SHIB_FREET(&resource, GetAllocator());
 		}
 	}

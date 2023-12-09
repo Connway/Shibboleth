@@ -110,13 +110,7 @@ public:
 
 	std::strong_ordering operator<=>(const T* rhs) const
 	{
-		if (get() == rhs) {
-			return std::strong_ordering::equal;
-		} else if (get() < rhs) {
-			return std::strong_ordering::less;
-		} else {
-			return std::strong_ordering::greater;
-		}
+		return get() <=> rhs;
 	}
 
 	std::strong_ordering operator<=>(const SerializeablePtr<T>& rhs) const

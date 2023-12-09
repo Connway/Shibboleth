@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
+#include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Math.h>
 #include <Gaff_JSON.h>
 #include <Gaff_Ops.h>

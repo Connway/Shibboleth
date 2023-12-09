@@ -47,8 +47,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
 };
 
-using ProgramBuffersResourcePtr = ResourcePtr<ProgramBuffersResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ProgramBuffersResource)

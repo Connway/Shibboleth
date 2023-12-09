@@ -47,8 +47,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
 };
 
-using BufferResourcePtr = ResourcePtr<BufferResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::BufferResource)

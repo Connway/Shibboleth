@@ -51,7 +51,7 @@ public:
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	Vector<EntityResourcePtr> _entity_resources;
+	Vector< ResourcePtr<EntityResource> > _entity_resources;
 	Vector<Entity*> _entities;
 	//ResourceCallbackID _callback_id;
 
@@ -68,8 +68,6 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };
-
-using LayerResourcePtr = ResourcePtr<LayerResource>;
 
 NS_END
 

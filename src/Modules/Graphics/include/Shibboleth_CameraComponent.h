@@ -22,56 +22,38 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSComponentBase.h>
+#include <Shibboleth_EntitySceneComponent.h>
 #include <Shibboleth_Math.h>
-
-NS_GAFF
-	class ISerializeReader;
-NS_END
 
 NS_SHIBBOLETH
 
-struct ECSQueryResult;
-class ECSManager;
-
-class Camera final : public ECSComponentBaseNonShared<Camera>
+class CameraComponent final : public EntitySceneComponent
 {
 public:
-	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-	static void SetInternal(void* component, int32_t page_index, const Camera& value);
-	static Camera GetInternal(const void* component, int32_t page_index);
+	CameraComponent(void) = default;
 
-	static void Destructor(ECSEntityID id, void* component, int32_t entity_index);
+	void setVerticalFOV(float focal_length, float sensor_size);
+	void setVerticalFOVDegrees(float fov);
+	void setVerticalFOVRadians(float fov);
+	void setVerticalFOV(float fov);
+	float getVerticalFOVDegrees(void) const;
+	float getVerticalFOVRadians(void) const;
+	float getVerticalFOV(void) const;
 
-	static Gleam::Vec4SIMD GetVerticalFOVDegrees(const void* component, int32_t page_index);
-	static Gleam::Vec4SIMD GetVerticalFOV(const void* component, int32_t page_index);
-	static Gleam::Vec4SIMD GetFocalLength(const void* component, int32_t page_index);
-	static Gleam::Vec4SIMD GetZNear(const void* component, int32_t page_index);
-	static Gleam::Vec4SIMD GetZFar(const void* component, int32_t page_index);
-	//static Gleam::Vec4SIMD GetFocusDistance(const void* component, int32_t page_index);
-	//static Gleam::Vec4SIMD GetFocalLength(const void* component, int32_t page_index);
+	void setZPlanes(const Gleam::Vec2& z_planes);
+	const Gleam::Vec2& getZPlanes(void) const;
 
-	// 35mm film (24mm x 36mm) [width x height]
-	static constexpr float DefaultSensorSize = 36.0f;
+	void setZNear(float z_near);
+	float getZNear(void) const;
 
-	Camera(const float* component);
-	Camera(void) = default;
-
-	void SetVerticalFOV(float focal_length, float sensor_size = DefaultSensorSize);
-	float GetVerticalFOV(void) const;
-
-	Gaff::Hash32 device_tag = Gaff::FNV1aHash32Const("main");
-	Gleam::IVec2 size = Gleam::IVec2{ -1, -1 };
-
-	float v_fov = 0.25f; // turns
-	float z_near = 0.001f; // m
-	float z_far = 2000.0f; // m
+	void setZFar(float z_far);
+	float getZFar(void) const;
 
 private:
-	static const float* GetFloatBegin(const void* component, int32_t page_index);
-	static float* GetFloatBegin(void* component, int32_t page_index);
+	Gleam::Vec2 _z_planes{ 0.001f, 2000.0f }; // m
+	float _vertical_fov = 0.25f; // turns
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::Camera)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraComponent)

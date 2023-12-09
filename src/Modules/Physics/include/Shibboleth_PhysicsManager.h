@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSComponentCommon.h>
+//#include <Shibboleth_ECSComponentCommon.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_ECSQuery.h>
+//#include <Shibboleth_ECSQuery.h>
 
 #ifdef _DEBUG
 	#include <Shibboleth_IDebugManager.h>

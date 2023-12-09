@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsManager.h"
 #include "Shibboleth_RigidBodyComponent.h"
-#include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_ECSManager.h>
+//#include <Shibboleth_ECSComponentCommon.h>
+//#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
 #include <Gaff_IncludeTracy.h>

@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_IResource.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
+#include <Shibboleth_ArrayPtr.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_AppUtils.h>
 #include <eathread/eathread_mutex.h>
@@ -45,13 +46,13 @@ public:
 	ResourceManager(void);
 	~ResourceManager(void);
 
-	bool init(void) override;
+	bool initAllModulesLoaded(void) override;
 
 
 	template <class T, class U = T>
 	ResourcePtr<U> requestResourceT(HashStringView64<> name, bool delay_load = false)
 	{
-		IResourcePtr old_ptr = requestResource(name, delay_load);
+		IResourcePtr old_ptr = requestResource(name, Refl::Reflection<T>::GetReflectionDefinition(), delay_load);
 
 		if (old_ptr._resource) {
 			IResource* const resource = old_ptr._resource.get();
@@ -70,9 +71,9 @@ public:
 		return requestResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
 
-	IResourcePtr requestResource(const char8_t* name, bool delay_load = false)
+	IResourcePtr requestResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def, bool delay_load = false)
 	{
-		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
+		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def, delay_load);
 	}
 
 	template <class T, class U = T>
@@ -112,7 +113,7 @@ public:
 	template <class T>
 	ResourcePtr<T> getResourceT(HashStringView64<> name)
 	{
-		IResourcePtr old_ptr = getResource(name);
+		IResourcePtr old_ptr = getResource(name, Refl::Reflection<T>::GetReflectionDefinition());
 
 		if (old_ptr._resource) {
 			IResource* const resource = old_ptr._resource.get();
@@ -131,15 +132,15 @@ public:
 		return getResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
-	IResourcePtr getResource(const char8_t* name)
+	IResourcePtr getResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
 	{
-		return getResource(HashStringView64<>(name, eastl::CharStrlen(name)));
+		return getResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
 	IResourcePtr createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr requestResource(HashStringView64<> name, bool delay_load);
-	IResourcePtr requestResource(HashStringView64<> name);
-	IResourcePtr getResource(HashStringView64<> name);
+	IResourcePtr requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load);
+	IResourcePtr requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
+	IResourcePtr getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
 	void waitForResource(const IResource& resource) const;
 
 	const IFile* loadFileAndWait(const char8_t* file_path, uintptr_t thread_id_int);
@@ -157,8 +158,24 @@ private:
 		int32_t next_id = 0;
 	};
 
-	EA::Thread::Mutex _res_lock;
-	Vector<IResource*> _resources{ ProxyAllocator("Resource") };
+	struct ResourceBucket final
+	{
+		Vector<IResource*> resources{ ProxyAllocator("Resource") };
+		EA::Thread::Mutex lock;
+		const Refl::IReflectionDefinition* ref_def = nullptr;
+
+		std::strong_ordering operator<=>(const Refl::IReflectionDefinition& rhs) const
+		{
+			return ref_def <=> &rhs;
+		}
+
+		std::strong_ordering operator<=>(const Refl::IReflectionDefinition* rhs) const
+		{
+			return ref_def <=> rhs;
+		}
+	};
+
+	ArrayPtr<ResourceBucket> _resource_buckets;
 
 	EA::Thread::Mutex _removal_lock;
 	Vector<const IResource*> _pending_removals{ ProxyAllocator("Resource") };

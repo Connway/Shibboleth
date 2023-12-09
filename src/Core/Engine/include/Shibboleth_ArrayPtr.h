@@ -22,40 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MeshResource.h"
-
-struct aiScene;
+#include "Shibboleth_ProxyAllocator.h"
+#include <Gaff_ArrayPtr.h>
 
 NS_SHIBBOLETH
 
-class ModelResource final : public IResource
-{
-public:
-	static constexpr bool Creatable = true;
-
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
-
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
-
-	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes);
-	bool createMesh(Gleam::IRenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes);
-	bool createMesh(const Vector< ResourcePtr<MeshResource> >& meshes, const Vector<int32_t>& centering_meshes);
-	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene);
-	bool createMesh(Gleam::IRenderDevice& device, const aiScene& scene);
-	bool createMesh(const Vector< ResourcePtr<MeshResource> >& meshes);
-
-	const ResourcePtr<MeshResource>& getMesh(int32_t index) const;
-	int32_t getNumMeshes(void) const;
-
-	const Gleam::Vec3& getCenteringVector(void) const;
-
-private:
-	Vector< ResourcePtr<MeshResource> > _meshes{ ProxyAllocator("Graphics") };
-	Gleam::Vec3 _centering_vector = glm::zero<Gleam::Vec3>();
-
-	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
-};
+template <class T>
+using ArrayPtr = Gaff::ArrayPtr<T, ProxyAllocator>;
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::ModelResource)

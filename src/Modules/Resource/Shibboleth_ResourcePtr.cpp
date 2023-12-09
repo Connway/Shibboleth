@@ -33,12 +33,15 @@ NS_SHIBBOLETH
 
 bool IResourcePtr::Load(const ISerializeReader& reader, IResourcePtr& out)
 {
-	if (!reader.isString()) {
-		return false;
+	GAFF_ASSERT(out._ref_def);
+	GAFF_ASSERT(reader.isNull() || reader.isString());
+
+	if (reader.isNull()) {
+		return true;
 	}
 
 	const char8_t* const res_path = reader.readString();
-	out = GetManagerTFast<ResourceManager>().requestResource(res_path);
+	out = GetManagerTFast<ResourceManager>().requestResource(res_path, *out._ref_def);
 	reader.freeString(res_path);
 
 	return out._resource;
@@ -46,7 +49,11 @@ bool IResourcePtr::Load(const ISerializeReader& reader, IResourcePtr& out)
 
 void IResourcePtr::Save(ISerializeWriter& writer, const IResourcePtr& value)
 {
-	writer.writeString(value._resource->getFilePath().getBuffer());
+	if (value._resource) {
+		writer.writeString(value._resource->getFilePath().getBuffer());
+	} else {
+		writer.writeNull();
+	}
 }
 
 IResourcePtr::IResourcePtr(const IResourcePtr& res_ptr, const Refl::IReflectionDefinition& ref_def):

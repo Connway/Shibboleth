@@ -34,9 +34,6 @@ struct ImGuiContext;
 
 NS_SHIBBOLETH
 
-class ModelResource;
-using ModelResourcePtr = ResourcePtr<ModelResource>;
-
 // To force getting the context from the DLL.
 class IDebugManager : public IManager
 {
@@ -131,7 +128,7 @@ public:
 		}
 
 		DebugRenderInstance* _instance = nullptr;
-		const ModelResource* _model = nullptr;
+		const ResourcePtr<ModelResource>* _model = nullptr;
 		DebugRenderType _type = DebugRenderType::Count;
 		bool _depth = false;
 
@@ -153,7 +150,7 @@ public:
 	virtual DebugRenderHandle renderDebugBox(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugCapsule(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 	virtual DebugRenderHandle renderDebugCylinder(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
-	virtual DebugRenderHandle renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
+	virtual DebugRenderHandle renderDebugModel(const ResourcePtr<ModelResource>& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) = 0;
 
 	virtual void registerDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) = 0;
 	virtual void unregisterDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) = 0;

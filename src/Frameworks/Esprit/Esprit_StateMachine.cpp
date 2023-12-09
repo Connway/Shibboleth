@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Esprit_StateMachine.h"
-#include <Gaff_Vector.h>
+#include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Math.h>
 
 namespace

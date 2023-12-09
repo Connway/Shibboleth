@@ -190,6 +190,8 @@ public:
 
 	virtual void writeString(const char8_t* key, const char8_t* value) = 0;
 
+	virtual void writeNull(const char8_t* key) = 0;
+
 	virtual void writeInt8(int8_t value) = 0;
 	virtual void writeInt16(int16_t value) = 0;
 	virtual void writeInt32(int32_t value) = 0;
@@ -205,6 +207,8 @@ public:
 	virtual void writeBool(bool value) = 0;
 
 	virtual void writeString(const char8_t* value) = 0;
+
+	virtual void writeNull(void) = 0;
 };
 
 class ScopeGuard final

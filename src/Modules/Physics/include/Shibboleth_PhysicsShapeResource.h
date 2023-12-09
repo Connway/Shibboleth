@@ -65,8 +65,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsShapeResource);
 };
 
-using PhysicsShapeResourcePtr = ResourcePtr<PhysicsShapeResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsShapeResource)

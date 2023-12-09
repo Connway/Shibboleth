@@ -28,26 +28,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class T, class Allocator = DefaultAllocator>
-class AllocatorDeleter
-{
-public:
-	AllocatorDeleter(void) = default;
-	GAFF_COPY_DEFAULT(AllocatorDeleter);
-	GAFF_MOVE_DEFAULT(AllocatorDeleter);
-
-	void operator()(T* ptr) const
-	{
-		if (ptr) {
-			GAFF_FREET(ptr, _allocator);
-		}
-	}
-
-private:
-	mutable Allocator _allocator;
-};
-
-
 template <class T>
 using SharedPtr = eastl::shared_ptr<T>;
 

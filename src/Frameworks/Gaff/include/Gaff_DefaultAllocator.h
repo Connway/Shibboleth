@@ -113,4 +113,25 @@ private:
 	const char* _name = nullptr;
 };
 
+template <class T, class Allocator = DefaultAllocator>
+class AllocatorDeleter
+{
+public:
+	static constexpr bool RequiresStorage = true;
+
+	AllocatorDeleter(void) = default;
+	GAFF_COPY_DEFAULT(AllocatorDeleter);
+	GAFF_MOVE_DEFAULT(AllocatorDeleter);
+
+	void operator()(T* ptr) const
+	{
+		if (ptr) {
+			GAFF_FREET(ptr, _allocator);
+		}
+	}
+
+private:
+	mutable Allocator _allocator;
+};
+
 NS_END

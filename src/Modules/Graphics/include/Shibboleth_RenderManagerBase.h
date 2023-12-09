@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IRenderManager.h"
 #include "Shibboleth_SamplerStateResource.h"
-#include <Shibboleth_ECSEntity.h>
+#include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
@@ -138,14 +138,14 @@ public:
 	void removeWindow(const Gleam::Window& window);
 	int32_t getNumWindows(void) const override;
 
-	const SamplerStateResourcePtr& getDefaultSamplerState(void) const;
-	SamplerStateResourcePtr& getDefaultSamplerState(void);
+	const ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void) const;
+	ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void);
 
-	bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
-	const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
-	bool removeGBuffer(ECSEntityID id);
-	bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
-	bool hasGBuffer(ECSEntityID id) const;
+	//bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
+	//const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	//bool removeGBuffer(ECSEntityID id);
+	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	//bool hasGBuffer(ECSEntityID id) const;
 
 	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
 	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
@@ -157,7 +157,7 @@ public:
 
 private:
 	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
-	VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
+	//VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
@@ -196,7 +196,7 @@ private:
 		}
 	};
 
-	SamplerStateResourcePtr _default_sampler;
+	ResourcePtr<SamplerStateResource> _default_sampler;
 
 	Gleam::IRenderDevice* createRenderDeviceFromAdapter(int32_t adapter_id);
 	void handleWindowClosed(Gleam::Window& window);

@@ -27,12 +27,12 @@ THE SOFTWARE.
 NS_GAFF
 
 constexpr float Pi = 3.141592654f;
-constexpr float DegToRad = Pi / 180.0f;
-constexpr float RadToDeg = 180.0f / Pi;
-constexpr float TurnsToDeg = 360.0f;
-constexpr float TurnsToRad = 2.0f * Pi;
-constexpr float DegToTurns = 1.0f / 360.0f;
-constexpr float RadToTurns = 1.0f / (2.0f * Pi);
+constexpr float DegreesToRadians = Pi / 180.0f;
+constexpr float RadianToDegrees = 180.0f / Pi;
+constexpr float TurnsToDegrees = 360.0f;
+constexpr float TurnsToRadians = 2.0f * Pi;
+constexpr float DegreesToTurns = 1.0f / 360.0f;
+constexpr float RadiansToTurns = 1.0f / (2.0f * Pi);
 constexpr float Epsilon = 0.0001f;
 
 template <class T>

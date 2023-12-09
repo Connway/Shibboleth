@@ -34,6 +34,12 @@ bool ISerializeablePtr::Load(const ISerializeReader& reader, ISerializeablePtr& 
 
 	{
 		const auto guard = reader.enterElementGuard(u8"class");
+		GAFF_ASSERT(reader.isNull() || reader.isString());
+
+		if (reader.isNull()) {
+			return true;
+		}
+
 		class_name = reader.readString();
 	}
 
@@ -65,7 +71,7 @@ void ISerializeablePtr::Save(ISerializeWriter& writer, const ISerializeablePtr& 
 		ref_def.save(writer, value._ptr.get());
 
 	} else {
-		writer.writeString(u8"class", u8"");
+		writer.writeNull(u8"class");
 	}
 }
 

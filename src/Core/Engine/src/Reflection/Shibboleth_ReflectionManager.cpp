@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Reflection/Shibboleth_IEnumReflectionDefinition.h"
 #include "Reflection/Shibboleth_IReflectionDefinition.h"
 #include "Reflection/Shibboleth_IReflection.h"
-#include <EASTL/sort.h>
+#include <Gaff_ContainerAlgorithm.h>
 
 namespace
 {

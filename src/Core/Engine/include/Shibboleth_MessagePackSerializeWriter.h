@@ -63,6 +63,8 @@ public:
 
 	void writeString(const char8_t* key, const char8_t* value) override;
 
+	void writeNull(const char8_t* key) override;
+
 	void writeInt8(int8_t value) override;
 	void writeInt16(int16_t value) override;
 	void writeInt32(int32_t value) override;
@@ -78,6 +80,8 @@ public:
 	void writeBool(bool value) override;
 
 	void writeString(const char8_t* value) override;
+
+	void writeNull(void) override;
 
 private:
 	Gaff::MessagePackWriter _writer;

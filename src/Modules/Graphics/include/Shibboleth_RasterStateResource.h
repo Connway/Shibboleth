@@ -50,8 +50,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };
 
-using RasterStateResourcePtr = ResourcePtr<RasterStateResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::RasterStateResource)

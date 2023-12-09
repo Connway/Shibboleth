@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_PhysicsShapeResource.h"
-#include <Shibboleth_ECSComponentBase.h>
+//#include <Shibboleth_ECSComponentBase.h>
 
 // namespace physx
 // {

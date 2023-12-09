@@ -47,8 +47,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(PhysicsMaterialResource);
 };
 
-using PhysicsMaterialResourcePtr = ResourcePtr<PhysicsMaterialResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::PhysicsMaterialResource)

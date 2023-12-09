@@ -58,48 +58,6 @@ const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
 };
 
-/*static constexpr const char8_t* const k_graphics_cfg_schema =
-u8R"({
-	"type": "object",
-
-	"properties":
-	{
-		"icon": { "type": "string" },
-
-		"adapters":
-		{
-			"type": "object",
-			"additionalProperties":
-			{
-				"type": "array",
-				"items": { "type": "integer", "minimum": 0 }
-			},
-		},
-
-		"windows":
-		{
-			"type": "object",
-			"additionalProperties":
-			{
-				"type": "object",
-				"properties":
-				{
-					"width": { "type": "number" },
-					"height": { "type": "number" },
-					"monitor_id": { "type": "number", "minimum": 0 },
-					"video_mode_id": { "type": "number", "minimum": 0 },
-					"windowed": { "type": "boolean" },
-					"vsync": { "type": "boolean" },
-					"icon": { "type": "string" }
-				},
-
-				"required": ["monitor_id"],
-				"additionalProperties": false
-			}
-		},
-	}
-})";*/
-
 RenderManagerBase::RenderManagerBase(void)
 {
 	// $TODO: This needs to be rejiggered. This is confusing to follow.
@@ -684,12 +642,12 @@ int32_t RenderManagerBase::getNumWindows(void) const
 	return static_cast<int32_t>(_window_outputs.size());
 }
 
-const SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void) const
+const ResourcePtr<SamplerStateResource>& RenderManagerBase::getDefaultSamplerState(void) const
 {
 	return _default_sampler;
 }
 
-SamplerStateResourcePtr& RenderManagerBase::getDefaultSamplerState(void)
+ResourcePtr<SamplerStateResource>& RenderManagerBase::getDefaultSamplerState(void)
 {
 	return _default_sampler;
 }

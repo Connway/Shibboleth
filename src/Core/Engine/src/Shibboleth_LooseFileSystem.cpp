@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_String.h"
+#include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 #include <filesystem>

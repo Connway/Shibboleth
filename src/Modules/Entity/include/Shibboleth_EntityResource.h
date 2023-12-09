@@ -42,8 +42,6 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(EntityResource);
 };
 
-using EntityResourcePtr = ResourcePtr<EntityResource>;
-
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityResource)

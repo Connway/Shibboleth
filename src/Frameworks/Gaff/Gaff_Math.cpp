@@ -67,7 +67,7 @@ float NormalizeAngleRadians(float angle)
 float NormalizeAngleTurns(float angle)
 {
 	angle = fmod(angle, 1.0f);
-	
+
 	if (angle < 0.0f) {
 		angle = 1.0f + angle;
 	}
@@ -82,12 +82,12 @@ float CalculateFOVRadians(float sensor_size, float focal_length)
 
 float CalculateFOVDegrees(float sensor_size, float focal_length)
 {
-	return CalculateFOVRadians(sensor_size, focal_length) * RadToDeg;
+	return CalculateFOVRadians(sensor_size, focal_length) * RadianToDegrees;
 }
 
 float CalculateFOV(float sensor_size, float focal_length)
 {
-	return CalculateFOVRadians(sensor_size, focal_length) * RadToTurns;
+	return CalculateFOVRadians(sensor_size, focal_length) * RadiansToTurns;
 }
 
 NS_END
