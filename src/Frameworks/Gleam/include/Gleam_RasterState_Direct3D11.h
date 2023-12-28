@@ -28,7 +28,7 @@ struct ID3D11RasterizerState;
 
 NS_GLEAM
 
-class RasterStateD3D11 : public IRasterState
+class RasterStateD3D11 final : public IRasterState
 {
 public:
 	RasterStateD3D11(void);

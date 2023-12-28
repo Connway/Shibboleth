@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class ShaderD3D11 : public IShader
+class ShaderD3D11 final : public IShader
 {
 public:
 	ShaderD3D11(void);

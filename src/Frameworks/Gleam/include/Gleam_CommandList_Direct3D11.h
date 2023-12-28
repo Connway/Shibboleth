@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class CommandListD3D11 : public ICommandList
+class CommandListD3D11 final : public ICommandList
 {
 public:
 	CommandListD3D11(const CommandListD3D11& command_list);

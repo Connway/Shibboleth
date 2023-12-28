@@ -38,10 +38,11 @@ filter { "platforms:x64" }
 		--"JPH_USE_TZCNT",
 		--"JPH_USE_FMADD",
 		"JPH_USE_SSE4_1",
-		"JPH_USE_SSE4_2"
+		"JPH_USE_SSE4_2",
 		--[["JPH_USE_AVX2",
 		"JPH_USE_AVX",
 		"JPH_USE_F16C"--]]
+		"GLM_FORCE_SILENT_WARNINGS"
 	}
 
 	vectorextensions "SSE4.2"

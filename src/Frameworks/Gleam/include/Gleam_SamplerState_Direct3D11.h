@@ -28,7 +28,7 @@ struct ID3D11SamplerState;
 
 NS_GLEAM
 
-class SamplerStateD3D11 : public ISamplerState
+class SamplerStateD3D11 final : public ISamplerState
 {
 public:
 	SamplerStateD3D11(void);

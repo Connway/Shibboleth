@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class RenderDeviceD3D11 : public IRenderDevice
+class RenderDeviceD3D11 final : public IRenderDevice
 {
 public:
 	bool init(int32_t adapter_id) override;

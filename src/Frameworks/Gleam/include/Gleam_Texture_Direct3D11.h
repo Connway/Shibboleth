@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class TextureD3D11 : public ITexture
+class TextureD3D11 final : public ITexture
 {
 public:
 	~TextureD3D11(void);

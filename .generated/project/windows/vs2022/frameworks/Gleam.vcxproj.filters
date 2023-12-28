@@ -93,9 +93,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ITexture.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeColor.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_IncludeD3D11.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -133,9 +130,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_Direct3D11.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh_OpenGL.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mouse.h">

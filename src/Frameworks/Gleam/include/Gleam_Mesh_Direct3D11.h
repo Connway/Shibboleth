@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class MeshD3D11 : public MeshBase
+class MeshD3D11 final : public MeshBase
 {
 public:
 	MeshD3D11(void);

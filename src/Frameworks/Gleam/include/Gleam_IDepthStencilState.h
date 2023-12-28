@@ -33,6 +33,18 @@ class IRenderDevice;
 class IDepthStencilState
 {
 public:
+	enum class StencilOp
+	{
+		Keep = 1,
+		Zero,
+		Replace,
+		IncrementClamp,
+		DecrementClanp,
+		Invert,
+		IncrementWrap,
+		DecrementWrap
+	};
+
 	struct StencilData final
 	{
 		StencilOp stencil_depth_fail = StencilOp::Keep;

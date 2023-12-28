@@ -31,7 +31,7 @@ struct IDXGISwapChain1;
 
 NS_GLEAM
 
-class RenderOutputD3D11 : public IRenderOutput
+class RenderOutputD3D11 final : public IRenderOutput
 {
 public:
 	bool init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync) override;

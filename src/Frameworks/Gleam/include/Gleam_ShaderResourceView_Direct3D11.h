@@ -28,7 +28,7 @@ struct ID3D11ShaderResourceView1;
 
 NS_GLEAM
 
-class ShaderResourceViewD3D11 : public IShaderResourceView
+class ShaderResourceViewD3D11 final : public IShaderResourceView
 {
 public:
 	ShaderResourceViewD3D11(void);

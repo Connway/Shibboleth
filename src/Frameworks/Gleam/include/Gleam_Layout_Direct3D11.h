@@ -28,7 +28,7 @@ struct ID3D11InputLayout;
 
 NS_GLEAM
 
-class LayoutD3D11 : public ILayout
+class LayoutD3D11 final : public ILayout
 {
 public:
 	LayoutD3D11(void);

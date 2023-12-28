@@ -28,7 +28,7 @@ struct ID3D11DepthStencilState;
 
 NS_GLEAM
 
-class DepthStencilStateD3D11 : public IDepthStencilState
+class DepthStencilStateD3D11 final : public IDepthStencilState
 {
 public:
 	DepthStencilStateD3D11(void);

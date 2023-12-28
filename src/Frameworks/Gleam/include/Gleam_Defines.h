@@ -37,18 +37,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-enum class StencilOp
-{
-	Keep = 1,
-	Zero,
-	Replace,
-	IncrementClamp,
-	DecrementClanp,
-	Invert,
-	IncrementWrap,
-	DecrementWrap
-};
-
+// $TODO: Move this to a more appropriate file.
 enum class ComparisonFunc
 {
 	Never = 1,

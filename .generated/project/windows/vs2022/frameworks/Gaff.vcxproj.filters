@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ArrayPtr.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ArrayString.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -13,6 +16,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_BitVector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ContainerAlgorithm.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_CrashHandler.h">
@@ -46,6 +52,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Windows.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Error.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h">
@@ -185,6 +194,7 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_Error.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_FileWatcher_Windows.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gaff\Gaff_GUID.cpp" />

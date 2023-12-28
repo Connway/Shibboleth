@@ -31,7 +31,7 @@ struct ID3D11DepthStencilView;
 
 NS_GLEAM
 
-class RenderTargetD3D11 : public IRenderTarget
+class RenderTargetD3D11 final : public IRenderTarget
 {
 public:
 	RenderTargetD3D11(void);

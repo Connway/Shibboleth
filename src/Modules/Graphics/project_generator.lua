@@ -166,7 +166,7 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		excludefiles { source_dir .. "Shibboleth_GraphicsRenderer.cpp" }
+		removefiles { source_dir .. "Shibboleth_GraphicsRenderer.cpp" }
 
 		IncludeDirs
 		{

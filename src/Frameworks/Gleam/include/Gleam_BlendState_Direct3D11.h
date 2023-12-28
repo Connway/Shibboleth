@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_IBlendState.h"
 
 struct ID3D11BlendState;
 
 NS_GLEAM
 
-class BlendStateD3D11 final
+class BlendStateD3D11 final : public IBlendState
 {
 public:
 	BlendStateD3D11(void);

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
-#include "Gleam_IncludeColor.h"
+#include <gtx/color_space.hpp>
 
 NS_GLEAM
 

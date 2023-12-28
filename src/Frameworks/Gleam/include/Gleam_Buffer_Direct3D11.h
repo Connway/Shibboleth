@@ -28,7 +28,7 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class BufferD3D11 : public IBuffer
+class BufferD3D11 final : public IBuffer
 {
 public:
 	BufferD3D11(void);
