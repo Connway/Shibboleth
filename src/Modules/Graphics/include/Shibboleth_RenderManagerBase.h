@@ -22,32 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderManager.h"
+#include <Shibboleth_IManager.h>
 #include "Shibboleth_SamplerStateResource.h"
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IRenderOutput.h>
-#include <Gleam_IRenderDevice.h>
-#include <Gleam_IRenderTarget.h>
-#include <Gleam_ISamplerState.h>
-#include <Gleam_ICommandList.h>
-#include <Gleam_Transform.h>
-#include <Gleam_IProgram.h>
-#include <Gleam_ITexture.h>
 #include <Gleam_Window.h>
-#include <Gaff_Hash.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread.h>
+#include <EASTL/array.h>
 
 NS_SHIBBOLETH
 
-class RenderManagerBase : public IRenderManager
+class RenderManager : public IManager
 {
 public:
-	using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
+	static constexpr int32_t CacheIndexCount = 2;
+
+	/*using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::Window>;
 	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
 
@@ -57,7 +50,7 @@ public:
 	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
 	using TexturePtr = UniquePtr<Gleam::ITexture>;
 
-	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;
+	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;*/
 
 	struct GBufferData final
 	{
@@ -156,6 +149,12 @@ public:
 	Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id);
 
 private:
+	struct RenderCommandData final
+	{
+		using CommandList
+		RenderCommandList command_lists[CacheIndexCount];
+	};
+
 	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
 	//VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
 

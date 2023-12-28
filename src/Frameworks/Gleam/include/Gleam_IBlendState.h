@@ -63,11 +63,11 @@ public:
 
 	enum class ColorMask
 	{
-		Red = 1,
-		Green = 2,
-		Blue  = 4,
-		Alpha = 8,
-		All = Red | Green| Blue | Alpha
+		Red		= 1 << 0,
+		Green	= 1 << 1,
+		Blue	= 1 << 2,
+		Alpha	= 1 << 3,
+		All 	= Red | Green| Blue | Alpha
 	};
 
 	struct Settings final

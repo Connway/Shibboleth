@@ -107,7 +107,7 @@ bool Window::GlobalInit(void)
 
 	glfwSetErrorCallback(OnError);
 	glfwInitAllocator(&allocator_data);
-	
+
 	if (!glfwInit()) {
 		return false;
 	}
@@ -141,11 +141,7 @@ void Window::GlobalShutdown(void)
 
 void Window::WaitEvents(double timeout_seconds)
 {
-	if (timeout_seconds < 0.0f) {
-		glfwWaitEventsTimeout(timeout_seconds);
-	} else {
-		glfwWaitEvents();
-	}
+	glfwWaitEventsTimeout(timeout_seconds);
 }
 
 void Window::PollEvents(void)
@@ -976,7 +972,7 @@ void Window::OnMouseButton(GLFWwindow* glfw_window, int button, int action, int 
 
 	// No flags on the negative bit, this should be fine.
 	const Gaff::Flags<Modifier> modifiers(static_cast<Gaff::Flags<Modifier>::StorageType>(mods));
-	
+
 	for (const auto& cb : window->_mouse_button_callbacks) {
 		cb.second(*window, static_cast<MouseButton>(button), action == GLFW_PRESS, modifiers);
 	}

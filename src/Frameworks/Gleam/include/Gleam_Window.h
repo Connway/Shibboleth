@@ -51,7 +51,7 @@ public:
 	static bool GlobalInit(void);
 	static void GlobalShutdown(void);
 
-	static void WaitEvents(double timeout_seconds = -1.0f);
+	static void WaitEvents(double timeout_seconds);
 	static void PollEvents(void);
 	static void PostEmptyEvent(void);
 

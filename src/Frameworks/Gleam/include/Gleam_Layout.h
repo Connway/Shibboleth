@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_D3D11
+#ifdef GLEAM_USE_D3D11
 	#include "Gleam_Layout_Direct3D11.h"
 
 	NS_GLEAM

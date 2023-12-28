@@ -267,10 +267,9 @@ function CoreProject(project_name, project_kind)
 		end
 end
 
-function ModuleProject(project_name, base_name, copy_dir)
+function ModuleProject(project_name, copy_dir)
 	local lib_name = project_name
 	local project_kind = "StaticLib"
-	local is_base = (base_name and project_name:sub(-4, -1) == "Base")
 	local is_lib = true
 
 	if (project_name:sub(-6, -1) == "Module") then
@@ -289,16 +288,8 @@ function ModuleProject(project_name, base_name, copy_dir)
 		project_kind = "None"
 	end
 
-	local source_dir = ""
-	--local base_dir = ""
-
-	if base_name then
-		source_dir = GetModulesSourceDirectory(base_name)
-		--base_dir = GetModulesDirectory(base_name)
-	else
-		source_dir = GetModulesSourceDirectory(project_name)
-		--base_dir = GetModulesDirectory(project_name)
-	end
+	local source_dir = GetModulesSourceDirectory(project_name)
+	--local base_dir = GetModulesDirectory(project_name)
 
 	project(project_name)
 		kind(project_kind)
@@ -307,20 +298,14 @@ function ModuleProject(project_name, base_name, copy_dir)
 
 		if is_lib then
 			if not _OPTIONS["preproc-pipeline"] or _OPTIONS["generate-preproc"] then
-				if not base_name or is_base then
-					ModuleGen(base_name or project_name)
-				end
+				ModuleGen(project_name)
 			end
 
 			files { source_dir .. "/project_generator.lua" }
 			defines { "SHIB_STATIC" }
 
-			if is_base then
-				defines { "SHIB_IS_BASE" }
-			end
-
 		elseif not is_lib then
-			ModuleIncludesAndLinks(lib_name, base_name)
+			ModuleIncludesAndLinks(lib_name)
 			NewDeleteLinkFix()
 			ModuleCopy(copy_dir)
 		end
@@ -329,8 +314,8 @@ function ModuleProject(project_name, base_name, copy_dir)
 		SetupConfigMap()
 end
 
-function DevModuleProject(project_name, base_name)
-	ModuleProject(project_name, base_name, "DevModules")
+function DevModuleProject(project_name)
+	ModuleProject(project_name, "DevModules")
 end
 
 function ToolProject(project_name, project_kind, no_preproc)
@@ -423,17 +408,9 @@ function ModuleDependencies(module_name)
 	}
 end
 
-function ModuleIncludesAndLinks(module_name, base_name)
-	local source_dir = ""
-	local base_dir = ""
-
-	if base_name then
-		source_dir = GetModulesSourceDirectory(base_name)
-		base_dir = GetModulesDirectory(base_name)
-	else
-		source_dir = GetModulesSourceDirectory(module_name)
-		base_dir = GetModulesDirectory(module_name)
-	end
+function ModuleIncludesAndLinks(module_name)
+	local source_dir = GetModulesSourceDirectory(module_name)
+	local base_dir = GetModulesDirectory(module_name)
 
 	IncludeDirs
 	{

@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_RenderManager.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_GraphicsConfigs.h"
@@ -58,7 +58,7 @@ const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
 	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
 };
 
-RenderManagerBase::RenderManagerBase(void)
+RenderManager::RenderManager(void)
 {
 	// $TODO: This needs to be rejiggered. This is confusing to follow.
 	_render_device_tags.reserve(std::size(g_supported_displays) + g_display_tags.size());
@@ -79,7 +79,7 @@ RenderManagerBase::RenderManagerBase(void)
 	}
 }
 
-RenderManagerBase::~RenderManagerBase(void)
+RenderManager::~RenderManager(void)
 {
 	for (int32_t i = 0; static_cast<size_t>(i) < std::size(_cached_render_commands); ++i) {
 		for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i]); ++j) {
@@ -96,7 +96,7 @@ RenderManagerBase::~RenderManagerBase(void)
 	Gleam::Window::GlobalShutdown();
 }
 
-bool RenderManagerBase::initAllModulesLoaded(void)
+bool RenderManager::initAllModulesLoaded(void)
 {
 	IApp& app = GetApp();
 	const Gaff::JSON& configs = app.getConfigs();
@@ -144,7 +144,7 @@ bool RenderManagerBase::initAllModulesLoaded(void)
 	return true;
 }
 
-bool RenderManagerBase::init(void)
+bool RenderManager::init(void)
 {
 	if (!Gleam::Window::GlobalInit()) {
 		// $TODO: Log error.
@@ -336,7 +336,7 @@ bool RenderManagerBase::init(void)
 				int32_t refresh_rate = -1; // Only used when in fullscreen mode.
 
 				Gleam::Window* const window = createWindow();
-				window->addCloseCallback(Gaff::MemberFunc(this, &RenderManagerBase::handleWindowClosed));
+				window->addCloseCallback(Gaff::MemberFunc(this, &RenderManager::handleWindowClosed));
 
 				if (windowed) {
 					if (width < 0 || height < 0) {
@@ -545,7 +545,7 @@ bool RenderManagerBase::init(void)
 	return true;
 }
 
-void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
+void RenderManager::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
 	auto& devices = _render_device_tags[hash];
@@ -554,7 +554,7 @@ void RenderManagerBase::addRenderDeviceTag(Gleam::IRenderDevice* device, const c
 	devices.emplace_back(device);
 }
 
-void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
+void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device)
 {
 	const auto it = Gaff::Find(_render_devices, device, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
 	GAFF_ASSERT(it == _render_devices.end());
@@ -568,60 +568,60 @@ void RenderManagerBase::manageRenderDevice(Gleam::IRenderDevice* device)
 	}
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(Gaff::Hash32 tag) const
+const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(Gaff::Hash32 tag) const
 {
 	const auto it = _render_device_tags.find(tag);
 	return (it == _render_device_tags.end()) ? nullptr : &it->second;
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char8_t* tag) const
+const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(const char8_t* tag) const
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
 	return getDevicesByTag(hash);
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManagerBase::getDevicesByTag(const char* tag) const
+const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(const char* tag) const
 {
 	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
 	return getDevicesByTag(hash);
 }
 
-Gleam::IRenderDevice& RenderManagerBase::getDevice(int32_t index) const
+Gleam::IRenderDevice& RenderManager::getDevice(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_render_devices.size()));
 	return *_render_devices[index];
 }
 
-int32_t RenderManagerBase::getNumDevices(void) const
+int32_t RenderManager::getNumDevices(void) const
 {
 	return static_cast<int32_t>(_render_devices.size());
 }
 
-Gleam::IRenderOutput* RenderManagerBase::getOutput(Gaff::Hash32 tag) const
+Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.second.get();
 }
 
-Gleam::IRenderOutput* RenderManagerBase::getOutput(int32_t index) const
+Gleam::IRenderOutput* RenderManager::getOutput(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
 	return _window_outputs.data()[index].second.second.get();
 }
 
-Gleam::Window* RenderManagerBase::getWindow(Gaff::Hash32 tag) const
+Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
-Gleam::Window* RenderManagerBase::getWindow(int32_t index) const
+Gleam::Window* RenderManager::getWindow(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
 	return _window_outputs.data()[index].second.first.get();
 }
 
-void RenderManagerBase::removeWindow(const Gleam::Window& window)
+void RenderManager::removeWindow(const Gleam::Window& window)
 {
 	for (auto it = _window_outputs.begin(); it != _window_outputs.end(); ++it) {
 		if (it->second.first.get() == &window) {
@@ -637,22 +637,22 @@ void RenderManagerBase::removeWindow(const Gleam::Window& window)
 	}
 }
 
-int32_t RenderManagerBase::getNumWindows(void) const
+int32_t RenderManager::getNumWindows(void) const
 {
 	return static_cast<int32_t>(_window_outputs.size());
 }
 
-const ResourcePtr<SamplerStateResource>& RenderManagerBase::getDefaultSamplerState(void) const
+const ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void) const
 {
 	return _default_sampler;
 }
 
-ResourcePtr<SamplerStateResource>& RenderManagerBase::getDefaultSamplerState(void)
+ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void)
 {
 	return _default_sampler;
 }
 
-bool RenderManagerBase::createGBuffer(
+bool RenderManager::createGBuffer(
 	ECSEntityID id,
 	Gaff::Hash32 device_tag,
 	const Gleam::IVec2& size,
@@ -774,7 +774,7 @@ bool RenderManagerBase::createGBuffer(
 	return true;
 }
 
-const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
+const RenderManager::GBufferData* RenderManager::getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
 {
 	const auto rd_it = _g_buffers.find(id);
 
@@ -786,12 +786,12 @@ const RenderManagerBase::GBufferData* RenderManagerBase::getGBuffer(ECSEntityID 
 	return nullptr;
 }
 
-bool RenderManagerBase::removeGBuffer(ECSEntityID id)
+bool RenderManager::removeGBuffer(ECSEntityID id)
 {
 	return _g_buffers.erase(id) > 0;
 }
 
-bool RenderManagerBase::hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
+bool RenderManager::hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const
 {
 	const auto it = _g_buffers.find(id);
 
@@ -802,17 +802,17 @@ bool RenderManagerBase::hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& d
 	return false;
 }
 
-bool RenderManagerBase::hasGBuffer(ECSEntityID id) const
+bool RenderManager::hasGBuffer(ECSEntityID id) const
 {
 	return _g_buffers.find(id) != _g_buffers.end();
 }
 
-const RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const
+const RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const
 {
-	return const_cast<RenderManagerBase*>(this)->getRenderCommands(device, order, cache_index);
+	return const_cast<RenderManager*>(this)->getRenderCommands(device, order, cache_index);
 }
 
-RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index)
+RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index)
 {
 	GAFF_ASSERT(Gaff::ValidIndex(cache_index, 1));
 	const auto it = _cached_render_commands[static_cast<int32_t>(order)][cache_index].find(&device);
@@ -821,7 +821,7 @@ RenderManagerBase::RenderCommandList& RenderManagerBase::getRenderCommands(const
 	return it->second;
 }
 
-void RenderManagerBase::presentAllOutputs(void)
+void RenderManager::presentAllOutputs(void)
 {
 	for (auto& pair : _window_outputs) {
 		pair.second.second->present();
@@ -830,12 +830,12 @@ void RenderManagerBase::presentAllOutputs(void)
 	_pending_window_removes.clear();
 }
 
-const Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const
+const Gleam::IRenderDevice* RenderManager::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const
 {
-	return const_cast<RenderManagerBase*>(this)->getDeferredDevice(device, thread_id);
+	return const_cast<RenderManager*>(this)->getDeferredDevice(device, thread_id);
 }
 
-Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id)
+Gleam::IRenderDevice* RenderManager::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id)
 {
 	const auto device_it = _deferred_contexts.find(&device);
 	GAFF_ASSERT(device_it != _deferred_contexts.end());
@@ -846,7 +846,7 @@ Gleam::IRenderDevice* RenderManagerBase::getDeferredDevice(const Gleam::IRenderD
 	return thread_it->second.get();
 }
 
-Gleam::IRenderDevice* RenderManagerBase::createRenderDeviceFromAdapter(int32_t adapter_id)
+Gleam::IRenderDevice* RenderManager::createRenderDeviceFromAdapter(int32_t adapter_id)
 {
 	Gleam::IRenderDevice* const rd = createRenderDevice();
 
@@ -883,7 +883,7 @@ Gleam::IRenderDevice* RenderManagerBase::createRenderDeviceFromAdapter(int32_t a
 	return rd;
 }
 
-void RenderManagerBase::handleWindowClosed(Gleam::Window& window)
+void RenderManager::handleWindowClosed(Gleam::Window& window)
 {
 	removeWindow(window);
 

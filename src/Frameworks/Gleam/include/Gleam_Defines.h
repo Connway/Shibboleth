@@ -35,15 +35,6 @@ THE SOFTWARE.
 #define RETURNIFFALSECLEANUP(r, c) if (!r) { c; return false; }
 #define RETURNIFFALSE(r) if (!r) { return false; }
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#ifdef PLATFORM_COMPILER_MSVC
-	#pragma warning(disable : 4201)
-#endif
-
-
 NS_GLEAM
 
 enum class StencilOp
@@ -73,7 +64,9 @@ enum class ComparisonFunc
 enum class RendererType
 {
 	Direct3D11 = 0,
+	Direct3D12,
 	Vulkan,
+	Metal,
 
 	Count
 };
