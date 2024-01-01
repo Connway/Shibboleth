@@ -105,6 +105,30 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
+	Gleam::RendererType getRendererType(void) const;
+
+	Gleam::IShaderResourceView* createShaderResourceView(void) const;
+	Gleam::IDepthStencilState* createDepthStencilState(void) const;
+	Gleam::IRenderDevice* createRenderDevice(void) const;
+	Gleam::IRenderOutput* createRenderOutput(void) const;
+	Gleam::IRenderTarget* createRenderTarget(void) const;
+	Gleam::ISamplerState* createSamplerState(void) const;
+	Gleam::ICommandList* createCommandList(void) const;
+	Gleam::IRasterState* createRasterState(void) const;
+	Gleam::IBlendState* createBlendState(void) const;
+	Gleam::ITexture* createTexture(void) const;
+	Gleam::IProgramBuffers* createProgramBuffers(void) const;
+	Gleam::IProgram* createProgram(void) const;
+	Gleam::IShader* createShader(void) const;
+	Gleam::IBuffer* createBuffer(void) const;
+	Gleam::ILayout* createLayout(void) const;
+	Gleam::IMesh* createMesh(void) const;
+
+	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const;
+	Gleam::Window* createWindow(void) const;
+
+	void updateWindows(void) override;
+
 	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);
 

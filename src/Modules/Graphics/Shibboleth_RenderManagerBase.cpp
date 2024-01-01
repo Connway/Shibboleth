@@ -32,8 +32,22 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Image.h>
 #include <Shibboleth_IApp.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IRenderDevice.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_DepthStencilState.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_RenderOutput.h>
+#include <Gleam_RenderTarget.h>
+#include <Gleam_SamplerState.h>
+#include <Gleam_CommandList.h>
+#include <Gleam_RasterState.h>
+#include <Gleam_BlendState.h>
+#include <Gleam_Texture.h>
+#include <Gleam_Program.h>
+#include <Gleam_Shader.h>
+#include <Gleam_Buffer.h>
+#include <Gleam_Layout.h>
+#include <Gleam_Window.h>
+#include <Gleam_Mesh.h>
 #include <Gaff_Function.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
@@ -144,6 +158,7 @@ bool RenderManager::initAllModulesLoaded(void)
 	return true;
 }
 
+// $TODO: Break this function down.
 bool RenderManager::init(void)
 {
 	if (!Gleam::Window::GlobalInit()) {
@@ -543,6 +558,114 @@ bool RenderManager::init(void)
 	}
 
 	return true;
+}
+
+Gleam::RendererType RenderManager::getRendererType(void) const
+{
+#ifdef GLEAM_USE_D3D11
+	return Gleam::RendererType::Direct3D11;
+#elif defined(GLEAM_USE_D3D12)
+	return Gleam::RendererType::Direct3D12;
+#elif defined(GLEAM_USE_VULKAN)
+	return Gleam::RendererType::Vulkan;
+#elif defined(GLEAM_USE_METAL)
+	return Gleam::RendererType::Metal;
+#endif
+}
+
+Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
+{
+	return SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
+}
+
+Gleam::IDepthStencilState* RenderManager::createDepthStencilState(void) const
+{
+	return SHIB_ALLOCT(Gleam::DepthStencilState, g_allocator);
+}
+
+Gleam::IRenderDevice* RenderManager::createRenderDevice(void) const
+{
+	return SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
+}
+
+Gleam::IRenderOutput* RenderManager::createRenderOutput(void) const
+{
+	return SHIB_ALLOCT(Gleam::RenderOutput, g_allocator);
+}
+
+Gleam::IRenderTarget* RenderManager::createRenderTarget(void) const
+{
+	return SHIB_ALLOCT(Gleam::RenderTarget, g_allocator);
+}
+
+Gleam::ISamplerState* RenderManager::createSamplerState(void) const
+{
+	return SHIB_ALLOCT(Gleam::SamplerState, g_allocator);
+}
+
+Gleam::ICommandList* RenderManager::createCommandList(void) const
+{
+	return SHIB_ALLOCT(Gleam::CommandList, g_allocator);
+}
+
+Gleam::IRasterState* RenderManager::createRasterState(void) const
+{
+	return SHIB_ALLOCT(Gleam::RasterState, g_allocator);
+}
+
+Gleam::IBlendState* RenderManager::createBlendState(void) const
+{
+	return SHIB_ALLOCT(Gleam::BlendState, g_allocator);
+}
+
+Gleam::ITexture* RenderManager::createTexture(void) const
+{
+	return SHIB_ALLOCT(Gleam::Texture, g_allocator);
+}
+
+Gleam::IProgramBuffers* RenderManager::createProgramBuffers(void) const
+{
+	return SHIB_ALLOCT(Gleam::ProgramBuffers, g_allocator);
+}
+
+Gleam::IProgram* RenderManager::createProgram(void) const
+{
+	return SHIB_ALLOCT(Gleam::Program, g_allocator);
+}
+
+Gleam::IShader* RenderManager::createShader(void) const
+{
+	return SHIB_ALLOCT(Gleam::Shader, g_allocator);
+}
+
+Gleam::IBuffer* RenderManager::createBuffer(void) const
+{
+	return SHIB_ALLOCT(Gleam::Buffer, g_allocator);
+}
+
+Gleam::ILayout* RenderManager::createLayout(void) const
+{
+	return SHIB_ALLOCT(Gleam::Layout, g_allocator);
+}
+
+Gleam::IMesh* RenderManager::createMesh(void) const
+{
+	return SHIB_ALLOCT(Gleam::Mesh, g_allocator);
+}
+
+Gleam::IRenderDevice::AdapterList RenderManager::getDisplayModes(void) const
+{
+	return Gleam::GetDisplayModes<GetRendererType()>();
+}
+
+Gleam::Window* RenderManager::createWindow(void) const
+{
+	return SHIB_ALLOCT(Gleam::Window, g_allocator);
+}
+
+void RenderManager::updateWindows(void)
+{
+	Gleam::Window::PollEvents();
 }
 
 void RenderManager::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
