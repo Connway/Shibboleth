@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef SHIB_IS_BASE
-
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_ModuleMacros.h>
 
@@ -75,5 +73,3 @@ SHIB_DEFINE_MODULE_BEGIN(Graphics)
 #endif
 
 SHIB_DEFINE_MODULE_END(Graphics)
-
-#endif

@@ -22,46 +22,207 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_RenderManagerBase.h"
-#include <Reflection/Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
+#include "Shibboleth_SamplerStateResource.h"
+#include <Shibboleth_ResourcePtr.h>
+#include <Shibboleth_SmartPtrs.h>
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_Vector.h>
+#include <Gleam_Window.h>
+#include <eathread/eathread_spinlock.h>
+#include <eathread/eathread.h>
+#include <EASTL/array.h>
 
 NS_SHIBBOLETH
 
-class Camera;
-
-class RenderManager final : public RenderManagerBase
+class RenderManager : public IManager
 {
 public:
-	RenderManager(void);
-	~RenderManager(void);
+	static constexpr int32_t CacheIndexCount = 2;
 
-	Gleam::RendererType getRendererType(void) const override;
+	/*using OutputPtr = UniquePtr<Gleam::IRenderOutput>;
+	using WindowPtr = UniquePtr<Gleam::Window>;
+	using WindowOutputPair = eastl::pair<WindowPtr, OutputPtr>;
 
-	Gleam::IShaderResourceView* createShaderResourceView(void) const override;
-	Gleam::IDepthStencilState* createDepthStencilState(void) const override;
-	Gleam::IRenderDevice* createRenderDevice(void) const override;
-	Gleam::IRenderOutput* createRenderOutput(void) const override;
-	Gleam::IRenderTarget* createRenderTarget(void) const override;
-	Gleam::ISamplerState* createSamplerState(void) const override;
-	Gleam::ICommandList* createCommandList(void) const override;
-	Gleam::IRasterState* createRasterState(void) const override;
-	Gleam::IBlendState* createBlendState(void) const override;
-	Gleam::ITexture* createTexture(void) const override;
-	Gleam::IProgramBuffers* createProgramBuffers(void) const override;
-	Gleam::IProgram* createProgram(void) const override;
-	Gleam::IShader* createShader(void) const override;
-	Gleam::IBuffer* createBuffer(void) const override;
-	Gleam::ILayout* createLayout(void) const override;
-	Gleam::IMesh* createMesh(void) const override;
+	using ProgramBuffersPtr = UniquePtr<Gleam::IProgramBuffers>;
+	using SamplerPtr = UniquePtr<Gleam::ISamplerState>;
+	using SRVPtr = UniquePtr<Gleam::IShaderResourceView>;
+	using RTVPtr = UniquePtr<Gleam::IRenderTarget>;
+	using TexturePtr = UniquePtr<Gleam::ITexture>;
 
-	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const override;
-	Gleam::Window* createWindow(void) const override;
+	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;*/
+
+	struct GBufferData final
+	{
+		RTVPtr render_target;
+
+		TexturePtr diffuse;
+		TexturePtr specular;
+		TexturePtr normal;
+		TexturePtr position;
+		TexturePtr depth;
+
+		SRVPtr diffuse_srv;
+		SRVPtr specular_srv;
+		SRVPtr normal_srv;
+		SRVPtr position_srv;
+		SRVPtr depth_srv;
+
+		// These fields are only filled out if doing off-screen rendering.
+		RTVPtr final_render_target;
+		TexturePtr final_image;
+		SRVPtr final_srv;
+	};
+
+	struct RenderCommand final
+	{
+		UniquePtr<Gleam::ICommandList> cmd_list;
+		bool owns_command = true;
+		//Gleam::IRenderTarget* target = nullptr;
+	};
+
+	struct RenderCommandList final
+	{
+		Vector<RenderCommand> command_list{ ProxyAllocator("Graphics") };
+		EA::Thread::SpinLock lock;
+	};
+
+	enum class RenderOrder
+	{
+		ClearRenderTargets,
+		InWorldWithDepthTest,
+		InWorldNoDepthTest,
+		ScreenSpace,
+		ToRenderTarget,
+		ScreenSpaceDirect, // Renders directly to screen.
+
+		Count
+	};
+
+	RenderManagerBase(void);
+	~RenderManagerBase(void);
+
+	bool initAllModulesLoaded(void) override;
+	bool init(void) override;
+
+	Gleam::RendererType getRendererType(void) const;
+
+	Gleam::IShaderResourceView* createShaderResourceView(void) const;
+	Gleam::IDepthStencilState* createDepthStencilState(void) const;
+	Gleam::IRenderDevice* createRenderDevice(void) const;
+	Gleam::IRenderOutput* createRenderOutput(void) const;
+	Gleam::IRenderTarget* createRenderTarget(void) const;
+	Gleam::ISamplerState* createSamplerState(void) const;
+	Gleam::ICommandList* createCommandList(void) const;
+	Gleam::IRasterState* createRasterState(void) const;
+	Gleam::IBlendState* createBlendState(void) const;
+	Gleam::ITexture* createTexture(void) const;
+	Gleam::IProgramBuffers* createProgramBuffers(void) const;
+	Gleam::IProgram* createProgram(void) const;
+	Gleam::IShader* createShader(void) const;
+	Gleam::IBuffer* createBuffer(void) const;
+	Gleam::ILayout* createLayout(void) const;
+	Gleam::IMesh* createMesh(void) const;
+
+	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const;
+	Gleam::Window* createWindow(void) const;
 
 	void updateWindows(void) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
+	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
+	void manageRenderDevice(Gleam::IRenderDevice* device);
+
+	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
+	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(const char8_t* tag) const;
+	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(const char* tag) const;
+	Gleam::IRenderDevice& getDevice(int32_t index) const;
+	int32_t getNumDevices(void) const;
+
+	Gleam::IRenderOutput* getOutput(const char* tag) const
+	{
+		return getOutput(Gaff::FNV1aHash32String(tag));
+	}
+
+	Gleam::Window* getWindow(const char* tag) const
+	{
+		return getWindow(Gaff::FNV1aHash32String(tag));
+	}
+
+	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
+	Gleam::IRenderOutput* getOutput(int32_t index) const override;
+	Gleam::Window* getWindow(Gaff::Hash32 tag) const;
+	Gleam::Window* getWindow(int32_t index) const override;
+	void removeWindow(const Gleam::Window& window);
+	int32_t getNumWindows(void) const override;
+
+	const ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void) const;
+	ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void);
+
+	//bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
+	//const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	//bool removeGBuffer(ECSEntityID id);
+	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
+	//bool hasGBuffer(ECSEntityID id) const;
+
+	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
+	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
+
+	void presentAllOutputs(void);
+
+	const Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const;
+	Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id);
+
+private:
+	struct RenderCommandData final
+	{
+		using CommandList
+		RenderCommandList command_lists[CacheIndexCount];
+	};
+
+	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
+	//VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
+
+	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
+	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
+	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+	Vector<WindowOutputPair> _pending_window_removes{ ProxyAllocator("Graphics") };
+
+	VectorMap<
+		const Gleam::IRenderDevice*,
+		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
+	> _deferred_contexts{ ProxyAllocator("Graphics") };
+
+	VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[static_cast<size_t>(RenderOrder::Count)][2] = {
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		},
+		{
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+		}
+	};
+
+	ResourcePtr<SamplerStateResource> _default_sampler;
+
+	Gleam::IRenderDevice* createRenderDeviceFromAdapter(int32_t adapter_id);
+	void handleWindowClosed(Gleam::Window& window);
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::RenderManager)
