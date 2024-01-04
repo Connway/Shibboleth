@@ -32,8 +32,8 @@ public:
 	ICommandList(void) {}
 	virtual ~ICommandList(void) {}
 
-	virtual const ICommandList& operator=(const ICommandList& rhs) = 0;
-	virtual const ICommandList& operator=(ICommandList&& rhs) = 0;
+	virtual ICommandList& operator=(const ICommandList& rhs) = 0;
+	virtual ICommandList& operator=(ICommandList&& rhs) = 0;
 
 	virtual bool operator==(const ICommandList& rhs) const = 0;
 	virtual bool operator!=(const ICommandList& rhs) const = 0;

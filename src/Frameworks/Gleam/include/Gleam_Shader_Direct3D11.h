@@ -27,11 +27,11 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class ShaderD3D11 final : public IShader
+class Shader final : public IShader
 {
 public:
-	ShaderD3D11(void);
-	~ShaderD3D11(void);
+	Shader(void);
+	~Shader(void);
 
 	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type);
 	bool initSource(IRenderDevice& rd, const char* shader_source, Type shader_type);

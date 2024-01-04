@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#if GLEAM_USE_D3D11
 
 #include "Gleam_ShaderResourceView_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
@@ -43,25 +43,25 @@ static constexpr D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITextu
 	D3D11_SRV_DIMENSION_TEXTURE1DARRAY
 };
 
-ShaderResourceViewD3D11::ShaderResourceViewD3D11(void)
+ShaderResourceView::ShaderResourceView(void)
 {
 }
 
-ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
+ShaderResourceView::~ShaderResourceView(void)
 {
 	destroy();
 }
 
-bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
+bool ShaderResourceView::init(IRenderDevice& rd, const ITexture* texture)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(texture);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
-	res_desc.Format = TextureD3D11::GetTypedD3DFormat(texture->getFormat());
+	res_desc.Format = Texture::GetTypedD3DFormat(texture->getFormat());
 	res_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture->getType())];
 
 	// The union will set this for all texture types.
@@ -86,11 +86,11 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	}
 
 	if (texture->getType() == ITexture::Type::THREE_D) {
-		resource = static_cast<const TextureD3D11*>(texture)->getTexture3D();
+		resource = static_cast<const Texture*>(texture)->getTexture3D();
 	} else if (texture->getType() == ITexture::Type::TWO_D || texture->getType() == ITexture::Type::TWO_D_ARRAY || texture->getType() == ITexture::Type::DEPTH || texture->getType() == ITexture::Type::DEPTH_STENCIL) {
-		resource = static_cast<const TextureD3D11*>(texture)->getTexture2D();
+		resource = static_cast<const Texture*>(texture)->getTexture2D();
 	} else 	if (texture->getType() == ITexture::Type::ONE_D || texture->getType() == ITexture::Type::ONE_D_ARRAY) {
-		resource = static_cast<const TextureD3D11*>(texture)->getTexture1D();
+		resource = static_cast<const Texture*>(texture)->getTexture1D();
 	}
 
 	GAFF_ASSERT(resource);
@@ -101,12 +101,12 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	return SUCCEEDED(result);
 }
 
-bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset)
+bool ShaderResourceView::init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(buffer);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_view_type = Type::BUFFER;
@@ -119,24 +119,24 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer, int
 	res_desc.BufferEx.FirstElement = static_cast<UINT>(offset); // $TODO: This seems to not be working is set to anything other than 0. Possibly related to format being unknown?
 	res_desc.BufferEx.Flags = 0;
 
-	ID3D11Resource* const resource = static_cast<const BufferD3D11*>(buffer)->getBuffer();
+	ID3D11Resource* const resource = static_cast<const Buffer*>(buffer)->getBuffer();
 	const HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
 	_buffer = buffer;
 
 	return SUCCEEDED(result);
 }
 
-void ShaderResourceViewD3D11::destroy(void)
+void ShaderResourceView::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_resource_view)
 }
 
-RendererType ShaderResourceViewD3D11::getRendererType(void) const
+RendererType ShaderResourceView::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-ID3D11ShaderResourceView1* ShaderResourceViewD3D11::getResourceView(void) const
+ID3D11ShaderResourceView1* ShaderResourceView::getResourceView(void) const
 {
 	return _resource_view;
 }

@@ -28,19 +28,26 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class CommandListD3D11 final : public ICommandList
+class CommandList final : public ICommandList
 {
 public:
-	CommandListD3D11(const CommandListD3D11& command_list);
-	CommandListD3D11(CommandListD3D11&& command_list);
-	CommandListD3D11(void);
-	~CommandListD3D11(void);
+	CommandList(const CommandList& command_list);
+	CommandList(CommandList&& command_list);
+	CommandList(void);
+	~CommandList(void);
 
-	const ICommandList& operator=(const ICommandList& rhs) override;
-	const ICommandList& operator=(ICommandList&& rhs) override;
+
+	ICommandList& operator=(const ICommandList& rhs) override;
+	ICommandList& operator=(ICommandList&& rhs) override;
 
 	bool operator==(const ICommandList& rhs) const override;
 	bool operator!=(const ICommandList& rhs) const override;
+
+	CommandList& operator=(const CommandList& rhs);
+	CommandList& operator=(CommandList&& rhs);
+
+	bool operator==(const CommandList& rhs) const;
+	bool operator!=(const CommandList& rhs) const;
 
 	RendererType getRendererType(void) const override;
 	bool isValid(void) const override;

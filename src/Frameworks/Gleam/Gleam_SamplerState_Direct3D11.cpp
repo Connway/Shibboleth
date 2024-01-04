@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef GLEAM_USE_D3D11
 
 #include "Gleam_SamplerState_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
@@ -42,17 +42,17 @@ static D3D11_FILTER g_filter_map[static_cast<size_t>(ISamplerState::Filter::Coun
 	D3D11_FILTER_ANISOTROPIC
 };
 
-SamplerStateD3D11::SamplerStateD3D11(void):
+SamplerState::SamplerState(void):
 	_sampler_state(nullptr)
 {
 }
 
-SamplerStateD3D11::~SamplerStateD3D11(void)
+SamplerState::~SamplerState(void)
 {
 	destroy();
 }
 
-bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings)
+bool SamplerState::init(IRenderDevice& rd, const Settings& sampler_settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && Gaff::Between(sampler_settings.max_anisotropy, 1, 16));
 
@@ -71,22 +71,22 @@ bool SamplerStateD3D11::init(IRenderDevice& rd, const Settings& sampler_settings
 	desc.MinLOD = sampler_settings.min_lod;
 	desc.MipLODBias = sampler_settings.lod_bias;
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	const HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }
 
-void SamplerStateD3D11::destroy(void)
+void SamplerState::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_sampler_state)
 }
 
-RendererType SamplerStateD3D11::getRendererType(void) const
+RendererType SamplerState::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-ID3D11SamplerState* SamplerStateD3D11::getSamplerState(void) const
+ID3D11SamplerState* SamplerState::getSamplerState(void) const
 {
 	return _sampler_state;
 }

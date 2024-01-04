@@ -28,11 +28,11 @@ struct ID3D11BlendState;
 
 NS_GLEAM
 
-class BlendStateD3D11 final : public IBlendState
+class BlendState final : public IBlendState
 {
 public:
-	BlendStateD3D11(void);
-	~BlendStateD3D11(void);
+	BlendState(void);
+	~BlendState(void);
 
 	bool init(IRenderDevice& rd, const Settings& settings) override;
 	void destroy(void) override;

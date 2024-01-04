@@ -28,11 +28,11 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class BufferD3D11 final : public IBuffer
+class Buffer final : public IBuffer
 {
 public:
-	BufferD3D11(void);
-	~BufferD3D11(void);
+	Buffer(void);
+	~Buffer(void);
 
 	bool init(IRenderDevice& rd, const Settings& buffer_settings) override;
 	void destroy(void) override;

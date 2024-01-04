@@ -24,14 +24,12 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 	#include "Gleam_Layout_Direct3D11.h"
-
-	NS_GLEAM
-		using Layout = LayoutD3D11;
-	NS_END
+#elif defined(GLEAM_USE_D3D12)
+	#include "Gleam_Layout_Direct3D12.h"
+#elif defined(GLEAM_USE_VULKAN)
+	#include "Gleam_Layout_Vulkan.h"
+#elif defined(GLEAM_USE_METAL)
+	#include "Gleam_Layout_Metal.h"
 #else
-	#include "Gleam_Layout_OpenGL.h"
-
-	NS_GLEAM
-		typedef LayoutGL Layout;
-	NS_END
+	#error "No renderer specified."
 #endif

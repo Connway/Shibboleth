@@ -28,11 +28,11 @@ struct ID3D11SamplerState;
 
 NS_GLEAM
 
-class SamplerStateD3D11 final : public ISamplerState
+class SamplerState final : public ISamplerState
 {
 public:
-	SamplerStateD3D11(void);
-	~SamplerStateD3D11(void);
+	SamplerState(void);
+	~SamplerState(void);
 
 	bool init(IRenderDevice& rd, const Settings& sampler_settings) override;
 	void destroy(void) override;

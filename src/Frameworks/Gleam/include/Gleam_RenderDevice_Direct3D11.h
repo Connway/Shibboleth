@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class RenderDeviceD3D11 final : public IRenderDevice
+class RenderDevice final : public IRenderDevice
 {
 public:
 	bool init(int32_t adapter_id) override;
@@ -75,7 +75,7 @@ private:
 	Gaff::COMRefPtr<ID3D11Device5> _device;
 	Gaff::COMRefPtr<IDXGIAdapter4> _adapter;
 
-	RenderDeviceD3D11* _owner = nullptr;
+	RenderDevice* _owner = nullptr;
 
 	friend class RenderOutputD3D11;
 

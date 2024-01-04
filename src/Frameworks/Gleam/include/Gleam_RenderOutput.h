@@ -24,9 +24,12 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 	#include "Gleam_RenderOutput_Direct3D11.h"
-
-	NS_GLEAM
-		using RenderOutput = RenderOutputD3D11;
-	NS_END
+#elif defined(GLEAM_USE_D3D12)
+	#include "Gleam_RenderOutput_Direct3D12.h"
+#elif defined(GLEAM_USE_VULKAN)
+	#include "Gleam_RenderOutput_Vulkan.h"
+#elif defined(GLEAM_USE_METAL)
+	#include "Gleam_RenderOutput_Metal.h"
 #else
+	#error "No renderer specified."
 #endif

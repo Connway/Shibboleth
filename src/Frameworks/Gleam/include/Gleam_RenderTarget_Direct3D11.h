@@ -31,11 +31,11 @@ struct ID3D11DepthStencilView;
 
 NS_GLEAM
 
-class RenderTargetD3D11 final : public IRenderTarget
+class RenderTarget final : public IRenderTarget
 {
 public:
-	RenderTargetD3D11(void);
-	~RenderTargetD3D11(void);
+	RenderTarget(void);
+	~RenderTarget(void);
 
 	bool init(void) override;
 	void destroy(void) override;
@@ -63,7 +63,7 @@ private:
 	D3D11_VIEWPORT _viewport;
 	ID3D11DepthStencilView* _depth_stencil_view = nullptr;
 
-	friend class RenderOutputD3D11;
+	friend class RenderOutput;
 	void setRTV(ID3D11RenderTargetView1* rt, const D3D11_VIEWPORT& viewport);
 };
 

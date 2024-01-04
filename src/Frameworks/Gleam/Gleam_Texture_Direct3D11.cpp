@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#if GLEAM_USE_D3D11
 
 #include "Gleam_Texture_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
@@ -157,7 +157,7 @@ static constexpr UINT _format_size[static_cast<int32_t>(ITexture::Format::SIZE)]
 	8
 };
 
-DXGI_FORMAT TextureD3D11::GetTypelessD3DFormat(Format format)
+DXGI_FORMAT Texture::GetTypelessD3DFormat(Format format)
 {
 	switch (format) {
 		case Format::DEPTH_16_UNORM:
@@ -177,7 +177,7 @@ DXGI_FORMAT TextureD3D11::GetTypelessD3DFormat(Format format)
 	}
 }
 
-DXGI_FORMAT TextureD3D11::GetTypedD3DFormat(Format format)
+DXGI_FORMAT Texture::GetTypedD3DFormat(Format format)
 {
 	DXGI_FORMAT typed_format;
 
@@ -206,17 +206,17 @@ DXGI_FORMAT TextureD3D11::GetTypedD3DFormat(Format format)
 	return typed_format;
 }
 
-DXGI_FORMAT TextureD3D11::GetD3DFormat(Format format)
+DXGI_FORMAT Texture::GetD3DFormat(Format format)
 {
 	return _format_map[static_cast<int32_t>(format)];
 }
 
-TextureD3D11::~TextureD3D11(void)
+Texture::~Texture(void)
 {
 	destroy();
 }
 
-void TextureD3D11::destroy(void)
+void Texture::destroy(void)
 {
 	if (_texture) {
 		switch (_type) {
@@ -246,12 +246,12 @@ void TextureD3D11::destroy(void)
 	}
 }
 
-bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
+bool Texture::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0 && num_elements > 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = mip_levels;
@@ -293,12 +293,12 @@ bool TextureD3D11::init2DArray(IRenderDevice& rd, int32_t width, int32_t height,
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
+bool Texture::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && mip_levels >= 0 && num_elements > 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = mip_levels;
@@ -338,12 +338,12 @@ bool TextureD3D11::init1DArray(IRenderDevice& rd, int32_t width, Format format, 
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
+bool Texture::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels >= 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = mip_levels;
@@ -383,22 +383,22 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D11::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
+bool Texture::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	return init2DArray(rd, width, height, format, 1, mip_levels, buffer);
 }
 
-bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
+bool Texture::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
 {
 	return init1DArray(rd, width, format, 1, mip_levels, buffer);
 }
 
-bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
+bool Texture::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels >= 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = mip_levels;
@@ -441,12 +441,12 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
+bool Texture::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
 {
 	GAFF_ASSERT(width > 0 && height > 0);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	switch (format) {
@@ -496,27 +496,27 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	return SUCCEEDED(result);
 }
 
-RendererType TextureD3D11::getRendererType(void) const
+RendererType Texture::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-void* TextureD3D11::getTexture(void) const
+void* Texture::getTexture(void) const
 {
 	return _texture;
 }
 
-ID3D11Texture1D* TextureD3D11::getTexture1D(void) const
+ID3D11Texture1D* Texture::getTexture1D(void) const
 {
 	return _texture_1d;
 }
 
-ID3D11Texture2D* TextureD3D11::getTexture2D(void) const
+ID3D11Texture2D* Texture::getTexture2D(void) const
 {
 	return _texture_2d;
 }
 
-ID3D11Texture3D* TextureD3D11::getTexture3D(void) const
+ID3D11Texture3D* Texture::getTexture3D(void) const
 {
 	return _texture_3d;
 }

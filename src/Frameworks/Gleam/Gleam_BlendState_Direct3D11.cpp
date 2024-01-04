@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_D3D11
+
 #include "Gleam_BlendState_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -28,21 +30,21 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-BlendStateD3D11::BlendStateD3D11(void):
+BlendState::BlendState(void):
 	_blend_state(nullptr)
 {
 }
 
-BlendStateD3D11::~BlendStateD3D11(void)
+BlendState::~BlendState(void)
 {
 	destroy();
 }
 
-bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
+bool BlendState::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_BLEND_DESC blend_desc;
@@ -62,32 +64,34 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 	return SUCCEEDED(result);
 }
 
-void BlendStateD3D11::destroy(void)
+void BlendState::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_blend_state);
 }
 
-void BlendStateD3D11::bind(IRenderDevice& rd) const
+void BlendState::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
 }
 
-void BlendStateD3D11::unbind(IRenderDevice& rd) const
+void BlendState::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
 }
 
-RendererType BlendStateD3D11::getRendererType(void) const
+RendererType BlendState::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
 NS_END
+
+#endif

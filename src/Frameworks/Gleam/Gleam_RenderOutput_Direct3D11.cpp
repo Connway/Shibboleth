@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_D3D11
+
 #include "Gleam_RenderOutput_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -28,12 +30,12 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool RenderOutputD3D11::init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync)
+bool RenderOutput::init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RendererType::Direct3D11);
 	_vsync = vsync && !window.isFullscreen();
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(device);
 	const Window& wnd = static_cast<const Window&>(window);
 
 	IDXGISwapChain1* swap_chain = nullptr;
@@ -161,19 +163,19 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const Window& window, int32_
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 
-	RenderTargetD3D11* rt = GLEAM_ALLOCT(RenderTargetD3D11);
+	RenderTarget* const rt = GLEAM_ALLOCT(RenderTarget);
 	rt->setRTV(_render_target_view.get(), viewport);
 	_render_target.reset(rt);
 
 	return true;
 }
 
-RendererType RenderOutputD3D11::getRendererType(void) const
+RendererType RenderOutput::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-IVec2 RenderOutputD3D11::getSize(void) const
+IVec2 RenderOutput::getSize(void) const
 {
 	const D3D11_VIEWPORT viewport = getViewport();
 
@@ -183,17 +185,17 @@ IVec2 RenderOutputD3D11::getSize(void) const
 	};
 }
 
-const IRenderTarget& RenderOutputD3D11::getRenderTarget(void) const
+const IRenderTarget& RenderOutput::getRenderTarget(void) const
 {
 	return *_render_target;
 }
 
-IRenderTarget& RenderOutputD3D11::getRenderTarget(void)
+IRenderTarget& RenderOutput::getRenderTarget(void)
 {
 	return *_render_target;
 }
 
-void RenderOutputD3D11::present(void)
+void RenderOutput::present(void)
 {
 	static const DXGI_PRESENT_PARAMETERS present_params = { 0, NULL, NULL, NULL };
 	const UINT interval = (_vsync) ? 1 : 0;
@@ -201,22 +203,22 @@ void RenderOutputD3D11::present(void)
 	_swap_chain->Present1(interval, _present_flags, &present_params);
 }
 
-const Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void) const
+const Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutput::getSwapChain(void) const
 {
 	return _swap_chain;
 }
 
-Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
+Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutput::getSwapChain(void)
 {
 	return _swap_chain;
 }
 
-const ID3D11Texture2D1* RenderOutputD3D11::getBackBufferTexture(void) const
+const ID3D11Texture2D1* RenderOutput::getBackBufferTexture(void) const
 {
-	return const_cast<RenderOutputD3D11*>(this)->getBackBufferTexture();
+	return const_cast<RenderOutput*>(this)->getBackBufferTexture();
 }
 
-ID3D11Texture2D1* RenderOutputD3D11::getBackBufferTexture(void)
+ID3D11Texture2D1* RenderOutput::getBackBufferTexture(void)
 {
 	ID3D11Texture2D1* back_buffer_ptr = nullptr;
 	_swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_ptr));
@@ -224,14 +226,16 @@ ID3D11Texture2D1* RenderOutputD3D11::getBackBufferTexture(void)
 	return back_buffer_ptr;
 }
 
-D3D11_VIEWPORT RenderOutputD3D11::getViewport(void) const
+D3D11_VIEWPORT RenderOutput::getViewport(void) const
 {
 	return _render_target->getViewport();
 }
 
-bool RenderOutputD3D11::isVSync(void) const
+bool RenderOutput::isVSync(void) const
 {
 	return _vsync;
 }
 
 NS_END
+
+#endif

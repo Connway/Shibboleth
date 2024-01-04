@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef GLEAM_USE_D3D11
 
 #include "Gleam_Buffer_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
@@ -44,21 +44,21 @@ static const D3D11_MAP g_map_map[static_cast<size_t>(IBuffer::MapType::Count)] =
 	D3D11_MAP_READ_WRITE
 };
 
-BufferD3D11::BufferD3D11(void):
+Buffer::Buffer(void):
 	_buffer(nullptr)
 {
 }
 
-BufferD3D11::~BufferD3D11(void)
+Buffer::~Buffer(void)
 {
 	destroy();
 }
 
-bool BufferD3D11::init(IRenderDevice& rd, const Settings& buffer_settings)
+bool Buffer::init(IRenderDevice& rd, const Settings& buffer_settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && !_buffer);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_BUFFER_DESC desc;
@@ -115,20 +115,23 @@ bool BufferD3D11::init(IRenderDevice& rd, const Settings& buffer_settings)
 	return SUCCEEDED(device->CreateBuffer(&desc, nullptr, &_buffer));
 }
 
-void BufferD3D11::destroy(void)
+void Buffer::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_buffer)
 }
 
-bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
+bool Buffer::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && data && size);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	const HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
-	RETURNIFFAILED(result)
+
+	if (FAILED(result)) {
+		return false;
+	}
 
 	memcpy(reinterpret_cast<int8_t*>(mapped_resource.pData) + offset, data, size);
 	context->Unmap(_buffer, 0);
@@ -136,10 +139,10 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 	return true;
 }
 
-void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
+void* Buffer::map(IRenderDevice& rd, MapType map_type)
 {
 	GAFF_ASSERT((rd.getRendererType() == RendererType::Direct3D11) && (map_type != MapType::None));
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
@@ -147,20 +150,20 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 
-void BufferD3D11::unmap(IRenderDevice& rd)
+void Buffer::unmap(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->Unmap(_buffer, 0);
 }
 
-RendererType BufferD3D11::getRendererType(void) const
+RendererType Buffer::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-ID3D11Buffer* BufferD3D11::getBuffer(void) const
+ID3D11Buffer* Buffer::getBuffer(void) const
 {
 	return _buffer;
 }

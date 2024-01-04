@@ -28,11 +28,11 @@ struct ID3D11RasterizerState;
 
 NS_GLEAM
 
-class RasterStateD3D11 final : public IRasterState
+class RasterState final : public IRasterState
 {
 public:
-	RasterStateD3D11(void);
-	~RasterStateD3D11(void);
+	RasterState(void);
+	~RasterState(void);
 
 	bool init(IRenderDevice& rd, const Settings& settings) override;
 	void destroy(void) override;

@@ -27,10 +27,10 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class TextureD3D11 final : public ITexture
+class Texture final : public ITexture
 {
 public:
-	~TextureD3D11(void);
+	~Texture(void);
 
 	void destroy(void) override;
 

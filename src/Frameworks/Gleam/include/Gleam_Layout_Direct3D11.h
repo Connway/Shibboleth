@@ -28,11 +28,11 @@ struct ID3D11InputLayout;
 
 NS_GLEAM
 
-class LayoutD3D11 final : public ILayout
+class Layout final : public ILayout
 {
 public:
-	LayoutD3D11(void);
-	~LayoutD3D11(void);
+	Layout(void);
+	~Layout(void);
 
 	bool init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader) override;
 	bool init(IRenderDevice& rd, const IShader& shader) override;

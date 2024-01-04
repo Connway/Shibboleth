@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_D3D11
+
 #include "Gleam_RasterState_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -27,21 +29,21 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-RasterStateD3D11::RasterStateD3D11(void):
+RasterState::RasterState(void):
 	_raster_state(nullptr)
 {
 }
 
-RasterStateD3D11::~RasterStateD3D11(void)
+RasterState::~RasterState(void)
 {
 	destroy();
 }
 
-bool RasterStateD3D11::init(IRenderDevice& rd, const Settings& settings)
+bool RasterState::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_RASTERIZER_DESC raster_desc;
@@ -60,32 +62,34 @@ bool RasterStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 	return SUCCEEDED(result);
 }
 
-void RasterStateD3D11::destroy(void)
+void RasterState::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_raster_state);
 }
 
-void RasterStateD3D11::bind(IRenderDevice& rd) const
+void RasterState::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->RSSetState(_raster_state);
 }
 
-void RasterStateD3D11::unbind(IRenderDevice& rd) const
+void RasterState::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->RSSetState(NULL);
 }
 
-RendererType RasterStateD3D11::getRendererType(void) const
+RendererType RasterState::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
 NS_END
+
+#endif

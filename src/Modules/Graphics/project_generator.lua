@@ -1,16 +1,3 @@
-newoption
-{
-	trigger = "renderer",
-	description = "Which renderer the Graphics Module will use when built.",
-	allowed =
-	{
-		{ "d3d11", "Direct3D 11" },
-		{ "d3d12", "Direct3D 12" },
-		{ "vulkan", "Vulkan" },
-		{ "metal", "Metal" }
-	}
-}
-
 local GenerateProject = function()
 	local source_dir = GetModulesSourceDirectory("Graphics")
 	local base_dir = GetModulesDirectory("Graphics")
@@ -39,50 +26,32 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/MainLoop/include"
 		}
 
-		filter { "system:windows", "options:not renderer or renderer=d3d11" }
-			defines { "GLEAM_USE_D3D11" }
-
-		filter { "system:windows", "options:renderer=d3d12" }
-			defines { "GLEAM_USE_D3D11" }
-
-		filter { "system:windows", "options:renderer=vulkan" }
-			defines { "GLEAM_USE_VULKAN" }
-
-		filter { "system:linux" }
-			-- Maybe use dxvk or something.
-			defines { "GLEAM_USE_VULKAN" }
-
-		filter { "system:macosx" }
-			-- Maybe use MoltenVK or something.
-			defines { "GLEAM_USE_METAL" }
-
-		filter {}
+		GleamRendererDefines()
 
 	ModuleProject "GraphicsModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_GraphicsModule.cpp" }
 
+		GleamRendererDefines()
+
 		filter { "system:windows", "options:not renderer or renderer=d3d11" }
-			defines { "GLEAM_USE_D3D11" }
 			links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
 
 		filter { "system:windows", "options:renderer=d3d12" }
-			defines { "GLEAM_USE_D3D11" }
 			links { "d3d12", "D3dcompiler", "dxgi", "dxguid" }
 
 		filter { "system:windows", "options:renderer=vulkan" }
-			defines { "GLEAM_USE_VULKAN" }
 			--dependson {}
 			--links {}
 
 		filter { "system:linux" }
-			defines { "GLEAM_USE_VULKAN" }
+			-- Vulkan
 			--dependson {}
 			--links {}
 
 		filter { "system:macosx" }
-			defines { "GLEAM_USE_METAL" }
+			-- Metal
 			--dependson {}
 			--links {}
 

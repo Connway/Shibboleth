@@ -20,75 +20,101 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_D3D11
+
 #include "Gleam_CommandList_Direct3D11.h"
 #include <Gaff_Assert.h>
 
 NS_GLEAM
 
-CommandListD3D11::CommandListD3D11(const CommandListD3D11& command_list):
+CommandList::CommandList(const CommandList& command_list):
 	_command_list(command_list._command_list)
 {
 }
 
-CommandListD3D11::CommandListD3D11(CommandListD3D11&& command_list):
+CommandList::CommandList(CommandList&& command_list):
 	_command_list(std::move(command_list._command_list))
 {
 }
 
-CommandListD3D11::CommandListD3D11(void)
+CommandList::CommandList(void)
 {
 }
 
-CommandListD3D11::~CommandListD3D11(void)
+CommandList::~CommandList(void)
 {
 	GAFF_COM_SAFE_RELEASE(_command_list);
 }
 
-const ICommandList& CommandListD3D11::operator=(const ICommandList& rhs)
+ICommandList& CommandList::operator=(const ICommandList& rhs)
 {
 	GAFF_ASSERT(rhs.getRendererType() == RendererType::Direct3D11);
-	_command_list = static_cast<const CommandListD3D11&>(rhs)._command_list;
+	*this = static_cast<const CommandList&>(rhs);
 	return *this;
 }
 
-const ICommandList& CommandListD3D11::operator=(ICommandList&& rhs)
+ICommandList& CommandList::operator=(ICommandList&& rhs)
 {
 	GAFF_ASSERT(rhs.getRendererType() == RendererType::Direct3D11);
-	_command_list = std::move(static_cast<CommandListD3D11&>(rhs)._command_list);
+	*this = std::move(static_cast<CommandList&>(rhs));
 	return *this;
 }
 
-bool CommandListD3D11::operator==(const ICommandList& rhs) const
+bool CommandList::operator==(const ICommandList& rhs) const
 {
 	GAFF_ASSERT(rhs.getRendererType() == RendererType::Direct3D11);
-	return _command_list == static_cast<const CommandListD3D11&>(rhs)._command_list;
+	return *this == static_cast<const CommandList&>(rhs);
 }
 
-bool CommandListD3D11::operator!=(const ICommandList& rhs) const
+bool CommandList::operator!=(const ICommandList& rhs) const
 {
 	GAFF_ASSERT(rhs.getRendererType() == RendererType::Direct3D11);
-	return _command_list != static_cast<const CommandListD3D11&>(rhs)._command_list;
+	return *this != static_cast<const CommandList&>(rhs);
 }
 
-RendererType CommandListD3D11::getRendererType(void) const
+CommandList& CommandList::operator=(const CommandList& rhs)
+{
+	_command_list = rhs._command_list;
+	return *this;
+}
+
+CommandList& CommandList::operator=(CommandList&& rhs)
+{
+	_command_list = std::move(rhs._command_list);
+	return *this;
+}
+
+bool CommandList::operator==(const CommandList& rhs) const
+{
+	return _command_list == rhs._command_list;
+}
+
+bool CommandList::operator!=(const CommandList& rhs) const
+{
+	return _command_list != rhs._command_list;
+}
+
+RendererType CommandList::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-bool CommandListD3D11::isValid(void) const
+bool CommandList::isValid(void) const
 {
 	return _command_list != nullptr;
 }
 
-void CommandListD3D11::setCommandList(ID3D11CommandList* command_list)
+void CommandList::setCommandList(ID3D11CommandList* command_list)
 {
 	GAFF_COM_SAFE_RELEASE(_command_list);
 	_command_list = command_list;
 }
 
-ID3D11CommandList* CommandListD3D11::getCommandList(void)
+ID3D11CommandList* CommandList::getCommandList(void)
 {
 	return _command_list.get();
 }
 
 NS_END
+
+#endif

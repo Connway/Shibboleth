@@ -27,21 +27,21 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-DepthStencilStateD3D11::DepthStencilStateD3D11(void):
+DepthStencilState::DepthStencilState(void):
 	_depth_stencil_state(nullptr), _stencil_ref(0)
 {
 }
 
-DepthStencilStateD3D11::~DepthStencilStateD3D11(void)
+DepthStencilState::~DepthStencilState(void)
 {
 	destroy();
 }
 
-bool DepthStencilStateD3D11::init(IRenderDevice& rd, const Settings& settings)
+bool DepthStencilState::init(IRenderDevice& rd, const Settings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -69,30 +69,30 @@ bool DepthStencilStateD3D11::init(IRenderDevice& rd, const Settings& settings)
 	return SUCCEEDED(result);
 }
 
-void DepthStencilStateD3D11::destroy(void)
+void DepthStencilState::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_depth_stencil_state);
 }
 
-void DepthStencilStateD3D11::bind(IRenderDevice& rd) const
+void DepthStencilState::bind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetDepthStencilState(_depth_stencil_state, _stencil_ref);
 }
 
-void DepthStencilStateD3D11::unbind(IRenderDevice& rd) const
+void DepthStencilState::unbind(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetDepthStencilState(NULL, 0);
 }
 
-RendererType DepthStencilStateD3D11::getRendererType(void) const
+RendererType DepthStencilState::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }

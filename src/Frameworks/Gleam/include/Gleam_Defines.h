@@ -30,11 +30,6 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
-#define RETURNIFFAILEDCLEANUP(r, c) if (FAILED(r)) { c; return false; }
-#define RETURNIFFAILED(r) if (FAILED(r)) { return false; }
-#define RETURNIFFALSECLEANUP(r, c) if (!r) { c; return false; }
-#define RETURNIFFALSE(r) if (!r) { return false; }
-
 NS_GLEAM
 
 // $TODO: Move this to a more appropriate file.

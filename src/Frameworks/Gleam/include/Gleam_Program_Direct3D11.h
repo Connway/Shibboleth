@@ -37,11 +37,11 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class ProgramBuffersD3D11 final : public ProgramBuffersBase
+class ProgramBuffers final : public ProgramBuffersBase
 {
 public:
-	ProgramBuffersD3D11(void);
-	~ProgramBuffersD3D11(void);
+	ProgramBuffers(void);
+	~ProgramBuffers(void);
 
 	void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) override;
 	void removeConstantBuffer(IShader::Type type, int32_t index) override;
@@ -74,11 +74,11 @@ private:
 };
 
 
-class ProgramD3D11 : public ProgramBase
+class Program: public ProgramBase
 {
 public:
-	ProgramD3D11(void);
-	~ProgramD3D11(void);
+	Program(void);
+	~Program(void);
 
 	void attach(IShader* shader);
 	void detach(IShader::Type shader);

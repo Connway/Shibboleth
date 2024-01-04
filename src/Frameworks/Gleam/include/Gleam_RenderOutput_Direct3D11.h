@@ -31,7 +31,7 @@ struct IDXGISwapChain1;
 
 NS_GLEAM
 
-class RenderOutputD3D11 final : public IRenderOutput
+class RenderOutput final : public IRenderOutput
 {
 public:
 	bool init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync) override;
@@ -54,7 +54,7 @@ public:
 	bool isVSync(void) const;
 
 private:
-	UniquePtr<RenderTargetD3D11> _render_target;
+	UniquePtr<RenderTarget> _render_target;
 
 	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
 	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;

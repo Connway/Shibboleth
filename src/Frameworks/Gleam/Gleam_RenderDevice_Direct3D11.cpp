@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef GLEAM_USE_D3D11
 
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_RenderTarget_Direct3D11.h"
@@ -34,7 +34,7 @@ NS_GLEAM
 template <>
 IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 {
-	Vector<RenderDeviceD3D11::AdapterInfo> display_info;
+	Vector<RenderDevice::AdapterInfo> display_info;
 
 	IDXGIFactory6* factory = nullptr;
 	IDXGIAdapter4* adapter = nullptr;
@@ -55,7 +55,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 	}
 
 	for (UINT i = 0; factory->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
-		RenderDeviceD3D11::AdapterInfo info;
+		RenderDevice::AdapterInfo info;
 		Gaff::COMRefPtr<IDXGIAdapter4> adapter_ptr;
 
 		adapter_ptr.reset(adapter);
@@ -70,7 +70,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		wcsncpy_s(info.adapter_name, std::size(info.adapter_name), adapter_desc.Description, std::size(adapter_desc.Description));
 
 		for (UINT j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
-			RenderDeviceD3D11::OutputInfo out_info;
+			RenderDevice::OutputInfo out_info;
 			Gaff::COMRefPtr<IDXGIOutput6> output;
 			UINT num_modes;
 
@@ -141,7 +141,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 	IRenderDevice::AdapterList out(display_info.size());
 
 	for (int32_t i = 0; i < static_cast<int32_t>(display_info.size()); ++i) {
-		const RenderDeviceD3D11::AdapterInfo& adpt_info = display_info[i];
+		const RenderDevice::AdapterInfo& adpt_info = display_info[i];
 		IRenderDevice::Adapter adpt;
 
 		const wchar_t*  src_begin = adpt_info.adapter_name;
@@ -156,7 +156,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		adpt.id = i;
 
 		for (int32_t j = 0; j < static_cast<int32_t>(adpt_info.output_info.size()); ++j) {
-			const RenderDeviceD3D11::OutputInfo& out_info = adpt_info.output_info[j];
+			const RenderDevice::OutputInfo& out_info = adpt_info.output_info[j];
 			IRenderDevice::Display display;
 			display.display_modes.reserve(out_info.display_mode_list.size());
 			display.id = j;
@@ -196,7 +196,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 	return out;
 }
 
-bool RenderDeviceD3D11::init(int32_t adapter_id)
+bool RenderDevice::init(int32_t adapter_id)
 {
 	IDXGIFactory6* factory = nullptr;
 	IDXGIAdapter4* adapter = nullptr;
@@ -265,7 +265,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	return true;
 }
 
-//bool RenderDeviceD3D11::resize(const IWindow& window)
+//bool RenderDevice::resize(const IWindow& window)
 //{
 //	const Window& wnd = static_cast<const Window&>(window);
 //
@@ -285,16 +285,25 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //					rtv = nullptr;
 //					rt->destroy();
 //					HRESULT result = sc->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
-//					RETURNIFFAILED(result)
+//
+//					if (FAILED(result)) {
+//						return false;
+//					}
 //
 //					ID3D11Texture2D* back_buffer_ptr;
 //					result = sc->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
-//					RETURNIFFAILED(result)
+//
+//					if (FAILED(result)) {
+//						return false;
+//					}
 //
 //					ID3D11RenderTargetView* render_target_view = nullptr;
 //					result = device.device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
 //					back_buffer_ptr->Release();
-//					RETURNIFFAILED(result)
+//
+//					if (FAILED(result)) {
+//						return false;
+//					}
 //
 //					viewport.Width = (float)wnd.getWidth();
 //					viewport.Height = (float)wnd.getHeight();
@@ -316,7 +325,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //	return false;
 //}
 //
-//bool RenderDeviceD3D11::handleFocusGained(const IWindow& window)
+//bool RenderDevice::handleFocusGained(const IWindow& window)
 //{
 //	const Window& wnd = static_cast<const Window&>(window);
 //
@@ -342,22 +351,22 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //	return false;
 //}
 
-IRenderDevice* RenderDeviceD3D11::getOwningDevice(void) const
+IRenderDevice* RenderDevice::getOwningDevice(void) const
 {
 	return _owner;
 }
 
-bool RenderDeviceD3D11::isDeferred(void) const
+bool RenderDevice::isDeferred(void) const
 {
 	return _owner != nullptr;
 }
 
-RendererType RenderDeviceD3D11::getRendererType(void) const
+RendererType RenderDevice::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
 
-IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
+IRenderDevice* RenderDevice::createDeferredRenderDevice(void)
 {
 	ID3D11DeviceContext3* deferred_context = nullptr;
 
@@ -365,7 +374,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 		return nullptr;
 	}
 
-	RenderDeviceD3D11* deferred_render_device = GLEAM_ALLOCT(RenderDeviceD3D11);
+	RenderDevice* deferred_render_device = GLEAM_ALLOCT(RenderDevice);
 	deferred_render_device->_context.reset(deferred_context);
 	deferred_render_device->_device = _device;
 	deferred_render_device->_adapter = _adapter;
@@ -374,19 +383,19 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 	return deferred_render_device;
 }
 
-void RenderDeviceD3D11::executeCommandList(ICommandList& command_list)
+void RenderDevice::executeCommandList(ICommandList& command_list)
 {
 	GAFF_ASSERT(command_list.getRendererType() == RendererType::Direct3D11 && _context);
-	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
+	CommandList& cmd_list = static_cast<CommandList&>(command_list);
 	GAFF_ASSERT(cmd_list.getCommandList());
 	_context->ExecuteCommandList(cmd_list.getCommandList(), FALSE);
 }
 
-bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
+bool RenderDevice::finishCommandList(ICommandList& command_list)
 {
 	GAFF_ASSERT(isDeferred() && command_list.getRendererType() == RendererType::Direct3D11 && _context);
 
-	CommandListD3D11& cmd_list = static_cast<CommandListD3D11&>(command_list);
+	CommandList& cmd_list = static_cast<CommandList&>(command_list);
 	ID3D11CommandList* cl = nullptr;
 
 	const HRESULT result = _context->FinishCommandList(FALSE, &cl);
@@ -400,12 +409,12 @@ bool RenderDeviceD3D11::finishCommandList(ICommandList& command_list)
 	return true;
 }
 
-void RenderDeviceD3D11::clearRenderState(void)
+void RenderDevice::clearRenderState(void)
 {
 	_context->ClearState();
 }
 
-void RenderDeviceD3D11::renderLineNoVertexInputInstanced(int32_t instance_count)
+void RenderDevice::renderLineNoVertexInputInstanced(int32_t instance_count)
 {
 	_context->IASetInputLayout(NULL);
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
@@ -414,7 +423,7 @@ void RenderDeviceD3D11::renderLineNoVertexInputInstanced(int32_t instance_count)
 	_context->DrawInstanced(static_cast<UINT>(2), static_cast<UINT>(instance_count), 0, 0);
 }
 
-void RenderDeviceD3D11::renderLineNoVertexInput(void)
+void RenderDevice::renderLineNoVertexInput(void)
 {
 	_context->IASetInputLayout(NULL);
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
@@ -423,7 +432,7 @@ void RenderDeviceD3D11::renderLineNoVertexInput(void)
 	_context->Draw(2, 0);
 }
 
-void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
+void RenderDevice::renderNoVertexInput(int32_t vert_count)
 {
 	_context->IASetInputLayout(NULL);
 	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
@@ -432,7 +441,7 @@ void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 	_context->Draw(static_cast<UINT>(vert_count), 0);
 }
 
-void RenderDeviceD3D11::setScissorRect(const IVec2& pos, const IVec2& size)
+void RenderDevice::setScissorRect(const IVec2& pos, const IVec2& size)
 {
 	const D3D11_RECT rect = {
 		pos.x,
@@ -444,7 +453,7 @@ void RenderDeviceD3D11::setScissorRect(const IVec2& pos, const IVec2& size)
 	_context->RSSetScissorRects(1, &rect);
 }
 
-void RenderDeviceD3D11::setScissorRect(const IVec4& rect)
+void RenderDevice::setScissorRect(const IVec4& rect)
 {
 	const D3D11_RECT d3d_rect = {
 		rect.x,
@@ -456,22 +465,22 @@ void RenderDeviceD3D11::setScissorRect(const IVec4& rect)
 	_context->RSSetScissorRects(1, &d3d_rect);
 }
 
-void* RenderDeviceD3D11::getUnderlyingDevice(void)
+void* RenderDevice::getUnderlyingDevice(void)
 {
 	return getDevice();
 }
 
-ID3D11DeviceContext3* RenderDeviceD3D11::getDeviceContext(void)
+ID3D11DeviceContext3* RenderDevice::getDeviceContext(void)
 {
 	return _context.get();
 }
 
-ID3D11Device5* RenderDeviceD3D11::getDevice(void)
+ID3D11Device5* RenderDevice::getDevice(void)
 {
 	return _device.get();
 }
 
-IDXGIAdapter4* RenderDeviceD3D11::getAdapter(void)
+IDXGIAdapter4* RenderDevice::getAdapter(void)
 {
 	return _adapter.get();
 }

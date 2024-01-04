@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef GLEAM_USE_D3D11
 
 #include "Gleam_Layout_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
@@ -42,17 +42,17 @@ static const char* _semantic_names[static_cast<size_t>(ILayout::Semantic::Count)
 	"BLENDWEIGHT"
 };
 
-LayoutD3D11::LayoutD3D11(void):
+Layout::Layout(void):
 	_layout(nullptr)
 {
 }
 
-LayoutD3D11::~LayoutD3D11(void)
+Layout::~Layout(void)
 {
 	destroy();
 }
 
-bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader)
+bool Layout::init(IRenderDevice& rd, const Description* layout_desc, size_t layout_desc_size, const IShader& shader)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && shader.getRendererType() == RendererType::Direct3D11);
 
@@ -61,22 +61,22 @@ bool LayoutD3D11::init(IRenderDevice& rd, const Description* layout_desc, size_t
 	for (size_t i = 0; i < layout_desc_size; ++i) {
 		input_desc[i].SemanticName = _semantic_names[static_cast<size_t>(layout_desc[i].semantic)];
 		input_desc[i].SemanticIndex = static_cast<UINT>(layout_desc[i].semantic_index);
-		input_desc[i].Format = TextureD3D11::GetD3DFormat(layout_desc[i].format);
+		input_desc[i].Format = Texture::GetD3DFormat(layout_desc[i].format);
 		input_desc[i].InputSlot = static_cast<UINT>(layout_desc[i].input_slot);
 		input_desc[i].AlignedByteOffset = static_cast<UINT>(layout_desc[i].aligned_byte_offset);
 		input_desc[i].InputSlotClass = (layout_desc->per_data_type == PerDataType::Vertex) ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 
-	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11&>(shader).getByteCodeBuffer();
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	ID3DBlob* shader_buffer = static_cast<const Shader&>(shader).getByteCodeBuffer();
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	const HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 
-bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
+bool Layout::init(IRenderDevice& rd, const IShader& shader)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && shader.getRendererType() == RendererType::Direct3D11);
 
@@ -89,43 +89,43 @@ bool LayoutD3D11::init(IRenderDevice& rd, const IShader& shader)
 
 		input_desc[i].SemanticName = reinterpret_cast<const char*>(input_ref.semantic_name.data());
 		input_desc[i].SemanticIndex = input_ref.semantic_index;
-		input_desc[i].Format = TextureD3D11::GetD3DFormat(input_ref.format);
+		input_desc[i].Format = Texture::GetD3DFormat(input_ref.format);
 		input_desc[i].InputSlot = static_cast<UINT>(i);
 		input_desc[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 		input_desc[i].InputSlotClass = (input_ref.instance_data) ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 
-	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11&>(shader).getByteCodeBuffer();
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	ID3DBlob* shader_buffer = static_cast<const Shader&>(shader).getByteCodeBuffer();
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	const HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(reflection.input_params_reflection.size()), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 
-void LayoutD3D11::destroy(void)
+void Layout::destroy(void)
 {
 	GAFF_COM_SAFE_RELEASE(_layout)
 }
 
-void LayoutD3D11::bind(IRenderDevice& rd)
+void Layout::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(_layout);
 }
 
-void LayoutD3D11::unbind(IRenderDevice& rd)
+void Layout::unbind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(NULL);
 }
 
-RendererType LayoutD3D11::getRendererType(void) const
+RendererType Layout::getRendererType(void) const
 {
 	return RendererType::Direct3D11;
 }
