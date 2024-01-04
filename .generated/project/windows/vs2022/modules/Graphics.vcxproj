@@ -253,7 +253,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RasterStateResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_SamplerStateResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ShaderResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_TextureResource.h" />
@@ -273,7 +272,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RasterStateResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderCommandSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManagerBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_SamplerStateResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_ShaderResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\Shibboleth_TextureResource.cpp" />

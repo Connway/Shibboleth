@@ -52,6 +52,18 @@ auto UpperBound(Container& container, const Value& value)
 }
 
 template <class Container, class Value, class Predicate>
+auto FindSorted(Container& container, const Value& value, Predicate predicate)
+{
+	return eastl::binary_search_i(container.begin(), container.end(), value, predicate);
+}
+
+template <class Container, class Value>
+auto FindSorted(Container& container, const Value& value)
+{
+	return eastl::binary_search_i(container.begin(), container.end(), value);
+}
+
+template <class Container, class Value, class Predicate>
 auto Find(Container& container, const Value& value, Predicate predicate)
 {
 	return eastl::find(container.begin(), container.end(), value, predicate);
@@ -61,6 +73,18 @@ template <class Container, class Value>
 auto Find(Container& container, const Value& value)
 {
 	return eastl::find(container.begin(), container.end(), value);
+}
+
+template <class Container, class Value, class Predicate>
+bool ContainsSorted(Container& container, const Value& value, Predicate predicate)
+{
+	return eastl::binary_search(container.begin(), container.end(), value, predicate);
+}
+
+template <class Container, class Value>
+bool ContainsSorted(Container& container, const Value& value)
+{
+	return eastl::binary_search(container.begin(), container.end(), value);
 }
 
 template <class Container, class Value, class Predicate>

@@ -52,40 +52,40 @@ public:
 
 	using RenderDevicePtr = UniquePtr<Gleam::IRenderDevice>;*/
 
-	struct GBufferData final
-	{
-		RTVPtr render_target;
+	//struct GBufferData final
+	//{
+	//	RTVPtr render_target;
 
-		TexturePtr diffuse;
-		TexturePtr specular;
-		TexturePtr normal;
-		TexturePtr position;
-		TexturePtr depth;
+	//	TexturePtr diffuse;
+	//	TexturePtr specular;
+	//	TexturePtr normal;
+	//	TexturePtr position;
+	//	TexturePtr depth;
 
-		SRVPtr diffuse_srv;
-		SRVPtr specular_srv;
-		SRVPtr normal_srv;
-		SRVPtr position_srv;
-		SRVPtr depth_srv;
+	//	SRVPtr diffuse_srv;
+	//	SRVPtr specular_srv;
+	//	SRVPtr normal_srv;
+	//	SRVPtr position_srv;
+	//	SRVPtr depth_srv;
 
-		// These fields are only filled out if doing off-screen rendering.
-		RTVPtr final_render_target;
-		TexturePtr final_image;
-		SRVPtr final_srv;
-	};
+	//	// These fields are only filled out if doing off-screen rendering.
+	//	RTVPtr final_render_target;
+	//	TexturePtr final_image;
+	//	SRVPtr final_srv;
+	//};
 
-	struct RenderCommand final
-	{
-		UniquePtr<Gleam::ICommandList> cmd_list;
-		bool owns_command = true;
-		//Gleam::IRenderTarget* target = nullptr;
-	};
+	//struct RenderCommand final
+	//{
+	//	UniquePtr<Gleam::ICommandList> cmd_list;
+	//	bool owns_command = true;
+	//	//Gleam::IRenderTarget* target = nullptr;
+	//};
 
-	struct RenderCommandList final
-	{
-		Vector<RenderCommand> command_list{ ProxyAllocator("Graphics") };
-		EA::Thread::SpinLock lock;
-	};
+	//struct RenderCommandList final
+	//{
+	//	Vector<RenderCommand> command_list{ ProxyAllocator("Graphics") };
+	//	EA::Thread::SpinLock lock;
+	//};
 
 	enum class RenderOrder
 	{
@@ -99,8 +99,8 @@ public:
 		Count
 	};
 
-	RenderManagerBase(void);
-	~RenderManagerBase(void);
+	RenderManager(void);
+	~RenderManager(void);
 
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
@@ -127,33 +127,52 @@ public:
 	Gleam::IRenderDevice::AdapterList getDisplayModes(void) const;
 	Gleam::Window* createWindow(void) const;
 
-	void updateWindows(void) override;
+	void updateWindows(void);
 
-	void addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag);
 	void manageRenderDevice(Gleam::IRenderDevice* device);
 
-	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
-	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(const char8_t* tag) const;
-	const Vector<Gleam::IRenderDevice*>* getDevicesByTag(const char* tag) const;
-	Gleam::IRenderDevice& getDevice(int32_t index) const;
+	const Gleam::IRenderDevice* getDevice(const Gleam::IRenderOutput& output) const;
+	const Gleam::IRenderDevice& getDevice(int32_t index) const;
+
+	Gleam::IRenderDevice* getDevice(const Gleam::IRenderOutput& output);
+	Gleam::IRenderDevice& getDevice(int32_t index);
+
 	int32_t getNumDevices(void) const;
 
-	Gleam::IRenderOutput* getOutput(const char* tag) const
+
+	const Gleam::IRenderOutput* getOutput(const char* tag) const
 	{
 		return getOutput(Gaff::FNV1aHash32String(tag));
 	}
 
-	Gleam::Window* getWindow(const char* tag) const
+	const Gleam::Window* getWindow(const char* tag) const
 	{
 		return getWindow(Gaff::FNV1aHash32String(tag));
 	}
 
-	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
-	Gleam::IRenderOutput* getOutput(int32_t index) const override;
-	Gleam::Window* getWindow(Gaff::Hash32 tag) const;
-	Gleam::Window* getWindow(int32_t index) const override;
+	Gleam::IRenderOutput* getOutput(const char* tag)
+	{
+		return getOutput(Gaff::FNV1aHash32String(tag));
+	}
+
+	Gleam::Window* getWindow(const char* tag)
+	{
+		return getWindow(Gaff::FNV1aHash32String(tag));
+	}
+
+	const Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag) const;
+	const Gleam::IRenderOutput* getOutput(int32_t index) const;
+	Gleam::IRenderOutput* getOutput(Gaff::Hash32 tag);
+	Gleam::IRenderOutput* getOutput(int32_t index);
+
+	const Gleam::Window* getWindow(Gaff::Hash32 tag) const;
+	const Gleam::Window* getWindow(int32_t index) const;
+	Gleam::Window* getWindow(Gaff::Hash32 tag);
+	Gleam::Window* getWindow(int32_t index);
+
 	void removeWindow(const Gleam::Window& window);
-	int32_t getNumWindows(void) const override;
+	int32_t getNumWindows(void) const;
+
 
 	const ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void) const;
 	ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void);
@@ -164,8 +183,8 @@ public:
 	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
 	//bool hasGBuffer(ECSEntityID id) const;
 
-	const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
-	RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
+	//const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
+	//RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
 
 	void presentAllOutputs(void);
 
@@ -173,51 +192,51 @@ public:
 	Gleam::IRenderDevice* getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id);
 
 private:
-	struct RenderCommandData final
-	{
-		using CommandList
-		RenderCommandList command_lists[CacheIndexCount];
-	};
+	//struct RenderCommandData final
+	//{
+	//	using CommandList
+	//	RenderCommandList command_lists[CacheIndexCount];
+	//};
 
-	VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
+	//VectorMap<const Gleam::IRenderDevice*, SamplerPtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
 	//VectorMap<ECSEntityID, VectorMap<const Gleam::IRenderDevice*, GBufferData> > _g_buffers{ ProxyAllocator("Graphics") };
 
-	VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
-	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
-	VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
-	Vector<WindowOutputPair> _pending_window_removes{ ProxyAllocator("Graphics") };
+	//VectorMap< Gaff::Hash32, Vector<Gleam::IRenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
+	//Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
+	//VectorMap<Gaff::Hash32, WindowOutputPair> _window_outputs{ ProxyAllocator("Graphics") };
+	//Vector<WindowOutputPair> _pending_window_removes{ ProxyAllocator("Graphics") };
 
-	VectorMap<
-		const Gleam::IRenderDevice*,
-		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
-	> _deferred_contexts{ ProxyAllocator("Graphics") };
+	//VectorMap<
+	//	const Gleam::IRenderDevice*,
+	//	VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::IRenderDevice> >
+	//> _deferred_contexts{ ProxyAllocator("Graphics") };
 
-	VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[static_cast<size_t>(RenderOrder::Count)][2] = {
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		},
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		},
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		},
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		},
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		},
-		{
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
-			VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
-		}
-	};
+	//VectorMap<const Gleam::IRenderDevice*, RenderCommandList> _cached_render_commands[static_cast<size_t>(RenderOrder::Count)][CacheIndexCount] = {
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	},
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	},
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	},
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	},
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	},
+	//	{
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") },
+	//		VectorMap<const Gleam::IRenderDevice*, RenderCommandList>{ ProxyAllocator("Graphics") }
+	//	}
+	//};
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
 

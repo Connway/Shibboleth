@@ -60,17 +60,35 @@ THE SOFTWARE.
 	#include <IOKit/graphics/IOGraphicsLib.h>
 #endif
 
+namespace
+{
+	static constexpr Gleam::RendererType GetRendererType(void)
+	{
+#ifdef GLEAM_USE_D3D11
+		return Gleam::RendererType::Direct3D11;
+#elif defined(GLEAM_USE_D3D12)
+		return Gleam::RendererType::Direct3D12;
+#elif defined(GLEAM_USE_VULKAN)
+		return Gleam::RendererType::Vulkan;
+#elif defined(GLEAM_USE_METAL)
+		return Gleam::RendererType::Metal;
+#endif
+	}
+
+	static Shibboleth::ProxyAllocator g_allocator("Graphics");
+
+	// Change this if the game supports more than one monitor.
+	// "main" display is implicit. Not necessary to explicitly reference it.
+	static constexpr const char8_t* g_supported_displays[] = { nullptr };
+
+	static const Shibboleth::VectorMap< Gaff::Hash32, Shibboleth::Vector<const char8_t*> > g_display_tags = {
+		{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
+	};
+}
+
+
+
 NS_SHIBBOLETH
-
-static ProxyAllocator g_allocator("Graphics");
-
-// Change this if the game supports more than one monitor.
-// "main" display is implicit. Not necessary to explicitly reference it.
-static constexpr const char8_t* g_supported_displays[] = { nullptr };
-
-const VectorMap< Gaff::Hash32, Vector<const char8_t*> > g_display_tags = {
-	{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
-};
 
 RenderManager::RenderManager(void)
 {
@@ -668,15 +686,6 @@ void RenderManager::updateWindows(void)
 	Gleam::Window::PollEvents();
 }
 
-void RenderManager::addRenderDeviceTag(Gleam::IRenderDevice* device, const char* tag)
-{
-	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
-	auto& devices = _render_device_tags[hash];
-
-	GAFF_ASSERT(Gaff::Find(devices, device) == devices.end());
-	devices.emplace_back(device);
-}
-
 void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device)
 {
 	const auto it = Gaff::Find(_render_devices, device, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
@@ -691,28 +700,21 @@ void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device)
 	}
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(Gaff::Hash32 tag) const
+const Gleam::IRenderDevice* RenderManager::getDevice(const Gleam::IRenderOutput& output) const
 {
-	const auto it = _render_device_tags.find(tag);
-	return (it == _render_device_tags.end()) ? nullptr : &it->second;
+	return const_cast<RenderManager*>(this)->getDevice(output);
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(const char8_t* tag) const
+const Gleam::IRenderDevice& RenderManager::getDevice(int32_t index) const
 {
-	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
-	return getDevicesByTag(hash);
+	return const_cast<RenderManager*>(this)->getDevice(index);
 }
 
-const Vector<Gleam::IRenderDevice*>* RenderManager::getDevicesByTag(const char* tag) const
+Gleam::IRenderDevice* RenderManager::getDevice(const Gleam::IRenderOutput& output)
 {
-	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(tag);
-	return getDevicesByTag(hash);
-}
-
-Gleam::IRenderDevice& RenderManager::getDevice(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_render_devices.size()));
-	return *_render_devices[index];
+	// $TODO: Implement.
+	GAFF_REF(output);
+	return nullptr;
 }
 
 int32_t RenderManager::getNumDevices(void) const
@@ -720,25 +722,51 @@ int32_t RenderManager::getNumDevices(void) const
 	return static_cast<int32_t>(_render_devices.size());
 }
 
-Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
+Gleam::IRenderDevice& RenderManager::getDevice(int32_t index)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_render_devices.size()));
+	return *_render_devices[index];
+}
+
+const Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getOutput(tag);
+}
+
+const Gleam::IRenderOutput* RenderManager::getOutput(int32_t index) const
+{
+	return const_cast<RenderManager*>(this)->getOutput(index);
+}
+
+Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.second.get();
 }
 
-Gleam::IRenderOutput* RenderManager::getOutput(int32_t index) const
+Gleam::IRenderOutput* RenderManager::getOutput(int32_t index)
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
 	return _window_outputs.data()[index].second.second.get();
 }
 
-Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
+const Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getWindow(tag);
+}
+
+const Gleam::Window* RenderManager::getWindow(int32_t index) const
+{
+	return const_cast<RenderManager*>(this)->getWindow(index);
+}
+
+Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag)
 {
 	const auto it = _window_outputs.find(tag);
 	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
 }
 
-Gleam::Window* RenderManager::getWindow(int32_t index) const
+Gleam::Window* RenderManager::getWindow(int32_t index)
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
 	return _window_outputs.data()[index].second.first.get();
