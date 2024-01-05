@@ -109,8 +109,6 @@ public:
 		Count
 	};
 
-	static Gleam::RendererType GetRendererType(void);
-
 
 	RenderManager(void);
 	~RenderManager(void);

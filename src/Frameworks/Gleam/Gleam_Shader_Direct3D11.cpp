@@ -282,19 +282,19 @@ Shader::~Shader(void)
 
 bool Shader::initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
 	return (this->*g_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, source_size);
 }
 
 bool Shader::initSource(IRenderDevice& rd, const char* shader_source, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
 	return (this->*g_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, strlen(shader_source));
 }
 
 bool Shader::init(IRenderDevice& rd, const char8_t* file_path, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
 	return (this->*g_init_funcs[static_cast<int32_t>(shader_type)])(rd, file_path);
 }
 

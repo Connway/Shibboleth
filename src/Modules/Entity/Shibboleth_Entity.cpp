@@ -227,7 +227,7 @@ bool Entity::removeComponent(const Refl::IReflectionDefinition& ref_def)
 
 void Entity::removeComponent(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_components.size())));
 	_components[index]->destroy();
 	_components.erase_unsorted(_components.begin() + index);
 }
@@ -312,7 +312,7 @@ const EntityComponent& Entity::getComponent(int32_t index) const
 
 EntityComponent& Entity::getComponent(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_components.size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_components.size())));
 	return *_components[index];
 }
 

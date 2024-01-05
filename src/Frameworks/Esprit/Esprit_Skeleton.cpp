@@ -40,13 +40,13 @@ int32_t Skeleton::getNumBones(void) const
 
 int32_t Skeleton::getParentIndex(int32_t bone_index) const
 {
-	GAFF_ASSERT(bone_index < static_cast<int32_t>(_parent_indices.size()));
+	GAFF_ASSERT(bone_index >= 0 && bone_index < static_cast<int32_t>(_parent_indices.size()));
 	return _parent_indices[bone_index];
 }
 
 const Gaff::Hash32& Skeleton::getNameHash(int32_t bone_index) const
 {
-	GAFF_ASSERT(bone_index < static_cast<int32_t>(_bone_hashes.size()));
+	GAFF_ASSERT(bone_index >= 0 && bone_index < static_cast<int32_t>(_bone_hashes.size()));
 	return _bone_hashes[bone_index];
 }
 
@@ -65,7 +65,7 @@ int32_t Skeleton::getBoneIndex(Gaff::Hash32 name) const
 
 void Skeleton::setReferenceTransform(int32_t bone_index, const Gleam::Transform& transform)
 {
-	GAFF_ASSERT(bone_index < static_cast<int32_t>(_parent_indices.size()));
+	GAFF_ASSERT(bone_index >= 0 && bone_index < static_cast<int32_t>(_parent_indices.size()));
 	_default_pose.getLocalTransforms()[bone_index] = transform;
 }
 
@@ -78,7 +78,7 @@ void Skeleton::addBone(int32_t parent_index, Gaff::Hash32 name)
 
 void Skeleton::calculateModelTransform(Pose& pose, int32_t bone_index)
 {
-	GAFF_ASSERT(bone_index < static_cast<int32_t>(_parent_indices.size()));
+	GAFF_ASSERT(bone_index >= 0 && bone_index < static_cast<int32_t>(_parent_indices.size()));
 
 	Gleam::Transform& bone_transform = pose.getModelTransforms()[bone_index];
 	int32_t parent_index = _parent_indices[bone_index];

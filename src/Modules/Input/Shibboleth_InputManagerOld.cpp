@@ -385,7 +385,7 @@ float InputManagerOld::getAliasValue(const char* alias_name, int32_t player_id) 
 float InputManagerOld::getAliasValue(int32_t index, int32_t player_id) const
 {
 	GAFF_ASSERT(_alias_values.validIndex(player_id));
-	GAFF_ASSERT(index < static_cast<int32_t>(_alias_values[player_id].size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_alias_values[player_id].size())));
 	return _alias_values[player_id].at(index).second.value;
 }
 

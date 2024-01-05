@@ -230,11 +230,13 @@ Program::~Program(void)
 void Program::attach(IShader* shader)
 {
 	GAFF_ASSERT(shader->getRendererType() == RendererType::Direct3D11);
-	GAFF_ASSERT(static_cast<int32_t>(shader->getType()) < static_cast<int32_t>(IShader::Type::Count));
 
-	_attached_shaders[static_cast<int32_t>(shader->getType())] = shader;
+	const IShader::Type shader_type = shader->getType();
+	GAFF_ASSERT(static_cast<int32_t>(shader->getType()) >= 0 && shader_type < IShader::Type::Count);
 
-	switch (shader->getType()) {
+	_attached_shaders[static_cast<int32_t>(shader_type)] = shader;
+
+	switch (shader_type) {
 		case IShader::Type::Vertex:
 			GAFF_COM_SAFE_RELEASE(_shader_vertex)
 			_shader_vertex = static_cast<const Shader*>(shader)->getVertexShader();
@@ -272,7 +274,7 @@ void Program::attach(IShader* shader)
 
 void Program::detach(IShader::Type shader)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader) < static_cast<int32_t>(IShader::Type::Count));
+	GAFF_ASSERT(static_cast<int32_t>(shader) >= 0 && shader < IShader::Type::Count);
 	_attached_shaders[static_cast<size_t>(shader)] = nullptr;
 
 	switch (shader) {

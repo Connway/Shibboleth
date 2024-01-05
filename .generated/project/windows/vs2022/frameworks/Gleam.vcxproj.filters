@@ -123,9 +123,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Mesh.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshBase.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_MeshGeneration.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -250,7 +247,6 @@
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Frustum.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Global.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshBase.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_MeshGeneration.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Frameworks\Gleam\Gleam_OBB.cpp" />
