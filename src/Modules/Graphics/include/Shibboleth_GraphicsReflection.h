@@ -23,15 +23,16 @@ THE SOFTWARE.
 #pragma once
 
 #include <Reflection/Shibboleth_Reflection.h>
+#include <Gleam_IDepthStencilState.h>
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IShader.h>
 
+SHIB_REFLECTION_DECLARE(Gleam::IDepthStencilState::StencilOp)
 SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Filter)
 SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Wrap)
 SHIB_REFLECTION_DECLARE(Gleam::IShader::Type)
 SHIB_REFLECTION_DECLARE(Gleam::ComparisonFunc)
-SHIB_REFLECTION_DECLARE(Gleam::StencilOp)
 
 SHIB_REFLECTION_DECLARE(Gleam::ISamplerState::Settings)
 SHIB_REFLECTION_DECLARE(Gleam::IRasterState::Settings)

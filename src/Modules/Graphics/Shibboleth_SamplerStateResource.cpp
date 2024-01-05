@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
-#include "Shibboleth_RenderManagerBase.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_SamplerState.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SamplerStateResource)
 	.classAttrs(
@@ -42,12 +43,14 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::SamplerStateResource)
 
 NS_SHIBBOLETH
 
+static ProxyAllocator g_allocator("Graphics");
+
 SHIB_REFLECTION_CLASS_DEFINE(SamplerStateResource)
 
 void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
 	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	const Vector<Gleam::RenderDevice*>* devices = nullptr;
 	U8String device_tag;
 
 	{
@@ -86,33 +89,32 @@ void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t /*thre
 	}
 }
 
-Vector<Gleam::IRenderDevice*> SamplerStateResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> SamplerStateResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
 
 	for (const auto& pair : _sampler_states) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool SamplerStateResource::createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings)
+bool SamplerStateResource::createSamplerState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings)
 {
 	bool success = true;
 
-	for (Gleam::IRenderDevice* device : devices) {
+	for (Gleam::RenderDevice* device : devices) {
 		success = success && createSamplerState(*device, sampler_state_settings);
 	}
 
 	return success;
 }
 
-bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings)
+bool SamplerStateResource::createSamplerState(Gleam::RenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::ISamplerState* const sampler_state = render_mgr.createSamplerState();
+	Gleam::SamplerState* const sampler_state = SHIB_ALLOCT(Gleam::SamplerState, g_allocator);
 
 	if (!sampler_state->init(device, sampler_state_settings)) {
 		LogErrorResource("Failed to create sampler state '%s'.", getFilePath().getBuffer());
@@ -124,13 +126,13 @@ bool SamplerStateResource::createSamplerState(Gleam::IRenderDevice& device, cons
 	return true;
 }
 
-const Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRenderDevice& rd) const
+const Gleam::SamplerState* SamplerStateResource::getSamplerState(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _sampler_states.find(&rd);
 	return (it != _sampler_states.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::ISamplerState* SamplerStateResource::getSamplerState(const Gleam::IRenderDevice& rd)
+Gleam::SamplerState* SamplerStateResource::getSamplerState(const Gleam::RenderDevice& rd)
 {
 	const auto it = _sampler_states.find(&rd);
 	return (it != _sampler_states.end()) ? it->second.get() : nullptr;

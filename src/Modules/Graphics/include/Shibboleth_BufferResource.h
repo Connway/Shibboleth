@@ -24,7 +24,11 @@ THE SOFTWARE.
 
 #include <Shibboleth_IResource.h>
 #include <Shibboleth_SmartPtrs.h>
-#include <Gleam_IBuffer.h>
+#include <Gleam_Buffer.h>
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -33,16 +37,16 @@ class BufferResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	bool createBuffer(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IBuffer::Settings& buffer_settings);
-	bool createBuffer(Gleam::IRenderDevice& device, const Gleam::IBuffer::Settings& buffer_settings);
+	bool createBuffer(const Vector<Gleam::RenderDevice*>& devices, const Gleam::IBuffer::Settings& buffer_settings);
+	bool createBuffer(Gleam::RenderDevice& device, const Gleam::IBuffer::Settings& buffer_settings);
 
-	const Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd) const;
-	Gleam::IBuffer* getBuffer(const Gleam::IRenderDevice& rd);
+	const Gleam::Buffer* getBuffer(const Gleam::RenderDevice& rd) const;
+	Gleam::Buffer* getBuffer(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IBuffer> > _buffers{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Buffer> > _buffers{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(BufferResource);
 };
