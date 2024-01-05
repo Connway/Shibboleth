@@ -57,7 +57,7 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	void* getShader(void) const;
+	ID3D11DeviceChild* getShader(void) const;
 	ID3D11VertexShader* getVertexShader(void) const;
 	ID3D11PixelShader* getPixelShader(void) const;
 	ID3D11DomainShader* getDomainShader(void) const;
@@ -70,7 +70,7 @@ public:
 private:
 	union
 	{
-		void* _shader;
+		ID3D11DeviceChild* _shader;
 		ID3D11VertexShader* _shader_vertex;
 		ID3D11PixelShader* _shader_pixel;
 		ID3D11DomainShader* _shader_domain;

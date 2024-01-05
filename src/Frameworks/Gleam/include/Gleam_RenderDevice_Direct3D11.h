@@ -77,8 +77,6 @@ private:
 
 	RenderDevice* _owner = nullptr;
 
-	friend class RenderOutputD3D11;
-
 	template <RendererType type>
 	friend IRenderDevice::AdapterList GetDisplayModes(void);
 };

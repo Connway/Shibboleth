@@ -22,79 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ProgramBase.h"
+#include "Gleam_IProgram.h"
 
-struct ID3D11VertexShader;
-struct ID3D11PixelShader;
-struct ID3D11DomainShader;
-struct ID3D11GeometryShader;
-struct ID3D11HullShader;
-struct ID3D11ComputeShader;
-
-struct ID3D11ShaderResourceView;
-struct ID3D11SamplerState;
-struct ID3D11Buffer;
+struct ID3D11DeviceChild;
 
 NS_GLEAM
 
-class ProgramBuffers final : public ProgramBuffersBase
-{
-public:
-	ProgramBuffers(void);
-	~ProgramBuffers(void);
+class Shader;
 
-	void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) override;
-	void removeConstantBuffer(IShader::Type type, int32_t index) override;
-	void popConstantBuffer(IShader::Type type, int32_t count = 1) override;
-
-	void addResourceView(IShader::Type type, IShaderResourceView* resource_view) override;
-	void removeResourceView(IShader::Type type, int32_t index) override;
-	void popResourceView(IShader::Type type, int32_t count = 1) override;
-	void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) override;
-
-	void addSamplerState(IShader::Type type, ISamplerState* sampler) override;
-	void removeSamplerState(IShader::Type type, int32_t index) override;
-	void popSamplerState(IShader::Type type, int32_t count = 1) override;
-
-	IProgramBuffers* clone(void) const override;
-
-	void clearResourceViews(void) override;
-	void clear(void) override;
-
-	void bind(IRenderDevice& rd, int32_t res_view_offset = 0, int32_t sampler_offset = 0, int32_t buffer_offset = 0) override;
-
-	RendererType getRendererType(void) const override;
-
-private:
-	Vector<ID3D11ShaderResourceView*> _res_views[static_cast<size_t>(IShader::Type::Count)];
-	Vector<ID3D11SamplerState*> _samplers[static_cast<size_t>(IShader::Type::Count)];
-	Vector<ID3D11Buffer*> _buffers[static_cast<size_t>(IShader::Type::Count)];
-
-	friend class ProgramD3D11;
-};
-
-
-class Program: public ProgramBase
+class Program: public IProgram
 {
 public:
 	Program(void);
 	~Program(void);
 
-	void attach(IShader* shader);
-	void detach(IShader::Type shader);
+	void attach(IShader* shader) override;
+	void detach(IShader::Type shader) override;
 
-	void bind(IRenderDevice& rd);
-	void unbind(IRenderDevice& rd);
+	void bind(IRenderDevice& rd) override;
+	void unbind(IRenderDevice& rd) override;
+
+	const IShader* getAttachedShader(IShader::Type type) const override;
+	IShader* getAttachedShader(IShader::Type type) override;
 
 	RendererType getRendererType(void) const;
 
 private:
-	ID3D11VertexShader* _shader_vertex;
-	ID3D11PixelShader* _shader_pixel;
-	ID3D11DomainShader* _shader_domain;
-	ID3D11GeometryShader* _shader_geometry;
-	ID3D11HullShader* _shader_hull;
-	ID3D11ComputeShader* _shader_compute;
+	Shader* _attached_shaders[static_cast<size_t>(IShader::Type::Count)] = { nullptr };
+	ID3D11DeviceChild* _d3d_shaders[static_cast<size_t>(IShader::Type::Count)] = { nullptr };
 };
 
 NS_END

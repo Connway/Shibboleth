@@ -287,7 +287,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EngineAttributesCommon.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EnumIterator.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Error.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_FileWatcher.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_HashString.h" />

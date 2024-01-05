@@ -180,9 +180,6 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EngineAttributesCommon.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EnumIterator.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Error.h">
       <Filter>include</Filter>
     </ClInclude>
