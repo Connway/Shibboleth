@@ -23,11 +23,14 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IncludeD3D11.h"
-#include "Gleam_MeshBase.h"
+#include "Gleam_Vector.h"
+#include "Gleam_IMesh.h"
 
 NS_GLEAM
 
-class Mesh final : public MeshBase
+class Buffer;
+
+class Mesh final : public IMesh
 {
 public:
 	Mesh(void);
@@ -36,23 +39,32 @@ public:
 	void clear(void) override;
 
 	void addBuffer(IBuffer* buffer, uint32_t offset = 0) override;
+	const IBuffer* getBuffer(int32_t index) const override;
+	IBuffer* getBuffer(int32_t index) override;
+	int32_t getBufferCount(void) const override;
+	uint32_t getBufferOffset(int32_t index) const override;
 
 	void setIndiceBuffer(IBuffer* buffer) override;
+	const IBuffer* getIndiceBuffer(void) const override;
+	IBuffer* getIndiceBuffer(void) override;
 
-	void setTopologyType(TopologyType topology) override;
 	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset = 0) override;
 	void renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset = 0, int32_t vert_offset = 0, int32_t instance_offset = 0) override;
 	void render(IRenderDevice& rd, int32_t index_offset = 0, int32_t vert_offset = 0) override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
 private:
-	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	DXGI_FORMAT _indice_format = DXGI_FORMAT_R16_UINT;
 
 	Vector<ID3D11Buffer*> _buffers;
 	Vector<UINT> _strides;
 
+	Vector<Buffer*> _vert_data;
+	Vector<uint32_t> _offsets;
+	Buffer* _indices = nullptr;
+
+	D3D11_PRIMITIVE_TOPOLOGY getD3DTopology(void) const;
 	void cacheBuffers(void);
 };
 

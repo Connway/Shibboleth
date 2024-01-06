@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IReflectionObject.h>
+#include <Reflection/Shibboleth_IReflectionObject.h>
 #include <Shibboleth_Vector.h>
 
 NS_SHIBBOLETH

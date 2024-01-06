@@ -22,18 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Gaff_Defines.h"
 #include <array>
 
-NS_SHIBBOLETH
+NS_GAFF
 
 template <class EnumType>
 class EnumIterator;
 
 NS_END
 
-#define SHIB_DEFINE_ENUM_ITERATOR_RANGE(EnumType, First, Last) \
-	NS_SHIBBOLETH \
+#define GAFF_DEFINE_ENUM_ITERATOR_RANGE(EnumType, First, Last) \
+	NS_GAFF \
 		template <> \
 		class EnumIterator<EnumType> final \
 		{ \
@@ -71,11 +71,11 @@ NS_END
 		}; \
 	NS_END
 
-#define SHIB_DEFINE_ENUM_ITERATOR_COUNT(EnumType, Count) SHIB_DEFINE_ENUM_ITERATOR_RANGE(EnumType, 0, static_cast<__underlying_type(EnumType)>(Count) - 1)
-#define SHIB_DEFINE_ENUM_ITERATOR(EnumType) SHIB_DEFINE_ENUM_ITERATOR_COUNT(EnumType, EnumType::Count)
+#define GAFF_DEFINE_ENUM_ITERATOR_COUNT(EnumType, Count) GAFF_DEFINE_ENUM_ITERATOR_RANGE(EnumType, 0, static_cast<__underlying_type(EnumType)>(Count) - 1)
+#define GAFF_DEFINE_ENUM_ITERATOR(EnumType) GAFF_DEFINE_ENUM_ITERATOR_COUNT(EnumType, EnumType::Count)
 
-#define SHIB_DEFINE_ENUM_ITERATOR_VALUES(EnumType, ...) \
-	NS_SHIBBOLETH \
+#define GAFF_DEFINE_ENUM_ITERATOR_VALUES(EnumType, ...) \
+	NS_GAFF \
 		template <> \
 		class EnumIterator<EnumType> final \
 		{ \

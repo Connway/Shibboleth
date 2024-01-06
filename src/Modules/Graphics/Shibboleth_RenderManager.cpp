@@ -47,19 +47,6 @@ THE SOFTWARE.
 
 namespace
 {
-	static constexpr Gleam::RendererType GetRendererType(void)
-	{
-#ifdef GLEAM_USE_D3D11
-		return Gleam::RendererType::Direct3D11;
-#elif defined(GLEAM_USE_D3D12)
-		return Gleam::RendererType::Direct3D12;
-#elif defined(GLEAM_USE_VULKAN)
-		return Gleam::RendererType::Vulkan;
-#elif defined(GLEAM_USE_METAL)
-		return Gleam::RendererType::Metal;
-#endif
-	}
-
 	static Shibboleth::ProxyAllocator g_allocator("Graphics");
 
 	// Change this if the game supports more than one monitor.
@@ -74,13 +61,6 @@ namespace
 
 
 NS_SHIBBOLETH
-
-Gleam::RendererType RenderManager::GetRendererType(void)
-{
-	return ::GetRendererType();
-}
-
-
 
 RenderManager::RenderManager(void)
 {
@@ -596,7 +576,7 @@ int32_t RenderManager::getNumDevices(void) const
 
 Gleam::IRenderDevice& RenderManager::getDevice(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_render_devices.size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_render_devices.size())));
 	return *_render_devices[index];
 }
 
@@ -618,7 +598,7 @@ Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
 
 Gleam::IRenderOutput* RenderManager::getOutput(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_window_outputs.size())));
 	return _window_outputs.data()[index].second.second.get();
 }
 
@@ -640,7 +620,7 @@ Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag)
 
 Gleam::Window* RenderManager::getWindow(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_window_outputs.size()));
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_window_outputs.size())));
 	return _window_outputs.data()[index].second.first.get();
 }
 

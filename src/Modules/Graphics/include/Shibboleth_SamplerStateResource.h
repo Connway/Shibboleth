@@ -25,6 +25,11 @@ THE SOFTWARE.
 #include <Shibboleth_IResource.h>
 #include <Gleam_ISamplerState.h>
 
+NS_GLEAM
+	class RenderDevice;
+	class SamplerState;
+NS_END
+
 NS_SHIBBOLETH
 
 class SamplerStateResource final : public IResource
@@ -34,16 +39,16 @@ public:
 
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	bool createSamplerState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings);
-	bool createSamplerState(Gleam::IRenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings);
+	bool createSamplerState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings);
+	bool createSamplerState(Gleam::RenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings);
 
-	const Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd) const;
-	Gleam::ISamplerState* getSamplerState(const Gleam::IRenderDevice& rd);
+	const Gleam::SamplerState* getSamplerState(const Gleam::RenderDevice& rd) const;
+	Gleam::SamplerState* getSamplerState(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::ISamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };

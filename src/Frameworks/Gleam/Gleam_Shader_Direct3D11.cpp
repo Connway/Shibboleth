@@ -42,22 +42,22 @@ NS_GLEAM
 using ShaderInitSourceFunc = bool (Shader::*)(IRenderDevice&, const char*, size_t);
 using ShaderInitFunc = bool (Shader::*)(IRenderDevice&, const char8_t*);
 
-static ShaderInitFunc g_init_funcs[static_cast<size_t>(IShader::Type::Count)] = {
-	&Shader::initVertex,
-	&Shader::initPixel,
-	&Shader::initDomain,
-	&Shader::initGeometry,
-	&Shader::initHull,
-	&Shader::initCompute
-};
-
-static ShaderInitSourceFunc g_source_init_funcs[static_cast<size_t>(IShader::Type::Count)] = {
+static constexpr ShaderInitSourceFunc k_source_init_funcs[static_cast<size_t>(IShader::Type::Count)] = {
 	&Shader::initVertexSource,
 	&Shader::initPixelSource,
 	&Shader::initDomainSource,
 	&Shader::initGeometrySource,
 	&Shader::initHullSource,
 	&Shader::initComputeSource
+};
+
+static constexpr ShaderInitFunc k_init_funcs[static_cast<size_t>(IShader::Type::Count)] = {
+	&Shader::initVertex,
+	&Shader::initPixel,
+	&Shader::initDomain,
+	&Shader::initGeometry,
+	&Shader::initHull,
+	&Shader::initCompute
 };
 
 static ITexture::Format GetFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
@@ -282,20 +282,20 @@ Shader::~Shader(void)
 
 bool Shader::initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
-	return (this->*g_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, source_size);
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
+	return (this->*k_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, source_size);
 }
 
 bool Shader::initSource(IRenderDevice& rd, const char* shader_source, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
-	return (this->*g_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, strlen(shader_source));
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
+	return (this->*k_source_init_funcs[static_cast<int32_t>(shader_type)])(rd, shader_source, strlen(shader_source));
 }
 
 bool Shader::init(IRenderDevice& rd, const char8_t* file_path, Type shader_type)
 {
-	GAFF_ASSERT(static_cast<int32_t>(shader_type) < static_cast<int32_t>(Type::Count));
-	return (this->*g_init_funcs[static_cast<int32_t>(shader_type)])(rd, file_path);
+	GAFF_ASSERT(static_cast<int32_t>(shader_type) >= 0 && shader_type < Type::Count);
+	return (this->*k_init_funcs[static_cast<int32_t>(shader_type)])(rd, file_path);
 }
 
 bool Shader::initVertex(IRenderDevice& rd, const char8_t* file_path)
@@ -748,7 +748,7 @@ RendererType Shader::getRendererType(void) const
 	return RendererType::Direct3D11;
 }
 
-void* Shader::getShader(void) const
+ID3D11DeviceChild* Shader::getShader(void) const
 {
 	return _shader;
 }

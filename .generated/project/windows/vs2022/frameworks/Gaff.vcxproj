@@ -232,6 +232,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Linux.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Windows.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumIterator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Error.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_FileWatcher.h" />

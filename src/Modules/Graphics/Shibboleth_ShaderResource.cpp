@@ -21,9 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ShaderResource.h"
-#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
+#include <Gleam_RenderDevice.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ShaderResource)
 	.classAttrs(
@@ -38,33 +38,35 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ShaderResource)
 
-Vector<Gleam::IRenderDevice*> ShaderResource::getDevices(void) const
+static ProxyAllocator g_allocator("Graphics");
+
+Vector<Gleam::RenderDevice*> ShaderResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
 
 	for (const auto& pair : _shader_data) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool ShaderResource::createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type)
+bool ShaderResource::createShaderAndLayout(const Vector<Gleam::RenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type)
 {
 	bool success = true;
 
-	for (Gleam::IRenderDevice* device : devices) {
+	for (Gleam::RenderDevice* device : devices) {
 		success = success && createShaderAndLayout(*device, shader_source, shader_type);
 	}
 
 	return success;
 }
 
-bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
+bool ShaderResource::createShaderAndLayout(Gleam::RenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IShader* const shader = render_mgr.createShader();
+
+	Gleam::Shader* const shader = SHIB_ALLOCT(Gleam::Shader, g_allocator);
 
 	if (!shader->initSource(device, shader_source, shader_type)) {
 		LogErrorResource("Failed to create shader '%s'.", getFilePath().getBuffer());
@@ -76,7 +78,7 @@ bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const c
 	pair.first.reset(shader);
 
 	if (shader_type == Gleam::IShader::Type::Vertex) {
-		Gleam::ILayout* const layout = render_mgr.createLayout();
+		Gleam::Layout* const layout = SHIB_ALLOCT(Gleam::Layout, g_allocator);
 
 		if (!layout->init(device, *shader)) {
 			LogErrorResource("Failed to create shader layout '%s'.", getFilePath().getBuffer());
@@ -91,25 +93,25 @@ bool ShaderResource::createShaderAndLayout(Gleam::IRenderDevice& device, const c
 	return true;
 }
 
-const Gleam::IShader* ShaderResource::getShader(const Gleam::IRenderDevice& rd) const
+const Gleam::Shader* ShaderResource::getShader(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _shader_data.find(&rd);
 	return (it != _shader_data.end()) ? it->second.first.get() : nullptr;
 }
 
-Gleam::IShader* ShaderResource::getShader(const Gleam::IRenderDevice& rd)
+Gleam::Shader* ShaderResource::getShader(const Gleam::RenderDevice& rd)
 {
 	const auto it = _shader_data.find(&rd);
 	return (it != _shader_data.end()) ? it->second.first.get() : nullptr;
 }
 
-const Gleam::ILayout* ShaderResource::getLayout(const Gleam::IRenderDevice& rd) const
+const Gleam::Layout* ShaderResource::getLayout(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _shader_data.find(&rd);
 	return (it != _shader_data.end()) ? it->second.second.get() : nullptr;
 }
 
-Gleam::ILayout* ShaderResource::getLayout(const Gleam::IRenderDevice& rd)
+Gleam::Layout* ShaderResource::getLayout(const Gleam::RenderDevice& rd)
 {
 	const auto it = _shader_data.find(&rd);
 	return (it != _shader_data.end()) ? it->second.second.get() : nullptr;

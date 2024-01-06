@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MaterialResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -45,7 +45,7 @@ SHIB_REFLECTION_CLASS_DEFINE(MaterialResource)
 
 void MaterialResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
 {
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
 	U8String device_tag;
@@ -71,7 +71,7 @@ void MaterialResource::load(const ISerializeReader& reader, uintptr_t thread_id_
 		return;
 	}
 
-	ShaderResourcePtr shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
+	ResourcePtr<ShaderResource> shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	// Process the compute section first.
 	{
@@ -90,7 +90,7 @@ void MaterialResource::load(const ISerializeReader& reader, uintptr_t thread_id_
 			reader.freeString(res_path);
 
 			const HashStringView64<> path_hash(final_path);
-			ShaderResourcePtr compute = res_mgr.getResourceT<ShaderResource>(path_hash);
+			ResourcePtr<ShaderResource> compute = res_mgr.getResourceT<ShaderResource>(path_hash);
 
 			if (!compute) {
 				const IFile* const compute_file = res_mgr.loadFileAndWait(final_path.data(), thread_id_int);
@@ -231,11 +231,11 @@ Vector<Gleam::IRenderDevice*> MaterialResource::getDevices(void) const
 
 bool MaterialResource::createProgram(
 	const Vector<Gleam::IRenderDevice*>& devices,
-	ShaderResourcePtr& vertex,
-	ShaderResourcePtr& pixel,
-	ShaderResourcePtr& domain,
-	ShaderResourcePtr& geometry,
-	ShaderResourcePtr& hull)
+	ResourcePtr<ShaderResource>& vertex,
+	ResourcePtr<ShaderResource>& pixel,
+	ResourcePtr<ShaderResource>& domain,
+	ResourcePtr<ShaderResource>& geometry,
+	ResourcePtr<ShaderResource>& hull)
 {
 	bool success = true;
 
@@ -248,11 +248,11 @@ bool MaterialResource::createProgram(
 
 bool MaterialResource::createProgram(
 	Gleam::IRenderDevice& device,
-	ShaderResourcePtr& vertex,
-	ShaderResourcePtr& pixel,
-	ShaderResourcePtr& domain,
-	ShaderResourcePtr& geometry,
-	ShaderResourcePtr& hull)
+	ResourcePtr<ShaderResource>& vertex,
+	ResourcePtr<ShaderResource>& pixel,
+	ResourcePtr<ShaderResource>& domain,
+	ResourcePtr<ShaderResource>& geometry,
+	ResourcePtr<ShaderResource>& hull)
 {
 	Gleam::IShader* const vert = (vertex) ? vertex->getShader(device) : nullptr;
 	Gleam::IShader* const pix = (pixel) ? pixel->getShader(device) : nullptr;
@@ -285,8 +285,8 @@ bool MaterialResource::createProgram(
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IProgram* const program = render_mgr.createProgram();
+	const RenderManager& render_mgr = GetManagerTFast<Shibboleth::RenderManager>();
+	Gleam::Program* const program = render_mgr.createProgram();
 
 	if (vert) {
 		_shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)] = vertex;
@@ -318,19 +318,19 @@ bool MaterialResource::createProgram(
 	return true;
 }
 
-bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
+bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel)
 {
-	ShaderResourcePtr empty;
+	ResourcePtr<ShaderResource> empty;
 	return createProgram(devices, vertex, pixel, empty, empty, empty);
 }
 
-bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel)
+bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel)
 {
-	ShaderResourcePtr empty;
+	ResourcePtr<ShaderResource> empty;
 	return createProgram(device, vertex, pixel, empty, empty, empty);
 }
 
-bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute)
+bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& compute)
 {
 	bool success = true;
 
@@ -341,7 +341,7 @@ bool MaterialResource::createProgram(const Vector<Gleam::IRenderDevice*>& device
 	return success;
 }
 
-bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute)
+bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& compute)
 {
 	Gleam::IShader* const shader = compute->getShader(device);
 
@@ -350,7 +350,7 @@ bool MaterialResource::createProgram(Gleam::IRenderDevice& device, ShaderResourc
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	const RenderManager& render_mgr = GetManagerTFast<Shibboleth::RenderManager>();
 	Gleam::IProgram* const program = render_mgr.createProgram();
 
 	_shaders[static_cast<int32_t>(Gleam::IShader::Type::Compute)] = compute;
@@ -375,13 +375,13 @@ Gleam::IProgram* MaterialResource::getProgram(const Gleam::IRenderDevice& device
 
 const Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device) const
 {
-	const ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
+	const ResourcePtr<ShaderResource>& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
 	return (shader) ? shader->getLayout(device) : nullptr;
 }
 
 Gleam::ILayout* MaterialResource::getLayout(const Gleam::IRenderDevice& device)
 {
-	ShaderResourcePtr& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
+	ResourcePtr<ShaderResource>& shader = _shaders[static_cast<int32_t>(Gleam::IShader::Type::Vertex)];
 	return (shader) ? shader->getLayout(device) : nullptr;
 }
 

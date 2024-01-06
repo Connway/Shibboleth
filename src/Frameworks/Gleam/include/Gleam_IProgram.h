@@ -23,62 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IShader.h"
-#include "Gleam_Vector.h"
-#include "Gleam_String.h"
 
 NS_GLEAM
-
-class IShaderResourceView;
-class ISamplerState;
-class IRenderDevice;
-class IBuffer;
-
-class IProgramBuffers
-{
-public:
-	IProgramBuffers(void) {}
-	virtual ~IProgramBuffers(void) {}
-
-	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::Type type) const = 0;
-	virtual const IBuffer* getConstantBuffer(IShader::Type type, int32_t index) const = 0;
-	virtual IBuffer* getConstantBuffer(IShader::Type type, int32_t index) = 0;
-	virtual void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) = 0;
-	virtual void removeConstantBuffer(IShader::Type type, int32_t index) = 0;
-	virtual void popConstantBuffer(IShader::Type type, int32_t count = 1) = 0;
-
-	virtual int32_t getConstantBufferCount(IShader::Type type) const = 0;
-	virtual int32_t getConstantBufferCount(void) const = 0;
-
-	virtual const Vector<IShaderResourceView*>& getResourceViews(IShader::Type type) const = 0;
-	virtual const IShaderResourceView* getResourceView(IShader::Type type, int32_t index) const = 0;
-	virtual IShaderResourceView* getResourceView(IShader::Type type, int32_t index) = 0;
-	virtual void addResourceView(IShader::Type type, IShaderResourceView* resource_view) = 0;
-	virtual void removeResourceView(IShader::Type type, int32_t index) = 0;
-	virtual void popResourceView(IShader::Type type, int32_t count = 1) = 0;
-	virtual void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) = 0;
-
-	virtual int32_t getResourceViewCount(IShader::Type type) const = 0;
-	virtual int32_t getResourceViewCount(void) const = 0;
-
-	virtual const Vector<ISamplerState*>& getSamplerStates(IShader::Type type) const = 0;
-	virtual const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const = 0;
-	virtual ISamplerState* getSamplerState(IShader::Type type, int32_t index) = 0;
-	virtual void addSamplerState(IShader::Type type, ISamplerState* sampler) = 0;
-	virtual void removeSamplerState(IShader::Type type, int32_t index) = 0;
-	virtual void popSamplerState(IShader::Type type, int32_t count = 1) = 0;
-
-	virtual int32_t getSamplerCount(IShader::Type type) const = 0;
-	virtual int32_t getSamplerCount(void) const = 0;
-
-	virtual IProgramBuffers* clone(void) const = 0;
-
-	virtual void clearResourceViews(void) = 0;
-	virtual void clear(void) = 0;
-
-	virtual void bind(IRenderDevice& rd, int32_t res_view_offset = 0, int32_t sampler_offset = 0, int32_t buffer_offset = 0) = 0;
-
-	virtual RendererType getRendererType(void) const = 0;
-};
 
 class IProgram
 {
@@ -92,10 +38,10 @@ public:
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual RendererType getRendererType(void) const = 0;
-
 	virtual const IShader* getAttachedShader(IShader::Type type) const = 0;
 	virtual IShader* getAttachedShader(IShader::Type type) = 0;
+
+	virtual RendererType getRendererType(void) const = 0;
 };
 
 NS_END

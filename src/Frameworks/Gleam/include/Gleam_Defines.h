@@ -55,4 +55,17 @@ enum class RendererType
 	Count
 };
 
+static constexpr RendererType GetRendererType(void)
+{
+#ifdef GLEAM_USE_D3D11
+	return RendererType::Direct3D11;
+#elif defined(GLEAM_USE_D3D12)
+	return RendererType::Direct3D12;
+#elif defined(GLEAM_USE_VULKAN)
+	return RendererType::Vulkan;
+#elif defined(GLEAM_USE_METAL)
+	return RendererType::Metal;
+#endif
+}
+
 NS_END

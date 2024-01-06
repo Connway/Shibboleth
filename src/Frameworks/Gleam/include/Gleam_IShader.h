@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Gleam_ITexture.h"
 #include "Gleam_Vector.h"
 #include "Gleam_String.h"
-#include <Gaff_Defines.h>
+#include <Gaff_EnumIterator.h>
 
 NS_GLEAM
 
@@ -158,3 +158,5 @@ protected:
 };
 
 NS_END
+
+GAFF_DEFINE_ENUM_ITERATOR(Gleam::IShader::Type)

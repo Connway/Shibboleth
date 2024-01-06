@@ -570,7 +570,7 @@ Shibboleth::HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index
 template <class T>
 IReflectionVar* ReflectionDefinition<T>::getVar(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vars.size()));
 	return getVarT(index);
 }
 
@@ -589,7 +589,7 @@ int32_t ReflectionDefinition<T>::getNumFuncs(void) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumFuncOverrides(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_funcs.size()));
 
 	int32_t count = 0;
 
@@ -607,7 +607,7 @@ int32_t ReflectionDefinition<T>::getNumFuncOverrides(int32_t index) const
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getFuncName(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_funcs.size()));
 	return Shibboleth::HashStringView32<>((_funcs.begin() + index)->first);
 }
 
@@ -627,7 +627,7 @@ int32_t ReflectionDefinition<T>::getNumStaticFuncs(void) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumStaticFuncOverrides(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_static_funcs.size()));
 
 	int32_t count = 0;
 
@@ -645,7 +645,7 @@ int32_t ReflectionDefinition<T>::getNumStaticFuncOverrides(int32_t index) const
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getStaticFuncName(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_static_funcs.size()));
 	return Shibboleth::HashStringView32<>((_static_funcs.begin() + index)->first);
 }
 
@@ -708,7 +708,7 @@ const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, int32_t
 {
 	const auto it = _var_attrs.find(name);
 	GAFF_ASSERT(it != _var_attrs.end());
-	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
 	return it->second[index].get();
 }
 
@@ -770,7 +770,7 @@ const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash64 name_arg_has
 		}
 
 	} else {
-		GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
+		GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
 		return it->second[index].get();
 	}
 
@@ -810,7 +810,7 @@ const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash64 name_a
 {
 	const auto it = _static_func_attrs.find(name_arg_hash);
 	GAFF_ASSERT(it != _static_func_attrs.end());
-	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
 	return it->second[index].get();
 }
 
@@ -835,7 +835,7 @@ int32_t ReflectionDefinition<T>::getNumConstructors(void) const
 template <class T>
 IReflectionStaticFunctionBase* ReflectionDefinition<T>::getConstructor(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_ctors.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_ctors.size()));
 	return ((_ctors.begin()) + index)->second.get();
 }
 
@@ -856,7 +856,7 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getFactory(Gaff::Hash64
 template <class T>
 IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(int32_t name_index, int32_t override_index) const
 {
-	GAFF_ASSERT(name_index < static_cast<int32_t>(_static_funcs.size()));
+	GAFF_ASSERT(name_index >= 0 && name_index < static_cast<int32_t>(_static_funcs.size()));
 	GAFF_ASSERT(override_index < StaticFuncData::k_num_overloads);
 
 	return (_static_funcs.begin() + name_index)->second.func[override_index].get();
@@ -881,7 +881,7 @@ IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(Gaff::Hash
 template <class T>
 IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(int32_t name_index, int32_t override_index) const
 {
-	GAFF_ASSERT(name_index < static_cast<int32_t>(_funcs.size()));
+	GAFF_ASSERT(name_index >= 0 && name_index < static_cast<int32_t>(_funcs.size()));
 	GAFF_ASSERT(override_index < FuncData::k_num_overloads);
 
 	return (_funcs.begin() + name_index)->second.func[override_index].get();
@@ -946,7 +946,7 @@ void ReflectionDefinition<T>::destroyInstance(void* data) const
 template <class T>
 IVar<T>* ReflectionDefinition<T>::getVarT(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vars.size()));
 	return (_vars.begin() + index)->second.get();
 }
 

@@ -39,27 +39,27 @@ public:
 
 	bool createProgram(
 		const Vector<Gleam::IRenderDevice*>& devices,
-		ShaderResourcePtr& vertex,
-		ShaderResourcePtr& pixel,
-		ShaderResourcePtr& domain,
-		ShaderResourcePtr& geometry,
-		ShaderResourcePtr& hull
+		ResourcePtr<ShaderResource>& vertex,
+		ResourcePtr<ShaderResource>& pixel,
+		ResourcePtr<ShaderResource>& domain,
+		ResourcePtr<ShaderResource>& geometry,
+		ResourcePtr<ShaderResource>& hull
 	);
 
 	bool createProgram(
 		Gleam::IRenderDevice& device,
-		ShaderResourcePtr& vertex,
-		ShaderResourcePtr& pixel,
-		ShaderResourcePtr& domain,
-		ShaderResourcePtr& geometry,
-		ShaderResourcePtr& hull
+		ResourcePtr<ShaderResource>& vertex,
+		ResourcePtr<ShaderResource>& pixel,
+		ResourcePtr<ShaderResource>& domain,
+		ResourcePtr<ShaderResource>& geometry,
+		ResourcePtr<ShaderResource>& hull
 	);
 
-	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel);
-	bool createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& vertex, ShaderResourcePtr& pixel);
+	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
+	bool createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
 
-	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ShaderResourcePtr& compute);
-	bool createProgram(Gleam::IRenderDevice& device, ShaderResourcePtr& compute);
+	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& compute);
+	bool createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& compute);
 
 	const Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device) const;
 	Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device);
@@ -69,7 +69,7 @@ public:
 
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
-	ShaderResourcePtr _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
+	ResourcePtr<ShaderResource> _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);
 };

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include <Gaff_Defines.h>
 
 NS_GLEAM
 
@@ -32,7 +33,7 @@ class IBuffer;
 class IMesh
 {
 public:
-	enum class TopologyType
+	enum class Topology
 	{
 		PointList = 0,
 		LineList,
@@ -63,17 +64,21 @@ public:
 	virtual const IBuffer* getIndiceBuffer(void) const = 0;
 	virtual IBuffer* getIndiceBuffer(void) = 0;
 
-	virtual void setTopologyType(TopologyType topology) = 0;
-	virtual TopologyType getTopologyType(void) const = 0;
+	virtual void setTopology(Topology topology) { _topology = topology; }
+	virtual Topology getTopology(void) const { return _topology; }
 
-	virtual void setIndexCount(int32_t count) = 0;
-	virtual int32_t getIndexCount(void) const = 0;
+	virtual void setIndexCount(int32_t count) { _index_count = count; }
+	virtual int32_t getIndexCount(void) const { return _index_count; }
 
 	virtual void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset = 0) = 0;
 	virtual void renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset = 0, int32_t vert_offset = 0, int32_t instance_offset = 0) = 0;
 	virtual void render(IRenderDevice& rd, int32_t index_offset = 0, int32_t vert_offset = 0) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
+
+private:
+	Topology _topology = Topology::TriangleList;
+	int32_t _index_count = 0;
 
 	GAFF_NO_COPY(IMesh);
 };

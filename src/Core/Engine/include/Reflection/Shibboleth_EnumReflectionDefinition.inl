@@ -176,7 +176,7 @@ int32_t EnumReflectionDefinition<Enum>::getNumEnumAttrs(void) const
 template <class Enum>
 const IAttribute* EnumReflectionDefinition<Enum>::getEnumAttr(int32_t index) const
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_enum_attrs.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_enum_attrs.size()));
 	return _enum_attrs[index].get();
 }
 

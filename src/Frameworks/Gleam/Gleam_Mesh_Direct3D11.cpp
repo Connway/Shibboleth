@@ -25,11 +25,10 @@ THE SOFTWARE.
 #include "Gleam_Mesh_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Buffer_Direct3D11.h"
-#include "Gleam_IRenderDevice.h"
 
 NS_GLEAM
 
-static D3D11_PRIMITIVE_TOPOLOGY g_topology_map[static_cast<size_t>(IMesh::TopologyType::Count)] = {
+static constexpr D3D11_PRIMITIVE_TOPOLOGY g_topology_map[static_cast<size_t>(IMesh::Topology::Count)] = {
 	D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 	D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
 	D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
@@ -52,20 +51,53 @@ Mesh::~Mesh(void)
 
 void Mesh::clear(void)
 {
-	MeshBase::clear();
 	_buffers.clear();
 	_strides.clear();
+	_vert_data.clear();
+	_offsets.clear();
+	_indices = nullptr;
 }
 
 void Mesh::addBuffer(IBuffer* buffer, uint32_t offset)
 {
-	MeshBase::addBuffer(buffer, offset);
+	GAFF_ASSERT(buffer->getRendererType() == RendererType::Direct3D11);
+
+	_vert_data.emplace_back(static_cast<Buffer*>(buffer));
+	_offsets.emplace_back(offset);
+
+	_vert_data.shrink_to_fit();
+	_offsets.shrink_to_fit();
+
 	cacheBuffers();
+}
+
+const IBuffer* Mesh::getBuffer(int32_t index) const
+{
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vert_data.size()));
+	return _vert_data[index];
+}
+
+IBuffer* Mesh::getBuffer(int32_t index)
+{
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vert_data.size()));
+	return _vert_data[index];
+}
+
+int32_t Mesh::getBufferCount(void) const
+{
+	return static_cast<int32_t>(_vert_data.size());
+}
+
+uint32_t Mesh::getBufferOffset(int32_t index) const
+{
+	return _offsets[index];
 }
 
 void Mesh::setIndiceBuffer(IBuffer* buffer)
 {
-	MeshBase::setIndiceBuffer(buffer);
+	GAFF_ASSERT(buffer->getRendererType() == RendererType::Direct3D11);
+
+	_indices = static_cast<Buffer*>(buffer);
 
 	_indice_format = DXGI_FORMAT_R16_UINT;
 
@@ -89,47 +121,57 @@ void Mesh::setIndiceBuffer(IBuffer* buffer)
 	}
 }
 
-void Mesh::setTopologyType(TopologyType topology)
+const IBuffer* Mesh::getIndiceBuffer(void) const
 {
-	_d3d_topology = g_topology_map[static_cast<size_t>(topology)];
-	_topology = topology;
+	return _indices;
+}
+
+IBuffer* Mesh::getIndiceBuffer(void)
+{
+	return _indices;
 }
 
 void Mesh::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t vert_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size());
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(_vert_data.size());
+	GAFF_ASSERT(_indices);
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
-	context->IASetPrimitiveTopology(_d3d_topology);
+	context->IASetPrimitiveTopology(getD3DTopology());
 	context->Draw(vert_count, vert_offset);
 }
 
 void Mesh::renderInstanced(IRenderDevice& rd, int32_t instance_count, int32_t index_offset, int32_t vert_offset, int32_t instance_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(_vert_data.size());
+	GAFF_ASSERT(_indices);
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
 	context->IASetIndexBuffer(static_cast<Buffer*>(_indices)->getBuffer(), _indice_format, 0);
-	context->IASetPrimitiveTopology(_d3d_topology);
+	context->IASetPrimitiveTopology(getD3DTopology());
 	context->DrawIndexedInstanced(getIndexCount(), instance_count, index_offset, vert_offset, instance_offset);
 }
 
 void Mesh::render(IRenderDevice& rd, int32_t index_offset, int32_t vert_offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(_vert_data.size());
+	GAFF_ASSERT(_indices);
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
 	context->IASetIndexBuffer(static_cast<Buffer*>(_indices)->getBuffer(), _indice_format, 0);
-	context->IASetPrimitiveTopology(_d3d_topology);
+	context->IASetPrimitiveTopology(getD3DTopology());
 	context->DrawIndexed(getIndexCount(), index_offset, vert_offset);
 }
 
@@ -138,19 +180,28 @@ RendererType Mesh::getRendererType(void) const
 	return RendererType::Direct3D11;
 }
 
+D3D11_PRIMITIVE_TOPOLOGY Mesh::getD3DTopology(void) const
+{
+	return g_topology_map[static_cast<size_t>(getTopology())];
+}
+
 void Mesh::cacheBuffers(void)
 {
 	_buffers.clear();
 	_strides.clear();
 
-	IBuffer* temp = nullptr;
+	_buffers.reserve(_vert_data.size());
+	_strides.reserve(_vert_data.size());
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
-		temp = _vert_data[i];
-		GAFF_ASSERT(temp && temp->getRendererType() == RendererType::Direct3D11);
-		_buffers.emplace_back(static_cast<Buffer*>(temp)->getBuffer());
-		_strides.emplace_back(temp->getStride());
+		Buffer* buffer = _vert_data[i];
+
+		_buffers.emplace_back(buffer->getBuffer());
+		_strides.emplace_back(buffer->getStride());
 	}
+
+	_buffers.shrink_to_fit();
+	_strides.shrink_to_fit();
 }
 
 NS_END

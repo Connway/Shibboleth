@@ -23,8 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ResourceManager.h>
-#include <Gleam_IShader.h>
-#include <Gleam_ILayout.h>
+#include <Gleam_Shader.h>
+#include <Gleam_Layout.h>
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -33,21 +37,21 @@ class ShaderResource final : public IResource
 public:
 	static constexpr bool Creatable = true;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	bool createShaderAndLayout(const Vector<Gleam::IRenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type);
-	bool createShaderAndLayout(Gleam::IRenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type);
+	bool createShaderAndLayout(const Vector<Gleam::RenderDevice*>& devices, const char* shader_source, Gleam::IShader::Type shader_type);
+	bool createShaderAndLayout(Gleam::RenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type);
 
-	const Gleam::IShader* getShader(const Gleam::IRenderDevice& rd) const;
-	Gleam::IShader* getShader(const Gleam::IRenderDevice& rd);
+	const Gleam::Shader* getShader(const Gleam::RenderDevice& rd) const;
+	Gleam::Shader* getShader(const Gleam::RenderDevice& rd);
 
-	const Gleam::ILayout* getLayout(const Gleam::IRenderDevice& rd) const;
-	Gleam::ILayout* getLayout(const Gleam::IRenderDevice& rd);
+	const Gleam::Layout* getLayout(const Gleam::RenderDevice& rd) const;
+	Gleam::Layout* getLayout(const Gleam::RenderDevice& rd);
 
 private:
-	using ShaderLayoutPair = eastl::pair< UniquePtr<Gleam::IShader>, UniquePtr<Gleam::ILayout> >;
+	using ShaderLayoutPair = eastl::pair< UniquePtr<Gleam::Shader>, UniquePtr<Gleam::Layout> >;
 
-	VectorMap<const Gleam::IRenderDevice*, ShaderLayoutPair> _shader_data{ ProxyAllocator("Graphics") };
+	VectorMap<const Gleam::RenderDevice*, ShaderLayoutPair> _shader_data{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(ShaderResource);
 };
