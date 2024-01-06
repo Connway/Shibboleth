@@ -1,0 +1,25 @@
+* text=auto
+
+*.c text
+*.h text
+*.cpp text
+*.hpp text
+*.inl text
+*.lua text
+
+*.cfg text
+*.yml text
+
+*.sln text eol=crlf
+*.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.bin binary
+*.ico binary
+
+*.entity text
+*.hlsl text
+*.material text
+
