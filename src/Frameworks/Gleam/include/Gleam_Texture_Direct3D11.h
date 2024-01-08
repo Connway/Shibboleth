@@ -44,10 +44,14 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	void* getTexture(void) const;
-	ID3D11Texture1D* getTexture1D(void) const;
-	ID3D11Texture2D* getTexture2D(void) const;
-	ID3D11Texture3D* getTexture3D(void) const;
+	const void* getTexture(void) const;
+	void* getTexture(void);
+	const ID3D11Texture1D* getTexture1D(void) const;
+	ID3D11Texture1D* getTexture1D(void);
+	const ID3D11Texture2D* getTexture2D(void) const;
+	ID3D11Texture2D* getTexture2D(void);
+	const ID3D11Texture3D* getTexture3D(void) const;
+	ID3D11Texture3D* getTexture3D(void);
 
 	static DXGI_FORMAT GetTypelessD3DFormat(Format format);
 	static DXGI_FORMAT GetTypedD3DFormat(Format format);

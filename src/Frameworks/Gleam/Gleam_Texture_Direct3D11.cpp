@@ -501,22 +501,42 @@ RendererType Texture::getRendererType(void) const
 	return RendererType::Direct3D11;
 }
 
-void* Texture::getTexture(void) const
+const void* Texture::getTexture(void) const
 {
 	return _texture;
 }
 
-ID3D11Texture1D* Texture::getTexture1D(void) const
+void* Texture::getTexture(void)
+{
+	return _texture;
+}
+
+const ID3D11Texture1D* Texture::getTexture1D(void) const
 {
 	return _texture_1d;
 }
 
-ID3D11Texture2D* Texture::getTexture2D(void) const
+ID3D11Texture1D* Texture::getTexture1D(void)
+{
+	return _texture_1d;
+}
+
+const ID3D11Texture2D* Texture::getTexture2D(void) const
 {
 	return _texture_2d;
 }
 
-ID3D11Texture3D* Texture::getTexture3D(void) const
+ID3D11Texture2D* Texture::getTexture2D(void)
+{
+	return _texture_2d;
+}
+
+const ID3D11Texture3D* Texture::getTexture3D(void) const
+{
+	return _texture_3d;
+}
+
+ID3D11Texture3D* Texture::getTexture3D(void)
 {
 	return _texture_3d;
 }

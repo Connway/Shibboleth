@@ -62,15 +62,15 @@ IVec2 RenderTarget::getSize(void) const
 	};
 }
 
-bool RenderTarget::addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face)
+bool RenderTarget::addTexture(IRenderDevice& rd, ITexture& color_texture, CubeFace face)
 {
-	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(color_texture.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	ID3D11RenderTargetView1* render_target_view = nullptr;
 
 	D3D11_RENDER_TARGET_VIEW_DESC1 desc;
-	desc.Format = Texture::GetD3DFormat(color_texture->getFormat());
+	desc.Format = Texture::GetD3DFormat(color_texture.getFormat());
 
 	if (face == CubeFace::None) {
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
@@ -86,7 +86,7 @@ bool RenderTarget::addTexture(IRenderDevice& rd, const ITexture* color_texture, 
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 
-	const HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(static_cast<const Texture*>(color_texture)->getTexture2D(), &desc, &render_target_view);
+	const HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(static_cast<Texture&>(color_texture).getTexture2D(), &desc, &render_target_view);
 
 	if (FAILED(result)) {
 		return false;
@@ -112,21 +112,21 @@ void RenderTarget::popTexture(void)
 	_render_target_views.pop_back();
 }
 
-bool RenderTarget::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture)
+bool RenderTarget::addDepthStencilBuffer(IRenderDevice& rd, ITexture& depth_stencil_texture)
 {
-	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(depth_stencil_texture.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 
 	GAFF_COM_SAFE_RELEASE(_depth_stencil_view)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	desc.Flags = 0;
-	desc.Format = Texture::GetD3DFormat(depth_stencil_texture->getFormat());
+	desc.Format = Texture::GetD3DFormat(depth_stencil_texture.getFormat());
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
-	const HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<const Texture*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	const HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<Texture&>(depth_stencil_texture).getTexture2D(), &desc, &_depth_stencil_view);
 
 	return SUCCEEDED(result);
 }

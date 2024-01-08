@@ -42,10 +42,10 @@ public:
 
 	IVec2 getSize(void) const override;
 
-	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CubeFace face = CubeFace::None) override;
+	bool addTexture(IRenderDevice& rd, ITexture& color_texture, CubeFace face = CubeFace::None) override;
 	void popTexture(void) override;
 
-	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) override;
+	bool addDepthStencilBuffer(IRenderDevice& rd, ITexture& depth_stencil_texture) override;
 
 	void bind(IRenderDevice& rd) override;
 	void unbind(IRenderDevice& rd) override;

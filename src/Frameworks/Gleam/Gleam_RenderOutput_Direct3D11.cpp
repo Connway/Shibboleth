@@ -101,7 +101,7 @@ bool RenderOutput::init(IRenderDevice& device, const Window& window, int32_t dis
 	factory->Release();
 
 	if (FAILED(result)) {
-		// Log error
+		// $TODO: Log error
 		adapter_output->Release();
 		return false;
 	}
@@ -120,7 +120,7 @@ bool RenderOutput::init(IRenderDevice& device, const Window& window, int32_t dis
 	adapter_output->Release();
 
 	if (FAILED(result)) {
-		// Log error
+		// $TODO: Log error
 		final_swap_chain->Release();
 		return false;
 	}
@@ -129,7 +129,7 @@ bool RenderOutput::init(IRenderDevice& device, const Window& window, int32_t dis
 	result = final_swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_ptr));
 
 	if (FAILED(result)) {
-		// Log error
+		// $TODO: Log error
 		final_swap_chain->Release();
 		return false;
 	}
@@ -147,7 +147,7 @@ bool RenderOutput::init(IRenderDevice& device, const Window& window, int32_t dis
 	back_buffer_ptr->Release();
 
 	if (FAILED(result)) {
-		// Log error
+		// $TODO: Log error
 		final_swap_chain->Release();
 		return false;
 	}
