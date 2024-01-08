@@ -22,8 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_RenderManagerBase.h>
-#include <Shibboleth_AppUtils.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
@@ -31,17 +29,16 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
 
 	.template ctor<>()
 
-	.var("device_tag", &Shibboleth::Camera::device_tag, Shibboleth::OptionalAttribute())
-	.var("v_fov", &Shibboleth::Camera::v_fov, Shibboleth::OptionalAttribute())
-	.var("z_near", &Shibboleth::Camera::z_near, Shibboleth::OptionalAttribute())
-	.var("z_far", &Shibboleth::Camera::z_far, Shibboleth::OptionalAttribute())
-	//.var("focus_distance", &Shibboleth::Camera::focus_distance, Shibboleth::OptionalAttribute())
-	//.var("f_stop", &Shibboleth::Camera::f_stop, Shibboleth::OptionalAttribute())
+	.var("vertical_fov", &Shibboleth::CameraComponent::_vertical_fov, Shibboleth::OptionalAttribute())
+	.var("z_planes", &Shibboleth::CameraComponent::_z_planes, Shibboleth::OptionalAttribute())
 
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(CameraComponent)
 
 void CameraComponent::setVerticalFOV(float focal_length, float sensor_size)
 {

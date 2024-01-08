@@ -22,40 +22,37 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_EntitySceneComponent.h>
-#include <Shibboleth_Math.h>
+#include "Shibboleth_SamplerStateResource.h"
+#include <Config/Shibboleth_Config.h>
+#include <Shibboleth_ResourcePtr.h>
 
 NS_SHIBBOLETH
 
-class CameraComponent final : public EntitySceneComponent
+struct GraphicsConfigWindow final
+{
+	int32_t monitor_id = 0;
+
+	int32_t width = -1;
+	int32_t height = -1;
+	int32_t refresh_rate = -1;
+	bool vsync = false;
+
+	int32_t pos_x = -1;
+	int32_t pos_y = -1;
+	bool windowed = false;
+};
+
+class GraphicsConfig final : public IConfig
 {
 public:
-	CameraComponent(void) = default;
+	ResourcePtr<SamplerStateResource> texture_filtering_sampler;
 
-	void setVerticalFOV(float focal_length, float sensor_size);
-	void setVerticalFOVDegrees(float fov);
-	void setVerticalFOVRadians(float fov);
-	void setVerticalFOV(float fov);
-	float getVerticalFOVDegrees(void) const;
-	float getVerticalFOVRadians(void) const;
-	float getVerticalFOV(void) const;
+	VectorMap<HashString32<>, GraphicsConfigWindow> windows;
 
-	void setZPlanes(const Gleam::Vec2& z_planes);
-	const Gleam::Vec2& getZPlanes(void) const;
-
-	void setZNear(float z_near);
-	float getZNear(void) const;
-
-	void setZFar(float z_far);
-	float getZFar(void) const;
-
-private:
-	Gleam::Vec2 _z_planes{ 0.001f, 2000.0f }; // m
-	float _vertical_fov = 0.25f; // turns
-
-	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(GraphicsConfig);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::GraphicsConfigWindow)
+SHIB_REFLECTION_DECLARE(Shibboleth::GraphicsConfig)

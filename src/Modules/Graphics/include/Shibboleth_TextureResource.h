@@ -24,8 +24,13 @@ THE SOFTWARE.
 
 #include <Shibboleth_IResource.h>
 #include <Shibboleth_SmartPtrs.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_ITexture.h>
+
+namespace Gleam
+{
+	class ShaderResourceView;
+	class RenderDevice;
+	class Texture;
+}
 
 NS_SHIBBOLETH
 
@@ -38,20 +43,20 @@ public:
 
 	void load(const IFile& file, uintptr_t thread_id_int) override;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	bool createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
-	bool createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
+	bool createTexture(const Vector<Gleam::RenderDevice*>& devices, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
+	bool createTexture(Gleam::RenderDevice& device, const Image& image, int32_t mip_levels = 1, bool make_linear = false);
 
-	const Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd) const;
-	Gleam::ITexture* getTexture(const Gleam::IRenderDevice& rd);
+	const Gleam::Texture* getTexture(const Gleam::RenderDevice& rd) const;
+	Gleam::Texture* getTexture(const Gleam::RenderDevice& rd);
 
-	const Gleam::IShaderResourceView* getShaderResourceView(const Gleam::IRenderDevice& rd) const;
-	Gleam::IShaderResourceView* getShaderResourceView(const Gleam::IRenderDevice& rd);
+	const Gleam::ShaderResourceView* getShaderResourceView(const Gleam::RenderDevice& rd) const;
+	Gleam::ShaderResourceView* getShaderResourceView(const Gleam::RenderDevice& rd);
 
 private:
-	using Data = eastl::pair< UniquePtr<Gleam::ITexture>, UniquePtr<Gleam::IShaderResourceView> >;
-	VectorMap<const Gleam::IRenderDevice*, Data> _texture_data{ ProxyAllocator("Graphics") };
+	using Data = eastl::pair< UniquePtr<Gleam::Texture>, UniquePtr<Gleam::ShaderResourceView> >;
+	VectorMap<const Gleam::RenderDevice*, Data> _texture_data{ ProxyAllocator("Graphics") };
 
 	void loadTextureJSON(const IFile& file, uintptr_t thread_id_int);
 	void loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear);

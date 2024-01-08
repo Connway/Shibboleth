@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ClearRenderTargetSystem.h"
-#include "Shibboleth_RenderManagerBase.h"
+//#include "Shibboleth_RenderManagerBase.h"
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_AppUtils.h>
 
@@ -36,77 +36,77 @@ SHIB_REFLECTION_CLASS_DEFINE(ClearRenderTargetSystem)
 
 bool ClearRenderTargetSystem::init(void)
 {
-	ECSQuery camera_query;
-	camera_query.add<Camera>(_camera);
+	//ECSQuery camera_query;
+	//camera_query.add<Camera>(_camera);
 
-	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	//_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
 
-	_cmd_lists[0].reset(_render_mgr->createCommandList());
-	_cmd_lists[1].reset(_render_mgr->createCommandList());
+	//_cmd_lists[0].reset(_render_mgr->createCommandList());
+	//_cmd_lists[1].reset(_render_mgr->createCommandList());
 
-	if (!_cmd_lists[0] || !_cmd_lists[1]) {
-		// $TODO: Log error.
-		return false;
-	}
+	//if (!_cmd_lists[0] || !_cmd_lists[1]) {
+	//	// $TODO: Log error.
+	//	return false;
+	//}
 
 	return true;
 }
 
-void ClearRenderTargetSystem::update(uintptr_t thread_id_int)
+void ClearRenderTargetSystem::update(uintptr_t /*thread_id_int*/)
 {
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	const int32_t num_cameras = static_cast<int32_t>(_camera.size());
+	//const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	//const int32_t num_cameras = static_cast<int32_t>(_camera.size());
 
-	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-		_ecs_mgr->iterate<Camera>(
-			_camera[camera_index],
-			[&](ECSEntityID id, const Camera& camera) -> void
-			{
-				const auto* const devices = _render_mgr->getDevicesByTag(camera.device_tag);
+	//for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
+	//	_ecs_mgr->iterate<Camera>(
+	//		_camera[camera_index],
+	//		[&](ECSEntityID id, const Camera& camera) -> void
+	//		{
+	//			const auto* const devices = _render_mgr->getDevicesByTag(camera.device_tag);
 
-				if (!devices) {
-					return;
-				}
+	//			if (!devices) {
+	//				return;
+	//			}
 
-				// $TODO: In the future, when more expensive clear options become available,
-				// may want to split this out into a per-device job.
-				for (const Gleam::IRenderDevice* device : *devices) {
-					const auto* const g_buffer = _render_mgr->getGBuffer(id, *device);
+	//			// $TODO: In the future, when more expensive clear options become available,
+	//			// may want to split this out into a per-device job.
+	//			for (const Gleam::IRenderDevice* device : *devices) {
+	//				const auto* const g_buffer = _render_mgr->getGBuffer(id, *device);
 
-					if (!g_buffer) {
-						// $TODO: Log error.
-						return;
-					}
+	//				if (!g_buffer) {
+	//					// $TODO: Log error.
+	//					return;
+	//				}
 
-					Gleam::IRenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
-					Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-					Gleam::ICommandList* const cmd_list = _cmd_lists[_cache_index].get();
+	//				Gleam::IRenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
+	//				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
+	//				Gleam::ICommandList* const cmd_list = _cmd_lists[_cache_index].get();
 
-					// $TODO: Make the clearing type an option.
-					render_target->bind(*deferred_device);
-					render_target->clear(*deferred_device, Gleam::IRenderTarget::ClearFlags::All, 1.0f, 0, Gleam::Color::Black);
+	//				// $TODO: Make the clearing type an option.
+	//				render_target->bind(*deferred_device);
+	//				render_target->clear(*deferred_device, Gleam::IRenderTarget::ClearFlags::All, 1.0f, 0, Gleam::Color::Black);
 
-					if (!deferred_device->finishCommandList(*cmd_list)) {
-						// $TODO: Log error periodic.
-						SHIB_FREET(cmd_list, GetAllocator());
-						return;
-					}
+	//				if (!deferred_device->finishCommandList(*cmd_list)) {
+	//					// $TODO: Log error periodic.
+	//					SHIB_FREET(cmd_list, GetAllocator());
+	//					return;
+	//				}
 
-					auto& render_cmds = _render_mgr->getRenderCommands(
-						*device,
-						RenderManagerBase::RenderOrder::ClearRenderTargets,
-						_cache_index
-					);
+	//				auto& render_cmds = _render_mgr->getRenderCommands(
+	//					*device,
+	//					RenderManagerBase::RenderOrder::ClearRenderTargets,
+	//					_cache_index
+	//				);
 
-					render_cmds.lock.Lock();
-					auto& cmd = render_cmds.command_list.emplace_back();
-					cmd.cmd_list.reset(cmd_list);
-					cmd.owns_command = false;
-					render_cmds.lock.Unlock();
-				}
-			}
-		);
-	}
+	//				render_cmds.lock.Lock();
+	//				auto& cmd = render_cmds.command_list.emplace_back();
+	//				cmd.cmd_list.reset(cmd_list);
+	//				cmd.owns_command = false;
+	//				render_cmds.lock.Unlock();
+	//			}
+	//		}
+	//	);
+	//}
 }
 
 NS_END

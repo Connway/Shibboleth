@@ -62,10 +62,10 @@ public:
 
 	virtual IVec2 getSize(void) const = 0;
 
-	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = CubeFace::None) = 0;
+	virtual bool addTexture(IRenderDevice& rd, ITexture& texture, CubeFace face = CubeFace::None) = 0;
 	virtual void popTexture(void) = 0;
 
-	virtual bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;
+	virtual bool addDepthStencilBuffer(IRenderDevice& rd, ITexture& depth_stencil_texture) = 0;
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;

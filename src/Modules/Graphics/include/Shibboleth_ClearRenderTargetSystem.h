@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ECSQuery.h>
+//#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
-#include <Gleam_ICommandList.h>
+//#include <Gleam_ICommandList.h>
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
-class ECSManager;
+//class RenderManagerBase;
+//class ECSManager;
 
 class ClearRenderTargetSystem final : public ISystem
 {
@@ -38,12 +38,12 @@ public:
 	void update(uintptr_t thread_id_int) override;
 
 private:
-	RenderManagerBase* _render_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
-	ECSQuery::Output _camera;
+	//RenderManagerBase* _render_mgr = nullptr;
+	//ECSManager* _ecs_mgr = nullptr;
+	//ECSQuery::Output _camera;
 	int32_t _cache_index = 0;
 
-	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
+	//UniquePtr<Gleam::ICommandList> _cmd_lists[2];
 
 	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetSystem);
 };

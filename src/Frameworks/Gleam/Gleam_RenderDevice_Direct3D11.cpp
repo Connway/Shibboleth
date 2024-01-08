@@ -31,10 +31,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-template <>
-IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
+IRenderDevice::AdapterList RenderDevice::GetDisplayModes(void)
 {
-	Vector<RenderDevice::AdapterInfo> display_info;
+	Vector<AdapterInfo> display_info;
 
 	IDXGIFactory6* factory = nullptr;
 	IDXGIAdapter4* adapter = nullptr;
@@ -48,14 +47,14 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 #endif
 
 	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
-	IRenderDevice::AdapterList adapters;
+	AdapterList adapters;
 
 	if (FAILED(result)) {
 		return adapters;
 	}
 
 	for (UINT i = 0; factory->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
-		RenderDevice::AdapterInfo info;
+		AdapterInfo info;
 		Gaff::COMRefPtr<IDXGIAdapter4> adapter_ptr;
 
 		adapter_ptr.reset(adapter);
@@ -67,10 +66,10 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		}
 
 		info.memory = static_cast<int32_t>(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
-		wcsncpy_s(info.adapter_name, std::size(info.adapter_name), adapter_desc.Description, std::size(adapter_desc.Description));
+		wcsncpy_s(info.adapter_name, adapter_desc.Description, std::size(adapter_desc.Description));
 
 		for (UINT j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
-			RenderDevice::OutputInfo out_info;
+			OutputInfo out_info;
 			Gaff::COMRefPtr<IDXGIOutput6> output;
 			UINT num_modes;
 
@@ -138,11 +137,11 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 	factory->Release();
 
 	// Convert DirectX data structures into our structure
-	IRenderDevice::AdapterList out(display_info.size());
+	AdapterList out(display_info.size());
 
 	for (int32_t i = 0; i < static_cast<int32_t>(display_info.size()); ++i) {
-		const RenderDevice::AdapterInfo& adpt_info = display_info[i];
-		IRenderDevice::Adapter adpt;
+		const AdapterInfo& adpt_info = display_info[i];
+		Adapter adpt;
 
 		const wchar_t*  src_begin = adpt_info.adapter_name;
 		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name) + 1;
@@ -156,8 +155,8 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 		adpt.id = i;
 
 		for (int32_t j = 0; j < static_cast<int32_t>(adpt_info.output_info.size()); ++j) {
-			const RenderDevice::OutputInfo& out_info = adpt_info.output_info[j];
-			IRenderDevice::Display display;
+			const OutputInfo& out_info = adpt_info.output_info[j];
+			Display display;
 			display.display_modes.reserve(out_info.display_mode_list.size());
 			display.id = j;
 
@@ -177,7 +176,7 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 			for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size()); ++k) {
 				const DXGI_MODE_DESC1& mode_desc = out_info.display_mode_list[k];
 
-				IRenderDevice::DisplayMode mode = {
+				DisplayMode mode = {
 					static_cast<int32_t>(mode_desc.RefreshRate.Numerator / mode_desc.RefreshRate.Denominator),
 					static_cast<int32_t>(mode_desc.Width),
 					static_cast<int32_t>(mode_desc.Height),
@@ -194,6 +193,21 @@ IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void)
 	}
 
 	return out;
+}
+
+bool RenderDevice::init(const char* adapter_name)
+{
+	const AdapterList adapters = GetDisplayModes();
+
+	for (const Adapter& adapter : adapters) {
+		if (!strncmp(adapter_name, adapter.adapter_name, std::size(adapter.adapter_name))) {
+			const int32_t adapter_id = static_cast<int32_t>(eastl::distance(adapters.begin(), &adapter));
+			return init(adapter_id);
+		}
+	}
+
+	// $TODO: Log error.
+	return false;
 }
 
 bool RenderDevice::init(int32_t adapter_id)

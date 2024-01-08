@@ -20,42 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_GraphicsConfig.h"
 
-#include <Shibboleth_EntitySceneComponent.h>
-#include <Shibboleth_Math.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
+	.var("monitor_id", &Shibboleth::GraphicsConfigWindow::monitor_id)
+
+	.var("width", &Shibboleth::GraphicsConfigWindow::width)
+	.var("height", &Shibboleth::GraphicsConfigWindow::height)
+	.var("refresh_rate", &Shibboleth::GraphicsConfigWindow::refresh_rate)
+	.var("vsync", &Shibboleth::GraphicsConfigWindow::vsync)
+
+	.var("pos_x", &Shibboleth::GraphicsConfigWindow::pos_x)
+	.var("pos_y", &Shibboleth::GraphicsConfigWindow::pos_y)
+	.var("windowed", &Shibboleth::GraphicsConfigWindow::windowed)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
+	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)
+
+	.var("windows", &Shibboleth::GraphicsConfig::windows)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
+
 
 NS_SHIBBOLETH
 
-class CameraComponent final : public EntitySceneComponent
-{
-public:
-	CameraComponent(void) = default;
-
-	void setVerticalFOV(float focal_length, float sensor_size);
-	void setVerticalFOVDegrees(float fov);
-	void setVerticalFOVRadians(float fov);
-	void setVerticalFOV(float fov);
-	float getVerticalFOVDegrees(void) const;
-	float getVerticalFOVRadians(void) const;
-	float getVerticalFOV(void) const;
-
-	void setZPlanes(const Gleam::Vec2& z_planes);
-	const Gleam::Vec2& getZPlanes(void) const;
-
-	void setZNear(float z_near);
-	float getZNear(void) const;
-
-	void setZFar(float z_far);
-	float getZFar(void) const;
-
-private:
-	Gleam::Vec2 _z_planes{ 0.001f, 2000.0f }; // m
-	float _vertical_fov = 0.25f; // turns
-
-	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
-};
+SHIB_REFLECTION_CLASS_DEFINE(GraphicsConfig)
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraComponent)

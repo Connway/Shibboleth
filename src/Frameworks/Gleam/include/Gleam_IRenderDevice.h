@@ -71,6 +71,7 @@ public:
 	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
+	virtual bool init(const char* adapter_name) = 0;
 	virtual bool init(int32_t adapter_id) = 0;
 
 	//virtual bool resize(const IWindow& window) = 0;
@@ -101,26 +102,5 @@ protected:
 
 	GAFF_NO_COPY(IRenderDevice);
 };
-
-template <RendererType type>
-IRenderDevice::AdapterList GetDisplayModes(void)
-{
-	GAFF_ASSERT_MSG(false, "Unrecognized RendererType!");
-	return IRenderDevice::AdapterList();
-}
-
-template <RendererType type>
-IRenderDevice::AdapterList GetAdapters(void)
-{
-	GAFF_ASSERT_MSG(false, "Unrecognized RendererType!");
-	return IRenderDevice::AdapterList();
-}
-
-
-template <>
-IRenderDevice::AdapterList GetDisplayModes<RendererType::Direct3D11>(void);
-
-template <>
-IRenderDevice::AdapterList GetAdapters<RendererType::Direct3D11>(void);
 
 NS_END

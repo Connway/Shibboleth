@@ -21,13 +21,16 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_TextureResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Image.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_Texture.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureResource)
 	.classAttrs(
@@ -42,6 +45,11 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::TextureResource)
+
+namespace
+{
+	static Shibboleth::ProxyAllocator g_allocator("Graphics");
+}
 
 NS_SHIBBOLETH
 
@@ -92,33 +100,32 @@ void TextureResource::load(const IFile& file, uintptr_t thread_id_int)
 	}
 }
 
-Vector<Gleam::IRenderDevice*> TextureResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> TextureResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out(g_allocator);
 
 	for (const auto& pair : _texture_data) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool TextureResource::createTexture(const Vector<Gleam::IRenderDevice*>& devices, const Image& image, int32_t mip_levels, bool make_linear)
+bool TextureResource::createTexture(const Vector<Gleam::RenderDevice*>& devices, const Image& image, int32_t mip_levels, bool make_linear)
 {
 	bool success = true;
 
-	for (Gleam::IRenderDevice* device : devices) {
+	for (Gleam::RenderDevice* device : devices) {
 		success = success && createTexture(*device, image, mip_levels, make_linear);
 	}
 
 	return success;
 }
 
-bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& image, int32_t mip_levels, bool make_linear)
+bool TextureResource::createTexture(Gleam::RenderDevice& device, const Image& image, int32_t mip_levels, bool make_linear)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::ITexture* const texture = render_mgr.createTexture();
+	Gleam::Texture* const texture = SHIB_ALLOCT(Gleam::Texture, g_allocator);
 	const Gleam::ITexture::Format format = GetTextureFormat(image);
 
 	bool success = texture->init2D(
@@ -136,8 +143,8 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 		return false;
 	}
 
-	Gleam::IShaderResourceView* const srv = render_mgr.createShaderResourceView();
-	success = srv->init(device, texture);
+	Gleam::ShaderResourceView* const srv = SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
+	success = srv->init(device, *texture);
 
 	if (!success) {
 		LogErrorResource("Failed to create texture shader resource view '%s'.", getFilePath().getBuffer());
@@ -153,25 +160,25 @@ bool TextureResource::createTexture(Gleam::IRenderDevice& device, const Image& i
 	return true;
 }
 
-const Gleam::ITexture* TextureResource::getTexture(const Gleam::IRenderDevice& rd) const
+const Gleam::Texture* TextureResource::getTexture(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _texture_data.find(&rd);
 	return (it != _texture_data.end()) ? it->second.first.get() : nullptr;
 }
 
-Gleam::ITexture* TextureResource::getTexture(const Gleam::IRenderDevice& rd)
+Gleam::Texture* TextureResource::getTexture(const Gleam::RenderDevice& rd)
 {
 	const auto it = _texture_data.find(&rd);
 	return (it != _texture_data.end()) ? it->second.first.get() : nullptr;
 }
 
-const Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::IRenderDevice& rd) const
+const Gleam::ShaderResourceView* TextureResource::getShaderResourceView(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _texture_data.find(&rd);
 	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
 }
 
-Gleam::IShaderResourceView* TextureResource::getShaderResourceView(const Gleam::IRenderDevice& rd)
+Gleam::ShaderResourceView* TextureResource::getShaderResourceView(const Gleam::RenderDevice& rd)
 {
 	const auto it = _texture_data.find(&rd);
 	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
@@ -235,8 +242,8 @@ void TextureResource::loadTextureJSON(const IFile& file, uintptr_t thread_id_int
 
 void TextureResource::loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
 {
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	const Vector<Gleam::IRenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
+	const Vector<Gleam::RenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
 
 	if (!devices || devices->empty()) {
 		LogErrorResource("Failed to load texture '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag);

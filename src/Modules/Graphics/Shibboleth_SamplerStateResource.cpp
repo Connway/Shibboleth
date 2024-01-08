@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
@@ -49,7 +50,7 @@ SHIB_REFLECTION_CLASS_DEFINE(SamplerStateResource)
 
 void SamplerStateResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
 	const Vector<Gleam::RenderDevice*>* devices = nullptr;
 	U8String device_tag;
 

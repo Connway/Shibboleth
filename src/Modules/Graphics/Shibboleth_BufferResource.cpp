@@ -75,13 +75,13 @@ bool BufferResource::createBuffer(Gleam::RenderDevice& device, const Gleam::IBuf
 	return true;
 }
 
-const Gleam::IBuffer* BufferResource::getBuffer(const Gleam::RenderDevice& rd) const
+const Gleam::Buffer* BufferResource::getBuffer(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _buffers.find(&rd);
 	return (it != _buffers.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IBuffer* BufferResource::getBuffer(const Gleam::RenderDevice& rd)
+Gleam::Buffer* BufferResource::getBuffer(const Gleam::RenderDevice& rd)
 {
 	const auto it = _buffers.find(&rd);
 	return (it != _buffers.end()) ? it->second.get() : nullptr;

@@ -110,20 +110,21 @@ public:
 	};
 
 
-	RenderManager(void);
 	~RenderManager(void);
 
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
-	void manageRenderDevice(Gleam::IRenderDevice* device);
+	void manageRenderDevice(Gleam::RenderDevice& device);
 
-	const Gleam::IRenderDevice* getDevice(const Gleam::RenderOutput& output) const;
-	const Gleam::IRenderDevice& getDevice(int32_t index) const;
+	// Are these functions necessary?
+	const Gleam::RenderDevice* getDevice(const Gleam::RenderOutput& output) const;
+	const Gleam::RenderDevice& getDevice(int32_t index) const;
 
-	Gleam::IRenderDevice* getDevice(const Gleam::RenderOutput& output);
-	Gleam::IRenderDevice& getDevice(int32_t index);
+	Gleam::RenderDevice* getDevice(const Gleam::RenderOutput& output);
+	Gleam::RenderDevice& getDevice(int32_t index);
 
+	const Vector<RenderDevicePtr>& getDevices(void) const;
 	int32_t getNumDevices(void) const;
 
 
@@ -172,8 +173,8 @@ public:
 	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
 	//bool hasGBuffer(ECSEntityID id) const;
 
-	//const RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const;
-	//RenderCommandList& getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index);
+	const RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const;
+	RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index);
 
 	void presentAllOutputs(void);
 
@@ -186,6 +187,7 @@ private:
 		GBuffer g_buffer;
 		RenderOutputPtr output;
 		WindowPtr window;
+		Gleam::RenderDevice* render_device = nullptr;
 	};
 
 	struct RenderCommandData final
@@ -216,7 +218,10 @@ private:
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
 
-	Gleam::RenderDevice* createRenderDeviceFromAdapter(int32_t adapter_id);
+	Gleam::RenderDevice* createRenderDevice(const char* adapter_name);
+	Gleam::RenderDevice* createRenderDevice(int32_t adapter_id);
+	Gleam::RenderDevice* finishRenderDevice(Gleam::RenderDevice* rd);
+
 	void handleWindowClosed(Gleam::Window& window);
 };
 

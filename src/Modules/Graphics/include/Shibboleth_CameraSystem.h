@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_MaterialResource.h"
 #include <Reflection/Shibboleth_Reflection.h>
-#include <Shibboleth_ECSQuery.h>
+//#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ICommandList.h>
@@ -42,57 +42,57 @@ NS_SHIBBOLETH
 class RenderManagerBase;
 class ECSManager;
 
-class CameraPreRenderSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
-	RenderManagerBase* _render_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(CameraPreRenderSystem);
-};
-
-class CameraPostRenderSystem final : public ISystem
-{
-public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
-
-private:
-	// $TODO: Camera render order dependencies.
-
-	struct CameraRenderData final
-	{
-		UniquePtr<Gleam::IProgramBuffers> program_buffers;
-		UniquePtr<Gleam::IRasterState> raster_state;
-		UniquePtr<Gleam::ISamplerState> sampler;
-		const Gleam::IRenderDevice* device = nullptr;
-		Gleam::ICommandList* cmd_list = nullptr;
-		CameraPostRenderSystem* system = nullptr;
-	};
-
-	Vector<CameraRenderData> _camera_job_data_cache{ ProxyAllocator("Graphics") };
-	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
-	Gaff::Counter _job_counter = 0;
-	int32_t _cache_index = 0;
-
-	MaterialResourcePtr _camera_material;
-	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
-
-	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
-	RenderManagerBase* _render_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
-
-	static void RenderCameras(uintptr_t id_int, void* data);
-
-	SHIB_REFLECTION_CLASS_DECLARE(CameraPostRenderSystem);
-};
+//class CameraPreRenderSystem final : public ISystem
+//{
+//public:
+//	bool init(void) override;
+//	void update(uintptr_t thread_id_int) override;
+//
+//private:
+//	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
+//	RenderManagerBase* _render_mgr = nullptr;
+//	ECSManager* _ecs_mgr = nullptr;
+//
+//	SHIB_REFLECTION_CLASS_DECLARE(CameraPreRenderSystem);
+//};
+//
+//class CameraPostRenderSystem final : public ISystem
+//{
+//public:
+//	bool init(void) override;
+//	void update(uintptr_t thread_id_int) override;
+//
+//private:
+//	// $TODO: Camera render order dependencies.
+//
+//	struct CameraRenderData final
+//	{
+//		UniquePtr<Gleam::IProgramBuffers> program_buffers;
+//		UniquePtr<Gleam::IRasterState> raster_state;
+//		UniquePtr<Gleam::ISamplerState> sampler;
+//		const Gleam::IRenderDevice* device = nullptr;
+//		Gleam::ICommandList* cmd_list = nullptr;
+//		CameraPostRenderSystem* system = nullptr;
+//	};
+//
+//	Vector<CameraRenderData> _camera_job_data_cache{ ProxyAllocator("Graphics") };
+//	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
+//	Gaff::Counter _job_counter = 0;
+//	int32_t _cache_index = 0;
+//
+//	MaterialResourcePtr _camera_material;
+//	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
+//
+//	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
+//	RenderManagerBase* _render_mgr = nullptr;
+//	ECSManager* _ecs_mgr = nullptr;
+//
+//	static void RenderCameras(uintptr_t id_int, void* data);
+//
+//	SHIB_REFLECTION_CLASS_DECLARE(CameraPostRenderSystem);
+//};
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraPreRenderSystem)
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraPostRenderSystem)
+//SHIB_REFLECTION_DECLARE(Shibboleth::CameraPreRenderSystem)
+//SHIB_REFLECTION_DECLARE(Shibboleth::CameraPostRenderSystem)

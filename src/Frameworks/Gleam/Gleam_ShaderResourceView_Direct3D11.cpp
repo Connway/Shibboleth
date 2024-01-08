@@ -52,30 +52,30 @@ ShaderResourceView::~ShaderResourceView(void)
 	destroy();
 }
 
-bool ShaderResourceView::init(IRenderDevice& rd, const ITexture* texture)
+bool ShaderResourceView::init(IRenderDevice& rd, const ITexture& texture)
 {
+	GAFF_ASSERT(texture.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	GAFF_ASSERT(texture);
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
-	res_desc.Format = Texture::GetTypedD3DFormat(texture->getFormat());
-	res_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture->getType())];
+	res_desc.Format = Texture::GetTypedD3DFormat(texture.getFormat());
+	res_desc.ViewDimension = g_dimension_map[static_cast<int32_t>(texture.getType())];
 
 	// The union will set this for all texture types.
-	res_desc.Texture2D.MipLevels = texture->getMipLevels();
+	res_desc.Texture2D.MipLevels = texture.getMipLevels();
 	res_desc.Texture2D.MostDetailedMip = 0;
 
-	ID3D11Resource* resource = nullptr;
+	const ID3D11Resource* resource = nullptr;
 
-	if (texture->getType() == ITexture::Type::CUBE) {
+	if (texture.getType() == ITexture::Type::CUBE) {
 		_view_type = Type::TEXTURE_CUBE;
 
-	} else if (texture->getArraySize() > 1) {
+	} else if (texture.getArraySize() > 1) {
 		// 2D array desc is the same structure as the 1D array desc.
-		res_desc.Texture2DArray.ArraySize = static_cast<UINT>(texture->getArraySize());
+		res_desc.Texture2DArray.ArraySize = static_cast<UINT>(texture.getArraySize());
 		res_desc.Texture2DArray.FirstArraySlice = 0;
 		res_desc.Texture2DArray.PlaneSlice = 0;
 		_view_type = Type::TEXTURE_ARRAY;
@@ -85,26 +85,26 @@ bool ShaderResourceView::init(IRenderDevice& rd, const ITexture* texture)
 		_view_type = Type::TEXTURE;
 	}
 
-	if (texture->getType() == ITexture::Type::THREE_D) {
-		resource = static_cast<const Texture*>(texture)->getTexture3D();
-	} else if (texture->getType() == ITexture::Type::TWO_D || texture->getType() == ITexture::Type::TWO_D_ARRAY || texture->getType() == ITexture::Type::DEPTH || texture->getType() == ITexture::Type::DEPTH_STENCIL) {
-		resource = static_cast<const Texture*>(texture)->getTexture2D();
-	} else 	if (texture->getType() == ITexture::Type::ONE_D || texture->getType() == ITexture::Type::ONE_D_ARRAY) {
-		resource = static_cast<const Texture*>(texture)->getTexture1D();
+	if (texture.getType() == ITexture::Type::THREE_D) {
+		resource = static_cast<const Texture&>(texture).getTexture3D();
+	} else if (texture.getType() == ITexture::Type::TWO_D || texture.getType() == ITexture::Type::TWO_D_ARRAY || texture.getType() == ITexture::Type::DEPTH || texture.getType() == ITexture::Type::DEPTH_STENCIL) {
+		resource = static_cast<const Texture&>(texture).getTexture2D();
+	} else 	if (texture.getType() == ITexture::Type::ONE_D || texture.getType() == ITexture::Type::ONE_D_ARRAY) {
+		resource = static_cast<const Texture&>(texture).getTexture1D();
 	}
 
 	GAFF_ASSERT(resource);
 
-	const HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
-	_texture = texture;
+	const HRESULT result = device->CreateShaderResourceView1(const_cast<ID3D11Resource*>(resource), &res_desc, &_resource_view);
+	_texture = &texture;
 
 	return SUCCEEDED(result);
 }
 
-bool ShaderResourceView::init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset)
+bool ShaderResourceView::init(IRenderDevice& rd, const IBuffer& buffer, int32_t offset)
 {
+	GAFF_ASSERT(buffer.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
-	GAFF_ASSERT(buffer);
 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
@@ -115,13 +115,13 @@ bool ShaderResourceView::init(IRenderDevice& rd, const IBuffer* buffer, int32_t 
 	res_desc.Format = DXGI_FORMAT_UNKNOWN;
 	res_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
-	res_desc.BufferEx.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStride());
+	res_desc.BufferEx.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer.getSize()) / buffer.getStride());
 	res_desc.BufferEx.FirstElement = static_cast<UINT>(offset); // $TODO: This seems to not be working is set to anything other than 0. Possibly related to format being unknown?
 	res_desc.BufferEx.Flags = 0;
 
-	ID3D11Resource* const resource = static_cast<const Buffer*>(buffer)->getBuffer();
+	ID3D11Resource* const resource = static_cast<const Buffer&>(buffer).getBuffer();
 	const HRESULT result = device->CreateShaderResourceView1(resource, &res_desc, &_resource_view);
-	_buffer = buffer;
+	_buffer = &buffer;
 
 	return SUCCEEDED(result);
 }

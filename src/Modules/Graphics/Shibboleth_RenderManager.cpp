@@ -32,6 +32,9 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Image.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_RenderOutput.h>
+#include <Gleam_SamplerState.h>
 #include <Gleam_Window.h>
 #include <Gaff_Function.h>
 #include <Gaff_Assert.h>
@@ -62,23 +65,19 @@ namespace
 
 NS_SHIBBOLETH
 
-RenderManager::RenderManager(void)
-{
-}
-
 RenderManager::~RenderManager(void)
 {
-	//for (int32_t i = 0; static_cast<size_t>(i) < std::size(_cached_render_commands); ++i) {
-	//	for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i]); ++j) {
-	//		for (auto& pair : _cached_render_commands[i][j]) {
-	//			for (auto& cmd : pair.second.command_list) {
-	//				if (!cmd.owns_command) {
-	//					cmd.cmd_list.release();
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
+	for (int32_t i = 0; static_cast<size_t>(i) < std::size(_cached_render_commands); ++i) {
+		for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i].command_lists); ++j) {
+			for (auto& pair : _cached_render_commands[i].command_lists[j]) {
+				for (auto& cmd : pair.second.command_list) {
+					if (!cmd.owns_command) {
+						cmd.cmd_list.release();
+					}
+				}
+			}
+		}
+	}
 
 	Gleam::Window::GlobalShutdown();
 }
@@ -196,7 +195,7 @@ bool RenderManager::init(void)
 
 		// Always attempt to create a render device at adapter ID 0.
 		} else {
-			Gleam::IRenderDevice* const rd = createRenderDeviceFromAdapter(0);
+			Gleam::RenderDevice* const rd = createRenderDeviceFromAdapter(0);
 
 			if (!rd) {
 				LogErrorGraphics("Failed to create render device with adapter id '0'.");
@@ -298,7 +297,7 @@ bool RenderManager::init(void)
 					}
 				}
 
-				Gleam::IRenderDevice* rd = nullptr;
+				Gleam::RenderDevice* rd = nullptr;
 
 				// Check if we've already created this device.
 				for (const auto& render_device : _render_devices) {
@@ -484,7 +483,7 @@ bool RenderManager::init(void)
 					}
 				}
 
-				Gleam::IRenderOutput* const output = createRenderOutput();
+				Gleam::RenderOutput* const output = SHIB_ALLOCT(Gleam::RenderOutput, g_allocator);
 
 				if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
 					LogErrorGraphics("Failed to create render output for window '%s'.", key);
@@ -493,9 +492,10 @@ bool RenderManager::init(void)
 					return false;
 				}
 
-				auto& entry = _window_outputs[window_hash];
-				entry.first.reset(window);
-				entry.second.reset(output);
+				auto& entry = _outputs[window_hash];
+				entry.render_device = rd;
+				entry.window.reset(window);
+				entry.output.reset(output);
 
 				return false;
 			});
@@ -538,35 +538,50 @@ bool RenderManager::init(void)
 //	Gleam::Window::PollEvents();
 //}
 
-void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device)
+void RenderManager::manageRenderDevice(Gleam::RenderDevice& device)
 {
 	const auto it = Gaff::Find(_render_devices, device, [](const auto& lhs, const auto* rhs) -> bool { return lhs.get() == rhs; });
 	GAFF_ASSERT(it == _render_devices.end());
 	_render_devices.emplace_back(device);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(RenderOrder::Count); ++i) {
-		for (int32_t j = 0; j < 2; ++j) {
+		for (int32_t j = 0; j < CacheIndexCount; ++j) {
 			// Create entry for newly managed device.
-			_cached_render_commands[i][j][device];
+			_cached_render_commands[i].command_lists[j].insert(&device);
 		}
 	}
 }
 
-const Gleam::IRenderDevice* RenderManager::getDevice(const Gleam::IRenderOutput& output) const
+const Gleam::RenderDevice* RenderManager::getDevice(const Gleam::RenderOutput& output) const
 {
 	return const_cast<RenderManager*>(this)->getDevice(output);
 }
 
-const Gleam::IRenderDevice& RenderManager::getDevice(int32_t index) const
+const Gleam::RenderDevice& RenderManager::getDevice(int32_t index) const
 {
 	return const_cast<RenderManager*>(this)->getDevice(index);
 }
 
-Gleam::IRenderDevice* RenderManager::getDevice(const Gleam::IRenderOutput& output)
+Gleam::RenderDevice* RenderManager::getDevice(const Gleam::RenderOutput& output)
 {
-	// $TODO: Implement.
-	GAFF_REF(output);
+	for (const auto& element : _outputs) {
+		if (element.second.output.get() == &output) {
+			return element.second.render_device;
+		}
+	}
+
 	return nullptr;
+}
+
+Gleam::RenderDevice& RenderManager::getDevice(int32_t index)
+{
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_render_devices.size())));
+	return *_render_devices[index];
+}
+
+const Vector<RenderManager::RenderDevicePtr>& RenderManager::getDevices(void) const
+{
+	return _render_devices;
 }
 
 int32_t RenderManager::getNumDevices(void) const
@@ -574,32 +589,26 @@ int32_t RenderManager::getNumDevices(void) const
 	return static_cast<int32_t>(_render_devices.size());
 }
 
-Gleam::IRenderDevice& RenderManager::getDevice(int32_t index)
-{
-	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_render_devices.size())));
-	return *_render_devices[index];
-}
-
-const Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
+const Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
 {
 	return const_cast<RenderManager*>(this)->getOutput(tag);
 }
 
-const Gleam::IRenderOutput* RenderManager::getOutput(int32_t index) const
+const Gleam::RenderOutput* RenderManager::getOutput(int32_t index) const
 {
 	return const_cast<RenderManager*>(this)->getOutput(index);
 }
 
-Gleam::IRenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
+Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
 {
-	const auto it = _window_outputs.find(tag);
-	return (it == _window_outputs.end()) ? nullptr : it->second.second.get();
+	const auto it = _outputs.find(tag);
+	return (it == _outputs.end()) ? nullptr : it->second.output.get();
 }
 
-Gleam::IRenderOutput* RenderManager::getOutput(int32_t index)
+Gleam::RenderOutput* RenderManager::getOutput(int32_t index)
 {
-	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_window_outputs.size())));
-	return _window_outputs.data()[index].second.second.get();
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_outputs.size())));
+	return _outputs.data()[index].second.output.get();
 }
 
 const Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
@@ -614,27 +623,26 @@ const Gleam::Window* RenderManager::getWindow(int32_t index) const
 
 Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag)
 {
-	const auto it = _window_outputs.find(tag);
-	return (it == _window_outputs.end()) ? nullptr : it->second.first.get();
+	const auto it = _outputs.find(tag);
+	return (it == _outputs.end()) ? nullptr : it->second.window.get();
 }
 
 Gleam::Window* RenderManager::getWindow(int32_t index)
 {
-	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_window_outputs.size())));
-	return _window_outputs.data()[index].second.first.get();
+	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_outputs.size())));
+	return _outputs.data()[index].second.window.get();
 }
 
 void RenderManager::removeWindow(const Gleam::Window& window)
 {
-	for (auto it = _window_outputs.begin(); it != _window_outputs.end(); ++it) {
-		if (it->second.first.get() == &window) {
+	for (auto it = _outputs.begin(); it != _outputs.end(); ++it) {
+		if (it->second.window.get() == &window) {
 			// Move over to pending for now. If we delete in the middle of a close window callback,
 			// this would delete the window before the other callbacks have had a chance to be called.
 			auto& pending = _pending_window_removes.emplace_back();
-			pending.first.reset(it->second.first.release());
-			pending.second.reset(it->second.second.release());
+			pending = std::move(it->second);
 
-			_window_outputs.erase(it);
+			_outputs.erase(it);
 			break;
 		}
 	}
@@ -642,7 +650,15 @@ void RenderManager::removeWindow(const Gleam::Window& window)
 
 int32_t RenderManager::getNumWindows(void) const
 {
-	return static_cast<int32_t>(_window_outputs.size());
+	int32_t count = 0;
+
+	for (const auto& entry : _outputs) {
+		if (entry.second.window) {
+			++count;
+		}
+	}
+
+	return count;
 }
 
 const ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void) const
@@ -810,35 +826,39 @@ bool RenderManager::hasGBuffer(ECSEntityID id) const
 	return _g_buffers.find(id) != _g_buffers.end();
 }
 
-const RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index) const
+const RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const
 {
 	return const_cast<RenderManager*>(this)->getRenderCommands(device, order, cache_index);
 }
 
-RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::IRenderDevice& device, RenderOrder order, int32_t cache_index)
+RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index)
 {
+	GAFF_ASSERT(order != RenderOrder::Count);
 	GAFF_ASSERT(Gaff::ValidIndex(cache_index, 1));
-	const auto it = _cached_render_commands[static_cast<int32_t>(order)][cache_index].find(&device);
-	GAFF_ASSERT(it != _cached_render_commands[static_cast<int32_t>(order)][cache_index].end());
+
+	const auto it = _cached_render_commands[static_cast<int32_t>(order)].command_lists[cache_index].find(&device);
+	GAFF_ASSERT(it != _cached_render_commands[static_cast<int32_t>(order)].command_lists[cache_index].end());
 
 	return it->second;
 }
 
 void RenderManager::presentAllOutputs(void)
 {
-	for (auto& pair : _window_outputs) {
-		pair.second.second->present();
+	for (auto& entry: _outputs) {
+		if (entry.second.output) {
+			entry.second.output->present();
+		}
 	}
 
 	_pending_window_removes.clear();
 }
 
-const Gleam::IRenderDevice* RenderManager::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id) const
+const Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const
 {
 	return const_cast<RenderManager*>(this)->getDeferredDevice(device, thread_id);
 }
 
-Gleam::IRenderDevice* RenderManager::getDeferredDevice(const Gleam::IRenderDevice& device, EA::Thread::ThreadId thread_id)
+Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id)
 {
 	const auto device_it = _deferred_contexts.find(&device);
 	GAFF_ASSERT(device_it != _deferred_contexts.end());
@@ -849,20 +869,42 @@ Gleam::IRenderDevice* RenderManager::getDeferredDevice(const Gleam::IRenderDevic
 	return thread_it->second.get();
 }
 
-Gleam::IRenderDevice* RenderManager::createRenderDeviceFromAdapter(int32_t adapter_id)
+Gleam::RenderDevice* RenderManager::createRenderDevice(const char* adapter_name)
 {
-	Gleam::IRenderDevice* const rd = createRenderDevice();
+	Gleam::RenderDevice* const rd = SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
+
+	if (!rd->init(adapter_name)) {
+		LogErrorGraphics("Failed to create render device.");
+		SHIB_FREET(rd, GetAllocator());
+
+		return nullptr;
+	}
+
+	manageRenderDevice(*rd);
+	return finishRenderDevice(rd);
+}
+
+Gleam::RenderDevice* RenderManager::createRenderDevice(int32_t adapter_id)
+{
+	Gleam::RenderDevice* const rd = SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
 
 	if (!rd->init(adapter_id)) {
 		LogErrorGraphics("Failed to create render device.");
 		SHIB_FREET(rd, GetAllocator());
+
 		return nullptr;
 	}
 
-	manageRenderDevice(rd);
+	manageRenderDevice(*rd);
+	return finishRenderDevice(rd);
+}
 
-	Gleam::ISamplerState* const sampler_state = createSamplerState();
-	const Gleam::ISamplerState::Settings sampler_settings = {
+Gleam::RenderDevice* RenderManager::finishRenderDevice(Gleam::RenderDevice* rd)
+{
+	Gleam::SamplerState* const sampler_state = SHIB_ALLOCT(Gleam::SamplerState, g_allocator);
+
+	const Gleam::ISamplerState::Settings sampler_settings =
+	{
 		Gleam::ISamplerState::Filter::NearestNearestNearest,
 		Gleam::ISamplerState::Wrap::Clamp,
 		Gleam::ISamplerState::Wrap::Clamp,

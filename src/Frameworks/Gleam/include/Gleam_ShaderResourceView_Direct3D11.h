@@ -34,8 +34,8 @@ public:
 	ShaderResourceView(void);
 	~ShaderResourceView(void);
 
-	bool init(IRenderDevice& rd, const ITexture* texture);
-	bool init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset = 0);
+	bool init(IRenderDevice& rd, const ITexture& texture);
+	bool init(IRenderDevice& rd, const IBuffer& buffer, int32_t offset = 0);
 	void destroy(void);
 
 	RendererType getRendererType(void) const;

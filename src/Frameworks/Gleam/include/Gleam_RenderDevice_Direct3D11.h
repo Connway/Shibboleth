@@ -31,6 +31,9 @@ NS_GLEAM
 class RenderDevice final : public IRenderDevice
 {
 public:
+	static AdapterList GetDisplayModes(void);
+
+	bool init(const char* adapter_name) override;
 	bool init(int32_t adapter_id) override;
 
 	IRenderDevice* getOwningDevice(void) const override;
