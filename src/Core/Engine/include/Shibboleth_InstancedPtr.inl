@@ -31,7 +31,7 @@ VarInstancedPtr<T, VarType>::VarInstancedPtr(Shibboleth::InstancedPtr<VarType> T
 }
 
 template <class T, class VarType>
-const Reflection<typename VarInstancedPtr::ReflectionType>& VarInstancedPtr<T, VarType>::GetReflection(void)
+const Reflection<typename VarInstancedPtr<T, VarType>::ReflectionType>& VarInstancedPtr<T, VarType>::GetReflection(void)
 {
 	return Reflection<ReflectionType>::GetInstance();
 }

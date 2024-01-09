@@ -30,5 +30,6 @@ CoreProject "Engine"
 
 	filter {}
 
+	GleamRendererDefines()
 	StaticHeaderGen()
 	SetupConfigMap()

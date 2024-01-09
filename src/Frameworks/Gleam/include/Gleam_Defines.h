@@ -65,6 +65,9 @@ static constexpr RendererType GetRendererType(void)
 	return RendererType::Vulkan;
 #elif defined(GLEAM_USE_METAL)
 	return RendererType::Metal;
+#else
+	#error "Unknown renderer type"
+	return RendererType::Count;
 #endif
 }
 

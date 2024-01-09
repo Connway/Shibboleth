@@ -108,15 +108,3 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 		Shibboleth::SaveHashStringView< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView64<>)
-
-// $TODO: Set custom serialize functions to load the string and hash it instead of loading a saved hash.
-// Allows potential malicious data written by user.
-SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
-	//.serialize()
-	.var("hash", &Gaff::Hash32::getHash, &Gaff::Hash32::setHash)
-SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
-	//.serialize()
-	.var("hash", &Gaff::Hash64::getHash, &Gaff::Hash64::setHash)
-SHIB_REFLECTION_DEFINE_END(Gaff::Hash64)
