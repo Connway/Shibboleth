@@ -132,14 +132,14 @@ void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const v
 template <class T, class HashStorage>
 bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
-	Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+	Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(&object);
 	return load(reader, &hash);
 }
 
 template <class T, class HashStorage>
 void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(object);
+	const Gaff::Hash<HashStorage>& hash = *IVar<T>::template get< Gaff::Hash<HashStorage> >(&object);
 	save(writer, &hash);
 }
 

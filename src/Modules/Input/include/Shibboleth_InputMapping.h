@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_InputActivator.h"
-#include <Shibboleth_SerializeablePtr.h>
+#include <Shibboleth_InstancedPtr.h>
 
 NS_SHIBBOLETH
 
@@ -36,7 +36,7 @@ struct InputMapping final
 		Count
 	};
 
-	Vector< SerializeablePtr<InputActivator> > activators{ ProxyAllocator("Input") };
+	Vector< InstancedPtr<InputActivator> > activators{ ProxyAllocator("Input") };
 	HashString32<> alias_name;
 	Gaff::Flags<Flag> flags{ Flag::ConsumeInput };
 };

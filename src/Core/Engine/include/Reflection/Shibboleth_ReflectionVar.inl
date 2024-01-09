@@ -261,7 +261,7 @@ void Var<T, VarType>::setData(void* object, const void* data)
 			return;
 		}
 
-		VarType* const var = IVar<T>::template get<VarType>(&object);
+		VarType* const var = IVar<T>::template get<VarType>(object);
 		*var = *reinterpret_cast<const VarType*>(data);
 
 	} else {
@@ -283,7 +283,7 @@ void Var<T, VarType>::setDataMove(void* object, void* data)
 		return;
 	}
 
-	VarType* const var = IVar<T>::template get<VarType>(&object);
+	VarType* const var = IVar<T>::template get<VarType>(object);
 	*var = std::move(*reinterpret_cast<VarType*>(data));
 }
 

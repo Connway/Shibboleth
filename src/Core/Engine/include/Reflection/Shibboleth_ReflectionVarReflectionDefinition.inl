@@ -58,7 +58,7 @@ void VarReflectionDefinition<T>::setData(void* object, const void* data)
 		return;
 	}
 
-	const IReflectionDefinition** var = IVar<T>::template get<const IReflectionDefinition*>(&object);
+	const IReflectionDefinition** var = IVar<T>::template get<const IReflectionDefinition*>(object);
 	*var = *reinterpret_cast<const IReflectionDefinition* const *>(data);
 }
 

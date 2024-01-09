@@ -26,84 +26,58 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-// This class is not intended to be used directly.
-class ISerializeablePtr
-{
-public:
-	static bool Load(const ISerializeReader& reader, ISerializeablePtr& out);
-	static void Save(ISerializeWriter& writer, const ISerializeablePtr& value);
-
-protected:
-	ISerializeablePtr(UniquePtr<Refl::IReflectionObject>&& ptr, const ProxyAllocator& allocator);
-	ISerializeablePtr(Refl::IReflectionObject* ptr, const ProxyAllocator& allocator);
-	ISerializeablePtr(const ProxyAllocator& allocator);
-	ISerializeablePtr(void) = default;
-
-	UniquePtr<Refl::IReflectionObject> _ptr;
-	ProxyAllocator _allocator;
-};
-
 template <class T>
-class SerializeablePtr final : public ISerializeablePtr
+class InstancedPtr final
 {
 	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
-	static_assert(std::is_base_of_v<Refl::IReflectionObject, T>, "Must inherit from IReflectionObject.");
 
 public:
-	template <class U>
-	explicit SerializeablePtr(U* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
-		ISerializeablePtr(ptr, allocator)
-	{
-		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
-	}
-
-	explicit SerializeablePtr(T* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
-		ISerializeablePtr(ptr, allocator)
+	explicit InstancedPtr(const ProxyAllocator& allocator = ProxyAllocator()):
+		_allocator(allocator)
 	{
 	}
 
-	template <class U>
-	explicit SerializeablePtr(SerializeablePtr<U>&& serializeable_ptr, const ProxyAllocator& allocator = ProxyAllocator()):
-		ISerializeablePtr(std::move(serializeable_ptr._ptr), allocator)
+	const Refl::IReflectionDefinition* getReflectionDefinition(void) const
 	{
-		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+		return _ref_def;
 	}
-
-	explicit SerializeablePtr(SerializeablePtr<T>&& serializeable_ptr, const ProxyAllocator& allocator = ProxyAllocator()):
-		ISerializeablePtr(std::move(serializeable_ptr._ptr), allocator)
-	{
-	}
-
-	SerializeablePtr(void) = default;
 
 	T* get(void) const
 	{
-		return static_cast<T*>(_ptr.get());
+		return _ptr.get();
 	}
 
 	template <class U>
 	void reset(U* ptr)
 	{
+		static_assert(Refl::Reflection<U>::HasReflection, "Assigning class does not have reflection.");
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+
+		_ref_def = &Refl::Reflection<U>::GetReflectionDefinition();
 		_ptr.reset(ptr);
 	}
 
 	void reset(T* ptr)
 	{
+		_ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 		_ptr.reset(ptr);
 	}
 
 	template <class U>
-	SerializeablePtr& operator=(SerializeablePtr<U>&& rhs)
+	InstancedPtr& operator=(InstancedPtr<U>&& rhs)
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 
+		_allocator = rhs._allocator;
+		_ref_def = rhs._ref_def;
 		_ptr = std::move(rhs._ptr);
 		return *this;
 	}
 
-	SerializeablePtr& operator=(SerializeablePtr<T>&& rhs)
+	InstancedPtr& operator=(InstancedPtr<T>&& rhs)
 	{
+		_allocator = rhs._allocator;
+		_ref_def = rhs._ref_def;
 		_ptr = std::move(rhs._ptr);
 		return *this;
 	}
@@ -113,7 +87,7 @@ public:
 		return get() <=> rhs;
 	}
 
-	std::strong_ordering operator<=>(const SerializeablePtr<T>& rhs) const
+	std::strong_ordering operator<=>(const InstancedPtr<T>& rhs) const
 	{
 		return (*this) <=> rhs.get();
 	}
@@ -128,7 +102,7 @@ public:
 	}
 
 	template <class U>
-	std::strong_ordering operator<=>(const SerializeablePtr<U>& rhs) const
+	std::strong_ordering operator<=>(const InstancedPtr<U>& rhs) const
 	{
 		static_assert(std::is_base_of_v<T, U>, "Comparing unrelated pointer types.");
 
@@ -170,9 +144,59 @@ public:
 	{
 		return _ptr != nullptr;
 	}
+
+private:
+	ProxyAllocator _allocator;
+	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
+	UniquePtr<T> _ptr;
 };
 
 NS_END
 
-SHIB_REFLECTION_TEMPLATE_VAR_NO_COPY_WITH_BASE(Shibboleth::SerializeablePtr, Shibboleth::ISerializeablePtr)
-SHIB_REFLECTION_DECLARE(Shibboleth::ISerializeablePtr)
+
+
+NS_REFLECTION
+
+template <class T, class VarType>
+class VarInstancedPtr;
+
+
+
+template <class T, class VarType>
+struct VarTypeHelper< T, Shibboleth::InstancedPtr<VarType> > final
+{
+	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using VariableType = VarType;
+	using Type = VarInstancedPtr<T, VarType>;
+	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
+};
+
+
+
+template <class T, class VarType>
+class VarInstancedPtr final : public IVar<T>
+{
+public:
+	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+
+	VarInstancedPtr(Shibboleth::InstancedPtr<VarType> T::* ptr);
+	VarInstancedPtr(void) = default;
+
+	static const Reflection<ReflectionType>& GetReflection(void);
+	const IReflection& getReflection(void) const override;
+
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
+
+	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+};
+
+NS_END
+
+#include "Shibboleth_InstancedPtr.inl"
