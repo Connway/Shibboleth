@@ -22,38 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Utilities.h"
-#include "Shibboleth_IApp.h"
+#include "Gaff_Defines.h"
 
-NS_SHIBBOLETH
+#define GAFF_DEFER_LINE_CAT(name, line) name##line
+#define GAFF_DEFER(defer_func, ...) const auto GAFF_DEFER_LINE_CAT(DEFER, __LINE__)(Gaff::CreateDefer(defer_func))
 
-template <class T>
-static T& GetManagerTFast(void)
-{
-	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-	return *static_cast<T*>(GetApp().getManager(Refl::Reflection<T>::GetNameHash()));
-}
+NS_GAFF
 
 template <class T>
-static T& GetManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
+class Defer final
 {
-	IManager* const manager = GetApp().getManager(manager_name);
-	GAFF_ASSERT(manager);
+public:
+	explicit Defer(T&& defer_func): _defer_func(defer_func) {}
+	Defer(Defer<T>&& scoped_exit) = default;
 
-	return *Refl::ReflectionCast<T>(manager, interface_name);
-}
+	// This should only be executed once when using the GAFF_DEFER macro.
+	~Defer(void) { _defer_func(); }
+
+private:
+	T _defer_func;
+};
 
 template <class T>
-static T& GetManagerT(void)
+Defer<T> CreateDefer(T&& defer_func)
 {
-	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-
-	IManager* const manager = GetApp().getManager(Refl::Reflection<T>::GetNameHash());
-	GAFF_ASSERT(manager);
-
-	return *Refl::ReflectionCast<T>(manager);
+	return Defer<T>(std::move(defer_func));
 }
 
 NS_END
-
-#define GETMANAGERT(base_mgr_class, mgr_class) GetManagerT<base_mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(#base_mgr_class))

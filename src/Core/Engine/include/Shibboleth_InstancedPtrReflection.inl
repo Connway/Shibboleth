@@ -22,22 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-NS_REFLECTION
+NS_SHIBBOLETH
 
 template <class T, class VarType>
-VarInstancedPtr<T, VarType>::VarInstancedPtr(Shibboleth::InstancedPtr<VarType> T::* ptr):
-	IVar<T>(ptr)
+VarInstancedPtr<T, VarType>::VarInstancedPtr(InstancedPtr<VarType> T::* ptr):
+	Refl::IVar<T>(ptr)
 {
 }
 
 template <class T, class VarType>
-const Reflection<typename VarInstancedPtr<T, VarType>::ReflectionType>& VarInstancedPtr<T, VarType>::GetReflection(void)
+const Refl::Reflection<typename VarInstancedPtr<T, VarType>::ReflectionType>& VarInstancedPtr<T, VarType>::GetReflection(void)
 {
-	return Reflection<ReflectionType>::GetInstance();
+	return Refl::Reflection<ReflectionType>::GetInstance();
 }
 
 template <class T, class VarType>
-const IReflection& VarInstancedPtr<T, VarType>::getReflection(void) const
+const Refl::IReflection& VarInstancedPtr<T, VarType>::getReflection(void) const
 {
 	return GetReflection();
 }
@@ -51,19 +51,19 @@ const void* VarInstancedPtr<T, VarType>::getData(const void* object) const
 template <class T, class VarType>
 void* VarInstancedPtr<T, VarType>::getData(void* object)
 {
-	return IVar<T>::template get< Shibboleth::InstancedPtr<VarType> >(object);
+	return Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
 }
 
 template <class T, class VarType>
 void VarInstancedPtr<T, VarType>::setData(void* object, const void* data)
 {
-	if constexpr (VarTypeHelper<T, VarType>::k_can_copy) {
-		if (IReflectionVar::isReadOnly()) {
+	if constexpr (Refl::VarTypeHelper<T, VarType>::k_can_copy) {
+		if (Refl::IReflectionVar::isReadOnly()) {
 			// $TODO: Log error.
 			return;
 		}
 
-		Shibboleth::InstancedPtr<VarType>* var = IVar<T>::template get< Shibboleth::InstancedPtr<VarType> >(object);
+		InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
 		*var = *reinterpret_cast<const VarType*>(data);
 
 	} else {
@@ -72,7 +72,7 @@ void VarInstancedPtr<T, VarType>::setData(void* object, const void* data)
 		GAFF_ASSERT_MSG(
 			false,
 			"VarInstancedPtr<T, VarType>::setData() was called with ReflectionType of '%s'.",
-			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
+			reinterpret_cast<const char*>(Refl::Reflection<ReflectionType>::GetName())
 		);
 	}
 }
@@ -80,17 +80,17 @@ void VarInstancedPtr<T, VarType>::setData(void* object, const void* data)
 template <class T, class VarType>
 void VarInstancedPtr<T, VarType>::setDataMove(void* object, void* data)
 {
-	if (IReflectionVar::isReadOnly()) {
+	if (Refl::IReflectionVar::isReadOnly()) {
 		// $TODO: Log error.
 		return;
 	}
 
-	Shibboleth::InstancedPtr<VarType>* var = IVar<T>::template get< Shibboleth::InstancedPtr<VarType> >(object);
+	InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
 	*var = std::move(*reinterpret_cast<VarType*>(data));
 }
 
 template <class T, class VarType>
-bool VarInstancedPtr<T, VarType>::load(const Shibboleth::ISerializeReader& reader, void* object)
+bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
 	const char8_t* class_name = nullptr;
 
@@ -109,7 +109,7 @@ bool VarInstancedPtr<T, VarType>::load(const Shibboleth::ISerializeReader& reade
 		const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(class_name));
 
 		if (ref_def) {
-			Shibboleth::InstancedPtr<VarType>* const var = reinterpret_cast<Shibboleth::InstancedPtr<VarType>*>(object);
+			InstancedPtr<VarType>* const var = reinterpret_cast<InstancedPtr<VarType>*>(object);
 			var->reset(ref_def->CREATET(VarType, out._allocator));
 
 			const auto guard = reader.enterElementGuard(u8"data");
@@ -131,9 +131,11 @@ bool VarInstancedPtr<T, VarType>::load(const Shibboleth::ISerializeReader& reade
 }
 
 template <class T, class VarType>
-void VarInstancedPtr<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+void VarInstancedPtr<T, VarType>::save(ISerializeWriter& writer, const void* object)
 {
-	const Shibboleth::InstancedPtr<VarType>* const var = reinterpret_cast<const Shibboleth::InstancedPtr<VarType>*>(object);
+	const InstancedPtr<VarType>* const var = reinterpret_cast<const InstancedPtr<VarType>*>(object);
+
+	writer.startObject(2);
 
 	if (*var) {
 		const Refl::IReflectionDefinition* const ref_def = var->getReflectionDefinition();
@@ -147,19 +149,21 @@ void VarInstancedPtr<T, VarType>::save(Shibboleth::ISerializeWriter& writer, con
 		writer.writeNull(u8"class");
 		writer.writeNull(u8"data");
 	}
+
+	writer.endObject();
 }
 
 template <class T, class VarType>
-bool VarInstancedPtr<T, VarType>::load(const Shibboleth::ISerializeReader& reader, T& object)
+bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, T& object)
 {
-	Shibboleth::InstancedPtr<VarType>* const var = IVar<T>::template get< Shibboleth::InstancedPtr<VarType> >(&object);
+	InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(&object);
 	return load(reader, var);
 }
 
 template <class T, class VarType>
-void VarInstancedPtr<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const T& object)
+void VarInstancedPtr<T, VarType>::save(ISerializeWriter& writer, const T& object)
 {
-	const Shibboleth::InstancedPtr<VarType>* const var = IVar<T>::template get< Shibboleth::InstancedPtr<VarType> >(&object);
+	const InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(&object);
 	save(writer, var);
 }
 

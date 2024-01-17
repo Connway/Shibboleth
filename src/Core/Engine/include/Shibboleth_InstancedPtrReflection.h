@@ -27,33 +27,52 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <class T>
-static T& GetManagerTFast(void)
-{
-	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-	return *static_cast<T*>(GetApp().getManager(Refl::Reflection<T>::GetNameHash()));
-}
-
-template <class T>
-static T& GetManagerT(Gaff::Hash64 manager_name, Gaff::Hash64 interface_name)
-{
-	IManager* const manager = GetApp().getManager(manager_name);
-	GAFF_ASSERT(manager);
-
-	return *Refl::ReflectionCast<T>(manager, interface_name);
-}
-
-template <class T>
-static T& GetManagerT(void)
-{
-	static_assert(std::is_base_of<IManager, T>::value, "Type T does not derive from IManager.");
-
-	IManager* const manager = GetApp().getManager(Refl::Reflection<T>::GetNameHash());
-	GAFF_ASSERT(manager);
-
-	return *Refl::ReflectionCast<T>(manager);
-}
+template <class T, class VarType>
+class VarInstancedPtr;
 
 NS_END
 
-#define GETMANAGERT(base_mgr_class, mgr_class) GetManagerT<base_mgr_class>(Gaff::FNV1aHash64Const(#mgr_class), Gaff::FNV1aHash64Const(#base_mgr_class))
+
+NS_REFLECTION
+
+template <class T, class VarType>
+struct VarTypeHelper< T, Shibboleth::InstancedPtr<T, VarType> > final
+{
+	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using VariableType = VarType;
+	using Type = Shibboleth::VarInstancedPtr<T, VarType>;
+	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
+};
+
+NS_END
+
+
+NS_SHIBBOLETH
+
+template <class T, class VarType>
+class VarInstancedPtr final : public Refl::IVar<T>
+{
+public:
+	using ReflectionType = Refl::VarTypeHelper<T, VarType>::ReflectionType;
+
+	VarInstancedPtr(InstancedPtr<VarType> T::* ptr);
+	VarInstancedPtr(void) = default;
+
+	static const Refl::Reflection<ReflectionType>& GetReflection(void);
+	const Refl::IReflection& getReflection(void) const override;
+
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	bool load(const ISerializeReader& reader, void* object) override;
+	void save(ISerializeWriter& writer, const void* object) override;
+
+	bool load(const ISerializeReader& reader, T& object) override;
+	void save(ISerializeWriter& writer, const T& object) override;
+};
+
+NS_END
+
+#include "Shibboleth_InstancedPtrReflection.inl"

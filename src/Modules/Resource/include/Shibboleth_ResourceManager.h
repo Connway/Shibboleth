@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ResourcePtr.h"
 #include "Shibboleth_IResource.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
@@ -50,97 +49,71 @@ public:
 
 
 	template <class T, class U = T>
-	ResourcePtr<U> requestResourceT(HashStringView64<> name, bool delay_load = false)
+	U* requestResourceT(HashStringView64<> name, bool delay_load = false)
 	{
-		IResourcePtr old_ptr = requestResource(name, Refl::Reflection<T>::GetReflectionDefinition(), delay_load);
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
 
-		if (old_ptr._resource) {
-			IResource* const resource = old_ptr._resource.get();
-			U* const typed_resource = Refl::ReflectionCast<U>(*resource);
-
-			return ResourcePtr<U>(typed_resource);
-
-		} else {
-			return ResourcePtr<U>();
-		}
+		IResource* const resource = requestResource(name, Refl::Reflection<T>::GetReflectionDefinition(), delay_load);
+		return (resource) ? Refl::ReflectionCast<U>(resource) : nullptr;
 	}
 
 	template <class T>
-	ResourcePtr<T> requestResourceT(const char8_t* name, bool delay_load = false)
+	T* requestResourceT(const char8_t* name, bool delay_load = false)
 	{
 		return requestResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
 	}
 
-	IResourcePtr requestResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def, bool delay_load = false)
+	IResource* requestResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def, bool delay_load = false)
 	{
 		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def, delay_load);
 	}
 
 	template <class T, class U = T>
-	ResourcePtr<U> createResourceT(HashStringView64<> name)
+	U* createResourceT(HashStringView64<> name)
 	{
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
 		static_assert(T::Creatable, "Resource is not a creatable type.");
-		IResourcePtr old_ptr = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
 
-		if (old_ptr._resource) {
-			IResource* const resource = old_ptr._resource.get();
-			U* typed_resource = nullptr;
-
-			if constexpr (std::is_same_v<T, U>) {
-				typed_resource = static_cast<U*>(old_ptr._resource.get());
-			} else {
-				typed_resource = Refl::ReflectionCast<U>(*resource);
-			}
-
-			return ResourcePtr<U>(typed_resource);
-
-		} else {
-			return ResourcePtr<U>();
-		}
+		IResource* const resource = createResource(name, Refl::Reflection<T>::GetReflectionDefinition());
+		return (resource) ? Refl::ReflectionCast<U>(resource) : nullptr;
 	}
 
 	template <class T, class U = T>
-	ResourcePtr<T> createResourceT(const char8_t* name)
+	T* createResourceT(const char8_t* name)
 	{
 		return createResourceT<T, U>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
-	IResourcePtr createResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
+	IResource* createResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
 	{
 		return createResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
 	template <class T>
-	ResourcePtr<T> getResourceT(HashStringView64<> name)
+	T* getResourceT(HashStringView64<> name)
 	{
-		IResourcePtr old_ptr = getResource(name, Refl::Reflection<T>::GetReflectionDefinition());
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
 
-		if (old_ptr._resource) {
-			IResource* const resource = old_ptr._resource.get();
-			T* const typed_resource = Refl::ReflectionCast<T>(*resource);
-
-			return ResourcePtr<T>(typed_resource);
-
-		} else {
-			return ResourcePtr<T>();
-		}
+		IResource* const resource = getResource(name, Refl::Reflection<T>::GetReflectionDefinition());
+		return (resource) ? Refl::ReflectionCast<T>(resource) : nullptr;
 	}
 
 	template <class T>
-	ResourcePtr<T> getResourceT(const char8_t* name)
+	T* getResourceT(const char8_t* name)
 	{
 		return getResourceT<T>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
-	IResourcePtr getResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
+	IResource* getResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
 	{
 		return getResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
-	IResourcePtr createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load);
-	IResourcePtr requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
+	IResource* createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
+	IResource* requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load);
+	IResource* requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
+	IResource* getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
 	void waitForResource(const IResource& resource) const;
 
 	const IFile* loadFileAndWait(const char8_t* file_path, uintptr_t thread_id_int);
@@ -186,7 +159,7 @@ private:
 	VectorMap<Gaff::Hash64, CallbackData> _callbacks{ ProxyAllocator("Resource") };
 	EA::Thread::Mutex _callback_lock;
 
-	ProxyAllocator _allocator = ProxyAllocator("Resource");
+	ProxyAllocator _allocator{ "Resource" };
 
 	void checkAndRemoveResources(void);
 	void checkCallbacks(void);

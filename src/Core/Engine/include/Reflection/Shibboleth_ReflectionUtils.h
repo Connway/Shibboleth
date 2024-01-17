@@ -25,17 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionDefines.h"
 #include <Gaff_Hash.h>
 
-#define REFLECTION_CAST_PTR_NAME(T, name, object) \
-	reinterpret_cast<T*>( \
-		const_cast<Refl::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
-			Gaff::FNV1aHash64Const(name), (object)->getBasePointer() \
-		) \
-	)
-
-#define REFLECTION_CAST_NAME(T, name, object) *REFLECTION_CAST_PTR_NAME(T, name, &object)
-#define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
-#define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
-
 #define GET_CLASS_ATTRS(T, Allocator) getClassAttrs<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
@@ -44,33 +33,65 @@ THE SOFTWARE.
 #define GET_ENUM_ATTR(T) getEnumAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_VALUE_ATTR(T, value_name) getEnumValueAttr<T>(value_name, Gaff::FNV1aHash64Const(#T))
 
-#define INTERFACE_CAST(interface_type, object) Refl::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
+#define REFLECTION_CAST(interface_type, object) Refl::ReflectionCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
 
 
 NS_REFLECTION
 
 template <class Derived, class Base>
-const Derived* ReflectionCast(const Base& object)
+Derived* ReflectionCast(Base* object)
 {
-	return object.getReflectionDefinition().template getInterface<Derived>(object.getBasePointer());
+	return object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer());
 }
 
 template <class Derived, class Base>
-Derived* ReflectionCast(Base& object)
+const Derived* ReflectionCast(const Base* object)
 {
-	return object.getReflectionDefinition().template getInterface<Derived>(object.getBasePointer());
+	return ReflectionCast<Derived, Base>(const_cast<Base*>(object));
 }
 
 template <class Derived, class Base>
-const Derived* InterfaceCast(const Base& object, Gaff::Hash64 interface_name)
+Derived& ReflectionCast(Base& object)
 {
-	return reinterpret_cast<Derived*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+	Derived* const derived = ReflectionCast<Derived, Base>(&object);
+	GAFF_ASSERT(derived);
+
+	return *derived;
 }
 
 template <class Derived, class Base>
-Derived* InterfaceCast(Base& object, Gaff::Hash64 interface_name)
+const Derived& ReflectionCast(const Base& object)
 {
-	return reinterpret_cast<Derived*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+	return ReflectionCast<Derived, Base>(const_cast<Base&>(object));
+}
+
+
+// Manual interface name hash passed in.
+template <class Derived, class Base>
+Derived* ReflectionCast(Base* object, Gaff::Hash64 interface_name)
+{
+	return reinterpret_cast<Derived*>(object->getReflectionDefinition().getInterface(interface_name, object->getBasePointer()));
+}
+
+template <class Derived, class Base>
+const Derived* ReflectionCast(const Base* object, Gaff::Hash64 interface_name)
+{
+	return ReflectionCast<Derived, Base>(const_cast<Base*>(object), interface_name);
+}
+
+template <class Derived, class Base>
+Derived& ReflectionCast(Base& object, Gaff::Hash64 interface_name)
+{
+	Derived* const derived = ReflectionCast<Derived, Base>(&object, interface_name);
+	GAFF_ASSERT(derived);
+
+	return *derived;
+}
+
+template <class Derived, class Base>
+const Derived& ReflectionCast(const Base& object, Gaff::Hash64 interface_name)
+{
+	return ReflectionCast<Derived, Base>(const_cast<Base&>(object), interface_name);
 }
 
 NS_END

@@ -23,8 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Reflection/Shibboleth_Reflection.h"
-#include "Shibboleth_Utilities.h"
-#include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
 
@@ -155,50 +153,4 @@ private:
 
 NS_END
 
-
-
-NS_REFLECTION
-
-template <class T, class VarType>
-class VarInstancedPtr;
-
-
-
-template <class T, class VarType>
-struct VarTypeHelper< T, Shibboleth::InstancedPtr<VarType> > final
-{
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
-	using VariableType = VarType;
-	using Type = VarInstancedPtr<T, VarType>;
-	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
-};
-
-
-
-template <class T, class VarType>
-class VarInstancedPtr final : public IVar<T>
-{
-public:
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
-
-	VarInstancedPtr(Shibboleth::InstancedPtr<VarType> T::* ptr);
-	VarInstancedPtr(void) = default;
-
-	static const Reflection<ReflectionType>& GetReflection(void);
-	const IReflection& getReflection(void) const override;
-
-	const void* getData(const void* object) const override;
-	void* getData(void* object) override;
-	void setData(void* object, const void* data) override;
-	void setDataMove(void* object, void* data) override;
-
-	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
-	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
-
-	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
-	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-};
-
-NS_END
-
-#include "Shibboleth_InstancedPtr.inl"
+#include "Shibboleth_InstancedPtrReflection.h"

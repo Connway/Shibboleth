@@ -16,7 +16,8 @@ local supported_project_actions =
 {
 	"vs2022",
 	"gmake2",
-	"xcode4"
+	"ninja",
+	"ecc"
 }
 
 for _,v in pairs(unsupported_project_actions) do

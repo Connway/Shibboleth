@@ -94,8 +94,6 @@ void VarHash<T, HashStorage>::setDataMove(void* object, void* data)
 template <class T, class HashStorage>
 bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
-	const Shibboleth::ScopeGuard guard = reader.enterElementGuard("string");
-
 	if (!Reflection<Shibboleth::U8String>::GetInstance().load(reader, _string)) {
 		return false;
 	}
@@ -112,21 +110,9 @@ bool VarHash<T, HashStorage>::load(const Shibboleth::ISerializeReader& reader, v
 }
 
 template <class T, class HashStorage>
-void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const void* object)
+void VarHash<T, HashStorage>::save(Shibboleth::ISerializeWriter& writer, const void* /*object*/)
 {
-	const Gaff::Hash<HashStorage>& hash = *reinterpret_cast<const Gaff::Hash<HashStorage>*>(object);
-
-	writer.startObject(3);
-
-	writer.writeUInt64(u8"version", Reflection<Gaff::Hash32>::GetInstance().getVersion().getHash());
-
-	writer.writeKey(u8"string");
 	Reflection<Shibboleth::U8String>::GetInstance().save(writer, _string);
-
-	writer.writeKey(u8"hash");
-	Reflection<HashStorage>::GetInstance().save(writer, hash.getHash());
-
-	writer.endObject();
 }
 
 template <class T, class HashStorage>

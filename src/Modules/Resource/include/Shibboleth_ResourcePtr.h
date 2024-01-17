@@ -29,99 +29,66 @@ NS_SHIBBOLETH
 
 class IResource;
 
-// This class is not intended to be used directly.
-class IResourcePtr
-{
-public:
-	static bool Load(const ISerializeReader& reader, IResourcePtr& out);
-	static void Save(ISerializeWriter& writer, const IResourcePtr& value);
-
-	IResourcePtr(const IResourcePtr& res_ptr) = default;
-	IResourcePtr(void) = default;
-
-protected:
-	IResourcePtr(const IResourcePtr& res_ptr, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr(IResourcePtr&& res_ptr, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr(IResource* resource, const Refl::IReflectionDefinition& ref_def);
-	IResourcePtr(const Refl::IReflectionDefinition& ref_def);
-
-	const Refl::IReflectionDefinition* _ref_def = nullptr;
-	Gaff::RefPtr<IResource> _resource;
-
-private:
-	IResourcePtr& operator=(const IResourcePtr& rhs);
-
-	friend class ResourceManager;
-};
-
 template <class T>
-class ResourcePtr final : IResourcePtr
+class ResourcePtr final
 {
 public:
 	static_assert(std::is_base_of_v<IResource, T>, "ResourcePtr requires type to derive from IResource.");
 	static_assert(Refl::Reflection<T>::HasReflection, "ResourcePtr requires type to have reflection.");
 
 	explicit ResourcePtr(T* resource):
-		IResourcePtr(resource, Refl::Reflection<T>::GetReflectionDefinition())
+		_resource(resource)
 	{
 	}
 
-	ResourcePtr(void):
-		IResourcePtr(Refl::Reflection<T>::GetReflectionDefinition())
+	template <class U>
+	explicit ResourcePtr(const ResourcePtr<U>& res_ptr):
+		_resource(res_ptr._resource)
 	{
+		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
 
-	ResourcePtr(const ResourcePtr<T>& res_ptr):
-		IResourcePtr(res_ptr, Refl::Reflection<T>::GetReflectionDefinition())
+	template <class U>
+	explicit ResourcePtr(ResourcePtr<U>&& res_ptr):
+		_resource(std::move(res_ptr._resource))
 	{
+		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
 
-	ResourcePtr(ResourcePtr<T>&& res_ptr):
-		IResourcePtr(std::move(res_ptr), Refl::Reflection<T>::GetReflectionDefinition())
+	ResourcePtr(const ResourcePtr<T>& res_ptr) = default;
+	ResourcePtr(ResourcePtr<T>&& res_ptr) = default;
+	ResourcePtr(void) = default;
+
+	std::strong_ordering operator<=>(const T* rhs) const
 	{
+		return get() <=> rhs;
 	}
 
-	bool operator==(const ResourcePtr<T>& rhs) const
+	std::strong_ordering operator<=>(const ResourcePtr<T>& rhs) const
 	{
-		return _resource == rhs._resource;
+		return (*this) <=> rhs.get();
 	}
 
-	bool operator==(const T* rhs) const
+	template <class U>
+	std::strong_ordering operator<=>(const U* rhs) const
 	{
-		return _resource == rhs;
+		static_assert(std::is_base_of_v<T, U>, "Comparing unrelated pointer types.");
+
+		const T* const rhs_ptr = rhs;
+		return (*this) <=> rhs_ptr;
 	}
 
-	bool operator!=(const ResourcePtr<T>& rhs) const
+	template <class U>
+	std::strong_ordering operator<=>(const ResourcePtr<U>& rhs) const
 	{
-		return _resource != rhs._resource;
+		static_assert(std::is_base_of_v<T, U>, "Comparing unrelated pointer types.");
+
+		const T* const rhs_ptr = rhs.get();
+		return (*this) <=> rhs_ptr;
 	}
 
-	bool operator!=(const T* rhs) const
-	{
-		return _resource != rhs;
-	}
-
-	bool operator<(const T* rhs) const
-	{
-		return _resource < rhs;
-	}
-
-	bool operator>(const T* rhs) const
-	{
-		return _resource > rhs;
-	}
-
-	ResourcePtr<T>& operator=(const ResourcePtr<T>& rhs)
-	{
-		_resource = rhs._resource;
-		return *this;
-	}
-
-	ResourcePtr<T>& operator=(ResourcePtr<T>&& rhs)
-	{
-		_resource = std::move(rhs._resource);
-		return *this;
-	}
+	ResourcePtr<T>& operator=(const ResourcePtr<T>& rhs) = default;
+	ResourcePtr<T>& operator=(ResourcePtr<T>&& rhs) = default;
 
 	ResourcePtr<T>& operator=(T* rhs)
 	{
@@ -163,9 +130,13 @@ public:
 	{
 		return _resource.get();
 	}
+
+private:
+	Gaff::RefPtr<T> _resource;
+
+	friend class ResourceManager;
 };
 
 NS_END
 
-SHIB_REFLECTION_TEMPLATE_VAR_WITH_BASE(Shibboleth::ResourcePtr, Shibboleth::IResourcePtr)
-SHIB_REFLECTION_DECLARE(Shibboleth::IResourcePtr)
+#include "Shibboleth_ResourcePtrReflection.h"
