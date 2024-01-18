@@ -25,33 +25,33 @@ THE SOFTWARE.
 #include "Shibboleth_MaterialResource.h"
 #include "Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_TextureResource.h"
-#include <Shibboleth_ECSComponentBase.h>
-#include <Shibboleth_ECSEntity.h>
+//#include <Shibboleth_ECSComponentBase.h>
+//#include <Shibboleth_ECSEntity.h>
 
 NS_SHIBBOLETH
 
-class ECSManager;
-
-class Material final : public ECSComponentBaseShared<Material>
-{
-public:
-	MaterialResourcePtr material;
-
-	using TextureMap = VectorMap<U8String, TextureResourcePtr>;
-	TextureMap textures_vertex;
-	TextureMap textures_pixel;
-	TextureMap textures_domain;
-	TextureMap textures_geometry;
-	TextureMap textures_hull;
-
-	using SamplerMap = VectorMap<U8String, SamplerStateResourcePtr>;
-	SamplerMap samplers_vertex;
-	SamplerMap samplers_pixel;
-	SamplerMap samplers_domain;
-	SamplerMap samplers_geometry;
-	SamplerMap samplers_hull;
-};
+//class ECSManager;
+//
+//class Material final : public ECSComponentBaseShared<Material>
+//{
+//public:
+//	MaterialResourcePtr material;
+//
+//	using TextureMap = VectorMap<U8String, TextureResourcePtr>;
+//	TextureMap textures_vertex;
+//	TextureMap textures_pixel;
+//	TextureMap textures_domain;
+//	TextureMap textures_geometry;
+//	TextureMap textures_hull;
+//
+//	using SamplerMap = VectorMap<U8String, SamplerStateResourcePtr>;
+//	SamplerMap samplers_vertex;
+//	SamplerMap samplers_pixel;
+//	SamplerMap samplers_domain;
+//	SamplerMap samplers_geometry;
+//	SamplerMap samplers_hull;
+//};
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::Material)
+//SHIB_REFLECTION_DECLARE(Shibboleth::Material)

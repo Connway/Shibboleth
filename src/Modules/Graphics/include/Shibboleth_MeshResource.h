@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_BufferResource.h"
+#include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Gleam_IMesh.h>
 #include <Gleam_AABB.h>
@@ -49,7 +50,8 @@ public:
 private:
 	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
 	ResourcePtr<BufferResource> _vertex_data;
-	ResourcePtr<BufferResource≥ _indice_data;
+	ResourcePtr<BufferResource> _indice_data;
+
 	Gleam::AABB _aabb;
 
 	void loadMesh(IFile* file);

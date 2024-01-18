@@ -24,6 +24,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtr.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtrReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtrReflection.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -33,7 +39,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourcePtr.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

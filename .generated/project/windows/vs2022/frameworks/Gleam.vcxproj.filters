@@ -144,6 +144,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBuffers.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBuffers_Direct3D11.h">
       <Filter>include</Filter>
     </ClInclude>

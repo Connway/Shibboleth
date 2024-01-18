@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ProgramBuffersResource.h"
-#include "Shibboleth_IRenderManager.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_AppUtils.h>
@@ -33,37 +33,43 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ProgramBuffersResource)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ProgramBuffersResource)
 
+
+namespace
+{
+	static Shibboleth::ProxyAllocator g_allocator("Graphics");
+}
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ProgramBuffersResource)
 
-Vector<Gleam::IRenderDevice*> ProgramBuffersResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> ProgramBuffersResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
 
 	for (const auto& pair : _program_buffers) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool ProgramBuffersResource::createProgramBuffers(const Vector<Gleam::IRenderDevice*>& devices)
+bool ProgramBuffersResource::createProgramBuffers(const Vector<Gleam::RenderDevice*>& devices)
 {
 	bool success = true;
 
-	for (Gleam::IRenderDevice* device : devices) {
+	for (Gleam::RenderDevice* device : devices) {
 		success = success && createProgramBuffers(*device);
 	}
 
 	return success;
 }
 
-bool ProgramBuffersResource::createProgramBuffers(Gleam::IRenderDevice& device)
+bool ProgramBuffersResource::createProgramBuffers(Gleam::RenderDevice& device)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IProgramBuffers* const program_buffers = render_mgr.createProgramBuffers();
+	const RenderManager& render_mgr = GetManagerTFast<Shibboleth::RenderManager>();
+	Gleam::ProgramBuffers* const program_buffers = SHIB_ALLOCT(Gleam::ProgramBuffers, g_allocator);
 
 	if (!program_buffers) {
 		LogErrorResource("Failed to create program buffers '%s'.", getFilePath().getBuffer());
@@ -75,13 +81,13 @@ bool ProgramBuffersResource::createProgramBuffers(Gleam::IRenderDevice& device)
 	return true;
 }
 
-const Gleam::IProgramBuffers* ProgramBuffersResource::getProgramBuffer(const Gleam::IRenderDevice& rd) const
+const Gleam::ProgramBuffers* ProgramBuffersResource::getProgramBuffer(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _program_buffers.find(&rd);
 	return (it != _program_buffers.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IProgramBuffers* ProgramBuffersResource::getProgramBuffer(const Gleam::IRenderDevice& rd)
+Gleam::ProgramBuffers* ProgramBuffersResource::getProgramBuffer(const Gleam::RenderDevice& rd)
 {
 	const auto it = _program_buffers.find(&rd);
 	return (it != _program_buffers.end()) ? it->second.get() : nullptr;

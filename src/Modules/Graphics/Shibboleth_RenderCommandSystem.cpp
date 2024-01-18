@@ -21,10 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderCommandSystem.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_RenderManager.h"
 #include "Shibboleth_CameraComponent.h"
-#include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_ECSManager.h>
 #include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 
@@ -43,86 +41,88 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSubmissionSystem)
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandSystem)
 
-static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
-
-static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
+namespace
 {
-	const Material::TextureMap* texture_map = nullptr;
+	static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
 
-	switch (shader_type) {
-		case Gleam::IShader::Type::Vertex:
-			texture_map = &material.textures_vertex;
-			break;
+	static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
+	{
+		const Material::TextureMap* texture_map = nullptr;
 
-		case Gleam::IShader::Type::Pixel:
-			texture_map = &material.textures_pixel;
-			break;
+		switch (shader_type) {
+			case Gleam::IShader::Type::Vertex:
+				texture_map = &material.textures_vertex;
+				break;
 
-		case Gleam::IShader::Type::Domain:
-			texture_map = &material.textures_domain;
-			break;
+			case Gleam::IShader::Type::Pixel:
+				texture_map = &material.textures_pixel;
+				break;
 
-		case Gleam::IShader::Type::Geometry:
-			texture_map = &material.textures_geometry;
-			break;
+			case Gleam::IShader::Type::Domain:
+				texture_map = &material.textures_domain;
+				break;
 
-		case Gleam::IShader::Type::Hull:
-			texture_map = &material.textures_hull;
-			break;
+			case Gleam::IShader::Type::Geometry:
+				texture_map = &material.textures_geometry;
+				break;
 
-		default:
-			break;
+			case Gleam::IShader::Type::Hull:
+				texture_map = &material.textures_hull;
+				break;
+
+			default:
+				break;
+		}
+
+		return texture_map;
 	}
 
-	return texture_map;
-}
+	static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::Type shader_type)
+	{
+		const Material::SamplerMap* sampler_map = nullptr;
 
-static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::Type shader_type)
-{
-	const Material::SamplerMap* sampler_map = nullptr;
+		switch (shader_type) {
+			case Gleam::IShader::Type::Vertex:
+				sampler_map = &material.samplers_vertex;
+				break;
 
-	switch (shader_type) {
-		case Gleam::IShader::Type::Vertex:
-			sampler_map = &material.samplers_vertex;
-			break;
+			case Gleam::IShader::Type::Pixel:
+				sampler_map = &material.samplers_pixel;
+				break;
 
-		case Gleam::IShader::Type::Pixel:
-			sampler_map = &material.samplers_pixel;
-			break;
+			case Gleam::IShader::Type::Domain:
+				sampler_map = &material.samplers_domain;
+				break;
 
-		case Gleam::IShader::Type::Domain:
-			sampler_map = &material.samplers_domain;
-			break;
+			case Gleam::IShader::Type::Geometry:
+				sampler_map = &material.samplers_geometry;
+				break;
 
-		case Gleam::IShader::Type::Geometry:
-			sampler_map = &material.samplers_geometry;
-			break;
+			case Gleam::IShader::Type::Hull:
+				sampler_map = &material.samplers_hull;
+				break;
 
-		case Gleam::IShader::Type::Hull:
-			sampler_map = &material.samplers_hull;
-			break;
+			default:
+				break;
+		}
 
-		default:
-			break;
+		return sampler_map;
 	}
 
-	return sampler_map;
-}
-
-template <class Map>
-static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& list)
-{
-	for (const auto& pair : resource_map) {
-		list.emplace_back(pair.second.get());
+	template <class Map>
+	static void AddResourcesToWaitList(const Map& resource_map, Vector<IResource*>& list)
+	{
+		for (const auto& pair : resource_map) {
+			list.emplace_back(pair.second.get());
+		}
 	}
 }
 
 
 
-//RenderCommandSubmissionSystem
 bool RenderCommandSubmissionSystem::init(void)
 {
-	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_render_mgr = &GetManagerTFast<Shibboleth::RenderManager>();
 	return true;
 }
 
@@ -136,7 +136,7 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 		_job_data_cache.resize(num_devices);
 
 		for (int32_t i = starting_index; i < num_devices; ++i) {
-			Gleam::IRenderDevice& device = _render_mgr->getDevice(i);
+			Gleam::RenderDevice& device = _render_mgr->getDevice(i);
 
 			_submission_job_data_cache[i].device = &device;
 			_submission_job_data_cache[i].rcss = this;
@@ -163,14 +163,14 @@ void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, 
 {
 	SubmissionData& job_data = *reinterpret_cast<SubmissionData*>(data);
 
-	for (int32_t i = 0; i < static_cast<int32_t>(RenderManagerBase::RenderOrder::Count); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(RenderManager::RenderOrder::Count); ++i) {
 		auto& cmds = job_data.rcss->_render_mgr->getRenderCommands(
 			*job_data.device,
-			static_cast<RenderManagerBase::RenderOrder>(i),
+			static_cast<RenderManager::RenderOrder>(i),
 			job_data.rcss->_cache_index
 		);
 
-		for (RenderManagerBase::RenderCommand& cmd : cmds.command_list) {
+		for (RenderManager::RenderCommand& cmd : cmds.command_list) {
 			if (!cmd.cmd_list->isValid()) {
 				// $TODO: Log error.
 				continue;
@@ -216,9 +216,8 @@ bool RenderCommandSystem::init(void)
 
 	object_query.addArchetypeCallbacks(std::move(object_add_func), std::move(object_remove_func));
 
-	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_render_mgr = &GetManagerTFast<Shibboleth::RenderManager>();
 	_res_mgr = &GetManagerTFast<ResourceManager>();
-	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_job_pool = &GetApp().getJobPool();
 
 	_ecs_mgr->registerQuery(std::move(object_query));
@@ -745,7 +744,7 @@ void RenderCommandSystem::DeviceJob(uintptr_t thread_id_int, void* data)
 
 	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
 		*job_data.device,
-		RenderManagerBase::RenderOrder::InWorldWithDepthTest,
+		RenderManager::RenderOrder::InWorldWithDepthTest,
 		job_data.rcs->_cache_index
 	);
 

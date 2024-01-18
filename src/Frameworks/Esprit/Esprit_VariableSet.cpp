@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Esprit_VariableSet.h"
+#include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Math.h>
 #include <EASTL/sort.h>
 

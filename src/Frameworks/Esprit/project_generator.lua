@@ -11,3 +11,5 @@ FrameworkProject "Esprit"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm"
 	}
+
+	GleamRendererDefines()

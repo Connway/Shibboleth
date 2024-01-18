@@ -22,24 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_GraphicsResourceComponents.h"
+//#include "Shibboleth_GraphicsResourceComponents.h"
 #include "Shibboleth_ProgramBuffersResource.h"
 #include "Shibboleth_MaterialComponent.h"
 #include "Shibboleth_BufferResource.h"
-#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
 
 NS_GLEAM
-	class IRenderTarget;
-	class ICommandList;
+	class RenderTarget;
+	class CommandList;
 NS_END
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
 class ResourceManager;
-class ECSManager;
+class RenderManager;
 
 class RenderCommandSubmissionSystem final : public ISystem
 {
@@ -51,14 +49,14 @@ private:
 	struct SubmissionData final
 	{
 		RenderCommandSubmissionSystem* rcss;
-		Gleam::IRenderDevice* device;
+		Gleam::RenderDevice* device;
 	};
 
 	Vector<SubmissionData> _submission_job_data_cache{ ProxyAllocator("Graphics") };
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
 
-	RenderManagerBase* _render_mgr = nullptr;
+	RenderManager* _render_mgr = nullptr;
 	int32_t _cache_index = 0;
 
 	static void SubmitCommands(uintptr_t id_int, void* data);
@@ -81,8 +79,8 @@ private:
 	{
 		struct InstanceBufferPage final
 		{
-			VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
-			BufferResourcePtr buffer;
+			VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ShaderResourceView> > srv_map{ ProxyAllocator("Graphics") };
+			ResourcePtr<BufferResource> buffer;
 		};
 
 		struct InstanceBufferData final
@@ -93,16 +91,16 @@ private:
 		};
 
 		using BufferVarMap = VectorMap<HashString32<>, InstanceBufferData>;
-		using VarMap = VectorMap< HashString32<>, UniquePtr<Gleam::IShaderResourceView> >;
+		using VarMap = VectorMap< HashString32<>, UniquePtr<Gleam::ShaderResourceView> >;
 
 		struct PipelineData final
 		{
 			BufferVarMap buffer_vars{ ProxyAllocator("Graphics") };
-			VectorMap<const Gleam::IRenderDevice*, VarMap> srv_vars{ ProxyAllocator("Graphics") };
+			VectorMap<const Gleam::RenderDevice*, VarMap> srv_vars{ ProxyAllocator("Graphics") };
 		};
 
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
-		ProgramBuffersResourcePtr program_buffers;
+		ResourcePtr<ProgramBuffersResource> program_buffers;
 
 		InstanceBufferData* instance_data = nullptr;
 
@@ -115,9 +113,9 @@ private:
 		RenderCommandSystem* rcs;
 		int32_t index;
 
-		Gleam::IRenderDevice* device;
-		Gleam::ICommandList* cmd_list;
-		Gleam::IRenderTarget* target;
+		Gleam::RenderDevice* device;
+		Gleam::CommandList* cmd_list;
+		Gleam::RenderTarget* target;
 
 		Gleam::Mat4x4 view_projection;
 	};
@@ -139,38 +137,38 @@ private:
 
 		Vector<RenderJobData> render_job_data_cache{ ProxyAllocator("Graphics") };
 		Vector<Gaff::JobData> job_data_cache{ ProxyAllocator("Graphics") };
-		Gleam::IRenderDevice* device;
+		Gleam::RenderDevice* device;
 		Gaff::Counter job_counter = 0;
 	};
 
-	RenderManagerBase* _render_mgr = nullptr;
+	RenderManager* _render_mgr = nullptr;
 	ResourceManager* _res_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
+	//ECSManager* _ecs_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
 
 	Vector<InstanceData> _instance_data{ ProxyAllocator("Graphics") };
 
 	// Entities
-	Vector<const InstanceBufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
-	Vector<const RasterState*> _raster_states{ ProxyAllocator("Graphics") };
-	Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
-	Vector<const Model*> _models{ ProxyAllocator("Graphics") };
+	//Vector<const InstanceBufferCount*> _buffer_count{ ProxyAllocator("Graphics") };
+	//Vector<const RasterState*> _raster_states{ ProxyAllocator("Graphics") };
+	//Vector<const Material*> _materials{ ProxyAllocator("Graphics") };
+	//Vector<const Model*> _models{ ProxyAllocator("Graphics") };
 
-	Vector<ECSQueryResult> _camera_position{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _camera_rotation{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _camera_position{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _camera_rotation{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
 
-	Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
-	Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _position{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _rotation{ ProxyAllocator("Graphics") };
+	//Vector<ECSQueryResult> _scale{ ProxyAllocator("Graphics") };
 
 	Vector<DeviceJobData> _device_job_data_cache{ ProxyAllocator("Graphics") };
 	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
 	Gaff::Counter _job_counter = 0;
 
-	Vector< UniquePtr<Gleam::ICommandList> > _cmd_lists[2] = {
-		Vector< UniquePtr<Gleam::ICommandList> >{ ProxyAllocator("Graphics") },
-		Vector< UniquePtr<Gleam::ICommandList> >{ ProxyAllocator("Graphics") }
+	Vector< UniquePtr<Gleam::CommandList> > _cmd_lists[2] = {
+		Vector< UniquePtr<Gleam::CommandList> >{ ProxyAllocator("Graphics") },
+		Vector< UniquePtr<Gleam::CommandList> >{ ProxyAllocator("Graphics") }
 	};
 
 	int32_t _cmd_list_end[2] = { 0, 0 };

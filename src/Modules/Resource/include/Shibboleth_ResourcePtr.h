@@ -98,12 +98,12 @@ public:
 
 	const T* operator->(void) const
 	{
-		return _resource;
+		return get();
 	}
 
 	T* operator->(void)
 	{
-		return _resource.get();
+		return get();
 	}
 
 	const T& operator*(void) const
@@ -123,7 +123,7 @@ public:
 
 	const T* get(void) const
 	{
-		return _resource;
+		return _resource.get();
 	}
 
 	T* get(void)

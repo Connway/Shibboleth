@@ -22,36 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
-#include <Gleam_SamplerState.h>
-
-NS_GLEAM
-	class RenderDevice;
-NS_END
-
-NS_SHIBBOLETH
-
-class SamplerStateResource final : public IResource
-{
-public:
-	static constexpr bool Creatable = true;
-
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
-
-	Vector<Gleam::RenderDevice*> getDevices(void) const;
-
-	bool createSamplerState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::ISamplerState::Settings& sampler_state_settings);
-	bool createSamplerState(Gleam::RenderDevice& device, const Gleam::ISamplerState::Settings& sampler_state_settings);
-
-	const Gleam::SamplerState* getSamplerState(const Gleam::RenderDevice& rd) const;
-	Gleam::SamplerState* getSamplerState(const Gleam::RenderDevice& rd);
-
-private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
-};
-
-NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::SamplerStateResource)
+#ifdef GLEAM_USE_D3D11
+	#include "Gleam_ProgramBuffers_Direct3D11.h"
+#elif defined(GLEAM_USE_D3D12)
+	#include "Gleam_ProgramBuffers_Direct3D12.h"
+#elif defined(GLEAM_USE_VULKAN)
+	#include "Gleam_ProgramBuffers_Vulkan.h"
+#elif defined(GLEAM_USE_METAL)
+	#include "Gleam_ProgramBuffers_Metal.h"
+#else
+	#error "No renderer specified."
+#endif

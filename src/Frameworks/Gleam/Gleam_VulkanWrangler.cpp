@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_VULKAN
+
 #include "Gleam_VulkanWrangler.h"
 #include <Gaff_DynamicModule.h>
 #include <Gaff_Assert.h>
@@ -57,3 +59,5 @@ namespace Gleam
 		VULKAN_IMPORT_OS(instance);
 	}
 }
+
+#endif

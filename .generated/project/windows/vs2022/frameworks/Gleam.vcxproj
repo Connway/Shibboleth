@@ -262,6 +262,7 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_OBB.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Plane.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program.h" />
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBuffers.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProgramBuffers_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_Program_Direct3D11.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gleam\include\Gleam_ProxyAllocator.h" />

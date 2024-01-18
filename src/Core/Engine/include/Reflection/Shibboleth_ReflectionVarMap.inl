@@ -97,7 +97,7 @@ void* MapVar<T, ContainerType>::getMapEntry(void* object, const void* key)
 	const ContainerType& map = *IVar<T>::template get<ContainerType>(object);
 	const auto it = map.find(*reinterpret_cast<const KeyVarType*>(key));
 
-	return (it != map.end()) ? &(*it) : nullptr;
+	return (it != map.end()) ? const_cast<ValueVarType*>(& it->second) : nullptr;
 }
 
 template <class T, class ContainerType>
@@ -236,7 +236,7 @@ bool MapVar<T, ContainerType>::isMap(void) const
 template <class T, class ContainerType>
 int32_t MapVar<T, ContainerType>::size(const void* object) const
 {
-	return IVar<T>::template get<ContainerType>(object)->size();
+	return static_cast<int32_t>(IVar<T>::template get<ContainerType>(object)->size());
 }
 
 template <class T, class ContainerType>

@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Defer.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -151,9 +154,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefPtr.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_ScopedExit.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_SmartPtrs.h">

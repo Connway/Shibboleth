@@ -242,6 +242,8 @@ CodeGenerator64od module_header --module Resource</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceLogging.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtrReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourcePtrReflection.inl" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h" />
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +251,6 @@ CodeGenerator64od module_header --module Resource</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourcePtr.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

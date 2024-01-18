@@ -216,7 +216,10 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtr.inl">
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JSONSerializeWriter.h">
