@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(GLEAM_USE_D3D11) || defined(GLEAM_USE_D3D12)
 
 #include "Gleam_ShaderInclude.h"
 //#include "Gleam_Global.h"

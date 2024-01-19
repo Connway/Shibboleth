@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef GLEAM_USE_D3D11
+
 #include "Gleam_DepthStencilState_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -98,3 +100,5 @@ RendererType DepthStencilState::getRendererType(void) const
 }
 
 NS_END
+
+#endif

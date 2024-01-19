@@ -23,13 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #ifdef GLEAM_USE_D3D11
-	#include "Gleam_Mesh_Direct3D11.h"
+	#include "Direct3D11/Gleam_Mesh_Direct3D11.h"
 #elif defined(GLEAM_USE_D3D12)
-	#include "Gleam_Mesh_Direct3D12.h"
+	#include "Direct3D12/Gleam_Mesh_Direct3D12.h"
 #elif defined(GLEAM_USE_VULKAN)
-	#include "Gleam_Mesh_Vulkan.h"
+	#include "Vulkan/Gleam_Mesh_Vulkan.h"
 #elif defined(GLEAM_USE_METAL)
-	#include "Gleam_Mesh_Metal.h"
+	#include "Metal/Gleam_Mesh_Metal.h"
 #else
 	#error "No renderer specified."
 #endif

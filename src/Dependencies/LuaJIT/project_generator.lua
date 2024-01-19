@@ -2,6 +2,8 @@ if _OPTIONS["no-luajit"] then
 	return
 end
 
+local mac_deployment_target = "14.2"
+
 DependencyProject "LuaJIT"
 	kind "Makefile"
 
@@ -17,7 +19,6 @@ DependencyProject "LuaJIT"
 	end
 
 	filter { "system:windows", "platforms:x64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
-
 		buildcommands
 		{
 			"if EXIST %{cfg.targetdir}/lua51.lib ( {ECHO} LuaJIT already built. ) ELSE ( {CHDIR} ../../../../../src/Dependencies/LuaJIT/src & msvcbuild.bat debug static & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.lib %{cfg.targetdir}/lua51.lib & {COPYFILE} ../../../../../src/Dependencies/LuaJIT/src/lua51.pdb %{cfg.targetdir}/lua51.pdb )"
@@ -47,10 +48,10 @@ DependencyProject "LuaJIT"
 			--"{COPYFILE} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src/libluajit.so %{cfg.targetdir}/libluajit.so"
 		}
 
-		filter { "system:macosx", "platforms:x64 or arm64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
+	filter { "system:macosx", "platforms:x64 or arm64", "configurations:*Debug*", "configurations:not Optimized_Debug*" }
 		buildcommands
 		{
-			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=13.2 " .. linux_make_cmd .. " CCDEBUG=-g",
+			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=" .. mac_deployment_target .. " " .. linux_make_cmd .. " CCDEBUG=-g",
 			"{MKDIR} %{cfg.targetdir}",
 			"{COPYFILE} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src/libluajit.a %{cfg.targetdir}/libluajit.a",
 			--"{COPYFILE} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src/libluajit.dylib %{cfg.targetdir}/libluajit.dylib"
@@ -59,7 +60,7 @@ DependencyProject "LuaJIT"
 	filter { "system:macosx", "platforms:x64 or arm64", "configurations:not *Debug* or Optimized_Debug" }
 		buildcommands
 		{
-			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=13.2 " .. linux_make_cmd,
+			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=" .. mac_deployment_target .. " " .. linux_make_cmd,
 			"{MKDIR} %{cfg.targetdir}",
 			"{COPYFILE} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src/libluajit.a %{cfg.targetdir}/libluajit.a",
 			--"{COPYFILE} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src/libluajit.dylib %{cfg.targetdir}/libluajit.dylib"
@@ -81,7 +82,7 @@ DependencyProject "LuaJIT"
 	filter { "system:macosx", "platforms:x64 or arm64" }
 		cleancommands
 		{
-			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=13.2 make clean"
+			"{CHDIR} " .. GetGeneratedLocation() .. "/../src/Dependencies/LuaJIT/src && MACOSX_DEPLOYMENT_TARGET=" .. mac_deployment_target .. " make clean"
 		}
 
 	filter { "system:linux", "platforms:x64 or arm64" }
