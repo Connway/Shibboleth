@@ -32,7 +32,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class ResourceManager;
-//class IFile;
+class IFile;
 
 struct ResourceCallbackID final
 {
@@ -71,8 +71,6 @@ public:
 	bool isLoaded(void) const;
 
 protected:
-	const IFile* loadFile(const char8_t* file_path);
-
 	void succeeded(void);
 	void failed(void);
 
@@ -86,6 +84,8 @@ private:
 	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;
+
+	const IFile* loadFile(const char8_t* file_path);
 
 	friend class ResourceManager;
 

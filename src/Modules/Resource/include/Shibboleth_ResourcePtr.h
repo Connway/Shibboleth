@@ -22,19 +22,23 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Reflection/Shibboleth_Reflection.h>
-#include <Gaff_RefPtr.h>
+#include "Shibboleth_IResource.h"
 
 NS_SHIBBOLETH
-
-class IResource;
 
 template <class T>
 class ResourcePtr final
 {
 public:
+	using NoCountChange = Gaff::RefPtr<T>::NoCountChange;
+
 	static_assert(std::is_base_of_v<IResource, T>, "ResourcePtr requires type to derive from IResource.");
 	static_assert(Refl::Reflection<T>::HasReflection, "ResourcePtr requires type to have reflection.");
+
+	ResourcePtr(T* resource, const NoCountChange& no_count_change):
+		_resource(resource, no_count_change)
+	{
+	}
 
 	explicit ResourcePtr(T* resource):
 		_resource(resource)
@@ -136,6 +140,33 @@ private:
 
 	friend class ResourceManager;
 };
+
+NS_END
+
+NS_REFLECTION
+
+template <class Derived, class Base>
+Shibboleth::ResourcePtr<Derived> ReflectionCast(Shibboleth::ResourcePtr<Base>&& resource)
+{
+	if constexpr (std::is_same_v<Base, Derived>) {
+		return Shibboleth::ResourcePtr<Derived>(resource.release(), Shibboleth::ResourcePtr<Derived>::NoCountChange());
+
+	} else {
+		Derived* const derived = ReflectionCast<Derived>(resource.get());
+
+		if (derived) {
+			resource.release();
+		}
+
+		return Shibboleth::ResourcePtr<Derived>(derived, Shibboleth::ResourcePtr<Derived>::NoCountChange());
+	}
+}
+
+template <class Derived, class Base>
+Shibboleth::ResourcePtr<Derived> ReflectionCast(const Shibboleth::ResourcePtr<Base>& resource)
+{
+	return Shibboleth::ResourcePtr<Derived>(ReflectionCast<Derived>(resource.get()));
+}
 
 NS_END
 

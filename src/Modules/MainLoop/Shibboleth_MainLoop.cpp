@@ -115,7 +115,10 @@ bool MainLoop::init(void)
 				}
 
 				const Gaff::Hash64 hash =  Gaff::FNV1aHash64String(system_name);
-				const auto it = eastl::lower_bound(systems->begin(), systems->end(), hash, ReflectionManager::CompareRefHash);
+				const auto it = eastl::lower_bound(systems->begin(), systems->end(), hash, [](const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
+				{
+					return lhs->getReflectionInstance().getNameHash() < rhs;
+				});
 
 				if (it == systems->end() || hash != (*it)->getReflectionInstance().getNameHash()) {
 					if (optional) {

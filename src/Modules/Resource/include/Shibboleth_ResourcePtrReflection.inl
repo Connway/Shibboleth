@@ -85,10 +85,8 @@ bool VarResourcePtr<T, VarType>::load(const ISerializeReader& reader, void* obje
 	bool result = true;
 
 	if (resource_path && resource_path[0]) {
-		ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-
 		ResourcePtr<VarType>* const var = reinterpret_cast<ResourcePtr<VarType>*>(object);
-		*var = res_mgr.requestResourceT<VarType>(HashStringView64<>(resource_path));
+		*var = RequestResourceT<VarType>(HashStringView64<>(resource_path));
 
 		if (!*var) {
 			// $TODO: Log error.

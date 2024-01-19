@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_RuntimeVarManagerFwd.h"
 #include "Shibboleth_DynamicLoaderFwd.h"
-#include "Reflection/Shibboleth_ReflectionUtils.h"
 #include "Shibboleth_JobPoolFwd.h"
 #include "Shibboleth_String.h"
+#include <Gaff_Hash.h>
 
 NS_GAFF
 	class JSON;

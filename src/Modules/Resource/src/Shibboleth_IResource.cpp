@@ -170,6 +170,16 @@ bool IResource::isLoaded(void) const
 	return _state == ResourceState::Loaded;
 }
 
+void IResource::succeeded(void)
+{
+	_state = ResourceState::Loaded;
+}
+
+void IResource::failed(void)
+{
+	_state = ResourceState::Failed;
+}
+
 const IFile* IResource::loadFile(const char8_t* file_path)
 {
 	U8String final_path(ProxyAllocator("Resource"));
@@ -183,16 +193,6 @@ const IFile* IResource::loadFile(const char8_t* file_path)
 	}
 
 	return file;
-}
-
-void IResource::succeeded(void)
-{
-	_state = ResourceState::Loaded;
-}
-
-void IResource::failed(void)
-{
-	_state = ResourceState::Failed;
 }
 
 NS_END

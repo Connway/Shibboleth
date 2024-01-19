@@ -30,10 +30,17 @@ template <class T>
 class RefPtr final
 {
 public:
-	explicit RefPtr(T* data, bool add_ref = true):
+	struct NoCountChange final {};
+
+	explicit RefPtr(T* data, const NoCountChange&):
 		_data(data)
 	{
-		if (_data && add_ref) {
+	}
+
+	explicit RefPtr(T* data):
+		_data(data)
+	{
+		if (_data) {
 			_data->addRef();
 		}
 	}

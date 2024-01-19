@@ -161,11 +161,11 @@ bool ResourceManager::initAllModulesLoaded(void)
 	return true;
 }
 
-IResource* ResourceManager::createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
+ResourcePtr<IResource> ResourceManager::createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
 		LogErrorResource("Resource type '%s' is not creatable.", ref_def.getReflectionInstance().getName());
-		return nullptr;
+		return ResourcePtr<IResource>();
 	}
 
 	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
@@ -175,7 +175,7 @@ IResource* ResourceManager::createResource(HashStringView64<> name, const Refl::
 	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return *it_res;
+		return ResourcePtr<IResource>(*it_res);
 	}
 
 	// create instance
@@ -183,7 +183,7 @@ IResource* ResourceManager::createResource(HashStringView64<> name, const Refl::
 
 	if (!factory) {
 		LogErrorResource("Resource type '%s' does not have a default constructor.", ref_def.getReflectionInstance().getName());
-		return nullptr;
+		return ResourcePtr<IResource>();
 	}
 
 	void* const data = factory(_allocator);
@@ -194,10 +194,10 @@ IResource* ResourceManager::createResource(HashStringView64<> name, const Refl::
 
 	it_bucket->resources.insert(it_res, resource);
 
-	return resource;
+	return ResourcePtr<IResource>(resource);
 }
 
-IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load)
+ResourcePtr<IResource> ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load)
 {
 	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
 	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
@@ -206,14 +206,14 @@ IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl:
 	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return *it_res;
+		return ResourcePtr<IResource>(*it_res);
 	}
 
 	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
 
 	if (pos == GAFF_SIZE_T_FAIL) {
 		// $TODO: Log error
-		return nullptr;
+		return ResourcePtr<IResource>();
 	}
 
 	// Search for res_factory that handles this resource file.
@@ -222,7 +222,7 @@ IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl:
 
 	if (it_fact == _resource_factories.end()) {
 		// $TODO: Log error
-		return nullptr;
+		return ResourcePtr<IResource>();
 	}
 
 	// Assume all resources always inherit from IResource first.
@@ -236,15 +236,15 @@ IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl:
 		requestLoad(*resource);
 	}
 
-	return resource;
+	return ResourcePtr<IResource>(resource);
 }
 
-IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
+ResourcePtr<IResource> ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
 	return requestResource(name, ref_def, false);
 }
 
-IResource* ResourceManager::getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
+ResourcePtr<IResource> ResourceManager::getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
 	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
 	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
@@ -253,10 +253,10 @@ IResource* ResourceManager::getResource(HashStringView64<> name, const Refl::IRe
 	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
 
 	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return *it_res;
+		return ResourcePtr<IResource>(*it_res);
 	}
 
-	return nullptr;
+	return ResourcePtr<IResource>();
 }
 
 void ResourceManager::waitForResource(const IResource& resource) const

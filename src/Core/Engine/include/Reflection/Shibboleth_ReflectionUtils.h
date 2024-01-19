@@ -41,7 +41,11 @@ NS_REFLECTION
 template <class Derived, class Base>
 Derived* ReflectionCast(Base* object)
 {
-	return object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer());
+	if constexpr (std::is_same_v<Base, Derived>) {
+		return object;
+	} else {
+		return object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer());
+	}
 }
 
 template <class Derived, class Base>
@@ -70,7 +74,11 @@ const Derived& ReflectionCast(const Base& object)
 template <class Derived, class Base>
 Derived* ReflectionCast(Base* object, Gaff::Hash64 interface_name)
 {
-	return reinterpret_cast<Derived*>(object->getReflectionDefinition().getInterface(interface_name, object->getBasePointer()));
+	if constexpr (std::is_same_v<Base, Derived>) {
+		return object;
+	} else {
+		return reinterpret_cast<Derived*>(object->getReflectionDefinition().getInterface(interface_name, object->getBasePointer()));
+	}
 }
 
 template <class Derived, class Base>

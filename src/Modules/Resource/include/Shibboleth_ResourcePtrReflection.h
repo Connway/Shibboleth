@@ -22,9 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_AppUtils.h>
-
 NS_SHIBBOLETH
 
 template <class T, class VarType>
@@ -74,6 +71,15 @@ public:
 	bool load(const ISerializeReader& reader, T& object) override;
 	void save(ISerializeWriter& writer, const T& object) override;
 };
+
+ResourcePtr<IResource> RequestResource(HashStringView64<> resource_path, const Refl::IReflectionDefinition& ref_def);
+
+template <class T>
+ResourcePtr<T> RequestResourceT(HashStringView64<> resource_path)
+{
+	ResourcePtr<IResource> resource = requestResource(resource_path, Refl::Reflection<T>::GetReflectionDefinition());
+	return ReflectionCast<T>(std::move(resource));
+}
 
 NS_END
 

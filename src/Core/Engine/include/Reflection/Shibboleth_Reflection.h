@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ReflectionMacros.h"
 #include "Shibboleth_ReflectionBase.h"
+#include "Shibboleth_ReflectionUtils.h"
 #include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
