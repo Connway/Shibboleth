@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ResourcePtrReflection.h"
+#include "Shibboleth_ResourcePtr.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_AppUtils.h>
 
@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 ResourcePtr<IResource> RequestResource(HashStringView64<> resource_path, const Refl::IReflectionDefinition& ref_def)
 {
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	return res_mgr.requestResourceT<VarType>(HashStringView64<>(resource_path));
+	return res_mgr.requestResource(HashStringView64<>(resource_path), ref_def);
 }
 
 NS_END

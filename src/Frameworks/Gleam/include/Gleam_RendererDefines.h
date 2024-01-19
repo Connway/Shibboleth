@@ -22,38 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_Platform.h>
-#include <cstdint> // For (u)int*_t and size_t
-
-#define NS_GLEAM namespace Gleam {
-#ifndef NS_END
-	#define NS_END }
-#endif
+#include "Gleam_Defines.h"
 
 NS_GLEAM
 
-// $TODO: Move this to a more appropriate file.
-enum class ComparisonFunc
-{
-	Never = 1,
-	Less,
-	Equal,
-	LessEqual,
-	Greater,
-	NotEqual,
-	GreaterEqual,
-	Always
-};
-
-
-enum class RendererType
-{
-	Direct3D11 = 0,
-	Direct3D12,
-	Vulkan,
-	Metal,
-
-	Count
-};
+static constexpr RendererType k_Renderer =
+#ifdef GLEAM_USE_D3D11
+	RendererType::Direct3D11;
+#elif defined(GLEAM_USE_D3D12)
+	RendererType::Direct3D12;
+#elif defined(GLEAM_USE_VULKAN)
+	RendererType::Vulkan;
+#elif defined(GLEAM_USE_METAL)
+	RendererType::Metal;
+#else
+	RendererType::Count;
+	#error "Unknown renderer type"
+#endif
 
 NS_END

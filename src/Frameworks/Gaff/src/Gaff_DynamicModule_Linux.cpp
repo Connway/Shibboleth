@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2024 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Gaff_Platform.h"
 
-#include <Gaff_Platform.h>
-#include <cstdint> // For (u)int*_t and size_t
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 
-#define NS_GLEAM namespace Gleam {
-#ifndef NS_END
-	#define NS_END }
-#endif
+#include "Gaff_DynamicModule_Linux.h"
+#include <dlfcn.h>
 
-NS_GLEAM
+NS_GAFF
 
-// $TODO: Move this to a more appropriate file.
-enum class ComparisonFunc
+DynamicModule::DynamicModule(void):
+	_module(nullptr)
 {
-	Never = 1,
-	Less,
-	Equal,
-	LessEqual,
-	Greater,
-	NotEqual,
-	GreaterEqual,
-	Always
-};
+}
 
-
-enum class RendererType
+DynamicModule::~DynamicModule(void)
 {
-	Direct3D11 = 0,
-	Direct3D12,
-	Vulkan,
-	Metal,
+	destroy();
+}
 
-	Count
-};
+bool DynamicModule::load(const char8_t* filename)
+{
+	_module = dlopen(reinterpret_cast<const char*>(filename), RTLD_LAZY);
+	return _module != nullptr;
+}
+
+bool DynamicModule::destroy(void)
+{
+	if (_module) {
+		return dlclose(_module) == 0;
+	}
+
+	return false;
+}
+
+void* DynamicModule::getAddress(const char* name) const
+{
+	return dlsym(_module, name);
+}
+
+const char* DynamicModule::GetErrorString(void)
+{
+	return dlerror();
+}
 
 NS_END
+
+#endif
