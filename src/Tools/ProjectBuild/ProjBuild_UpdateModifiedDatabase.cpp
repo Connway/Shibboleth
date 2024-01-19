@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ int UpdateModifiedDatabase_Run(const argparse::ArgumentParser& /*program*/)
 		}
 
 		Gaff::JSON db_entry = database.getObject(dir.data());
-		
+
 		const int64_t write_time = entry.last_write_time().time_since_epoch().count();
 		db_entry.setObject(entry.path().filename().u8string().data(), Gaff::JSON::CreateInt64(write_time));
 	}

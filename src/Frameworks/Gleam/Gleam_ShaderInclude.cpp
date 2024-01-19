@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ void ShaderInclude::setWorkingDir(const char8_t* dir)
 NS_END
 
 //const char* gSystemDir = "..\\Shader";
-// 
+//
 //HRESULT __stdcall CShaderInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes) {
 //    try {
 //        std::string finalPath;
@@ -70,9 +70,9 @@ NS_END
 //        default:
 //            GAFF_ASSERT(0);
 //        }
-// 
+//
 //        std::ifstream includeFile(finalPath.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
-// 
+//
 //        if (includeFile.is_open()) {
 //            long long fileSize = includeFile.tellg();
 //            char* buf = new char[fileSize];
@@ -90,7 +90,7 @@ NS_END
 //        return E_FAIL;
 //    }
 //}
-// 
+//
 //HRESULT __stdcall CShaderInclude::Close(LPCVOID pData) {
 //    char* buf = (char*)pData;
 //    delete[] buf;

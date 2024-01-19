@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public:
 		int32_t height;
 		int32_t id;
 	};
-	
+
 	struct Display final
 	{
 		char display_name[128];

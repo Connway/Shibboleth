@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ EditorMainWindow::EditorMainWindow(QWidget *parent):
 
 	file_menu->addAction(exitAction);
 
-	
+
 	QMenu* const window_menu = menu_bar->addMenu(tr("&Window"));
 
 	const auto* const wnd_bucket = refl_mgr.getAttributeBucket<Shibboleth::EditorWindowAttribute>();

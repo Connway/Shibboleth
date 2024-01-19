@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ public:
 			const MessagePackNode value(mpack_node_map_value_at(_node, static_cast<size_t>(i)));
 
 			GAFF_ASSERT(key.isString());
-			
+
 			if (callback(key.getString(), value)) {
 				return true;
 			}
@@ -90,7 +90,7 @@ public:
 	bool isUInt16(void) const;
 	bool isInt32(void) const; // Is(U)Int32/64 for compatability with JSON interface.
 	bool isUInt32(void) const;
-	bool isInt64(void) const; 
+	bool isInt64(void) const;
 	bool isUInt64(void) const;
 	bool isFloat(void) const;
 	bool isDouble(void) const;

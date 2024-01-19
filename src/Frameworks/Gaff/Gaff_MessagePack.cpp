@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -333,7 +333,7 @@ uint64_t MessagePackNode::getUInt64(uint64_t default_value) const
 	if (isNull()) {
 		return default_value;
 	}
-	
+
 	const uint64_t ret = mpack_node_u64(_node);
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return ret;
@@ -372,15 +372,15 @@ double MessagePackNode::getNumber(double default_value) const
 	if (isInt64()) {
 		ret = static_cast<double>(mpack_node_i64(_node));
 	}
-	
+
 	if (isUInt64()) {
 		ret = static_cast<double>(mpack_node_u64(_node));
 	}
-	
+
 	if (isFloat()) {
 		ret = static_cast<double>(mpack_node_float(_node));
 	}
-	
+
 	if (isDouble()) {
 		ret = mpack_node_double(_node);
 	}
@@ -700,7 +700,7 @@ NS_END
 extern "C" void* MPackInternalAlloc(size_t size)
 {
 	return Gaff::g_alloc(size);
-}	
+}
 
 extern "C" void MPackInternalFree(void* data)
 {

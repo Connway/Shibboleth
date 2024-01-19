@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -98,7 +98,7 @@ int main(int argc, const char** argv)
 
 		const Gaff::U8String<> mpack_file = Gaff::U8String<>(argv[i]) + u8".bin";
 		Gaff::MessagePackWriter mpack;
-		
+
 		if (!mpack.init(mpack_file.data())) {
 			printf("Failed to initialize mpack file '%s'.", reinterpret_cast<const char*>(mpack_file.data()));
 			continue;

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -570,6 +570,6 @@ size_t GetNextNonWhitespaceIndex(const std::string& str, size_t start_index)
 	while (k_whitespace_substr.find(str[start_index]) != std::string_view::npos) {
 		++start_index;
 	}
-	
+
 	return start_index;
 }

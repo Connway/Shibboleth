@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,7 @@ bool Flags<Enum>::testAll(StorageType flags) const
 
 	return (_flags & temp) == temp;
 }
-	
+
 template <class Enum>
 bool Flags<Enum>::testAny(StorageType flags) const
 {

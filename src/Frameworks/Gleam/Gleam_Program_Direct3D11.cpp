@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,7 @@ namespace
 	template <Gleam::IShader::Type ShaderType>
 	static void BindShader(
 		ID3D11DeviceContext3* context,
-		ID3D11DeviceChild* shader, 
+		ID3D11DeviceChild* shader,
 		ID3D11ClassInstance* const* class_instances = NULL,
 		UINT num_class_instances = 0)
 	{

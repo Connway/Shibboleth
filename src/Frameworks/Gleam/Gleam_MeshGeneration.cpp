@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2023 by Nicholas LaCroix
+Copyright (C) 2024 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -358,7 +358,7 @@ void GenerateDebugBox(int32_t subdivisions, Vector<Vec3>& points, Vector<int16_t
 
 	indices.set_capacity(num_indices_per_face * 6);
 	points.set_capacity(num_points_per_face * 6);
-	
+
 	// Top
 	// Forward to back.
 	for (int32_t z_slice = 0; z_slice < num_points_per_axis; ++z_slice) {
