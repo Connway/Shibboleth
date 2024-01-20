@@ -23,23 +23,23 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IDebugManager.h"
-#include <Shibboleth_ECSQuery.h>
+#include <Shibboleth_ModelResource.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
-#include <Shibboleth_ModelResource.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IDepthStencilState.h>
-#include <Gleam_IRenderDevice.h>
-#include <Gleam_ISamplerState.h>
-#include <Gleam_ICommandList.h>
-#include <Gleam_IRasterState.h>
-#include <Gleam_IBlendState.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_DepthStencilState.h>
+#include <Gleam_ProgramBuffers.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_SamplerState.h>
+#include <Gleam_CommandList.h>
+#include <Gleam_RasterState.h>
+#include <Gleam_BlendState.h>
 #include <Gleam_Transform.h>
-#include <Gleam_IProgram.h>
-#include <Gleam_IShader.h>
-#include <Gleam_IBuffer.h>
-#include <Gleam_ILayout.h>
-#include <Gleam_IMesh.h>
+#include <Gleam_Program.h>
+#include <Gleam_Shader.h>
+#include <Gleam_Buffer.h>
+#include <Gleam_Layout.h>
+#include <Gleam_Mesh.h>
 #include <Gaff_Flags.h>
 #include <eathread/eathread_spinlock.h>
 
@@ -93,40 +93,48 @@ public:
 	DebugRenderHandle renderDebugBox(const Gleam::Vec3& pos, const Gleam::Vec3& size = Gleam::Vec3(1.0f), const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCapsule(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 	DebugRenderHandle renderDebugCylinder(const Gleam::Vec3& pos, float radius = 1.0f, float height = 1.0f, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
-	DebugRenderHandle renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
+	DebugRenderHandle renderDebugModel(const ResourcePtr<ModelResource>& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color = Gleam::Color::White, bool has_depth = false) override;
 
 	void registerDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) override;
 	void unregisterDebugMenuItems(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
 private:
+	enum class DepthTest
+	{
+		Disabled,
+		Enabled,
+
+		Count
+	};
+
 	struct DebugRenderInstanceData final
 	{
-		UniquePtr<Gleam::IProgramBuffers> program_buffers;
-		UniquePtr<Gleam::IBuffer> constant_buffer;
-		UniquePtr<Gleam::IBuffer> vertices[2];
-		UniquePtr<Gleam::IBuffer> indices[2];
-		UniquePtr<Gleam::IMesh> mesh[2];
+		UniquePtr<Gleam::ProgramBuffers> program_buffers;
+		UniquePtr<Gleam::Buffer> constant_buffer;
+		UniquePtr<Gleam::Buffer> vertices[2];
+		UniquePtr<Gleam::Buffer> indices[2];
+		UniquePtr<Gleam::Mesh> mesh[2];
 
 		// 0 = no depth test, 1 = depth test
-		EA::Thread::SpinLock lock[2];
+		EA::Thread::SpinLock lock[static_cast<size_t>(DepthTest::Count)];
 
 		// 0 = no depth test, 1 = depth test
-		UniquePtr<Gleam::ICommandList> cmd_list[2];
+		UniquePtr<Gleam::CommandList> cmd_list[static_cast<size_t>(DepthTest::Count)];
 
 		// 0 = no depth test, 1 = depth test
-		Vector< UniquePtr<Gleam::IShaderResourceView> > instance_data_view[2] = {
+		Vector< UniquePtr<Gleam::IShaderResourceView> > instance_data_view[static_cast<size_t>(DepthTest::Count)] = {
 			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<Gleam::IShaderResourceView> >{ ProxyAllocator("Debug") }
 		};
 
 		// 0 = no depth test, 1 = depth test
-		Vector< UniquePtr<Gleam::IBuffer> > instance_data[2] = {
+		Vector< UniquePtr<Gleam::IBuffer> > instance_data[static_cast<size_t>(DepthTest::Count)] = {
 			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<Gleam::IBuffer> >{ ProxyAllocator("Debug") }
 		};
 
 		// 0 = no depth test, 1 = depth test
-		Vector< UniquePtr<DebugRenderInstance> > render_list[2] = {
+		Vector< UniquePtr<DebugRenderInstance> > render_list[static_cast<size_t>(DepthTest::Count)] = {
 			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") },
 			Vector< UniquePtr<DebugRenderInstance> >{ ProxyAllocator("Debug") }
 		};
@@ -141,22 +149,22 @@ private:
 
 	struct DebugRenderData final
 	{
-		UniquePtr<Gleam::IProgram> line_program;
-		UniquePtr<Gleam::IProgram> program;
-		UniquePtr<Gleam::ILayout> layout;
+		UniquePtr<Gleam::Program> line_program;
+		UniquePtr<Gleam::Program> program;
+		UniquePtr<Gleam::Layout> layout;
 
-		UniquePtr<Gleam::IShader> line_vertex_shader;
-		UniquePtr<Gleam::IShader> vertex_shader;
-		UniquePtr<Gleam::IShader> pixel_shader;
+		UniquePtr<Gleam::Shader> line_vertex_shader;
+		UniquePtr<Gleam::Shader> vertex_shader;
+		UniquePtr<Gleam::Shader> pixel_shader;
 
 		// 0 = no depth test, 1 = depth test
-		UniquePtr<Gleam::IDepthStencilState> depth_stencil_state[2];
-		UniquePtr<Gleam::IRasterState> raster_state[2];
+		UniquePtr<Gleam::DepthStencilState> depth_stencil_state[static_cast<size_t>(DepthTest::Count)];
+		UniquePtr<Gleam::RasterState> raster_state[static_cast<size_t>(DepthTest::Count)];
 
 		DebugRenderJobData render_job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		Gaff::JobData job_data_cache[static_cast<size_t>(DebugRenderType::Count)];
 		DebugRenderInstanceData instance_data[static_cast<size_t>(DebugRenderType::Count)];
-		VectorMap<ModelResourcePtr, DebugRenderInstanceData> model_instance_data{ ProxyAllocator("Debug") };
+		VectorMap<ResourcePtr<ModelResource>, DebugRenderInstanceData> model_instance_data{ ProxyAllocator("Debug") };
 
 		Gaff::Counter job_counter = 0;
 	};
@@ -212,8 +220,8 @@ private:
 	//int32_t _char_buffer_cache_index = 0;
 	int32_t _render_cache_index = 0;
 
-	Gleam::IRenderOutput* _main_output = nullptr;
-	Gleam::IRenderDevice* _main_device = nullptr;
+	Gleam::RenderOutput* _main_output = nullptr;
+	Gleam::RenderDevice* _main_device = nullptr;
 	Gleam::Window* _main_window = nullptr;
 
 	//Vector<uint32_t> _character_buffer[2] = {
@@ -223,25 +231,25 @@ private:
 
 	GLFWcursor* _mouse_cursors[9] = { nullptr };
 
-	UniquePtr<Gleam::ICommandList> _cmd_list[2];
+	UniquePtr<Gleam::CommandList> _cmd_list[2];
 
 	// ImGui
-	UniquePtr<Gleam::IBuffer> _vertex_buffer;
-	UniquePtr<Gleam::IBuffer> _index_buffer;
-	UniquePtr<Gleam::IMesh> _mesh;
+	UniquePtr<Gleam::Buffer> _vertex_buffer;
+	UniquePtr<Gleam::Buffer> _index_buffer;
+	UniquePtr<Gleam::Mesh> _mesh;
 
-	UniquePtr<Gleam::IDepthStencilState> _depth_stencil_state;
-	UniquePtr<Gleam::IProgramBuffers> _program_buffers;
-	UniquePtr<Gleam::IShaderResourceView> _font_srv;
-	UniquePtr<Gleam::IBuffer> _vert_constant_buffer;
-	UniquePtr<Gleam::IRasterState> _raster_state;
-	UniquePtr<Gleam::IBlendState> _blend_state;
-	UniquePtr<Gleam::ITexture> _font_texture;
-	UniquePtr<Gleam::IShader> _vertex_shader;
-	UniquePtr<Gleam::ISamplerState> _sampler;
-	UniquePtr<Gleam::IShader> _pixel_shader;
-	UniquePtr<Gleam::IProgram> _program;
-	UniquePtr<Gleam::ILayout> _layout;
+	UniquePtr<Gleam::DepthStencilState> _depth_stencil_state;
+	UniquePtr<Gleam::ProgramBuffers> _program_buffers;
+	UniquePtr<Gleam::ShaderResourceView> _font_srv;
+	UniquePtr<Gleam::Buffer> _vert_constant_buffer;
+	UniquePtr<Gleam::RasterState> _raster_state;
+	UniquePtr<Gleam::BlendState> _blend_state;
+	UniquePtr<Gleam::Texture> _font_texture;
+	UniquePtr<Gleam::Shader> _vertex_shader;
+	UniquePtr<Gleam::SamplerState> _sampler;
+	UniquePtr<Gleam::Shader> _pixel_shader;
+	UniquePtr<Gleam::Program> _program;
+	UniquePtr<Gleam::Layout> _layout;
 
 	ECSQuery::Output _camera_position{ ProxyAllocator("Debug") };
 	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
@@ -251,7 +259,6 @@ private:
 
 	RenderManagerBase* _render_mgr = nullptr;
 	InputManager* _input_mgr = nullptr;
-	ECSManager* _ecs_mgr = nullptr;
 
 	DebugRenderData _debug_data;
 	DebugMenuEntry _debug_menu_root;
@@ -273,7 +280,7 @@ private:
 	static void SetClipboardText(void* user_data, const char* text);
 	static const char* GetClipboardText(void* user_data);
 
-	static void RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& instance_data);
+	static void RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ResourcePtr<ModelResource>& model, DebugRenderInstanceData& instance_data);
 	static void RenderDebugShape(uintptr_t thread_id_int, void* data);
 
 	void renderPostCamera(uintptr_t thread_id_int);

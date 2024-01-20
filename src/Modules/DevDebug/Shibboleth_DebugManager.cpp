@@ -22,11 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_DebugManager.h"
 #include "Shibboleth_DebugAttributes.h"
-#include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_RenderManagerBase.h>
+#include <Shibboleth_RenderManager.h>
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_InputManager.h>
-#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
 #include <Gleam_MeshGeneration.h>
@@ -52,12 +50,12 @@ namespace
 	class ModelMapComparison
 	{
 	public:
-		bool operator()(const Shibboleth::ModelResourcePtr& lhs, const Shibboleth::ModelResource* rhs) const
+		bool operator()(const Shibboleth::ResourcePtr<Shibboleth::ModelResource>& lhs, const Shibboleth::ModelResource* rhs) const
 		{
 			return lhs.get() < rhs;
 		}
 
-		bool operator()(const Shibboleth::ModelResource* lhs, const Shibboleth::ModelResourcePtr& rhs) const
+		bool operator()(const Shibboleth::ModelResource* lhs, const Shibboleth::ResourcePtr<Shibboleth::ModelResource>& rhs) const
 		{
 			return lhs < rhs.get();
 		}
@@ -553,7 +551,7 @@ const char* DebugManager::GetClipboardText(void* user_data)
 	return "";
 }
 
-void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ModelResourcePtr& model, DebugRenderInstanceData& debug_data)
+void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData& job_data, const ResourcePtr<ModelResource>& model, DebugRenderInstanceData& debug_data)
 {
 	GAFF_ASSERT(job_data.type != DebugRenderType::Model || model);
 
@@ -1009,7 +1007,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
 
 	} else {
 		DebugRenderInstanceData& debug_data = job_data.debug_mgr->_debug_data.instance_data[static_cast<int32_t>(job_data.type)];
-		static const ModelResourcePtr model_ptr;
+		static const ResourcePtr<ModelResource> model_ptr;
 
 		RenderDebugShape(thread_id_int, job_data, model_ptr, debug_data);
 	}
@@ -1338,7 +1336,7 @@ DebugManager::DebugRenderHandle DebugManager::renderDebugCylinder(const Gleam::V
 	return DebugRenderHandle(instance, DebugRenderType::Cylinder, has_depth);
 }
 
-DebugManager::DebugRenderHandle DebugManager::renderDebugModel(const ModelResourcePtr& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color, bool has_depth)
+DebugManager::DebugRenderHandle DebugManager::renderDebugModel(const ResourcePtr<ModelResource>& model, const Gleam::Transform& transform, const Gleam::Color::RGB& color, bool has_depth)
 {
 	auto& debug_data = _debug_data.model_instance_data[model];
 	auto* const instance = SHIB_ALLOCT(DebugRenderInstance, g_allocator);

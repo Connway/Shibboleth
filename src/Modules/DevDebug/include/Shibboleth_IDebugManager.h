@@ -34,6 +34,8 @@ struct ImGuiContext;
 
 NS_SHIBBOLETH
 
+class ModelResource;
+
 // To force getting the context from the DLL.
 class IDebugManager : public IManager
 {
@@ -128,7 +130,7 @@ public:
 		}
 
 		DebugRenderInstance* _instance = nullptr;
-		const ResourcePtr<ModelResource>* _model = nullptr;
+		const ModelResource* _model = nullptr;
 		DebugRenderType _type = DebugRenderType::Count;
 		bool _depth = false;
 
