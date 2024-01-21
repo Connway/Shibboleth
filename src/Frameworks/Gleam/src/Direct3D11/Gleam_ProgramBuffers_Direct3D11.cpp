@@ -22,12 +22,12 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 
-#include "Gleam_ProgramBuffers_Direct3D11.h"
-#include "Gleam_ShaderResourceView_Direct3D11.h"
-#include "Gleam_SamplerState_Direct3D11.h"
-#include "Gleam_RenderDevice_Direct3D11.h"
-#include "Gleam_Shader_Direct3D11.h"
-#include "Gleam_Buffer_Direct3D11.h"
+#include "Direct3D11/Gleam_ProgramBuffers_Direct3D11.h"
+#include "Direct3D11/Gleam_ShaderResourceView_Direct3D11.h"
+#include "Direct3D11/Gleam_SamplerState_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_Shader_Direct3D11.h"
+#include "Direct3D11/Gleam_Buffer_Direct3D11.h"
 
 NS_GLEAM
 

@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 
-#include "Gleam_SamplerState_Direct3D11.h"
-#include "Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_SamplerState_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_IncludeD3D11.h"
 #include "Gleam_IRenderDevice.h"
-#include "Gleam_IncludeD3D11.h"
 #include <Gaff_Math.h>
 
 NS_GLEAM

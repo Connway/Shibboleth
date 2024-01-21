@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 
-#include "Gleam_CommandList_Direct3D11.h"
+#include "Direct3D11/Gleam_CommandList_Direct3D11.h"
 #include <Gaff_Assert.h>
 
 NS_GLEAM

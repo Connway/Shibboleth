@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 
-#include "Gleam_RenderDevice_Direct3D11.h"
-#include "Gleam_RenderTarget_Direct3D11.h"
-#include "Gleam_CommandList_Direct3D11.h"
-#include "Gleam_RenderOutput_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderTarget_Direct3D11.h"
+#include "Direct3D11/Gleam_CommandList_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderOutput_Direct3D11.h"
 #include "Gleam_Global.h"
 #include "Gleam_String.h"
 

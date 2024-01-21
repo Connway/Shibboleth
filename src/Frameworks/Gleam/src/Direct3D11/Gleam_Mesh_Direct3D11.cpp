@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #ifdef GLEAM_USE_D3D11
 
-#include "Gleam_Mesh_Direct3D11.h"
-#include "Gleam_RenderDevice_Direct3D11.h"
-#include "Gleam_Buffer_Direct3D11.h"
+#include "Direct3D11/Gleam_Mesh_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_Buffer_Direct3D11.h"
 
 NS_GLEAM
 

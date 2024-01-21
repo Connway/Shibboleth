@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #if GLEAM_USE_D3D11
 
-#include "Gleam_Texture_Direct3D11.h"
-#include "Gleam_RenderDevice_Direct3D11.h"
+#include "Direct3D11/Gleam_Texture_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include <cmath>
 

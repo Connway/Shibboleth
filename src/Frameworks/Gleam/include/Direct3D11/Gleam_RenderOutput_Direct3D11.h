@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RenderTarget_Direct3D11.h"
+#include "Direct3D11/Gleam_RenderTarget_Direct3D11.h"
 #include "Gleam_IRenderOutput.h"
 #include "Gleam_SmartPtrs.h"
 #include <Gaff_RefPtr.h>
