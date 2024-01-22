@@ -39,6 +39,8 @@ struct GraphicsConfigWindow final
 
 	int32_t pos_x = -1;
 	int32_t pos_y = -1;
+
+	// $TODO: Replace this with window mode type.
 	bool windowed = false;
 };
 

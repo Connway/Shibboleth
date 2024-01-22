@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_GraphicsConfig.h"
+#include <Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
 	.var("monitor_id", &Shibboleth::GraphicsConfigWindow::monitor_id)
@@ -38,7 +39,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)
 
-	.var("windows", &Shibboleth::GraphicsConfig::windows)
+	.var("windows", &Shibboleth::GraphicsConfig::windows, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
 
 

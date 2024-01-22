@@ -24,10 +24,11 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_GraphicsConfigs.h"
+#include "Shibboleth_GraphicsConfig.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SerializeReader.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Log/Shibboleth_LogManager.h>
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Image.h>
@@ -51,10 +52,6 @@ THE SOFTWARE.
 namespace
 {
 	static Shibboleth::ProxyAllocator g_allocator("Graphics");
-
-	// Change this if the game supports more than one monitor.
-	// "main" display is implicit. Not necessary to explicitly reference it.
-	static constexpr const char8_t* g_supported_displays[] = { nullptr };
 
 	static const Shibboleth::VectorMap< Gaff::Hash32, Shibboleth::Vector<const char8_t*> > g_display_tags = {
 		{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
@@ -82,54 +79,6 @@ RenderManager::~RenderManager(void)
 	Gleam::Window::GlobalShutdown();
 }
 
-bool RenderManager::initAllModulesLoaded(void)
-{
-	IApp& app = GetApp();
-	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs.getObject(k_config_graphics_cfg).getString(k_config_graphics_default_cfg);
-
-	IFileSystem& fs = app.getFileSystem();
-	const IFile* const file = fs.openFile(graphics_cfg_path);
-
-	if (!file) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	Gaff::JSON config;
-
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, k_graphics_cfg_schema*/)) {
-		LogErrorGraphics("Failed to parse config file with error - %s.", config.getErrorText());
-		fs.closeFile(file);
-
-		return false;
-	}
-
-	fs.closeFile(file);
-
-	const Gaff::JSON sampler = config.getObject(u8"texture_filtering");
-
-	if (sampler.isString()) {
-		ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-
-		_default_sampler = res_mgr.requestResourceT<SamplerStateResource>(sampler.getString());
-
-		if (!_default_sampler) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		res_mgr.waitForResource(*_default_sampler);
-
-		if (_default_sampler->hasFailed()) {
-			// $TODO: Log error.
-			return false;
-		}
-	}
-
-	return true;
-}
-
 // $TODO: Break this function down.
 bool RenderManager::init(void)
 {
@@ -138,40 +87,20 @@ bool RenderManager::init(void)
 		return false;
 	}
 
-	IApp& app = GetApp();
-	const Gaff::JSON& configs = app.getConfigs();
-	const char8_t* const graphics_cfg_path = configs.getObject(k_config_graphics_cfg).getString(k_config_graphics_default_cfg);
-
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
+	const GraphicsConfig& config = GetConfig<GraphicsConfig>();
 
-	IFileSystem& fs = app.getFileSystem();
-	const IFile* const file = fs.openFile(graphics_cfg_path);
+	_default_sampler = config.texture_filtering_sampler;
 
-	if (!file) {
-		// $TODO: Generate default config file.
-		return false;
-	}
-
-	Gaff::JSON config;
-
-	if (!config.parse(reinterpret_cast<const char8_t*>(file->getBuffer())/*, k_graphics_cfg_schema*/)) {
-		const char8_t* const error = config.getErrorText();
-		LogErrorGraphics("Failed to parse config file with error - %s.", error);
-		fs.closeFile(file);
-		return false;
-	}
-
-	fs.closeFile(file);
-
-	if (configs.getObject(k_config_graphics_no_windows).getBool(false)) {
+	if (windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
-		const Gaff::JSON adapters = config.getObject(u8"adapters");
+		/*const Gaff::JSON adapters = config.getObject(u8"adapters");
 
 		if (adapters.isObject() && adapters.size() > 0) {
 			adapters.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
 			{
-				value.forEachInArray([&](int32_t /*index*/, const Gaff::JSON& adapter_id) -> bool
+				value.forEachInArray([&](int32_t index, const Gaff::JSON& adapter_id) -> bool
 				{
 					const int32_t aid = adapter_id.getInt32();
 					Gleam::IRenderDevice* const rd = createRenderDeviceFromAdapter(aid);
@@ -207,244 +136,217 @@ bool RenderManager::init(void)
 			_render_device_tags[tag_hash].emplace_back(rd);
 
 			_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
-		}
+		}*/
+
+		return false;
 
 	} else {
-		const Gaff::JSON windows = config.getObject(u8"windows");
+		int monitor_count = 0;
+		GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
 
-		if (windows.isObject()) {
-			const auto& adapters = getDisplayModes();
+		for (const auto& entry : config.windows) {
+			if (!Gaff::ValidIndex(entry.second.monitor_id, monitor_count)) {
+				// $TODO: Log error.
+				continue;
+			}
 
-			// Find default adapter and display IDs.
-			int32_t default_adapter_id = 0;
-			int32_t default_display_id = 0;
+			const GLFWmonitor& monitor = monitors[entry.second.monitor_id];
+			Gleam::Window* window = nullptr;
 
-			for (const auto& adpt : adapters) {
-				for (const auto& display : adpt.displays) {
-					if (display.is_primary) {
-						default_adapter_id = adpt.id;
-						default_display_id = display.id;
-						break;
+			if (windowed) {
+				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
+
+				if (!window->initWindowed(entry.first.getBuffer(), Gleam::IVec2(entry.second.width, entry.second.height))) {
+					LogErrorGraphics("Failed to create window '%s'.", entry.first.getBuffer());
+					SHIB_FREET(window, GetAllocator());
+
+					continue;
+				}
+
+			} else {
+				// Find video mode referenced in config settings.
+				int video_mode_count = 0;
+				const GLFWvidmode* const video_modes = glfwGetVideoModes(monitor, &video_mode_count);
+
+				static constexpr auto k_find_video_mode_func = [](const GLFWvideomode& lhs, const GraphicsConfigWindow& rhs) -> bool
+				{
+					return lhs.width == rhs.width &&
+							lhs.height == rhs.height &&
+							lhs.refreshRate == rhs.refresh_rate;
+				};
+
+				const GLFWvideomode* video_mode = eastl::find(video_modes, video_modes + video_mode_count, entry.second, k_find_video_mode_func);
+
+				// Didn't find a video mode that matches current settings. Use current desktop video mode.
+				if (!video_mode) {
+					video_mode = glfwGetVideoMode(&monitor);
+
+					// Still don't have a video mode. Something really bad is happening.
+					if (!video_mode) {
+						LogErrorGraphics("Failed to find video mode for window '%s'.", entry.first.getBuffer());
+						continue;
 					}
+				}
+
+				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
+
+				if (!window->initFullscreen(entry.first.getBuffer(), monitor, *video_mode)) {
+					LogErrorGraphics("Failed to create window '%s'.", entry.first.getBuffer());
+					SHIB_FREET(window, GetAllocator());
+
+					continue;
 				}
 			}
 
-			windows.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
-			{
-				int32_t video_mode_id = value.getObject(u8"video_mode_id").getInt32(-1);
-				const int32_t monitor_id = value.getObject(u8"monitor_id").getInt32(-1);
-				const bool windowed = value.getObject(u8"windowed").getBool(true);
+			window->addCloseCallback(Gaff::MemberFunc(this, &RenderManager::handleWindowClosed));
 
-				int32_t adapter_id = -1;
-				int32_t display_id = -1;
+			// $TODO: create render devices and outputs.
 
-				int32_t count = 0;
 
-				if (monitor_id > -1) {
-					for (const auto& adpt : adapters) {
-						const int32_t start_count = count;
-						count += static_cast<int32_t>(adpt.displays.size());
+			Gleam::RenderDevice* rd = nullptr;
 
-						if (monitor_id < count) {
-							adapter_id = adpt.id;
-							display_id = monitor_id - start_count;
-							break;
-						}
-					}
+			// Check if we've already created this device.
+			for (const auto& render_device : _render_devices) {
+				if (render_device->getAdapterID() == adapter_id) {
+					rd = render_device.get();
+					break;
 				}
+			}
 
-				if (adapter_id == -1) {
-					// Windowed mode will potentially not have an adapter_id at this point.
-					if (!windowed) {
-						// $TODO: Log error.
+			// Create it if we don't already have it.
+			if (!rd) {
+				rd = createRenderDeviceFromAdapter(adapter_id);
 
-						// If we are anything but the main window, skip over creating the window.
-						if (strcmp(reinterpret_cast<const char*>(key), "main")) {
-							return false;
-						}
-					}
-
-					// Default to primary display and the adapter it is attached to.
-					adapter_id = default_adapter_id;
-					display_id = default_display_id;
-
-					// $TODO: We should overwrite the config file in scenarios like this.
-					//if (!windowed) {
-					//}
+				if (!rd) {
+					LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
+					return false;
 				}
+			}
 
-				// Incorrect video mode id.
-				// Default to video mode that matches the current display settings.
-				if (!windowed &&
-					(video_mode_id < 0 ||
-					video_mode_id >= static_cast<int32_t>(adapters[adapter_id].displays[display_id].display_modes.size()))) {
+			int32_t width = value.getObject(u8"width").getInt32(-1);
+			int32_t height = value.getObject(u8"height").getInt32(-1);
+			const bool vsync = value.getObject(u8"vsync").getBool(false);
+			int32_t refresh_rate = -1; // Only used when in fullscreen mode.
 
+			Gleam::Window* const window = SHIB_ALLOCT(Gleam::Window, g_allocator);
+			window->addCloseCallback(Gaff::MemberFunc(this, &RenderManager::handleWindowClosed));
+
+			if (windowed) {
+				if (width < 0 || height < 0) {
 					// $TODO: Log error.
-
-					const auto& display = adapters[adapter_id].displays[display_id];
-					video_mode_id = -1;
-
-					for (const auto& display_mode : display.display_modes) {
-						// Display mode matches current display settings,
-						// but pick highest refresh rate.
-						if (display_mode.width == display.curr_width &&
-							display_mode.height == display.curr_height &&
-							(video_mode_id == -1 ||
-							display_mode.refresh_rate > display.display_modes[video_mode_id].refresh_rate)) {
-
-							video_mode_id = display_mode.id;
-						}
-					}
+					width = 1024;
+					height = 768;
 				}
 
-				Gleam::RenderDevice* rd = nullptr;
+				if (!window->initWindowed(key, Gleam::IVec2(width, height))) {
+					LogErrorGraphics("Failed to create window '%s'.", key);
+					SHIB_FREET(window, GetAllocator());
+					return false;
+				}
 
-				// Check if we've already created this device.
-				for (const auto& render_device : _render_devices) {
-					if (render_device->getAdapterID() == adapter_id) {
-						rd = render_device.get();
+				// Create the window centered on the display.
+				const auto& display = adapters[adapter_id].displays[display_id];
+				const Gleam::IVec2 pos(
+					display.curr_x + display.curr_width / 2 - width / 2,
+					display.curr_y + display.curr_height / 2 - height / 2
+				);
+
+				window->setPos(pos);
+
+			} else {
+				int32_t glfw_monitor_id = -1;
+
+				int monitor_count = 0;
+				GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
+
+				for (int32_t i = 0; i < monitor_count; ++i) {
+				#if defined(PLATFORM_WINDOWS)
+					const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
+					const char* const display_name = glfwGetWin32Monitor(monitors[i]);
+
+					if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
+						!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
+
+						glfw_monitor_id = i;
+						break;
+					}
+
+				#elif defined(PLATFORM_LINUX)
+					// $TODO: Need to fix this code for non-Windows platforms.
+					const char* const adapter_name = nullptr;
+					const char* const display_name = nullptr;
+
+					static_assert(false, "Fix Linux code.");
+
+				#elif defined(PLATFORM_MAC)
+					const char* const display_name = glfwGetMonitorName(monitors[i]);
+
+					if (!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
+						glfw_monitor_id = i;
+						break;
+					}
+
+				#else
+					static_assert(false, "Unknown platform.");
+				#endif
+				}
+
+				if (glfw_monitor_id < 0) {
+					// $TODO: Log error.
+					SHIB_FREET(window, GetAllocator());
+					return false;
+				}
+
+				int32_t glfw_video_mode_id = -1;
+
+				int video_mode_count = 0;
+				const GLFWvidmode* const video_modes = glfwGetVideoModes(monitors[glfw_monitor_id], &video_mode_count);
+
+				const auto& display_mode = adapters[adapter_id].displays[display_id].display_modes[video_mode_id];
+
+				for (int32_t i = 0; i < video_mode_count; ++i) {
+					if (video_modes[i].width == display_mode.width &&
+						video_modes[i].height == display_mode.height &&
+						video_modes[i].refreshRate == display_mode.refresh_rate) {
+
+						glfw_video_mode_id = i;
 						break;
 					}
 				}
 
-				// Create it if we don't already have it.
-				if (!rd) {
-					rd = createRenderDeviceFromAdapter(adapter_id);
-
-					if (!rd) {
-						LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
-						return false;
-					}
+				if (glfw_video_mode_id < 0) {
+					// $TODO: Log error.
+					SHIB_FREET(window, GetAllocator());
+					return false;
 				}
 
-				int32_t width = value.getObject(u8"width").getInt32(-1);
-				int32_t height = value.getObject(u8"height").getInt32(-1);
-				const bool vsync = value.getObject(u8"vsync").getBool(false);
-				int32_t refresh_rate = -1; // Only used when in fullscreen mode.
-
-				Gleam::Window* const window = SHIB_ALLOCT(Gleam::Window, g_allocator);
-				window->addCloseCallback(Gaff::MemberFunc(this, &RenderManager::handleWindowClosed));
-
-				if (windowed) {
-					if (width < 0 || height < 0) {
-						// $TODO: Log error.
-						width = 1024;
-						height = 768;
-					}
-
-					if (!window->initWindowed(key, Gleam::IVec2(width, height))) {
-						LogErrorGraphics("Failed to create window '%s'.", key);
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					// Create the window centered on the display.
-					const auto& display = adapters[adapter_id].displays[display_id];
-					const Gleam::IVec2 pos(
-						display.curr_x + display.curr_width / 2 - width / 2,
-						display.curr_y + display.curr_height / 2 - height / 2
-					);
-
-					window->setPos(pos);
-
-				} else {
-					int32_t glfw_monitor_id = -1;
-
-					int monitor_count = 0;
-					GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
-
-					for (int32_t i = 0; i < monitor_count; ++i) {
-					#if defined(PLATFORM_WINDOWS)
-						const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
-						const char* const display_name = glfwGetWin32Monitor(monitors[i]);
-
-						if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
-							!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
-
-							glfw_monitor_id = i;
-							break;
-						}
-
-					#elif defined(PLATFORM_LINUX)
-						// $TODO: Need to fix this code for non-Windows platforms.
-						const char* const adapter_name = nullptr;
-						const char* const display_name = nullptr;
-
-						static_assert(false, "Fix Linux code.");
-
-					#elif defined(PLATFORM_MAC)
-						const char* const display_name = glfwGetMonitorName(monitors[i]);
-
-						if (!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
-							glfw_monitor_id = i;
-							break;
-						}
-
-					#else
-						static_assert(false, "Unknown platform.");
-					#endif
-					}
-
-					if (glfw_monitor_id < 0) {
-						// $TODO: Log error.
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					int32_t glfw_video_mode_id = -1;
-
-					int video_mode_count = 0;
-					const GLFWvidmode* const video_modes = glfwGetVideoModes(monitors[glfw_monitor_id], &video_mode_count);
-
-					const auto& display_mode = adapters[adapter_id].displays[display_id].display_modes[video_mode_id];
-
-					for (int32_t i = 0; i < video_mode_count; ++i) {
-						if (video_modes[i].width == display_mode.width &&
-							video_modes[i].height == display_mode.height &&
-							video_modes[i].refreshRate == display_mode.refresh_rate) {
-
-							glfw_video_mode_id = i;
-							break;
-						}
-					}
-
-					if (glfw_video_mode_id < 0) {
-						// $TODO: Log error.
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					if (!window->initFullscreen(key, glfw_monitor_id, glfw_video_mode_id)) {
-						LogErrorGraphics("Failed to create window '%s'.", key);
-						SHIB_FREET(window, GetAllocator());
-						return false;
-					}
-
-					refresh_rate = display_mode.refresh_rate;
+				if (!window->initFullscreen(key, glfw_monitor_id, glfw_video_mode_id)) {
+					LogErrorGraphics("Failed to create window '%s'.", key);
+					SHIB_FREET(window, GetAllocator());
+					return false;
 				}
 
-				if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
-					const char8_t* const icon_path = icon.getString();
-					Gaff::File icon_file(icon_path, Gaff::File::OpenMode::ReadBinary);
-					icon.freeString(icon_path);
+				refresh_rate = display_mode.refresh_rate;
+			}
 
-					if (icon_file.isOpen()) {
-						Vector<uint8_t> icon_data;
-						icon_data.resize(icon_file.getFileSize());
+			if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
+				const char8_t* const icon_path = icon.getString();
+				Gaff::File icon_file(icon_path, Gaff::File::OpenMode::ReadBinary);
+				icon.freeString(icon_path);
 
-						if (icon_file.readEntireFile(reinterpret_cast<char*>(icon_data.data()))) {
-							const size_t index = Gaff::ReverseFind(icon_path, u8'.');
+				if (icon_file.isOpen()) {
+					Vector<uint8_t> icon_data;
+					icon_data.resize(icon_file.getFileSize());
 
-							if (index != GAFF_SIZE_T_FAIL) {
-								Image image;
+					if (icon_file.readEntireFile(reinterpret_cast<char*>(icon_data.data()))) {
+						const size_t index = Gaff::ReverseFind(icon_path, u8'.');
 
-								if (image.load(icon_data.data(), icon_data.size(), reinterpret_cast<const char*>(icon_path + index))) {
-									const GLFWimage icon_image { image.getWidth(), image.getHeight(), image.getBuffer() };
-									window->setIcon(&icon_image, 1);
+						if (index != GAFF_SIZE_T_FAIL) {
+							Image image;
 
-								} else {
-									// $TODO: Log error.
-								}
+							if (image.load(icon_data.data(), icon_data.size(), reinterpret_cast<const char*>(icon_path + index))) {
+								const GLFWimage icon_image { image.getWidth(), image.getHeight(), image.getBuffer() };
+								window->setIcon(&icon_image, 1);
 
 							} else {
 								// $TODO: Log error.
@@ -457,53 +359,52 @@ bool RenderManager::init(void)
 					} else {
 						// $TODO: Log error.
 					}
+
+				} else {
+					// $TODO: Log error.
+				}
+			}
+
+			// Add the device to the window tag.
+			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
+			_render_device_tags[window_hash].emplace_back(rd);
+
+			_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
+
+			// Add render device to tag list if not already present.
+			for (const auto& entry : g_display_tags) {
+				const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
+					{
+						return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
+					});
+
+				if (it == entry.second.end()) {
+					continue;
 				}
 
-				// Add the device to the window tag.
-				const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
-				_render_device_tags[window_hash].emplace_back(rd);
+				auto& render_devices = _render_device_tags[entry.first];
 
-				_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
-
-				// Add render device to tag list if not already present.
-				for (const auto& entry : g_display_tags) {
-					const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
-						{
-							return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
-						});
-
-					if (it == entry.second.end()) {
-						continue;
-					}
-
-					auto& render_devices = _render_device_tags[entry.first];
-
-					if (Gaff::Find(render_devices, rd) == render_devices.end()) {
-						render_devices.emplace_back(rd);
-					}
+				if (Gaff::Find(render_devices, rd) == render_devices.end()) {
+					render_devices.emplace_back(rd);
 				}
+			}
 
-				Gleam::RenderOutput* const output = SHIB_ALLOCT(Gleam::RenderOutput, g_allocator);
+			Gleam::RenderOutput* const output = SHIB_ALLOCT(Gleam::RenderOutput, g_allocator);
 
-				if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
-					LogErrorGraphics("Failed to create render output for window '%s'.", key);
-					SHIB_FREET(output, GetAllocator());
-					SHIB_FREET(window, GetAllocator());
-					return false;
-				}
-
-				auto& entry = _outputs[window_hash];
-				entry.render_device = rd;
-				entry.window.reset(window);
-				entry.output.reset(output);
-
+			if (!output->init(*rd, *window, display_id, refresh_rate, vsync)) {
+				LogErrorGraphics("Failed to create render output for window '%s'.", key);
+				SHIB_FREET(output, GetAllocator());
+				SHIB_FREET(window, GetAllocator());
 				return false;
-			});
+			}
 
-		} else {
-			// $TODO: Log error.
+			auto& entry = _outputs[window_hash];
+			entry.render_device = rd;
+			entry.window.reset(window);
+			entry.output.reset(output);
+
 			return false;
-		}
+		});
 	}
 
 	const auto& job_pool = app.getJobPool();

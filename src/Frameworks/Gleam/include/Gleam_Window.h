@@ -101,17 +101,6 @@ public:
 		GLFWmonitor& monitor,
 		const GLFWvidmode& video_mode);
 
-	bool initFullscreen(
-		const char8_t* window_name,
-		int32_t monitor_id,
-		int32_t video_mode_id);
-
-	bool initFullscreen(
-		const char8_t* window_name,
-		GLFWmonitor& monitor,
-		const IVec2& size,
-		int32_t refresh_rate = -1);
-
 	bool initWindowed(
 		const char8_t* window_name,
 		const IVec2& size);

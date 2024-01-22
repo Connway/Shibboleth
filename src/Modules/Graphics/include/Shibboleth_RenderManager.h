@@ -88,7 +88,7 @@ public:
 	{
 		UniquePtr<Gleam::CommandList> cmd_list;
 		bool owns_command = true;
-		//Gleam::IRenderTarget* target = nullptr;
+		//Gleam::RenderTarget* target = nullptr;
 	};
 
 	struct RenderCommandList final
@@ -112,7 +112,6 @@ public:
 
 	~RenderManager(void);
 
-	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
 	void manageRenderDevice(Gleam::RenderDevice& device);
