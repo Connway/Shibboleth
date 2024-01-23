@@ -217,7 +217,7 @@ private:
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
 
-	Gleam::RenderDevice* createRenderDevice(const char* adapter_name);
+	Gleam::RenderDevice* createRenderDevice(const Gleam::Window& window);
 	Gleam::RenderDevice* createRenderDevice(int32_t adapter_id);
 	Gleam::RenderDevice* finishRenderDevice(Gleam::RenderDevice* rd);
 

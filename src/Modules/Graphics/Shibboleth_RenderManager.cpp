@@ -87,13 +87,16 @@ bool RenderManager::init(void)
 		return false;
 	}
 
+	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
-	const GraphicsConfig& config = GetConfig<GraphicsConfig>();
+	const GraphicsConfig* const config = GetConfig<GraphicsConfig>();
+	GAFF_ASSERT(config);
 
-	_default_sampler = config.texture_filtering_sampler;
+	// $TODO: This isn't going to work. Need to find a better way to serialize this.
+	_default_sampler = config->texture_filtering_sampler;
 
-	if (windows.empty()) {
+	if (config->windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
 		/*const Gaff::JSON adapters = config.getObject(u8"adapters");
 
@@ -144,16 +147,16 @@ bool RenderManager::init(void)
 		int monitor_count = 0;
 		GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
 
-		for (const auto& entry : config.windows) {
+		for (const auto& entry : config->windows) {
 			if (!Gaff::ValidIndex(entry.second.monitor_id, monitor_count)) {
 				// $TODO: Log error.
 				continue;
 			}
 
-			const GLFWmonitor& monitor = monitors[entry.second.monitor_id];
+			GLFWmonitor* const monitor = monitors[entry.second.monitor_id];
 			Gleam::Window* window = nullptr;
 
-			if (windowed) {
+			if (entry.second.windowed) {
 				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
 
 				if (!window->initWindowed(entry.first.getBuffer(), Gleam::IVec2(entry.second.width, entry.second.height))) {
@@ -168,18 +171,16 @@ bool RenderManager::init(void)
 				int video_mode_count = 0;
 				const GLFWvidmode* const video_modes = glfwGetVideoModes(monitor, &video_mode_count);
 
-				static constexpr auto k_find_video_mode_func = [](const GLFWvideomode& lhs, const GraphicsConfigWindow& rhs) -> bool
+				const GLFWvidmode* video_mode = eastl::find(video_modes, video_modes + video_mode_count, entry.second, [](const GLFWvidmode& lhs, const GraphicsConfigWindow& rhs) -> bool
 				{
 					return lhs.width == rhs.width &&
-							lhs.height == rhs.height &&
-							lhs.refreshRate == rhs.refresh_rate;
-				};
-
-				const GLFWvideomode* video_mode = eastl::find(video_modes, video_modes + video_mode_count, entry.second, k_find_video_mode_func);
+						lhs.height == rhs.height &&
+						lhs.refreshRate == rhs.refresh_rate;
+				});
 
 				// Didn't find a video mode that matches current settings. Use current desktop video mode.
 				if (!video_mode) {
-					video_mode = glfwGetVideoMode(&monitor);
+					video_mode = glfwGetVideoMode(monitor);
 
 					// Still don't have a video mode. Something really bad is happening.
 					if (!video_mode) {
@@ -190,7 +191,7 @@ bool RenderManager::init(void)
 
 				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
 
-				if (!window->initFullscreen(entry.first.getBuffer(), monitor, *video_mode)) {
+				if (!window->initFullscreen(entry.first.getBuffer(), *monitor, *video_mode)) {
 					LogErrorGraphics("Failed to create window '%s'.", reinterpret_cast<const char*>(entry.first.getBuffer()));
 					SHIB_FREET(window, GetAllocator());
 
@@ -218,8 +219,8 @@ bool RenderManager::init(void)
 				rd = createRenderDevice(*window);
 
 				if (!rd) {
-					LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", reinterpret_cast<const char*>(entry.first.getBuffer()), adapter_id);
-					return false;
+					LogErrorGraphics("Failed to create render device for window '%s'.", reinterpret_cast<const char*>(entry.first.getBuffer()));
+					continue;
 				}
 			}
 
@@ -666,7 +667,7 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	return thread_it->second.get();
 }
 
-Gleam::RenderDevice* RenderManager::createRenderDevice(const Window& window)
+Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)
 {
 	Gleam::RenderDevice* const rd = SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
 

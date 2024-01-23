@@ -199,7 +199,9 @@ IRenderDevice::AdapterList RenderDevice::GetDisplayModes(void)
 
 bool RenderDevice::init(const Window& window)
 {
-	const char* const adapter_name = glfwGetWin32Adapter(window.getGLFWWindow());
+	GLFWwindow* const glfw_window = window.getGLFWWindow();
+	GLFWmonitor* const monitor = glfwGetWindowMonitor(glfw_window);
+	const char* const adapter_name = glfwGetWin32Adapter(monitor);
 	return init(adapter_name);
 }
 
@@ -489,18 +491,21 @@ void RenderDevice::setScissorRect(const IVec4& rect)
 
 bool RenderDevice::isUsedBy(const Window& window) const
 {
-	const char* const window_adapter_name = glfwGetWin32Adapter(window.getGLFWWindow());
+	GLFWwindow* const glfw_window = window.getGLFWWindow();
+	GLFWmonitor* const monitor = glfwGetWindowMonitor(glfw_window);
+
+	const char* const window_adapter_name = glfwGetWin32Adapter(monitor);
 	const Gaff::Hash32 window_adapter_hash = Gaff::FNV1aHash32String(window_adapter_name);
 
 	DXGI_ADAPTER_DESC3 adapter_desc;
-	const HRESULT result = adapter->GetDesc3(&adapter_desc);
+	const HRESULT result = _adapter->GetDesc3(&adapter_desc);
 
 	if (FAILED(result)) {
 		return false;
 	}
 
-	CONVERT_STRING(char8_t, adapter_name, adapter_desc.Description);
-	const Gaff::Hash32 adapter_hash = Gaff::FNV1aHash32Const(adapter_name);
+	CONVERT_STRING_ARRAY(char8_t, adapter_name, adapter_desc.Description);
+	const Gaff::Hash32 adapter_hash = Gaff::FNV1aHash32String(adapter_name);
 
 	return window_adapter_hash == adapter_hash;
 }

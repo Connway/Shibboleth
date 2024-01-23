@@ -214,7 +214,7 @@ NS_END
 #define CONVERT_STRING_ARRAY(ToType, TempBufferName, string) \
 	ToType TempBufferName[std::size(string)] = { 0 }; \
 	{ \
-		auto* str_start = string; \
+		const auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
 		ToType* TempBufferName##_end = TempBufferName + std::size(string); \
 		eastl::DecodePart(str_start, str_start + std::size(string), TempBufferName##_begin, TempBufferName##_end); \
@@ -223,7 +223,7 @@ NS_END
 #define CONVERT_STRING(ToType, TempBufferName, string) \
 	ToType TempBufferName[STRING_CONVERSION_BUFFER_SIZE] = { 0 }; \
 	{ \
-		auto* str_start = string; \
+		const auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
 		ToType* TempBufferName##_end = TempBufferName + STRING_CONVERSION_BUFFER_SIZE; \
 		eastl::DecodePart(str_start, str_start + eastl::CharStrlen(string), TempBufferName##_begin, TempBufferName##_end); \

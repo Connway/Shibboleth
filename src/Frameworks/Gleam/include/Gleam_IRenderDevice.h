@@ -72,7 +72,7 @@ public:
 	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
-	virtual bool init(Window& window) = 0;
+	virtual bool init(const Window& window) = 0;
 	virtual bool init(const char* adapter_name) = 0;
 	virtual bool init(int32_t adapter_id) = 0;
 

@@ -49,6 +49,8 @@ class GraphicsConfig final : public IConfig
 public:
 	ResourcePtr<SamplerStateResource> texture_filtering_sampler;
 
+	//ResourcePath<SamplerStateResource> texture_filtering_sampler;
+
 	VectorMap<HashString32<>, GraphicsConfigWindow> windows;
 
 	SHIB_REFLECTION_CLASS_DECLARE(GraphicsConfig);
