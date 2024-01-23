@@ -420,9 +420,9 @@ void ResourceManager::removeResource(const IResource& resource)
 
 void ResourceManager::requestLoad(IResource& resource)
 {
-	if (resource._state != ResourceState::Delayed) {
+	if (resource._state != ResourceState::Deferred) {
 		LogErrorResource(
-			"Call to ResourceManager::requestLoad() called on resource '%s' and is not marked for delayed load.",
+			"Call to ResourceManager::requestLoad() called on resource '%s' and is not marked for deferred load.",
 			resource._file_path.getBuffer()
 		);
 

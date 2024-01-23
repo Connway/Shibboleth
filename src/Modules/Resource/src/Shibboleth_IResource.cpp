@@ -73,7 +73,7 @@ static void LoadJob(uintptr_t thread_id_int, void* data)
 
 void IResource::requestLoad(void)
 {
-	if (_state != ResourceState::Delayed) {
+	if (_state != ResourceState::Deferred) {
 		return;
 	}
 

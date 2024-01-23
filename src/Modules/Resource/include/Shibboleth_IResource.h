@@ -45,7 +45,7 @@ enum class ResourceState
 	Pending = 0,
 	Failed,
 	Loaded,
-	Delayed
+	Deferred
 };
 
 class IResource : public Refl::IReflectionObject
@@ -80,7 +80,7 @@ private:
 	//Vector<IResource*> _incoming_references;
 	//Vector<IResource*> _outgoing_references;
 
-	ResourceState _state = ResourceState::Delayed;
+	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;

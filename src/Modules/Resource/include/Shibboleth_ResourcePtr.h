@@ -137,8 +137,6 @@ public:
 
 private:
 	Gaff::RefPtr<T> _resource;
-
-	friend class ResourceManager;
 };
 
 NS_END
@@ -149,7 +147,7 @@ template <class Derived, class Base>
 Shibboleth::ResourcePtr<Derived> ReflectionCast(Shibboleth::ResourcePtr<Base>&& resource)
 {
 	if constexpr (std::is_same_v<Base, Derived>) {
-		return Shibboleth::ResourcePtr<Derived>(resource.release(), Shibboleth::ResourcePtr<Derived>::NoCountChange());
+		return Shibboleth::ResourcePtr<Derived>(std::move(resource));
 
 	} else {
 		Derived* const derived = ReflectionCast<Derived>(resource.get());

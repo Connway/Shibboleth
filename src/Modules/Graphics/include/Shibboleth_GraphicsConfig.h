@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SamplerStateResource.h"
 #include <Config/Shibboleth_Config.h>
-#include <Shibboleth_ResourcePtr.h>
+#include <Shibboleth_DeferredResourcePtr.h>
 
 NS_SHIBBOLETH
 
@@ -47,9 +47,7 @@ struct GraphicsConfigWindow final
 class GraphicsConfig final : public IConfig
 {
 public:
-	ResourcePtr<SamplerStateResource> texture_filtering_sampler;
-
-	//ResourcePath<SamplerStateResource> texture_filtering_sampler;
+	DeferredResourcePtr<SamplerStateResource> texture_filtering_sampler;
 
 	VectorMap<HashString32<>, GraphicsConfigWindow> windows;
 
