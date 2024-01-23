@@ -2129,7 +2129,7 @@ bool DebugManager::initImGui(void)
 	}
 #endif
 
-	static_assert(GAFF_ARRAY_SIZE(_mouse_cursors) == ImGuiMouseCursor_COUNT);
+	static_assert(std::size(_mouse_cursors) == static_cast<size_t>(ImGuiMouseCursor_COUNT));
 
 	_mouse_cursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	_mouse_cursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);

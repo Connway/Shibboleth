@@ -33,6 +33,7 @@ class RenderDevice final : public IRenderDevice
 public:
 	static AdapterList GetDisplayModes(void);
 
+	bool init(const Window& window) override;
 	bool init(const char* adapter_name) override;
 	bool init(int32_t adapter_id) override;
 
@@ -52,7 +53,7 @@ public:
 	void setScissorRect(const IVec2& pos, const IVec2& size) override;
 	void setScissorRect(const IVec4& rect) override;
 
-	void* getUnderlyingDevice(void) override;
+	virtual bool isUsedBy(const Window& window) const = 0;
 
 	ID3D11DeviceContext3* getDeviceContext(void);
 	ID3D11Device5* getDevice(void);

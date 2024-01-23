@@ -26,12 +26,13 @@ THE SOFTWARE.
 #include "Gleam_Vec4.h"
 #include "Gleam_Vec2.h"
 #include <Gaff_Assert.h>
+#include <Gaff_Hash.h>
 
 NS_GLEAM
 
 class IRenderOutput;
 class ICommandList;
-//class IWindow;
+class Window;
 
 class IRenderDevice
 {
@@ -71,6 +72,7 @@ public:
 	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
+	virtual bool init(Window& window) = 0;
 	virtual bool init(const char* adapter_name) = 0;
 	virtual bool init(int32_t adapter_id) = 0;
 
@@ -93,7 +95,7 @@ public:
 	virtual void setScissorRect(const IVec2& pos, const IVec2& size) = 0;
 	virtual void setScissorRect(const IVec4& rect) = 0;
 
-	virtual void* getUnderlyingDevice(void) = 0;
+	virtual bool isUsedBy(const Window& window) const = 0;
 
 	int32_t getAdapterID(void) const { return _adapter_id; }
 

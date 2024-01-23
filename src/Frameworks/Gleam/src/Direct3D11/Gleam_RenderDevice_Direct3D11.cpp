@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include "Direct3D11/Gleam_RenderOutput_Direct3D11.h"
 #include "Gleam_Global.h"
 #include "Gleam_String.h"
+#include "Gleam_Window.h"
+#include "Gleam_IncludeGLFWNative.h"
 
 NS_GLEAM
 
@@ -193,6 +195,12 @@ IRenderDevice::AdapterList RenderDevice::GetDisplayModes(void)
 	}
 
 	return out;
+}
+
+bool RenderDevice::init(const Window& window)
+{
+	const char* const adapter_name = glfwGetWin32Adapter(window.getGLFWWindow());
+	return init(adapter_name);
 }
 
 bool RenderDevice::init(const char* adapter_name)
@@ -479,9 +487,22 @@ void RenderDevice::setScissorRect(const IVec4& rect)
 	_context->RSSetScissorRects(1, &d3d_rect);
 }
 
-void* RenderDevice::getUnderlyingDevice(void)
+bool RenderDevice::isUsedBy(const Window& window) const
 {
-	return getDevice();
+	const char* const window_adapter_name = glfwGetWin32Adapter(window.getGLFWWindow());
+	const Gaff::Hash32 window_adapter_hash = Gaff::FNV1aHash32String(window_adapter_name);
+
+	DXGI_ADAPTER_DESC3 adapter_desc;
+	const HRESULT result = adapter->GetDesc3(&adapter_desc);
+
+	if (FAILED(result)) {
+		return false;
+	}
+
+	CONVERT_STRING(char8_t, adapter_name, adapter_desc.Description);
+	const Gaff::Hash32 adapter_hash = Gaff::FNV1aHash32Const(adapter_name);
+
+	return window_adapter_hash == adapter_hash;
 }
 
 ID3D11DeviceContext3* RenderDevice::getDeviceContext(void)

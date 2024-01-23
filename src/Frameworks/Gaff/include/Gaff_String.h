@@ -212,12 +212,12 @@ NS_END
 #define STRING_CONVERSION_BUFFER_SIZE 256
 
 #define CONVERT_STRING_ARRAY(ToType, TempBufferName, string) \
-	ToType TempBufferName[GAFF_ARRAY_SIZE(string)] = { 0 }; \
+	ToType TempBufferName[std::size(string)] = { 0 }; \
 	{ \
 		auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
-		ToType* TempBufferName##_end = TempBufferName + GAFF_ARRAY_SIZE(string); \
-		eastl::DecodePart(str_start, str_start + GAFF_ARRAY_SIZE(string), TempBufferName##_begin, TempBufferName##_end); \
+		ToType* TempBufferName##_end = TempBufferName + std::size(string); \
+		eastl::DecodePart(str_start, str_start + std::size(string), TempBufferName##_begin, TempBufferName##_end); \
 	}
 
 #define CONVERT_STRING(ToType, TempBufferName, string) \

@@ -157,7 +157,7 @@ bool RenderManager::init(void)
 				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
 
 				if (!window->initWindowed(entry.first.getBuffer(), Gleam::IVec2(entry.second.width, entry.second.height))) {
-					LogErrorGraphics("Failed to create window '%s'.", entry.first.getBuffer());
+					LogErrorGraphics("Failed to create window '%s'.", reinterpret_cast<const char*>(entry.first.getBuffer()));
 					SHIB_FREET(window, GetAllocator());
 
 					continue;
@@ -183,7 +183,7 @@ bool RenderManager::init(void)
 
 					// Still don't have a video mode. Something really bad is happening.
 					if (!video_mode) {
-						LogErrorGraphics("Failed to find video mode for window '%s'.", entry.first.getBuffer());
+						LogErrorGraphics("Failed to find video mode for window '%s'.", reinterpret_cast<const char*>(entry.first.getBuffer()));
 						continue;
 					}
 				}
@@ -191,7 +191,7 @@ bool RenderManager::init(void)
 				window = SHIB_ALLOCT(Gleam::Window, g_allocator);
 
 				if (!window->initFullscreen(entry.first.getBuffer(), monitor, *video_mode)) {
-					LogErrorGraphics("Failed to create window '%s'.", entry.first.getBuffer());
+					LogErrorGraphics("Failed to create window '%s'.", reinterpret_cast<const char*>(entry.first.getBuffer()));
 					SHIB_FREET(window, GetAllocator());
 
 					continue;
@@ -207,7 +207,7 @@ bool RenderManager::init(void)
 
 			// Check if we've already created this device.
 			for (const auto& render_device : _render_devices) {
-				if (render_device->getAdapterID() == adapter_id) {
+				if (render_device->isUsedBy(*window)) {
 					rd = render_device.get();
 					break;
 				}
@@ -215,120 +215,16 @@ bool RenderManager::init(void)
 
 			// Create it if we don't already have it.
 			if (!rd) {
-				rd = createRenderDeviceFromAdapter(adapter_id);
+				rd = createRenderDevice(*window);
 
 				if (!rd) {
-					LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", key, adapter_id);
+					LogErrorGraphics("Failed to create render device for window '%s' with adapter id '%i'.", reinterpret_cast<const char*>(entry.first.getBuffer()), adapter_id);
 					return false;
 				}
 			}
 
-			int32_t width = value.getObject(u8"width").getInt32(-1);
-			int32_t height = value.getObject(u8"height").getInt32(-1);
-			const bool vsync = value.getObject(u8"vsync").getBool(false);
-			int32_t refresh_rate = -1; // Only used when in fullscreen mode.
-
-			Gleam::Window* const window = SHIB_ALLOCT(Gleam::Window, g_allocator);
-			window->addCloseCallback(Gaff::MemberFunc(this, &RenderManager::handleWindowClosed));
-
-			if (windowed) {
-				if (width < 0 || height < 0) {
-					// $TODO: Log error.
-					width = 1024;
-					height = 768;
-				}
-
-				if (!window->initWindowed(key, Gleam::IVec2(width, height))) {
-					LogErrorGraphics("Failed to create window '%s'.", key);
-					SHIB_FREET(window, GetAllocator());
-					return false;
-				}
-
-				// Create the window centered on the display.
-				const auto& display = adapters[adapter_id].displays[display_id];
-				const Gleam::IVec2 pos(
-					display.curr_x + display.curr_width / 2 - width / 2,
-					display.curr_y + display.curr_height / 2 - height / 2
-				);
-
-				window->setPos(pos);
-
-			} else {
-				int32_t glfw_monitor_id = -1;
-
-				int monitor_count = 0;
-				GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
-
-				for (int32_t i = 0; i < monitor_count; ++i) {
-				#if defined(PLATFORM_WINDOWS)
-					const char* const adapter_name = glfwGetWin32Adapter(monitors[i]);
-					const char* const display_name = glfwGetWin32Monitor(monitors[i]);
-
-					if (!strcmp(adapter_name, adapters[adapter_id].adapter_name) &&
-						!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
-
-						glfw_monitor_id = i;
-						break;
-					}
-
-				#elif defined(PLATFORM_LINUX)
-					// $TODO: Need to fix this code for non-Windows platforms.
-					const char* const adapter_name = nullptr;
-					const char* const display_name = nullptr;
-
-					static_assert(false, "Fix Linux code.");
-
-				#elif defined(PLATFORM_MAC)
-					const char* const display_name = glfwGetMonitorName(monitors[i]);
-
-					if (!strcmp(display_name, adapters[adapter_id].displays[display_id].display_name)) {
-						glfw_monitor_id = i;
-						break;
-					}
-
-				#else
-					static_assert(false, "Unknown platform.");
-				#endif
-				}
-
-				if (glfw_monitor_id < 0) {
-					// $TODO: Log error.
-					SHIB_FREET(window, GetAllocator());
-					return false;
-				}
-
-				int32_t glfw_video_mode_id = -1;
-
-				int video_mode_count = 0;
-				const GLFWvidmode* const video_modes = glfwGetVideoModes(monitors[glfw_monitor_id], &video_mode_count);
-
-				const auto& display_mode = adapters[adapter_id].displays[display_id].display_modes[video_mode_id];
-
-				for (int32_t i = 0; i < video_mode_count; ++i) {
-					if (video_modes[i].width == display_mode.width &&
-						video_modes[i].height == display_mode.height &&
-						video_modes[i].refreshRate == display_mode.refresh_rate) {
-
-						glfw_video_mode_id = i;
-						break;
-					}
-				}
-
-				if (glfw_video_mode_id < 0) {
-					// $TODO: Log error.
-					SHIB_FREET(window, GetAllocator());
-					return false;
-				}
-
-				if (!window->initFullscreen(key, glfw_monitor_id, glfw_video_mode_id)) {
-					LogErrorGraphics("Failed to create window '%s'.", key);
-					SHIB_FREET(window, GetAllocator());
-					return false;
-				}
-
-				refresh_rate = display_mode.refresh_rate;
-			}
-
+			// $TODO: Set icon.
+			/*
 			if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
 				const char8_t* const icon_path = icon.getString();
 				Gaff::File icon_file(icon_path, Gaff::File::OpenMode::ReadBinary);
@@ -364,25 +260,26 @@ bool RenderManager::init(void)
 					// $TODO: Log error.
 				}
 			}
+			*/
 
 			// Add the device to the window tag.
-			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(key);
+			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(entry.first.getBuffer());
 			_render_device_tags[window_hash].emplace_back(rd);
 
 			_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
 
 			// Add render device to tag list if not already present.
-			for (const auto& entry : g_display_tags) {
-				const auto it = Gaff::Find(entry.second, key, [](const char8_t* lhs, const char8_t* rhs) -> bool
-					{
-						return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
-					});
+			for (const auto& display_tag_entry : g_display_tags) {
+				const auto it = Gaff::Find(display_tag_entry.second, entry.first.getBuffer(), [](const char8_t* lhs, const char8_t* rhs) -> bool
+				{
+					return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
+				});
 
-				if (it == entry.second.end()) {
+				if (it == display_tag_entry.second.end()) {
 					continue;
 				}
 
-				auto& render_devices = _render_device_tags[entry.first];
+				auto& render_devices = _render_device_tags[display_tag_entry.first];
 
 				if (Gaff::Find(render_devices, rd) == render_devices.end()) {
 					render_devices.emplace_back(rd);
@@ -395,16 +292,15 @@ bool RenderManager::init(void)
 				LogErrorGraphics("Failed to create render output for window '%s'.", key);
 				SHIB_FREET(output, GetAllocator());
 				SHIB_FREET(window, GetAllocator());
-				return false;
+
+				continue;
 			}
 
 			auto& entry = _outputs[window_hash];
 			entry.render_device = rd;
 			entry.window.reset(window);
 			entry.output.reset(output);
-
-			return false;
-		});
+		}
 	}
 
 	const auto& job_pool = app.getJobPool();
@@ -770,11 +666,11 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	return thread_it->second.get();
 }
 
-Gleam::RenderDevice* RenderManager::createRenderDevice(const char* adapter_name)
+Gleam::RenderDevice* RenderManager::createRenderDevice(const Window& window)
 {
 	Gleam::RenderDevice* const rd = SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
 
-	if (!rd->init(adapter_name)) {
+	if (!rd->init(window)) {
 		LogErrorGraphics("Failed to create render device.");
 		SHIB_FREET(rd, GetAllocator());
 

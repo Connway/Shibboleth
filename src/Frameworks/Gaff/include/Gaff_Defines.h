@@ -70,7 +70,6 @@ THE SOFTWARE.
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 #define GAFF_STR_U8(x) GAFF_CAT(u8, GAFF_STR(x))
 
-#define GAFF_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0])) // Only for scenarios where std::size is causing issues.
 #define GAFF_FLAG_BIT(index) (1 << index)
 
 #define GAFF_FAIL_RETURN(expr, return_value) if (!(expr)) { return return_value; }
