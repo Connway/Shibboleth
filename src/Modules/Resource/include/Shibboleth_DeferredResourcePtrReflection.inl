@@ -75,7 +75,7 @@ void VarDeferredResourcePtr<T, VarType>::setDataMove(void* object, void* data)
 template <class T, class VarType>
 bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
-	GAFF_ASSERT(reader.isNull() || reader.isString());
+	GAFF_ASSERT(reader.isNull() || reader.isObject());
 
 	if (reader.isNull()) {
 		return true;
@@ -108,7 +108,12 @@ bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, vo
 	const Refl::IReflectionDefinition* const = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(type_name));
 	DeferredResourcePtr<VarType>* const var = reinterpret_cast<DeferredResourcePtr<VarType>*>(object);
 
-	*var = DeferredResourcePtr<VarType>(HashString64<>(resource_path), ref_def);
+	if (ref_def) {
+		*var = DeferredResourcePtr<VarType>(HashString64<>(resource_path), ref_def);
+	} else {
+		// $TODO: Log warning.
+		*var = DeferredResourcePtr<VarType>(HashString64<>(resource_path));
+	}
 
 	reader.freeString(resource_path);
 	reader.freeString(type_name);
