@@ -63,17 +63,13 @@ public:
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
 
-	explicit DeferredResourcePtr(const HashString64<>& file_path):
-		_ref_def(&Refl::Reflection<T>::GetReflectionDefinition()),
-		_file_path(file_path),
-		_resource(nullptr)
+	explicit DeferredResourcePtr(const HashString64<>& file_path, const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
+		_ref_def(ref_def), _file_path(file_path), _resource(nullptr)
 	{
 	}
 
-	explicit DeferredResourcePtr(HashString64<>&& file_path):
-		_ref_def(&Refl::Reflection<T>::GetReflectionDefinition()),
-		_file_path(std::move(file_path)),
-		_resource(nullptr)
+	explicit DeferredResourcePtr(HashString64<>&& file_path, , const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
+		_ref_def(ref_def), _file_path(std::move(file_path)), _resource(nullptr)
 	{
 	}
 
@@ -184,6 +180,7 @@ public:
 private:
 	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 	HashString64<> _file_path;
+
 	Gaff::RefPtr<T> _resource;
 };
 

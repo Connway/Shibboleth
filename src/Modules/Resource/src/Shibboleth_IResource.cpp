@@ -38,7 +38,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
 	.entry("Pending", Shibboleth::ResourceState::Pending)
 	.entry("Failed", Shibboleth::ResourceState::Failed)
 	.entry("Loaded", Shibboleth::ResourceState::Loaded)
-	.entry("Delayed", Shibboleth::ResourceState::Delayed)
+	.entry("Deferred", Shibboleth::ResourceState::Deferred)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)

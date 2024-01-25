@@ -211,13 +211,17 @@ NS_END
 
 #define STRING_CONVERSION_BUFFER_SIZE 256
 
+#define CONVERT_STRING_ARRAY_SIZE_HACK(Array) (sizeof(Array) / sizeof(Array[0]))
+
+// std::size is for some reason giving compiler errors about not being a constant expression ...
+// even the the array size is 100% a known, compile time value ...
 #define CONVERT_STRING_ARRAY(ToType, TempBufferName, string) \
-	ToType TempBufferName[std::size(string)] = { 0 }; \
+	ToType TempBufferName[CONVERT_STRING_ARRAY_SIZE_HACK(string) * 4] = { 0 }; \
 	{ \
 		const auto* str_start = string; \
 		ToType* TempBufferName##_begin = TempBufferName; \
-		ToType* TempBufferName##_end = TempBufferName + std::size(string); \
-		eastl::DecodePart(str_start, str_start + std::size(string), TempBufferName##_begin, TempBufferName##_end); \
+		ToType* TempBufferName##_end = TempBufferName + CONVERT_STRING_ARRAY_SIZE_HACK(string) * 4; \
+		eastl::DecodePart(str_start, str_start + CONVERT_STRING_ARRAY_SIZE_HACK(string), TempBufferName##_begin, TempBufferName##_end); \
 	}
 
 #define CONVERT_STRING(ToType, TempBufferName, string) \

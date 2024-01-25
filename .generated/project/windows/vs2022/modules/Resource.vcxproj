@@ -238,6 +238,8 @@ CodeGenerator64od module_header --module Resource</Command>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtrReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtrReflection.inl" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceLogging.h" />

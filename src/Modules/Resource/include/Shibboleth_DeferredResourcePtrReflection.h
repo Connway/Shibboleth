@@ -25,7 +25,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 template <class T, class VarType>
-class VarResourcePtr;
+class VarDeferredResourcePtr;
 
 NS_END
 
@@ -34,11 +34,11 @@ NS_END
 NS_REFLECTION
 
 template <class T, class VarType>
-struct VarTypeHelper< T, Shibboleth::ResourcePtr<VarType> > final
+struct VarTypeHelper< T, Shibboleth::DeferredResourcePtr<VarType> > final
 {
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
 	using VariableType = VarType;
-	using Type = Shibboleth::VarResourcePtr<T, VarType>;
+	using Type = Shibboleth::VarDeferredResourcePtr<T, VarType>;
 	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
 };
 
@@ -49,13 +49,13 @@ NS_END
 NS_SHIBBOLETH
 
 template <class T, class VarType>
-class VarResourcePtr final : public Refl::IVar<T>
+class VarDeferredResourcePtr final : public Refl::IVar<T>
 {
 public:
 	using ReflectionType = Refl::VarTypeHelper<T, VarType>::ReflectionType;
 
-	VarResourcePtr(ResourcePtr<VarType> T::* ptr);
-	VarResourcePtr(void) = default;
+	VarDeferredResourcePtr(DeferredResourcePtr<VarType> T::* ptr);
+	VarDeferredResourcePtr(void) = default;
 
 	static const Refl::Reflection<ReflectionType>& GetReflection(void);
 	const Refl::IReflection& getReflection(void) const override;
@@ -72,15 +72,6 @@ public:
 	void save(ISerializeWriter& writer, const T& object) override;
 };
 
-ResourcePtr<IResource> RequestResource(HashStringView64<> resource_path, const Refl::IReflectionDefinition& ref_def);
-
-template <class T>
-ResourcePtr<T> RequestResourceT(HashStringView64<> resource_path)
-{
-	ResourcePtr<IResource> resource = RequestResource(resource_path, Refl::Reflection<T>::GetReflectionDefinition());
-	return ReflectionCast<T>(std::move(resource));
-}
-
 NS_END
 
-#include "Shibboleth_ResourcePtrReflection.inl"
+#include "Shibboleth_DeferredResourcePtrReflection.inl"

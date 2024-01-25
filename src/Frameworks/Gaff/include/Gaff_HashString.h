@@ -158,7 +158,9 @@ public:
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(const T* string);
 	void clear(void);
+
 	size_t size(void) const;
+	bool empty(void) const;
 
 	const String<T, Allocator>& getString(void) const;
 	const T* getBuffer(void) const;

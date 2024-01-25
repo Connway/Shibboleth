@@ -350,6 +350,12 @@ size_t HashString<T, HashType, HashingFunc, Allocator, true>::size(void) const
 }
 
 template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
+bool HashString<T, HashType, HashingFunc, Allocator, true>::empty(void) const
+{
+	return _string.empty();
+}
+
+template <class T, class HashType, HashFunc<HashType> HashingFunc, class Allocator>
 const String<T, Allocator>& HashString<T, HashType, HashingFunc, Allocator, true>::getString(void) const
 {
 	return _string;

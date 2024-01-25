@@ -15,6 +15,12 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtr.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtrReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_DeferredResourcePtrReflection.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h">
       <Filter>include</Filter>
     </ClInclude>
