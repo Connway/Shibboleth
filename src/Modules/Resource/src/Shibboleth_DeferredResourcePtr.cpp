@@ -20,43 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_SamplerStateResource.h"
-#include "Shibboleth_ImageResource.h"
-#include <Config/Shibboleth_Config.h>
-#include <Shibboleth_DeferredResourcePtr.h>
+#include "Shibboleth_DeferredResourcePtr.h"
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_AppUtils.h>
 
 NS_SHIBBOLETH
 
-struct GraphicsConfigWindow final
+ResourcePtr<IResource> DeferredResourceRequestResourceHelper(const HashString64<>& file_path, const Refl::IReflectionDefinition& ref_def)
 {
-	int32_t monitor_id = 0;
-
-	int32_t width = -1;
-	int32_t height = -1;
-	int32_t refresh_rate = -1;
-	bool vsync = false;
-
-	int32_t pos_x = -1;
-	int32_t pos_y = -1;
-
-	// $TODO: Replace this with window mode type.
-	bool windowed = false;
-};
-
-class GraphicsConfig final : public IConfig
-{
-public:
-	DeferredResourcePtr<SamplerStateResource> texture_filtering_sampler;
-	DeferredResourcePtr<ImageResource> icon;
-
-	VectorMap<HashString32<>, GraphicsConfigWindow> windows;
-
-	SHIB_REFLECTION_CLASS_DECLARE(GraphicsConfig);
-};
+	return GetManagerTFast<ResourceManager>().requestResource(file_path, ref_def);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::GraphicsConfigWindow)
-SHIB_REFLECTION_DECLARE(Shibboleth::GraphicsConfig)

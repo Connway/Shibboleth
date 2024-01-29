@@ -71,9 +71,16 @@ static void LoadJob(uintptr_t thread_id_int, void* data)
 	SHIB_FREET(job_data, GetAllocator());
 }
 
+bool IResource::waitUntilLoaded(void) const
+{
+	_res_mgr->waitForResource(*this);
+	return getState() == ResourceState::Loaded;
+}
+
 void IResource::requestLoad(void)
 {
 	if (_state != ResourceState::Deferred) {
+		// $TODO: Log warning.
 		return;
 	}
 

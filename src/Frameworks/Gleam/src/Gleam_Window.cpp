@@ -442,6 +442,11 @@ void Window::setIcon(const GLFWimage* icons, int32_t count)
 	glfwSetWindowIcon(_window, count, icons);
 }
 
+void Window::setIcon(const GLFWimage& icon)
+{
+	setIcon(&icon, 1);
+}
+
 void Window::setVisible(bool visible)
 {
 	GAFF_ASSERT(_window);

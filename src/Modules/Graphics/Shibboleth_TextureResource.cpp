@@ -36,10 +36,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureResource)
 	.classAttrs(
 		Shibboleth::CreatableAttribute(),
 		Shibboleth::ResourceExtensionAttribute(u8".texture.bin"),
-		Shibboleth::ResourceExtensionAttribute(u8".texture"),
-		Shibboleth::ResourceExtensionAttribute(u8".png"),
-		Shibboleth::ResourceExtensionAttribute(u8".tiff"),
-		Shibboleth::ResourceExtensionAttribute(u8".tif")
+		Shibboleth::ResourceExtensionAttribute(u8".texture")
 	)
 
 	.template base<Shibboleth::IResource>()

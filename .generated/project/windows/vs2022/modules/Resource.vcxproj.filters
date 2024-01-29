@@ -47,6 +47,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_DeferredResourcePtr.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_IResource.cpp">
       <Filter>src</Filter>
     </ClCompile>

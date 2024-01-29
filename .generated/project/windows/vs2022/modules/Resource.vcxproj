@@ -250,6 +250,7 @@ CodeGenerator64od module_header --module Resource</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Resource\include\Shibboleth_ResourceSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_DeferredResourcePtr.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_IResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_ResourceAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_ResourceManager.cpp" />

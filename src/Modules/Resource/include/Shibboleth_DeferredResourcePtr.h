@@ -22,9 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IResource.h"
+#include "Shibboleth_ResourcePtr.h"
 
 NS_SHIBBOLETH
+
+ResourcePtr<IResource> DeferredResourceRequestResourceHelper(const HashString64<>& _file_path, const Refl::IReflectionDefinition& ref_def);
 
 template <class T>
 class DeferredResourcePtr final
@@ -68,7 +70,7 @@ public:
 	{
 	}
 
-	explicit DeferredResourcePtr(HashString64<>&& file_path, , const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
+	explicit DeferredResourcePtr(HashString64<>&& file_path, const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
 		_ref_def(ref_def), _file_path(std::move(file_path)), _resource(nullptr)
 	{
 	}
@@ -157,6 +159,11 @@ public:
 		return _resource.get() != nullptr;
 	}
 
+	operator ResourcePtr<T>(void) const
+	{
+		return _resource;
+	}
+
 	const T* get(void) const
 	{
 		return _resource.get();
@@ -177,11 +184,17 @@ public:
 		return _file_path;
 	}
 
+	void requestLoad(void)
+	{
+		GAFF_ASSERT(!_file_path.empty() && _ref_def);
+		_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+	}
+
 private:
 	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 	HashString64<> _file_path;
 
-	Gaff::RefPtr<T> _resource;
+	ResourcePtr<T> _resource;
 };
 
 NS_END

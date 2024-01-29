@@ -40,6 +40,7 @@ struct ResourceCallbackID final
 	int32_t cb_id = -1;
 };
 
+// $TODO: Move this into IResource.
 enum class ResourceState
 {
 	Pending = 0,
@@ -53,6 +54,7 @@ class IResource : public Refl::IReflectionObject
 public:
 	static constexpr bool Creatable = false;
 
+	bool waitUntilLoaded(void) const;
 	void requestLoad(void);
 
 	virtual void load(const ISerializeReader& reader, uintptr_t thread_id_int);

@@ -93,10 +93,23 @@ bool RenderManager::init(void)
 	const GraphicsConfig* const config = GetConfig<GraphicsConfig>();
 	GAFF_ASSERT(config);
 
-	config->texture_filtering_sampler->requestLoad();
-	_default_sampler = config->texture_filtering_sampler.get();
+	config->texture_filtering_sampler.requestLoad();
 
-	//GLFWimage icon;
+	if (!config->icon->waitUntilLoaded()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_default_sampler = config->texture_filtering_sampler;
+
+	config->icon.requestLoad();
+	GLFWimage icon;
+
+	if (config->icon->waitUntilLoaded()) {
+		config->icon->fillGLFWImage(icon);
+	} else {
+		// $TODO: Log warning.
+	}
 
 	if (config->windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
@@ -226,7 +239,9 @@ bool RenderManager::init(void)
 				}
 			}
 
-			//glfwSetWindowIcon(window, 1, &icon);
+			if (config->icon->isLoaded()) {
+				window->setIcon(icon);
+			}
 
 			// Add the device to the window tag.
 			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(entry.first.getBuffer());

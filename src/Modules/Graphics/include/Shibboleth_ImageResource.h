@@ -41,6 +41,10 @@ public:
 
 private:
 	Image _image;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ImageResource);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ImageResource)

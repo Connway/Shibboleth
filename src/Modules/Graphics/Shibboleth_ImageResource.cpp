@@ -22,10 +22,16 @@ THE SOFTWARE.
 
 #include "Shibboleth_ImageResource.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-//#include <Shibboleth_ResourceLogging.h>
+#include <Shibboleth_ResourceLogging.h>
+#include <Shibboleth_IFileSystem.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ImageResource)
-	.classAttrs(Shibboleth::CreatableAttribute())
+	.classAttrs(
+		Shibboleth::CreatableAttribute(),
+		Shibboleth::ResourceExtensionAttribute(u8".png"),
+		Shibboleth::ResourceExtensionAttribute(u8".tiff"),
+		Shibboleth::ResourceExtensionAttribute(u8".tif")
+	)
 
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
@@ -33,8 +39,15 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::ImageResource)
 
 NS_SHIBBOLETH
 
-void ImageResource::load(const IFile& file, uintptr_t thread_id_int)
+void ImageResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
 {
+	const size_t index = getFilePath().getString().rfind('.');
+
+	if (!_image.load(file.getBuffer(), file.size(), getFilePath().getString().data() + index)) {
+		LogErrorResource("ImageResource::load: Could not read or parse image file '%s'.", getFilePath().getBuffer());
+		failed();
+		return;
+	}
 }
 
 NS_END

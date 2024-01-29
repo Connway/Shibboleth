@@ -105,7 +105,7 @@ bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, vo
 		return false;
 	}
 
-	const Refl::IReflectionDefinition* const = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(type_name));
+	const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(type_name));
 	DeferredResourcePtr<VarType>* const var = reinterpret_cast<DeferredResourcePtr<VarType>*>(object);
 
 	if (ref_def) {

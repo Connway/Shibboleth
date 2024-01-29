@@ -125,6 +125,7 @@ public:
 	void setTitle(const char8_t* title);
 
 	void setIcon(const GLFWimage* icons, int32_t count);
+	void setIcon(const GLFWimage& icon);
 
 	void setVisible(bool visible);
 	bool isVisible(void) const;
