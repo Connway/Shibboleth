@@ -53,7 +53,7 @@ public:
 	void setScissorRect(const IVec2& pos, const IVec2& size) override;
 	void setScissorRect(const IVec4& rect) override;
 
-	virtual bool isUsedBy(const Window& window) const override;
+	bool isUsedBy(const Window& window) const override;
 
 	ID3D11DeviceContext3* getDeviceContext(void);
 	ID3D11Device5* getDevice(void);
