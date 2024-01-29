@@ -31,15 +31,7 @@ VectorVar<T, ContainerType>::VectorVar(ContainerType T::*ptr):
 	GAFF_ASSERT(ptr);
 
 	if constexpr (!std::is_enum_v<ReflectionType> && !ReflectionDefinition<ReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<ReflectionType, VarType>);
-	}
-}
-
-template <class T, class ContainerType>
-VectorVar<T, ContainerType>::VectorVar(void)
-{
-	if constexpr (!std::is_enum_v<ReflectionType> && !ReflectionDefinition<ReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<ReflectionType, VarType>);
+		static_assert(!VarTypeHelper<T, ContainerType>::k_can_copy || std::is_base_of_v<ReflectionType, VarType>);
 	}
 }
 

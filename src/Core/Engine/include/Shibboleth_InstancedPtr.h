@@ -32,10 +32,29 @@ class InstancedPtr final
 	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
 
 public:
-	explicit InstancedPtr(const ProxyAllocator& allocator = ProxyAllocator()):
+	template <class U>
+	explicit InstancedPtr(U* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		_ptr(ptr),
+		_ref_def(&Refl::Reflection<U>::GetReflectionDefinition()),
+		_allocator(allocator)
+	{
+		static_assert(Refl::Reflection<U>::HasReflection, "Assigning class does not have reflection.");
+		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+	}
+
+	explicit InstancedPtr(T* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		_ptr(ptr),
 		_allocator(allocator)
 	{
 	}
+
+	explicit InstancedPtr(const ProxyAllocator& allocator):
+		_allocator(allocator)
+	{
+	}
+
+	InstancedPtr(InstancedPtr<T>&& instanced_ptr) = default;
+	InstancedPtr(void) = default;
 
 	const Refl::IReflectionDefinition* getReflectionDefinition(void) const
 	{
@@ -74,13 +93,7 @@ public:
 		return *this;
 	}
 
-	InstancedPtr& operator=(InstancedPtr<T>&& rhs)
-	{
-		_allocator = rhs._allocator;
-		_ref_def = rhs._ref_def;
-		_ptr = std::move(rhs._ptr);
-		return *this;
-	}
+	InstancedPtr& operator=(InstancedPtr<T>&& rhs) = default;
 
 	std::strong_ordering operator<=>(const T* rhs) const
 	{
@@ -145,10 +158,16 @@ public:
 		return _ptr != nullptr;
 	}
 
+	ProxyAllocator& getAllocator(void)
+	{
+		return _allocator;
+	}
+
 private:
-	ProxyAllocator _allocator;
-	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 	UniquePtr<T> _ptr;
+
+	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
+	ProxyAllocator _allocator;
 };
 
 NS_END

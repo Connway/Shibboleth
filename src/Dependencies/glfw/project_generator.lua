@@ -34,3 +34,14 @@ DependencyProject "GLFW"
 	filter {}
 
 	SetupConfigMap()
+
+
+function GLFWDependencies()
+	if os.target() == "windows" then
+		return {}
+	elseif os.target() == "linux" then
+		return {}
+	elseif os.target() == "macosx" then
+		return {}
+	end
+end

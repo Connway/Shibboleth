@@ -43,7 +43,7 @@ struct VarTypeHelper final
 	using ReflectionType = VarType;
 	using VariableType = VarType;
 	using Type = Var<T, VarType>;
-	static constexpr bool k_can_copy = true;
+	static constexpr bool k_can_copy = requires(T lhs, const T& rhs) { lhs = rhs; } || requires(const T& rhs) { T(rhs); }
 };
 
 

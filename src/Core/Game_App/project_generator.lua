@@ -45,10 +45,6 @@ CoreProject("Game_App", proj_kind)
 	--filter { "system:not windows" }
 	--	linkoptions { "-Wl,-rpath,./bin" }
 
-	filter { "configurations:*Static*" }
-		defines { "SHIB_STATIC" }
-		StaticLinks()
-
 	filter { "configurations:not *Release*" }
 		debugargs { "\"cfg\\dev.cfg\"" }
 
@@ -59,3 +55,8 @@ CoreProject("Game_App", proj_kind)
 		"{MKDIR} ../../../../../workingdir/bin",
 		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}
+
+
+--CoreProject("Game_App_Static", proj_kind)
+	--defines { "SHIB_STATIC" }
+	--StaticLinks()

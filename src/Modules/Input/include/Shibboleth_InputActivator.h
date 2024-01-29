@@ -32,8 +32,6 @@ class PlayerInputSubsystem;
 class InputActivator : public Refl::IReflectionObject
 {
 public:
-	InputActivator(const InputActivator& activator) = default;
-
 	virtual void update(const PlayerInputSubsystem& input_subsystem, const Gleam::Vec3& input_value, float dt) const;
 
 	bool isTriggered(void) const;

@@ -68,7 +68,6 @@ public:
 	static_assert(Reflection<ReflectionType>::HasReflection);
 
 	explicit VectorVar(ContainerType T::*ptr);
-	VectorVar(void);
 
 	static const Reflection<ReflectionType>& GetReflection(void);
 	const IReflection& getReflection(void) const override;

@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IRenderManager;
+class RenderManager;
 
 class InputManagerOld final : public IManager
 {
@@ -119,7 +119,7 @@ private:
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _start;
 	eastl::chrono::time_point<eastl::chrono::high_resolution_clock> _end;
 
-	IRenderManager* _render_mgr = nullptr;
+	RenderManager* _render_mgr = nullptr;
 
 	Gaff::Hash32 _prev_mode = Gaff::FNV1aHash32Const("Default");
 	Gaff::Hash32 _curr_mode = Gaff::FNV1aHash32Const("Default");

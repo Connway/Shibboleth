@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_InputManagerOld.h"
 #include "Shibboleth_InputReflection.h"
-#include <Shibboleth_IRenderManager.h>
+//#include <Shibboleth_RenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
@@ -68,7 +68,8 @@ u8R"({
 
 static void UpdateWindows(uintptr_t, void* data)
 {
-	reinterpret_cast<IRenderManager*>(data)->updateWindows();
+	GAFF_REF(data);
+	//reinterpret_cast<IRenderManager*>(data)->updateWindows();
 }
 
 
@@ -236,19 +237,19 @@ bool InputManagerOld::initAllModulesLoaded(void)
 	_device_player_map[k_mouse_device] = _km_player_id;
 
 	// Register for all the input callbacks.
-	_render_mgr = &GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
+	//_render_mgr = &GetManagerTFast<Shibboleth::RenderManager>();
 
-	for (int32_t i = 0; i < _render_mgr->getNumWindows(); ++i) {
-		Gleam::Window* const window = _render_mgr->getWindow(i);
+	//for (int32_t i = 0; i < _render_mgr->getNumWindows(); ++i) {
+	//	Gleam::Window* const window = _render_mgr->getWindow(i);
 
-		window->addKeyCallback(Gaff::MemberFunc(this, &InputManagerOld::handleKeyboardInput));
-		window->addMouseCallback(Gaff::MemberFunc(this, &InputManagerOld::handleMouseInput));
-		//window->addGamepadCallback();
+	//	window->addKeyCallback(Gaff::MemberFunc(this, &InputManagerOld::handleKeyboardInput));
+	//	window->addMouseCallback(Gaff::MemberFunc(this, &InputManagerOld::handleMouseInput));
+	//	//window->addGamepadCallback();
 
-		if (!window->isUsingRawMouseMotion()) {
-			window->useRawMouseMotion(true);
-		}
-	}
+	//	if (!window->isUsingRawMouseMotion()) {
+	//		window->useRawMouseMotion(true);
+	//	}
+	//}
 
 	return true;
 }

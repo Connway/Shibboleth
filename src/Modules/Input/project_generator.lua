@@ -38,7 +38,7 @@ local GenerateProject = function()
 			"Player",
 			"Resource",
 
-			"GLFW"
+			--"GLFW"
 		}
 
 		dependson(deps)
@@ -52,7 +52,7 @@ local LinkDependencies = function()
 	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "Player")
 	table.insert(deps, "Resource")
-	table.insert(deps, "GLFW")
+	--table.insert(deps, "GLFW")
 
 	dependson(deps)
 	links(deps)

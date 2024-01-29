@@ -64,7 +64,7 @@ void VarInstancedPtr<T, VarType>::setData(void* object, const void* data)
 		}
 
 		InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
-		*var = *reinterpret_cast<const VarType*>(data);
+		**var = *reinterpret_cast<const VarType*>(data);
 
 	} else {
 		GAFF_REF(object, data);
@@ -86,7 +86,7 @@ void VarInstancedPtr<T, VarType>::setDataMove(void* object, void* data)
 	}
 
 	InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
-	*var = std::move(*reinterpret_cast<VarType*>(data));
+	**var = std::move(*reinterpret_cast<VarType*>(data));
 }
 
 template <class T, class VarType>
@@ -110,7 +110,7 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 
 		if (ref_def) {
 			InstancedPtr<VarType>* const var = reinterpret_cast<InstancedPtr<VarType>*>(object);
-			var->reset(ref_def->CREATET(VarType, out._allocator));
+			var->reset(ref_def->CREATET(VarType, var->getAllocator()));
 
 			const auto guard = reader.enterElementGuard(u8"data");
 			GAFF_ASSERT(reader.isNull() || reader.isObject());

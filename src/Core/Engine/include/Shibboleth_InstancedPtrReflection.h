@@ -36,12 +36,12 @@ NS_END
 NS_REFLECTION
 
 template <class T, class VarType>
-struct VarTypeHelper< T, Shibboleth::InstancedPtr<T, VarType> > final
+struct VarTypeHelper< T, Shibboleth::InstancedPtr<VarType> > final
 {
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
 	using VariableType = VarType;
 	using Type = Shibboleth::VarInstancedPtr<T, VarType>;
-	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
+	static constexpr bool k_can_copy = false;
 };
 
 NS_END

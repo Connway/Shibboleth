@@ -184,6 +184,33 @@ Gleam::ShaderResourceView* TextureResource::getShaderResourceView(const Gleam::R
 	return (it != _texture_data.end()) ? it->second.second.get() : nullptr;
 }
 
+void TextureResource::loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
+{
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
+	const Vector<Gleam::RenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
+
+	if (!devices || devices->empty()) {
+		LogErrorResource("Failed to load texture '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag);
+		failed();
+		return;
+	}
+
+	const size_t index = image_path.rfind('.');
+	Image image;
+
+	if (!image.load(file.getBuffer(), file.size(), image_path.data() + index)) {
+		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file '%s'.", getFilePath().getBuffer(), image_path.data());
+		failed();
+		return;
+	}
+
+	if (createTexture(*devices, image, 1, make_linear)) {
+		succeeded();
+	} else {
+		failed();
+	}
+}
+
 void TextureResource::loadTextureJSON(const IFile& file, uintptr_t thread_id_int)
 {
 	SerializeReaderWrapper reader_wrapper;
@@ -238,33 +265,6 @@ void TextureResource::loadTextureJSON(const IFile& file, uintptr_t thread_id_int
 	}
 
 	loadTextureImage(*image_file, device_tag.data(), image_path, make_linear);
-}
-
-void TextureResource::loadTextureImage(const IFile& file, const char8_t* device_tag, const U8String& image_path, bool make_linear)
-{
-	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
-	const Vector<Gleam::RenderDevice*>* const devices = render_mgr.getDevicesByTag(device_tag);
-
-	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load texture '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag);
-		failed();
-		return;
-	}
-
-	const size_t index = image_path.rfind('.');
-	Image image;
-
-	if (!image.load(file.getBuffer(), file.size(), image_path.data() + index)) {
-		LogErrorResource("Failed to load texture '%s'. Could not read or parse image file '%s'.", getFilePath().getBuffer(), image_path.data());
-		failed();
-		return;
-	}
-
-	if (createTexture(*devices, image, 1, make_linear)) {
-		succeeded();
-	} else {
-		failed();
-	}
 }
 
 NS_END
