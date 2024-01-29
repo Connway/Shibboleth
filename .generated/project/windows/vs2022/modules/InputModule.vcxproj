@@ -273,9 +273,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\InputModu
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,10 +26,10 @@ THE SOFTWARE.
 #include <Gleam_RenderDevice.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::BufferResource)
-.classAttrs(Shibboleth::CreatableAttribute())
+	.classAttrs(Shibboleth::CreatableAttribute())
 
-.template base<Shibboleth::IResource>()
-.template ctor<>()
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::BufferResource)
 
 NS_SHIBBOLETH

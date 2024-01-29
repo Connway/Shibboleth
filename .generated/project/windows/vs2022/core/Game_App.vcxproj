@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -155,12 +155,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\Game_App\$(TargetFi
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Physics\Physics64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Player\Player64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\imgui\imgui64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Scene\Scene64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Entity\Entity64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <ProjectReference>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
 copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Game_App\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\bin
@@ -195,7 +192,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Game_App\$(Target
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -232,7 +229,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\Game_App\$(Target
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;LowLevel.lib;LowLevelAABB.lib;LowLevelDynamics.lib;PhysXCharacterKinematic.lib;PhysXFoundation.lib;PhysXExtensions.lib;PhysXVehicle.lib;PhysXCooking.lib;PhysXCommon.lib;PhysXPvdSDK.lib;PhysXTask.lib;PhysX.lib;SceneQuery.lib;SimulationController.lib;ECS.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Dbghelp.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -249,56 +246,23 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Game_App\
     <None Include="..\..\..\..\..\src\Core\Game_App\project_generator.lua" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\modules\Physics.vcxproj">
-      <Project>{888B590D-F46A-D8A8-FD82-637F69E13E0A}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Player.vcxproj">
-      <Project>{724E55CA-5EF0-7FA0-47AB-93F433EC06F1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\imgui.vcxproj">
-      <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Scene.vcxproj">
-      <Project>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Entity.vcxproj">
-      <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
     <ProjectReference Include="Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
-      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\mpack.vcxproj">
-      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Script.vcxproj">
-      <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\DevDebug.vcxproj">
-      <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\MainLoop.vcxproj">
-      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modules\Resource.vcxproj">
-      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\LuaJIT.vcxproj">
-      <Project>{CEBCA2C1-BA5E-CD97-A319-E1EB8F5A54E8}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\TracyClient.vcxproj">
-      <Project>{27069401-93BB-0CF7-1CB0-06CE886403FB}</Project>
+    <ProjectReference Include="Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
+      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

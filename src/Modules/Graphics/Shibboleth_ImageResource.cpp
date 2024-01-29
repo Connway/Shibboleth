@@ -20,36 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ImageResource.h"
+#include <Shibboleth_ResourceAttributesCommon.h>
+//#include <Shibboleth_ResourceLogging.h>
 
-#include <Shibboleth_IResource.h>
-#include <Gleam_ProgramBuffers.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ImageResource)
+	.classAttrs(Shibboleth::CreatableAttribute())
 
-NS_GLEAM
-	class RenderDevice;
-NS_END
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ImageResource)
 
 NS_SHIBBOLETH
 
-class ProgramBuffersResource final : public IResource
+void ImageResource::load(const IFile& file, uintptr_t thread_id_int)
 {
-public:
-	static constexpr bool Creatable = true;
-
-	Vector<Gleam::RenderDevice*> getDevices(void) const;
-
-	bool createProgramBuffers(const Vector<Gleam::RenderDevice*>& devices);
-	bool createProgramBuffers(Gleam::RenderDevice& device);
-
-	const Gleam::ProgramBuffers* getProgramBuffer(const Gleam::RenderDevice& rd) const;
-	Gleam::ProgramBuffers* getProgramBuffer(const Gleam::RenderDevice& rd);
-
-private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ProgramBuffers> > _program_buffers{ ProxyAllocator("Graphics") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
-};
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::ProgramBuffersResource)

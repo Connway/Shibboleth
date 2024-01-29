@@ -23,33 +23,24 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_IResource.h>
-#include <Gleam_ProgramBuffers.h>
+#include <Shibboleth_Image.h>
 
-NS_GLEAM
-	class RenderDevice;
-NS_END
+struct GLFWimage;
 
 NS_SHIBBOLETH
 
-class ProgramBuffersResource final : public IResource
+class ImageResource final : public IResource
 {
 public:
 	static constexpr bool Creatable = true;
 
-	Vector<Gleam::RenderDevice*> getDevices(void) const;
+	void load(const IFile& file, uintptr_t thread_id_int) override;
 
-	bool createProgramBuffers(const Vector<Gleam::RenderDevice*>& devices);
-	bool createProgramBuffers(Gleam::RenderDevice& device);
-
-	const Gleam::ProgramBuffers* getProgramBuffer(const Gleam::RenderDevice& rd) const;
-	Gleam::ProgramBuffers* getProgramBuffer(const Gleam::RenderDevice& rd);
+	void fillGLFWImage(GLFWimage& image) const;
+	const Image& getImage(void) const;
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ProgramBuffers> > _program_buffers{ ProxyAllocator("Graphics") };
-
-	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
+	Image _image;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::ProgramBuffersResource)

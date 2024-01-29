@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_BufferResource.h"
 #include <Shibboleth_ResourcePtr.h>
-#include <Shibboleth_SmartPtrs.h>
 #include <Gleam_IMesh.h>
 #include <Gleam_AABB.h>
 

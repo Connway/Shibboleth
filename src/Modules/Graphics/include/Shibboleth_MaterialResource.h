@@ -23,8 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ShaderResource.h"
-#include <Shibboleth_ResourcePtr.h>
-#include <Shibboleth_IResource.h>
 #include <Gleam_IProgram.h>
 
 NS_SHIBBOLETH

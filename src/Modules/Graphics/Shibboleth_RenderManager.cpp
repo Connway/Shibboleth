@@ -93,8 +93,10 @@ bool RenderManager::init(void)
 	const GraphicsConfig* const config = GetConfig<GraphicsConfig>();
 	GAFF_ASSERT(config);
 
-	// $TODO: This isn't going to work. Need to find a better way to serialize this.
-	_default_sampler = config->texture_filtering_sampler;
+	config->texture_filtering_sampler->requestLoad();
+	_default_sampler = config->texture_filtering_sampler.get();
+
+	//GLFWimage icon;
 
 	if (config->windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
@@ -224,44 +226,7 @@ bool RenderManager::init(void)
 				}
 			}
 
-			// $TODO: Set icon.
-			/*
-			if (const Gaff::JSON icon = value.getObject(u8"icon"); icon.isString()) {
-				const char8_t* const icon_path = icon.getString();
-				Gaff::File icon_file(icon_path, Gaff::File::OpenMode::ReadBinary);
-				icon.freeString(icon_path);
-
-				if (icon_file.isOpen()) {
-					Vector<uint8_t> icon_data;
-					icon_data.resize(icon_file.getFileSize());
-
-					if (icon_file.readEntireFile(reinterpret_cast<char*>(icon_data.data()))) {
-						const size_t index = Gaff::ReverseFind(icon_path, u8'.');
-
-						if (index != GAFF_SIZE_T_FAIL) {
-							Image image;
-
-							if (image.load(icon_data.data(), icon_data.size(), reinterpret_cast<const char*>(icon_path + index))) {
-								const GLFWimage icon_image { image.getWidth(), image.getHeight(), image.getBuffer() };
-								window->setIcon(&icon_image, 1);
-
-							} else {
-								// $TODO: Log error.
-							}
-
-						} else {
-							// $TODO: Log error.
-						}
-
-					} else {
-						// $TODO: Log error.
-					}
-
-				} else {
-					// $TODO: Log error.
-				}
-			}
-			*/
+			//glfwSetWindowIcon(window, 1, &icon);
 
 			// Add the device to the window tag.
 			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(entry.first.getBuffer());

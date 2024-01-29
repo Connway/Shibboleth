@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_IResource.h>
-#include <Shibboleth_SmartPtrs.h>
 #include <Gleam_Buffer.h>
 
 NS_GLEAM

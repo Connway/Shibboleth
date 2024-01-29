@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_IResource.h>
-#include <Shibboleth_SmartPtrs.h>
 #include <Esprit_StateMachine.h>
 
 NS_SHIBBOLETH
