@@ -218,7 +218,7 @@ Shibboleth::DeferredResourcePtr<Derived> ReflectionCast(Shibboleth::DeferredReso
 			return Shibboleth::DeferredResourcePtr<Derived>(derived, Shibboleth::DeferredResourcePtr<Derived>::NoCountChange());
 
 		} else {
-			if (resource.getReflectionDefinition()->hasInterface<Derived>()) {
+			if (resource.getReflectionDefinition()->template hasInterface<Derived>()) {
 				return Shibboleth::DeferredResourcePtr<Derived>(resource.getFilePath());
 			} else {
 				return Shibboleth::DeferredResourcePtr<Derived>();
@@ -234,7 +234,7 @@ Shibboleth::DeferredResourcePtr<Derived> ReflectionCast(const Shibboleth::Deferr
 		return Shibboleth::DeferredResourcePtr<Derived>(ReflectionCast<Derived>(resource.get()));
 
 	} else {
-		if (resource.getReflectionDefinition()->hasInterface<Derived>()) {
+		if (resource.getReflectionDefinition()->template hasInterface<Derived>()) {
 			return Shibboleth::DeferredResourcePtr<Derived>(resource.getFilePath());
 		} else {
 			return Shibboleth::DeferredResourcePtr<Derived>();
