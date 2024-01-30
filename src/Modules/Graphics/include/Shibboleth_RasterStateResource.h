@@ -23,7 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_IResource.h>
-#include <Gleam_IRasterState.h>
+#include <Gleam_RasterState.h>
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -34,18 +38,18 @@ public:
 
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	bool createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings);
-	bool createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings);
+	bool createRasterState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings);
+	bool createRasterState(Gleam::RenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings);
 
-	Gleam::IRasterState* getOrCreateRasterState(const Gleam::IRenderDevice& rd);
+	Gleam::RasterState* getOrCreateRasterState(const Gleam::RenderDevice& rd);
 
-	const Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd) const;
-	Gleam::IRasterState* getRasterState(const Gleam::IRenderDevice& rd);
+	const Gleam::RasterState* getRasterState(const Gleam::RenderDevice& rd) const;
+	Gleam::RasterState* getRasterState(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IRasterState> > _raster_states{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::RasterState> > _raster_states{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };

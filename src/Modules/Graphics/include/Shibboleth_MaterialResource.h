@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_ShaderResource.h"
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
-#include <Gleam_IProgram.h>
+#include <Gleam_Program.h>
 
 NS_SHIBBOLETH
 
@@ -36,10 +36,10 @@ public:
 
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
 	bool createProgram(
-		const Vector<Gleam::IRenderDevice*>& devices,
+		const Vector<Gleam::RenderDevice*>& devices,
 		ResourcePtr<ShaderResource>& vertex,
 		ResourcePtr<ShaderResource>& pixel,
 		ResourcePtr<ShaderResource>& domain,
@@ -48,7 +48,7 @@ public:
 	);
 
 	bool createProgram(
-		Gleam::IRenderDevice& device,
+		Gleam::RenderDevice& device,
 		ResourcePtr<ShaderResource>& vertex,
 		ResourcePtr<ShaderResource>& pixel,
 		ResourcePtr<ShaderResource>& domain,
@@ -56,20 +56,20 @@ public:
 		ResourcePtr<ShaderResource>& hull
 	);
 
-	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
-	bool createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
+	bool createProgram(const Vector<Gleam::RenderDevice*>& devices, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
+	bool createProgram(Gleam::RenderDevice& device, ResourcePtr<ShaderResource>& vertex, ResourcePtr<ShaderResource>& pixel);
 
-	bool createProgram(const Vector<Gleam::IRenderDevice*>& devices, ResourcePtr<ShaderResource>& compute);
-	bool createProgram(Gleam::IRenderDevice& device, ResourcePtr<ShaderResource>& compute);
+	bool createProgram(const Vector<Gleam::RenderDevice*>& devices, ResourcePtr<ShaderResource>& compute);
+	bool createProgram(Gleam::RenderDevice& device, ResourcePtr<ShaderResource>& compute);
 
-	const Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device) const;
-	Gleam::IProgram* getProgram(const Gleam::IRenderDevice& device);
+	const Gleam::Program* getProgram(const Gleam::RenderDevice& device) const;
+	Gleam::Program* getProgram(const Gleam::RenderDevice& device);
 
-	const Gleam::ILayout* getLayout(const Gleam::IRenderDevice& device) const;
-	Gleam::ILayout* getLayout(const Gleam::IRenderDevice& device);
+	const Gleam::Layout* getLayout(const Gleam::RenderDevice& device) const;
+	Gleam::Layout* getLayout(const Gleam::RenderDevice& device);
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IProgram> > _programs{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Program> > _programs{ ProxyAllocator("Graphics") };
 	ResourcePtr<ShaderResource> _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);

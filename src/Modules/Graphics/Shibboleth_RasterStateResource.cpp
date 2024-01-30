@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_RasterStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Gleam_RenderDevice.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RasterStateResource)
 	.classAttrs(
@@ -46,8 +47,8 @@ SHIB_REFLECTION_CLASS_DEFINE(RasterStateResource)
 
 void RasterStateResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
 {
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
+	const Vector<Gleam::RenderDevice*>* devices = nullptr;
 	U8String device_tag;
 
 	{
@@ -86,37 +87,38 @@ void RasterStateResource::load(const ISerializeReader& reader, uintptr_t /*threa
 	}
 }
 
-Vector<Gleam::IRenderDevice*> RasterStateResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> RasterStateResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
 
 	for (const auto& pair : _raster_states) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool RasterStateResource::createRasterState(const Vector<Gleam::IRenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings)
+bool RasterStateResource::createRasterState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings)
 {
 	bool success = true;
 
-	for (Gleam::IRenderDevice* device : devices) {
+	for (Gleam::RenderDevice* device : devices) {
 		success = success && createRasterState(*device, raster_state_settings);
 	}
 
 	return success;
 }
 
-bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings)
+bool RasterStateResource::createRasterState(Gleam::RenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings)
 {
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
-	Gleam::IRasterState* const raster_state = render_mgr.createRasterState();
+	static ProxyAllocator k_allocator("Graphics");
+	Gleam::RasterState* const raster_state = SHIB_ALLOCT(Gleam::RasterState, k_allocator);
 
 	if (!raster_state->init(device, raster_state_settings)) {
 		LogErrorResource("Failed to create raster state '%s'.", getFilePath().getBuffer());
-		SHIB_FREET(raster_state, GetAllocator());
+		SHIB_FREET(raster_state, k_allocator);
+
 		return false;
 	}
 
@@ -124,13 +126,13 @@ bool RasterStateResource::createRasterState(Gleam::IRenderDevice& device, const 
 	return true;
 }
 
-const Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDevice& rd) const
+const Gleam::RasterState* RasterStateResource::getRasterState(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _raster_states.find(&rd);
 	return (it != _raster_states.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IRasterState* RasterStateResource::getRasterState(const Gleam::IRenderDevice& rd)
+Gleam::RasterState* RasterStateResource::getRasterState(const Gleam::RenderDevice& rd)
 {
 	const auto it = _raster_states.find(&rd);
 	return (it != _raster_states.end()) ? it->second.get() : nullptr;

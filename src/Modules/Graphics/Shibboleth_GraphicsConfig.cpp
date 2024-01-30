@@ -38,6 +38,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)
+	.var("icon", &Shibboleth::GraphicsConfig::icon, Shibboleth::OptionalAttribute())
 
 	.var("windows", &Shibboleth::GraphicsConfig::windows, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
