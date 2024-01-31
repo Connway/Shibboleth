@@ -135,6 +135,11 @@ public:
 		return _resource.get();
 	}
 
+	T* release(void)
+	{
+		return _resource.release();
+	}
+
 private:
 	Gaff::RefPtr<T> _resource;
 };

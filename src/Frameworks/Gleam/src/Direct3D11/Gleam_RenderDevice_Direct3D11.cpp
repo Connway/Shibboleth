@@ -202,6 +202,7 @@ bool RenderDevice::init(const Window& window)
 	GLFWwindow* const glfw_window = window.getGLFWWindow();
 	GLFWmonitor* const monitor = glfwGetWindowMonitor(glfw_window);
 	const char* const adapter_name = glfwGetWin32Adapter(monitor);
+
 	return init(adapter_name);
 }
 

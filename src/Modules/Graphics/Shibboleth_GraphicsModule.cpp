@@ -26,6 +26,8 @@ THE SOFTWARE.
 SHIB_DEFINE_MODULE_BEGIN(Graphics)
 
 #ifdef SHIB_STATIC
+	#include <Log/Shibboleth_LogManager.h>
+
 	namespace Graphics
 	{
 		class Module final : public Shibboleth::Module
@@ -51,8 +53,11 @@ SHIB_DEFINE_MODULE_BEGIN(Graphics)
 
 		static void GraphicsLog(const char8_t* msg, Gleam::LogMsgType type)
 		{
+			static constexpr const char8_t* const k_log_channel_name_graphics = u8"Graphics";
+			static constexpr Gaff::Hash32 k_log_channel_graphics = Gaff::FNV1aHash32StringConst(k_log_channel_name_graphics);
+
 			const Shibboleth::LogType msg_type = static_cast<Shibboleth::LogType>(type);
-			Shibboleth::GetApp().getLogManager().logMessage(msg_type, Shibboleth::k_log_channel_default, msg);
+			Shibboleth::GetApp().getLogManager().logMessage(msg_type, k_log_channel_graphics, msg);
 		}
 
 		bool Module::preInit(Shibboleth::IApp& app)

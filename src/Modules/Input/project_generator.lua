@@ -21,8 +21,7 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Gleam/include",
 			source_dir .. "../../Modules/Player/include",
 			source_dir .. "../../Modules/MainLoop/include",
-			source_dir .. "../../Modules/Resource/include",
-			source_dir .. "../../Modules/Graphics/include" -- for iterating over windows.
+			source_dir .. "../../Modules/Resource/include"
 		}
 
 	ModuleProject "InputModule"
@@ -34,7 +33,6 @@ local GenerateProject = function()
 		{
 			"Gleam",
 			"MainLoop",
-			"GraphicsBase",
 			"Player",
 			"Resource",
 
@@ -49,7 +47,6 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Input")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "MainLoop")
-	table.insert(deps, "GraphicsBase")
 	table.insert(deps, "Player")
 	table.insert(deps, "Resource")
 	--table.insert(deps, "GLFW")

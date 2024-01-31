@@ -175,47 +175,47 @@ private:
 
 	int32_t _cache_index = 0;
 
-	void newObjectArchetype(const ECSArchetype& archetype);
-	void removedObjectArchetype(int32_t index);
+	//void newObjectArchetype(const ECSArchetype& archetype);
+	//void removedObjectArchetype(int32_t index);
 
-	void processNewArchetypeMaterial(
-		InstanceData& instance_data,
-		const Material& material,
-		const ECSArchetype& archetype
-	);
+//	void processNewArchetypeMaterial(
+//		InstanceData& instance_data,
+//		const Material& material,
+//		const ECSArchetype& archetype
+//	);
+//
+//	void addStructuredBuffersSRVs(
+//		InstanceData& instance_data,
+//		const Material& material,
+//		const ECSArchetype& archetype,
+//		const Vector<Gleam::IRenderDevice*>& devices,
+//		Gleam::IShader::Type shader_type
+//	);
 
-	void addStructuredBuffersSRVs(
-		InstanceData& instance_data,
-		const Material& material,
-		const ECSArchetype& archetype,
-		const Vector<Gleam::IRenderDevice*>& devices,
-		Gleam::IShader::Type shader_type
-	);
-
-	void addTextureSRVs(
-		const Material& material,
-		const Gleam::ShaderReflection& refl,
-		InstanceData::VarMap& var_map,
-		Gleam::IRenderDevice& rd,
-		Gleam::IShader::Type shader_type
-	);
-
-	void addConstantBuffers(
-		const Gleam::ShaderReflection& refl,
-		Gleam::IProgramBuffers& pb,
-		Gleam::IRenderDevice& rd,
-		const ECSArchetype& archetype,
-		const Vector<Gleam::IRenderDevice*>& devices,
-		Gleam::IShader::Type shader_type
-	);
-
-	void addSamplers(
-		const Material& material,
-		const Gleam::ShaderReflection& refl,
-		Gleam::IProgramBuffers& pb,
-		Gleam::IRenderDevice& rd,
-		Gleam::IShader::Type shader_type
-	);
+//	void addTextureSRVs(
+//		const Material& material,
+//		const Gleam::ShaderReflection& refl,
+//		InstanceData::VarMap& var_map,
+//		Gleam::IRenderDevice& rd,
+//		Gleam::IShader::Type shader_type
+//	);
+//
+//	void addConstantBuffers(
+//		const Gleam::ShaderReflection& refl,
+//		Gleam::ProgramBuffers& pb,
+//		Gleam::RenderDevice& rd,
+//		const ECSArchetype& archetype,
+//		const Vector<Gleam::RenderDevice*>& devices,
+//		Gleam::IShader::Type shader_type
+//	);
+//
+//	void addSamplers(
+//		const Material& material,
+//		const Gleam::ShaderReflection& refl,
+//		Gleam::ProgramBuffers& pb,
+//		Gleam::RenderDevice& rd,
+//		Gleam::IShader::Type shader_type
+//	);
 
 	static void GenerateCommandListJob(uintptr_t id_int, void* data);
 	static void DeviceJob(uintptr_t id_int, void* data);

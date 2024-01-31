@@ -45,9 +45,12 @@ void ImageResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
 
 	if (!_image.load(file.getBuffer(), file.size(), getFilePath().getString().data() + index)) {
 		LogErrorResource("ImageResource::load: Could not read or parse image file '%s'.", getFilePath().getBuffer());
+
 		failed();
 		return;
 	}
+
+	succeeded();
 }
 
 NS_END

@@ -45,7 +45,6 @@ enum class ComparisonFunc
 	Always
 };
 
-
 enum class RendererType
 {
 	Direct3D11 = 0,

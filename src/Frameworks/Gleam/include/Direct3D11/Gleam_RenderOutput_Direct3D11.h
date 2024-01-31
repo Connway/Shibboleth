@@ -34,7 +34,7 @@ NS_GLEAM
 class RenderOutput final : public IRenderOutput
 {
 public:
-	bool init(IRenderDevice& device, const Window& window, int32_t display_id, int32_t refresh_rate, bool vsync) override;
+	bool init(IRenderDevice& device, const Window& window, int32_t refresh_rate, bool vsync) override;
 
 	RendererType getRendererType(void) const override;
 

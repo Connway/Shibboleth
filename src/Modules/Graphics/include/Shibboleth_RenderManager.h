@@ -33,12 +33,8 @@ THE SOFTWARE.
 #include <EASTL/array.h>
 
 NS_GLEAM
-	class ShaderResourceView;
-	class ProgramBuffers;
 	class RenderOutput;
-	class RenderTarget;
 	class RenderDevice;
-	class SamplerState;
 	class CommandList;
 	class Texture;
 	class Window;
@@ -54,35 +50,35 @@ public:
 	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::Window>;
 
-	using ShaderResourceViewPtr = UniquePtr<Gleam::ShaderResourceView>;
-	using ProgramBuffersPtr = UniquePtr<Gleam::ProgramBuffers>;
+	//using ShaderResourceViewPtr = UniquePtr<Gleam::ShaderResourceView>;
+	//using ProgramBuffersPtr = UniquePtr<Gleam::ProgramBuffers>;
 	using SamplerStatePtr = UniquePtr<Gleam::SamplerState>;
-	using RenderTargetPtr = UniquePtr<Gleam::RenderTarget>;
-	using TexturePtr = UniquePtr<Gleam::Texture>;
+	//using RenderTargetPtr = UniquePtr<Gleam::RenderTarget>;
+	//using TexturePtr = UniquePtr<Gleam::Texture>;
 
 	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;
 
-	struct GBuffer final
-	{
-		RenderTargetPtr render_target;
-
-		TexturePtr diffuse;
-		TexturePtr specular;
-		TexturePtr normal;
-		TexturePtr position;
-		TexturePtr depth;
-
-		ShaderResourceViewPtr diffuse_srv;
-		ShaderResourceViewPtr specular_srv;
-		ShaderResourceViewPtr normal_srv;
-		ShaderResourceViewPtr position_srv;
-		ShaderResourceViewPtr depth_srv;
-
-		// These fields are only filled out if doing off-screen rendering.
-		RenderTargetPtr final_render_target;
-		TexturePtr final_image;
-		ShaderResourceViewPtr final_srv;
-	};
+//	struct GBuffer final
+//	{
+//		RenderTargetPtr render_target;
+//
+//		TexturePtr diffuse;
+//		TexturePtr specular;
+//		TexturePtr normal;
+//		TexturePtr position;
+//		TexturePtr depth;
+//
+//		ShaderResourceViewPtr diffuse_srv;
+//		ShaderResourceViewPtr specular_srv;
+//		ShaderResourceViewPtr normal_srv;
+//		ShaderResourceViewPtr position_srv;
+//		ShaderResourceViewPtr depth_srv;
+//
+//		// These fields are only filled out if doing off-screen rendering.
+//		RenderTargetPtr final_render_target;
+//		TexturePtr final_image;
+//		ShaderResourceViewPtr final_srv;
+//	};
 
 	struct RenderCommand final
 	{
@@ -126,6 +122,11 @@ public:
 	const Vector<RenderDevicePtr>& getDevices(void) const;
 	int32_t getNumDevices(void) const;
 
+	const Vector<Gleam::RenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
+	const Vector<Gleam::RenderDevice*>* getDevicesByTag(const char* tag) const
+	{
+		return getDevicesByTag(Gaff::FNV1aHash32String(tag));
+	}
 
 	const Gleam::RenderOutput* getOutput(const char* tag) const
 	{
@@ -164,7 +165,7 @@ public:
 	const ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void) const;
 	ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void);
 
-	GBuffer* createGBuffer(Gleam::RenderTarget& output);
+	//GBuffer* createGBuffer(Gleam::RenderTarget& output);
 
 	//bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
 	//const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
@@ -183,7 +184,7 @@ public:
 private:
 	struct RenderOutput final
 	{
-		GBuffer g_buffer;
+		//GBuffer g_buffer;
 		RenderOutputPtr output;
 		WindowPtr window;
 		Gleam::RenderDevice* render_device = nullptr;
@@ -201,7 +202,7 @@ private:
 	};
 
 	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
-	VectorMap<const Gleam::RenderTarget*, GBuffer> _g_buffers{ ProxyAllocator{"Graphics"} };
+	//VectorMap<const Gleam::RenderTarget*, GBuffer> _g_buffers{ ProxyAllocator{"Graphics"} };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::RenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
 	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
