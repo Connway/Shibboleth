@@ -22,42 +22,46 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_BufferResource.h"
-#include <Shibboleth_ResourcePtr.h>
-#include <Gleam_IMesh.h>
-#include <Gleam_AABB.h>
+#include "Shibboleth_MeshResource.h"
 
-struct aiMesh;
+struct aiScene;
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
 
 NS_SHIBBOLETH
 
-class MeshResource final : public IResource
+class MeshResource;
+
+class ModelResource final : public IResource
 {
 public:
 	static constexpr bool Creatable = true;
 
-	Vector<Gleam::IRenderDevice*> getDevices(void) const;
+	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
-	bool createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh);
-	bool createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh);
+	Vector<Gleam::RenderDevice*> getDevices(void) const;
 
-	const Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd) const;
-	Gleam::IMesh* getMesh(const Gleam::IRenderDevice& rd);
+	bool createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes);
+	bool createMesh(Gleam::RenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes);
+	bool createMesh(const Vector< ResourcePtr<MeshResource> >& meshes, const Vector<int32_t>& centering_meshes);
+	bool createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiScene& scene);
+	bool createMesh(Gleam::RenderDevice& device, const aiScene& scene);
+	bool createMesh(const Vector< ResourcePtr<MeshResource> >& meshes);
 
-	const Gleam::AABB& getAABB(void) const;
+	const ResourcePtr<MeshResource>& getMesh(int32_t index) const;
+	int32_t getNumMeshes(void) const;
+
+	const Gleam::Vec3& getCenteringVector(void) const;
 
 private:
-	VectorMap< const Gleam::IRenderDevice*, UniquePtr<Gleam::IMesh> > _meshes{ ProxyAllocator("Graphics") };
-	ResourcePtr<BufferResource> _vertex_data;
-	ResourcePtr<BufferResource> _indice_data;
+	Vector< ResourcePtr<MeshResource> > _meshes{ ProxyAllocator("Graphics") };
+	Gleam::Vec3 _centering_vector = glm::zero<Gleam::Vec3>();
 
-	Gleam::AABB _aabb;
-
-	void loadMesh(IFile* file);
-
-	SHIB_REFLECTION_CLASS_DECLARE(MeshResource);
+	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::MeshResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelResource)

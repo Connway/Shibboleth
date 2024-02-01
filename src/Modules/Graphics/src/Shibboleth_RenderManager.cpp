@@ -49,6 +49,11 @@ THE SOFTWARE.
 	#include <IOKit/graphics/IOGraphicsLib.h>
 #endif
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
+
 namespace
 {
 	static Shibboleth::ProxyAllocator g_allocator("Graphics");
@@ -57,6 +62,8 @@ namespace
 
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(RenderManager)
 
 RenderManager::~RenderManager(void)
 {

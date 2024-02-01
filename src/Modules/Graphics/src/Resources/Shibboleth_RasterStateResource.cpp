@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_RasterStateResource.h"
+#include "Resources/Shibboleth_RasterStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>

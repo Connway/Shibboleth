@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_SamplerStateResource.h"
-#include "Shibboleth_ImageResource.h"
+#include "Resources/Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_ImageResource.h"
 #include <Config/Shibboleth_Config.h>
 #include <Shibboleth_DeferredResourcePtr.h>
 

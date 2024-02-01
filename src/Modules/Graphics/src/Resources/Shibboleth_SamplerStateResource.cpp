@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>

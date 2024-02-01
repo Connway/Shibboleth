@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_MeshResource.h"
-#include "Shibboleth_IRenderManager.h"
+#include "Resources/Shibboleth_MeshResource.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
+#include <Gleam_Mesh.h>
 #include <assimp/mesh.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)
@@ -34,30 +34,34 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MeshResource)
 
+namespace
+{
+	static Shibboleth::ProxyAllocator g_allocator("Graphics");
+}
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(MeshResource)
 
-Vector<Gleam::IRenderDevice*> MeshResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> MeshResource::getDevices(void) const
 {
-	Vector<Gleam::IRenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
 
 	for (const auto& pair : _meshes) {
-		out.emplace_back(const_cast<Gleam::IRenderDevice*>(pair.first));
+		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
 	}
 
 	out.shrink_to_fit();
 	return out;
 }
 
-bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiMesh& mesh)
+bool MeshResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiMesh& mesh)
 {
 	if (!mesh.HasFaces()) {
 		LogErrorResource("Failed to load mesh '%s'. Mesh does not have an index list.", getFilePath().getBuffer());
 		return false;
 	}
 
-	const IRenderManager& render_mgr = GETMANAGERT(Shibboleth::IRenderManager, Shibboleth::RenderManager);
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
 	_meshes.reserve(devices.size());
@@ -185,18 +189,18 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 	SHIB_FREE(data, GetAllocator());
 
 	for (int32_t j = 0; j < static_cast<int32_t>(devices.size()); ++j) {
-		Gleam::IRenderDevice* const rd = devices[j];
-		Gleam::IBuffer* const vertex_buffer = _vertex_data->getBuffer(*rd);
-		Gleam::IBuffer* const indice_buffer = _indice_data->getBuffer(*rd);
+		Gleam::RenderDevice* const rd = devices[j];
+		Gleam::Buffer* const vertex_buffer = _vertex_data->getBuffer(*rd);
+		Gleam::Buffer* const indice_buffer = _indice_data->getBuffer(*rd);
 
 		if (!vertex_buffer || !indice_buffer) {
 			continue;
 		}
 
-		Gleam::IMesh* const gpu_mesh = render_mgr.createMesh();
+		Gleam::Mesh* const gpu_mesh = SHIB_ALLOCT(Gleam::Mesh, g_allocator);
 		_meshes[rd].reset(gpu_mesh);
 
-		gpu_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+		gpu_mesh->setTopology(Gleam::IMesh::Topology::TriangleList);
 		gpu_mesh->setIndiceBuffer(indice_buffer);
 		gpu_mesh->setIndexCount(static_cast<int32_t>(mesh.mNumFaces * 3));
 
@@ -239,19 +243,19 @@ bool MeshResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, cons
 	return true;
 }
 
-bool MeshResource::createMesh(Gleam::IRenderDevice& device, const aiMesh& mesh)
+bool MeshResource::createMesh(Gleam::RenderDevice& device, const aiMesh& mesh)
 {
-	const Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	const Vector<Gleam::RenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
 	return createMesh(devices, mesh);
 }
 
-const Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd) const
+const Gleam::Mesh* MeshResource::getMesh(const Gleam::RenderDevice& rd) const
 {
 	const auto it = _meshes.find(&rd);
 	return (it != _meshes.end()) ? it->second.get() : nullptr;
 }
 
-Gleam::IMesh* MeshResource::getMesh(const Gleam::IRenderDevice& rd)
+Gleam::Mesh* MeshResource::getMesh(const Gleam::RenderDevice& rd)
 {
 	const auto it = _meshes.find(&rd);
 	return (it != _meshes.end()) ? it->second.get() : nullptr;

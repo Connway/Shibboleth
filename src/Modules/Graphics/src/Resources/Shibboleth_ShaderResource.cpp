@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ShaderResource.h"
+#include "Resources/Shibboleth_ShaderResource.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Gleam_RenderDevice.h>
@@ -65,7 +65,6 @@ bool ShaderResource::createShaderAndLayout(const Vector<Gleam::RenderDevice*>& d
 
 bool ShaderResource::createShaderAndLayout(Gleam::RenderDevice& device, const char* shader_source, Gleam::IShader::Type shader_type)
 {
-
 	Gleam::Shader* const shader = SHIB_ALLOCT(Gleam::Shader, g_allocator);
 
 	if (!shader->initSource(device, shader_source, shader_type)) {

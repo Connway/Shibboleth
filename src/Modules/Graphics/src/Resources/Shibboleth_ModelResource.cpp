@@ -20,14 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ModelResource.h"
-#include "Shibboleth_RenderManagerBase.h"
+#include "Resources/Shibboleth_ModelResource.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
-
+#include <Gleam_RenderDevice.h>
+#include <Gleam_Mesh.h>
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -56,9 +57,9 @@ static int32_t GetIgnoreFlag(const char (&field)[size], const ISerializeReader& 
 
 void ModelResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
 {
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	const RenderManager& render_mgr = GetManagerTFast<RenderManager>();
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
-	const Vector<Gleam::IRenderDevice*>* devices = nullptr;
+	const Vector<Gleam::RenderDevice*>* devices = nullptr;
 	const IFile* model_file = nullptr;
 	U8String model_file_path;
 	U8String device_tag;
@@ -74,7 +75,7 @@ void ModelResource::load(const ISerializeReader& reader, uintptr_t thread_id_int
 
 		const char8_t* const tag = reader.readString(u8"main");
 		device_tag = tag;
-		devices = render_mgr.getDevicesByTag(tag);
+		devices = render_mgr.getDevicesByTag(reinterpret_cast<const char*>(tag));
 		reader.freeString(tag);
 	}
 
@@ -173,16 +174,16 @@ void ModelResource::load(const ISerializeReader& reader, uintptr_t thread_id_int
 	}
 }
 
-Vector<Gleam::IRenderDevice*> ModelResource::getDevices(void) const
+Vector<Gleam::RenderDevice*> ModelResource::getDevices(void) const
 {
 	if (!_meshes.empty()) {
 		return _meshes[0]->getDevices();
 	}
 
-	return Vector<Gleam::IRenderDevice*>{ ProxyAllocator("Graphics") };
+	return Vector<Gleam::RenderDevice*>{ ProxyAllocator("Graphics") };
 }
 
-bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes)
+bool ModelResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
 	ResourceManager& res_mgr = GetManagerTFast<ResourceManager>();
 
@@ -230,13 +231,13 @@ bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, con
 	return succeeded;
 }
 
-bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes)
+bool ModelResource::createMesh(Gleam::RenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
-	const Vector<Gleam::IRenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	const Vector<Gleam::RenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
 	return createMesh(devices, scene, centering_meshes);
 }
 
-bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes, const Vector<int32_t>& centering_meshes)
+bool ModelResource::createMesh(const Vector< ResourcePtr<MeshResource> >& meshes, const Vector<int32_t>& centering_meshes)
 {
 	for (const auto& mesh : meshes) {
 		if (mesh->getDevices() != meshes[0]->getDevices()) {
@@ -261,25 +262,25 @@ bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes, const Vect
 	return true;
 }
 
-bool ModelResource::createMesh(const Vector<Gleam::IRenderDevice*>& devices, const aiScene& scene)
+bool ModelResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiScene& scene)
 {
 	Vector<int32_t> centering_meshes;
 	return createMesh(devices, scene, centering_meshes);
 }
 
-bool ModelResource::createMesh(Gleam::IRenderDevice& device, const aiScene& scene)
+bool ModelResource::createMesh(Gleam::RenderDevice& device, const aiScene& scene)
 {
 	Vector<int32_t> centering_meshes;
 	return createMesh(device, scene, centering_meshes);
 }
 
-bool ModelResource::createMesh(const Vector<MeshResourcePtr>& meshes)
+bool ModelResource::createMesh(const Vector< ResourcePtr<MeshResource> >& meshes)
 {
 	Vector<int32_t> centering_meshes;
 	return createMesh(meshes, centering_meshes);
 }
 
-const MeshResourcePtr& ModelResource::getMesh(int32_t index) const
+const ResourcePtr<MeshResource>& ModelResource::getMesh(int32_t index) const
 {
 	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_meshes.size())));
 	return _meshes[index];

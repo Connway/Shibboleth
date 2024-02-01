@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IManager.h>
-#include "Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_SamplerStateResource.h"
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
+#include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Vec2.h>
@@ -44,7 +44,7 @@ NS_END
 
 NS_SHIBBOLETH
 
-class RenderManager : public IManager
+class RenderManager final : public IManager
 {
 public:
 	struct OutputRenderData final
@@ -224,6 +224,10 @@ private:
 	Gleam::RenderDevice* finishRenderDevice(Gleam::RenderDevice* rd);
 
 	void handleWindowClosed(Gleam::Window& window);
+
+	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderManager);
