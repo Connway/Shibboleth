@@ -35,9 +35,20 @@ template <class T, class Allocator = DefaultAllocator>
 using Vector = eastl::vector<T, Allocator>;
 
 template <class T, class Allocator>
+bool PushBackUnique(Vector<T, Allocator>& vec, const T& value)
+{
+	if (eastl::find(vec.begin(), vec.end(), value) == vec.end()) {
+		vec.push_back(value);
+		return true;
+	}
+
+	return false;
+}
+
+template <class T, class Allocator>
 bool EmplaceBackUnique(Vector<T, Allocator>& vec, T&& value)
 {
-	if (Find(vec, value) == vec.end()) {
+	if (eastl::find(vec.begin(), vec.end(), value) == vec.end()) {
 		vec.emplace_back(std::move(value));
 		return true;
 	}
@@ -46,14 +57,17 @@ bool EmplaceBackUnique(Vector<T, Allocator>& vec, T&& value)
 }
 
 template <class T, class Allocator>
-bool PushBackUnique(Vector<T, Allocator>& vec, const T& value)
+auto InsertSorted(Vector<T, Allocator>& vec, const T& value)
 {
-	if (Find(vec, value) == vec.end()) {
-		vec.push_back(value);
-		return true;
-	}
+	const auto it = eastl::lower_bound(vec.begin(), vec.end(), value);
+	return vec.insert(it, value);
+}
 
-	return false;
+template <class T, class Allocator>
+auto EmplaceSorted(Vector<T, Allocator>& vec, T&& value)
+{
+	const auto it = eastl::lower_bound(vec.begin(), vec.end(), value);
+	return vec.emplace(it, std::move(value));
 }
 
 NS_END

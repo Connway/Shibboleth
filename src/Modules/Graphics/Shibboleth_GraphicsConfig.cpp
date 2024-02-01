@@ -34,6 +34,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
 	.var("pos_x", &Shibboleth::GraphicsConfigWindow::pos_x)
 	.var("pos_y", &Shibboleth::GraphicsConfigWindow::pos_y)
 	.var("windowed", &Shibboleth::GraphicsConfigWindow::windowed)
+
+	.var("tags", &Shibboleth::GraphicsConfigWindow::tags)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)

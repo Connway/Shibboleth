@@ -43,6 +43,8 @@ struct GraphicsConfigWindow final
 
 	// $TODO: Replace this with window mode type.
 	bool windowed = false;
+
+	Vector< HashString32<> > tags{ ProxyAllocator("Graphics") };
 };
 
 class GraphicsConfig final : public IConfig
@@ -51,7 +53,7 @@ public:
 	DeferredResourcePtr<SamplerStateResource> texture_filtering_sampler;
 	DeferredResourcePtr<ImageResource> icon;
 
-	VectorMap<HashString32<>, GraphicsConfigWindow> windows;
+	VectorMap<HashString32<>, GraphicsConfigWindow> windows{ ProxyAllocator("Graphics") };
 
 	SHIB_REFLECTION_CLASS_DECLARE(GraphicsConfig);
 };

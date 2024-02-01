@@ -242,7 +242,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ClearRenderTargetSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfig.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfigs.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsLogging.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_ImageResource.h" />

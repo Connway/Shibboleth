@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
-#include "Shibboleth_GraphicsConfigs.h"
 #include "Shibboleth_GraphicsConfig.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SerializeReader.h>
@@ -53,10 +52,6 @@ THE SOFTWARE.
 namespace
 {
 	static Shibboleth::ProxyAllocator g_allocator("Graphics");
-
-	static const Shibboleth::VectorMap< Gaff::Hash32, Shibboleth::Vector<const char8_t*> > g_display_tags = {
-		{ Gaff::FNV1aHash32Const(u8"gameplay"), { u8"main" } }
-	};
 }
 
 
@@ -250,25 +245,16 @@ bool RenderManager::init(void)
 
 			// Add the device to the window tag.
 			const Gaff::Hash32 window_hash = Gaff::FNV1aHash32String(entry.first.getBuffer());
-			_render_device_tags[window_hash].emplace_back(rd);
+			Gaff::InsertSorted(_render_device_tags[window_hash], rd);
 
-			_render_device_tags[Gaff::FNV1aHash32Const(u8"all")].emplace_back(rd);
+			Gaff::InsertSorted(_render_device_tags[Gaff::FNV1aHash32Const(u8"all")], rd);
 
 			// Add render device to tag list if not already present.
-			for (const auto& display_tag_entry : g_display_tags) {
-				const auto it = Gaff::Find(display_tag_entry.second, entry.first.getBuffer(), [](const char8_t* lhs, const char8_t* rhs) -> bool
-				{
-					return eastl::u8string_view(lhs) == eastl::u8string_view(rhs);
-				});
+			for (const HashString32<>& tag : entry.second.tags) {
+				auto& render_devices = _render_device_tags[tag.getHash()];
 
-				if (it == display_tag_entry.second.end()) {
-					continue;
-				}
-
-				auto& render_devices = _render_device_tags[display_tag_entry.first];
-
-				if (Gaff::Find(render_devices, rd) == render_devices.end()) {
-					render_devices.emplace_back(rd);
+				if (!Gaff::Contains(render_devices, rd)) {
+					Gaff::InsertSorted(render_devices, rd);
 				}
 			}
 
@@ -379,7 +365,17 @@ const Vector<Gleam::RenderDevice*>* RenderManager::getDevicesByTag(Gaff::Hash32 
 	return (it != _render_device_tags.end()) ? &it->second : nullptr;
 }
 
+const Vector<Gleam::RenderDevice*>* RenderManager::getDevicesByTag(const char* tag) const
+{
+	return getDevicesByTag(Gaff::FNV1aHash32String(tag));
+}
+
 const Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getOutput(tag);
+}
+
+const Gleam::RenderOutput* RenderManager::getOutput(const char* tag) const
 {
 	return const_cast<RenderManager*>(this)->getOutput(tag);
 }
@@ -395,6 +391,11 @@ Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
 	return (it == _outputs.end()) ? nullptr : it->second.output.get();
 }
 
+Gleam::RenderOutput* RenderManager::getOutput(const char* tag)
+{
+	return getOutput(Gaff::FNV1aHash32String(tag));
+}
+
 Gleam::RenderOutput* RenderManager::getOutput(int32_t index)
 {
 	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_outputs.size())));
@@ -402,6 +403,11 @@ Gleam::RenderOutput* RenderManager::getOutput(int32_t index)
 }
 
 const Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getWindow(tag);
+}
+
+const Gleam::Window* RenderManager::getWindow(const char* tag) const
 {
 	return const_cast<RenderManager*>(this)->getWindow(tag);
 }
@@ -415,6 +421,11 @@ Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag)
 {
 	const auto it = _outputs.find(tag);
 	return (it == _outputs.end()) ? nullptr : it->second.window.get();
+}
+
+Gleam::Window* RenderManager::getWindow(const char* tag)
+{
+	return getWindow(Gaff::FNV1aHash32String(tag));
 }
 
 Gleam::Window* RenderManager::getWindow(int32_t index)
@@ -657,6 +668,27 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	GAFF_ASSERT(thread_it != device_it->second.end());
 
 	return thread_it->second.get();
+}
+
+const RenderManager::OutputRenderData* RenderManager::getOutputRenderData(Gaff::Hash32 output_name) const
+{
+	return const_cast<RenderManager*>(this)->getOutputRenderData(output_name);
+}
+
+const RenderManager::OutputRenderData* RenderManager::getOutputRenderData(const char* output_name) const
+{
+	return const_cast<RenderManager*>(this)->getOutputRenderData(output_name);
+}
+
+RenderManager::OutputRenderData* RenderManager::getOutputRenderData(Gaff::Hash32 output_name)
+{
+	const auto it = _outputs.find(output_name);
+	return (it != _outputs.end()) ? &it->second.render_data : nullptr;
+}
+
+RenderManager::OutputRenderData* RenderManager::getOutputRenderData(const char* output_name)
+{
+	return getOutputRenderData(Gaff::FNV1aHash32String(output_name));
 }
 
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)

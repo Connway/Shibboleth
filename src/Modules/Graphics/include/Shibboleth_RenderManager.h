@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_Vector.h>
+#include <Gleam_Transform.h>
+#include <Gleam_Vec2.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread.h>
 #include <EASTL/array.h>
@@ -45,6 +47,15 @@ NS_SHIBBOLETH
 class RenderManager : public IManager
 {
 public:
+	struct OutputRenderData final
+	{
+		Gleam::TransformRT transform;
+		Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
+		float vertical_fov = 0.25f; // turns
+
+		// DOF?
+	};
+
 	static constexpr int32_t CacheIndexCount = 2;
 
 	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
@@ -123,39 +134,20 @@ public:
 	int32_t getNumDevices(void) const;
 
 	const Vector<Gleam::RenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
-	const Vector<Gleam::RenderDevice*>* getDevicesByTag(const char* tag) const
-	{
-		return getDevicesByTag(Gaff::FNV1aHash32String(tag));
-	}
-
-	const Gleam::RenderOutput* getOutput(const char* tag) const
-	{
-		return getOutput(Gaff::FNV1aHash32String(tag));
-	}
-
-	const Gleam::Window* getWindow(const char* tag) const
-	{
-		return getWindow(Gaff::FNV1aHash32String(tag));
-	}
-
-	Gleam::RenderOutput* getOutput(const char* tag)
-	{
-		return getOutput(Gaff::FNV1aHash32String(tag));
-	}
-
-	Gleam::Window* getWindow(const char* tag)
-	{
-		return getWindow(Gaff::FNV1aHash32String(tag));
-	}
+	const Vector<Gleam::RenderDevice*>* getDevicesByTag(const char* tag) const;
 
 	const Gleam::RenderOutput* getOutput(Gaff::Hash32 tag) const;
+	const Gleam::RenderOutput* getOutput(const char* tag) const;
 	const Gleam::RenderOutput* getOutput(int32_t index) const;
 	Gleam::RenderOutput* getOutput(Gaff::Hash32 tag);
+	Gleam::RenderOutput* getOutput(const char* tag);
 	Gleam::RenderOutput* getOutput(int32_t index);
 
 	const Gleam::Window* getWindow(Gaff::Hash32 tag) const;
+	const Gleam::Window* getWindow(const char* tag) const;
 	const Gleam::Window* getWindow(int32_t index) const;
 	Gleam::Window* getWindow(Gaff::Hash32 tag);
+	Gleam::Window* getWindow(const char* tag);
 	Gleam::Window* getWindow(int32_t index);
 
 	void removeWindow(const Gleam::Window& window);
@@ -173,6 +165,7 @@ public:
 	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
 	//bool hasGBuffer(ECSEntityID id) const;
 
+	// $TODO: More configurable pipelines instead of this hardcoded pipeline.
 	const RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const;
 	RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index);
 
@@ -181,6 +174,11 @@ public:
 	const Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const;
 	Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id);
 
+	const OutputRenderData* getOutputRenderData(Gaff::Hash32 output_name) const;
+	const OutputRenderData* getOutputRenderData(const char* output_name) const;
+	OutputRenderData* getOutputRenderData(Gaff::Hash32 output_name);
+	OutputRenderData* getOutputRenderData(const char* output_name);
+
 private:
 	struct RenderOutput final
 	{
@@ -188,6 +186,9 @@ private:
 		RenderOutputPtr output;
 		WindowPtr window;
 		Gleam::RenderDevice* render_device = nullptr;
+
+		// $TODO: Move this as part of pipeline data instead?
+		OutputRenderData render_data;
 	};
 
 	struct RenderCommandData final
