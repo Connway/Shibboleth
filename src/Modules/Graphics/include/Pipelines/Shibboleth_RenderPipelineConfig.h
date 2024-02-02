@@ -20,38 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_GraphicsConfig.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
-	.var("monitor_id", &Shibboleth::GraphicsConfigWindow::monitor_id)
-
-	.var("width", &Shibboleth::GraphicsConfigWindow::width)
-	.var("height", &Shibboleth::GraphicsConfigWindow::height)
-	.var("refresh_rate", &Shibboleth::GraphicsConfigWindow::refresh_rate)
-	.var("vsync", &Shibboleth::GraphicsConfigWindow::vsync)
-
-	.var("pos_x", &Shibboleth::GraphicsConfigWindow::pos_x)
-	.var("pos_y", &Shibboleth::GraphicsConfigWindow::pos_y)
-	.var("windowed", &Shibboleth::GraphicsConfigWindow::windowed)
-
-	.var("tags", &Shibboleth::GraphicsConfigWindow::tags)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
-	.BASE(Shibboleth::IConfig)
-	.template ctor<>()
-
-	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)
-	.var("icon", &Shibboleth::GraphicsConfig::icon, Shibboleth::OptionalAttribute())
-
-	.var("windows", &Shibboleth::GraphicsConfig::windows, Shibboleth::OptionalAttribute())
-SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
-
+#include <Config/Shibboleth_Config.h>
+#include <Shibboleth_InstancedPtr.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(GraphicsConfig)
+class IRenderStage;
+
+class RenderPipelineConfig final : public IConfig
+{
+public:
+	Vector< InstancedPtr<IRenderStage> > stages{ ProxyAllocator("Graphics") };
+
+	SHIB_REFLECTION_CLASS_DECLARE_2();
+};
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderPipelineConfig)
