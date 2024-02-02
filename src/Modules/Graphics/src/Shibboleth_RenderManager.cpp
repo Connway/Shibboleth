@@ -285,11 +285,11 @@ bool RenderManager::init(void)
 	Vector<EA::Thread::ThreadId> thread_ids(job_pool.getNumTotalThreads(), GRAPHICS_ALLOCATOR);
 
 	job_pool.getThreadIDs(thread_ids.data());
-	_deferred_contexts.reserve(_render_devices.size());
+	_deferred_devices.reserve(_render_devices.size());
 
 	// Loop over all devices.
 	for (const auto& rd : _render_devices) {
-		auto& context_map = _deferred_contexts[rd.get()];
+		auto& context_map = _deferred_devices[rd.get()];
 		context_map.reserve(thread_ids.size());
 
 		// Loop over all thread ids and create deferred contexts for them.
@@ -696,8 +696,8 @@ const Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderD
 
 Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id)
 {
-	const auto device_it = _deferred_contexts.find(&device);
-	GAFF_ASSERT(device_it != _deferred_contexts.end());
+	const auto device_it = _deferred_devices.find(&device);
+	GAFF_ASSERT(device_it != _deferred_devices.end());
 
 	const auto thread_it = device_it->second.find(thread_id);
 	GAFF_ASSERT(thread_it != device_it->second.end());

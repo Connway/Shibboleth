@@ -212,17 +212,16 @@ private:
 
 	// $TODO: Move a lot of these into RenderPipeline.
 	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };
-	//VectorMap<const Gleam::RenderTarget*, GBuffer> _g_buffers{ ProxyAllocator{"Graphics"} };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::RenderDevice*> > _render_device_tags{ GRAPHICS_ALLOCATOR };
 	Vector<RenderDevicePtr> _render_devices{ GRAPHICS_ALLOCATOR };
-	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
-	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
-
 	VectorMap<
 		const Gleam::RenderDevice*,
 		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::RenderDevice> >
-	> _deferred_contexts{ GRAPHICS_ALLOCATOR };
+	> _deferred_devices{ GRAPHICS_ALLOCATOR };
+
+	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
+	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
 
 	RenderCommandData _cached_render_commands[static_cast<size_t>(RenderOrder::Count)];
 
