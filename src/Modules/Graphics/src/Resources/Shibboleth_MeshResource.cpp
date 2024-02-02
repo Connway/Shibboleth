@@ -45,7 +45,7 @@ SHIB_REFLECTION_CLASS_DEFINE(MeshResource)
 
 Vector<Gleam::RenderDevice*> MeshResource::getDevices(void) const
 {
-	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ GRAPHICS_ALLOCATOR };
 
 	for (const auto& pair : _meshes) {
 		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
@@ -245,7 +245,7 @@ bool MeshResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, const
 
 bool MeshResource::createMesh(Gleam::RenderDevice& device, const aiMesh& mesh)
 {
-	const Vector<Gleam::RenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	const Vector<Gleam::RenderDevice*> devices(1, &device, GRAPHICS_ALLOCATOR);
 	return createMesh(devices, mesh);
 }
 

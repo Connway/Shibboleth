@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
-#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_AppUtils.h>
@@ -45,7 +44,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ProgramBuffersResource)
 
 Vector<Gleam::RenderDevice*> ProgramBuffersResource::getDevices(void) const
 {
-	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ GRAPHICS_ALLOCATOR };
 
 	for (const auto& pair : _program_buffers) {
 		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));
@@ -68,7 +67,6 @@ bool ProgramBuffersResource::createProgramBuffers(const Vector<Gleam::RenderDevi
 
 bool ProgramBuffersResource::createProgramBuffers(Gleam::RenderDevice& device)
 {
-	const RenderManager& render_mgr = GetManagerTFast<Shibboleth::RenderManager>();
 	Gleam::ProgramBuffers* const program_buffers = SHIB_ALLOCT(Gleam::ProgramBuffers, g_allocator);
 
 	if (!program_buffers) {

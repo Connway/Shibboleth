@@ -50,7 +50,7 @@ public:
 	const Gleam::AABB& getAABB(void) const;
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Mesh> > _meshes{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Mesh> > _meshes{ GRAPHICS_ALLOCATOR };
 	ResourcePtr<BufferResource> _vertex_data;
 	ResourcePtr<BufferResource> _indice_data;
 

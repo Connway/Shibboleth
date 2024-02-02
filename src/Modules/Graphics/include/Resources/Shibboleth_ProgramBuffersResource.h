@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_IResource.h>
 #include <Gleam_ProgramBuffers.h>
 
@@ -45,7 +46,7 @@ public:
 	Gleam::ProgramBuffers* getProgramBuffer(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ProgramBuffers> > _program_buffers{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ProgramBuffers> > _program_buffers{ GRAPHICS_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(ProgramBuffersResource);
 };

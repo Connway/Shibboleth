@@ -351,7 +351,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 //			}
 //
 //			const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
-//			InstanceData::VarMap shader_vars{ ProxyAllocator("Graphics") };
+//			InstanceData::VarMap shader_vars{ GRAPHICS_ALLOCATOR };
 //
 //			addTextureSRVs(material, shader_refl, shader_vars, *rd, shader_type);
 //
@@ -414,7 +414,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 //	}
 //
 //	const Gleam::ShaderReflection refl = shader->getReflectionData();
-//	InstanceData::BufferVarMap var_map{ ProxyAllocator("Graphics") };
+//	InstanceData::BufferVarMap var_map{ GRAPHICS_ALLOCATOR };
 //
 //	for (const auto& sb_refl : refl.structured_buffers) {
 //		const Gleam::IBuffer::Settings settings = {
@@ -436,7 +436,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 //		}
 //
 //		auto& buffer_data = var_map[HashString32<>(sb_refl.name.data())];
-//		var_map.set_allocator(ProxyAllocator("Graphics"));
+//		var_map.set_allocator(GRAPHICS_ALLOCATOR);
 //
 //		const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
 //		buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(it, refl.var_decl_order.end()) - 1);
@@ -656,7 +656,7 @@ void RenderCommandSystem::GenerateCommandListJob(uintptr_t thread_id_int, void* 
 		}
 	}
 
-	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, ProxyAllocator("Graphics"));
+	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, GRAPHICS_ALLOCATOR);
 
 	for (int32_t j = 0; j < static_cast<int32_t>(buffer_cache.size()); ++j) {
 		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);

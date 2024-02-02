@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_IResource.h>
 #include <Gleam_RasterState.h>
 
@@ -49,7 +50,7 @@ public:
 	Gleam::RasterState* getRasterState(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::RasterState> > _raster_states{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::RasterState> > _raster_states{ GRAPHICS_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
 };

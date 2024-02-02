@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MaterialResource.h"
-#include "Shibboleth_SamplerStateResource.h"
-#include "Shibboleth_TextureResource.h"
+#include "Resources/Shibboleth_MaterialResource.h"
+#include "Resources/Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_TextureResource.h"
 //#include <Shibboleth_ECSComponentBase.h>
 //#include <Shibboleth_ECSEntity.h>
 

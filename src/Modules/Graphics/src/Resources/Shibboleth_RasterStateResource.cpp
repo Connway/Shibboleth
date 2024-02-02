@@ -89,7 +89,7 @@ void RasterStateResource::load(const ISerializeReader& reader, uintptr_t /*threa
 
 Vector<Gleam::RenderDevice*> RasterStateResource::getDevices(void) const
 {
-	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ GRAPHICS_ALLOCATOR };
 
 	for (const auto& pair : _raster_states) {
 		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));

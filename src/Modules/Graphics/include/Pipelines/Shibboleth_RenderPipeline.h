@@ -22,19 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_SmartPtrs.h>
+#include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_Vector.h>
 
 NS_SHIBBOLETH
 
+class RenderManager;
 class IRenderStage;
 
 class RenderPipeline final
 {
 public:
+	bool init(RenderManager& render_mgr);
 
 private:
-	Vector< UniquePtr<IRenderStage> > _stages{ ProxyAllocator("Graphics") };
+	Vector<IRenderStage*> _render_stage_cache{ GRAPHICS_ALLOCATOR };
 };
 
 NS_END

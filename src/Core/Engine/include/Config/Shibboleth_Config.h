@@ -78,6 +78,15 @@ const T* GetConfig(void)
 	return (attr) ? static_cast<const T*>(attr->getConfig()) : nullptr;
 }
 
+template<class T>
+const T& GetConfigRef(void)
+{
+	const T* config = GetConfig<T>();
+	GAFF_ASSERT(config);
+
+	return *config;
+}
+
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ConfigDirectoryAttribute)

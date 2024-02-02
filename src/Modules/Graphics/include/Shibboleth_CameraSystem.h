@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MaterialResource.h"
+#include "Resources/Shibboleth_MaterialResource.h"
 #include <Reflection/Shibboleth_Reflection.h>
 //#include <Shibboleth_ECSQuery.h>
 #include <Shibboleth_ISystem.h>
@@ -49,7 +49,7 @@ class ECSManager;
 //	void update(uintptr_t thread_id_int) override;
 //
 //private:
-//	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
+//	Vector<ECSQueryResult> _camera{ GRAPHICS_ALLOCATOR };
 //	RenderManagerBase* _render_mgr = nullptr;
 //	ECSManager* _ecs_mgr = nullptr;
 //
@@ -75,15 +75,15 @@ class ECSManager;
 //		CameraPostRenderSystem* system = nullptr;
 //	};
 //
-//	Vector<CameraRenderData> _camera_job_data_cache{ ProxyAllocator("Graphics") };
-//	Vector<Gaff::JobData> _job_data_cache{ ProxyAllocator("Graphics") };
+//	Vector<CameraRenderData> _camera_job_data_cache{ GRAPHICS_ALLOCATOR };
+//	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 //	Gaff::Counter _job_counter = 0;
 //	int32_t _cache_index = 0;
 //
 //	MaterialResourcePtr _camera_material;
 //	UniquePtr<Gleam::ICommandList> _cmd_lists[2];
 //
-//	Vector<ECSQueryResult> _camera{ ProxyAllocator("Graphics") };
+//	Vector<ECSQueryResult> _camera{ GRAPHICS_ALLOCATOR };
 //	RenderManagerBase* _render_mgr = nullptr;
 //	ECSManager* _ecs_mgr = nullptr;
 //

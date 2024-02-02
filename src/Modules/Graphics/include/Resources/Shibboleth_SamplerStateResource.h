@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_IResource.h>
 #include <Gleam_SamplerState.h>
 
@@ -47,7 +48,7 @@ public:
 	Gleam::SamplerState* getSamplerState(const Gleam::RenderDevice& rd);
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _sampler_states{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _sampler_states{ GRAPHICS_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(SamplerStateResource);
 };

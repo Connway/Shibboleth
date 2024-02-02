@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Pipelines/Shibboleth_RenderPipelineConfig.h>
+#include "Pipelines/Shibboleth_RenderPipelineConfig.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipelineConfig)
 	.BASE(Shibboleth::IConfig)
 	.template ctor<>()
 
-	.var("stages", &Shibboleth::RenderingPipelineConfig::stages)
+	.var("stages", &Shibboleth::RenderPipelineConfig::stages)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipelineConfig)

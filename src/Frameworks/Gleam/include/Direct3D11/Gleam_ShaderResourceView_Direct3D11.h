@@ -34,11 +34,11 @@ public:
 	ShaderResourceView(void);
 	~ShaderResourceView(void);
 
-	bool init(IRenderDevice& rd, const ITexture& texture);
-	bool init(IRenderDevice& rd, const IBuffer& buffer, int32_t offset = 0);
-	void destroy(void);
+	bool init(IRenderDevice& rd, const ITexture& texture) override;
+	bool init(IRenderDevice& rd, const IBuffer& buffer, int32_t offset = 0) override;
+	void destroy(void) override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
 	ID3D11ShaderResourceView1* getResourceView(void) const;
 

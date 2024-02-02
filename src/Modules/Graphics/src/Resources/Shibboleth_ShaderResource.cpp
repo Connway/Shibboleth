@@ -42,7 +42,7 @@ static ProxyAllocator g_allocator("Graphics");
 
 Vector<Gleam::RenderDevice*> ShaderResource::getDevices(void) const
 {
-	Vector<Gleam::RenderDevice*> out{ ProxyAllocator("Graphics") };
+	Vector<Gleam::RenderDevice*> out{ GRAPHICS_ALLOCATOR };
 
 	for (const auto& pair : _shader_data) {
 		out.emplace_back(const_cast<Gleam::RenderDevice*>(pair.first));

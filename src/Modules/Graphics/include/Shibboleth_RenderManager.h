@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Resources/Shibboleth_SamplerStateResource.h"
+#include "Pipelines/Shibboleth_RenderPipeline.h"
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
@@ -100,7 +101,7 @@ public:
 
 	struct RenderCommandList final
 	{
-		Vector<RenderCommand> command_list{ ProxyAllocator("Graphics") };
+		Vector<RenderCommand> command_list{ GRAPHICS_ALLOCATOR };
 		EA::Thread::SpinLock lock;
 	};
 
@@ -134,19 +135,24 @@ public:
 	int32_t getNumDevices(void) const;
 
 	const Vector<Gleam::RenderDevice*>* getDevicesByTag(Gaff::Hash32 tag) const;
+	const Vector<Gleam::RenderDevice*>* getDevicesByTag(const char8_t* tag) const;
 	const Vector<Gleam::RenderDevice*>* getDevicesByTag(const char* tag) const;
 
 	const Gleam::RenderOutput* getOutput(Gaff::Hash32 tag) const;
+	const Gleam::RenderOutput* getOutput(const char8_t* tag) const;
 	const Gleam::RenderOutput* getOutput(const char* tag) const;
 	const Gleam::RenderOutput* getOutput(int32_t index) const;
 	Gleam::RenderOutput* getOutput(Gaff::Hash32 tag);
+	Gleam::RenderOutput* getOutput(const char8_t* tag);
 	Gleam::RenderOutput* getOutput(const char* tag);
 	Gleam::RenderOutput* getOutput(int32_t index);
 
 	const Gleam::Window* getWindow(Gaff::Hash32 tag) const;
+	const Gleam::Window* getWindow(const char8_t* tag) const;
 	const Gleam::Window* getWindow(const char* tag) const;
 	const Gleam::Window* getWindow(int32_t index) const;
 	Gleam::Window* getWindow(Gaff::Hash32 tag);
+	Gleam::Window* getWindow(const char8_t* tag);
 	Gleam::Window* getWindow(const char* tag);
 	Gleam::Window* getWindow(int32_t index);
 
@@ -197,23 +203,26 @@ private:
 
 		DeviceCommandListMap command_lists[CacheIndexCount] =
 		{
-			DeviceCommandListMap{ ProxyAllocator("Graphics") },
-			DeviceCommandListMap{ ProxyAllocator("Graphics") },
+			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
 		};
 	};
 
-	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ ProxyAllocator("Graphics") };
+	RenderPipeline _render_pipeline;
+
+	// $TODO: Move a lot of these into RenderPipeline.
+	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };
 	//VectorMap<const Gleam::RenderTarget*, GBuffer> _g_buffers{ ProxyAllocator{"Graphics"} };
 
-	VectorMap< Gaff::Hash32, Vector<Gleam::RenderDevice*> > _render_device_tags{ ProxyAllocator("Graphics") };
-	Vector<RenderDevicePtr> _render_devices{ ProxyAllocator("Graphics") };
-	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ ProxyAllocator("Graphics") };
-	Vector<RenderOutput> _pending_window_removes{ ProxyAllocator("Graphics") };
+	VectorMap< Gaff::Hash32, Vector<Gleam::RenderDevice*> > _render_device_tags{ GRAPHICS_ALLOCATOR };
+	Vector<RenderDevicePtr> _render_devices{ GRAPHICS_ALLOCATOR };
+	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
+	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
 
 	VectorMap<
 		const Gleam::RenderDevice*,
 		VectorMap< EA::Thread::ThreadId, UniquePtr<Gleam::RenderDevice> >
-	> _deferred_contexts{ ProxyAllocator("Graphics") };
+	> _deferred_contexts{ GRAPHICS_ALLOCATOR };
 
 	RenderCommandData _cached_render_commands[static_cast<size_t>(RenderOrder::Count)];
 

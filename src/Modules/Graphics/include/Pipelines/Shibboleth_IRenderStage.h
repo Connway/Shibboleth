@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Reflection/Shibboleth_IReflectionObject.h>
-#include <Shibboleth_Defines.h>
+#include <Reflection/Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
@@ -41,3 +40,5 @@ public:
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::IRenderStage)

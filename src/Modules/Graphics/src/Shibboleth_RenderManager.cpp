@@ -93,28 +93,27 @@ bool RenderManager::init(void)
 	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
-	const GraphicsConfig* const config = GetConfig<GraphicsConfig>();
-	GAFF_ASSERT(config);
+	const GraphicsConfig config = GetConfigRef<GraphicsConfig>();
 
-	const_cast<GraphicsConfig*>(config)->texture_filtering_sampler.requestLoad();
+	const_cast<GraphicsConfig&>(config).texture_filtering_sampler.requestLoad();
 
-	if (!config->texture_filtering_sampler->waitUntilLoaded()) {
+	if (!config.texture_filtering_sampler->waitUntilLoaded()) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	_default_sampler = config->texture_filtering_sampler;
+	_default_sampler = config.texture_filtering_sampler;
 
-	const_cast<GraphicsConfig*>(config)->icon.requestLoad();
+	const_cast<GraphicsConfig&>(config).icon.requestLoad();
 	GLFWimage icon;
 
-	if (config->icon->waitUntilLoaded()) {
-		config->icon->fillGLFWImage(icon);
+	if (config.icon->waitUntilLoaded()) {
+		config.icon->fillGLFWImage(icon);
 	} else {
 		// $TODO: Log warning.
 	}
 
-	if (config->windows.empty()) {
+	if (config.windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
 		/*const Gaff::JSON adapters = config.getObject(u8"adapters");
 
@@ -165,7 +164,7 @@ bool RenderManager::init(void)
 		int monitor_count = 0;
 		GLFWmonitor*const * const monitors = glfwGetMonitors(&monitor_count);
 
-		for (const auto& entry : config->windows) {
+		for (const auto& entry : config.windows) {
 			if (!Gaff::ValidIndex(entry.second.monitor_id, monitor_count)) {
 				// $TODO: Log error.
 				continue;
@@ -246,7 +245,7 @@ bool RenderManager::init(void)
 				}
 			}
 
-			if (config->icon->isLoaded()) {
+			if (config.icon->isLoaded()) {
 				window->setIcon(icon);
 			}
 
@@ -283,7 +282,7 @@ bool RenderManager::init(void)
 	}
 
 	const auto& job_pool = app.getJobPool();
-	Vector<EA::Thread::ThreadId> thread_ids(job_pool.getNumTotalThreads(), ProxyAllocator("Graphics"));
+	Vector<EA::Thread::ThreadId> thread_ids(job_pool.getNumTotalThreads(), GRAPHICS_ALLOCATOR);
 
 	job_pool.getThreadIDs(thread_ids.data());
 	_deferred_contexts.reserve(_render_devices.size());
@@ -304,6 +303,10 @@ bool RenderManager::init(void)
 
 			context_map[id].reset(static_cast<Gleam::RenderDevice*>(deferred_device));
 		}
+	}
+
+	if (!_render_pipeline.init(*this)) {
+		return false;
 	}
 
 	return true;
@@ -372,12 +375,22 @@ const Vector<Gleam::RenderDevice*>* RenderManager::getDevicesByTag(Gaff::Hash32 
 	return (it != _render_device_tags.end()) ? &it->second : nullptr;
 }
 
+const Vector<Gleam::RenderDevice*>* RenderManager::getDevicesByTag(const char8_t* tag) const
+{
+	return getDevicesByTag(Gaff::FNV1aHash32String(tag));
+}
+
 const Vector<Gleam::RenderDevice*>* RenderManager::getDevicesByTag(const char* tag) const
 {
 	return getDevicesByTag(Gaff::FNV1aHash32String(tag));
 }
 
 const Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getOutput(tag);
+}
+
+const Gleam::RenderOutput* RenderManager::getOutput(const char8_t* tag) const
 {
 	return const_cast<RenderManager*>(this)->getOutput(tag);
 }
@@ -398,6 +411,11 @@ Gleam::RenderOutput* RenderManager::getOutput(Gaff::Hash32 tag)
 	return (it == _outputs.end()) ? nullptr : it->second.output.get();
 }
 
+Gleam::RenderOutput* RenderManager::getOutput(const char8_t* tag)
+{
+	return getOutput(Gaff::FNV1aHash32String(tag));
+}
+
 Gleam::RenderOutput* RenderManager::getOutput(const char* tag)
 {
 	return getOutput(Gaff::FNV1aHash32String(tag));
@@ -410,6 +428,11 @@ Gleam::RenderOutput* RenderManager::getOutput(int32_t index)
 }
 
 const Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag) const
+{
+	return const_cast<RenderManager*>(this)->getWindow(tag);
+}
+
+const Gleam::Window* RenderManager::getWindow(const char8_t* tag) const
 {
 	return const_cast<RenderManager*>(this)->getWindow(tag);
 }
@@ -428,6 +451,11 @@ Gleam::Window* RenderManager::getWindow(Gaff::Hash32 tag)
 {
 	const auto it = _outputs.find(tag);
 	return (it == _outputs.end()) ? nullptr : it->second.window.get();
+}
+
+Gleam::Window* RenderManager::getWindow(const char8_t* tag)
+{
+	return getWindow(Gaff::FNV1aHash32String(tag));
 }
 
 Gleam::Window* RenderManager::getWindow(const char* tag)
@@ -491,7 +519,7 @@ ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void)
 //		return true;
 //	}
 //
-//	it = _g_buffers.emplace(id, VectorMap<const Gleam::IRenderDevice*, GBufferData>{ ProxyAllocator("Graphics") }).first;
+//	it = _g_buffers.emplace(id, VectorMap<const Gleam::IRenderDevice*, GBufferData>{ GRAPHICS_ALLOCATOR }).first;
 //
 //	const auto* const devices = getDevicesByTag(device_tag);
 //

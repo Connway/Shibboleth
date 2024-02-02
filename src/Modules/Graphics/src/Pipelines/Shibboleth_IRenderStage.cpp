@@ -20,34 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InputActivator.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include "Pipelines/Shibboleth_IRenderStage.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputActivator)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IRenderStage)
 	.BASE(Refl::IReflectionObject)
-
-	.classAttrs(
-		Shibboleth::ClassBucketAttribute()
-	)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputActivator)
-
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(InputActivator)
-
-void InputActivator::update(const PlayerInputSubsystem& /*input_subsystem*/, const Gleam::Vec3& /*input_value*/, float /*dt*/) const
-{
-}
-
-bool InputActivator::isTriggered(void) const
-{
-	return _flags.testAll(Flag::Triggered);
-}
-
-void InputActivator::setTriggered(bool triggered)
-{
-	_flags.set(triggered, Flag::Triggered);
-}
-
-NS_END
+SHIB_REFLECTION_DEFINE_END(Shibboleth::IRenderStage)

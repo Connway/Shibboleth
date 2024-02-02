@@ -45,8 +45,8 @@ public:
 	IShaderResourceView(void) {}
 	virtual ~IShaderResourceView(void) {}
 
-	virtual bool init(IRenderDevice& rd, const ITexture* texture) = 0;
-	virtual bool init(IRenderDevice& rd, const IBuffer* buffer, int32_t offset = 0) = 0;
+	virtual bool init(IRenderDevice& rd, const ITexture& texture) = 0;
+	virtual bool init(IRenderDevice& rd, const IBuffer& buffer, int32_t offset = 0) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;

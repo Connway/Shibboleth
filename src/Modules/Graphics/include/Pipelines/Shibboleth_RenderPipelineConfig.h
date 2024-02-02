@@ -22,19 +22,19 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Pipelines/Shibboleth_IRenderStage.h"
+#include "Shibboleth_GraphicsDefines.h"
 #include <Config/Shibboleth_Config.h>
 #include <Shibboleth_InstancedPtr.h>
 
 NS_SHIBBOLETH
 
-class IRenderStage;
-
 class RenderPipelineConfig final : public IConfig
 {
 public:
-	Vector< InstancedPtr<IRenderStage> > stages{ ProxyAllocator("Graphics") };
+	Vector< InstancedPtr<IRenderStage> > stages{ GRAPHICS_ALLOCATOR };
 
-	SHIB_REFLECTION_CLASS_DECLARE_2();
+	SHIB_REFLECTION_CLASS_DECLARE(RenderPipelineConfig);
 };
 
 NS_END

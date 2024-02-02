@@ -20,34 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InputActivator.h"
-#include <Shibboleth_EngineAttributesCommon.h>
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputActivator)
-	.BASE(Refl::IReflectionObject)
-
-	.classAttrs(
-		Shibboleth::ClassBucketAttribute()
-	)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputActivator)
-
+#include "Pipelines/Shibboleth_RenderPipeline.h"
+#include "Pipelines/Shibboleth_RenderPipelineConfig.h"
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InputActivator)
-
-void InputActivator::update(const PlayerInputSubsystem& /*input_subsystem*/, const Gleam::Vec3& /*input_value*/, float /*dt*/) const
+bool RenderPipeline::init(RenderManager& /*render_mgr*/)
 {
-}
+	const RenderPipelineConfig& config = GetConfigRef<RenderPipelineConfig>();
 
-bool InputActivator::isTriggered(void) const
-{
-	return _flags.testAll(Flag::Triggered);
-}
+	_render_stage_cache.reserve(config.stages.size());
 
-void InputActivator::setTriggered(bool triggered)
-{
-	_flags.set(triggered, Flag::Triggered);
+	for (const InstancedPtr<IRenderStage>& stage : config.stages) {
+		_render_stage_cache.emplace_back(stage.get());
+	}
+
+	return true;
 }
 
 NS_END

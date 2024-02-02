@@ -69,7 +69,7 @@ public:
 	Gleam::Layout* getLayout(const Gleam::RenderDevice& device);
 
 private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Program> > _programs{ ProxyAllocator("Graphics") };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::Program> > _programs{ GRAPHICS_ALLOCATOR };
 	ResourcePtr<ShaderResource> _shaders[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	SHIB_REFLECTION_CLASS_DECLARE(MaterialResource);

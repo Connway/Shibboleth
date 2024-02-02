@@ -29,20 +29,6 @@ THE SOFTWARE.
 #define GET_INTERFACE(class_type, data) template getInterface<class_type>(CLASS_HASH(class_type), data)
 #define CREATET(class_type, allocator, ...) template createT<class_type>(CLASS_HASH(class_type), allocator, ##__VA_ARGS__)
 
-#define SHIB_REFLECTION_CLASS_DECLARE_2() \
-	public: \
-		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \
-		const void* getBasePointer(void) const override \
-		{ \
-			return this; \
-		} \
-		void* getBasePointer(void) override \
-		{ \
-			return this; \
-		} \
-	private: \
-		friend class Refl::Reflection< std::decay_t< std::remove_pointer_t<decltype(this)> > >
-
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
 		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \

@@ -180,7 +180,7 @@ Vector<Gleam::RenderDevice*> ModelResource::getDevices(void) const
 		return _meshes[0]->getDevices();
 	}
 
-	return Vector<Gleam::RenderDevice*>{ ProxyAllocator("Graphics") };
+	return Vector<Gleam::RenderDevice*>{ GRAPHICS_ALLOCATOR };
 }
 
 bool ModelResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, const aiScene& scene, const Vector<int32_t>& centering_meshes)
@@ -233,7 +233,7 @@ bool ModelResource::createMesh(const Vector<Gleam::RenderDevice*>& devices, cons
 
 bool ModelResource::createMesh(Gleam::RenderDevice& device, const aiScene& scene, const Vector<int32_t>& centering_meshes)
 {
-	const Vector<Gleam::RenderDevice*> devices(1, &device, ProxyAllocator("Graphics"));
+	const Vector<Gleam::RenderDevice*> devices(1, &device, GRAPHICS_ALLOCATOR);
 	return createMesh(devices, scene, centering_meshes);
 }
 
