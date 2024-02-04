@@ -1,6 +1,8 @@
-DependencyProject "GLFW"
+DependencyProject("GLFW", "SharedLib")
 	language "C"
 	warnings "Extra"
+
+	defines { "_GLFW_BUILD_DLL" }
 
 	files { "**.c", "**.h" }
 
@@ -19,29 +21,22 @@ DependencyProject "GLFW"
 	filter { "system:macosx" }
 		defines { "_GLFW_COCOA" }
 		files { "**.m" }
+		links { "Cocoa.framework", "IOKit.framework" }
 
 	filter { "system:linux", "options:not wayland" }
 		removefiles { "src/wl_*.*" }
 		defines { "_GLFW_X11" }
+		-- links {}
 
 	filter { "system:linux", "options:wayland" }
 		removefiles { "src/x11_*.*" }
 		defines { "_GLFW_WAYLAND" }
+		-- links {}
 
 	filter { "system:windows" }
 		defines { "_GLFW_WIN32", "_CRT_SECURE_NO_WARNINGS" }
+		-- links {}
 
 	filter {}
 
 	SetupConfigMap()
-
-
-function GLFWDependencies()
-	if os.target() == "windows" then
-		return {}
-	elseif os.target() == "linux" then
-		return {}
-	elseif os.target() == "macosx" then
-		return {}
-	end
-end
