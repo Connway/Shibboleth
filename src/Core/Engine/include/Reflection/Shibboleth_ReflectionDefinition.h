@@ -72,9 +72,6 @@ public:
 
 	constexpr static bool IsBuiltIn(void) { return false; }
 
-	template <class... Args>
-	T* create(Args&&... args) const;
-
 	const char8_t* getFriendlyName(void) const override;
 
 	bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override;
