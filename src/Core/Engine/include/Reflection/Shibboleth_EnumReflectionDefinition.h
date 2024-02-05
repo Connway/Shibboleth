@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_IAttribute.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_VectorMap.h"
-#include "Shibboleth_SmartPtrs.h"
+#include "Ptrs/Shibboleth_SmartPtrs.h"
 #include "Shibboleth_Vector.h"
 #include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Hash.h>

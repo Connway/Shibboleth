@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourcePtr.h"
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_VectorMap.h>
-#include <Shibboleth_ArrayPtr.h>
+#include <Ptrs/Shibboleth_ArrayPtr.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_AppUtils.h>
 #include <eathread/eathread_mutex.h>

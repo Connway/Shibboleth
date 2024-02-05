@@ -29,7 +29,7 @@ THE SOFTWARE.
 //#include "Shibboleth_FileWatcher.h"
 #include "Shibboleth_Broadcaster.h"
 #include "Log/Shibboleth_LogManager.h"
-#include "Shibboleth_SmartPtrs.h"
+#include "Ptrs/Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_IModule.h"
 #include "Shibboleth_JobPool.h"

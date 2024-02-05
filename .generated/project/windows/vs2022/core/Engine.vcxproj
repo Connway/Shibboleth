@@ -240,6 +240,11 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Gen_StaticReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Log\Shibboleth_LogManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_ArrayPtr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_IAttribute.h" />
@@ -279,7 +284,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_App.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_AppConfigs.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_AppUtils.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ArrayPtr.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Broadcaster.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Broadcaster.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Curve.h" />
@@ -298,9 +302,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_IModule.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ISubsystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Image.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtr.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JSONSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JobPool.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JobPoolFwd.h" />
@@ -316,7 +317,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReader.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReaderWrapper.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SparseStack.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SubsystemCollector.h" />

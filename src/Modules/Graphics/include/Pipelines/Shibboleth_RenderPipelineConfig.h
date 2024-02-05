@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include "Pipelines/Shibboleth_IRenderStage.h"
 #include "Shibboleth_GraphicsDefines.h"
+#include <Ptrs/Shibboleth_InstancedPtr.h>
 #include <Config/Shibboleth_Config.h>
-#include <Shibboleth_InstancedPtr.h>
 
 NS_SHIBBOLETH
 

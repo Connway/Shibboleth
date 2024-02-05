@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ShaderResource.h"
 #include <Shibboleth_ResourcePtr.h>
-#include <Shibboleth_SmartPtrs.h>
+#include <Ptrs/Shibboleth_SmartPtrs.h>
 #include <Gleam_Program.h>
 
 NS_SHIBBOLETH

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_InputActivator.h"
-#include <Shibboleth_InstancedPtr.h>
+#include <Ptrs/Shibboleth_InstancedPtr.h>
 
 NS_SHIBBOLETH
 

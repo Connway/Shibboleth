@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Reflection/Shibboleth_ReflectionDefinitionVariable.h"
 #include "Shibboleth_IReflectionDefinition.h"
 #include "Shibboleth_AppConfigs.h"
-#include "Shibboleth_SmartPtrs.h"
+#include "Ptrs/Shibboleth_SmartPtrs.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
 #include <Gaff_ContainerAlgorithm.h>

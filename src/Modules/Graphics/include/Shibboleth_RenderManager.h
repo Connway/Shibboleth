@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Pipelines/Shibboleth_RenderPipeline.h"
 #include <Shibboleth_ResourcePtr.h>
-#include <Shibboleth_SmartPtrs.h>
+#include <Ptrs/Shibboleth_SmartPtrs.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Vector.h>

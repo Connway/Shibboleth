@@ -10,6 +10,9 @@
     <Filter Include="include\Log">
       <UniqueIdentifier>{DA63C031-4619-3927-CF0D-33FE3BC22F2B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Ptrs">
+      <UniqueIdentifier>{C127CF69-AD8A-5E0E-5610-97C442522A91}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\Reflection">
       <UniqueIdentifier>{A3FEAE6A-8FE2-6FC0-F842-6A13E4455A42}</UniqueIdentifier>
     </Filter>
@@ -38,6 +41,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Log\Shibboleth_LogManager.h">
       <Filter>include\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_ArrayPtr.h">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtr.h">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.h">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_SmartPtrs.h">
+      <Filter>include\Ptrs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.h">
       <Filter>include\Reflection</Filter>
@@ -156,9 +174,6 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_AppUtils.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ArrayPtr.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Broadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -213,15 +228,6 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Image.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtr.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_InstancedPtrReflection.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JSONSerializeWriter.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -265,9 +271,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReaderWrapper.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SparseStack.h">
