@@ -43,10 +43,4 @@ CoreProject("Memory", "SharedLib")
 
 	filter {}
 
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
-	}
-
 	SetupConfigMap()

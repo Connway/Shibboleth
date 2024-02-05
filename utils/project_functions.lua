@@ -258,7 +258,7 @@ function CoreProject(project_name, project_kind)
 
 		SetupConfigMap()
 
-		if (project_kind == "WindowedApp") or (project_kind == "ConsoleApp") then
+		if (project_kind == "WindowedApp") or (project_kind == "ConsoleApp") or (project_kind == "SharedLib") then
 			postbuildcommands
 			{
 				"{MKDIR} " .. GetBinLocation(),
@@ -374,7 +374,13 @@ function SetupConfigMap()
 	configmap
 	{
 		["Static_Debug_D3D11"] = "Debug",
-		["Static_Release_D3D11"] = "Release"
+		["Static_Release_D3D11"] = "Release",
+		--["Static_Debug_D3D12"] = "Debug",
+		--["Static_Release_D3D12"] = "Release",
+		--["Static_Debug_Vulkan"] = "Debug",
+		--["Static_Release_Vulkan"] = "Release",
+		--["Static_Debug_Metal"] = "Debug",
+		--["Static_Release_Metal"] = "Release",
 	}
 end
 

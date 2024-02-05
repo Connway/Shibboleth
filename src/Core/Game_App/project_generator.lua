@@ -50,12 +50,6 @@ CoreProject("Game_App", proj_kind)
 
 	filter {}
 
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../../workingdir/bin",
-		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
-	}
-
 
 --CoreProject("Game_App_Static", proj_kind)
 	--defines { "SHIB_STATIC" }
