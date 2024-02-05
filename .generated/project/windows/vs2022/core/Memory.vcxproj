@@ -123,8 +123,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -162,8 +162,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\Memory\$(TargetFile
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -198,8 +198,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\$(TargetFi
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -234,8 +234,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\Memory\$(TargetFi
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory\$(TargetFileName) ..\..\..\..\..\workingdir\bin</Command>
+      <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\bin (mkdir $(SolutionDir)\..\..\..\..\workingdir\bin)
+copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Memory\$(TargetFileName) $(SolutionDir)\..\..\..\..\workingdir\bin</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
