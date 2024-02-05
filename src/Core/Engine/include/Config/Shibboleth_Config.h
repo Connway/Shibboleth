@@ -33,21 +33,6 @@ class IConfig : public Refl::IReflectionObject
 
 
 
-class ConfigDirectoryAttribute final : public Refl::IAttribute
-{
-public:
-	ConfigDirectoryAttribute(const char8_t* directory);
-
-	const char8_t* getDirectory(void) const;
-
-	IAttribute* clone(void) const override;
-
-private:
-	const char8_t* const _directory = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ConfigDirectoryAttribute);
-};
-
 class GlobalConfigAttribute final : public Refl::IAttribute
 {
 public:
@@ -66,6 +51,35 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(GlobalConfigAttribute);
 };
+
+class ConfigFileAttribute final : public Refl::IAttribute
+{
+public:
+	ConfigFileAttribute(const char8_t* file_name = nullptr, const char8_t* directory = nullptr);
+
+	const char8_t* getDirectory(void) const;
+	const char8_t* getFileName(void) const;
+
+	IAttribute* clone(void) const override;
+
+private:
+	const char8_t* const _file_name = nullptr;
+	const char8_t* const _directory = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ConfigFileAttribute);
+};
+
+class InitFromConfigAttribute final : public Refl::IAttribute
+{
+public:
+	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
+
+	IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(InitFromConfigAttribute);
+};
+
+
 
 template <class T>
 const T* GetConfig(void)
@@ -89,8 +103,9 @@ const T& GetConfigRef(void)
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ConfigDirectoryAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::InitFromConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::ConfigFileAttribute)
 
 NS_HASHABLE
 	GAFF_CLASS_HASHABLE(Shibboleth::IConfig);
