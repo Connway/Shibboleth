@@ -40,3 +40,9 @@ DependencyProject("GLFW", "SharedLib")
 	filter {}
 
 	SetupConfigMap()
+
+	postbuildcommands
+	{
+		"{MKDIR} " .. GetBinLocation(),
+		"{COPYFILE} %{cfg.targetdir}/%{cfg.buildtarget.name} " .. GetBinLocation()
+	}
