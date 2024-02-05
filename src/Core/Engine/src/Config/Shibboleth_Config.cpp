@@ -80,7 +80,7 @@ Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefiniti
 	const ConfigDirectoryAttribute* const config_dir_attr = ref_def.getClassAttr<ConfigDirectoryAttribute>();
 
 	if (config_dir_attr) {
-		config_path += U8String(u8"/") + config_dir_attr->getDirectory();
+		config_path = config_dir_attr->getDirectory() + U8String(u8"/") + config_path;
 	}
 
 	config_path = u8"cfg/" + config_path + u8".cfg";
