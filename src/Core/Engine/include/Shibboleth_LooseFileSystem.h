@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Containers/Shibboleth_Vector.h"
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Vector.h"
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <eathread/eathread_mutex.h>
 

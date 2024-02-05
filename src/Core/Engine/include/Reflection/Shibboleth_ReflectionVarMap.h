@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionVar.h"
-#include "Shibboleth_VectorMap.h"
+#include "Containers/Shibboleth_VectorMap.h"
 
 NS_REFLECTION
 

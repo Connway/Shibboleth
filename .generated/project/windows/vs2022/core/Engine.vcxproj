@@ -237,6 +237,10 @@ CodeGenerator64od static_header</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Queue.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_SparseStack.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Vector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_VectorMap.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Gen_StaticReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Log\Shibboleth_LogManager.h" />
@@ -244,6 +248,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtr.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.inl" />
@@ -310,20 +315,15 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_MessagePackSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ModuleMacros.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ProxyAllocator.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Queue.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_RuntimeVarManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_RuntimeVarManagerFwd.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReader.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReaderWrapper.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SparseStack.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SubsystemCollector.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ThreadAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Utilities.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Vector.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_VectorMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Config\Shibboleth_Config.cpp" />

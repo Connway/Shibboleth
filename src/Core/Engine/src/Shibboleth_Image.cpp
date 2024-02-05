@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Vector.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_Math.h>
 #include <tiffio.h>

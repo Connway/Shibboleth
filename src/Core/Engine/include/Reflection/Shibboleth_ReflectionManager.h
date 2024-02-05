@@ -22,12 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Containers/Shibboleth_VectorMap.h"
+#include "Ptrs/Shibboleth_SmartPtrs.h"
+#include "Shibboleth_HashString.h"
+#include "Shibboleth_String.h"
 #include "Shibboleth_IReflection.h"
 #include "Shibboleth_IAttribute.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_VectorMap.h"
-#include "Ptrs/Shibboleth_SmartPtrs.h"
-#include "Shibboleth_String.h"
 #include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH

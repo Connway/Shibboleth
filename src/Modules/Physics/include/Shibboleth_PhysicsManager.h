@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 //#include <Shibboleth_ECSComponentCommon.h>
-#include <Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 //#include <Shibboleth_ECSQuery.h>
 

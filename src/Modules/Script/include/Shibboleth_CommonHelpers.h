@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include <Shibboleth_IReflectionDefinition.h>
 #include <Shibboleth_ProxyAllocator.h>
-#include <Shibboleth_VectorMap.h>
-#include <Shibboleth_Vector.h>
+#include <Containers/Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_String.h>
 #include <Gaff_Flags.h>
 

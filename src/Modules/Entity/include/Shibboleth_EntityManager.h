@@ -23,9 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Entity.h"
+#include <Containers/Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_VectorMap.h>
-#include <Shibboleth_Vector.h>
 #include <eathread/eathread_rwspinlock.h>
 #include <eathread/eathread_rwmutex.h>
 

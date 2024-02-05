@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Player.h"
+#include <Containers/Shibboleth_SparseStack.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_SparseStack.h>
 
 NS_SHIBBOLETH
 

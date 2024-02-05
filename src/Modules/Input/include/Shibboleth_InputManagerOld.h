@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_SparseStack.h>
+#include <Containers/Shibboleth_SparseStack.h>
 #include <Reflection/Shibboleth_Reflection.h>
-#include <Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_VectorMap.h>
 #include <Ptrs/Shibboleth_SmartPtrs.h>
 #include <Shibboleth_IManager.h>
 #include <Gleam_Window.h>

@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_CommonHelpers.h"
 #include <Reflection/Shibboleth_IReflectionFunction.h>
 #include <Reflection/Shibboleth_IReflection.h>
-#include <Shibboleth_Vector.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Gaff_Hash.h>
 #include <lua.hpp>
 

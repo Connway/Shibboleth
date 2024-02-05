@@ -7,6 +7,9 @@
     <Filter Include="include\Config">
       <UniqueIdentifier>{6E3688FB-5A04-7C01-4398-EC272F055866}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Containers">
+      <UniqueIdentifier>{6E0AE27B-5AEE-A2D1-C34E-9D24AF518D53}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\Log">
       <UniqueIdentifier>{DA63C031-4619-3927-CF0D-33FE3BC22F2B}</UniqueIdentifier>
     </Filter>
@@ -33,6 +36,18 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h">
       <Filter>include\Config</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Queue.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_SparseStack.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Vector.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_VectorMap.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -52,6 +67,9 @@
       <Filter>include\Ptrs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_RefCounted.h">
       <Filter>include\Ptrs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_SmartPtrs.h">
@@ -252,12 +270,6 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Queue.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_RefCounted.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_RuntimeVarManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -273,9 +285,6 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SerializeReaderWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_SparseStack.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_String.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -286,12 +295,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Utilities.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Vector.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_VectorMap.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

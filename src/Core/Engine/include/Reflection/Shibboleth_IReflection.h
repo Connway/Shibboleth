@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionDefines.h"
+#include "Containers/Shibboleth_Vector.h"
 #include "Shibboleth_HashString.h"
-#include "Shibboleth_Vector.h"
 #include <Gaff_Assert.h>
 #include <Gaff_Flags.h>
 #include <Gaff_Hash.h>

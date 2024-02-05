@@ -23,8 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_SerializeInterfaces.h"
-#include "Shibboleth_ProxyAllocator.h"
-#include "Shibboleth_Vector.h"
+#include "Containers/Shibboleth_Vector.h"
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH

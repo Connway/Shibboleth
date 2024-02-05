@@ -32,7 +32,7 @@ THE SOFTWARE.
 #ifdef SHIB_RUNTIME_VAR_ENABLED
 
 #include "Reflection/Shibboleth_Reflection.h"
-#include "Shibboleth_VectorMap.h"
+#include "Containers/Shibboleth_VectorMap.h"
 
 NS_SHIBBOLETH
 

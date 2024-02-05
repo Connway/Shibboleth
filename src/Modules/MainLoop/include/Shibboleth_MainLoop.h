@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_ISystem.h"
 #include <Reflection/Shibboleth_Reflection.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IMainLoop.h>
 #include <Shibboleth_JobPool.h>
-#include <Shibboleth_Vector.h>
 
 NS_SHIBBOLETH
 

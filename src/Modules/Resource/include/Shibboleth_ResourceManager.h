@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourcePtr.h"
 #include <Shibboleth_EngineAttributesCommon.h>
-#include <Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_VectorMap.h>
 #include <Ptrs/Shibboleth_ArrayPtr.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_AppUtils.h>

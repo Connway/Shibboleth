@@ -24,11 +24,11 @@ THE SOFTWARE.
 
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Pipelines/Shibboleth_RenderPipeline.h"
-#include <Shibboleth_ResourcePtr.h>
+#include <Containers/Shibboleth_VectorMap.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Ptrs/Shibboleth_SmartPtrs.h>
-#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Vector.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Vec2.h>
 #include <eathread/eathread_spinlock.h>

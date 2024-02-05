@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include <Reflection/Shibboleth_Reflection.h>
+#include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_HashString.h>
-#include <Shibboleth_Vector.h>
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_RefPtr.h>
 #include <EASTL/functional.h>

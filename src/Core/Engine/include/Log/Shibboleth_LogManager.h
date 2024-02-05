@@ -23,11 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_AppConfigs.h"
+#include "Containers/Shibboleth_VectorMap.h"
+#include "Containers/Shibboleth_Vector.h"
+#include "Containers/Shibboleth_Queue.h"
 #include "Shibboleth_HashString.h"
-#include "Shibboleth_VectorMap.h"
-#include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Queue.h"
 #include <Gaff_File.h>
 #include <eathread/eathread_semaphore.h>
 #include <eathread/eathread_thread.h>

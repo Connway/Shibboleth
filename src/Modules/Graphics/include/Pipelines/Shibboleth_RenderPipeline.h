@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_GraphicsDefines.h"
-#include <Shibboleth_Vector.h>
+#include <Containers/Shibboleth_Vector.h>
 
 NS_SHIBBOLETH
 

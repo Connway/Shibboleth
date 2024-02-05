@@ -77,6 +77,12 @@ Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefiniti
 		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
 	}
 
+	const ConfigDirectoryAttribute* const config_dir_attr = ref_def.getClassAttr<ConfigDirectoryAttribute>();
+
+	if (config_dir_attr) {
+		config_path += U8String(u8"/") + config_dir_attr->getDirectory();
+	}
+
 	config_path = u8"cfg/" + config_path + u8".cfg";
 
 	ProxyAllocator allocator; // $TODO: Set a real allocator.
