@@ -27,27 +27,22 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IConfig : public Refl::IReflectionObject
-{
-};
-
-
-
 class GlobalConfigAttribute final : public Refl::IAttribute
 {
 public:
-	GlobalConfigAttribute(const IConfig* config);
+	GlobalConfigAttribute(const Refl::IReflectionObject* config);
 	GlobalConfigAttribute(void) = default;
 
-	void setConfig(const IConfig* config);
-	const IConfig* getConfig(void) const;
+	void setConfig(const Refl::IReflectionObject* config);
+	const Refl::IReflectionObject* getConfig(void) const;
 
 	Error createAndLoadConfig(const Refl::IReflectionDefinition& ref_def);
 
+	void apply(Refl::IReflectionDefinition& ref_def) override;
 	IAttribute* clone(void) const override;
 
 private:
-	const IConfig* _config = nullptr;
+	const Refl::IReflectionObject* _config = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(GlobalConfigAttribute);
 };
@@ -72,11 +67,28 @@ private:
 class InitFromConfigAttribute final : public Refl::IAttribute
 {
 public:
+	InitFromConfigAttribute(bool init_on_instantiate = true, bool use_config_var_attribute = false);
+
 	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
 	IAttribute* clone(void) const override;
 
+	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path);
+	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def);
+
+private:
+	bool _use_config_var_attribute = false;
+	bool _init_on_instantiate = true;
+
 	SHIB_REFLECTION_CLASS_DECLARE(InitFromConfigAttribute);
+};
+
+class ConfigVarAttribute final : public Refl::IAttribute
+{
+public:
+	IAttribute* clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ConfigVarAttribute);
 };
 
 
@@ -84,7 +96,7 @@ public:
 template <class T>
 const T* GetConfig(void)
 {
-	static_assert(std::is_base_of_v<IConfig, T>, "Passed in class is not an IConfig.");
+	static_assert(std::is_base_of_v<Refl::IReflectionObject, T>, "Passed in class is not an IReflectionObject.");
 
 	const Refl::IReflectionDefinition& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
 	const auto* const attr = ref_def.template getClassAttr<GlobalConfigAttribute>();
@@ -106,7 +118,4 @@ NS_END
 SHIB_REFLECTION_DECLARE(Shibboleth::InitFromConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ConfigFileAttribute)
-
-NS_HASHABLE
-	GAFF_CLASS_HASHABLE(Shibboleth::IConfig);
-NS_END
+SHIB_REFLECTION_DECLARE(Shibboleth::ConfigVarAttribute)

@@ -460,6 +460,26 @@ public:
 		}
 	}
 
+	template <class T>
+	void getVarAttrs(Shibboleth::Vector< eastl::pair<int32_t, const T*> >& out) const
+	{
+		const int32_t num_vars = getNumVars();
+
+		for (int32_t j = 0; j < num_vars; ++j) {
+			const Shibboleth::HashStringView32<> name = getVarName(j);
+			const int32_t size = getNumVarAttrs(name.getHash());
+
+			for (int32_t i = 0; i < size; ++i) {
+				const IAttribute* const attribute = getVarAttr(name.getHash(), i);
+				const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
+
+				if (attr) {
+					out.emplace_back(eastl::make_pair(j, attr));
+				}
+			}
+		}
+	}
+
 	template <class Ret, class... Args, class T>
 	void getFuncAttrs(Gaff::Hash32 name, Shibboleth::Vector<const T*>& out) const
 	{

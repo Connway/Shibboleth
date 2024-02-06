@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Pipelines/Shibboleth_RenderPipelineConfig.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipelineConfig)
-	.BASE(Shibboleth::IConfig)
+	.BASE(Refl::IReflectionObject)
 	.template ctor<>()
 
 	.var("stages", &Shibboleth::RenderPipelineConfig::stages)

@@ -27,78 +27,30 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InitFromConfigAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::GlobalConfigAttribute, IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigFileAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigVarAttribute, IAttribute)
 
-namespace
-{
-	static Shibboleth::Error LoadConfig(void* object, const Refl::IReflectionDefinition& ref_def)
-	{
-		static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
-		Shibboleth::U8String config_path = ref_def.getReflectionInstance().getName();
-
-		if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
-			config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
-		}
-
-		const Shibboleth::ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<Shibboleth::ConfigFileAttribute>();
-
-		if (config_file_attr) {
-			if (config_file_attr->getFileName()) {
-				config_path = config_file_attr->getFileName();
-			}
-
-			if (config_file_attr->getDirectory()) {
-				config_path = Shibboleth::U8String(config_file_attr->getDirectory()) + u8"/" + config_path;
-			}
-		}
-
-		config_path = u8"cfg/" + config_path + u8".cfg";
-
-		Gaff::JSON config_data;
-
-		if (!config_data.parseFile(config_path.data())) {
-			LogErrorDefault(
-				"LoadConfig: Failed to parse config '%s'. %s",
-				reinterpret_cast<const char*>(config_path.data()),
-				reinterpret_cast<const char*>(config_data.getErrorText())
-			);
-
-			return Shibboleth::Error::k_simple_error;
-		}
-
-		auto reader = Shibboleth::MakeSerializeReader(config_data);
-
-		if (!ref_def.load(reader, object)) {
-			LogErrorDefault(
-				"LoadConfig: Failed to load config of type '%s'.",
-				reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
-			);
-
-			return Shibboleth::Error::k_simple_error;
-		}
-
-		return Shibboleth::Error::k_no_error;
-	}
-}
 
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(InitFromConfigAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(GlobalConfigAttribute)
 SHIB_REFLECTION_CLASS_DEFINE(ConfigFileAttribute)
+SHIB_REFLECTION_CLASS_DEFINE(ConfigVarAttribute)
 
 
 
-GlobalConfigAttribute::GlobalConfigAttribute(const IConfig* config):
+GlobalConfigAttribute::GlobalConfigAttribute(const Refl::IReflectionObject* config):
 	_config(config)
 {
 }
 
-void GlobalConfigAttribute::setConfig(const IConfig* config)
+void GlobalConfigAttribute::setConfig(const Refl::IReflectionObject* config)
 {
 	_config = config;
 }
 
-const IConfig* GlobalConfigAttribute::getConfig(void) const
+const Refl::IReflectionObject* GlobalConfigAttribute::getConfig(void) const
 {
 	return _config;
 }
@@ -106,7 +58,7 @@ const IConfig* GlobalConfigAttribute::getConfig(void) const
 Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefinition& ref_def)
 {
 	ProxyAllocator allocator; // $TODO: Set a real allocator.
-	IConfig* const config_instance = ref_def.CREATET(Shibboleth::IConfig, allocator);
+	Refl::IReflectionObject* const config_instance = ref_def.CREATET(Refl::IReflectionObject, allocator);
 
 	if (!config_instance) {
 		LogErrorDefault(
@@ -119,7 +71,16 @@ Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefiniti
 
 	setConfig(config_instance);
 
-	return LoadConfig(config_instance->getBasePointer(), ref_def);
+	// InitFromConfigAttribute will load the config in the createT call.
+	return Error::k_no_error;
+}
+
+void GlobalConfigAttribute::apply(Refl::IReflectionDefinition& ref_def)
+{
+	if (!ref_def.hasClassAttr<InitFromConfigAttribute>()) {
+		InitFromConfigAttribute init_attr;
+		ref_def.addClassAttr(init_attr);
+	}
 }
 
 Refl::IAttribute* GlobalConfigAttribute::clone(void) const
@@ -153,15 +114,110 @@ Refl::IAttribute* ConfigFileAttribute::clone(void) const
 
 
 
+InitFromConfigAttribute::InitFromConfigAttribute(bool init_on_instantiate, bool use_config_var_attribute):
+	_use_config_var_attribute(use_config_var_attribute), _init_on_instantiate(init_on_instantiate)
+{
+}
+
 void InitFromConfigAttribute::instantiated(void* object, const Refl::IReflectionDefinition& ref_def)
 {
-	LoadConfig(object, ref_def);
+	if (_init_on_instantiate) {
+		loadConfig(object, ref_def);
+	}
 }
 
 Refl::IAttribute* InitFromConfigAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(GlobalConfigAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path)
+{
+	const U8String config_path = u8"cfg/" + relative_cfg_path + u8".cfg";
+	Gaff::JSON config_data;
+
+	if (!config_data.parseFile(config_path.data())) {
+		LogErrorDefault(
+			"InitFromConfigAttribute::LoadConfig: Failed to parse config '%s'. %s",
+			reinterpret_cast<const char*>(config_path.data()),
+			reinterpret_cast<const char*>(config_data.getErrorText())
+		);
+
+		return Error::k_simple_error;
+	}
+
+	auto reader = MakeSerializeReader(config_data);
+
+	if (_use_config_var_attribute) {
+		Shibboleth::Vector< eastl::pair<int32_t, const ConfigVarAttribute*> > config_vars;
+		bool has_error = false;
+
+		ref_def.getVarAttrs(config_vars);
+
+		for (const auto& entry : config_vars) {
+			const ScopeGuard guard = reader.enterElementGuard(ref_def.getVarName(entry.first).getBuffer());
+			Refl::IReflectionVar* const var = ref_def.getVar(entry.first);
+
+			if (!var->load(reader, object)) {
+				LogErrorDefault(
+					"InitFromConfigAttribute::loadConfig: Failed to load variable '%s' in config of type '%s'.",
+					ref_def.getVarName(entry.first).getBuffer(),
+					reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
+				);
+
+				has_error = true;
+			}
+		}
+
+		if (has_error) {
+			return Error::k_simple_error;
+		}
+
+	} else {
+		if (!ref_def.load(reader, object)) {
+			LogErrorDefault(
+				"InitFromConfigAttribute::loadConfig: Failed to load config of type '%s'.",
+				reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
+			);
+
+			return Error::k_simple_error;
+		}
+	}
+
+	return Error::k_no_error;
+}
+
+Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def)
+{
+	static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
+	Shibboleth::U8String config_path = ref_def.getReflectionInstance().getName();
+
+	if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
+		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
+	}
+
+	const Shibboleth::ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<Shibboleth::ConfigFileAttribute>();
+
+	if (config_file_attr) {
+		if (config_file_attr->getFileName()) {
+			config_path = config_file_attr->getFileName();
+		}
+
+		if (config_file_attr->getDirectory()) {
+			config_path = Shibboleth::U8String(config_file_attr->getDirectory()) + u8"/" + config_path;
+		}
+	}
+
+	return loadConfig(object, ref_def, config_path);
+}
+
+
+
+Refl::IAttribute* ConfigVarAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ConfigVarAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END

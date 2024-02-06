@@ -39,7 +39,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
-	.BASE(Shibboleth::IConfig)
+	.BASE(Refl::IReflectionObject)
 	.template ctor<>()
 
 	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)

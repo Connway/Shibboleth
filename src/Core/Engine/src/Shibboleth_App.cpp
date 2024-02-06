@@ -326,7 +326,7 @@ bool App::initInternal(void)
 	_reflection_mgr.registerTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
 	_reflection_mgr.registerTypeBucket<IManager>();
-	_reflection_mgr.registerTypeBucket<IConfig>();
+	_reflection_mgr.registerAttributeBucket<GlobalConfigAttribute>();
 
 	// Init engine reflection.
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
@@ -775,7 +775,7 @@ bool App::createModule(CreateModuleFunc create_func, const char8_t* module_name)
 
 bool App::createConfigs(void)
 {
-	const auto* const configs = _reflection_mgr.getTypeBucket<IConfig>();
+	const auto* const configs = _reflection_mgr.getAttributeBucket<GlobalConfigAttribute>();
 
 	if (!configs) {
 		return true;
@@ -784,7 +784,7 @@ bool App::createConfigs(void)
 	for (const Refl::IReflectionDefinition* ref_def : *configs) {
 		GlobalConfigAttribute* const attr = const_cast<GlobalConfigAttribute*>(ref_def->getClassAttr<GlobalConfigAttribute>());
 
-		if (!attr || attr->getConfig()) {
+		if (attr->getConfig()) {
 			continue;
 		}
 

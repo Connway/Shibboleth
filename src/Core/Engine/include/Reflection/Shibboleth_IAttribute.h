@@ -48,6 +48,9 @@ public:
 	virtual void finish(IEnumReflectionDefinition& /*ref_def*/) {}
 	virtual void finish(IReflectionDefinition& /*ref_def*/) {}
 
+	virtual void apply(IEnumReflectionDefinition& /*ref_def*/) {}
+	virtual void apply(IReflectionDefinition& /*ref_def*/) {}
+
 	virtual void instantiated(void* /*object*/, const IReflectionDefinition& /*ref_def*/) {}
 
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.

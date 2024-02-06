@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderPipelineConfig final : public IConfig
+class RenderPipelineConfig final : public Refl::IReflectionObject
 {
 public:
 	Vector< InstancedPtr<IRenderStage> > stages{ GRAPHICS_ALLOCATOR };

@@ -684,7 +684,7 @@ bool ReflectionDefinition<T>::hasClassAttr(Gaff::Hash64 attr_name) const
 template <class T>
 void ReflectionDefinition<T>::addClassAttr(IAttribute& attribute)
 {
-	_class_attrs.emplace_back(IAttributePtr(attribute.clone()));
+	addAttributes(_class_attrs, attribute);
 }
 
 template <class T>
@@ -1893,12 +1893,15 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionStati
 	}
 }
 
-// Non-apply() call version.
+// Class
 template <class T>
 template <class First, class... Rest>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
 {
-	attrs.emplace_back(IAttributePtr(first.clone()));
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(*this);
 
 	if constexpr (sizeof...(Rest) > 0) {
 		return addAttributes(attrs, rest...);
