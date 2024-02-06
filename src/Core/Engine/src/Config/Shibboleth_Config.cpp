@@ -114,14 +114,14 @@ Refl::IAttribute* ConfigFileAttribute::clone(void) const
 
 
 
-InitFromConfigAttribute::InitFromConfigAttribute(bool init_on_instantiate, bool use_config_var_attribute):
-	_use_config_var_attribute(use_config_var_attribute), _init_on_instantiate(init_on_instantiate)
+InitFromConfigAttribute::InitFromConfigAttribute(Gaff::Flags<Flag> flags):
+	_flags(flags)
 {
 }
 
 void InitFromConfigAttribute::instantiated(void* object, const Refl::IReflectionDefinition& ref_def)
 {
-	if (_init_on_instantiate) {
+	if (_flags.testAll(Flag::InitOnInstantiate)) {
 		loadConfig(object, ref_def);
 	}
 }
@@ -149,7 +149,7 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 
 	auto reader = MakeSerializeReader(config_data);
 
-	if (_use_config_var_attribute) {
+	if (_flags.testAll(Flag::UseConfigVarAttribute)) {
 		Shibboleth::Vector< eastl::pair<int32_t, const ConfigVarAttribute*> > config_vars;
 		bool has_error = false;
 

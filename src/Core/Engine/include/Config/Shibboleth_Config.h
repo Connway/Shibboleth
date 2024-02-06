@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Reflection/Shibboleth_Reflection.h"
 #include "Shibboleth_Error.h"
+#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
@@ -67,7 +68,16 @@ private:
 class InitFromConfigAttribute final : public Refl::IAttribute
 {
 public:
-	InitFromConfigAttribute(bool init_on_instantiate = true, bool use_config_var_attribute = false);
+	enum class Flag
+	{
+		UseConfigVarAttribute,
+		InitOnInstantiate,
+
+		Count
+	};
+
+	InitFromConfigAttribute(Gaff::Flags<Flag> flags);
+	InitFromConfigAttribute(void) = default;
 
 	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
@@ -77,8 +87,7 @@ public:
 	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def);
 
 private:
-	bool _use_config_var_attribute = false;
-	bool _init_on_instantiate = true;
+	Gaff::Flags<Flag> _flags { Flag::InitOnInstantiate };
 
 	SHIB_REFLECTION_CLASS_DECLARE(InitFromConfigAttribute);
 };
