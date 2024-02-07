@@ -92,6 +92,12 @@ void VarInstancedPtr<T, VarType>::setDataMove(void* object, void* data)
 template <class T, class VarType>
 bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
+	GAFF_ASSERT(reader.isNull() || reader.isObject());
+
+	if (reader.isNull()) {
+		return true;
+	}
+
 	const char8_t* class_name = nullptr;
 
 	{
@@ -135,20 +141,19 @@ void VarInstancedPtr<T, VarType>::save(ISerializeWriter& writer, const void* obj
 {
 	const InstancedPtr<VarType>* const var = reinterpret_cast<const InstancedPtr<VarType>*>(object);
 
+	if (!*var) {
+		writer.writeNull();
+		return;
+	}
+
 	writer.startObject(2);
 
-	if (*var) {
-		const Refl::IReflectionDefinition* const ref_def = var->getReflectionDefinition();
+	const Refl::IReflectionDefinition* const ref_def = var->getReflectionDefinition();
 
-		writer.writeString(u8"class", ref_def->getReflectionInstance().getName());
-		writer.writeKey(u8"data");
+	writer.writeString(u8"class", ref_def->getReflectionInstance().getName());
+	writer.writeKey(u8"data");
 
-		ref_def->save(writer, ref_def->getBasePointer(var->get()));
-
-	} else {
-		writer.writeNull(u8"class");
-		writer.writeNull(u8"data");
-	}
+	ref_def->save(writer, ref_def->getBasePointer(var->get()));
 
 	writer.endObject();
 }

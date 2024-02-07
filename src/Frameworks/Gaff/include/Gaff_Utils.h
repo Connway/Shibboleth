@@ -73,7 +73,7 @@ constexpr ptrdiff_t OffsetOfMember(void);
 template <class T, class R>
 constexpr ptrdiff_t OffsetOfMember(R T::*m);
 
-template <class Derived, class Base>
+template <class Base, class Derived>
 constexpr ptrdiff_t OffsetOfClass(void);
 
 template <typename T, typename M> M GetMemberType(M T::*);

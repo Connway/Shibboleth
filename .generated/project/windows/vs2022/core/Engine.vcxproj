@@ -237,6 +237,9 @@ CodeGenerator64od static_header</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArray.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArrayReflection.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArrayReflection.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_SparseStack.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Vector.h" />

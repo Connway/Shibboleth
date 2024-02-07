@@ -36,7 +36,7 @@ constexpr ptrdiff_t OffsetOfMember(R T::*m)
 	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*m));
 }
 
-template <class Derived, class Base>
+template <class Base, class Derived>
 constexpr ptrdiff_t OffsetOfClass(void)
 {
 	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;

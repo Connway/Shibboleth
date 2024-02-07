@@ -97,7 +97,7 @@ template <class T>
 template <class Base>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(const char8_t* name)
 {
-	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
+	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 	_hash = Gaff::FNV1aHash64String(name, _hash);
 	_hash = Gaff::FNV1aHash64T(offset, _hash);
 	return *this;
@@ -108,7 +108,7 @@ template <class Base>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 {
 	const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
-	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
+	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 
 	_hash = Gaff::FNV1aHash64T(Reflection<Base>::GetNameHash(), _hash);
 	_hash = Gaff::FNV1aHash64T(offset, _hash);

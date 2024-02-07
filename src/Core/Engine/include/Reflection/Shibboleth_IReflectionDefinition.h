@@ -64,6 +64,12 @@ public:
 
 	using VoidFunc = void (*)(void);
 
+	template <class T>
+	ptrdiff_t getBasePointerOffset(void) const
+	{
+		return getBasePointerOffset(Hash::template ClassHashable<T>::GetName());
+	}
+
 	const void* getBasePointer(Gaff::Hash64 interface_name, const void* object) const
 	{
 		return const_cast<IReflectionDefinition*>(this)->getBasePointer(interface_name, const_cast<void*>(object));

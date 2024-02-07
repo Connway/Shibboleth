@@ -36,6 +36,15 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h">
       <Filter>include\Config</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArray.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArrayReflection.h">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArrayReflection.inl">
+      <Filter>include\Containers</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_Queue.h">
       <Filter>include\Containers</Filter>
     </ClInclude>
