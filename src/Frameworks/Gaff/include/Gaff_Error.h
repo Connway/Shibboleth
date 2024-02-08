@@ -38,6 +38,7 @@ struct Error
 
 	bool hasError(void) const { return flags.testAll(Flag::HasError); }
 	bool isFatal(void) const { return flags.testAll(Flag::Fatal); }
+	bool isOk(void) const { return flags.empty(); }
 
 	operator bool(void) const { return hasError(); }
 

@@ -51,16 +51,14 @@ private:
 class ConfigFileAttribute final : public Refl::IAttribute
 {
 public:
-	ConfigFileAttribute(const char8_t* file_name = nullptr, const char8_t* directory = nullptr);
+	ConfigFileAttribute(const char8_t* file_path = nullptr);
 
-	const char8_t* getDirectory(void) const;
-	const char8_t* getFileName(void) const;
+	const char8_t* getFilePath(void) const;
 
 	IAttribute* clone(void) const override;
 
 private:
-	const char8_t* const _file_name = nullptr;
-	const char8_t* const _directory = nullptr;
+	const char8_t* const _file_path = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ConfigFileAttribute);
 };
@@ -83,8 +81,8 @@ public:
 
 	IAttribute* clone(void) const override;
 
-	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path);
-	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def);
+	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path) const;
+	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def) const;
 
 private:
 	Gaff::Flags<Flag> _flags { Flag::InitOnInstantiate };

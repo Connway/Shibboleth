@@ -32,6 +32,22 @@ class InstancedPtr final
 	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
 
 public:
+	template <class U>
+	explicit InstancedPtr(U* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		_ptr(ptr),
+		_ref_def(&Refl::Reflection<U>::GetReflectionDefinition()),
+		_allocator(allocator)
+	{
+		static_assert(Refl::Reflection<U>::HasReflection, "Assigning class does not have reflection.");
+		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+	}
+
+	explicit InstancedPtr(T* ptr, const ProxyAllocator& allocator = ProxyAllocator()):
+		_ptr(ptr),
+		_allocator(allocator)
+	{
+	}
+
 	explicit InstancedPtr(const ProxyAllocator& allocator):
 		_allocator(allocator)
 	{

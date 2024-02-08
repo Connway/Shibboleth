@@ -91,25 +91,20 @@ Refl::IAttribute* GlobalConfigAttribute::clone(void) const
 
 
 
-ConfigFileAttribute::ConfigFileAttribute(const char8_t* file_name, const char8_t* directory):
-	_file_name(file_name), _directory(directory)
+ConfigFileAttribute::ConfigFileAttribute(const char8_t* file_path):
+	_file_path(file_path)
 {
 }
 
-const char8_t* ConfigFileAttribute::getDirectory(void) const
+const char8_t* ConfigFileAttribute::getFilePath(void) const
 {
-	return _directory;
-}
-
-const char8_t* ConfigFileAttribute::getFileName(void) const
-{
-	return _file_name;
+	return _file_path;
 }
 
 Refl::IAttribute* ConfigFileAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ConfigFileAttribute, allocator.getPoolIndex("Reflection"), allocator, _directory);
+	return SHIB_ALLOCT_POOL(ConfigFileAttribute, allocator.getPoolIndex("Reflection"), allocator, _file_path);
 }
 
 
@@ -132,7 +127,7 @@ Refl::IAttribute* InitFromConfigAttribute::clone(void) const
 	return SHIB_ALLOCT_POOL(GlobalConfigAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
-Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path)
+Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path) const
 {
 	const U8String config_path = u8"cfg/" + relative_cfg_path + u8".cfg";
 	Gaff::JSON config_data;
@@ -188,7 +183,7 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 	return Error::k_no_error;
 }
 
-Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def)
+Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def) const
 {
 	static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
 	Shibboleth::U8String config_path = ref_def.getReflectionInstance().getName();
@@ -200,12 +195,8 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 	const Shibboleth::ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<Shibboleth::ConfigFileAttribute>();
 
 	if (config_file_attr) {
-		if (config_file_attr->getFileName()) {
-			config_path = config_file_attr->getFileName();
-		}
-
-		if (config_file_attr->getDirectory()) {
-			config_path = Shibboleth::U8String(config_file_attr->getDirectory()) + u8"/" + config_path;
+		if (config_file_attr->getFilePath()) {
+			config_path = config_file_attr->getFilePath();
 		}
 	}
 

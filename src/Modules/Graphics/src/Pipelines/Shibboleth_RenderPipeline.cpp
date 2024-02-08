@@ -21,21 +21,30 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Pipelines/Shibboleth_RenderPipeline.h"
-#include "Pipelines/Shibboleth_RenderPipelineConfig.h"
+#include "Pipelines/Shibboleth_IRenderStage.h"
+#include <Config/Shibboleth_Config.h>
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
+	.classAttrs(
+		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines")
+		Shibboleth::InitFromConfigAttribute(),
+	)
+
+	.var("stages", &Shibboleth::RenderPipeline::_stages)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
 
 NS_SHIBBOLETH
 
-bool RenderPipeline::init(RenderManager& /*render_mgr*/)
+Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 {
-	const RenderPipelineConfig& config = GetConfigRef<RenderPipelineConfig>();
+	const Refl::ReflectionDefinition<RenderPipeline>& ref_def = Refl::Reflection<RenderPipeline>::GetReflectionDefinition();
 
-	_render_stage_cache.reserve(config.stages.size());
+	const InitFromConfigAttribute* const config_attr = ref_def.getClassAttr<InitFromConfigAttribute>();
+	GAFF_ASSERT(config_attr);
 
-	for (const InstancedPtr<IRenderStage>& stage : config.stages) {
-		_render_stage_cache.emplace_back(stage.get());
-	}
+	const Error error = config_attr->loadConfig(this, ref_def);
 
-	return true;
+	return error;
 }
 
 NS_END

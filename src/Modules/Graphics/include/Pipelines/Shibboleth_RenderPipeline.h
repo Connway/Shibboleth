@@ -23,7 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_GraphicsDefines.h"
-#include <Containers/Shibboleth_Vector.h>
+#include <Containers/Shibboleth_InstancedArray.h>
+#include <Shibboleth_Error.h>
 
 NS_SHIBBOLETH
 
@@ -33,10 +34,14 @@ class IRenderStage;
 class RenderPipeline final
 {
 public:
-	bool init(RenderManager& render_mgr);
+	Error init(RenderManager& render_mgr);
 
 private:
-	Vector<IRenderStage*> _render_stage_cache{ GRAPHICS_ALLOCATOR };
+	InstancedArray<IRenderStage> _stages{ GRAPHICS_ALLOCATOR };
+
+	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(RenderPipeline);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderPipeline)

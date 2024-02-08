@@ -29,6 +29,8 @@ THE SOFTWARE.
 #define GET_INTERFACE(class_type, data) template getInterface<class_type>(CLASS_HASH(class_type), data)
 #define CREATET(class_type, allocator, ...) template createT<class_type>(CLASS_HASH(class_type), allocator, ##__VA_ARGS__)
 
+#define SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type) friend class Refl::Reflection<type>
+
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
 		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \
@@ -41,7 +43,7 @@ THE SOFTWARE.
 			return this; \
 		} \
 	private: \
-		friend class Refl::Reflection<type>
+		SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type)
 
 #define SHIB_REFLECTION_CLASS_DEFINE(type) \
 	const Refl::IReflectionDefinition& type::getReflectionDefinition(void) const \
