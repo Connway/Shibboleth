@@ -251,6 +251,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtr.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_ManagerRef.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_EnumReflectionDefinition.h" />

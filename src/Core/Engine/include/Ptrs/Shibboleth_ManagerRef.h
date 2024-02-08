@@ -20,34 +20,71 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Pipelines/Shibboleth_RenderPipeline.h"
-#include <Config/Shibboleth_Config.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
-	.classAttrs(
-		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines"),
-		Shibboleth::InitFromConfigAttribute()
-	)
-
-	.var("stages", &Shibboleth::RenderPipeline::_stages)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
+#include "Shibboleth_AppUtils.h"
 
 NS_SHIBBOLETH
 
-Error RenderPipeline::init(RenderManager& /*render_mgr*/)
+template <class T, bool k_use_fast_getter = true>
+class ManagerRef final
 {
-	const Refl::ReflectionDefinition<RenderPipeline>& ref_def = Refl::Reflection<RenderPipeline>::GetReflectionDefinition();
-
-	const InitFromConfigAttribute* const config_attr = ref_def.getClassAttr<InitFromConfigAttribute>();
-	GAFF_ASSERT(config_attr);
-
-	const Error error = config_attr->loadConfig(this, ref_def);
-
-	if (error.hasError()) {
-		// $TODO: Log error.
+public:
+	ManagerRef(void):
+		_manager(k_use_fast_getter ? GetManagerTFast<T>() : GetManagerT<T>()
+	{
 	}
 
-	return error;
-}
+	const T* operator->(void) const
+	{
+		return get();
+	}
+
+	T* operator->(void)
+	{
+		return get();
+	}
+
+	const T& operator*(void) const
+	{
+		return _manager;
+	}
+
+	T& operator*(void)
+	{
+		return _manager;
+	}
+
+	operator bool(void) const
+	{
+		return _resource.get() != nullptr;
+	}
+
+	const T* get(void) const
+	{
+		return &_manager;
+	}
+
+	T* get(void)
+	{
+		return &_manager;
+	}
+
+	operator const T*(void) const
+	{
+		return get();
+	}
+
+	operator T*(void)
+	{
+		return get();
+	}
+
+private:
+	const T& _manager;
+};
+
+template <class T>
+using ManagerRefSafe = ManagerRef<T, false>;
 
 NS_END

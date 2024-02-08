@@ -26,7 +26,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderManager;
+class RenderManager
+{
+public:
+	struct RenderCommandData;
+};
 
 class IRenderStage : public Refl::IReflectionObject
 {
@@ -36,7 +40,9 @@ public:
 	virtual bool init(RenderManager& /*render_mgr*/) {}
 	virtual void destroy(RenderManager& /*render_mgr*/) {}
 
-	virtual void render(void) = 0;
+	virtual void update(void) = 0;
+
+	virtual const RenderManager::RenderCommandData& getRenderCommands(void) const = 0;
 };
 
 NS_END

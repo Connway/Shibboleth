@@ -78,6 +78,9 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_InstancedPtrReflection.inl">
       <Filter>include\Ptrs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_ManagerRef.h">
+      <Filter>include\Ptrs</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Ptrs\Shibboleth_RefCounted.h">
       <Filter>include\Ptrs</Filter>
     </ClInclude>

@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h">
+      <Filter>include\Pipelines</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderStage.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
@@ -92,6 +95,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp">
+      <Filter>src\Pipelines</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>

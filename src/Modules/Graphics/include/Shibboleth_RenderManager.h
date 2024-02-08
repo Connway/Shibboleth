@@ -48,6 +48,8 @@ NS_SHIBBOLETH
 class RenderManager final : public IManager
 {
 public:
+	static constexpr int32_t CacheIndexCount = 2;
+
 	struct OutputRenderData final
 	{
 		Gleam::TransformRT transform;
@@ -56,8 +58,6 @@ public:
 
 		// DOF?
 	};
-
-	static constexpr int32_t CacheIndexCount = 2;
 
 	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::Window>;
@@ -103,6 +103,17 @@ public:
 	{
 		Vector<RenderCommand> command_list{ GRAPHICS_ALLOCATOR };
 		EA::Thread::SpinLock lock;
+	};
+
+	struct RenderCommandData final
+	{
+		using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
+
+		DeviceCommandListMap command_lists[CacheIndexCount] =
+		{
+			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+		};
 	};
 
 	enum class RenderOrder
@@ -197,21 +208,7 @@ private:
 		OutputRenderData render_data;
 	};
 
-	struct RenderCommandData final
-	{
-		using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
-
-		DeviceCommandListMap command_lists[CacheIndexCount] =
-		{
-			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-		};
-	};
-
 	RenderPipeline _render_pipeline;
-
-	// $TODO: Move a lot of these into RenderPipeline.
-	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };
 
 	VectorMap< Gaff::Hash32, Vector<Gleam::RenderDevice*> > _render_device_tags{ GRAPHICS_ALLOCATOR };
 	Vector<RenderDevicePtr> _render_devices{ GRAPHICS_ALLOCATOR };
@@ -223,9 +220,14 @@ private:
 	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
 	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
 
+	// $TODO: Move a lot of these into RenderPipeline.
+	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };
+
 	RenderCommandData _cached_render_commands[static_cast<size_t>(RenderOrder::Count)];
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
+
+	int32_t _render_cache_index = 0;
 
 	Gleam::RenderDevice* createRenderDevice(const Gleam::Window& window);
 	Gleam::RenderDevice* createRenderDevice(int32_t adapter_id);

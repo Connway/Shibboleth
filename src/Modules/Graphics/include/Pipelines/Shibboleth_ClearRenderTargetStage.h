@@ -20,34 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Pipelines/Shibboleth_RenderPipeline.h"
-#include <Config/Shibboleth_Config.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
-	.classAttrs(
-		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines"),
-		Shibboleth::InitFromConfigAttribute()
-	)
-
-	.var("stages", &Shibboleth::RenderPipeline::_stages)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
+#include "Shibboleth_IRenderStage.h"
 
 NS_SHIBBOLETH
 
-Error RenderPipeline::init(RenderManager& /*render_mgr*/)
+class ClearRenderTargetStage final : public IRenderStage
 {
-	const Refl::ReflectionDefinition<RenderPipeline>& ref_def = Refl::Reflection<RenderPipeline>::GetReflectionDefinition();
+public:
+	virtual bool init(RenderManager& render_mgr) override;
+	//virtual void destroy(RenderManager& /*render_mgr*/) override;
 
-	const InitFromConfigAttribute* const config_attr = ref_def.getClassAttr<InitFromConfigAttribute>();
-	GAFF_ASSERT(config_attr);
+	virtual void update(void) override;
 
-	const Error error = config_attr->loadConfig(this, ref_def);
+private:
+	RenderManager* _render_mgr = nullptr;
 
-	if (error.hasError()) {
-		// $TODO: Log error.
-	}
-
-	return error;
-}
+	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetStage)
