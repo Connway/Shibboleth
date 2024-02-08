@@ -30,9 +30,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipeline.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipelineConfig.h">
-      <Filter>include\Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_BufferResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
@@ -99,9 +96,6 @@
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp">
-      <Filter>src\Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipelineConfig.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_BufferResource.cpp">

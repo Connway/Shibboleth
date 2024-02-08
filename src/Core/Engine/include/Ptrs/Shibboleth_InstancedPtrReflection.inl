@@ -39,7 +39,8 @@ const Refl::Reflection<typename VarInstancedPtr<T, VarType>::ReflectionType>& Va
 template <class T, class VarType>
 const Refl::IReflection& VarInstancedPtr<T, VarType>::getReflection(void) const
 {
-	return GetReflection();
+	GAFF_ASSERT(_reflection);
+	return *_reflection;
 }
 
 template <class T, class VarType>
@@ -115,14 +116,17 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 		const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(class_name));
 
 		if (ref_def) {
+			_reflection = &ref_def->getReflectionInstance();
+
 			InstancedPtr<VarType>* const var = reinterpret_cast<InstancedPtr<VarType>*>(object);
 			var->reset(ref_def->CREATET(VarType, var->getAllocator()));
 
 			const auto guard = reader.enterElementGuard(u8"data");
 			GAFF_ASSERT(reader.isNull() || reader.isObject());
 
-			if (!reader.isNull()) {
-				ref_def->load(reader, ref_def->getBasePointer(var->get()));
+			if (!reader.isNull() && !ref_def->load(reader, ref_def->getBasePointer(var->get()))) {
+				reader.freeString(class_name);
+				return false;
 			}
 
 		} else {

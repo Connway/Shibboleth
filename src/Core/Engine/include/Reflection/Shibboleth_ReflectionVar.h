@@ -104,7 +104,7 @@ protected:
 
 
 template <class T, class VarType>
-class Var final : public IVar<T>
+class Var : public IVar<T>
 {
 public:
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;

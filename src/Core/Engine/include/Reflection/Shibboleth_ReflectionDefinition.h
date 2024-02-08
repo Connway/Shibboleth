@@ -59,6 +59,7 @@ class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
 	// Add to this list as needed.
+	using IReflectionDefinition::getClassAttr;
 	using IReflectionDefinition::getVarAttr;
 
 	using IAttributePtr = Shibboleth::UniquePtr<IAttribute>;

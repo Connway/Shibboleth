@@ -23,13 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_GraphicsDefines.h"
+#include "Shibboleth_IRenderStage.h"
 #include <Containers/Shibboleth_InstancedArray.h>
 #include <Shibboleth_Error.h>
 
 NS_SHIBBOLETH
 
 class RenderManager;
-class IRenderStage;
 
 class RenderPipeline final
 {

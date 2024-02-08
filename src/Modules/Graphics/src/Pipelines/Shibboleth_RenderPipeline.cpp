@@ -21,13 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Pipelines/Shibboleth_RenderPipeline.h"
-#include "Pipelines/Shibboleth_IRenderStage.h"
 #include <Config/Shibboleth_Config.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
 	.classAttrs(
-		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines")
-		Shibboleth::InitFromConfigAttribute(),
+		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines"),
+		Shibboleth::InitFromConfigAttribute()
 	)
 
 	.var("stages", &Shibboleth::RenderPipeline::_stages)

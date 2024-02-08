@@ -58,7 +58,6 @@ public:
 	VarInstancedPtr(InstancedPtr<VarType> T::* ptr);
 	VarInstancedPtr(void) = default;
 
-	static const Refl::Reflection<ReflectionType>& GetReflection(void);
 	const Refl::IReflection& getReflection(void) const override;
 
 	const void* getData(const void* object) const override;
@@ -71,6 +70,9 @@ public:
 
 	bool load(const ISerializeReader& reader, T& object) override;
 	void save(ISerializeWriter& writer, const T& object) override;
+
+private:
+	const Refl::IReflection* _reflection = &Refl::Reflection<ReflectionType>::GetInstance();
 };
 
 NS_END

@@ -77,6 +77,93 @@ void VarInstancedArray<T, VarType>::setDataMove(void* object, void* data)
 }
 
 template <class T, class VarType>
+bool VarInstancedArray<T, VarType>::isVector(void) const
+{
+	return true;
+}
+
+template <class T, class VarType>
+bool VarInstancedArray<T, VarType>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class VarType>
+int32_t VarInstancedArray<T, VarType>::size(const void* object) const
+{
+	const InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(object);
+	return var->size();
+}
+
+template <class T, class VarType>
+const void* VarInstancedArray<T, VarType>::getElement(const void* object, int32_t index) const
+{
+	return const_cast<VarInstancedArray<T, VarType>*>(this)->getElement(const_cast<void*>(object), index);
+}
+
+template <class T, class VarType>
+void* VarInstancedArray<T, VarType>::getElement(void* object, int32_t index)
+{
+	InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(object);
+	return var->at(index);
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::setElement(void* /*object*/, int32_t /*index*/, const void* /*data*/)
+{
+	GAFF_ASSERT_MSG(
+		false,
+		"VarInstancedArray<T, VarType>::setElement() was called with ReflectionType of '%s'.",
+		reinterpret_cast<const char*>(Refl::Reflection<ReflectionType>::GetName())
+	);
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::setElementMove(void* /*object*/, int32_t /*index*/, void* /*data*/)
+{
+	GAFF_ASSERT_MSG(
+		false,
+		"VarInstancedArray<T, VarType>::setElementMove() was called with ReflectionType of '%s'.",
+		reinterpret_cast<const char*>(Refl::Reflection<ReflectionType>::GetName())
+	);
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::swap(void* object, int32_t index_a, int32_t index_b)
+{
+	InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(object);
+	var->swap(index_a, index_b);
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::resize(void* object, size_t new_size)
+{
+	InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(object);
+	var->resize(static_cast<int32_t>(new_size));
+
+	const size_t old_size = _elements.size();
+
+	_cached_element_vars.resize(new_size);
+	_elements.resize(new_size);
+
+	if (new_size > old_size) {
+		regenerateSubVars(object, static_cast<int32_t>(old_size + 1), static_cast<int32_t>(new_size));
+	}
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::remove(void* object, int32_t index)
+{
+	InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(object);
+	var->erase(index);
+
+	_cached_element_vars.erase(_cached_element_vars.begin() + index);
+	_elements.erase(_elements.begin() + index);
+
+	regenerateSubVars(object, index, static_cast<int32_t>(_elements.size()));
+}
+
+template <class T, class VarType>
 bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
 	GAFF_ASSERT(reader.isNull() || reader.isArray());
@@ -117,13 +204,13 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 			const Refl::IReflectionDefinition* const ref_def = ref_mgr.getReflection(Gaff::FNV1aHash64String(class_name));
 
 			if (ref_def) {
-				VarType* const instance = var->push(*ref_def);
+				VarType& instance = var->push(*ref_def);
 
 				const auto guard = reader.enterElementGuard(u8"data");
 				GAFF_ASSERT(reader.isNull() || reader.isObject());
 
 				if (!reader.isNull()) {
-					ref_def->load(reader, ref_def->getBasePointer(instance));
+					success = ref_def->load(reader, ref_def->getBasePointer(&instance)) && success;
 				}
 
 			} else {
@@ -134,9 +221,14 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 				var->pushEmpty();
 			}
 		}
+
+		reader.freeString(class_name);
 	}
 
-	reader.freeString(class_name);
+	_cached_element_vars.resize(static_cast<size_t>(array_size));
+	_elements.resize(static_cast<size_t>(array_size));
+	regenerateSubVars(object, 0, array_size);
+
 	return true;
 }
 
@@ -155,7 +247,7 @@ void VarInstancedArray<T, VarType>::save(ISerializeWriter& writer, const void* o
 	writer.startArray(static_cast<uint32_t>(array_size));
 
 	for (int32_t i = 0; i < array_size; ++i) {
-		VarType* const element = var->at(i);
+		const VarType* const element = var->at(i);
 
 		if (element) {
 			const Refl::IReflectionDefinition* const ref_def = var->getReflectionDefinition(i);
@@ -189,6 +281,37 @@ void VarInstancedArray<T, VarType>::save(ISerializeWriter& writer, const T& obje
 {
 	const InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(&object);
 	save(writer, var);
+}
+
+template <class T, class VarType>
+const Vector<Refl::IReflectionVar::SubVarData>& VarInstancedArray<T, VarType>::getSubVars(void)
+{
+	return _cached_element_vars;
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::setSubVarBaseName(eastl::u8string_view base_name)
+{
+	_base_name = base_name;
+}
+
+template <class T, class VarType>
+void VarInstancedArray<T, VarType>::regenerateSubVars(const void* object, int32_t range_begin, int32_t range_end)
+{
+	const InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(&object);
+
+	for (int32_t i = range_begin; i < range_end; ++i) {
+		U8String element_path(ProxyAllocator("Reflection"));
+		element_path.append_sprintf(u8"%s[%i]", _base_name.data(), i);
+
+		_elements[i].setReflection(var->getReflectionDefinition(i)->getReflectionInstance());
+		_elements[i].setOffset(static_cast<ptrdiff_t>(var->_metadata[i].start));
+		_elements[i].setParent(this);
+		_elements[i].setNoSerialize(true);
+
+		_cached_element_vars[i].first = HashString32<>(element_path);
+		_cached_element_vars[i].second = &_elements[i];
+	}
 }
 
 NS_END

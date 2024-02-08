@@ -84,9 +84,27 @@ public:
 	bool load(const ISerializeReader& reader, T& object) override;
 	void save(ISerializeWriter& writer, const T& object) override;
 
-	const Shibboleth::Vector<IReflectionVar::SubVarData>& getSubVars(void) override;
+	const Vector<Refl::IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;
-	void regenerateSubVars(int32_t range_begin, int32_t range_end);
+	void regenerateSubVars(const void* object, int32_t range_begin, int32_t range_end);
+
+private:
+	// $TODO: Make a var type that wraps this and overrides the adjust functions.
+	using RefVarType = Refl::VarTypeHelper<T, VarType>::Type;
+
+	class VarElementWrapper final : public RefVarType
+	{
+	public:
+		const Refl::IReflection& getReflection(void) const override { GAFF_ASSERT(_reflection); return *_reflection; }
+		void setReflection(const Refl::IReflection& reflection) { _reflection = &reflection; }
+
+	private:
+		const Refl::IReflection* _reflection = &Refl::Reflection<ReflectionType>::GetInstance();
+	};
+
+	Vector<Refl::IReflectionVar::SubVarData> _cached_element_vars{ ProxyAllocator("Reflection") };
+	Vector<VarElementWrapper> _elements{ ProxyAllocator("Reflection") };
+	eastl::u8string_view _base_name;
 };
 
 NS_END

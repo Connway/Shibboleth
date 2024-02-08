@@ -67,7 +67,7 @@ public:
 	template <class T>
 	ptrdiff_t getBasePointerOffset(void) const
 	{
-		return getBasePointerOffset(Hash::template ClassHashable<T>::GetName());
+		return getBasePointerOffset(Hash::template ClassHashable<T>::GetHash());
 	}
 
 	const void* getBasePointer(Gaff::Hash64 interface_name, const void* object) const

@@ -82,7 +82,7 @@ struct VarFunctionData<T, FunctionPair, false> final
 // VarFunction has a limitation in that it doesn't support containers. Might be worth supporting,
 // but at this time, I don't see a great use-case for it.
 template <class T, class FunctionPair>
-class VarFunction final : public IVar<T>
+class VarFunction : public IVar<T>
 {
 public:
 	using GetVarType = VarTypeHelper<T, FunctionPair>::GetVariableType;

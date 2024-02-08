@@ -43,56 +43,32 @@ public:
 
 	InstancedArray& operator=(InstancedArray<T>&& instanced_array) = default;
 
-	const T* operator[](size_t index) const
-	{
-		return at(index);
-	}
-
-	T* operator[](size_t index)
-	{
-		return at(index);
-	}
-
 	const T* operator[](int32_t index) const
 	{
-		return at(static_cast<size_t>(index));
+		return at(index);
 	}
 
 	T* operator[](int32_t index)
 	{
-		return at(static_cast<size_t>(index));
-	}
-
-	const T* at(size_t index) const
-	{
-		return const_cast<InstancedArray<T>*>(this)->at(index);
-	}
-
-	T* at(size_t index)
-	{
-		const Metadata& metadata = _metadata[index];
-		return (metadata.ref_def) ? reinterpret_cast<T*>(_instances.data() + metadata.start) : nullptr;
+		return at(index);
 	}
 
 	const T* at(int32_t index) const
 	{
-		return at(static_cast<size_t>(index));
+		return const_cast<InstancedArray<T>*>(this)->at(index);
 	}
 
 	T* at(int32_t index)
 	{
-		return at(static_cast<size_t>(index));
-	}
-
-	const Refl::IReflectionDefinition* getReflectionDefinition(size_t index) const
-	{
 		GAFF_ASSERT(index < _metadata.size());
-		return _metadata[index].ref_def;
+		const Metadata& metadata = _metadata[index];
+		return (metadata.ref_def) ? reinterpret_cast<T*>(_instances.data() + metadata.start) : nullptr;
 	}
 
 	const Refl::IReflectionDefinition* getReflectionDefinition(int32_t index) const
 	{
-		return getReflectionDefinition(static_cast<size_t>(index));
+		GAFF_ASSERT(index < _metadata.size());
+		return _metadata[index].ref_def;
 	}
 
 	int32_t size(void) const
@@ -132,9 +108,7 @@ public:
 	template <class... Args>
 	T& push(const Refl::IReflectionDefinition& ref_def, Args&&... args)
 	{
-		GAFF_ASSERT(ref_def.getBasePointerOffset<T>() == 0);
-		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated types.");
-		static_assert(Gaff::OffsetOfClass<T, U>() == 0, "Offset of T in class U must be zero.");
+		GAFF_ASSERT_MSG(ref_def.getBasePointerOffset<T>() == 0, "Offset of T in class U must be zero.");
 
 		Metadata metadata = { &ref_def, 0, ref_def.size() };
 
@@ -167,6 +141,70 @@ public:
 		_metadata.emplace_back(metadata);
 	}
 
+	void pop(void)
+	{
+		GAFF_ASSERT(!empty());
+		erase(size() - 1);
+	}
+
+	void erase(int32_t index)
+	{
+		eraseInternal(index, true);
+	}
+
+	void resize(int32_t new_size)
+	{
+		const int32_t old_size = size();
+
+		if (new_size > old_size) {
+			for (int32_t i = old_size; i < new_size; ++i) {
+				pushEmpty();
+			}
+
+		} else if (new_size < old_size) {
+			for (int32_t i = old_size; i > new_size; --i) {
+				pop();
+			}
+		}
+	}
+
+	void swap(int32_t index_a, int32_t index_b)
+	{
+		GAFF_ASSERT(index_a >= 0 && index_a < size());
+		GAFF_ASSERT(index_b >= 0 && index_b < size());
+
+		if (index_a == index_b) {
+			return;
+		}
+
+		// Ensure index_a < index_b.
+		if (index_a > index_b) {
+			eastl::swap(index_a, index_b);
+		}
+
+		// Copying as we're going to erase the entries later.
+		const Metadata metadata_a = _metadata[index_a];
+		const Metadata metadata_b = _metadata[index_b];
+
+		Vector<uint8_t> value_a(metadata_a.size, 0, _metadata.get_allocator());
+		Vector<uint8_t> value_b(metadata_b.size, 0, _metadata.get_allocator());
+
+		// Copy bytes into temp value buffers.
+		for (int32_t i = 0; i < metadata_a.size; ++i) {
+			value_a[i] = _instances[metadata_a.start + i];
+		}
+
+		for (int32_t i = 0; i < metadata_b.size; ++i) {
+			value_b[i] = _instances[metadata_b.start + i];
+		}
+
+		eraseInternal(index_a, false);
+		insertInternal(index_a, metadata_b, value_b);
+
+		eraseInternal(index_b, false);
+		insertInternal(index_b, metadata_a, value_a);
+	}
+
 private:
 	struct Metadata final
 	{
@@ -177,6 +215,46 @@ private:
 
 	Vector<Metadata> _metadata;
 	Vector<uint8_t> _instances; // Byte buffer.
+
+	void eraseInternal(int32_t index, bool destroy_instance)
+	{
+		GAFF_ASSERT(index >= 0 && index < size());
+		const Metadata& metadata = _metadata[index];
+
+		if (metadata.ref_def) {
+			T* const instance = at(index);
+
+			if (destroy_instance) {
+				metadata.ref_def->destroyInstance(instance);
+			}
+
+			const auto start = _instances.begin() + metadata.start;
+			_instances.erase(start, start + metadata.size);
+		}
+
+		for (int32_t i = index + 1; i < size(); ++i) {
+			_metadata[i].start -= metadata.size;
+		}
+
+		_metadata.erase(_metadata.begin() + index);
+	}
+
+	void insertInternal(int32_t index, const Metadata& metadata, const Vector<uint8_t>& value)
+	{
+		const int32_t start = _metadata[index].start;
+
+		for (int32_t i = index; i < size(); ++i) {
+			_metadata[i].start += metadata.size;
+		}
+
+		_metadata.insert(_metadata.begin() + index, metadata);
+		_metadata[index].start = start;
+
+		_instances.insert(_instances.begin() + start, value.begin(), value.end());
+	}
+
+	template <class U, class VarType>
+	friend class VarInstancedArray;
 };
 
 NS_END
