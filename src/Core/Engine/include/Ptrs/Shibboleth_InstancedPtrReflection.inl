@@ -31,12 +31,6 @@ VarInstancedPtr<T, VarType>::VarInstancedPtr(InstancedPtr<VarType> T::* ptr):
 }
 
 template <class T, class VarType>
-const Refl::Reflection<typename VarInstancedPtr<T, VarType>::ReflectionType>& VarInstancedPtr<T, VarType>::GetReflection(void)
-{
-	return Refl::Reflection<ReflectionType>::GetInstance();
-}
-
-template <class T, class VarType>
 const Refl::IReflection& VarInstancedPtr<T, VarType>::getReflection(void) const
 {
 	GAFF_ASSERT(_reflection);
