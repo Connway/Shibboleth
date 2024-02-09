@@ -325,7 +325,7 @@ void RenderManager::manageRenderDevice(Gleam::RenderDevice& device)
 	_render_devices.emplace_back(&device);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(RenderOrder::Count); ++i) {
-		for (int32_t j = 0; j < CacheIndexCount; ++j) {
+		for (int32_t j = 0; j < RenderCommandData::CacheIndexCount; ++j) {
 			// Create entry for newly managed device.
 			_cached_render_commands[i].command_lists[j].insert(&device);
 		}
@@ -662,12 +662,12 @@ ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void)
 //	return _g_buffers.find(id) != _g_buffers.end();
 //}
 
-const RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const
+const RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const
 {
 	return const_cast<RenderManager*>(this)->getRenderCommands(device, order, cache_index);
 }
 
-RenderManager::RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index)
+RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index)
 {
 	GAFF_ASSERT(order != RenderOrder::Count);
 	GAFF_ASSERT(Gaff::ValidIndex(cache_index, 1));
@@ -724,6 +724,19 @@ RenderManager::OutputRenderData* RenderManager::getOutputRenderData(Gaff::Hash32
 RenderManager::OutputRenderData* RenderManager::getOutputRenderData(const char* output_name)
 {
 	return getOutputRenderData(Gaff::FNV1aHash32String(output_name));
+}
+
+void RenderManager::initializeRenderCommandData(RenderCommandData& render_commands) const
+{
+	GAFF_ASSERT(render_commands.command_lists[0].empty());
+
+	for (auto& command_map : render_commands.command_lists) {
+		command_map.reserve(_deferred_devices.size());
+
+		for (const auto& entry : _deferred_devices) {
+			command_map.insert(entry.first);
+		}
+	}
 }
 
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)
@@ -792,6 +805,11 @@ void RenderManager::handleWindowClosed(Gleam::Window& window)
 	if (!getNumWindows()) {
 		GetApp().quit();
 	}
+}
+
+int32_t RenderManager::getRenderCacheIndex(void) const
+{
+	return _render_cache_index;
 }
 
 NS_END

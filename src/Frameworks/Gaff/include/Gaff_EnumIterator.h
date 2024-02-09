@@ -57,12 +57,13 @@ NS_END
 			{ \
 				return EnumIterator<EnumType>(_value++); \
 			} \
-			EnumType operator*() const \
+			EnumType operator*(void) const \
 			{ \
 				return static_cast<EnumType>(_value); \
 			} \
 			EnumIterator<EnumType>& operator=(const EnumIterator<EnumType>& rhs) = default; \
 			auto operator<=>(const EnumIterator<EnumType>& rhs) const = default; \
+			bool operator==(const EnumIterator<EnumType>& rhs) const = default; \
 		private: \
 			using ValueType = __underlying_type(EnumType); \
 			ValueType _value = static_cast<ValueType>(First); \

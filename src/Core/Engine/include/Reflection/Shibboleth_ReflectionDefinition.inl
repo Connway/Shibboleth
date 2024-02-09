@@ -477,6 +477,18 @@ void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, void* objec
 }
 
 template <class T>
+const void* ReflectionDefinition<T>::getInterface(const IReflectionDefinition& ref_def, const void* object) const
+{
+	return getInterface(ref_def.getReflectionInstance().getNameHash(), object);
+}
+
+template <class T>
+void* ReflectionDefinition<T>::getInterface(const IReflectionDefinition& ref_def, void* object) const
+{
+	return getInterface(ref_def.getReflectionInstance().getNameHash(), object);
+}
+
+template <class T>
 bool ReflectionDefinition<T>::hasInterface(Gaff::Hash64 class_hash) const
 {
 	if (class_hash == Reflection<T>::GetNameHash()) {
@@ -485,6 +497,12 @@ bool ReflectionDefinition<T>::hasInterface(Gaff::Hash64 class_hash) const
 
 	auto it = _base_class_offsets.find(class_hash);
 	return it != _base_class_offsets.end();
+}
+
+template <class T>
+bool ReflectionDefinition<T>::hasInterface(const IReflectionDefinition& ref_def) const
+{
+	return hasInterface(ref_def.getReflectionInstance().getNameHash());
 }
 
 template <class T>

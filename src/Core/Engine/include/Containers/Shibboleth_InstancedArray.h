@@ -33,6 +33,217 @@ class InstancedArray final
 	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
 
 public:
+	class Iterator final
+	{
+	public:
+		explicit Iterator(InstancedArray<T>& owner, int32_t index = 0):
+			_owner(&owner), _index(index)
+		{
+		}
+
+		Iterator(const Iterator& it) = default;
+		Iterator(void) = default;
+
+		Iterator& operator=(const Iterator& rhs) = default;
+
+		Iterator operator+(int32_t offset) const
+		{
+			return (_owner) ? Iterator(*_owner, _index + offset) : Iterator();
+		}
+
+		Iterator& operator+=(int32_t offset)
+		{
+			_index += offset;
+			return *this;
+		}
+
+		Iterator& operator++(void)
+		{
+			++_index;
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			return (_owner) ? Iterator(_owner, _index++) : Iterator();
+		}
+
+		Iterator operator-(int32_t offset) const
+		{
+			return (_owner) ? Iterator(*_owner, _index - offset) : Iterator();
+		}
+
+		Iterator& operator-=(int32_t offset)
+		{
+			_index -= offset;
+			return *this;
+		}
+
+		Iterator& operator--(void)
+		{
+			--_index;
+			return *this;
+		}
+
+		Iterator operator--(int)
+		{
+			return (_owner) ? Iterator(_owner, _index--) : Iterator();
+		}
+
+		T& operator*(void) const
+		{
+			T* const entry = get();
+			GAFF_ASSERT(entry);
+
+			return *entry;
+		}
+
+		T* operator->(void) const
+		{
+			return get();
+		}
+
+		int32_t getIndex(void) const
+		{
+			return _index;
+		}
+
+		T* get(void) const
+		{
+			return (_owner) ? _owner->at(_index) : nullptr;
+		}
+
+		auto operator<=>(const Iterator& rhs) const
+		{
+			return _index <=> rhs._index;
+		}
+
+		bool operator==(const Iterator& rhs) const
+		{
+			return _owner == rhs._owner && _index == rhs._index;
+		}
+
+	private:
+		InstancedArray<T>* _owner = nullptr;
+		int32_t _index = -1;
+	};
+
+	class ConstIterator final
+	{
+	public:
+		explicit ConstIterator(InstancedArray<T>& owner, int32_t index = 0):
+		_iterator(owner, index)
+		{
+		}
+
+		ConstIterator(const Iterator& it):
+		_iterator(it)
+		{
+		}
+
+		ConstIterator(const ConstIterator& it) = default;
+		ConstIterator(void) = default;
+
+		ConstIterator& operator=(const ConstIterator& rhs) = default;
+		ConstIterator& operator=(const Iterator& rhs)
+		{
+			_iterator = rhs;
+			return *this;
+		}
+
+		ConstIterator operator+(int32_t offset) const
+		{
+			return _iterator + offset;
+		}
+
+		ConstIterator& operator+=(int32_t offset)
+		{
+			_iterator += offset;
+			return *this;
+		}
+
+		ConstIterator& operator++(void)
+		{
+			++_iterator;
+			return *this;
+		}
+
+		ConstIterator operator++(int)
+		{
+			return ConstIterator(_iterator++);
+		}
+
+		ConstIterator operator-(int32_t offset) const
+		{
+			return _iterator - offset;
+		}
+
+		ConstIterator& operator-=(int32_t offset)
+		{
+			_iterator -= offset;
+			return *this;
+		}
+
+		ConstIterator& operator--(void)
+		{
+			--_iterator;
+			return *this;
+		}
+
+		ConstIterator operator--(int)
+		{
+			return ConstIterator(_iterator--);
+		}
+
+		const T& operator*(void) const
+		{
+			const T* const entry = get();
+			GAFF_ASSERT(entry);
+
+			return *entry;
+		}
+
+		const T* operator->(void) const
+		{
+			return get();
+		}
+
+		int32_t getIndex(void) const
+		{
+			return _iterator.getIndex();
+		}
+
+		const T* get(void) const
+		{
+			return _iterator.get();
+		}
+
+		auto operator<=>(const ConstIterator& rhs) const
+		{
+			return *this <=> rhs._iterator;
+		}
+
+		auto operator<=>(const Iterator& rhs) const
+		{
+			return _iterator <=> rhs;
+		}
+
+		bool operator==(const ConstIterator& rhs) const
+		{
+			return *this == rhs._iterator;
+		}
+
+		bool operator==(const Iterator& rhs) const
+		{
+			return _iterator == rhs;
+		}
+
+	private:
+		Iterator _iterator;
+	};
+
+
+
 	explicit InstancedArray(const ProxyAllocator& allocator):
 		_metadata(allocator), _instances(allocator)
 	{
@@ -60,14 +271,14 @@ public:
 
 	T* at(int32_t index)
 	{
-		GAFF_ASSERT(index < _metadata.size());
+		GAFF_ASSERT(index >= 0 && index < _metadata.size());
 		const Metadata& metadata = _metadata[index];
 		return (metadata.ref_def) ? reinterpret_cast<T*>(_instances.data() + metadata.start) : nullptr;
 	}
 
 	const Refl::IReflectionDefinition* getReflectionDefinition(int32_t index) const
 	{
-		GAFF_ASSERT(index < _metadata.size());
+		GAFF_ASSERT(index >= 0 && index < _metadata.size());
 		return _metadata[index].ref_def;
 	}
 
@@ -79,6 +290,26 @@ public:
 	bool empty(void) const
 	{
 		return size() <= 0;
+	}
+
+	ConstIterator begin(void) const
+	{
+		return static_cast<InstancedArray<T>*>(this)->begin();
+	}
+
+	ConstIterator end(void) const
+	{
+		return static_cast<InstancedArray<T>*>(this)->end();
+	}
+
+	Iterator begin(void)
+	{
+		return Iterator(*this);
+	}
+
+	Iterator end(void)
+	{
+		return Iterator(*this, size());
 	}
 
 	template <class U, class... Args>
@@ -154,6 +385,8 @@ public:
 
 	void resize(int32_t new_size)
 	{
+		new_size = Gaff::Max(0, new_size);
+
 		const int32_t old_size = size();
 
 		if (new_size > old_size) {
@@ -219,6 +452,7 @@ private:
 	void eraseInternal(int32_t index, bool destroy_instance)
 	{
 		GAFF_ASSERT(index >= 0 && index < size());
+
 		const Metadata& metadata = _metadata[index];
 
 		if (metadata.ref_def) {

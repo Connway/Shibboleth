@@ -50,4 +50,35 @@ Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 	return error;
 }
 
+const IRenderStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const
+{
+	return const_cast<RenderPipeline*>(this)->getRenderStagePtr(ref_def);
+}
+
+IRenderStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def)
+{
+	for (IRenderStage& stage : _stages) {
+		const Refl::IReflectionDefinition& stage_ref_def = stage.getReflectionDefinition();
+
+		if (&stage_ref_def == &ref_def || stage_ref_def.hasInterface(ref_def)) {
+			return &stage;
+		}
+	}
+
+	return nullptr;
+}
+
+const IRenderStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def) const
+{
+	return const_cast<RenderPipeline*>(this)->getRenderStage(ref_def);
+}
+
+IRenderStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def)
+{
+	IRenderStage* const stage = getRenderStagePtr(ref_def);
+	GAFF_ASSERT(stage);
+
+	return *stage;
+}
+
 NS_END

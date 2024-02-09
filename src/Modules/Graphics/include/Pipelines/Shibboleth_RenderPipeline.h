@@ -34,6 +34,35 @@ class RenderManager;
 class RenderPipeline final
 {
 public:
+	template <class T>
+	const T* getRenderStagePtr(void) const
+	{
+		return const_cast<RenderPipeline>(this)->getRenderStagePtr<T>();
+	}
+
+	template <class T>
+	T* getRenderStagePtr(void)
+	{
+		return static_cast<T*>(getRenderStagePtr(Refl::Reflection<T>::GetReflectionDefinition()));
+	}
+
+	template <class T>
+	const T& getRenderStage(void) const
+	{
+		return const_cast<RenderPipeline>(this)->template getRenderStagePtr<T>();
+	}
+
+	template <class T>
+	T& getRenderStage(void)
+	{
+		return static_cast<T&>(getRenderStage(Refl::Reflection<T>::GetReflectionDefinition()));
+	}
+
+	const IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const;
+	IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def);
+	const IRenderStage& getRenderStage(const Refl::IReflectionDefinition& ref_def) const;
+	IRenderStage& getRenderStage(const Refl::IReflectionDefinition& ref_def);
+
 	Error init(RenderManager& render_mgr);
 
 private:

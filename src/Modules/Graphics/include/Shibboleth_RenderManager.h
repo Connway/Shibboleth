@@ -43,13 +43,49 @@ NS_GLEAM
 	class Window;
 NS_END
 
+
 NS_SHIBBOLETH
+
+struct RenderCommands final
+{
+	UniquePtr<Gleam::CommandList> commands;
+	//Gleam::RenderTarget* target = nullptr;
+};
+
+struct RenderCommandList final
+{
+	Vector<RenderCommands> command_list{ GRAPHICS_ALLOCATOR };
+
+	// $TODO: Evaluate if we need this once converted over to render pipeline.
+	//EA::Thread::SpinLock lock;
+};
+
+struct RenderCommandData final
+{
+	using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
+	static constexpr int32_t CacheIndexCount = 2;
+
+	DeviceCommandListMap command_lists[CacheIndexCount] =
+	{
+		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+	};
+
+	const RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index) const
+	{
+		return const_cast<RenderCommandData*>(this)->getCommandList(device, cache_index);
+	}
+
+	RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index)
+	{
+		return command_lists[cache_index][&device];
+	}
+};
+
 
 class RenderManager final : public IManager
 {
 public:
-	static constexpr int32_t CacheIndexCount = 2;
-
 	struct OutputRenderData final
 	{
 		Gleam::TransformRT transform;
@@ -91,30 +127,6 @@ public:
 //		TexturePtr final_image;
 //		ShaderResourceViewPtr final_srv;
 //	};
-
-	struct RenderCommand final
-	{
-		UniquePtr<Gleam::CommandList> cmd_list;
-		bool owns_command = true;
-		//Gleam::RenderTarget* target = nullptr;
-	};
-
-	struct RenderCommandList final
-	{
-		Vector<RenderCommand> command_list{ GRAPHICS_ALLOCATOR };
-		EA::Thread::SpinLock lock;
-	};
-
-	struct RenderCommandData final
-	{
-		using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
-
-		DeviceCommandListMap command_lists[CacheIndexCount] =
-		{
-			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-			DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-		};
-	};
 
 	enum class RenderOrder
 	{
@@ -195,6 +207,10 @@ public:
 	const OutputRenderData* getOutputRenderData(const char* output_name) const;
 	OutputRenderData* getOutputRenderData(Gaff::Hash32 output_name);
 	OutputRenderData* getOutputRenderData(const char* output_name);
+
+	void initializeRenderCommandData(RenderCommandData& render_commands) const;
+
+	int32_t getRenderCacheIndex(void) const;
 
 private:
 	struct RenderOutput final

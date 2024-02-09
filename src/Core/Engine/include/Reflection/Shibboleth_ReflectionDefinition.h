@@ -86,7 +86,10 @@ public:
 
 	const void* getInterface(Gaff::Hash64 class_hash, const void* object) const override;
 	void* getInterface(Gaff::Hash64 class_hash, void* object) const override;
+	const void* getInterface(const IReflectionDefinition& ref_def, const void* object) const override;
+	void* getInterface(const IReflectionDefinition& ref_def, void* object) const override;
 	bool hasInterface(Gaff::Hash64 class_hash) const override;
+	bool hasInterface(const IReflectionDefinition& ref_def) const override;
 
 	void setAllocator(const Shibboleth::ProxyAllocator& allocator);
 	Shibboleth::ProxyAllocator& getAllocator(void) override;
@@ -671,7 +674,10 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const override { return Gaff::FNV1aHash64(reinterpret_cast<const char*>(object), sizeof(class_type), init); } \
 		const void* getInterface(Gaff::Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Gaff::Hash64, void*) const override { return nullptr; } \
+		const void* getInterface(const IReflectionDefinition&, const void*) const override { return nullptr; } \
+		void* getInterface(const IReflectionDefinition&, void*) const override { return nullptr; } \
 		bool hasInterface(Gaff::Hash64) const override { return false; } \
+		bool hasInterface(const IReflectionDefinition&) const override { return false; } \
 		Shibboleth::ProxyAllocator& getAllocator(void) override { return _allocator; } \
 		int32_t getNumVars(void) const override { return 0; } \
 		Shibboleth::HashStringView32<> getVarName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \

@@ -629,7 +629,10 @@ public:
 
 	virtual const void* getInterface(Gaff::Hash64 class_id, const void* object) const = 0;
 	virtual void* getInterface(Gaff::Hash64 class_id, void* object) const = 0;
+	virtual const void* getInterface(const IReflectionDefinition& ref_def, const void* object) const = 0;
+	virtual void* getInterface(const IReflectionDefinition& ref_def, void* object) const = 0;
 	virtual bool hasInterface(Gaff::Hash64 class_hash) const = 0;
+	virtual bool hasInterface(const IReflectionDefinition& ref_def) const = 0;
 
 	virtual Shibboleth::ProxyAllocator& getAllocator(void) = 0;
 

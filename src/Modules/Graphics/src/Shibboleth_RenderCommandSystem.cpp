@@ -154,7 +154,7 @@ void RenderCommandSubmissionSystem::update(uintptr_t thread_id_int)
 		job_pool.helpWhileWaiting(thread_id, _job_counter);
 	}
 
-	_cache_index = (_cache_index + 1) % RenderManager::CacheIndexCount;
+	_cache_index = (_cache_index + 1) % RenderCommandData::CacheIndexCount;
 	_render_mgr->presentAllOutputs();
 }
 
@@ -169,7 +169,7 @@ void RenderCommandSubmissionSystem::SubmitCommands(uintptr_t /*thread_id_int*/, 
 			job_data.rcss->_cache_index
 		);
 
-		for (RenderManager::RenderCommand& cmd : cmds.command_list) {
+		for (RenderCommands& cmd : cmds.command_list) {
 			if (!cmd.cmd_list->isValid()) {
 				// $TODO: Log error.
 				continue;
@@ -281,7 +281,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 		_job_pool->helpWhileWaiting(thread_id, _job_counter);
 	}
 
-	_cache_index = (_cache_index + 1) % RenderManager::CacheIndexCount;
+	_cache_index = (_cache_index + 1) % RenderCommandData::CacheIndexCount;
 }
 
 //void RenderCommandSystem::newObjectArchetype(const ECSArchetype& archetype)

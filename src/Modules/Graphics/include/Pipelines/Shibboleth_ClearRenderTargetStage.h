@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IRenderStage.h"
 
 NS_SHIBBOLETH
@@ -29,12 +30,15 @@ NS_SHIBBOLETH
 class ClearRenderTargetStage final : public IRenderStage
 {
 public:
-	virtual bool init(RenderManager& render_mgr) override;
-	//virtual void destroy(RenderManager& /*render_mgr*/) override;
+	bool init(RenderManager& render_mgr) override;
+	//void destroy(RenderManager& /*render_mgr*/) override;
 
-	virtual void update(void) override;
+	void update(uintptr_t thread_id_int) override;
+
+	const RenderCommandData& getRenderCommands(void) const override;
 
 private:
+	RenderCommandData _render_commands;
 	RenderManager* _render_mgr = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
