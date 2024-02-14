@@ -22,40 +22,47 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Resources/Shibboleth_RenderTargetResource.h"
 #include "Shibboleth_GraphicsDefines.h"
-#include <Shibboleth_IResource.h>
-#include <Gleam_IRasterState.h>
+#include <Shibboleth_ResourceAttributesCommon.h>
+#include <Gleam_RenderTarget.h>
 
-NS_GLEAM
-	class RenderDevice;
-class RasterState;
-NS_END
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderTargetResource)
+	.classAttrs(
+		Shibboleth::CreatableAttribute()
+	)
+
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderTargetResource)
+
 
 NS_SHIBBOLETH
 
-class RasterStateResource final : public IResource
+SHIB_REFLECTION_CLASS_DEFINE(RenderTargetResource)
+
+Gleam::RenderDevice* RenderTargetResource::getDevice(void) const
 {
-public:
-	static constexpr bool Creatable = true;
+	return _render_device;
+}
 
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+Error RenderTargetResource::createRenderTarget(Gleam::RenderDevice& device)
+{
+	_render_device = &device;
+	_render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, GRAPHICS_ALLOCATOR));
 
-	Vector<Gleam::RenderDevice*> getDevices(void) const;
+	// This could arguably be a fatal error.
+	return (_render_target != nullptr) ? Error::k_no_error : Error::k_simple_error;
+}
 
-	bool createRasterState(const Vector<Gleam::RenderDevice*>& devices, const Gleam::IRasterState::Settings& raster_state_settings);
-	bool createRasterState(Gleam::RenderDevice& device, const Gleam::IRasterState::Settings& raster_state_settings);
+const Gleam::RenderTarget* RenderTargetResource::getRenderTarget(void) const
+{
+	return _render_target.get();
+}
 
-	Gleam::RasterState* getOrCreateRasterState(const Gleam::RenderDevice& rd);
-
-	const Gleam::RasterState* getRasterState(const Gleam::RenderDevice& rd) const;
-	Gleam::RasterState* getRasterState(const Gleam::RenderDevice& rd);
-
-private:
-	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::RasterState> > _raster_states{ GRAPHICS_ALLOCATOR };
-
-	SHIB_REFLECTION_CLASS_DECLARE(RasterStateResource);
-};
+Gleam::RenderTarget* RenderTargetResource::getRenderTarget(void)
+{
+	return _render_target.get();
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::RasterStateResource)

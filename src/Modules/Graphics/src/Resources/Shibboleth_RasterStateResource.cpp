@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Gleam_RenderDevice.h>
+#include <Gleam_RasterState.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RasterStateResource)
 	.classAttrs(
@@ -55,7 +56,7 @@ void RasterStateResource::load(const ISerializeReader& reader, uintptr_t /*threa
 		const auto guard = reader.enterElementGuard(u8"devices_tag");
 
 		if (!reader.isNull() && !reader.isString()) {
-			LogErrorResource("Malformed shader '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
+			LogErrorResource("Malformed raster state '%s'. 'devices_tag' is not string.", getFilePath().getBuffer());
 			failed();
 			return;
 		}
@@ -67,7 +68,7 @@ void RasterStateResource::load(const ISerializeReader& reader, uintptr_t /*threa
 	}
 
 	if (!devices || devices->empty()) {
-		LogErrorResource("Failed to load shader '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
+		LogErrorResource("Failed to load raster state '%s'. Devices tag '%s' has no render devices associated with it.", getFilePath().getBuffer(), device_tag.data());
 		failed();
 		return;
 	}

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Ptrs/Shibboleth_SmartPtrs.h>
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_IManager.h>
+#include <Gleam_CommandList.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Vec2.h>
 #include <eathread/eathread_spinlock.h>

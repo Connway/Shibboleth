@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_RasterStateResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_RenderTargetResource.h">
+      <Filter>include\Resources</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_SamplerStateResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
@@ -123,6 +126,9 @@
       <Filter>src\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_RasterStateResource.cpp">
+      <Filter>src\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_RenderTargetResource.cpp">
       <Filter>src\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_SamplerStateResource.cpp">
