@@ -149,20 +149,20 @@ void RenderTarget::unbind(IRenderDevice& rd)
 	rd3d.getDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void RenderTarget::clear(IRenderDevice& rd, uint8_t clear_flags, float clear_depth, uint8_t clear_stencil, const Color::RGBA& clear_color)
+void RenderTarget::clear(IRenderDevice& rd, const IRenderTarget::ClearSettings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RendererType::Direct3D11);
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
-	if (clear_flags & ClearFlags::Color) {
+	if (settings.flags.testAll(IRenderTarget::ClearSettings::Flags::Color)) {
 		for (int32_t i = 0; i < static_cast<int32_t>(_render_target_views.size()); ++i) {
-			context->ClearRenderTargetView(_render_target_views[i], clear_color.data.data);
+			context->ClearRenderTargetView(_render_target_views[i], settings.color.data.data);
 		}
 	}
 
 	if (_depth_stencil_view) {
-		context->ClearDepthStencilView(_depth_stencil_view, clear_flags, clear_depth, clear_stencil);
+		context->ClearDepthStencilView(_depth_stencil_view, settings.flags.getStorage(), settings.depth, settings.stencil);
 	}
 }
 

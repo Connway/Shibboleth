@@ -21,6 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Pipelines/Shibboleth_ClearRenderTargetStage.h"
+#include "Resources/Shibboleth_RenderTargetResource.h"
+#include <Ptrs/Shibboleth_ManagerRef.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Gleam_RenderTarget.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_CommandList.h>
 
@@ -32,8 +36,11 @@ SHIB_REFLECTION_CLASS_DEFINE(ClearRenderTargetStage)
 
 bool ClearRenderTargetStage::init(RenderManager& render_mgr)
 {
-	_render_mgr = &render_mgr;
+	ManagerRef<ResourceManager> res_mgr;
+	_render_targets = &res_mgr->getResources(Refl::Reflection<RenderTargetResource>::GetReflectionDefinition());
+	_resource_lock = &res_mgr->getResourceBucketLock<RenderTargetResource>();
 
+	_render_mgr = &render_mgr;
 	_render_mgr->initializeRenderCommandData(_render_commands);
 
 	for (auto& command_map : _render_commands.command_lists) {
@@ -43,7 +50,7 @@ bool ClearRenderTargetStage::init(RenderManager& render_mgr)
 		}
 	}
 
-	return true;
+	return _render_targets != nullptr;
 }
 
 //void ClearRenderTargetStage::destroy(RenderManager& /*render_mgr*/)
@@ -54,73 +61,37 @@ void ClearRenderTargetStage::update(uintptr_t thread_id_int)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
-	// iterate over all render targets.
-	// get device for render target.
+	// Ensure the render target bucket doesn't get changed from underneath us.
+	const EA::Thread::AutoMutex lock(*_resource_lock);
 
-	Gleam::RenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
-	const int32_t cache_index = _render_mgr->getRenderCacheIndex();
+	// All these IResources are RenderTargetResources. Safe to static_cast.
+	for (IResource* const resource : *_render_targets) {
+		RenderTargetResource* const rt_res = static_cast<RenderTargetResource*>(resource);
 
-	Gleam::CommandList* const cmd_list = _render_commands.getCommandList(*deferred_device, cache_index).command_list[0].commands.get();
+		if (!rt_res->canClear()) {
+			continue;
+		}
 
-	//render_target->bind(*deferred_device);
-	//render_target->clear(*deferred_device, Gleam::IRenderTarget::ClearFlags::All, 1.0f, 0, Gleam::Color::Black);
+		Gleam::RenderTarget* const target = rt_res->getRenderTarget();
+		Gleam::RenderDevice* const device = rt_res->getDevice();
 
-	if (!deferred_device->finishCommandList(*cmd_list)) {
-		// $TODO: Log periodic error.
+		// $TODO: Should we log?
+		if (!device || !target) {
+			continue;
+		}
+
+		Gleam::RenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
+		const int32_t cache_index = _render_mgr->getRenderCacheIndex();
+
+		Gleam::CommandList* const cmd_list = _render_commands.getCommandList(*deferred_device, cache_index).command_list[0].commands.get();
+
+		target->bind(*deferred_device);
+		target->clear(*deferred_device, rt_res->getClearSettings());
+
+		if (!deferred_device->finishCommandList(*cmd_list)) {
+			// $TODO: Log periodic error.
+		}
 	}
-
-	//const int32_t num_cameras = static_cast<int32_t>(_camera.size());
-
-	//for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-	//	_ecs_mgr->iterate<Camera>(
-	//		_camera[camera_index],
-	//		[&](ECSEntityID id, const Camera& camera) -> void
-	//		{
-	//			const auto* const devices = _render_mgr->getDevicesByTag(camera.device_tag);
-
-	//			if (!devices) {
-	//				return;
-	//			}
-
-	//			// $TODO: In the future, when more expensive clear options become available,
-	//			// may want to split this out into a per-device job.
-	//			for (const Gleam::IRenderDevice* device : *devices) {
-	//				const auto* const g_buffer = _render_mgr->getGBuffer(id, *device);
-
-	//				if (!g_buffer) {
-	//					// $TODO: Log error.
-	//					return;
-	//				}
-
-	//				Gleam::IRenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
-	//				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-	//				Gleam::ICommandList* const cmd_list = _cmd_lists[_cache_index].get();
-
-	//				// $TODO: Make the clearing type an option.
-	//				render_target->bind(*deferred_device);
-	//				render_target->clear(*deferred_device, Gleam::IRenderTarget::ClearFlags::All, 1.0f, 0, Gleam::Color::Black);
-
-	//				if (!deferred_device->finishCommandList(*cmd_list)) {
-	//					// $TODO: Log error periodic.
-	//					SHIB_FREET(cmd_list, GetAllocator());
-	//					return;
-	//				}
-
-	//				auto& render_cmds = _render_mgr->getRenderCommands(
-	//					*device,
-	//					RenderManagerBase::RenderOrder::ClearRenderTargets,
-	//					_cache_index
-	//				);
-
-	//				render_cmds.lock.Lock();
-	//				auto& cmd = render_cmds.command_list.emplace_back();
-	//				cmd.cmd_list.reset(cmd_list);
-	//				cmd.owns_command = false;
-	//				render_cmds.lock.Unlock();
-	//			}
-	//		}
-	//	);
-	//}
 }
 
 const RenderCommandData& ClearRenderTargetStage::getRenderCommands(void) const

@@ -330,6 +330,30 @@ void ResourceManager::removeCallback(ResourceCallbackID id)
 	}
 }
 
+const Vector<const IResource*>& ResourceManager::getResources(const Refl::IReflectionDefinition& ref_def) const
+{
+	const Vector<IResource*>& resources = const_cast<ResourceManager*>(this)->getResources(ref_def);
+
+	// Only adding const qualifier to element type, should be safe to reinterpret_cast.
+	return reinterpret_cast<const Vector<const IResource*>&>(resources);
+}
+
+const Vector<IResource*>& ResourceManager::getResources(const Refl::IReflectionDefinition& ref_def)
+{
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
+
+	return it_bucket->resources;
+}
+
+EA::Thread::Mutex& ResourceManager::getResourceBucketLock(const Refl::IReflectionDefinition& ref_def)
+{
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
+
+	return it_bucket->lock;
+}
+
 void ResourceManager::checkAndRemoveResources(void)
 {
 	const EA::Thread::AutoMutex pending_lock(_removal_lock);

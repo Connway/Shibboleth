@@ -25,6 +25,11 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IRenderStage.h"
 
+namespace EA::Thread
+{
+	class Mutex;
+}
+
 NS_SHIBBOLETH
 
 class ClearRenderTargetStage final : public IRenderStage
@@ -40,6 +45,9 @@ public:
 private:
 	RenderCommandData _render_commands;
 	RenderManager* _render_mgr = nullptr;
+
+	const Vector<IResource*>* _render_targets = nullptr;
+	EA::Thread::Mutex* _resource_lock = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
 };

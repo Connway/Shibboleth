@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 #include <Shibboleth_IResource.h>
 #include <Shibboleth_Error.h>
+#include <Gleam_IRenderTarget.h>
 
-namespace Gleam
-{
+NS_GLEAM
 	class RenderDevice;
 	class RenderTarget;
-}
+NS_END
 
 NS_SHIBBOLETH
 
@@ -45,9 +45,26 @@ public:
 	const Gleam::RenderTarget* getRenderTarget(void) const;
 	Gleam::RenderTarget* getRenderTarget(void);
 
+	void setNoClear(bool no_clear);
+	bool canClear(void) const;
+
+	void setClearSettings(const Gleam::IRenderTarget::ClearSettings& settings);
+	const Gleam::IRenderTarget::ClearSettings& getClearSettings(void) const;
+
 private:
-	Gleam::RenderDevice* _render_device = nullptr;
+	enum class Flag
+	{
+		NoClear,
+
+		Count
+	};
+
+	Gleam::IRenderTarget::ClearSettings _clear_settings;
+
 	UniquePtr<Gleam::RenderTarget> _render_target;
+	Gleam::RenderDevice* _render_device = nullptr;
+
+	Gaff::Flags<Flag> _flags;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderTargetResource);
 };

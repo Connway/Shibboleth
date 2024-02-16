@@ -39,7 +39,6 @@ THE SOFTWARE.
 NS_GLEAM
 	class RenderOutput;
 	class RenderDevice;
-	class CommandList;
 	class Texture;
 	class Window;
 NS_END
@@ -102,7 +101,6 @@ public:
 	//using ShaderResourceViewPtr = UniquePtr<Gleam::ShaderResourceView>;
 	//using ProgramBuffersPtr = UniquePtr<Gleam::ProgramBuffers>;
 	using SamplerStatePtr = UniquePtr<Gleam::SamplerState>;
-	//using RenderTargetPtr = UniquePtr<Gleam::RenderTarget>;
 	//using TexturePtr = UniquePtr<Gleam::Texture>;
 
 	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;

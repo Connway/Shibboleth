@@ -65,4 +65,24 @@ Gleam::RenderTarget* RenderTargetResource::getRenderTarget(void)
 	return _render_target.get();
 }
 
+void RenderTargetResource::setNoClear(bool no_clear)
+{
+	_flags.set(no_clear, Flag::NoClear);
+}
+
+bool RenderTargetResource::canClear(void) const
+{
+	return !_flags.testAll(Flag::NoClear);
+}
+
+void RenderTargetResource::setClearSettings(const Gleam::IRenderTarget::ClearSettings& settings)
+{
+	_clear_settings = settings;
+}
+
+const Gleam::IRenderTarget::ClearSettings& RenderTargetResource::getClearSettings(void) const
+{
+	return _clear_settings;
+}
+
 NS_END

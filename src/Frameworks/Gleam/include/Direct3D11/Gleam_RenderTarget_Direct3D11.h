@@ -50,7 +50,7 @@ public:
 	void bind(IRenderDevice& rd) override;
 	void unbind(IRenderDevice& rd) override;
 
-	void clear(IRenderDevice& rd, uint8_t clear_flags = ClearFlags::All, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color::RGBA& clear_color = Color::Black) override;
+	void clear(IRenderDevice& rd, const IRenderTarget::ClearSettings& settings = ClearSettings{}) override;
 
 	bool isComplete(void) const override;
 

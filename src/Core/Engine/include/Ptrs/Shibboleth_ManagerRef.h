@@ -31,7 +31,7 @@ class ManagerRef final
 {
 public:
 	ManagerRef(void):
-		_manager(k_use_fast_getter ? GetManagerTFast<T>() : GetManagerT<T>()
+		_manager(k_use_fast_getter ? GetManagerTFast<T>() : GetManagerT<T>())
 	{
 	}
 
@@ -55,11 +55,6 @@ public:
 		return _manager;
 	}
 
-	operator bool(void) const
-	{
-		return _resource.get() != nullptr;
-	}
-
 	const T* get(void) const
 	{
 		return &_manager;
@@ -81,7 +76,7 @@ public:
 	}
 
 private:
-	const T& _manager;
+	T& _manager;
 };
 
 template <class T>

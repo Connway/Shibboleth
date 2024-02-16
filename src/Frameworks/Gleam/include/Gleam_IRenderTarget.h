@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Color.h"
 #include "Gleam_Vec2.h"
-#include <Gaff_Defines.h>
+#include <Gaff_Flags.h>
 
 NS_GLEAM
 
@@ -34,14 +34,6 @@ class ITexture;
 class IRenderTarget
 {
 public:
-	enum ClearFlags
-	{
-		Depth = 1,
-		Stencil,
-		Color,
-		All = Depth | Stencil | Color
-	};
-
 	enum class CubeFace
 	{
 		PosX = 0,
@@ -52,6 +44,25 @@ public:
 		NegZ,
 
 		None
+	};
+
+	struct ClearSettings final
+	{
+		enum class Flags
+		{
+			Depth = 0,
+			Stencil,
+			Color,
+
+			Count,
+
+			All = GAFF_FLAG_BIT(Depth) | GAFF_FLAG_BIT(Stencil) | GAFF_FLAG_BIT(Color)
+		};
+
+		Gleam::Color::RGBA color = Gleam::Color::Black;
+		Gaff::Flags<Flags> flags = Flags::All;
+		float depth = 1.0f;
+		uint8_t stencil = 0;
 	};
 
 	IRenderTarget(void) {}
@@ -70,7 +81,7 @@ public:
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual void clear(IRenderDevice& rd, uint8_t clear_flags = ClearFlags::All, float clear_depth = 1.0f, uint8_t clear_stencil = 0, const Color::RGBA& clear_color = Color::Black) = 0;
+	virtual void clear(IRenderDevice& rd, const ClearSettings& settings = ClearSettings{}) = 0;
 
 	virtual bool isComplete(void) const = 0;
 

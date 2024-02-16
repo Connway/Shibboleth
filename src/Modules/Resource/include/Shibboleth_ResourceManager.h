@@ -124,6 +124,80 @@ public:
 	ResourceCallbackID registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback);
 	void removeCallback(ResourceCallbackID id);
 
+	template<class T, class U = T>
+	Vector< ResourcePtr<const U> > getResourcesSafe(void) const
+	{
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
+
+		const Vector<IResource*>& resources = getResources(Refl::Reflection<T>::GetReflectionDefinition());
+		Vector< ResourcePtr<const U> > typed_resources(resources.get_allocator());
+
+		typed_resources.reserve(resources.size());
+
+		for (IResource* res : resources) {
+			const U* const final_ptr = ReflectionCast<U>(res);
+
+			if (final_ptr) {
+				typed_resources.emplace_back(final_ptr);
+			}
+		}
+	}
+
+	template<class T, class U = T>
+	Vector< ResourcePtr<U> > getResourcesSafe(void)
+	{
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
+
+		const Vector<IResource*>& resources = getResources(Refl::Reflection<T>::GetReflectionDefinition());
+		Vector< ResourcePtr<const U> > typed_resources(resources.get_allocator());
+
+		typed_resources.reserve(resources.size());
+
+		for (IResource* res : resources) {
+			const U* const final_ptr = ReflectionCast<U>(res);
+
+			if (final_ptr) {
+				typed_resources.emplace_back(final_ptr);
+			}
+		}
+	}
+
+	template<class T, class U = T>
+	Vector<const U*> getResources(void) const
+	{
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
+
+		const Vector<IResource*>& resources = getResources(Refl::Reflection<T>::GetReflectionDefinition());
+		Vector<const U*> typed_resources(resources.get_allocator());
+
+		typed_resources.reserve(resources.size());
+
+		for (IResource* res : resources) {
+			const U* const final_ptr = ReflectionCast<U>(res);
+
+			if (final_ptr) {
+				typed_resources.emplace_back(final_ptr);
+			}
+		}
+	}
+
+	const Vector<const IResource*>& getResources(const Refl::IReflectionDefinition& ref_def) const;
+	const Vector<IResource*>& getResources(const Refl::IReflectionDefinition& ref_def);
+
+	template<class T>
+	EA::Thread::Mutex& getResourceBucketLock()
+	{
+		static_assert(Refl::Reflection<T>::HasReflection, "T does not have reflection.");
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+
+		return getResourceBucketLock(Refl::Reflection<T>::GetReflectionDefinition());
+	}
+
+	EA::Thread::Mutex& getResourceBucketLock(const Refl::IReflectionDefinition& ref_def);
+
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 
@@ -137,8 +211,8 @@ private:
 	struct ResourceBucket final
 	{
 		Vector<IResource*> resources{ ProxyAllocator("Resource") };
-		EA::Thread::Mutex lock;
 		const Refl::IReflectionDefinition* ref_def = nullptr;
+		EA::Thread::Mutex lock;
 
 		std::strong_ordering operator<=>(const Refl::IReflectionDefinition& rhs) const
 		{
