@@ -22,32 +22,19 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include <Shibboleth_ECSQuery.h>
-#include <Shibboleth_ISystem.h>
-//#include <Gleam_ICommandList.h>
+#include <Config/Shibboleth_Config.h>
 
 NS_SHIBBOLETH
 
-//class RenderManagerBase;
-//class ECSManager;
-
-class ClearRenderTargetSystem final : public ISystem
+struct UpdatePhasesConfig final : public Refl::IReflectionObject
 {
 public:
-	bool init(void) override;
-	void update(uintptr_t thread_id_int) override;
 
 private:
-	//RenderManagerBase* _render_mgr = nullptr;
-	//ECSManager* _ecs_mgr = nullptr;
-	//ECSQuery::Output _camera;
-	int32_t _cache_index = 0;
 
-	//UniquePtr<Gleam::ICommandList> _cmd_lists[2];
-
-	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(UpdatePhasesConfig);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::UpdatePhasesConfig)

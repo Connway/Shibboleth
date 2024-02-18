@@ -188,6 +188,7 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 	static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
 	Shibboleth::U8String config_path = ref_def.getReflectionInstance().getName();
 
+	// Strip out the word Config in classes with the naming pattern MyClassNameConfig.
 	if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
 		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
 	}
@@ -197,6 +198,19 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 	if (config_file_attr) {
 		if (config_file_attr->getFilePath()) {
 			config_path = config_file_attr->getFilePath();
+		}
+
+	// $TODO: This naively assumes no unicode characters in class names. Will break if non-ASCII characters are used in class names.
+	} else if (!_flags.testAll(Flag::NoSnakeCaseConversion)) {
+		for (int32_t i = 0; i < static_cast<int32_t>(config_path.size()); ++i) {
+			if (std::isupper(static_cast<char>(config_path[i]))) {
+				config_path[i] = static_cast<char8_t>(std::tolower(static_cast<char>(config_path[i])));
+
+				if (i) {
+					config_path.insert(config_path.begin() + i, u8'_');
+					++i; // Skip over character we just converted.
+				}
+			}
 		}
 	}
 

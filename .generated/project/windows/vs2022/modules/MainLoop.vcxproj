@@ -241,6 +241,7 @@ CodeGenerator64od module_header --module MainLoop</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_GameTimeSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_ISystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_UpdatePhasesConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_GameTime.cpp" />
@@ -248,6 +249,7 @@ CodeGenerator64od module_header --module MainLoop</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_UpdatePhasesConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\MainLoop\project_generator.lua" />
