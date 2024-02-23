@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Attributes/Shibboleth_InstancedAttributes.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
 
@@ -83,6 +84,8 @@ public:
 
 	bool load(const ISerializeReader& reader, T& object) override;
 	void save(ISerializeWriter& writer, const T& object) override;
+
+	const InstancedOptionalAttribute* getOptionalAttribute(void) const;
 
 	const Vector<Refl::IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;

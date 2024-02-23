@@ -267,6 +267,8 @@ public:
 	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object) = 0;
 	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object) = 0;
 
+	virtual const IReflection& getOwnerReflection(void) const = 0;
+
 	virtual bool hasReflection(void) const { return true; }
 	virtual const IReflection& getReflection(void) const = 0;
 
@@ -279,6 +281,7 @@ public:
 	virtual bool isVector(void) const { return false; }
 	virtual bool isFlags(void) const { return false; }
 	virtual bool isMap(void) const { return false; }
+	virtual bool isContainer(void) const { return isFixedArray() || isVector() || isMap(); }
 
 	virtual const IReflection& getReflectionKey(void) const
 	{
@@ -408,6 +411,9 @@ public:
 	void setNoCopy(bool optional) { _flags.set(optional, Flag::NoCopy); }
 	bool isNoCopy(void) const { return _flags.testAll(Flag::NoCopy); }
 
+	Gaff::Hash32 getName(void) const { return _name; }
+	void setName(Gaff::Hash32 name) { _name = name; }
+
 private:
 	enum class Flag
 	{
@@ -419,6 +425,7 @@ private:
 		Count
 	};
 
+	Gaff::Hash32 _name = Gaff::Hash32(0);
 	Gaff::Flags<Flag> _flags;
 };
 

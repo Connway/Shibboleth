@@ -26,7 +26,7 @@ NS_SHIBBOLETH
 
 template <class T, class VarType>
 VarInstancedArray<T, VarType>::VarInstancedArray(InstancedArray<VarType> T::* ptr):
-Refl::IVar<T>(ptr)
+	Refl::IVar<T>(ptr)
 {
 }
 
@@ -172,6 +172,7 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 		return true;
 	}
 
+	const InstancedOptionalAttribute* const optional_attr = getOptionalAttribute();
 	InstancedArray<VarType>* const var = reinterpret_cast<InstancedArray<VarType>*>(object);
 	const ReflectionManager& ref_mgr = GetApp().getReflectionManager();
 	const int32_t array_size = reader.size();
@@ -182,7 +183,10 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 		const char8_t* class_name = nullptr;
 
 		if (reader.isNull()) {
-			var->pushEmpty();
+			if (!optional_attr || optional_attr->shouldLeaveEmptyElement()) {
+				var->pushEmpty();
+			}
+
 			continue;
 		}
 
@@ -214,11 +218,15 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 				}
 
 			} else {
-				// $TODO: Log error.
-				reader.freeString(class_name);
-				success = false;
+				if (!optional_attr || optional_attr->matches(class_name)) {
+					// $TODO: Log error.
+					reader.freeString(class_name);
+					success = false;
+				}
 
-				var->pushEmpty();
+				if (!optional_attr || optional_attr->shouldLeaveEmptyElement()) {
+					var->pushEmpty();
+				}
 			}
 		}
 
@@ -281,6 +289,28 @@ void VarInstancedArray<T, VarType>::save(ISerializeWriter& writer, const T& obje
 {
 	const InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(&object);
 	save(writer, var);
+}
+
+template <class T, class VarType>
+const InstancedOptionalAttribute* VarInstancedArray<T, VarType>::getOptionalAttribute(void) const
+{
+	const auto& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
+
+	const InstancedOptionalAttribute* optional_attr = ref_def.template getVarAttr<InstancedOptionalAttribute>(Refl::IReflectionVar::getName());
+
+	if (!optional_attr) {
+		const Refl::IVar<T>* parent = Refl::IVar<T>::getParent();
+
+		while (parent && parent->isContainer()) {
+			parent = parent->getParent();
+		}
+
+		if (parent) {
+			optional_attr = ref_def.template getVarAttr<InstancedOptionalAttribute>(parent->getName());
+		}
+	}
+
+	return optional_attr;
 }
 
 template <class T, class VarType>

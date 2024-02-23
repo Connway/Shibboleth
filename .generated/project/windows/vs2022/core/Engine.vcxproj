@@ -236,6 +236,7 @@ CodeGenerator64od static_header</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Attributes\Shibboleth_InstancedAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArray.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArrayReflection.h" />
@@ -330,6 +331,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Attributes\Shibboleth_InstancedAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Config\Shibboleth_Config.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Log\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Reflection\Shibboleth_Reflection.cpp" />

@@ -118,10 +118,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\SceneModule\SceneModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
@@ -155,10 +153,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\SceneModule\$(Targe
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\SceneModule\SceneModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
@@ -192,10 +188,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\SceneModule\$(Tar
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\SceneModule\SceneModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
@@ -229,10 +223,8 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\SceneModule\$(Tar
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\SceneModule\SceneModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)

@@ -145,7 +145,7 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 	auto reader = MakeSerializeReader(config_data);
 
 	if (_flags.testAll(Flag::UseConfigVarAttribute)) {
-		Shibboleth::Vector< eastl::pair<int32_t, const ConfigVarAttribute*> > config_vars;
+		Vector< eastl::pair<int32_t, const ConfigVarAttribute*> > config_vars;
 		bool has_error = false;
 
 		ref_def.getVarAttrs(config_vars);
@@ -186,14 +186,14 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def) const
 {
 	static constexpr eastl::u8string_view k_config_name_ending = u8"Config";
-	Shibboleth::U8String config_path = ref_def.getReflectionInstance().getName();
+	U8String config_path = ref_def.getReflectionInstance().getName();
 
 	// Strip out the word Config in classes with the naming pattern MyClassNameConfig.
 	if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
 		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
 	}
 
-	const Shibboleth::ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<Shibboleth::ConfigFileAttribute>();
+	const ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<ConfigFileAttribute>();
 
 	if (config_file_attr) {
 		if (config_file_attr->getFilePath()) {

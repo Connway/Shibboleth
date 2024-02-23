@@ -1212,7 +1212,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	const Gaff::Hash32 hash_name = Gaff::FNV1aHash32Const(name);
+
+	pair.second->setName(hash_name);
+
+	auto& attrs = _var_attrs[hash_name];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {
@@ -1253,7 +1257,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
-	auto& attrs = _var_attrs[Gaff::FNV1aHash32Const(name)];
+	const Gaff::Hash32 hash_name = Gaff::FNV1aHash32Const(name);
+
+	pair.second->setName(hash_name);
+
+	auto& attrs = _var_attrs[hash_name];
 	attrs.set_allocator(_allocator);
 
 	if constexpr (sizeof...(Attrs) > 0) {

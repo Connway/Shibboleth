@@ -4,6 +4,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Attributes">
+      <UniqueIdentifier>{3F4F00BC-2B33-C111-9493-BB648096AB93}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\Config">
       <UniqueIdentifier>{6E3688FB-5A04-7C01-4398-EC272F055866}</UniqueIdentifier>
     </Filter>
@@ -22,6 +25,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Attributes">
+      <UniqueIdentifier>{633C278D-4F0A-1B93-389E-8BB9240BF7F7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Config">
       <UniqueIdentifier>{92319E09-7EE9-DF56-E7F0-B8B2D3C77A47}</UniqueIdentifier>
     </Filter>
@@ -33,6 +39,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Attributes\Shibboleth_InstancedAttributes.h">
+      <Filter>include\Attributes</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h">
       <Filter>include\Config</Filter>
     </ClInclude>
@@ -311,6 +320,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Attributes\Shibboleth_InstancedAttributes.cpp">
+      <Filter>src\Attributes</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Config\Shibboleth_Config.cpp">
       <Filter>src\Config</Filter>
     </ClCompile>

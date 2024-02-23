@@ -23,27 +23,4 @@ THE SOFTWARE.
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_ModuleMacros.h>
 
-SHIB_DEFINE_MODULE_BEGIN(MainLoop)
-
-#ifdef SHIB_STATIC
-	namespace MainLoop
-	{
-		class Module final : public Shibboleth::Module
-		{
-		public:
-			bool preInit(Shibboleth::IApp& app) override;
-		};
-
-		bool Module::preInit(Shibboleth::IApp& app)
-		{
-			if (!Shibboleth::Module::preInit(app)) {
-				return false;
-			}
-
-			app.getReflectionManager().registerTypeBucket<Shibboleth::ISystem>();
-			return true;
-		}
-	}
-#endif
-
-SHIB_DEFINE_MODULE_END(MainLoop)
+SHIB_DEFINE_BASIC_MODULE(MainLoop)

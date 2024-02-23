@@ -123,7 +123,7 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 				return false;
 			}
 
-		} else {
+		} else if (!checkIsOptional(class_name)) {
 			// $TODO: Log error.
 			reader.freeString(class_name);
 			return false;
@@ -168,6 +168,28 @@ void VarInstancedPtr<T, VarType>::save(ISerializeWriter& writer, const T& object
 {
 	const InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(&object);
 	save(writer, var);
+}
+
+template <class T, class VarType>
+bool VarInstancedPtr<T, VarType>::checkIsOptional(const char8_t* class_name) const
+{
+	const auto& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
+
+	const InstancedOptionalAttribute* optional = ref_def.template getVarAttr<InstancedOptionalAttribute>(Refl::IReflectionVar::getName());
+
+	if (!optional) {
+		const Refl::IVar<T>* parent = Refl::IVar<T>::getParent();
+
+		while (parent && parent->isContainer()) {
+			parent = parent->getParent();
+		}
+
+		if (parent) {
+			optional = ref_def.template getVarAttr<InstancedOptionalAttribute>(parent->getName());
+		}
+	}
+
+	return !optional || optional->matches(class_name);
 }
 
 NS_END

@@ -21,7 +21,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_UpdatePhasesConfig.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\MainLoop\include\Shibboleth_UpdatePhases.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -31,7 +31,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_ISystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_UpdatePhasesConfig.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\MainLoop\Shibboleth_UpdatePhases.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\MainLoop\project_generator.lua" />

@@ -41,6 +41,12 @@ IVar<T>::IVar(ptrdiff_t offset):
 }
 
 template <class T>
+const IReflection& IVar<T>::getOwnerReflection(void) const
+{
+	return Reflection<T>::GetInstance();
+}
+
+template <class T>
 template <class VarType>
 const VarType& IVar<T>::IVar::getDataT(const T& object) const
 {
@@ -175,6 +181,12 @@ template <class T>
 void IVar<T>::setOffset(ptrdiff_t offset)
 {
 	_offset = offset;
+}
+
+template <class T>
+const IVar<T>* IVar<T>::getParent(void) const
+{
+	return _parent;
 }
 
 template <class T>

@@ -27,6 +27,29 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
+template <class T>
+struct DimensionsHelper final
+{
+	static constexpr int32_t Dimensions = 0;
+};
+
+template <class T, class Allocator>
+struct DimensionsHelper< Gaff::Vector<T, Allocator> > final
+{
+	static constexpr int32_t Dimensions = 1 + DimensionsHelper<T>::Dimensions;
+};
+
+template <class T, size_t array_size>
+struct DimensionsHelper< eastl::array<T, array_size> > final
+{
+	static constexpr int32_t Dimensions = 1 + DimensionsHelper<T>::Dimensions;
+};
+
+template <class T>
+static constexpr int32_t Dimensions = DimensionsHelper<T>::Dimensions;
+
+
+
 template <class T, class ContainerType>
 class VectorVar;
 
@@ -40,6 +63,9 @@ struct VarTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
 	using VariableType = VarType;
 	using Type = VectorVar<T, ContainerType>;
 
+	// $TODO: Support for N-dimensional vectors.
+	static constexpr int32_t Dimensions = Refl::Dimensions< Gaff::Vector<VarType, Vec_Allocator> >;
+
 	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
 	static constexpr bool k_is_fixed_array = false;
 };
@@ -51,6 +77,9 @@ struct VarTypeHelper< T, eastl::array<VarType, array_size> > final
 	using ContainerType = eastl::array<VarType, array_size>;
 	using VariableType = VarType;
 	using Type = VectorVar<T, ContainerType>;
+
+	// $TODO: Support for N-dimensional arrays.
+	static constexpr int32_t Dimensions = Refl::Dimensions< eastl::array<VarType, array_size> >;
 
 	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
 	static constexpr bool k_is_fixed_array = true;

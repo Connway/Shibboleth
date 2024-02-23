@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Attributes/Shibboleth_InstancedAttributes.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
 
@@ -70,6 +71,8 @@ public:
 
 	bool load(const ISerializeReader& reader, T& object) override;
 	void save(ISerializeWriter& writer, const T& object) override;
+
+	bool checkIsOptional(const char8_t* class_name) const;
 
 private:
 	const Refl::IReflection* _reflection = &Refl::Reflection<ReflectionType>::GetInstance();

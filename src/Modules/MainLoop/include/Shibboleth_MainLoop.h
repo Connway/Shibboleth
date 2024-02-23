@@ -22,11 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ISystem.h"
+#include "Shibboleth_UpdatePhases.h"
 #include <Reflection/Shibboleth_Reflection.h>
-#include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IMainLoop.h>
-#include <Shibboleth_JobPool.h>
 
 NS_SHIBBOLETH
 
@@ -38,34 +36,7 @@ public:
 	void update(void) override;
 
 private:
-	struct UpdateRow final
-	{
-		Vector< UniquePtr<ISystem> > systems{ ProxyAllocator("MainLoop") };
-		Vector<Gaff::JobData> job_data{ ProxyAllocator("MainLoop") };
-	};
-
-	struct UpdateBlock final
-	{
-		Vector<UpdateRow> rows{ ProxyAllocator("MainLoop") };
-		Gaff::Counter counter = -1;
-		int32_t curr_row = -1;
-		int32_t frame = 0;
-
-		UpdateBlock(void) = default;
-
-		UpdateBlock(UpdateBlock&& block):
-			rows(std::move(block.rows)),
-			counter(static_cast<int32_t>(block.counter)),
-			curr_row(block.curr_row),
-			frame(block.frame)
-		{
-		}
-	};
-
-	Vector<UpdateBlock> _blocks{ ProxyAllocator("MainLoop") };
-	JobPool* _job_pool = nullptr;
-
-	bool _update_windows = true;
+	UpdatePhases _update_phases;
 
 	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
 };

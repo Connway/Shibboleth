@@ -20,21 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Attributes/Shibboleth_InstancedAttributes.h"
 
-#include <Config/Shibboleth_Config.h>
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InstancedOptionalAttribute, IAttribute)
 
 NS_SHIBBOLETH
 
-struct UpdatePhasesConfig final : public Refl::IReflectionObject
+SHIB_REFLECTION_CLASS_DEFINE(InstancedOptionalAttribute)
+
+InstancedOptionalAttribute::InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix, bool leave_empty_element):
+_prefix(prefix), _suffix(suffix), _leave_empty_element(leave_empty_element)
 {
-public:
+}
 
-private:
+const char8_t* InstancedOptionalAttribute::getPrefix(void) const
+{
+	return _prefix;
+}
 
-	SHIB_REFLECTION_CLASS_DECLARE(UpdatePhasesConfig);
-};
+const char8_t* InstancedOptionalAttribute::getSuffix(void) const
+{
+	return _suffix;
+}
+
+bool InstancedOptionalAttribute::shouldLeaveEmptyElement(void) const
+{
+	return _leave_empty_element;
+}
+
+bool InstancedOptionalAttribute::matches(const char8_t* name) const
+{
+	return (!_prefix || Gaff::StartsWith(name, _prefix)) && (!_suffix || Gaff::EndsWith(name, _suffix));
+}
+
+Refl::IAttribute* InstancedOptionalAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(InstancedOptionalAttribute, allocator.getPoolIndex("Reflection"), allocator, _prefix, _suffix);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::UpdatePhasesConfig)

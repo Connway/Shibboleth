@@ -132,6 +132,38 @@ size_t Find(const T* string, T character)
 }
 
 template <class T>
+bool StartsWith(const T* string, size_t string_size, const T* start_string, size_t start_string_size)
+{
+	GAFF_ASSERT(string && start_string);
+	return string_size >= start_string_size && !eastl::Compare(string, start_string, start_string_size);
+}
+
+template <class T>
+bool StartsWith(const T* string, size_t string_size, const T* start_string)
+{
+	const size_t start_string_size = eastl::CharStrlen(start_string);
+	GAFF_ASSERT(string && start_string && start_string_size);
+	return StartsWith(string, string_size, start_string, start_string_size);
+}
+
+template <class T>
+bool StartsWith(const T* string, const T* start_string, size_t start_string_size)
+{
+	const size_t string_size = eastl::CharStrlen(string);
+	GAFF_ASSERT(string && start_string && string_size);
+	return StartsWith(string, string_size, start_string, start_string_size);
+}
+
+template <class T>
+bool StartsWith(const T* string, const T* start_string)
+{
+	const size_t string_size = eastl::CharStrlen(string);
+	const size_t start_string_size = eastl::CharStrlen(start_string);
+	GAFF_ASSERT(string && start_string && string_size && start_string_size);
+	return StartsWith(string, string_size, start_string, start_string_size);
+}
+
+template <class T>
 bool EndsWith(const T* string, size_t string_size, const T* end_string, size_t end_string_size)
 {
 	GAFF_ASSERT(string && end_string);

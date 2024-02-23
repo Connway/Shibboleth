@@ -306,7 +306,7 @@ function ModuleProject(project_name, copy_dir)
 
 		elseif not is_lib then
 			ModuleIncludesAndLinks(lib_name)
-			NewDeleteLinkFix()
+			--NewDeleteLinkFix()
 			ModuleCopy(copy_dir)
 		end
 

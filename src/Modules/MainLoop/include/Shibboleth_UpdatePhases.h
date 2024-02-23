@@ -20,20 +20,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#pragma once
+
 #include "Shibboleth_ISystem.h"
-#include "Shibboleth_EngineAttributesCommon.h"
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ISystem)
-	.classAttrs(
-		Shibboleth::ClassBucketAttribute(),
-
-		// Do not allow scripts to create systems.
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
-	)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::ISystem)
+#include <Containers/Shibboleth_InstancedArray.h>
+#include <Shibboleth_JobPool.h>
+#include <Shibboleth_Error.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ISystem)
+class ISystem;
+
+struct UpdateRow final
+{
+	InstancedArray<ISystem> systems{ ProxyAllocator("MainLoop") };
+	Vector<Gaff::JobData> job_data{ ProxyAllocator("MainLoop") };
+};
+
+// Workaround for not supporting n-dimensional vectors.
+struct UpdateBlock final
+{
+	Vector<UpdateRow> update_rows{ ProxyAllocator("MainLoop") };
+
+	Gaff::Counter counter = -1;
+	int32_t curr_row = -1;
+	int32_t frame = 0;
+
+
+	UpdateBlock(UpdateBlock&& block);
+	UpdateBlock& operator=(UpdateBlock&& rhs);
+
+	GAFF_STRUCTORS_DEFAULT(UpdateBlock);
+};
+
+class UpdatePhases final
+{
+public:
+	Error init(void);
+	void update(void);
+	void clear(void);
+
+private:
+	Vector<UpdateBlock> update_blocks{ ProxyAllocator("MainLoop") };
+	JobPool* _job_pool = nullptr;
+
+	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(UpdatePhases);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::UpdatePhases)
+SHIB_REFLECTION_DECLARE(Shibboleth::UpdateBlock)
+SHIB_REFLECTION_DECLARE(Shibboleth::UpdateRow)
+
+SHIB_REFLECTION_VAR_NO_COPY(Shibboleth::UpdateBlock)
+SHIB_REFLECTION_VAR_NO_COPY(Shibboleth::UpdateRow)

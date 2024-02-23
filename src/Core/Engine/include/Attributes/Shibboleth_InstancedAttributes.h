@@ -20,16 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_UpdatePhasesConfig.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::UpdatePhasesConfig)
-	.BASE(Refl::IReflectionObject)
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdatePhasesConfig)
-
+#include "Reflection/Shibboleth_Reflection.h"
+#include "Reflection/Shibboleth_IAttribute.h"
+#include "Shibboleth_String.h"
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(UpdatePhasesConfig)
+class InstancedOptionalAttribute final : public Refl::IAttribute
+{
+public:
+	//
+	explicit InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix = nullptr, bool leave_empty_element = true);
+
+	const char8_t* getPrefix(void) const;
+	const char8_t* getSuffix(void) const;
+	bool shouldLeaveEmptyElement(void) const;
+
+	bool matches(const char8_t* name) const;
+
+	Refl::IAttribute* clone(void) const override;
+
+private:
+	const char8_t* const _prefix = nullptr;
+	const char8_t* const _suffix = nullptr;
+	bool _leave_empty_element = true;
+
+	SHIB_REFLECTION_CLASS_DECLARE(InstancedOptionalAttribute);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::InstancedOptionalAttribute)

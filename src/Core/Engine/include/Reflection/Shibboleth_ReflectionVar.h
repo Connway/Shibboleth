@@ -63,6 +63,8 @@ public:
 
 	virtual ~IVar(void) {}
 
+	const IReflection& getOwnerReflection(void) const override;
+
 	template <class VarType>
 	const VarType& getDataT(const T& object) const;
 
@@ -85,6 +87,8 @@ public:
 	virtual void save(Shibboleth::ISerializeWriter& writer, const T& object) = 0;
 
 	void setOffset(ptrdiff_t offset);
+
+	const IVar<T>* getParent(void) const;
 	void setParent(IVar<T>* parent);
 
 	const void* adjust(const void* object) const;
@@ -110,6 +114,7 @@ public:
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
 
 	static_assert(Reflection<ReflectionType>::HasReflection);
+	static_assert(Reflection<T>::HasReflection);
 
 	explicit Var(VarType T::*ptr);
 	Var(void) = default;
