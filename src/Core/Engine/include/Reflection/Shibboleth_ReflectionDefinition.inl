@@ -133,6 +133,13 @@ bool ReflectionDefinition<T>::BaseVarPtr<Base>::isFlags(void) const
 
 template <class T>
 template <class Base>
+bool ReflectionDefinition<T>::BaseVarPtr<Base>::isMap(void) const
+{
+	return _base_var->isMap();
+}
+
+template <class T>
+template <class Base>
 int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::size(const void* object) const
 {
 	GAFF_ASSERT(object);

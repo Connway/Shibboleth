@@ -118,9 +118,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Debug\Engine\Engine64d.lib;msvcrtd.lib;..\..\..\..\build\windows\vs2022\output\x64\Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Debug\LogicModule\LogicModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
@@ -154,9 +155,10 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\LogicModule\$(Targe
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Logic\Logic64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Esprit\Esprit64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Entity\Entity64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Logic\Logic64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Esprit\Esprit64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Entity\Entity64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\LogicModule\LogicModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -193,9 +195,10 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\LogicModule\$(Tar
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Profile\Engine\Engine64p.lib;msvcrt.lib;..\..\..\..\build\windows\vs2022\output\x64\Profile\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Profile\LogicModule\LogicModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
@@ -229,9 +232,10 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\LogicModule\$(Tar
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\Engine\Engine64od.lib;msvcrtd.lib;..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LuaJIT\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LogicModule\LogicModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST $(SolutionDir)\..\..\..\..\workingdir\Modules (mkdir $(SolutionDir)\..\..\..\..\workingdir\Modules)
