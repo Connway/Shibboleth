@@ -240,10 +240,22 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	}
 }
 
+const ReflectionManager::TypeBucket* ReflectionManager::getAttributeBucket(const Refl::IReflectionDefinition& ref_def) const
+{
+	GAFF_ASSERT(ref_def.hasInterface<Refl::IAttribute>());
+	return getAttributeBucket(ref_def.getReflectionInstance().getNameHash());
+}
+
 const ReflectionManager::TypeBucket* ReflectionManager::getAttributeBucket(Gaff::Hash64 name) const
 {
 	const auto it = _attr_buckets.find(name);
 	return (it == _attr_buckets.end()) ? nullptr : &it->second;
+}
+
+void ReflectionManager::registerAttributeBucket(const Refl::IReflectionDefinition& ref_def)
+{
+	GAFF_ASSERT(ref_def.hasInterface<Refl::IAttribute>());
+	registerAttributeBucket(ref_def.getReflectionInstance().getNameHash());
 }
 
 void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)

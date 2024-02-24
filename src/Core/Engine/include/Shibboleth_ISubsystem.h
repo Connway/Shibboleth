@@ -44,9 +44,9 @@ class ShouldCreateSubsystemAttribute final : public Refl::IAttribute
 public:
 	using ShouldCreateFunc = bool (*)(void);
 
+	ShouldCreateSubsystemAttribute(const ShouldCreateSubsystemAttribute& attr) = default;
 	ShouldCreateSubsystemAttribute(ShouldCreateFunc should_create_func);
 
-	Refl::IAttribute* clone(void) const override;
 	bool canInherit(void) const override;
 
 	bool shouldCreate(void) const;
@@ -54,7 +54,7 @@ public:
 private:
 	ShouldCreateFunc _should_create_func = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ShouldCreateSubsystemAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ShouldCreateSubsystemAttribute);
 };
 
 NS_END

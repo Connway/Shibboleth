@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 class GlobalConfigAttribute final : public Refl::IAttribute
 {
 public:
-	GlobalConfigAttribute(const Refl::IReflectionObject* config);
+	GlobalConfigAttribute(const GlobalConfigAttribute& attr) = default;
 	GlobalConfigAttribute(void) = default;
 
 	void setConfig(const Refl::IReflectionObject* config);
@@ -40,27 +40,25 @@ public:
 	Error createAndLoadConfig(const Refl::IReflectionDefinition& ref_def);
 
 	void apply(Refl::IReflectionDefinition& ref_def) override;
-	IAttribute* clone(void) const override;
 
 private:
 	const Refl::IReflectionObject* _config = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(GlobalConfigAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(GlobalConfigAttribute);
 };
 
 class ConfigFileAttribute final : public Refl::IAttribute
 {
 public:
+	ConfigFileAttribute(const ConfigFileAttribute& attr) = default;
 	ConfigFileAttribute(const char8_t* file_path = nullptr);
 
 	const char8_t* getFilePath(void) const;
 
-	IAttribute* clone(void) const override;
-
 private:
 	const char8_t* const _file_path = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ConfigFileAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ConfigFileAttribute);
 };
 
 class InitFromConfigAttribute final : public Refl::IAttribute
@@ -75,12 +73,12 @@ public:
 		Count
 	};
 
-	InitFromConfigAttribute(Gaff::Flags<Flag> flags);
+	InitFromConfigAttribute(const InitFromConfigAttribute& attr) = default;
 	InitFromConfigAttribute(void) = default;
 
-	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
+	InitFromConfigAttribute(Gaff::Flags<Flag> flags);
 
-	IAttribute* clone(void) const override;
+	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
 	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path) const;
 	Error loadConfig(void* object, const Refl::IReflectionDefinition& ref_def) const;
@@ -88,15 +86,7 @@ public:
 private:
 	Gaff::Flags<Flag> _flags { Flag::InitOnInstantiate };
 
-	SHIB_REFLECTION_CLASS_DECLARE(InitFromConfigAttribute);
-};
-
-class ConfigVarAttribute final : public Refl::IAttribute
-{
-public:
-	IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ConfigVarAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(InitFromConfigAttribute);
 };
 
 
@@ -123,7 +113,8 @@ const T& GetConfigRef(void)
 
 NS_END
 
+SHIB_SIMPLE_ATTRIBUTE_DECLARE(ConfigVarAttribute, Shibboleth)
+
 SHIB_REFLECTION_DECLARE(Shibboleth::InitFromConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ConfigFileAttribute)
-SHIB_REFLECTION_DECLARE(Shibboleth::ConfigVarAttribute)

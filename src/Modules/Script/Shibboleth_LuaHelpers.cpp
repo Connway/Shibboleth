@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaHelpers.h"
 #include "Shibboleth_CommonHelpers.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_ScriptLogging.h>
 //#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IManager.h>

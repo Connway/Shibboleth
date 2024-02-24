@@ -31,14 +31,8 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::DebugMenuItemAttribu
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(DebugMenuClassAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(DebugMenuItemAttribute)
-
-Refl::IAttribute* DebugMenuClassAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(DebugMenuClassAttribute, allocator.getPoolIndex("Reflection"), allocator);
-}
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(DebugMenuClassAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(DebugMenuItemAttribute)
 
 void DebugMenuClassAttribute::instantiated(void* object, const Refl::IReflectionDefinition& ref_def)
 {
@@ -67,12 +61,6 @@ const U8String& DebugMenuItemAttribute::getPath(void) const
 bool DebugMenuItemAttribute::isImGuiUpdateFunction(void) const
 {
 	return _is_imgui_update_function;
-}
-
-Refl::IAttribute* DebugMenuItemAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(DebugMenuItemAttribute, allocator.getPoolIndex("Reflection"), allocator, _path.data(), _is_imgui_update_function);
 }
 
 void DebugMenuItemAttribute::finish(Refl::IReflectionDefinition& ref_def)

@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #include "Attributes/Shibboleth_InstancedAttributes.h"
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InstancedOptionalAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InstancedOptionalAttribute, Refl::IAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InstancedOptionalAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(InstancedOptionalAttribute)
 
 InstancedOptionalAttribute::InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix, bool leave_empty_element):
-_prefix(prefix), _suffix(suffix), _leave_empty_element(leave_empty_element)
+	_prefix(prefix), _suffix(suffix), _leave_empty_element(leave_empty_element)
 {
 }
 
@@ -51,12 +51,6 @@ bool InstancedOptionalAttribute::shouldLeaveEmptyElement(void) const
 bool InstancedOptionalAttribute::matches(const char8_t* name) const
 {
 	return (!_prefix || Gaff::StartsWith(name, _prefix)) && (!_suffix || Gaff::EndsWith(name, _suffix));
-}
-
-Refl::IAttribute* InstancedOptionalAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(InstancedOptionalAttribute, allocator.getPoolIndex("Reflection"), allocator, _prefix, _suffix);
 }
 
 NS_END

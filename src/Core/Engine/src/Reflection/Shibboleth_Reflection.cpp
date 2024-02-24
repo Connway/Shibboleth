@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Reflection/Shibboleth_Reflection.h"
-#include "Shibboleth_EngineAttributesCommon.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE(int8_t)
 SHIB_REFLECTION_DEFINE(int16_t)

@@ -27,62 +27,52 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class CreatableAttribute final : public Refl::IAttribute
-{
-public:
-	Refl::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(CreatableAttribute);
-};
-
 class ResourceExtensionAttribute final : public Refl::IAttribute
 {
 public:
+	ResourceExtensionAttribute(const ResourceExtensionAttribute& attr) = default;
 	ResourceExtensionAttribute(const char8_t* extension);
 
 	const HashStringView32<>& getExtension(void) const;
 
-	Refl::IAttribute* clone(void) const override;
-
 private:
 	HashStringView32<> _extension;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResourceExtensionAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ResourceExtensionAttribute);
 };
 
 class ResourceLoadPoolAttribute final : public Refl::IAttribute
 {
 public:
+	ResourceLoadPoolAttribute(const ResourceLoadPoolAttribute& attr) = default;
 	ResourceLoadPoolAttribute(Gaff::Hash32 pool);
 
 	Gaff::Hash32 getPool(void) const;
 
-	Refl::IAttribute* clone(void) const override;
-
 private:
 	Gaff::Hash32 _pool;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResourceLoadPoolAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ResourceLoadPoolAttribute);
 };
 
 class ResourceSchemaAttribute final : public Refl::IAttribute
 {
 public:
+	ResourceSchemaAttribute(const ResourceSchemaAttribute& attr) = default;
 	ResourceSchemaAttribute(const char8_t* schema);
 
 	const char8_t* getSchema(void) const;
 
-	Refl::IAttribute* clone(void) const override;
-
 private:
 	const char8_t* const _schema = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ResourceSchemaAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ResourceSchemaAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::CreatableAttribute)
+SHIB_SIMPLE_ATTRIBUTE_DECLARE(CreatableAttribute, Shibboleth)
+
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceExtensionAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceLoadPoolAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceSchemaAttribute)

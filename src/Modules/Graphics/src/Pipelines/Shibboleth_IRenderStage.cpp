@@ -23,5 +23,4 @@ THE SOFTWARE.
 #include "Pipelines/Shibboleth_IRenderStage.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IRenderStage)
-	.BASE(Refl::IReflectionObject)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::IRenderStage)

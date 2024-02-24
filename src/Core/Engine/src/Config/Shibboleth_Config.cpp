@@ -21,29 +21,30 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Config/Shibboleth_Config.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 #include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_SerializeReader.h"
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InitFromConfigAttribute, IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::GlobalConfigAttribute, IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigFileAttribute, IAttribute)
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigVarAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)
+	.classAttrs(
+		Shibboleth::AttributeBucketAttribute()
+	)
 
+	.BASE(Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::GlobalConfigAttribute)
 
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InitFromConfigAttribute, Refl::IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigFileAttribute, Refl::IAttribute)
+
+SHIB_SIMPLE_ATTRIBUTE_DEFINE(ConfigVarAttribute, Shibboleth)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InitFromConfigAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(GlobalConfigAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ConfigFileAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ConfigVarAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(InitFromConfigAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(GlobalConfigAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(ConfigFileAttribute)
 
 
-
-GlobalConfigAttribute::GlobalConfigAttribute(const Refl::IReflectionObject* config):
-	_config(config)
-{
-}
 
 void GlobalConfigAttribute::setConfig(const Refl::IReflectionObject* config)
 {
@@ -83,12 +84,6 @@ void GlobalConfigAttribute::apply(Refl::IReflectionDefinition& ref_def)
 	}
 }
 
-Refl::IAttribute* GlobalConfigAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(GlobalConfigAttribute, allocator.getPoolIndex("Reflection"), allocator, _config);
-}
-
 
 
 ConfigFileAttribute::ConfigFileAttribute(const char8_t* file_path):
@@ -99,12 +94,6 @@ ConfigFileAttribute::ConfigFileAttribute(const char8_t* file_path):
 const char8_t* ConfigFileAttribute::getFilePath(void) const
 {
 	return _file_path;
-}
-
-Refl::IAttribute* ConfigFileAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ConfigFileAttribute, allocator.getPoolIndex("Reflection"), allocator, _file_path);
 }
 
 
@@ -119,12 +108,6 @@ void InitFromConfigAttribute::instantiated(void* object, const Refl::IReflection
 	if (_flags.testAll(Flag::InitOnInstantiate)) {
 		loadConfig(object, ref_def);
 	}
-}
-
-Refl::IAttribute* InitFromConfigAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(GlobalConfigAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path) const
@@ -218,11 +201,5 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 }
 
 
-
-Refl::IAttribute* ConfigVarAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ConfigVarAttribute, allocator.getPoolIndex("Reflection"), allocator);
-}
 
 NS_END

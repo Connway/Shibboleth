@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LocalPlayerSubsystem.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LocalPlayerSubsystem)
 	.BASE(Shibboleth::ISubsystem)

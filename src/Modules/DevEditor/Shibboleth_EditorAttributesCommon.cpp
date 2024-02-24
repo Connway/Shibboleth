@@ -24,24 +24,18 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::EditorWindowAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::EditorWindowAttribute, Refl::IAttribute)
 
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(EditorWindowAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(EditorWindowAttribute)
 
 
 EditorWindowAttribute::EditorWindowAttribute(const char8_t* path, bool single_instance):
 	_path(path),
 	_single_instance(single_instance)
 {
-}
-
-Refl::IAttribute* EditorWindowAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(EditorWindowAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
 NS_END

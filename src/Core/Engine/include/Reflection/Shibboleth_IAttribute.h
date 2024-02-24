@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IReflectionObject.h"
+#include <Gaff_Hashable.h>
 #include <Gaff_Vector.h>
 #include <Gaff_Hash.h>
 
@@ -79,28 +80,40 @@ public:
 
 NS_END
 
-#define SHIB_DECLARE_SIMPLE_ATTRIBUTE(AttributeName, Namespace) \
-	namespace Namespace \
-	{ \
-		class AttributeName final : public Refl::IAttribute \
-		{ \
-		public: \
-			Refl::IAttribute* clone(void) const override; \
-			SHIB_REFLECTION_CLASS_DECLARE(AttributeName); \
-		}; \
-	} \
-	SHIB_REFLECTION_DECLARE(Namespace::AttributeName)
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Refl::IAttribute);
+NS_END
 
+#define SHIB_REFLECTION_ATTRIBUTE_DECLARE(AttributeName) \
+	public: \
+		Refl::IAttribute* clone(void) const override; \
+		SHIB_REFLECTION_CLASS_DECLARE(AttributeName)
 
-#define SHIB_DEFINE_SIMPLE_ATTRIBUTE(AttributeName, Namespace) \
-	SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Namespace::AttributeName, IAttribute) \
-	namespace Namespace \
-	{ \
+#define SHIB_REFLECTION_ATTRIBUTE_DEFINE(AttributeName) \
 		SHIB_REFLECTION_CLASS_DEFINE(AttributeName) \
 		Refl::IAttribute* AttributeName::clone(void) const \
 		{ \
 			IAllocator& allocator = GetAllocator(); \
-			return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator); \
-		} \
-	}
+			if constexpr (requires(const AttributeName& value) { AttributeName(value); }) { \
+				return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator, *this); \
+			} else { \
+				return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator); \
+			} \
+		}
 
+#define SHIB_SIMPLE_ATTRIBUTE_DECLARE(AttributeName, Namespace) \
+	namespace Namespace \
+	{ \
+		class AttributeName final : public Refl::IAttribute \
+		{ \
+			SHIB_REFLECTION_ATTRIBUTE_DECLARE(AttributeName); \
+		}; \
+	} \
+	SHIB_REFLECTION_DECLARE(Namespace::AttributeName)
+
+#define SHIB_SIMPLE_ATTRIBUTE_DEFINE(AttributeName, Namespace) \
+	SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Namespace::AttributeName, Refl::IAttribute) \
+	namespace Namespace \
+	{ \
+		SHIB_REFLECTION_ATTRIBUTE_DEFINE(AttributeName) \
+	}

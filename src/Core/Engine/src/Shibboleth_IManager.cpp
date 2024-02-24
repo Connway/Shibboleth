@@ -21,10 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_IManager.h"
-#include "Shibboleth_EngineAttributesCommon.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IManager)
 	.classAttrs(
+		Shibboleth::ClassBucketAttribute(),
+
 		// Do not allow scripts to create managers.
 		Shibboleth::ScriptFlagsAttribute(
 			Shibboleth::ScriptFlagsAttribute::Flag::ReferenceOnly

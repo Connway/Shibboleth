@@ -236,6 +236,7 @@ CodeGenerator64od static_header</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Attributes\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Attributes\Shibboleth_InstancedAttributes.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Config\Shibboleth_Config.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Containers\Shibboleth_InstancedArray.h" />
@@ -300,7 +301,6 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Defines.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_DynamicLoaderFwd.h" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_EngineAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Error.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_FileWatcher.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_HashString.h" />
@@ -331,6 +331,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Attributes\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Attributes\Shibboleth_InstancedAttributes.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Config\Shibboleth_Config.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Log\Shibboleth_LogManager.cpp" />
@@ -339,7 +340,6 @@ CodeGenerator64od static_header</Command>
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Reflection\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_Broadcaster.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_EngineAttributesCommon.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_IManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_ISubsystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Core\Engine\src\Shibboleth_Image.cpp" />

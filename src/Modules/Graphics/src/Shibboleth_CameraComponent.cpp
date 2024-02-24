@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraComponent.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)

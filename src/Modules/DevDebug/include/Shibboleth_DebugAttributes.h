@@ -29,22 +29,20 @@ NS_SHIBBOLETH
 
 class DebugMenuClassAttribute final : public Refl::IAttribute
 {
-	Refl::IAttribute* clone(void) const override;
-
+public:
 	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuClassAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(DebugMenuClassAttribute);
 };
 
 class DebugMenuItemAttribute final : public Refl::IAttribute
 {
 public:
 	DebugMenuItemAttribute(const char8_t* path, bool is_imgui_update_function = false);
+	DebugMenuItemAttribute(const DebugMenuItemAttribute& attr) = default;
 
 	const U8String& getPath(void) const;
 	bool isImGuiUpdateFunction(void) const;
-
-	Refl::IAttribute* clone(void) const override;
 
 	void finish(Refl::IReflectionDefinition& ref_def) override;
 
@@ -52,7 +50,7 @@ private:
 	U8String _path;
 	bool _is_imgui_update_function;
 
-	SHIB_REFLECTION_CLASS_DECLARE(DebugMenuItemAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(DebugMenuItemAttribute);
 };
 
 NS_END

@@ -22,24 +22,18 @@ THE SOFTWARE.
 
 #include "Shibboleth_ISubsystem.h"
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ShouldCreateSubsystemAttribute, IAttribute)
+SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ShouldCreateSubsystemAttribute, Refl::IAttribute)
 
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ShouldCreateSubsystemAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(ShouldCreateSubsystemAttribute)
 
 
 ShouldCreateSubsystemAttribute::ShouldCreateSubsystemAttribute(ShouldCreateFunc should_create_func):
 	_should_create_func(should_create_func)
 {
 	GAFF_ASSERT(_should_create_func);
-}
-
-Refl::IAttribute* ShouldCreateSubsystemAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ShouldCreateSubsystemAttribute, allocator.getPoolIndex("Reflection"), allocator, _should_create_func);
 }
 
 bool ShouldCreateSubsystemAttribute::canInherit(void) const

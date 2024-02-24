@@ -30,17 +30,16 @@ class EditorWindowAttribute final : public Refl::IAttribute
 {
 public:
 	EditorWindowAttribute(const char8_t* path = nullptr, bool single_instance = true);
+	EditorWindowAttribute(const EditorWindowAttribute& attr) = default;
 
 	bool isSingleInstance(void) const { return _single_instance; }
 	const char8_t* getPath(void) const { return _path; }
-
-	Refl::IAttribute* clone(void) const override;
 
 private:
 	const char8_t* const _path = nullptr;
 	bool _single_instance = true;
 
-	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(EditorWindowAttribute);
 };
 
 NS_END

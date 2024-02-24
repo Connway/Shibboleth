@@ -61,12 +61,12 @@ public:
 		registerTypeBucket(Hash::template ClassHashable<T>::GetHash());
 	}
 
-	template <class T>
-	const TypeBucket* getAttributeBucket(Gaff::Hash64 module_name) const
-	{
-		static_assert(std::is_base_of<Refl::IAttribute, T>::value, "T is not an attribute.");
-		return getAttributeBucket(Hash::template ClassHashable<T>::GetHash(), module_name);
-	}
+//	template <class T>
+//	const TypeBucket* getAttributeBucket(Gaff::Hash64 module_name) const
+//	{
+//		static_assert(std::is_base_of<Refl::IAttribute, T>::value, "T is not an attribute.");
+//		return getAttributeBucket(Hash::template ClassHashable<T>::GetHash(), module_name);
+//	}
 
 	template <class T>
 	const TypeBucket* getAttributeBucket(void) const
@@ -125,7 +125,12 @@ public:
 	void registerTypeBucket(const Refl::IReflectionDefinition& ref_def);
 	void registerTypeBucket(Gaff::Hash64 name);
 
+	// $TODO: Add support for getting attribute buckets from a specific module.
+	//const TypeBucket* getAttributeBucket(const Refl::IReflectionDefinition& ref_def, Gaff::Hash64 module_name) const;
+	const TypeBucket* getAttributeBucket(const Refl::IReflectionDefinition& ref_def) const;
+	//const TypeBucket* getAttributeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	const TypeBucket* getAttributeBucket(Gaff::Hash64 name) const;
+	void registerAttributeBucket(const Refl::IReflectionDefinition& ref_def);
 	void registerAttributeBucket(Gaff::Hash64 attr_name);
 
 	TypeBucket getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
@@ -143,6 +148,7 @@ private:
 	TypeBucketMap _type_buckets{ ProxyAllocator("Reflection") };
 
 	VectorMap< HashString64<>, Vector<const Refl::IEnumReflectionDefinition*> > _module_enum_owners{ ProxyAllocator("Reflection") };
+	//VectorMap<HashString64<>, TypeBucketMap> _module_attribute_owners{ ProxyAllocator("Reflection") };
 	VectorMap<HashString64<>, TypeBucketMap> _module_owners{ ProxyAllocator("Reflection") };
 
 	void insertType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def);

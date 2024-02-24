@@ -693,3 +693,7 @@ private:
 };
 
 NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Refl::IReflectionDefinition);
+NS_END

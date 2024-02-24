@@ -31,8 +31,8 @@ NS_SHIBBOLETH
 class InstancedOptionalAttribute final : public Refl::IAttribute
 {
 public:
-	//
 	explicit InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix = nullptr, bool leave_empty_element = true);
+	InstancedOptionalAttribute(const InstancedOptionalAttribute& attr) = default;
 
 	const char8_t* getPrefix(void) const;
 	const char8_t* getSuffix(void) const;
@@ -40,14 +40,12 @@ public:
 
 	bool matches(const char8_t* name) const;
 
-	Refl::IAttribute* clone(void) const override;
-
 private:
 	const char8_t* const _prefix = nullptr;
 	const char8_t* const _suffix = nullptr;
 	bool _leave_empty_element = true;
 
-	SHIB_REFLECTION_CLASS_DECLARE(InstancedOptionalAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(InstancedOptionalAttribute);
 };
 
 NS_END

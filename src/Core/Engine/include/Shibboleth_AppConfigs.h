@@ -31,7 +31,6 @@ NS_SHIBBOLETH
 constexpr const char8_t* const k_config_app_working_dir = u8"app_working_dir";
 constexpr const char8_t* const k_config_app_log_dir = u8"app_log_dir";
 constexpr const char8_t* const k_config_app_editor_mode = u8"app_editor_mode";
-constexpr const char8_t* const k_config_app_hot_reload_modules = u8"app_hot_reload_modules";
 constexpr const char8_t* const k_config_app_read_file_threads = u8"app_read_file_threads";
 constexpr const char8_t* const k_config_app_file_system = u8"app_file_system";
 constexpr const char8_t* const k_config_app_no_load_modules = u8"app_no_load_modules";
@@ -43,6 +42,7 @@ constexpr const char8_t* const k_config_app_read_file_pool_name = u8"Read File";
 constexpr int32_t k_config_app_default_read_file_threads = 1;
 
 // Modules
+// $TODO: Convert these to proper config files.
 constexpr const char8_t* const k_config_module_unload_order = u8"module_unload_order";
 constexpr const char8_t* const k_config_module_load_order = u8"module_load_order";
 constexpr const char8_t* const k_config_module_directories = u8"module_directories";

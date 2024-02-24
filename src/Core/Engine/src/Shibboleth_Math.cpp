@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Math.h"
-#include "Shibboleth_EngineAttributesCommon.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
 namespace
 {

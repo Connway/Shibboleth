@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)

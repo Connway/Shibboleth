@@ -158,8 +158,6 @@ NS_END
 NS_HASHABLE
 	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeReader);
 	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeWriter);
-	GAFF_CLASS_HASHABLE(Refl::IReflectionDefinition);
-	GAFF_CLASS_HASHABLE(Refl::IAttribute);
 	GAFF_CLASS_HASHABLE(char8_t);
 NS_END
 

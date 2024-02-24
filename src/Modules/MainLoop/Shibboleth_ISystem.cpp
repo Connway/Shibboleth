@@ -21,12 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ISystem.h"
-#include "Shibboleth_EngineAttributesCommon.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ISystem)
 	.classAttrs(
-		Shibboleth::ClassBucketAttribute(),
-
 		// Do not allow scripts to create systems.
 		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
 	)

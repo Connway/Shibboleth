@@ -22,23 +22,17 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::CreatableAttribute, Refl::IAttribute)
+SHIB_SIMPLE_ATTRIBUTE_DEFINE(CreatableAttribute, Shibboleth)
+
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceExtensionAttribute, Refl::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceLoadPoolAttribute, Refl::IAttribute)
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ResourceSchemaAttribute, Refl::IAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(CreatableAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ResourceExtensionAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ResourceLoadPoolAttribute)
-SHIB_REFLECTION_CLASS_DEFINE(ResourceSchemaAttribute)
-
-Refl::IAttribute* CreatableAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(CreatableAttribute, allocator.getPoolIndex("Reflection"), allocator);
-}
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(ResourceExtensionAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(ResourceLoadPoolAttribute)
+SHIB_REFLECTION_ATTRIBUTE_DEFINE(ResourceSchemaAttribute)
 
 
 
@@ -50,12 +44,6 @@ ResourceExtensionAttribute::ResourceExtensionAttribute(const char8_t* extension)
 const HashStringView32<>& ResourceExtensionAttribute::getExtension(void) const
 {
 	return _extension;
-}
-
-Refl::IAttribute* ResourceExtensionAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ResourceExtensionAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
 }
 
 
@@ -70,12 +58,6 @@ Gaff::Hash32 ResourceLoadPoolAttribute::getPool(void) const
 	return _pool;
 }
 
-Refl::IAttribute* ResourceLoadPoolAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ResourceLoadPoolAttribute, allocator.getPoolIndex("Reflection"), allocator, _pool);
-}
-
 
 
 ResourceSchemaAttribute::ResourceSchemaAttribute(const char8_t* schema):
@@ -86,12 +68,6 @@ ResourceSchemaAttribute::ResourceSchemaAttribute(const char8_t* schema):
 const char8_t* ResourceSchemaAttribute::getSchema(void) const
 {
 	return _schema;
-}
-
-Refl::IAttribute* ResourceSchemaAttribute::clone(void) const
-{
-	IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(ResourceSchemaAttribute, allocator.getPoolIndex("Reflection"), allocator, _schema);
 }
 
 NS_END

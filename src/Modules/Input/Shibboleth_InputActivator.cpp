@@ -21,11 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InputActivator.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputActivator)
-	.BASE(Refl::IReflectionObject)
-
 	.classAttrs(
 		Shibboleth::ClassBucketAttribute()
 	)

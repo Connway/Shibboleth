@@ -31,8 +31,6 @@ NS_SHIBBOLETH
 class ReadOnlyAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
-
 	template <class T, class Var>
 	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setReadOnly(true); }
 
@@ -45,7 +43,7 @@ public:
 	template <class T, class Var, size_t size>
 	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setReadOnly(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ReadOnlyAttribute);
 };
 
 
@@ -53,8 +51,6 @@ public:
 class NoSerializeAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
-
 	template <class T, class Var>
 	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setNoSerialize(true); }
 
@@ -67,7 +63,7 @@ public:
 	template <class T, class Var, size_t size>
 	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setNoSerialize(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE(NoSerializeAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(NoSerializeAttribute);
 };
 
 
@@ -75,8 +71,6 @@ public:
 class OptionalAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
-
 	template <class T, class Var>
 	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setOptional(true); }
 
@@ -89,7 +83,7 @@ public:
 	template <class T, class Var, size_t size>
 	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setOptional(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE(OptionalAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(OptionalAttribute);
 };
 
 
@@ -97,9 +91,7 @@ public:
 class UniqueAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
-
-	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(UniqueAttribute);
 };
 
 
@@ -108,19 +100,18 @@ class RangeAttribute final : public Refl::IAttribute
 {
 public:
 	RangeAttribute(double min = std::numeric_limits<double>::min(), double max = std::numeric_limits<double>::max(), double step = 1.0);
+	RangeAttribute(const RangeAttribute& attr) = default;
 
 	double getStep(void) const;
 	double getMin(void) const;
 	double getMax(void) const;
-
-	Refl::IAttribute* clone(void) const override;
 
 private:
 	double _step;
 	double _min;
 	double _max;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(RangeAttribute);
 };
 
 
@@ -151,7 +142,7 @@ public:
 	{
 	}
 
-	Refl::IAttribute* clone(void) const override;
+	ScriptFlagsAttribute(const ScriptFlagsAttribute& attr) = default;
 
 	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
 	bool isReferenceOnly(void) const { return _flags.testAll(Flag::ReferenceOnly); }
@@ -162,7 +153,7 @@ public:
 private:
 	Gaff::Flags<Flag> _flags;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ScriptFlagsAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ScriptFlagsAttribute);
 };
 
 
@@ -170,8 +161,6 @@ private:
 class NoCopyAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
-
 	template <class T, class Var>
 	void apply(Refl::IReflectionVar& ref_var, Var T::*) { ref_var.setNoCopy(true); }
 
@@ -184,7 +173,7 @@ public:
 	template <class T, class Var, size_t size>
 	void apply(Refl::IReflectionVar& ref_var, Var (T::* /*arr*/)[size]) { ref_var.setNoCopy(true); }
 
-	SHIB_REFLECTION_CLASS_DECLARE(NoCopyAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(NoCopyAttribute);
 };
 
 
@@ -192,12 +181,23 @@ public:
 class ClassBucketAttribute final : public Refl::IAttribute
 {
 public:
-	Refl::IAttribute* clone(void) const override;
 	bool canInherit(void) const override;
 
 	void finish(Refl::IReflectionDefinition& ref_def) override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ClassBucketAttribute);
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ClassBucketAttribute);
+};
+
+
+
+class AttributeBucketAttribute final : public Refl::IAttribute
+{
+public:
+	bool canInherit(void) const override;
+
+	void finish(Refl::IReflectionDefinition& ref_def) override;
+
+	SHIB_REFLECTION_ATTRIBUTE_DECLARE(AttributeBucketAttribute);
 };
 
 
@@ -207,12 +207,6 @@ public:
 ////class GlobalMessageAttribute final : public Refl::IAttribute
 ////{
 ////public:
-////	Refl::IAttribute* clone(void) const override
-////	{
-////		IAllocator& allocator = GetAllocator();
-////		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
-////	}
-////
 ////	void instantiated(void* object, const Refl::IReflectionDefinition& ref_def) override
 ////	{
 ////		// $TODO: Implement
@@ -268,6 +262,7 @@ SHIB_REFLECTION_DECLARE(Shibboleth::RangeAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ScriptFlagsAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::NoCopyAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ClassBucketAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::AttributeBucketAttribute)
 
 //SHIB_TEMPLATE_REFLECTION_DECLARE(Shibboleth::GlobalMessageAttribute, T, Msg)
 //

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_MaterialComponent.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_ECSAttributes.h>
 #include <Shibboleth_ECSManager.h>
 

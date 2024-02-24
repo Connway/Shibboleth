@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_App.h"
-#include "Shibboleth_EngineAttributesCommon.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_SerializeReader.h"
 #include "Shibboleth_AppConfigs.h"
@@ -163,7 +163,7 @@ void App::destroy(void)
 				value.freeString(module_name);
 
 				// Find all the managers for this module and free them.
-				const auto* const manager_refls = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), module_name_hash);
+				const auto* const manager_refls = _reflection_mgr.getTypeBucket<IManager>(module_name_hash);
 
 				if (manager_refls) {
 					for (const Refl::IReflectionDefinition* ref_def : *manager_refls) {
@@ -325,8 +325,6 @@ bool App::initInternal(void)
 
 	_reflection_mgr.registerTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
-	_reflection_mgr.registerTypeBucket<IManager>();
-	_reflection_mgr.registerAttributeBucket<GlobalConfigAttribute>();
 
 	// Init engine reflection.
 	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
@@ -596,7 +594,7 @@ bool App::loadModules(void)
 
 				const char8_t* const module_name = module_row.getString();
 				const Vector<const Refl::IReflectionDefinition*>* const manager_bucket =
-					_reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), Gaff::FNV1aHash64String(module_name));
+					_reflection_mgr.getTypeBucket<IManager>(Gaff::FNV1aHash64String(module_name));
 
 				if (manager_bucket) {
 					if (!createManagersInternal(*manager_bucket)) {
@@ -609,7 +607,7 @@ bool App::loadModules(void)
 		}
 
 		// Create the rest of the managers.
-		const Vector<const Refl::IReflectionDefinition*>* const manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash());
+		const Vector<const Refl::IReflectionDefinition*>* const manager_bucket = _reflection_mgr.getTypeBucket<IManager>();
 
 		if (manager_bucket) {
 			if (!createManagersInternal(*manager_bucket)) {
@@ -645,7 +643,7 @@ bool App::loadModules(void)
 			}
 
 			const char8_t* const module_name = module_row.getString();
-			const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Refl::Reflection<IManager>::GetNameHash(), Gaff::FNV1aHash64String(module_name));
+			const Vector<const Refl::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket<IManager>(Gaff::FNV1aHash64String(module_name));
 
 			if (manager_bucket) {
 				for (const Refl::IReflectionDefinition* ref_def : *manager_bucket) {

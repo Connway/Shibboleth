@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_GameTime.h"
-#include <Shibboleth_EngineAttributesCommon.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Math.h>
