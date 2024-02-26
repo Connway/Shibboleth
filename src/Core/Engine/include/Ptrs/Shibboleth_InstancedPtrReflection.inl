@@ -87,7 +87,7 @@ void VarInstancedPtr<T, VarType>::setDataMove(void* object, void* data)
 template <class T, class VarType>
 bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
-	GAFF_ASSERT(reader.isNull() || reader.isObject());
+	GAFF_ASSERT(reader.isNull() || reader.isObject() || reader.isString());
 
 	if (reader.isNull()) {
 		return true;
@@ -95,7 +95,10 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 
 	const char8_t* class_name = nullptr;
 
-	{
+	if (reader.isString()) {
+		class_name = reader.readString();
+
+	} else {
 		const auto guard = reader.enterElementGuard(u8"class");
 		GAFF_ASSERT(reader.isNull() || reader.isString());
 
@@ -115,12 +118,14 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 			InstancedPtr<VarType>* const var = reinterpret_cast<InstancedPtr<VarType>*>(object);
 			var->reset(ref_def->CREATET(VarType, var->getAllocator()));
 
-			const auto guard = reader.enterElementGuard(u8"data");
-			GAFF_ASSERT(reader.isNull() || reader.isObject());
+			if (reader.isObject()) {
+				const auto guard = reader.enterElementGuard(u8"data");
+				GAFF_ASSERT(reader.isNull() || reader.isObject());
 
-			if (!reader.isNull() && !ref_def->load(reader, ref_def->getBasePointer(var->get()))) {
-				reader.freeString(class_name);
-				return false;
+				if (!reader.isNull() && !ref_def->load(reader, ref_def->getBasePointer(var->get()))) {
+					reader.freeString(class_name);
+					return false;
+				}
 			}
 
 		} else if (!checkIsOptional(class_name)) {
@@ -149,6 +154,7 @@ void VarInstancedPtr<T, VarType>::save(ISerializeWriter& writer, const void* obj
 	const Refl::IReflectionDefinition* const ref_def = var->getReflectionDefinition();
 
 	writer.writeString(u8"class", ref_def->getReflectionInstance().getName());
+	// $TODO: If no data has been overridden from default, just write the class name instead.
 	writer.writeKey(u8"data");
 
 	ref_def->save(writer, ref_def->getBasePointer(var->get()));

@@ -182,6 +182,8 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 		const auto element_guard = reader.enterElementGuard(i);
 		const char8_t* class_name = nullptr;
 
+		GAFF_ASSERT(reader.isNull() || reader.isObject() || reader.isString());
+
 		if (reader.isNull()) {
 			if (!optional_attr || optional_attr->shouldLeaveEmptyElement()) {
 				var->pushEmpty();
@@ -190,18 +192,17 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 			continue;
 		}
 
+		if (reader.isString()) {
+			class_name = reader.readString();
+
+		} else {
 		{
 			const auto guard = reader.enterElementGuard(u8"class");
 			GAFF_ASSERT(reader.isNull() || reader.isString());
 
-			if (reader.isNull()) {
-				// $TODO: Log error.
-				var->pushEmpty();
-
-				continue;
+			if (reader.isString()) {
+				class_name = reader.readString();
 			}
-
-			class_name = reader.readString();
 		}
 
 		if (class_name && class_name[0]) {
@@ -210,11 +211,13 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 			if (ref_def) {
 				VarType& instance = var->push(*ref_def);
 
-				const auto guard = reader.enterElementGuard(u8"data");
-				GAFF_ASSERT(reader.isNull() || reader.isObject());
+				if (reader.isObject()) {
+					const auto guard = reader.enterElementGuard(u8"data");
+					GAFF_ASSERT(reader.isNull() || reader.isObject());
 
-				if (!reader.isNull()) {
-					success = ref_def->load(reader, ref_def->getBasePointer(&instance)) && success;
+					if (!reader.isNull()) {
+						success = ref_def->load(reader, ref_def->getBasePointer(&instance)) && success;
+					}
 				}
 
 			} else {
@@ -233,9 +236,9 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 		reader.freeString(class_name);
 	}
 
-	_cached_element_vars.resize(static_cast<size_t>(array_size));
-	_elements.resize(static_cast<size_t>(array_size));
-	regenerateSubVars(object, 0, array_size);
+	_cached_element_vars.resize(static_cast<size_t>(var->size()));
+	_elements.resize(static_cast<size_t>(var->size()));
+	regenerateSubVars(object, 0, var->size());
 
 	return true;
 }
@@ -263,6 +266,7 @@ void VarInstancedArray<T, VarType>::save(ISerializeWriter& writer, const void* o
 			writer.startObject(2);
 
 			writer.writeString(u8"class", ref_def->getReflectionInstance().getName());
+			// $TODO: If no data has been overridden from default, just write the class name instead.
 			writer.writeKey(u8"data");
 
 			ref_def->save(writer, ref_def->getBasePointer(element));
