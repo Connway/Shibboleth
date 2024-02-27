@@ -196,7 +196,6 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 			class_name = reader.readString();
 
 		} else {
-		{
 			const auto guard = reader.enterElementGuard(u8"class");
 			GAFF_ASSERT(reader.isNull() || reader.isString());
 
