@@ -58,6 +58,30 @@ public:
 		return static_cast<T&>(getRenderStage(Refl::Reflection<T>::GetReflectionDefinition()));
 	}
 
+	template <class T>
+	Vector<const T*> getRenderStages(void) const
+	{
+		return const_cast<RenderPipeline*>(this)->template getRenderStages<T>();
+	}
+
+	template <class T>
+	Vector<T*> getRenderStages(void)
+	{
+		const Vector<IRenderStage*> stages = getRenderStages(Refl::Reflection<T>::GetReflectionDefinition());
+		Vector<T*> out(stages.get_allocator());
+
+		out.reserve(stages.size());
+
+		for (IRenderStage* stage : stages) {
+			out.emplace_back(static_cast<T*>(stage));
+		}
+
+		return out;
+	}
+
+	Vector<const IRenderStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def) const;
+	Vector<IRenderStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def);
+
 	const IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const;
 	IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def);
 	const IRenderStage& getRenderStage(const Refl::IReflectionDefinition& ref_def) const;
