@@ -107,14 +107,19 @@ template <class T>
 template <class Base>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 {
-	const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
-	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
+	if constexpr (Reflection<Base>::HasReflection) {
+		const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
+		const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 
-	_hash = Gaff::FNV1aHash64T(Reflection<Base>::GetNameHash(), _hash);
-	_hash = Gaff::FNV1aHash64T(offset, _hash);
-	_hash = Gaff::FNV1aHash64T(version, _hash);
+		_hash = Gaff::FNV1aHash64T(Reflection<Base>::GetNameHash(), _hash);
+		_hash = Gaff::FNV1aHash64T(offset, _hash);
+		_hash = Gaff::FNV1aHash64T(version, _hash);
 
-	return *this;
+		return *this;
+
+	} else {
+		return base<Base>(Hash::ClassHashable<Base>::GetName().data.data());
+	}
 }
 
 template <class T>

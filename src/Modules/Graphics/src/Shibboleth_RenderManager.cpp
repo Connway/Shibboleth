@@ -812,4 +812,14 @@ int32_t RenderManager::getRenderCacheIndex(void) const
 	return _render_cache_index;
 }
 
+const RenderPipeline& RenderManager::getRenderPipeline(void) const
+{
+	return _render_pipeline;
+}
+
+RenderPipeline& RenderManager::getRenderPipeline(void)
+{
+	return _render_pipeline;
+}
+
 NS_END

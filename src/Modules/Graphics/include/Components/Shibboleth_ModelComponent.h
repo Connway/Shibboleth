@@ -20,10 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LocalPlayerSubsystem.h"
-#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LocalPlayerSubsystem)
-	.classAttrs(Shibboleth::ClassBucketAttribute())
-	.template base<Shibboleth::ISubsystem>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::LocalPlayerSubsystem)
+#include "Pipelines/Shibboleth_IModelStageRegistration.h"
+#include <Shibboleth_EntitySceneComponent.h>
+
+NS_SHIBBOLETH
+
+class ModelComponent final : public EntitySceneComponent
+{
+public:
+	bool init(void) override;
+
+private:
+	ModelData _model_data;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ModelComponent);
+};
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelComponent)

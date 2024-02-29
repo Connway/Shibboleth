@@ -26,13 +26,10 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
-
 	.template ctor<>()
 
 	.var("vertical_fov", &Shibboleth::CameraComponent::_vertical_fov, Shibboleth::OptionalAttribute())
 	.var("z_planes", &Shibboleth::CameraComponent::_z_planes, Shibboleth::OptionalAttribute())
-
-	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 
 

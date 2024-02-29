@@ -20,10 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LocalPlayerSubsystem.h"
-#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#include "Components/Shibboleth_ModelComponent.h"
+#include "Pipelines/Shibboleth_IModelStageRegistration.h"
+#include "Shibboleth_RenderManager.h"
+#include <Ptrs/Shibboleth_ManagerRef.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_Texture.h>
+#include <Gleam_Mesh.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LocalPlayerSubsystem)
-	.classAttrs(Shibboleth::ClassBucketAttribute())
-	.template base<Shibboleth::ISubsystem>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::LocalPlayerSubsystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
+	.template base<Shibboleth::EntitySceneComponent>()
+	.template ctor<>()
+
+	//.var("data", &Shibboleth::ModelComponent::_model_data)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
+
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(ModelComponent)
+
+bool ModelComponent::init(void)
+{
+	ManagerRef<RenderManager> render_mgr;
+
+	const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
+
+	for (IModelStageRegistration* registrar : model_stages) {
+		registrar->registerModel(_model_data);
+	}
+
+	// $TODO: Register with render stages.
+	return true;
+}
+
+NS_END

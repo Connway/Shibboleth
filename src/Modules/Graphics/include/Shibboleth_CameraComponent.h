@@ -30,8 +30,6 @@ NS_SHIBBOLETH
 class CameraComponent final : public EntitySceneComponent
 {
 public:
-	CameraComponent(void) = default;
-
 	void setVerticalFOV(float focal_length, float sensor_size);
 	void setVerticalFOVDegrees(float fov);
 	void setVerticalFOVRadians(float fov);

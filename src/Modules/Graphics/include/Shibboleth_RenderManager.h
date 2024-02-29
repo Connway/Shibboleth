@@ -211,6 +211,9 @@ public:
 
 	int32_t getRenderCacheIndex(void) const;
 
+	const RenderPipeline& getRenderPipeline(void) const;
+	RenderPipeline& getRenderPipeline(void);
+
 private:
 	struct RenderOutput final
 	{

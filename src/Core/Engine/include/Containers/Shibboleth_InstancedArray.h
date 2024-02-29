@@ -294,12 +294,12 @@ public:
 
 	ConstIterator begin(void) const
 	{
-		return static_cast<InstancedArray<T>*>(this)->begin();
+		return const_cast<InstancedArray<T>*>(this)->begin();
 	}
 
 	ConstIterator end(void) const
 	{
-		return static_cast<InstancedArray<T>*>(this)->end();
+		return const_cast<InstancedArray<T>*>(this)->end();
 	}
 
 	Iterator begin(void)

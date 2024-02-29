@@ -30,7 +30,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)
 		Shibboleth::AttributeBucketAttribute()
 	)
 
-	.BASE(Refl::IAttribute)
+	.template base<Refl::IAttribute>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GlobalConfigAttribute)
 
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::InitFromConfigAttribute, Refl::IAttribute)

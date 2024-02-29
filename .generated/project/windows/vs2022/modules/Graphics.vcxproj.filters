@@ -4,6 +4,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Components">
+      <UniqueIdentifier>{FE2CB57C-EA10-76D2-5371-70253F746054}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\Pipelines">
       <UniqueIdentifier>{011C00C5-6D32-FE5A-B6A9-897C22FFCEE2}</UniqueIdentifier>
     </Filter>
@@ -13,6 +16,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Components">
+      <UniqueIdentifier>{221ADC4D-0EE8-CF53-F77B-407AE3E8ABB8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Pipelines">
       <UniqueIdentifier>{A5F4AB20-11B5-2757-DAEF-70D4466F6C33}</UniqueIdentifier>
     </Filter>
@@ -21,10 +27,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Components\Shibboleth_ModelComponent.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h">
+      <Filter>include\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IModelStageRegistration.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderStage.h">
@@ -98,6 +110,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Components\Shibboleth_ModelComponent.cpp">
+      <Filter>src\Components</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>

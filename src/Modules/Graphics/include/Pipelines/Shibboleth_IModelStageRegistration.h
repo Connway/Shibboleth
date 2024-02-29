@@ -22,45 +22,55 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Reflection/Shibboleth_Reflection.h"
+#include "Resources/Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_MaterialResource.h"
+#include "Resources/Shibboleth_TextureResource.h"
+#include "Resources/Shibboleth_ModelResource.h"
 
 NS_SHIBBOLETH
 
-class SubsystemCollectorBase;
-
-class ISubsystem : public Refl::IReflectionObject
+struct TextureData final
 {
-public:
-	virtual ~ISubsystem(void) {}
+	using TextureMap = VectorMap< HashString32<>, ResourcePtr<TextureResource> >;
 
-	virtual void init(const SubsystemCollectorBase& /*collector*/) {}
-	virtual void destroy(const SubsystemCollectorBase& /*collector*/) {}
+	TextureMap textures_vertex;
+	TextureMap textures_pixel;
+	TextureMap textures_domain;
+	TextureMap textures_geometry;
+	TextureMap textures_hull;
 };
 
+struct SamplerData final
+{
+	using SamplerMap = VectorMap< HashString32<>, ResourcePtr<SamplerStateResource> >;
 
+	SamplerMap samplers_vertex;
+	SamplerMap samplers_pixel;
+	SamplerMap samplers_domain;
+	SamplerMap samplers_geometry;
+	SamplerMap samplers_hull;
+};
 
-class ShouldCreateSubsystemAttribute final : public Refl::IAttribute
+struct ModelData final
+{
+	ResourcePtr<ModelResource> model;
+
+	// $TODO: Add support for automatically sizing these according to the number of meshes in the model resource.
+	Vector< ResourcePtr<MaterialResource> > materials{ GRAPHICS_ALLOCATOR };
+	Vector<TextureData> texture_data{ GRAPHICS_ALLOCATOR };
+	Vector<SamplerData> sampler_data{ GRAPHICS_ALLOCATOR };
+};
+
+class IModelStageRegistration
 {
 public:
-	using ShouldCreateFunc = bool (*)(void);
+	virtual ~IModelStageRegistration(void) {}
 
-	ShouldCreateSubsystemAttribute(const ShouldCreateSubsystemAttribute& attr) = default;
-	ShouldCreateSubsystemAttribute(ShouldCreateFunc should_create_func);
-
-	bool canInherit(void) const override;
-
-	bool shouldCreate(void) const;
-
-private:
-	ShouldCreateFunc _should_create_func = nullptr;
-
-	SHIB_REFLECTION_ATTRIBUTE_DECLARE(ShouldCreateSubsystemAttribute);
+	virtual void registerModel(const ModelData& data) = 0;
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ShouldCreateSubsystemAttribute)
-
 NS_HASHABLE
-	GAFF_CLASS_HASHABLE(Shibboleth::ISubsystem);
+	GAFF_CLASS_HASHABLE(Shibboleth::IModelStageRegistration);
 NS_END

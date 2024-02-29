@@ -41,8 +41,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
-	.BASE(Refl::IReflectionObject)
-
 	.classAttrs(
 		Shibboleth::ClassBucketAttribute()
 	)

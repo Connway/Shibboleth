@@ -24,6 +24,6 @@ THE SOFTWARE.
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PlayerSubsystem)
-	.BASE(Shibboleth::ISubsystem)
 	.classAttrs(Shibboleth::ClassBucketAttribute())
+	.template base<Shibboleth::ISubsystem>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::PlayerSubsystem)

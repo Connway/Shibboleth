@@ -29,8 +29,8 @@ THE SOFTWARE.
 // 		Shibboleth::ECSClassAttribute(nullptr, u8"Physics")
 // 	)
 
-// 	.base< Shibboleth::ECSComponentBaseBoth<Shibboleth::RigidBody, Shibboleth::RigidBody&> >()
-// 	.ctor<>()
+// 	.template base< Shibboleth::ECSComponentBaseBoth<Shibboleth::RigidBody, Shibboleth::RigidBody&> >()
+// 	.template ctor<>()
 
 // 	.staticFunc("Constructor", Shibboleth::RigidBody::Constructor)
 // 	.staticFunc("Destructor", Shibboleth::RigidBody::Destructor)

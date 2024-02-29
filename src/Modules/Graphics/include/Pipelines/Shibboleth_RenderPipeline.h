@@ -61,21 +61,18 @@ public:
 	template <class T>
 	Vector<const T*> getRenderStages(void) const
 	{
-		return const_cast<RenderPipeline*>(this)->template getRenderStages<T>();
+		Vector<const T*> out;
+
+		getRenderStagesInternal<T>(out);
+		return out;
 	}
 
 	template <class T>
 	Vector<T*> getRenderStages(void)
 	{
-		const Vector<IRenderStage*> stages = getRenderStages(Refl::Reflection<T>::GetReflectionDefinition());
-		Vector<T*> out(stages.get_allocator());
+		Vector<T*> out;
 
-		out.reserve(stages.size());
-
-		for (IRenderStage* stage : stages) {
-			out.emplace_back(static_cast<T*>(stage));
-		}
-
+		getRenderStagesInternal<T>(out);
 		return out;
 	}
 
@@ -91,6 +88,20 @@ public:
 
 private:
 	InstancedArray<IRenderStage> _stages{ GRAPHICS_ALLOCATOR };
+
+	template <class T, class U>
+	void getRenderStagesInternal(Vector<U*>& out)
+	{
+		for (IRenderStage& stage : _stages) {
+			const Refl::IReflectionDefinition& ref_def = stage.getReflectionDefinition();
+
+			T* const interface_ptr = ref_def.template getInterface<T>(stage.getBasePointer());
+
+			if (interface_ptr) {
+				out.emplace_back(interface_ptr);
+			}
+		}
+	}
 
 	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(RenderPipeline);
 };

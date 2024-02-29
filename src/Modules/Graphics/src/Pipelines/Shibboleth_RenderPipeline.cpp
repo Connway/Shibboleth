@@ -52,7 +52,17 @@ Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 
 Vector<const IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def) const
 {
-	return const_cast<RenderPipeline*>(this)->getRenderStages();
+	Vector<const IRenderStage*> out;
+
+	for (const IRenderStage& stage : _stages) {
+		const Refl::IReflectionDefinition& stage_ref_def = stage.getReflectionDefinition();
+
+		if (&stage_ref_def == &ref_def || stage_ref_def.hasInterface(ref_def)) {
+			out.emplace_back(&stage);
+		}
+	}
+
+	return out;
 }
 
 Vector<IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def)

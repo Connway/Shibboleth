@@ -1013,96 +1013,42 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 {
 	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
 
-	// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
-	if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
-		base<Base>(Reflection<Base>::GetName());
-	}
+	if constexpr (Reflection<Base>::HasReflection) {
+		// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
+		if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
+			base<Base>(Reflection<Base>::GetName());
+		}
 
-	// Add vars, funcs, and static funcs and attrs from base class.
-	if (Reflection<Base>::GetInstance().isDefined()) {
-		const ReflectionDefinition<Base>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
+		// Add vars, funcs, and static funcs and attrs from base class.
+		if (Reflection<Base>::GetInstance().isDefined()) {
+			const ReflectionDefinition<Base>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
 
-		// For calling base class functions.
-		_base_classes.emplace(
-			Reflection<Base>::GetNameHash(),
-			&base_ref_def
-		);
-
-		// Base class vars
-		for (auto& it : base_ref_def._vars) {
-			GAFF_ASSERT(_vars.find(it.first) == _vars.end());
-
-			eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-				it.first,
-				IVarPtr(SHIB_ALLOCT(BaseVarPtr<Base>, _allocator, it.second.get()))
+			// For calling base class functions.
+			_base_classes.emplace(
+				Reflection<Base>::GetNameHash(),
+				&base_ref_def
 			);
 
-			pair.second->setNoSerialize(!it.second->canSerialize());
-			pair.second->setReadOnly(it.second->isReadOnly());
+			// Base class vars
+			for (auto& it : base_ref_def._vars) {
+				GAFF_ASSERT(_vars.find(it.first) == _vars.end());
 
-			_vars.insert(std::move(pair));
-
-			// Base class var attrs
-			const auto attr_it = base_ref_def._var_attrs.find(pair.first.getHash());
-
-			// Copy attributes
-			if (attr_it != base_ref_def._var_attrs.end()) {
-				auto& attrs = _var_attrs[pair.first.getHash()];
-				attrs.set_allocator(_allocator);
-
-				for (const IAttributePtr& attr : attr_it->second) {
-					if (attr->canInherit()) {
-						attrs.emplace_back(attr->clone());
-					}
-				}
-			}
-		}
-
-		// Base class funcs
-		for (auto& it : base_ref_def._funcs) {
-			FuncData& func_data = _funcs[it.first];
-
-			for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-				if (!it.second.func[i]) {
-					break;
-				}
-
-				int32_t index = -1;
-
-				for (int32_t j = 0; j < FuncData::k_num_overloads; ++j) {
-					if (!func_data.func[j]) {
-						index = j;
-						break;
-					}
-
-					if (it.second.hash[i] == func_data.hash[j]) {
-						break;
-					}
-
-					--index;
-				}
-
-				if (index < 0) {
-					GAFF_ASSERT_MSG(index > -(FuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", FuncData::k_num_overloads);
-					continue;
-				}
-
-				ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
-					ReflectionBaseFunction,
-					_allocator,
-					it.second.func[i]->getBaseRefDef(),
-					it.second.func[i].get()
+				eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
+					it.first,
+					IVarPtr(SHIB_ALLOCT(BaseVarPtr < Base > , _allocator, it.second.get()))
 				);
 
-				func_data.hash[index] = it.second.hash[i];
-				func_data.func[index].reset(ref_func);
+				pair.second->setNoSerialize(!it.second->canSerialize());
+				pair.second->setReadOnly(it.second->isReadOnly());
 
-				// Copy attributes.
-				const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
-				const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
+				_vars.insert(std::move(pair));
 
-				if (attr_it != base_ref_def._func_attrs.end()) {
-					auto& attrs = _func_attrs[attr_hash];
+				// Base class var attrs
+				const auto attr_it = base_ref_def._var_attrs.find(pair.first.getHash());
+
+				// Copy attributes
+				if (attr_it != base_ref_def._var_attrs.end()) {
+					auto& attrs = _var_attrs[pair.first.getHash()];
 					attrs.set_allocator(_allocator);
 
 					for (const IAttributePtr& attr : attr_it->second) {
@@ -1112,71 +1058,130 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 					}
 				}
 			}
-		}
 
-		// Base class static funcs
-		for (auto& it : base_ref_def._static_funcs) {
-			StaticFuncData& static_func_data = _static_funcs[it.first];
+			// Base class funcs
+			for (auto& it : base_ref_def._funcs) {
+				FuncData& func_data = _funcs[it.first];
 
-			for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
-				if (!it.second.func[i]) {
-					break;
-				}
-
-				int32_t index = -1;
-
-				for (int32_t j = 0; j < StaticFuncData::k_num_overloads; ++j) {
-					if (!static_func_data.func[j]) {
-						index = j;
+				for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
+					if (!it.second.func[i]) {
 						break;
 					}
 
-					if (it.second.hash[i] == static_func_data.hash[j]) {
-						break;
+					int32_t index = -1;
+
+					for (int32_t j = 0; j < FuncData::k_num_overloads; ++j) {
+						if (!func_data.func[j]) {
+							index = j;
+							break;
+						}
+
+						if (it.second.hash[i] == func_data.hash[j]) {
+							break;
+						}
+
+						--index;
 					}
-				}
 
-				if (index < 0) {
-					GAFF_ASSERT_MSG(index > -(StaticFuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::k_num_overloads);
-					continue;
-				}
+					if (index < 0) {
+						GAFF_ASSERT_MSG(index > -(FuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", FuncData::k_num_overloads);
+						continue;
+					}
 
-				static_func_data.hash[index] = it.second.hash[i];
-				static_func_data.func[index].reset(it.second.func[i]->clone(_allocator));
+					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
+						ReflectionBaseFunction,
+						_allocator,
+						it.second.func[i]->getBaseRefDef(),
+						it.second.func[i].get()
+					);
 
-				// Copy attributes.
-				const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(static_func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
-				const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
+					func_data.hash[index] = it.second.hash[i];
+					func_data.func[index].reset(ref_func);
 
-				if (attr_it != base_ref_def._static_func_attrs.end()) {
-					auto& attrs = _static_func_attrs[attr_hash];
-					attrs.set_allocator(_allocator);
+					// Copy attributes.
+					const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
+					const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
 
-					for (const IAttributePtr& attr : attr_it->second) {
-						if (attr->canInherit()) {
-							attrs.emplace_back(attr->clone());
+					if (attr_it != base_ref_def._func_attrs.end()) {
+						auto& attrs = _func_attrs[attr_hash];
+						attrs.set_allocator(_allocator);
+
+						for (const IAttributePtr& attr : attr_it->second) {
+							if (attr->canInherit()) {
+								attrs.emplace_back(attr->clone());
+							}
 						}
 					}
 				}
 			}
-		}
 
-		// Base class class attrs
-		for (const IAttributePtr& attr : base_ref_def._class_attrs) {
-			if (attr->canInherit()) {
-				_class_attrs.emplace_back(attr->clone());
+			// Base class static funcs
+			for (auto& it : base_ref_def._static_funcs) {
+				StaticFuncData& static_func_data = _static_funcs[it.first];
+
+				for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
+					if (!it.second.func[i]) {
+						break;
+					}
+
+					int32_t index = -1;
+
+					for (int32_t j = 0; j < StaticFuncData::k_num_overloads; ++j) {
+						if (!static_func_data.func[j]) {
+							index = j;
+							break;
+						}
+
+						if (it.second.hash[i] == static_func_data.hash[j]) {
+							break;
+						}
+					}
+
+					if (index < 0) {
+						GAFF_ASSERT_MSG(index > -(StaticFuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::k_num_overloads);
+						continue;
+					}
+
+					static_func_data.hash[index] = it.second.hash[i];
+					static_func_data.func[index].reset(it.second.func[i]->clone(_allocator));
+
+					// Copy attributes.
+					const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(static_func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
+					const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
+
+					if (attr_it != base_ref_def._static_func_attrs.end()) {
+						auto& attrs = _static_func_attrs[attr_hash];
+						attrs.set_allocator(_allocator);
+
+						for (const IAttributePtr& attr : attr_it->second) {
+							if (attr->canInherit()) {
+								attrs.emplace_back(attr->clone());
+							}
+						}
+					}
+				}
 			}
+
+			// Base class class attrs
+			for (const IAttributePtr& attr : base_ref_def._class_attrs) {
+				if (attr->canInherit()) {
+					_class_attrs.emplace_back(attr->clone());
+				}
+			}
+
+			// Register for callback if base class hasn't been defined yet.
+		} else {
+			++_dependents_remaining;
+
+			eastl::function<void (void)> cb(&RegisterBaseVariables < Base >);
+			Reflection<Base>::GetInstance().registerOnDefinedCallback(std::move(cb));
 		}
 
-	// Register for callback if base class hasn't been defined yet.
+		return *this;
+
 	} else {
-		++_dependents_remaining;
-
-		eastl::function<void (void)> cb(&RegisterBaseVariables<Base>);
-		Reflection<Base>::GetInstance().registerOnDefinedCallback(std::move(cb));
+		return base<Base>(Hash::ClassHashable<Base>::GetName().data.data());
 	}
-
-	return *this;
 }
 
 template <class T>
@@ -1834,7 +1839,7 @@ void ReflectionDefinition<T>::RegisterBaseVariables(void)
 	--ref_def._dependents_remaining;
 	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
 
-	ref_def.base<Base>();
+	ref_def.template base<Base>();
 
 	if (ref_def._dependents_remaining == 0) {
 		ref_def.finish();
