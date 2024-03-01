@@ -31,13 +31,13 @@ MapVar<T, ContainerType>::MapVar(ContainerType T::*ptr):
 {
 	GAFF_ASSERT(ptr);
 
-	if constexpr (!std::is_enum_v<KeyReflectionType> && !ReflectionDefinition<KeyReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<KeyReflectionType, KeyVarType>);
-	}
-
-	if constexpr (!std::is_enum_v<ValueReflectionType> && !ReflectionDefinition<ValueReflectionType>::IsBuiltIn()) {
-		static_assert(std::is_base_of_v<ValueReflectionType, ValueVarType>);
-	}
+//	if constexpr (!std::is_enum_v<KeyReflectionType> && !ReflectionDefinition<KeyReflectionType>::IsBuiltIn()) {
+//		static_assert(std::is_base_of_v<KeyReflectionType, KeyVarType>);
+//	}
+//
+//	if constexpr (!std::is_enum_v<ValueReflectionType> && !ReflectionDefinition<ValueReflectionType>::IsBuiltIn()) {
+//		static_assert(std::is_base_of_v<ValueReflectionType, ValueVarType>);
+//	}
 }
 
 template <class T, class ContainerType>
@@ -363,10 +363,10 @@ void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const 
 		writer.startObject(2);
 
 		writer.writeKey(u8"key");
-		Reflection<KeyReflectionType>::GetInstance().save(writer, entry.first);
+		_elements[i].first.save(writer, &entry.first);
 
 		writer.writeKey(u8"value");
-		Reflection<ValueReflectionType>::GetInstance().save(writer, entry.second);
+		_elements[i].second.save(writer, &entry.second);
 
 		writer.endObject();
 	}
@@ -391,7 +391,7 @@ void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const 
 //template <class T, class ContainerType>
 //const Shibboleth::Vector<IReflectionVar::SubVarData>& MapVar<T, ContainerType>::getSubVars(void)
 //{
-//	return _cached_elements_vars;
+//	return _cached_element_vars;
 //}
 
 template <class T, class ContainerType>

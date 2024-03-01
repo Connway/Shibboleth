@@ -267,6 +267,7 @@ CodeGenerator64od module_header --module Graphics</Command>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Components\Shibboleth_ModelComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IModelStageRegistration.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderCommandStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp" />

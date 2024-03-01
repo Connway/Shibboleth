@@ -116,6 +116,9 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IModelStageRegistration.cpp">
+      <Filter>src\Pipelines</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>

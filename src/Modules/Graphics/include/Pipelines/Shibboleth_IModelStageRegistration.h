@@ -33,22 +33,22 @@ struct TextureData final
 {
 	using TextureMap = VectorMap< HashString32<>, ResourcePtr<TextureResource> >;
 
-	TextureMap textures_vertex;
-	TextureMap textures_pixel;
-	TextureMap textures_domain;
-	TextureMap textures_geometry;
-	TextureMap textures_hull;
+	TextureMap vertex;
+	TextureMap pixel;
+	TextureMap domain;
+	TextureMap geometry;
+	TextureMap hull;
 };
 
 struct SamplerData final
 {
 	using SamplerMap = VectorMap< HashString32<>, ResourcePtr<SamplerStateResource> >;
 
-	SamplerMap samplers_vertex;
-	SamplerMap samplers_pixel;
-	SamplerMap samplers_domain;
-	SamplerMap samplers_geometry;
-	SamplerMap samplers_hull;
+	SamplerMap vertex;
+	SamplerMap pixel;
+	SamplerMap domain;
+	SamplerMap geometry;
+	SamplerMap hull;
 };
 
 struct ModelData final
@@ -57,8 +57,8 @@ struct ModelData final
 
 	// $TODO: Add support for automatically sizing these according to the number of meshes in the model resource.
 	Vector< ResourcePtr<MaterialResource> > materials{ GRAPHICS_ALLOCATOR };
-	Vector<TextureData> texture_data{ GRAPHICS_ALLOCATOR };
-	Vector<SamplerData> sampler_data{ GRAPHICS_ALLOCATOR };
+	Vector<TextureData> texture_material_data{ GRAPHICS_ALLOCATOR };
+	Vector<SamplerData> sampler_material_data{ GRAPHICS_ALLOCATOR };
 };
 
 class IModelStageRegistration
@@ -74,3 +74,7 @@ NS_END
 NS_HASHABLE
 	GAFF_CLASS_HASHABLE(Shibboleth::IModelStageRegistration);
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::TextureData)
+SHIB_REFLECTION_DECLARE(Shibboleth::SamplerData)
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelData)
