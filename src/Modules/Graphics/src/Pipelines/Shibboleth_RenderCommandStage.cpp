@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Pipelines/Shibboleth_RenderCommandStage.h"
+#include "Shibboleth_GraphicsLogging.h"
 #include <Shibboleth_ResourceManager.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibboleth::IRenderStage)
@@ -28,6 +29,10 @@ SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibbo
 namespace
 {
 	static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
+
+	static constexpr const char8_t* StructuredBufferFormat = u8"RenderCommandSystem:StructuredBuffer:%s:%llu:%i";
+	static constexpr const char8_t* ProgramBuffersFormat = u8"RenderCommandSystem:ProgramBuffers:%llu";
+	static constexpr const char8_t* ConstBufferFormat = u8"RenderCommandSystem:ConstBuffer:%s:%llu";
 
 //	static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
 //	{
@@ -175,6 +180,116 @@ void RenderCommandStage::update(uintptr_t thread_id_int)
 const RenderCommandData& RenderCommandStage::getRenderCommands(void) const
 {
 	return _render_commands;
+}
+
+void RenderCommandStage::registerModel(const ModelData& data)
+{
+	static constexpr auto AddResourcesToWaitList = []<class Map>(const Map& resource_map, Vector<const IResource*>& list) -> void
+	{
+		for (const auto& pair : resource_map) {
+			list.emplace_back(pair.second.get());
+		}
+	};
+
+	static constexpr auto AddResourcesToHash = []<class Map>(const Map& resource_map, Gaff::Hash64& bucket_hash) -> void
+	{
+		for (const auto& entry : resource_map) {
+			bucket_hash = Gaff::FNV1aHash64T(entry.second.get(), bucket_hash);
+		}
+	};
+
+	if (!data.model) {
+		LogErrorGraphics("RenderCommandStage::registerModel: No model was provided.");
+		return;
+	}
+
+	if (!data.materials.empty()) {
+		LogErrorGraphics("RenderCommandStage::registerModel: No materials were provided.");
+		return;
+	}
+
+	Vector<const IResource*> resource_list = { data.model.get() };
+
+	Gaff::Hash64 bucket_hash = Gaff::FNV1aHash64T(data.model.get());
+
+	for (const ResourcePtr<MaterialResource>& material_resource : data.materials) {
+		bucket_hash = Gaff::FNV1aHash64T(material_resource.get(), bucket_hash);
+		resource_list.emplace_back(material_resource.get());
+	}
+
+	for (const TextureData& texture_data : data.texture_material_data) {
+		// Not hashing texture data, as we can use a texture array to simplify the number of render calls needed.
+
+		AddResourcesToWaitList(texture_data.vertex, resource_list);
+		AddResourcesToWaitList(texture_data.pixel, resource_list);
+		AddResourcesToWaitList(texture_data.domain, resource_list);
+		AddResourcesToWaitList(texture_data.geometry, resource_list);
+		AddResourcesToWaitList(texture_data.hull, resource_list);
+	}
+
+	for (const SamplerData& sampler_data : data.sampler_material_data) {
+		AddResourcesToWaitList(sampler_data.vertex, resource_list);
+		AddResourcesToWaitList(sampler_data.pixel, resource_list);
+		AddResourcesToWaitList(sampler_data.domain, resource_list);
+		AddResourcesToWaitList(sampler_data.geometry, resource_list);
+		AddResourcesToWaitList(sampler_data.hull, resource_list);
+
+		AddResourcesToHash(sampler_data.vertex, bucket_hash);
+		AddResourcesToHash(sampler_data.pixel, bucket_hash);
+		AddResourcesToHash(sampler_data.domain, bucket_hash);
+		AddResourcesToHash(sampler_data.geometry, bucket_hash);
+		AddResourcesToHash(sampler_data.hull, bucket_hash);
+	}
+
+	_resource_mgr->registerCallback(resource_list, Gaff::Func([&](const Vector<IResource*>&) -> void
+	{
+		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash);
+
+		InstanceData& instance_data = _instance_data.emplace_back();
+		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+		instance_data.buffer_instance_count = buffer_count;
+
+		if (!instance_data.program_buffers->createProgramBuffers(material->material->getDevices())) {
+			// $TODO: Log error
+			return;
+		}
+
+		processNewArchetypeMaterial(instance_data, *material, archetype);
+	});
+
+
+	//	auto* const material = _materials.back();
+	//	auto* const model = _models.back()->value.get();
+	//
+	//	Vector<IResource*> resources{ material->material.get(), model };
+	//	AddResourcesToWaitList(material->textures_vertex, resources);
+	//	AddResourcesToWaitList(material->textures_pixel, resources);
+	//	AddResourcesToWaitList(material->textures_domain, resources);
+	//	AddResourcesToWaitList(material->textures_geometry, resources);
+	//	AddResourcesToWaitList(material->textures_hull, resources);
+	//	AddResourcesToWaitList(material->samplers_vertex, resources);
+	//	AddResourcesToWaitList(material->samplers_pixel, resources);
+	//	AddResourcesToWaitList(material->samplers_domain, resources);
+	//	AddResourcesToWaitList(material->samplers_geometry, resources);
+	//	AddResourcesToWaitList(material->samplers_hull, resources);
+	//
+	//	const int32_t buffer_count = (_buffer_count.empty() || !_buffer_count.back()) ? 64 : _buffer_count.back()->value;
+	//
+	//	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
+	//	{
+	//		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, archetype.getHash());
+	//
+	//		InstanceData& instance_data = _instance_data.emplace_back();
+	//		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+	//		instance_data.buffer_instance_count = buffer_count;
+	//
+	//		if (!instance_data.program_buffers->createProgramBuffers(material->material->getDevices())) {
+	//			// $TODO: Log error
+	//			return;
+	//		}
+	//
+	//		processNewArchetypeMaterial(instance_data, *material, archetype);
+	//	}));
 }
 
 void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* data)

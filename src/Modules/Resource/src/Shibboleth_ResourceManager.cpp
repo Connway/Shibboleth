@@ -377,7 +377,7 @@ void ResourceManager::checkAndRemoveResources(void)
 			const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
 			GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
 
-			const EA::Thread::AutoMutex lock(it_bucket->lock);
+			const EA::Thread::AutoMutex bucket_lock(it_bucket->lock);
 			const auto it_res = Gaff::LowerBound(it_bucket->resources, resource->getFilePath().getHash(), ResourceHashCompare);
 
 			if (it_res != it_bucket->resources.end() && *it_res == resource) {
@@ -385,6 +385,20 @@ void ResourceManager::checkAndRemoveResources(void)
 			}
 
 			SHIB_FREET(resource, GetAllocator());
+
+			// Remove all callbacks that involve this resource.
+			const EA::Thread::AutoMutex callback_lock(_callback_lock);
+
+			for (int32_t j = 0; j < _callbacks.size();) {
+				const auto it = _callbacks.begin() + j;
+
+				if (Gaff::Contains(it->second.resources, resource)) {
+					_callbacks.erase(it);
+					continue;
+				}
+
+				++j;
+			}
 		}
 	}
 }

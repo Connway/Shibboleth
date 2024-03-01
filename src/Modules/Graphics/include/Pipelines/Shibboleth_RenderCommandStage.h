@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IModelStageRegistration.h"
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IRenderStage.h"
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
@@ -40,7 +41,7 @@ NS_SHIBBOLETH
 class ResourceManager;
 
 // $TODO: This might need to be split up into more discrete stages, such as a culling stage.
-class RenderCommandStage final : public IRenderStage
+class RenderCommandStage final : public IRenderStage, public IModelStageRegistration
 {
 public:
 	bool init(RenderManager& render_mgr) override;
@@ -49,6 +50,8 @@ public:
 	void update(uintptr_t thread_id_int) override;
 
 	const RenderCommandData& getRenderCommands(void) const override;
+
+	void registerModel(const ModelData& data) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
