@@ -133,6 +133,8 @@ private:
 	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 	Gaff::Counter _job_counter = 0;
 
+	void processNewInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash);
+
 	static void GenerateCommandListJob(uintptr_t id_int, void* data);
 	static void DeviceJob(uintptr_t id_int, void* data);
 };

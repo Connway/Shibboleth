@@ -261,7 +261,7 @@ void RenderCommandStage::registerModel(const ModelData& data)
 			return;
 		}
 
-		processNewInstance(instance_data, *material, archetype);
+		processNewInstance(data, instance_data, instance_hash);
 	});
 
 	return instance_hash;
@@ -302,7 +302,82 @@ void RenderCommandStage::registerModel(const ModelData& data)
 
 void RenderCommandStage::unregisterModel(Gaff::Hash64 instance_hash)
 {
+}
 
+void RenderCommandStage::processNewInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash)
+{
+	// Assuming that all materials have the same devices.
+	const auto devices = data.materials.front()->getDevices();
+
+	if (devices.empty()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	for (int32_t mesh_index = 0; mesh_index < data.model->getNumMeshes(); ++mesh_index) {
+		const MaterialData& material_data = data.material_data[mesh_index];
+
+		for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type) {
+			const int32_t shader_type_index = static_cast<int32_t>(shader_type);
+
+			addStructuredBuffersSRVs(instance_data, instance_hash, devices, shader_type, material_data.material);
+
+			for (Gleam::IRenderDevice* rd : devices) {
+				const Gleam::IProgram* const program = material_data.material->getProgram(*rd);
+				const Gleam::IShader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
+
+				if (!shader) {
+					continue;
+				}
+
+				const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
+				InstanceData::VarMap shader_vars { GRAPHICS_ALLOCATOR };
+
+				addTextureSRVs(instance_data, instance_hash, devices, shader_type, material_data.material, shader_refl, shader_vars, *rd);
+
+				auto& var_srvs = instance_data.pipeline_data[shader_type_index].srv_vars[rd];
+				var_srvs = std::move(shader_vars);
+
+				if (shader_type == Gleam::IShader::Type::Vertex) {
+					for (const auto& sb_refl : shader_refl.structured_buffers) {
+						const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char8_t* rhs)->bool { return lhs.name == rhs; });
+
+						if (it != sb_refl.vars.end()) {
+							instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
+							instance_data.instance_data = &instance_data.pipeline_data[shader_type_index].buffer_vars[HashString32<>(sb_refl.name.data())];
+						}
+					}
+				}
+
+				Gleam::IProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(*rd);
+
+				if (!pb) {
+					continue;
+				}
+
+				addConstantBuffers(instance_data, instance_hash, devices, shader_type, shader_refl, *pb, *rd, devices);
+				addSamplers(instance_data, instance_hash, devices, shader_type, material_data.material, shader_refl, *pb, *rd);
+
+				for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
+					const auto it = var_srvs.find(HashString32<>(var_name.data()));
+
+					if (it != var_srvs.end()) {
+						pb->addResourceView(shader_type, it->second.get());
+
+					} else {
+						auto& buffers = instance_data.pipeline_data[shader_type_index].buffer_vars;
+						const auto it_buf = buffers.find(HashString32<>(var_name.data()));
+
+						if (it_buf != buffers.end()) {
+							pb->addResourceView(shader_type, it_buf->second.pages[0].srv_map[rd].get());
+						} else {
+							// $TODO: Log error.
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* data)

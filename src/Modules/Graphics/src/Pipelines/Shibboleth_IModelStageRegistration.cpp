@@ -25,6 +25,14 @@ THE SOFTWARE.
 #include <Gleam_Texture.h>
 #include <Gleam_Mesh.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MaterialData)
+	.template ctor<>()
+
+	.var("material", &Shibboleth::MaterialData::material)
+	.var("textures", &Shibboleth::MaterialData::textures)
+	.var("samplers", &Shibboleth::MaterialData::samplers)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::MaterialData)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::TextureData)
 	.template ctor<>()
 
@@ -49,8 +57,5 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelData)
 	.template ctor<>()
 
 	.var("model", &Shibboleth::ModelData::model)
-
-	.var("materials", &Shibboleth::ModelData::materials)
-	.var("texture_material_data", &Shibboleth::ModelData::texture_material_data)
-	.var("sampler_material_data", &Shibboleth::ModelData::sampler_material_data)
+	.var("material_data", &Shibboleth::ModelData::material_data)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelData)

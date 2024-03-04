@@ -51,14 +51,18 @@ struct SamplerData final
 	SamplerMap hull;
 };
 
+struct MaterialData final
+{
+	ResourcePtr<MaterialResource> material;
+	TextureData textures;
+	SamplerData samplers;
+};
+
 struct ModelData final
 {
 	ResourcePtr<ModelResource> model;
-
-	// $TODO: Add support for automatically sizing these according to the number of meshes in the model resource.
-	Vector< ResourcePtr<MaterialResource> > materials{ GRAPHICS_ALLOCATOR };
-	Vector<TextureData> texture_material_data{ GRAPHICS_ALLOCATOR };
-	Vector<SamplerData> sampler_material_data{ GRAPHICS_ALLOCATOR };
+	// $TODO: Add support for automatically sizing this according to the number of meshes in the model resource.
+	Vector<MaterialData> material_data{ GRAPHICS_ALLOCATOR };
 };
 
 class IModelStageRegistration
@@ -76,6 +80,7 @@ NS_HASHABLE
 	GAFF_CLASS_HASHABLE(Shibboleth::IModelStageRegistration);
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::MaterialData)
 SHIB_REFLECTION_DECLARE(Shibboleth::TextureData)
 SHIB_REFLECTION_DECLARE(Shibboleth::SamplerData)
 SHIB_REFLECTION_DECLARE(Shibboleth::ModelData)
