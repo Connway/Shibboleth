@@ -66,7 +66,8 @@ class IModelStageRegistration
 public:
 	virtual ~IModelStageRegistration(void) {}
 
-	virtual void registerModel(const ModelData& data) = 0;
+	virtual Gaff::Hash64 registerModel(const ModelData& data) = 0;
+	virtual void unregisterModel(Gaff::Hash64 instance_hash) = 0;
 };
 
 NS_END

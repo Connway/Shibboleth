@@ -217,16 +217,6 @@ void RenderCommandStage::registerModel(const ModelData& data)
 		resource_list.emplace_back(material_resource.get());
 	}
 
-	for (const TextureData& texture_data : data.texture_material_data) {
-		// Not hashing texture data, as we can use a texture array to simplify the number of render calls needed.
-
-		AddResourcesToWaitList(texture_data.vertex, resource_list);
-		AddResourcesToWaitList(texture_data.pixel, resource_list);
-		AddResourcesToWaitList(texture_data.domain, resource_list);
-		AddResourcesToWaitList(texture_data.geometry, resource_list);
-		AddResourcesToWaitList(texture_data.hull, resource_list);
-	}
-
 	for (const SamplerData& sampler_data : data.sampler_material_data) {
 		AddResourcesToWaitList(sampler_data.vertex, resource_list);
 		AddResourcesToWaitList(sampler_data.pixel, resource_list);
@@ -239,6 +229,23 @@ void RenderCommandStage::registerModel(const ModelData& data)
 		AddResourcesToHash(sampler_data.domain, bucket_hash);
 		AddResourcesToHash(sampler_data.geometry, bucket_hash);
 		AddResourcesToHash(sampler_data.hull, bucket_hash);
+	}
+
+	Gaff::Hash64 instance_hash = bucket_hash;
+
+	for (const TextureData& texture_data : data.texture_material_data) {
+		AddResourcesToWaitList(texture_data.vertex, resource_list);
+		AddResourcesToWaitList(texture_data.pixel, resource_list);
+		AddResourcesToWaitList(texture_data.domain, resource_list);
+		AddResourcesToWaitList(texture_data.geometry, resource_list);
+		AddResourcesToWaitList(texture_data.hull, resource_list);
+
+		// Only hashing texture data for instance, as we can use a texture array to simplify the number of render calls needed.
+		AddResourcesToHash(sampler_data.vertex, instance_hash);
+		AddResourcesToHash(sampler_data.pixel, instance_hash);
+		AddResourcesToHash(sampler_data.domain, instance_hash);
+		AddResourcesToHash(sampler_data.geometry, instance_hash);
+		AddResourcesToHash(sampler_data.hull, instance_hash);
 	}
 
 	_resource_mgr->registerCallback(resource_list, Gaff::Func([&](const Vector<IResource*>&) -> void
@@ -254,9 +261,10 @@ void RenderCommandStage::registerModel(const ModelData& data)
 			return;
 		}
 
-		processNewArchetypeMaterial(instance_data, *material, archetype);
+		processNewInstance(instance_data, *material, archetype);
 	});
 
+	return instance_hash;
 
 	//	auto* const material = _materials.back();
 	//	auto* const model = _models.back()->value.get();
@@ -290,6 +298,11 @@ void RenderCommandStage::registerModel(const ModelData& data)
 	//
 	//		processNewArchetypeMaterial(instance_data, *material, archetype);
 	//	}));
+}
+
+void RenderCommandStage::unregisterModel(Gaff::Hash64 instance_hash)
+{
+
 }
 
 void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* data)

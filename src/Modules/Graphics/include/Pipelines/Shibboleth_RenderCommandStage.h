@@ -51,7 +51,8 @@ public:
 
 	const RenderCommandData& getRenderCommands(void) const override;
 
-	void registerModel(const ModelData& data) override;
+	Gaff::Hash64 registerModel(const ModelData& data) override;
+	void unregisterModel(Gaff::Hash64 instance_hash) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
