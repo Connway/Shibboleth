@@ -34,6 +34,8 @@ namespace
 	static constexpr const char8_t* ProgramBuffersFormat = u8"RenderCommandSystem:ProgramBuffers:%llu";
 	static constexpr const char8_t* ConstBufferFormat = u8"RenderCommandSystem:ConstBuffer:%s:%llu";
 
+	static Shibboleth::ProxyAllocator g_allocator(GRAPHICS_ALLOCATOR_POOL_NAME);
+
 //	static const Material::TextureMap* GetTextureMap(const Material& material, Gleam::IShader::Type shader_type)
 //	{
 //		const Material::TextureMap* texture_map = nullptr;
@@ -248,6 +250,9 @@ void RenderCommandStage::registerModel(const ModelData& data)
 		AddResourcesToHash(sampler_data.hull, instance_hash);
 	}
 
+	// $TODO: This is temporary until I refactor textures to use a texture array.
+	bucket_hash = instance_hash;
+
 	_resource_mgr->registerCallback(resource_list, Gaff::Func([&](const Vector<IResource*>&) -> void
 	{
 		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash);
@@ -265,39 +270,6 @@ void RenderCommandStage::registerModel(const ModelData& data)
 	});
 
 	return instance_hash;
-
-	//	auto* const material = _materials.back();
-	//	auto* const model = _models.back()->value.get();
-	//
-	//	Vector<IResource*> resources{ material->material.get(), model };
-	//	AddResourcesToWaitList(material->textures_vertex, resources);
-	//	AddResourcesToWaitList(material->textures_pixel, resources);
-	//	AddResourcesToWaitList(material->textures_domain, resources);
-	//	AddResourcesToWaitList(material->textures_geometry, resources);
-	//	AddResourcesToWaitList(material->textures_hull, resources);
-	//	AddResourcesToWaitList(material->samplers_vertex, resources);
-	//	AddResourcesToWaitList(material->samplers_pixel, resources);
-	//	AddResourcesToWaitList(material->samplers_domain, resources);
-	//	AddResourcesToWaitList(material->samplers_geometry, resources);
-	//	AddResourcesToWaitList(material->samplers_hull, resources);
-	//
-	//	const int32_t buffer_count = (_buffer_count.empty() || !_buffer_count.back()) ? 64 : _buffer_count.back()->value;
-	//
-	//	_res_mgr->registerCallback(resources, Gaff::Func<void (const Vector<IResource*>&)>([this, &archetype, material, buffer_count](const Vector<IResource*>&) -> void
-	//	{
-	//		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, archetype.getHash());
-	//
-	//		InstanceData& instance_data = _instance_data.emplace_back();
-	//		instance_data.program_buffers = _res_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
-	//		instance_data.buffer_instance_count = buffer_count;
-	//
-	//		if (!instance_data.program_buffers->createProgramBuffers(material->material->getDevices())) {
-	//			// $TODO: Log error
-	//			return;
-	//		}
-	//
-	//		processNewArchetypeMaterial(instance_data, *material, archetype);
-	//	}));
 }
 
 void RenderCommandStage::unregisterModel(Gaff::Hash64 instance_hash)
@@ -667,5 +639,72 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 	// Clear this for next run.
 	job_data.rcs->_cmd_list_end[cache_index] = 0;
 }
+
+instance_data, instance_hash, devices, shader_type, material_data.material
+void RenderCommandSystem::addStructuredBuffersSRVs(
+	InstanceData& instance_data,
+	Gaff::Hash64 instance_hash,
+	const Vector<Gleam::RenderDevice*>& devices,
+	const Gleam::IShader::Type shader_type,
+	const MaterialResource& material)
+{
+	const Gleam::Program* const program = material.getProgram(*devices[0]);
+	const Gleam::Shader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
+
+	if (!shader) {
+		return;
+	}
+
+	const Gleam::ShaderReflection refl = shader->getReflectionData();
+	InstanceData::BufferVarMap var_map{ GRAPHICS_ALLOCATOR };
+
+	for (const auto& sb_refl : refl.structured_buffers) {
+		const Gleam::IBuffer::Settings settings = {
+			nullptr,
+			sb_refl.size_bytes * static_cast<size_t>(instance_data.buffer_instance_count), // size
+			static_cast<int32_t>(sb_refl.size_bytes), // stride
+			static_cast<int32_t>(sb_refl.size_bytes), // elem_size
+			Gleam::IBuffer::Type::StructuredData,
+			Gleam::IBuffer::MapType::Write,
+			true
+		};
+
+		U8String b_name(U8String::CtorSprintf(), StructuredBufferFormat, sb_refl.name.data(), instance_hash.getHash(), 0);
+		BufferResourcePtr buffer = _res_mgr->createResourceT<BufferResource>(b_name.data());
+		GAFF_ASSERT(buffer);
+
+		if (!buffer->createBuffer(devices, settings)) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		auto& buffer_data = var_map[HashString32<>(sb_refl.name.data())];
+		var_map.set_allocator(GRAPHICS_ALLOCATOR);
+
+		const auto it = Gaff::Find(refl.var_decl_order, sb_refl.name);
+		// Leaving original line here. This didn't make sense to me, but maybe I'm forgetting something.
+		// buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(it, refl.var_decl_order.end()) - 1);
+		buffer_data.srv_index = (it == refl.var_decl_order.end()) ? -1 : static_cast<int32_t>(eastl::distance(refl.var_decl_order.begin(), it));
+		buffer_data.buffer_string = std::move(b_name);
+		auto& page = buffer_data.pages.emplace_back();
+
+		for (Gleam::RenderDevice rd : devices) {
+			Gleam::ShaderResourceView* const srv = SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
+
+			if (!srv->init(*rd, buffer->getBuffer(*rd))) {
+				// $TODO: Log error and use error texture.
+				SHIB_FREET(srv, GetAllocator());
+				return;
+			}
+
+			page.srv_map[rd].reset(srv);
+		}
+
+		page.buffer = std::move(buffer);
+	}
+
+	instance_data.pipeline_data[static_cast<int32_t>(shader_type)].buffer_vars = std::move(var_map);
+}
+
 
 NS_END
