@@ -36,10 +36,10 @@ class IShaderResourceView
 public:
 	enum class Type
 	{
-		TEXTURE_ARRAY = 0,
-		TEXTURE_CUBE,
-		TEXTURE,
-		BUFFER
+		TextureArray = 0,
+		TextureCube,
+		Texture,
+		Buffer
 	};
 
 	IShaderResourceView(void) {}

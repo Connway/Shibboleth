@@ -220,21 +220,21 @@ void Texture::destroy(void)
 {
 	if (_texture) {
 		switch (_type) {
-			case Type::ONE_D:
+			case Type::OneDimensional:
 				_texture_1d->Release();
 				break;
 
-			case Type::DEPTH_STENCIL:
-			case Type::DEPTH:
-			case Type::TWO_D:
+			case Type::DepthStencil:
+			case Type::Depth:
+			case Type::TwoDimensional:
 				_texture_2d->Release();
 				break;
 
-			case Type::THREE_D:
+			case Type::ThreeDimensional:
 				_texture_3d->Release();
 				break;
 
-			case Type::CUBE:
+			case Type::Cube:
 				_texture_2d->Release();
 				break;
 
@@ -257,7 +257,7 @@ bool Texture::init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Form
 	_mip_levels = mip_levels;
 	_array_size = num_elements;
 	_format = format;
-	_type = (num_elements > 1) ? Type::TWO_D_ARRAY : Type::TWO_D;
+	_type = (num_elements > 1) ? Type::TwoDimensionalArray : Type::TwoDimensional;
 	_width = width;
 	_height = height;
 	_depth = 0;
@@ -304,7 +304,7 @@ bool Texture::init1DArray(IRenderDevice& rd, int32_t width, Format format, int32
 	_mip_levels = mip_levels;
 	_array_size = num_elements;
 	_format = format;
-	_type = (num_elements > 1) ? Type::ONE_D_ARRAY : Type::ONE_D;
+	_type = (num_elements > 1) ? Type::OneDimensionalArray : Type::OneDimensional;
 	_width = width;
 	_height = 0;
 	_depth = 0;
@@ -348,7 +348,7 @@ bool Texture::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t d
 
 	_mip_levels = mip_levels;
 	_format = format;
-	_type = Type::THREE_D;
+	_type = Type::ThreeDimensional;
 	_width = width;
 	_height = height;
 	_depth = depth;
@@ -404,7 +404,7 @@ bool Texture::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Form
 	_mip_levels = mip_levels;
 	_array_size = 6;
 	_format = format;
-	_type = Type::CUBE;
+	_type = Type::Cube;
 	_width = width;
 	_height = height;
 	_depth = 0;
@@ -451,23 +451,23 @@ bool Texture::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height,
 
 	switch (format) {
 		case Format::DEPTH_16_UNORM:
-			_type = Type::DEPTH;
+			_type = Type::Depth;
 			break;
 
 		case Format::DEPTH_32_F:
-			_type = Type::DEPTH;
+			_type = Type::Depth;
 			break;
 
 		case Format::DEPTH_STENCIL_24_8_UNORM_UI:
-			_type = Type::DEPTH_STENCIL;
+			_type = Type::DepthStencil;
 			break;
 
 		case Format::DEPTH_STENCIL_32_8_F:
-			_type = Type::DEPTH_STENCIL;
+			_type = Type::DepthStencil;
 			break;
 
 		default:
-			_type = Type::SIZE;
+			_type = Type::Count;
 			break;
 	}
 
@@ -477,7 +477,7 @@ bool Texture::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height,
 	_height = height;
 	_depth = 0;
 
-	GAFF_ASSERT(_type != Type::SIZE);
+	GAFF_ASSERT(_type != Type::Count);
 
 	D3D11_TEXTURE2D_DESC depth_stencil_desc;
 	depth_stencil_desc.Width = static_cast<UINT>(width);

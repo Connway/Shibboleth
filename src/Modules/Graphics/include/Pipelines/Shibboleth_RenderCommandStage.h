@@ -82,7 +82,7 @@ private:
 		};
 
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
-		ResourcePtr<ProgramBuffersResource> program_buffers;
+		Vector< ResourcePtr<ProgramBuffersResource> > program_buffers;
 
 		InstanceBufferData* instance_data = nullptr;
 
@@ -125,15 +125,52 @@ private:
 
 	RenderCommandData _render_commands;
 
-	ManagerRef<ResourceManager> _resource_mgr;
-	ManagerRef<RenderManager> _render_mgr;
-	JobPool* _job_pool = nullptr;
+	VectorMap<Gaff::Hash64, InstanceData> _instance_data{ GRAPHICS_ALLOCATOR };
+	EA::Thread::RWMutex _instance_data_lock;
 
 	Vector<DeviceJobData> _device_job_data_cache{ GRAPHICS_ALLOCATOR };
 	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 	Gaff::Counter _job_counter = 0;
 
-	void processNewInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash);
+	ManagerRef<ResourceManager> _resource_mgr;
+	ManagerRef<RenderManager> _render_mgr;
+	JobPool* _job_pool = nullptr;
+
+	void addInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash);
+
+	void addStructuredBuffersSRVs(
+		InstanceData& instance_data,
+		Gaff::Hash64 instance_hash,
+		const Vector<Gleam::RenderDevice*>& devices,
+		const Gleam::IShader::Type shader_type,
+		const Gleam::ShaderReflection& refl,
+		const MaterialResource& material
+	);
+
+	void addTextureSRVs(
+		const Gleam::IShader::Type shader_type,
+		const MaterialData& material_data,
+		const Gleam::ShaderReflection& refl,
+		InstanceData::VarMap& var_map,
+		Gleam::RenderDevice& rd
+	);
+
+	void addConstantBuffers(
+		Gaff::Hash64 instance_hash,
+		const Gleam::IShader::Type shader_type,
+		const Gleam::ShaderReflection& refl,
+		Gleam::ProgramBuffers& pb,
+		Gleam::RenderDevice& rd
+	);
+
+	void addSamplers(
+		const Gleam::IShader::Type shader_type,
+		const MaterialData& material_data,
+		const Gleam::ShaderReflection& refl,
+		Gleam::ProgramBuffers& pb,
+		Gleam::RenderDevice& rd
+	);
+
 
 	static void GenerateCommandListJob(uintptr_t id_int, void* data);
 	static void DeviceJob(uintptr_t id_int, void* data);

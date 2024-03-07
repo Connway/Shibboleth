@@ -63,6 +63,8 @@ struct ModelData final
 	ResourcePtr<ModelResource> model;
 	// $TODO: Add support for automatically sizing this according to the number of meshes in the model resource.
 	Vector<MaterialData> material_data{ GRAPHICS_ALLOCATOR };
+
+	int32_t instances_per_page = 64;
 };
 
 class IModelStageRegistration

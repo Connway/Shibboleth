@@ -40,7 +40,8 @@ NS_SHIBBOLETH
 class ResourceManager final : public IManager
 {
 public:
-	using ResourceStateCallback = eastl::function<void (const Vector<IResource*>&)>;
+	using ResourceStateCallbackSignature = void (const Vector<IResource*>&);
+	using ResourceStateCallback = eastl::function<ResourceStateCallbackSignature>;
 
 	ResourceManager(void);
 	~ResourceManager(void);

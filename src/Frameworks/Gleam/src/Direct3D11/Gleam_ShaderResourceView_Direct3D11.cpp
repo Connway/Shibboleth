@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static constexpr D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::SIZE)] = {
+static constexpr D3D11_SRV_DIMENSION g_dimension_map[static_cast<int32_t>(ITexture::Type::Count)] = {
 	D3D11_SRV_DIMENSION_TEXTURE1D,
 	D3D11_SRV_DIMENSION_TEXTURE2D,
 	D3D11_SRV_DIMENSION_TEXTURE3D,
@@ -70,26 +70,26 @@ bool ShaderResourceView::init(IRenderDevice& rd, const ITexture& texture)
 
 	const ID3D11Resource* resource = nullptr;
 
-	if (texture.getType() == ITexture::Type::CUBE) {
-		_view_type = Type::TEXTURE_CUBE;
+	if (texture.getType() == ITexture::Type::Cube) {
+		_view_type = Type::TextureCube;
 
 	} else if (texture.getArraySize() > 1) {
 		// 2D array desc is the same structure as the 1D array desc.
 		res_desc.Texture2DArray.ArraySize = static_cast<UINT>(texture.getArraySize());
 		res_desc.Texture2DArray.FirstArraySlice = 0;
 		res_desc.Texture2DArray.PlaneSlice = 0;
-		_view_type = Type::TEXTURE_ARRAY;
+		_view_type = Type::TextureArray;
 
 	} else {
 		res_desc.Texture2D.PlaneSlice = 0;
-		_view_type = Type::TEXTURE;
+		_view_type = Type::Texture;
 	}
 
-	if (texture.getType() == ITexture::Type::THREE_D) {
+	if (texture.getType() == ITexture::Type::ThreeDimensional) {
 		resource = static_cast<const Texture&>(texture).getTexture3D();
-	} else if (texture.getType() == ITexture::Type::TWO_D || texture.getType() == ITexture::Type::TWO_D_ARRAY || texture.getType() == ITexture::Type::DEPTH || texture.getType() == ITexture::Type::DEPTH_STENCIL) {
+	} else if (texture.getType() == ITexture::Type::TwoDimensional || texture.getType() == ITexture::Type::TwoDimensionalArray || texture.getType() == ITexture::Type::Depth || texture.getType() == ITexture::Type::DepthStencil) {
 		resource = static_cast<const Texture&>(texture).getTexture2D();
-	} else 	if (texture.getType() == ITexture::Type::ONE_D || texture.getType() == ITexture::Type::ONE_D_ARRAY) {
+	} else 	if (texture.getType() == ITexture::Type::OneDimensional || texture.getType() == ITexture::Type::OneDimensionalArray) {
 		resource = static_cast<const Texture&>(texture).getTexture1D();
 	}
 
@@ -109,7 +109,7 @@ bool ShaderResourceView::init(IRenderDevice& rd, const IBuffer& buffer, int32_t 
 	RenderDevice& rd3d = static_cast<RenderDevice&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
-	_view_type = Type::BUFFER;
+	_view_type = Type::Buffer;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC1 res_desc;
 	res_desc.Format = DXGI_FORMAT_UNKNOWN;

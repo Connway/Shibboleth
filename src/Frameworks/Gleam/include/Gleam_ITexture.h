@@ -34,17 +34,17 @@ class ITexture
 public:
 	enum class Type
 	{
-		ONE_D = 0,
-		TWO_D,
-		THREE_D,
-		CUBE,
-		DEPTH,
-		DEPTH_STENCIL,
+		OneDimensional = 0,
+		TwoDimensional,
+		ThreeDimensional,
+		Cube,
+		Depth,
+		DepthStencil,
 
-		TWO_D_ARRAY,
-		ONE_D_ARRAY,
+		OneDimensionalArray,
+		TwoDimensionalArray,
 
-		SIZE
+		Count
 	};
 
 	enum class Format

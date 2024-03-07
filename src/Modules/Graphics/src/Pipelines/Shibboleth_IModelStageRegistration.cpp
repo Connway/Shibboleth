@@ -58,4 +58,5 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelData)
 
 	.var("model", &Shibboleth::ModelData::model)
 	.var("material_data", &Shibboleth::ModelData::material_data)
+	.var("instances_per_page", &Shibboleth::ModelData::instances_per_page, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelData)
