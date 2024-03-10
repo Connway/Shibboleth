@@ -81,13 +81,28 @@ private:
 			VectorMap<const Gleam::RenderDevice*, VarMap> srv_vars{ GRAPHICS_ALLOCATOR };
 		};
 
-		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
-		Vector< ResourcePtr<ProgramBuffersResource> > program_buffers;
+		struct MeshInstanceData final
+		{
+			PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
+			ResourcePtr<ProgramBuffersResource> program_buffers;
 
-		InstanceBufferData* instance_data = nullptr;
+			InstanceBufferData* model_to_proj_data = nullptr;
 
-		int32_t buffer_instance_count = 1;
-		int32_t model_to_proj_offset = -1;
+			int32_t buffer_instance_count = 1;
+			int32_t model_to_proj_offset = -1;
+		};
+
+		Vector<MeshInstanceData> mesh_instances{ GRAPHICS_ALLOCATOR };
+		EA::Thread::Mutex lock;
+
+		// $TODO: Remove these.
+//		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
+//		ResourcePtr<ProgramBuffersResource> program_buffers;
+//
+//		InstanceBufferData* model_to_proj_data = nullptr;
+//
+//		int32_t buffer_instance_count = 1;
+//		int32_t model_to_proj_offset = -1;
 	};
 
 	struct RenderJobData final

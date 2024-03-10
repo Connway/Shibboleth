@@ -171,6 +171,14 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 		bucket_hash = Gaff::FNV1aHash64T(material_data.material.get(), bucket_hash);
 		resource_list.emplace_back(material_data.material.get());
 
+		// Textures
+		AddResourcesToWaitList(material_data.textures.vertex, resource_list);
+		AddResourcesToWaitList(material_data.textures.pixel, resource_list);
+		AddResourcesToWaitList(material_data.textures.domain, resource_list);
+		AddResourcesToWaitList(material_data.textures.geometry, resource_list);
+		AddResourcesToWaitList(material_data.textures.hull, resource_list);
+
+		// Samplers
 		AddResourcesToWaitList(material_data.samplers.vertex, resource_list);
 		AddResourcesToWaitList(material_data.samplers.pixel, resource_list);
 		AddResourcesToWaitList(material_data.samplers.domain, resource_list);
@@ -187,12 +195,6 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 	Gaff::Hash64 instance_hash = bucket_hash;
 
 	for (const MaterialData& material_data : data.material_data) {
-		AddResourcesToWaitList(material_data.textures.vertex, resource_list);
-		AddResourcesToWaitList(material_data.textures.pixel, resource_list);
-		AddResourcesToWaitList(material_data.textures.domain, resource_list);
-		AddResourcesToWaitList(material_data.textures.geometry, resource_list);
-		AddResourcesToWaitList(material_data.textures.hull, resource_list);
-
 		// Only hashing texture data for instance, as we can use a texture array to simplify the number of render calls needed.
 		AddResourcesToHash(material_data.textures.vertex, instance_hash);
 		AddResourcesToHash(material_data.textures.pixel, instance_hash);
@@ -207,14 +209,11 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 	_instance_data_lock.Lock(EA::Thread::RWMutex::LockType::kLockTypeRead);
 	const auto it = _instance_data.find(bucket_hash);
 
-	if (it != _instance_data.end())
-	{
+	if (it != _instance_data.end()) {
 		addInstance(data, it->second, instance_hash);
-
 		_instance_data_lock.Unlock();
-	}
-	else
-	{
+
+	} else {
 		_instance_data_lock.Unlock(); // Unlock here in case registerCallback() calls our callback immediately.
 
 		_resource_mgr->registerCallback(resource_list, [&](const Vector<IResource*>&) -> void
