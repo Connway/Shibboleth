@@ -29,8 +29,6 @@ NS_SHIBBOLETH
 
 class EntitySceneComponent : public EntityComponent
 {
-	GAFF_NO_COPY(EntitySceneComponent);
-
 public:
 	EntitySceneComponent(void) = default;
 
@@ -81,6 +79,8 @@ private:
 	friend class Entity;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntitySceneComponent);
+
+	GAFF_NO_COPY(EntitySceneComponent);
 };
 
 NS_END

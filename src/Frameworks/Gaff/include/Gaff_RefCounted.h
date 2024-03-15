@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
+#include "Gaff_IncludeEASTLAtomic.h"
 #include "Gaff_IRefCounted.h"
-#include <atomic>
 
 NS_GAFF
 
@@ -46,7 +46,7 @@ public: \
 		return _count; \
 	} \
 private: \
-	mutable std::atomic_int32_t _count = 0
+	mutable eastl::atomic<int32_t> _count = 0
 
 #define GAFF_REF_COUNTED(Class, Allocator) \
 public: \

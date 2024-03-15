@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_IShader.h>
+#include <Gaff_IncludeEASTLAtomic.h>
 
 NS_GLEAM
 	class RenderTarget;
@@ -44,6 +45,14 @@ class ResourceManager;
 class RenderCommandStage final : public IRenderStage, public IModelStageRegistration
 {
 public:
+	struct ModelInstanceHandle final
+	{
+		Gaff::Hash64 bucket_hash{ 0 };
+		Gaff::Hash64 instance_hash{ 0 };
+
+		bool isValid(void) const { return bucket_hash.getHash() != 0 && instance_hash.getHash() != 0; }
+	};
+
 	bool init(RenderManager& render_mgr) override;
 	//void destroy(RenderManager& /*render_mgr*/) override;
 
@@ -51,8 +60,10 @@ public:
 
 	const RenderCommandData& getRenderCommands(void) const override;
 
-	Gaff::Hash64 registerModel(const ModelData& data) override;
-	void unregisterModel(Gaff::Hash64 instance_hash) override;
+	// $TODO: Should these APIs use a queue model instead?
+	// $TODO: Register something that can retrive the final transform of the model.
+	ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& component) override;
+	void unregisterModel(ModelInstanceHandle handle) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
@@ -93,16 +104,10 @@ private:
 		};
 
 		Vector<MeshInstanceData> mesh_instances{ GRAPHICS_ALLOCATOR };
-		EA::Thread::Mutex lock;
+		eastl::atomic<int32_t> instances = 0;
 
-		// $TODO: Remove these.
-//		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
-//		ResourcePtr<ProgramBuffersResource> program_buffers;
-//
-//		InstanceBufferData* model_to_proj_data = nullptr;
-//
-//		int32_t buffer_instance_count = 1;
-//		int32_t model_to_proj_offset = -1;
+		// $TODO: When texture arrays are a thing, use this lock when copying new textures.
+		//EA::Thread::Mutex lock;
 	};
 
 	struct RenderJobData final
@@ -151,7 +156,8 @@ private:
 	ManagerRef<RenderManager> _render_mgr;
 	JobPool* _job_pool = nullptr;
 
-	void addInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash);
+	void addModelInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash);
+	bool createInstanceBucket(const ModelData& data, Gaff::Hash64 bucket_hash);
 
 	void addStructuredBuffersSRVs(
 		InstanceData& instance_data,

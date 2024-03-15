@@ -52,8 +52,6 @@ NS_SHIBBOLETH
 class RefCounted : public Gaff::IRefCounted
 {
 public:
-	RefCounted(void) {}
-
 	void addRef(void) const
 	{
 		++_count;
@@ -61,7 +59,7 @@ public:
 
 	void release(void) const
 	{
-		int32_t new_count = --_count;
+		const int32_t new_count = --_count;
 
 		if (!new_count) {
 			SHIB_FREET(this, GetAllocator());

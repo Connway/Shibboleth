@@ -32,7 +32,7 @@ namespace
 	static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
 
 	static constexpr const char8_t* StructuredBufferFormat = u8"RenderCommandSystem:StructuredBuffer:%s:%llu:%i";
-	static constexpr const char8_t* ProgramBuffersFormat = u8"RenderCommandSystem:ProgramBuffers:%llu";
+	static constexpr const char8_t* ProgramBuffersFormat = u8"RenderCommandSystem:ProgramBuffers:%llu:%i";
 	static constexpr const char8_t* ConstBufferFormat = u8"RenderCommandSystem:ConstBuffer:%s:%llu";
 
 	static Shibboleth::ProxyAllocator g_allocator(GRAPHICS_ALLOCATOR_POOL_NAME);
@@ -137,7 +137,7 @@ const RenderCommandData& RenderCommandStage::getRenderCommands(void) const
 	return _render_commands;
 }
 
-Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
+RenderCommandStage::ModelInstanceHandle RenderCommandStage::registerModel(const ModelData& data)
 {
 	static constexpr auto AddResourcesToWaitList = []<class Map>(const Map& resource_map, Vector<const IResource*>& list) -> void
 	{
@@ -155,12 +155,12 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 
 	if (!data.model) {
 		LogErrorGraphics("RenderCommandStage::registerModel: No model was provided.");
-		return;
+		return ModelInstanceHandle();
 	}
 
 	if (!data.material_data.empty()) {
 		LogErrorGraphics("RenderCommandStage::registerModel: No materials were provided.");
-		return;
+		return ModelInstanceHandle();
 	}
 
 	Vector<const IResource*> resource_list = { data.model.get() };
@@ -210,7 +210,7 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 	const auto it = _instance_data.find(bucket_hash);
 
 	if (it != _instance_data.end()) {
-		addInstance(data, it->second, instance_hash);
+		addModelInstance(data, it->second, instance_hash);
 		_instance_data_lock.Unlock();
 
 	} else {
@@ -218,46 +218,96 @@ Gaff::Hash64 RenderCommandStage::registerModel(const ModelData& data)
 
 		_resource_mgr->registerCallback(resource_list, [&](const Vector<IResource*>&) -> void
 		{
-			const Hash pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash);
-
-			{
-				const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeWrite);
-				InstanceData& instance_data = _instance_data.insert(bucket_hash)->first->second;
-
-				instance_data.program_buffers = _resource_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
-				instance_data.buffer_instance_count = data.instances_per_page;
-
-				if (!instance_data.program_buffers->createProgramBuffers(data.model->getDevices())) {
-					// $TODO: Log error
-					return;
-				}
+			if (!createInstanceBucket(data, bucket_hash)) {
+				return;
 			}
 
 			const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeRead);
 			InstanceData& instance_data = _instance_data[bucket_hash];
 
-			addInstance(data, instance_data, instance_hash);
+			addModelInstance(data, instance_data, instance_hash);
 		}));
 	}
 
-	return instance_hash;
+		return ModelInstanceHandle{ bucket_hash, instance_hash };
 }
 
-void RenderCommandStage::unregisterModel(Gaff::Hash64 instance_hash)
+void RenderCommandStage::unregisterModel(ModelInstanceHandle handle)
 {
+	bool remove = false;
+
+	{
+		const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeRead);
+		const auto it = _instance_data.find(handle.bucket_hash);
+
+		if (it == _instance_data.end()) {
+			return;
+		}
+
+		const int32_t instance_count = --it->second.instances;
+
+		remove = instance_count <= 0;
+	}
+
+	if (remove) {
+		const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeWrite);
+		const auto it = _instance_data.find(handle.bucket_hash);
+
+		if (it == _instance_data.end()) {
+			return;
+		}
+
+		// Double check. Another thread might have added a new instance while we were re-acquiring the lock.
+		if (it->second.instances <= 0) {
+			_instance_data.erase(it);
+		}
+	}
 }
 
-void RenderCommandStage::addInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash)
+void RenderCommandStage::addModelInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash)
+{
+	GAFF_REF(data, instance_hash);
+	++instance_data.instances;
+}
+
+bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash64 bucket_hash)
 {
 	// Assuming that all materials have the same devices.
 	const auto devices = data.materials.front()->getDevices();
 
 	if (devices.empty()) {
 		// $TODO: Log error.
-		return;
+		return false;
 	}
 
-	for (int32_t mesh_index = 0; mesh_index < data.model->getNumMeshes(); ++mesh_index) {
+	const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeWrite);
+	const auto insert_result = _instance_data.insert(bucket_hash);
+
+	// Value was already inserted.
+	if (!insert_result.second) {
+		return true;
+	}
+
+	InstanceData& instance_data = insert_result->first->second;
+	bool result = true;
+
+	instance_data.mesh_instances.resize(static_cast<size_t>(data.model->getNumMeshes()));
+
+	for (int32_t i = 0; i < data.model->getNumMeshes(); ++i) {
+		InstanceData::MeshInstanceData& mesh_instance = instance_data.mesh_instances[i];
+
+		const Hash pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash, i);
+		mesh_instance.program_buffers = _resource_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
+		mesh_instance.buffer_instance_count = data.instances_per_page;
+
+		if (!mesh_instance.program_buffers->createProgramBuffers(data.model->getDevices())) {
+			// $TODO: Log error
+
+			// Don't leave partial model data.
+			_instance_data.erase(insert_result.first);
+			return false;
+		}
+
 		const MaterialData& material_data = data.material_data[mesh_index];
 
 		for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type) {
@@ -272,14 +322,15 @@ void RenderCommandStage::addInstance(const ModelData& data, InstanceData& instan
 
 			const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
 
-			addStructuredBuffersSRVs(instance_data, instance_hash, devices, shader_type, shader_refl, material_data.material);
+			addStructuredBuffersSRVs(mesh_instance, bucket_hash, devices, shader_type, shader_refl, material_data.material);
 
 			for (Gleam::RenderDevice* rd : devices) {
 				InstanceData::VarMap shader_vars { GRAPHICS_ALLOCATOR };
 
-				addTextureSRVs(instance_data, instance_hash, devices, shader_type, material_data, shader_refl, shader_vars, *rd);
+				// $TODO: When texture arrays are added, move this out of bucket data and into instance data.
+				addTextureSRVs(shader_type, material_data, shader_refl, shader_vars, *rd);
 
-				auto& var_srvs = instance_data.pipeline_data[shader_type_index].srv_vars[rd];
+				auto& var_srvs = mesh_instance.pipeline_data[shader_type_index].srv_vars[rd];
 				var_srvs = std::move(shader_vars);
 
 				if (shader_type == Gleam::IShader::Type::Vertex) {
@@ -287,19 +338,15 @@ void RenderCommandStage::addInstance(const ModelData& data, InstanceData& instan
 						const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char8_t* rhs)->bool { return lhs.name == rhs; });
 
 						if (it != sb_refl.vars.end()) {
-							instance_data.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
-							instance_data.instance_data = &instance_data.pipeline_data[shader_type_index].buffer_vars[HashString32<>(sb_refl.name.data())];
+							mesh_instance.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
+							mesh_instance.model_to_proj_data = &mesh_instance.pipeline_data[shader_type_index].buffer_vars[HashString32<>(sb_refl.name.data())];
 						}
 					}
 				}
 
-				Gleam::ProgramBuffers* const pb = instance_data.program_buffers->getProgramBuffer(*rd);
+				Gleam::ProgramBuffers* const pb = mesh_instance.program_buffers->getProgramBuffer(*rd);
 
-				if (!pb) {
-					continue;
-				}
-
-				addConstantBuffers(instance_hash, shader_type, shader_refl, *pb, *rd);
+				addConstantBuffers(bucket_hash, shader_type, shader_refl, *pb, *rd);
 				addSamplers(shader_type, material_data, shader_refl, *pb, *rd);
 
 				for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
@@ -311,7 +358,7 @@ void RenderCommandStage::addInstance(const ModelData& data, InstanceData& instan
 						pb->addResourceView(shader_type, it->second.get());
 
 					} else {
-						auto& buffers = instance_data.pipeline_data[shader_type_index].buffer_vars;
+						auto& buffers = mesh_instance.pipeline_data[shader_type_index].buffer_vars;
 						const auto it_buf = buffers.find(name);
 
 						if (it_buf != buffers.end()) {
@@ -324,6 +371,8 @@ void RenderCommandStage::addInstance(const ModelData& data, InstanceData& instan
 			}
 		}
 	}
+
+	return true;
 }
 
 void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* data)
@@ -615,7 +664,7 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 }
 
 void RenderCommandStage::addStructuredBuffersSRVs(
-	InstanceData& instance_data,
+	InstanceData::MeshInstanceData& mesh_instance,
 	Gaff::Hash64 instance_hash,
 	const Vector<Gleam::RenderDevice*>& devices,
 	const Gleam::IShader::Type shader_type,
@@ -627,7 +676,7 @@ void RenderCommandStage::addStructuredBuffersSRVs(
 	for (const auto& sb_refl : refl.structured_buffers) {
 		const Gleam::IBuffer::Settings settings = {
 			nullptr,
-			sb_refl.size_bytes * static_cast<size_t>(instance_data.buffer_instance_count), // size
+			sb_refl.size_bytes * static_cast<size_t>(mesh_instance.buffer_instance_count), // size
 			static_cast<int32_t>(sb_refl.size_bytes), // stride
 			static_cast<int32_t>(sb_refl.size_bytes), // elem_size
 			Gleam::IBuffer::Type::StructuredData,
@@ -669,7 +718,7 @@ void RenderCommandStage::addStructuredBuffersSRVs(
 		page.buffer = std::move(buffer);
 	}
 
-	instance_data.pipeline_data[static_cast<int32_t>(shader_type)].buffer_vars = std::move(var_map);
+	mesh_instance.pipeline_data[static_cast<int32_t>(shader_type)].buffer_vars = std::move(var_map);
 }
 
 void RenderCommandStage::addTextureSRVs(
