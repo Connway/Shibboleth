@@ -311,6 +311,7 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_IManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_IModule.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ISubsystem.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ITransformProvider.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Image.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JSONSerializeWriter.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_JobPool.h" />

@@ -39,6 +39,7 @@ NS_END
 
 NS_SHIBBOLETH
 
+class ITransformProvider;
 class ResourceManager;
 
 // $TODO: This might need to be split up into more discrete stages, such as a culling stage.
@@ -62,7 +63,7 @@ public:
 
 	// $TODO: Should these APIs use a queue model instead?
 	// $TODO: Register something that can retrive the final transform of the model.
-	ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& component) override;
+	ModelInstanceHandle registerModel(const ModelData& data) override;
 	void unregisterModel(ModelInstanceHandle handle) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);

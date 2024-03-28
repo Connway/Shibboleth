@@ -264,6 +264,9 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ISubsystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_ITransformProvider.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Shibboleth_Image.h">
       <Filter>include</Filter>
     </ClInclude>
