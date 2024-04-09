@@ -29,6 +29,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ITransformProvider;
+
 struct TextureData final
 {
 	using TextureMap = VectorMap< HashString32<>, ResourcePtr<TextureResource> >;
@@ -70,10 +72,19 @@ struct ModelData final
 class IModelStageRegistration
 {
 public:
+	struct ModelInstanceHandle final
+	{
+		Gaff::Hash64 bucket_hash{ 0 };
+		Gaff::Hash64 instance_hash{ 0 };
+		const ITransformProvider* provider = nullptr;
+
+		bool isValid(void) const { return bucket_hash.getHash() != 0 && instance_hash.getHash() != 0; }
+	};
+
 	virtual ~IModelStageRegistration(void) {}
 
-	virtual Gaff::Hash64 registerModel(const ModelData& data) = 0;
-	virtual void unregisterModel(Gaff::Hash64 instance_hash) = 0;
+	virtual ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& transform_provider) = 0;
+	virtual void unregisterModel(ModelInstanceHandle handle) = 0;
 };
 
 NS_END

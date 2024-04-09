@@ -76,7 +76,7 @@ namespace
 		return texture_map;
 	}
 
-	static const Material::SamplerMap* GetSamplereMap(const Material& material, Gleam::IShader::Type shader_type)
+	static const Material::SamplerMap* GetSamplerMap(const Material& material, Gleam::IShader::Type shader_type)
 	{
 		const Material::SamplerMap* sampler_map = nullptr;
 
@@ -532,7 +532,7 @@ void RenderCommandSystem::update(uintptr_t thread_id_int)
 //{
 //	SamplerStateResourcePtr& default_sampler_res = _render_mgr->getDefaultSamplerState();
 //	Gleam::ISamplerState* const default_sampler = default_sampler_res->getSamplerState(rd);
-//	const Material::SamplerMap* const sampler_map = GetSamplereMap(material, shader_type);
+//	const Material::SamplerMap* const sampler_map = GetSamplerMap(material, shader_type);
 //
 //	GAFF_ASSERT(sampler_map);
 //

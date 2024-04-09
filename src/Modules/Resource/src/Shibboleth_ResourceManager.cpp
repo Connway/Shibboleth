@@ -282,7 +282,7 @@ const IFile* ResourceManager::loadFileAndWait(const char8_t* file_path, uintptr_
 	return data.out_file;
 }
 
-ResourceCallbackID ResourceManager::registerCallback(const Vector<IResource*>& resources, const ResourceStateCallback& callback)
+ResourceCallbackID ResourceManager::registerCallback(const Vector<const IResource*>& resources, const ResourceStateCallback& callback)
 {
 	GAFF_ASSERT(Gaff::Find(resources, nullptr) == resources.end());
 	bool already_loaded = true;

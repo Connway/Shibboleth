@@ -215,14 +215,4 @@ void EntitySceneComponent::updateToWorld(void)
 	setTransformRelative(_transform_relative);
 }
 
-Gleam::Transform EntitySceneComponent::getTransformFromGenerator(Gaff::Hash32 /*generator_name*/)
-{
-	return Gleam::Transform();
-}
-
-bool EntitySceneComponent::hasTransformGenerator(Gaff::Hash32 /*generator_name*/) const
-{
-	return false;
-}
-
 NS_END

@@ -23,11 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_EntityComponent.h"
+#include <Shibboleth_ITransformProvider.h>
 #include <Gleam_Transform.h>
 
 NS_SHIBBOLETH
 
-class EntitySceneComponent : public EntityComponent
+class EntitySceneComponent : public EntityComponent, public ITransformProvider
 {
 public:
 	EntitySceneComponent(void) = default;
@@ -60,8 +61,7 @@ public:
 	void addChild(EntitySceneComponent& component);
 	void removeFromParent(bool update_to_world = false);
 
-	virtual Gleam::Transform getTransformFromGenerator(Gaff::Hash32 generator_name);
-	virtual bool hasTransformGenerator(Gaff::Hash32 generator_name) const;
+	const Gleam::Transform& provideTransform(void) const override { return getTransformWorld(); }
 
 private:
 	Gleam::Transform _transform_relative;

@@ -31,8 +31,10 @@ class ModelComponent final : public EntitySceneComponent
 {
 public:
 	bool init(void) override;
+	void destroy(void) override;
 
 private:
+	Vector<IModelStageRegistration::ModelInstanceHandle> _handles;
 	ModelData _model_data;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelComponent);

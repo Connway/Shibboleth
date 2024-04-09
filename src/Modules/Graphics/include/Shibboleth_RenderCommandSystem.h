@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_MaterialComponent.h"
 #include <Shibboleth_ISystem.h>
 #include <Shibboleth_JobPool.h>
+#include <Gleam_Matrix4x4.h>
 
 NS_GLEAM
 	class RenderTarget;

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Defines.h"
+#include <Gleam_Transform.h>
 
 NS_SHIBBOLETH
 
@@ -31,7 +32,10 @@ class ITransformProvider
 public:
 	virtual ~ITransformProvider(void) = default;
 
-	virtual const Gleam::Transform& ProvideTransform(void) const = 0;
+	virtual const Gleam::Transform& provideTransform(void) const = 0;
+
+	virtual Gleam::Transform getTransformFromGenerator(Gaff::Hash32 /*generator_name*/) const { return Gleam::Transform(); }
+	virtual const ITransformProvider* getTransformGenerator(Gaff::Hash32 /*generator_name*/) const { return nullptr; }
 };
 
 NS_END

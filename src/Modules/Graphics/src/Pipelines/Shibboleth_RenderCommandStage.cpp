@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Shibboleth_RenderCommandStage.h"
 #include "Shibboleth_GraphicsLogging.h"
+#include <Shibboleth_ITransformProvider.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Gaff_Function.h>
 
@@ -137,7 +138,7 @@ const RenderCommandData& RenderCommandStage::getRenderCommands(void) const
 	return _render_commands;
 }
 
-RenderCommandStage::ModelInstanceHandle RenderCommandStage::registerModel(const ModelData& data)
+RenderCommandStage::ModelInstanceHandle RenderCommandStage::registerModel(const ModelData& data, const ITransformProvider& transform_provider)
 {
 	static constexpr auto AddResourcesToWaitList = []<class Map>(const Map& resource_map, Vector<const IResource*>& list) -> void
 	{
@@ -210,7 +211,7 @@ RenderCommandStage::ModelInstanceHandle RenderCommandStage::registerModel(const 
 	const auto it = _instance_data.find(bucket_hash);
 
 	if (it != _instance_data.end()) {
-		addModelInstance(data, it->second, instance_hash);
+		addModelInstance(data, it->second, instance_hash, transform_provider);
 		_instance_data_lock.Unlock();
 
 	} else {
@@ -225,11 +226,11 @@ RenderCommandStage::ModelInstanceHandle RenderCommandStage::registerModel(const 
 			const EA::Thread::AutoRWMutex lock(_instance_data_lock, EA::Thread::RWMutex::LockType::kLockTypeRead);
 			InstanceData& instance_data = _instance_data[bucket_hash];
 
-			addModelInstance(data, instance_data, instance_hash);
-		}));
+			addModelInstance(data, instance_data, instance_hash, transform_provider);
+		});
 	}
 
-		return ModelInstanceHandle{ bucket_hash, instance_hash };
+	return ModelInstanceHandle{ bucket_hash, instance_hash, &transform_provider };
 }
 
 void RenderCommandStage::unregisterModel(ModelInstanceHandle handle)
@@ -244,9 +245,14 @@ void RenderCommandStage::unregisterModel(ModelInstanceHandle handle)
 			return;
 		}
 
-		const int32_t instance_count = --it->second.instances;
+		const EA::Thread::AutoRWMutex instance_lock(it->second.lock, EA::Thread::RWMutex::LockType::kLockTypeWrite);
 
-		remove = instance_count <= 0;
+		const auto it_provider = Gaff::Find(it->second.transform_providers, handle.provider);
+
+		if (it_provider != it->second.transform_providers.end()) {
+			it->second.transform_providers.erase_unsorted(it_provider);
+			remove = it->second.transform_providers.empty();
+		}
 	}
 
 	if (remove) {
@@ -258,22 +264,24 @@ void RenderCommandStage::unregisterModel(ModelInstanceHandle handle)
 		}
 
 		// Double check. Another thread might have added a new instance while we were re-acquiring the lock.
-		if (it->second.instances <= 0) {
+		if (it->second.transform_providers.empty()) {
 			_instance_data.erase(it);
 		}
 	}
 }
 
-void RenderCommandStage::addModelInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash)
+void RenderCommandStage::addModelInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash, const ITransformProvider& transform_provider)
 {
 	GAFF_REF(data, instance_hash);
-	++instance_data.instances;
+
+	EA::Thread::AutoRWMutex lock(instance_data.lock, EA::Thread::RWMutex::LockType::kLockTypeWrite);
+	instance_data.transform_providers.emplace_back(&transform_provider);
 }
 
 bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash64 bucket_hash)
 {
 	// Assuming that all materials have the same devices.
-	const auto devices = data.materials.front()->getDevices();
+	const auto devices = data.material_data.front().material->getDevices();
 
 	if (devices.empty()) {
 		// $TODO: Log error.
@@ -288,7 +296,7 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 		return true;
 	}
 
-	InstanceData& instance_data = insert_result->first->second;
+	InstanceData& instance_data = insert_result.first->second;
 	bool result = true;
 
 	instance_data.mesh_instances.resize(static_cast<size_t>(data.model->getNumMeshes()));
@@ -296,7 +304,7 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 	for (int32_t i = 0; i < data.model->getNumMeshes(); ++i) {
 		InstanceData::MeshInstanceData& mesh_instance = instance_data.mesh_instances[i];
 
-		const Hash pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash, i);
+		const U8String pb_name(U8String::CtorSprintf(), ProgramBuffersFormat, bucket_hash, i);
 		mesh_instance.program_buffers = _resource_mgr->createResourceT<ProgramBuffersResource>(pb_name.data());
 		mesh_instance.buffer_instance_count = data.instances_per_page;
 
@@ -308,13 +316,13 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 			return false;
 		}
 
-		const MaterialData& material_data = data.material_data[mesh_index];
+		const MaterialData& material_data = data.material_data[i];
 
-		for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type) {
+		for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type>()) {
 			const int32_t shader_type_index = static_cast<int32_t>(shader_type);
 			// Shader reflection should be the same across all devices. Caching once up front instead of requesting it per device.
 			const Gleam::Program* const program = material_data.material->getProgram(*devices[0]);
-			const Gleam::Shader* const shader = (program) ? program->getAttachedShader(shader_type) : nullptr;
+			const Gleam::Shader* const shader = (program) ? static_cast<const Gleam::Shader*>(program->getAttachedShader(shader_type)) : nullptr;
 
 			if (!shader) {
 				continue;

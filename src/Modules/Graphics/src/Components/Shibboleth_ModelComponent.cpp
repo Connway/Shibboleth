@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Components/Shibboleth_ModelComponent.h"
-#include "Pipelines/Shibboleth_IModelStageRegistration.h"
 #include "Shibboleth_RenderManager.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Gleam_ShaderResourceView.h>
@@ -45,13 +44,26 @@ bool ModelComponent::init(void)
 	ManagerRef<RenderManager> render_mgr;
 
 	const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
+	_handles.reserve(model_stages.size());
 
 	for (IModelStageRegistration* registrar : model_stages) {
-		registrar->registerModel(_model_data);
+		_handles.emplace_back(registrar->registerModel(_model_data, *this));
 	}
 
-	// $TODO: Register with render stages.
 	return true;
+}
+
+void ModelComponent::destroy(void)
+{
+	ManagerRef<RenderManager> render_mgr;
+
+	const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
+
+	for (int32_t i = 0; i < static_cast<int32_t>(_handles.size()); ++i) {
+		model_stages[i]->unregisterModel(_handles[i]);
+	}
+
+	_handles.clear();
 }
 
 NS_END
