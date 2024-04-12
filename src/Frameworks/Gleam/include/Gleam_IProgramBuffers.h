@@ -56,10 +56,9 @@ public:
 	virtual int32_t getResourceViewCount(IShader::Type type) const = 0;
 	virtual int32_t getResourceViewCount(void) const = 0;
 
-	virtual const Vector<ISamplerState*>& getSamplerStates(IShader::Type type) const = 0;
+	virtual const Vector<const ISamplerState*>& getSamplerStates(IShader::Type type) const = 0;
 	virtual const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const = 0;
-	virtual ISamplerState* getSamplerState(IShader::Type type, int32_t index) = 0;
-	virtual void addSamplerState(IShader::Type type, ISamplerState* sampler) = 0;
+	virtual void addSamplerState(IShader::Type type, const ISamplerState* sampler) = 0;
 	virtual void removeSamplerState(IShader::Type type, int32_t index) = 0;
 	virtual void popSamplerState(IShader::Type type, int32_t count = 1) = 0;
 

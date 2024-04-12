@@ -54,10 +54,9 @@ public:
 	int32_t getResourceViewCount(IShader::Type type) const override;
 	int32_t getResourceViewCount(void) const override;
 
-	const Vector<ISamplerState*>& getSamplerStates(IShader::Type type) const override;
+	const Vector<const ISamplerState*>& getSamplerStates(IShader::Type type) const override;
 	const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const override;
-	ISamplerState* getSamplerState(IShader::Type type, int32_t index) override;
-	void addSamplerState(IShader::Type type, ISamplerState* sampler) override;
+	void addSamplerState(IShader::Type type, const ISamplerState* sampler) override;
 	void removeSamplerState(IShader::Type type, int32_t index) override;
 	void popSamplerState(IShader::Type type, int32_t count = 1) override;
 
@@ -75,7 +74,7 @@ public:
 
 private:
 	Vector<IShaderResourceView*> _resource_views[static_cast<size_t>(IShader::Type::Count)];
-	Vector<ISamplerState*> _sampler_states[static_cast<size_t>(IShader::Type::Count)];
+	Vector<const ISamplerState*> _sampler_states[static_cast<size_t>(IShader::Type::Count)];
 	Vector<IBuffer*> _constant_buffers[static_cast<size_t>(IShader::Type::Count)];
 
 	Vector<ID3D11ShaderResourceView*> _d3d_res_views[static_cast<size_t>(IShader::Type::Count)];

@@ -54,10 +54,12 @@ public:
 
 	const RenderCommandData& getRenderCommands(void) const override;
 
-	// $TODO: Should these APIs use a queue model instead?
-	// $TODO: Register something that can retrive the final transform of the model.
+	// $TODO: Should these APIs use a queue model instead? So that registration is fast and then all the data gets created in update loop?
 	ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& transform_provider) override;
 	void unregisterModel(ModelInstanceHandle handle) override;
+
+	// $TODO: Should these APIs use a queue model instead? So that registration is fast and then all the data gets created in update loop?
+	// $TODO: Register/unregister camera APIs.
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
@@ -154,7 +156,7 @@ private:
 	bool createInstanceBucket(const ModelData& data, Gaff::Hash64 bucket_hash);
 
 	void addStructuredBuffersSRVs(
-		InstanceData& instance_data,
+		InstanceData::MeshInstanceData& instance_data,
 		Gaff::Hash64 instance_hash,
 		const Vector<Gleam::RenderDevice*>& devices,
 		const Gleam::IShader::Type shader_type,
@@ -172,6 +174,7 @@ private:
 
 	void addConstantBuffers(
 		Gaff::Hash64 instance_hash,
+		const Vector<Gleam::RenderDevice*>& devices,
 		const Gleam::IShader::Type shader_type,
 		const Gleam::ShaderReflection& refl,
 		Gleam::ProgramBuffers& pb,

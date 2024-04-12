@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsLogging.h"
 #include <Shibboleth_ITransformProvider.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_Mesh.h>
 #include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibboleth::IRenderStage)
@@ -59,7 +61,7 @@ namespace
 		}
 
 		GAFF_ASSERT(false);
-		return nullptr;
+		return static_cast<decltype(&texture_data.vertex)>(nullptr);
 	}
 }
 
@@ -297,7 +299,6 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 	}
 
 	InstanceData& instance_data = insert_result.first->second;
-	bool result = true;
 
 	instance_data.mesh_instances.resize(static_cast<size_t>(data.model->getNumMeshes()));
 
@@ -330,7 +331,7 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 
 			const Gleam::ShaderReflection shader_refl = shader->getReflectionData();
 
-			addStructuredBuffersSRVs(mesh_instance, bucket_hash, devices, shader_type, shader_refl, material_data.material);
+			addStructuredBuffersSRVs(mesh_instance, bucket_hash, devices, shader_type, shader_refl, *material_data.material);
 
 			for (Gleam::RenderDevice* rd : devices) {
 				InstanceData::VarMap shader_vars { GRAPHICS_ALLOCATOR };
@@ -354,7 +355,7 @@ bool RenderCommandStage::createInstanceBucket(const ModelData& data, Gaff::Hash6
 
 				Gleam::ProgramBuffers* const pb = mesh_instance.program_buffers->getProgramBuffer(*rd);
 
-				addConstantBuffers(bucket_hash, shader_type, shader_refl, *pb, *rd);
+				addConstantBuffers(bucket_hash, devices, shader_type, shader_refl, *pb, *rd);
 				addSamplers(shader_type, material_data, shader_refl, *pb, *rd);
 
 				for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
@@ -711,10 +712,10 @@ void RenderCommandStage::addStructuredBuffersSRVs(
 		buffer_data.buffer_string = std::move(b_name);
 		auto& page = buffer_data.pages.emplace_back();
 
-		for (Gleam::RenderDevice rd : devices) {
+		for (Gleam::RenderDevice* rd : devices) {
 			Gleam::ShaderResourceView* const srv = SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
 
-			if (!srv->init(*rd, buffer->getBuffer(*rd))) {
+			if (!srv->init(*rd, *buffer->getBuffer(*rd))) {
 				// $TODO: Log error and use error texture.
 				SHIB_FREET(srv, GetAllocator());
 				return;
@@ -750,7 +751,7 @@ void RenderCommandStage::addTextureSRVs(
 		Gleam::ShaderResourceView* const srv = SHIB_ALLOCT(Gleam::ShaderResourceView, g_allocator);
 		const Gleam::Texture* const texture = it->second->getTexture(rd);
 
-		if (!srv->init(rd, texture)) {
+		if (!srv->init(rd, *texture)) {
 			// $TODO: Log error and use error texture.
 			SHIB_FREET(srv, GetAllocator());
 			continue;
@@ -762,6 +763,7 @@ void RenderCommandStage::addTextureSRVs(
 
 void RenderCommandStage::addConstantBuffers(
 	Gaff::Hash64 instance_hash,
+	const Vector<Gleam::RenderDevice*>& devices,
 	const Gleam::IShader::Type shader_type,
 	const Gleam::ShaderReflection& refl,
 	Gleam::ProgramBuffers& pb,
@@ -809,7 +811,7 @@ void RenderCommandStage::addSamplers(
 			pb.addSamplerState(shader_type, default_sampler);
 
 		} else {
-			Gleam::SamplerState* const sampler = it->second->getSamplerState(rd);
+			const Gleam::SamplerState* const sampler = it->second->getSamplerState(rd);
 
 			if (sampler) {
 				pb.addSamplerState(shader_type, sampler);

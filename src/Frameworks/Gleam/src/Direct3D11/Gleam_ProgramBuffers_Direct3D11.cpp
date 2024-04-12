@@ -226,7 +226,7 @@ int32_t ProgramBuffers::getResourceViewCount(void) const
 	return count;
 }
 
-const Vector<ISamplerState*>& ProgramBuffers::getSamplerStates(IShader::Type type) const
+const Vector<const ISamplerState*>& ProgramBuffers::getSamplerStates(IShader::Type type) const
 {
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 	return _sampler_states[static_cast<int32_t>(type)];
@@ -234,17 +234,12 @@ const Vector<ISamplerState*>& ProgramBuffers::getSamplerStates(IShader::Type typ
 
 const ISamplerState* ProgramBuffers::getSamplerState(IShader::Type type, int32_t index) const
 {
-	return const_cast<ProgramBuffers*>(this)->getSamplerState(type, index);
-}
-
-ISamplerState* ProgramBuffers::getSamplerState(IShader::Type type, int32_t index)
-{
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_sampler_states[static_cast<int32_t>(type)].size()));
 	return _sampler_states[static_cast<int32_t>(type)][index];
 }
 
-void ProgramBuffers::addSamplerState(IShader::Type type, ISamplerState* sampler)
+void ProgramBuffers::addSamplerState(IShader::Type type, const ISamplerState* sampler)
 {
 	GAFF_ASSERT(sampler && sampler->getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
