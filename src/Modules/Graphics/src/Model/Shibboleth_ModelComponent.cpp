@@ -23,15 +23,12 @@ THE SOFTWARE.
 #include "Components/Shibboleth_ModelComponent.h"
 #include "Shibboleth_RenderManager.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
-#include <Gleam_ShaderResourceView.h>
-#include <Gleam_Texture.h>
-#include <Gleam_Mesh.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
 	.template ctor<>()
 
-	//.var("data", &Shibboleth::ModelComponent::_model_instance_data)
+	.var("data", &Shibboleth::ModelComponent::_model_instance_data)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
 
 
@@ -42,13 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ModelComponent)
 bool ModelComponent::init(void)
 {
 	ManagerRef<RenderManager> render_mgr;
-
-	//const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
-	//_handles.reserve(model_stages.size());
-
-	//for (IModelStageRegistration* registrar : model_stages) {
-	//	_handles.emplace_back(registrar->registerModel(_model_data, *this));
-	//}
+	_handle = render_mgr->registerModel(_model_data, *this);
 
 	return true;
 }
@@ -56,14 +47,9 @@ bool ModelComponent::init(void)
 void ModelComponent::destroy(void)
 {
 	ManagerRef<RenderManager> render_mgr;
+	render_mgr->unregisterModel(_handle);
 
-	//const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
-
-	//for (int32_t i = 0; i < static_cast<int32_t>(_handles.size()); ++i) {
-	//	model_stages[i]->unregisterModel(_handles[i]);
-	//}
-
-	//_handles.clear();
+	_handle = ModelInstanceHandle{};
 }
 
 NS_END

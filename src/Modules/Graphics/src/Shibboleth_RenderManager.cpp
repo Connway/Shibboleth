@@ -760,24 +760,72 @@ RenderPipeline& RenderManager::getRenderPipeline(void)
 	return _render_pipeline;
 }
 
-void RenderManager::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
+ModelInstanceHandle RenderManager::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
 {
-	Gaff::Hash64 instance_hash;
-	Gaff::Hash64 bucket_hash;
+	const ModelInstanceHandle handle = model_data.createInstanceHandle(tform_provider);
+	auto it_bucket = _model_instances.find(handle.bucket_hash);
 
-	model_data.getInstanceAndBucketHash(bucket_hash, instance_hash);
+	if (it_bucket == _model_instances.end()) {
+		const auto result = _model_instances.insert(handle.bucket_hash);
+		GAFF_ASSERT(result.second);
 
-	// $TODO: Use hahes to add transform provider to map.
+		it_bucket = result.first;
+		it_bucket->set_allocator(GRAPHICS_ALLOCATOR);
+	}
+
+	auto it_instance = it_bucket->find(handle.instance_hash);
+
+	if (it_instance == it_bucket->end()) {
+		const auto result = it_bucket->insert(handle.instance_hash);
+		GAFF_ASSERT(result.second);
+
+		it_instance = result.first;
+		it_instance->set_allocator(GRAPHICS_ALLOCATOR);
+	}
+
+	GAFF_ASSERT(!Gaff::Contains(*it_instance, &tform_provider));
+	it_instance->emplace_back(&tform_provider);
+
+	return handle;
 }
 
-void RenderManager::unregisterModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
+void RenderManager::unregisterModel(ModelInstanceHandle handle)
 {
-	Gaff::Hash64 instance_hash;
-	Gaff::Hash64 bucket_hash;
+	const auto it_bucket = _model_instances.find(handle.bucket_hash);
 
-	model_data.getInstanceAndBucketHash(bucket_hash, instance_hash);
+	if (it_bucket == _model_instances.end()) {
+		// $TODO: Log warning.
+		return;
+	}
 
-	// $TODO: Remove from map.
+	auto it_instance = it_bucket->find(handle.instance_hash);
+
+	if (it_instance == it_bucket->end()) {
+		// $TODO: Log warning.
+		return;
+	}
+
+	const auto it = Gaff::Find(*it_instance, &tform_provider);
+
+	if (it == it_instance->end()) {
+		// $TODO: Log warning.
+		return;
+	}
+
+	it_instance->erase_unsorted(it);
+
+	if (it_instance->empty()) {
+		it_bucket->erase(handle.instance_hash);
+	}
+
+	if (it_bucket->empty()) {
+		_model_instances.erase(handle.bucket_hash);
+	}
+}
+
+const VectorMap<Gaff::Hash64, RenderManager::ModelBucket>& RenderManager::getRegisteredModels(void) const
+{
+	return _model_instances;
 }
 
 int32_t RenderManager::registerCameraView(CameraView*& view)

@@ -34,8 +34,8 @@ public:
 	void destroy(void) override;
 
 private:
-	//Vector<IModelStageRegistration::ModelInstanceHandle> _handles;
 	ModelInstanceData _model_instance_data;
+	ModelInstanceHandle _handle;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelComponent);
 };

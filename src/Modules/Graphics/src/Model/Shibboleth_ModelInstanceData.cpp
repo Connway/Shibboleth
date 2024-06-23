@@ -63,6 +63,16 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelInstanceData)
 
 NS_SHIBBOLETH
 
+ModelInstanceHandle ModelInstanceData::createInstanceHandle(const ITransformProvider& tform_provider) const
+{
+	ModelInstanceHandle handle;
+	handle.transform_provider = &tform_provider;
+
+	getInstanceAndBucketHash(handle.bucket_hash, handle.instance_hash);
+
+	return handle;
+}
+
 void ModelInstanceData::getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const
 {
 	static constexpr auto AddResourcesToHash = []<class Map>(const Map& resource_map, Gaff::Hash64& bucket_hash) -> void
