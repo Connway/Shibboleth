@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 
 class ITransformProvider;
 
-struct TextureData final
+struct TextureInstanceData final
 {
 	using TextureMap = VectorMap< HashString32<>, ResourcePtr<TextureResource> >;
 
@@ -42,7 +42,7 @@ struct TextureData final
 	TextureMap hull;
 };
 
-struct SamplerData final
+struct SamplerInstanceData final
 {
 	using SamplerMap = VectorMap< HashString32<>, ResourcePtr<SamplerStateResource> >;
 
@@ -53,47 +53,33 @@ struct SamplerData final
 	SamplerMap hull;
 };
 
-struct MaterialData final
+struct MaterialInstanceData final
 {
 	ResourcePtr<MaterialResource> material;
-	TextureData textures;
-	SamplerData samplers;
+	TextureInstanceData textures;
+	SamplerInstanceData samplers;
 };
 
-struct ModelData final
+struct ModelInstanceData final
 {
-	ResourcePtr<ModelResource> model;
 	// $TODO: Add support for automatically sizing this according to the number of meshes in the model resource.
-	Vector<MaterialData> material_data{ GRAPHICS_ALLOCATOR };
+	Vector<MaterialInstanceData> material_data{ GRAPHICS_ALLOCATOR };
+	ResourcePtr<ModelResource> model;
 
+	// $TODO: Fixed size.
 	int32_t instances_per_page = 64;
-};
 
-class IModelStageRegistration
-{
-public:
-	struct ModelInstanceHandle final
-	{
-		Gaff::Hash64 bucket_hash{ 0 };
-		Gaff::Hash64 instance_hash{ 0 };
-		const ITransformProvider* provider = nullptr;
+	Gaff::Hash64 instance_hash_cache;
+	Gaff::Hash64 bucket_hash_cache;
 
-		bool isValid(void) const { return bucket_hash.getHash() != 0 && instance_hash.getHash() != 0; }
-	};
-
-	virtual ~IModelStageRegistration(void) {}
-
-	virtual ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& transform_provider) = 0;
-	virtual void unregisterModel(ModelInstanceHandle handle) = 0;
+	void getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const;
+	Gaff::Hash64 getInstanceHash(void) const;
+	Gaff::Hash64 getBucketHash(void) const;
 };
 
 NS_END
 
-NS_HASHABLE
-	GAFF_CLASS_HASHABLE(Shibboleth::IModelStageRegistration);
-NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::MaterialData)
-SHIB_REFLECTION_DECLARE(Shibboleth::TextureData)
-SHIB_REFLECTION_DECLARE(Shibboleth::SamplerData)
-SHIB_REFLECTION_DECLARE(Shibboleth::ModelData)
+SHIB_REFLECTION_DECLARE(Shibboleth::MaterialInstanceData)
+SHIB_REFLECTION_DECLARE(Shibboleth::TextureInstanceData)
+SHIB_REFLECTION_DECLARE(Shibboleth::SamplerInstanceData)
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelInstanceData)

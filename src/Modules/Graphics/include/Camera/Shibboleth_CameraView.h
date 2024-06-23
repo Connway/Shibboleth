@@ -20,50 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Components/Shibboleth_ModelComponent.h"
-#include "Shibboleth_RenderManager.h"
-#include <Ptrs/Shibboleth_ManagerRef.h>
-#include <Gleam_ShaderResourceView.h>
-#include <Gleam_Texture.h>
-#include <Gleam_Mesh.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
-	.template base<Shibboleth::EntitySceneComponent>()
-	.template ctor<>()
-
-	//.var("data", &Shibboleth::ModelComponent::_model_data)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
-
+#include <Shibboleth_Reflection.h>
+#include <Gaff_Math.h
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ModelComponent)
-
-bool ModelComponent::init(void)
+// $TODO: Since this camera view structure lives at the RenderManager level, it's not super
+// flexible to custom pipelines that may want to add additional data to this structure.
+struct CameraView final
 {
-	ManagerRef<RenderManager> render_mgr;
+	Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
+	float fov = 75.0f * Gaff::DegreesToTurns;
 
-	const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
-	_handles.reserve(model_stages.size());
-
-	for (IModelStageRegistration* registrar : model_stages) {
-		_handles.emplace_back(registrar->registerModel(_model_data, *this));
-	}
-
-	return true;
-}
-
-void ModelComponent::destroy(void)
-{
-	ManagerRef<RenderManager> render_mgr;
-
-	const auto model_stages = render_mgr->getRenderPipeline().getRenderStages<IModelStageRegistration>();
-
-	for (int32_t i = 0; i < static_cast<int32_t>(_handles.size()); ++i) {
-		model_stages[i]->unregisterModel(_handles[i]);
-	}
-
-	_handles.clear();
-}
+	// $TODO: Depth of field.
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraView)

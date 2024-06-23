@@ -22,24 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Pipelines/Shibboleth_IModelStageRegistration.h"
+#include "Shibboleth_CameraView.h"
 #include <Shibboleth_EntitySceneComponent.h>
+#include <Shibboleth_Math.h>
 
 NS_SHIBBOLETH
 
-class ModelComponent final : public EntitySceneComponent
+class CameraComponent final : public EntitySceneComponent
 {
 public:
-	bool init(void) override;
-	void destroy(void) override;
+	void setFOV(float focal_length, float sensor_size);
+	void setFOVDegrees(float fov);
+	void setFOVRadians(float fov);
+	void setFOV(float fov);
+	float getFOVDegrees(void) const;
+	float getFOVRadians(void) const;
+	float getFOV(void) const;
+
+	const CameraView& getView(void) const { return const_cast<CameraComponent*>(this)->getView(); }
+	CameraView& getView(void);
 
 private:
-	Vector<IModelStageRegistration::ModelInstanceHandle> _handles;
-	ModelData _model_data;
+	CameraView _view;
 
-	SHIB_REFLECTION_CLASS_DECLARE(ModelComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ModelComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraComponent)

@@ -739,6 +739,53 @@ void RenderManager::initializeRenderCommandData(RenderCommandData& render_comman
 	}
 }
 
+int32_t RenderManager::getRenderCacheIndex(void) const
+{
+	return _render_cache_index;
+}
+
+const RenderPipeline& RenderManager::getRenderPipeline(void) const
+{
+	return _render_pipeline;
+}
+
+RenderPipeline& RenderManager::getRenderPipeline(void)
+{
+	return _render_pipeline;
+}
+
+void RenderManager::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
+{
+}
+
+void RenderManager::unregisterModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
+{
+}
+
+int32_t RenderManager::registerCameraView(CameraView*& view)
+{
+	const int32_t index = _camera_views.emplace();
+	_new_camera_views.emplace_back(index);
+
+	view = &_camera_views[index];
+}
+
+int32_t RenderManager::registerCameraView(void)
+{
+	CameraView* view_ptr = nullptr;
+	return registerCameraView(view_ptr);
+}
+
+void RenderManager::unregisterCameraView(int32_t id)
+{
+	_camera_views.remove(id);
+}
+
+CameraView& RenderManager::getCameraView(int32_t id)
+{
+	return _camera_views[id];
+}
+
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)
 {
 	Gleam::RenderDevice* const rd = SHIB_ALLOCT(Gleam::RenderDevice, g_allocator);
@@ -805,21 +852,6 @@ void RenderManager::handleWindowClosed(Gleam::Window& window)
 	if (!getNumWindows()) {
 		GetApp().quit();
 	}
-}
-
-int32_t RenderManager::getRenderCacheIndex(void) const
-{
-	return _render_cache_index;
-}
-
-const RenderPipeline& RenderManager::getRenderPipeline(void) const
-{
-	return _render_pipeline;
-}
-
-RenderPipeline& RenderManager::getRenderPipeline(void)
-{
-	return _render_pipeline;
 }
 
 NS_END
