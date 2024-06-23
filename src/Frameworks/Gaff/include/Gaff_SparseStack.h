@@ -136,6 +136,8 @@ public:
 
 	void pop(void);
 
+	// $TODO: Implement compact() function.
+
 	bool validIndex(int32_t index) const;
 	bool empty(void) const;
 

@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IModelStageRegistration.h"
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IRenderStage.h"
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
@@ -41,10 +40,11 @@ NS_END
 
 NS_SHIBBOLETH
 
+struct ModelInstanceData;
 class ResourceManager;
 
 // $TODO: This might need to be split up into more discrete stages, such as a culling stage.
-class RenderCommandStage final : public IRenderStage, public IModelStageRegistration
+class RenderCommandStage final : public IRenderStage
 {
 public:
 	bool init(RenderManager& render_mgr) override;
@@ -53,13 +53,6 @@ public:
 	void update(uintptr_t thread_id_int) override;
 
 	const RenderCommandData& getRenderCommands(void) const override;
-
-	// $TODO: Should these APIs use a queue model instead? So that registration is fast and then all the data gets created in update loop?
-	ModelInstanceHandle registerModel(const ModelData& data, const ITransformProvider& transform_provider) override;
-	void unregisterModel(ModelInstanceHandle handle) override;
-
-	// $TODO: Should these APIs use a queue model instead? So that registration is fast and then all the data gets created in update loop?
-	// $TODO: Register/unregister camera APIs.
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
@@ -152,8 +145,8 @@ private:
 	ManagerRef<RenderManager> _render_mgr;
 	JobPool* _job_pool = nullptr;
 
-	void addModelInstance(const ModelData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash, const ITransformProvider& transform_provider);
-	bool createInstanceBucket(const ModelData& data, Gaff::Hash64 bucket_hash);
+	void addModelInstance(const ModelInstanceData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash, const ITransformProvider& transform_provider);
+	bool createInstanceBucket(const ModelInstanceData& data, Gaff::Hash64 bucket_hash);
 
 	void addStructuredBuffersSRVs(
 		InstanceData::MeshInstanceData& instance_data,

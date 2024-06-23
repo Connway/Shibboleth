@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Pipelines/Shibboleth_RenderPipeline.h"
+#include "Resources/Shibboleth_ModelResource.h"
+#include "Camera/Shibboleth_CameraView.h"
+#include <Containers/Shibboleth_SparseStack.h>
 #include <Containers/Shibboleth_VectorMap.h>
 #include <Containers/Shibboleth_Vector.h>
 #include <Ptrs/Shibboleth_SmartPtrs.h>
@@ -45,6 +48,8 @@ NS_END
 
 
 NS_SHIBBOLETH
+
+struct ModelInstanceData;
 
 struct RenderCommands final
 {
@@ -214,6 +219,15 @@ public:
 	const RenderPipeline& getRenderPipeline(void) const;
 	RenderPipeline& getRenderPipeline(void);
 
+	void registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+	void unregisterModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+
+	int32_t registerCameraView(CameraView*& view);
+	int32_t registerCameraView(void);
+	void unregisterCameraView(int32_t id);
+	const CameraView& getCameraView() const { return const_cast<RenderManager*>(this)->getCameraView(); }
+	CameraView& getCameraView(int32_t id);
+
 private:
 	struct RenderOutput final
 	{
@@ -237,6 +251,9 @@ private:
 
 	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
 	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
+
+	SparseStack<CameraView> _camera_views{ GRAPHICS_ALLOCATOR };
+	Vector<int32_t> _new_camera_views{ GRAPHICS_ALLOCATOR };
 
 	// $TODO: Move a lot of these into RenderPipeline.
 	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };

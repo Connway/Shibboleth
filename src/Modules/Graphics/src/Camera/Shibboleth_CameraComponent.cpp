@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_CameraComponent.h"
+#include "Camera/Shibboleth_CameraComponent.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Gaff_Math.h>
 
@@ -28,7 +28,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
 	.template ctor<>()
 
-	.var("vertical_fov", &Shibboleth::CameraComponent::_vertical_fov, Shibboleth::OptionalAttribute())
+	.var("_fov", &Shibboleth::CameraComponent::_view.fov, Shibboleth::OptionalAttribute())
 	.var("z_planes", &Shibboleth::CameraComponent::_z_planes, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 
@@ -37,74 +37,48 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CameraComponent)
 
-void CameraComponent::setVerticalFOV(float focal_length, float sensor_size)
+void CameraComponent::setFOV(float focal_length, float sensor_size)
 {
 	GAFF_ASSERT(focal_length > 0.0f);
 	GAFF_ASSERT(sensor_size > 0.0f);
 
 	const float fov = Gaff::CalculateFOV(sensor_size, focal_length);
-	setVerticalFOV(fov);
+	setFOV(fov);
 }
 
-void CameraComponent::setVerticalFOVDegrees(float fov)
+void CameraComponent::setFOVDegrees(float fov)
 {
-	_vertical_fov = fov * Gaff::DegreesToTurns;
+	_view.fov = fov * Gaff::DegreesToTurns;
 }
 
-void CameraComponent::setVerticalFOVRadians(float fov)
+void CameraComponent::setFOVRadians(float fov)
 {
-	_vertical_fov = fov * Gaff::RadiansToTurns;
+	_view.fov = fov * Gaff::RadiansToTurns;
 }
 
-void CameraComponent::setVerticalFOV(float fov)
+void CameraComponent::setFOV(float fov)
 {
-	_vertical_fov = fov;
+	_view.fov = fov;
 }
 
-float CameraComponent::getVerticalFOVDegrees(void) const
+float CameraComponent::getFOVDegrees(void) const
 {
-	return _vertical_fov * Gaff::TurnsToDegrees;
+	return _view.fov * Gaff::TurnsToDegrees;
 }
 
-float CameraComponent::getVerticalFOVRadians(void) const
+float CameraComponent::getFOVRadians(void) const
 {
-	return _vertical_fov * Gaff::TurnsToRadians;
+	return _view.fov * Gaff::TurnsToRadians;
 }
 
-float CameraComponent::getVerticalFOV(void) const
+float CameraComponent::getFOV(void) const
 {
-	return _vertical_fov;
+	return _view.fov;
 }
 
-const Gleam::Vec2& CameraComponent::getZPlanes(void) const
+CameraView& CameraComponent::getView(void)
 {
-	return _z_planes;
-}
-
-void CameraComponent::setZPlanes(const Gleam::Vec2& z_planes)
-{
-	GAFF_ASSERT(z_planes.x < z_planes.y);
-	_z_planes = z_planes;
-}
-
-void CameraComponent::setZNear(float z_near)
-{
-	_z_planes.x = z_near;
-}
-
-float CameraComponent::getZNear(void) const
-{
-	return _z_planes.x;
-}
-
-void CameraComponent::setZFar(float z_far)
-{
-	_z_planes.y = z_far;
-}
-
-float CameraComponent::getZFar(void) const
-{
-	return _z_planes.y;
+	return _view;
 }
 
 NS_END

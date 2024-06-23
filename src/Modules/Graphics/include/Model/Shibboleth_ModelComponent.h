@@ -22,38 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Model/Shibboleth_ModelInstanceData.h"
 #include <Shibboleth_EntitySceneComponent.h>
-#include <Shibboleth_Math.h>
 
 NS_SHIBBOLETH
 
-class CameraComponent final : public EntitySceneComponent
+class ModelComponent final : public EntitySceneComponent
 {
 public:
-	void setVerticalFOV(float focal_length, float sensor_size);
-	void setVerticalFOVDegrees(float fov);
-	void setVerticalFOVRadians(float fov);
-	void setVerticalFOV(float fov);
-	float getVerticalFOVDegrees(void) const;
-	float getVerticalFOVRadians(void) const;
-	float getVerticalFOV(void) const;
-
-	void setZPlanes(const Gleam::Vec2& z_planes);
-	const Gleam::Vec2& getZPlanes(void) const;
-
-	void setZNear(float z_near);
-	float getZNear(void) const;
-
-	void setZFar(float z_far);
-	float getZFar(void) const;
+	bool init(void) override;
+	void destroy(void) override;
 
 private:
-	Gleam::Vec2 _z_planes{ 0.001f, 2000.0f }; // m
-	float _vertical_fov = 0.25f; // turns
+	//Vector<IModelStageRegistration::ModelInstanceHandle> _handles;
+	ModelInstanceData _model_instance_data;
 
-	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(ModelComponent);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::ModelComponent)
