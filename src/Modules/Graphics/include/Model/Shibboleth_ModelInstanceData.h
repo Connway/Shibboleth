@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Resources/Shibboleth_MaterialResource.h"
 #include "Resources/Shibboleth_TextureResource.h"
-#include "Resources/Shibboleth_ModelResource.h"
+#include "Model/Shibboleth_ModelResource.h"
 
 NS_SHIBBOLETH
 
@@ -78,9 +78,9 @@ struct ModelInstanceData final
 
 	ModelInstanceHandle createInstanceHandle(const ITransformProvider& tform_provider) const;
 
-	void getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const;
-	Gaff::Hash64 getInstanceHash(void) const;
-	Gaff::Hash64 getBucketHash(void) const;
+	void calculateInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const;
+	Gaff::Hash64 calculateInstanceHash(void) const;
+	Gaff::Hash64 calculateBucketHash(void) const;
 };
 
 NS_END

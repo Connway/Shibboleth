@@ -25,4 +25,4 @@ THE SOFTWARE.
 #include <Shibboleth_ProxyAllocator.h>
 
 #define GRAPHICS_ALLOCATOR_POOL_NAME "Graphics"
-#define GRAPHICS_ALLOCATOR Shibboleth::ProxyAllocator(GRAPHICS_ALLOCATOR_POOL_NAME)
+#define GRAPHICS_ALLOCATOR Shibboleth::ProxyAllocator{ GRAPHICS_ALLOCATOR_POOL_NAME }
