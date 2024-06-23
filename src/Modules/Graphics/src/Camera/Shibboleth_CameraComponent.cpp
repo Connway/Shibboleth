@@ -21,7 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Camera/Shibboleth_CameraComponent.h"
+#include "Shibboleth_RenderManager.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
@@ -35,6 +37,14 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CameraComponent)
+
+bool CameraComponent::init(void)
+{
+	ManagerRef<RenderManager> render_mgr;
+	_view_id = render_mgr->registerCameraView();
+
+	return true;
+}
 
 void CameraComponent::setFOV(float focal_length, float sensor_size)
 {

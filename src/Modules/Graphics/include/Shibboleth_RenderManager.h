@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Pipelines/Shibboleth_RenderPipeline.h"
-#include "Resources/Shibboleth_ModelResource.h"
+#include "Model/Shibboleth_ModelResource.h"
 #include "Camera/Shibboleth_CameraView.h"
 #include <Containers/Shibboleth_SparseStack.h>
 #include <Containers/Shibboleth_VectorMap.h>
@@ -148,6 +148,8 @@ public:
 	~RenderManager(void);
 
 	bool init(void) override;
+
+	void newFrame(void);
 
 	void manageRenderDevice(Gleam::RenderDevice& device);
 

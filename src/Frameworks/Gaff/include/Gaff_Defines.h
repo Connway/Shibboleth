@@ -60,8 +60,8 @@ THE SOFTWARE.
 #define GAFF_REF_HELPER(x) ((void)x)
 #define GAFF_REF(...) GAFF_FOR_EACH(GAFF_REF_HELPER, __VA_ARGS__)
 
-#define GAFF_UFAUL(type) static_cast<type>(-1) // Failure value for a unsigned type.
-#define GAFF_SIZE_T_FAIL GAFF_UFAUL(size_t) // Returned from functions that use size_t's, but can potentially fail
+#define GAFF_UFAIL(type) static_cast<type>(-1) // Failure value for a unsigned type.
+#define GAFF_SIZE_T_FAIL GAFF_UFAIL(size_t) // Returned from functions that use size_t's, but can potentially fail
 #define GAFF_DYNAMIC_EXPORT_C extern "C" GAFF_DYNAMIC_EXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x

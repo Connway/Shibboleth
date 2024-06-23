@@ -312,6 +312,12 @@ bool RenderManager::init(void)
 	return true;
 }
 
+void RenderManager::newFrame(void)
+{
+	_new_camera_views.clear();
+	_new_models.clear();
+}
+
 //void RenderManager::updateWindows(void)
 //{
 //	Gleam::Window::PollEvents();
@@ -756,10 +762,22 @@ RenderPipeline& RenderManager::getRenderPipeline(void)
 
 void RenderManager::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
 {
+	Gaff::Hash64 instance_hash;
+	Gaff::Hash64 bucket_hash;
+
+	model_data.getInstanceAndBucketHash(bucket_hash, instance_hash);
+
+	// $TODO: Use hahes to add transform provider to map.
 }
 
 void RenderManager::unregisterModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
 {
+	Gaff::Hash64 instance_hash;
+	Gaff::Hash64 bucket_hash;
+
+	model_data.getInstanceAndBucketHash(bucket_hash, instance_hash);
+
+	// $TODO: Remove from map.
 }
 
 int32_t RenderManager::registerCameraView(CameraView*& view)
