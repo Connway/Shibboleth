@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Resources/Shibboleth_MeshResource.h"
+#include "Model/Shibboleth_MeshResource.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
-#include <Gleam_Mesh.h>
 #include <assimp/mesh.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MeshResource)

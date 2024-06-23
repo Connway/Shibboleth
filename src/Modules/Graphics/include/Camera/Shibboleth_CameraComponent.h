@@ -31,6 +31,8 @@ NS_SHIBBOLETH
 class CameraComponent final : public EntitySceneComponent
 {
 public:
+	bool init(void) override;
+
 	void setFOV(float focal_length, float sensor_size);
 	void setFOVDegrees(float fov);
 	void setFOVRadians(float fov);
@@ -44,6 +46,7 @@ public:
 
 private:
 	CameraView _view;
+	int32_t _view_id = -1;
 
 	SHIB_REFLECTION_CLASS_DECLARE(CameraComponent);
 };

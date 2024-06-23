@@ -22,15 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_BufferResource.h"
+#include "Resources/Shibboleth_BufferResource.h"
 #include <Shibboleth_ResourcePtr.h>
+#include <Gleam_Mesh.h>
 #include <Gleam_AABB.h>
 
 struct aiMesh;
-
-NS_GLEAM
-	class Mesh;
-NS_END
 
 NS_SHIBBOLETH
 
