@@ -789,6 +789,8 @@ ModelInstanceHandle RenderManager::registerModel(const ModelInstanceData& model_
 	GAFF_ASSERT(!Gaff::Contains(it_instance->second, &tform_provider));
 	it_instance->second.emplace_back(&tform_provider);
 
+	_new_models.emplace_back(handle);
+
 	return handle;
 }
 
