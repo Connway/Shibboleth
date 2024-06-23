@@ -264,6 +264,7 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MaterialComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerSystems.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraComponent.cpp" />
@@ -292,6 +293,7 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_MaterialComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderCommandSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManagerSystems.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />

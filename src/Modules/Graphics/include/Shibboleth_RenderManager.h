@@ -50,6 +50,7 @@ NS_END
 NS_SHIBBOLETH
 
 struct ModelInstanceData;
+class ITransformProvider;
 
 struct RenderCommands final
 {
