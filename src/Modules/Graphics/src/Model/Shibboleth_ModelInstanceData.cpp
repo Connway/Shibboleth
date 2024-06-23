@@ -68,12 +68,12 @@ ModelInstanceHandle ModelInstanceData::createInstanceHandle(const ITransformProv
 	ModelInstanceHandle handle;
 	handle.transform_provider = &tform_provider;
 
-	getInstanceAndBucketHash(handle.bucket_hash, handle.instance_hash);
+	calculateInstanceAndBucketHash(handle.bucket_hash, handle.instance_hash);
 
 	return handle;
 }
 
-void ModelInstanceData::getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const
+void ModelInstanceData::calculateInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const
 {
 	static constexpr auto AddResourcesToHash = []<class Map>(const Map& resource_map, Gaff::Hash64& bucket_hash) -> void
 	{
@@ -82,54 +82,50 @@ void ModelInstanceData::getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff
 		}
 	};
 
-	if (instance_hash_cache != k_init_hash64 && bucket_hash_cache != k_init_hash64) {
-		instance_hash = instance_hash_cache;
-		bucket_hash = bucket_hash_cache;
-		return;
-	}
+	bucket_hash = Gaff::FNV1aHash64T(model.get());
 
-	bucket_hash_cache = Gaff::FNV1aHash64T(data.model.get());
-
-	for (const MaterialData& material_data : data.material_data) {
-		bucket_hash_cache = Gaff::FNV1aHash64T(material_data.material.get(), bucket_hash);
-		resource_list.emplace_back(material_data.material.get());
+	for (const MaterialInstanceData& data : material_data) {
+		bucket_hash = Gaff::FNV1aHash64T(data.material.get(), bucket_hash);
 
 		// Samplers
-		AddResourcesToHash(material_data.samplers.vertex, bucket_hash);
-		AddResourcesToHash(material_data.samplers.pixel, bucket_hash);
-		AddResourcesToHash(material_data.samplers.domain, bucket_hash);
-		AddResourcesToHash(material_data.samplers.geometry, bucket_hash);
-		AddResourcesToHash(material_data.samplers.hull, bucket_hash);
+		AddResourcesToHash(data.samplers.vertex, bucket_hash);
+		AddResourcesToHash(data.samplers.pixel, bucket_hash);
+		AddResourcesToHash(data.samplers.domain, bucket_hash);
+		AddResourcesToHash(data.samplers.geometry, bucket_hash);
+		AddResourcesToHash(data.samplers.hull, bucket_hash);
 	}
 
-	instance_hash_cache = bucket_hash_cache;
+	instance_hash = bucket_hash;
 
-	for (const MaterialData& material_data : data.material_data) {
+	for (const MaterialInstanceData& data : material_data) {
 		// Only hashing texture data for instance, as we can use a texture array to simplify the number of render calls needed.
-		AddResourcesToHash(material_data.textures.vertex, instance_hash_cache);
-		AddResourcesToHash(material_data.textures.pixel, instance_hash_cache);
-		AddResourcesToHash(material_data.textures.domain, instance_hash_cache);
-		AddResourcesToHash(material_data.textures.geometry, instance_hash_cache);
-		AddResourcesToHash(material_data.textures.hull, instance_hash_cache);
+		AddResourcesToHash(data.textures.vertex, instance_hash);
+		AddResourcesToHash(data.textures.pixel, instance_hash);
+		AddResourcesToHash(data.textures.domain, instance_hash);
+		AddResourcesToHash(data.textures.geometry, instance_hash);
+		AddResourcesToHash(data.textures.hull, instance_hash);
 	}
 
 	// $TODO: This is temporary until I refactor textures to use a texture array.
-	bucket_hash_cache = instance_hash_cache;
-
-	instance_hash = instance_hash_cache;
-	bucket_hash = bucket_hash_cache;
+	bucket_hash = instance_hash;
 }
 
-Gaff::Hash64 ModelInstanceData::getInstanceHash(void) const
+Gaff::Hash64 ModelInstanceData::calculateInstanceHash(void) const
 {
-	calculateInstanceAndBucketHash(bucket_hash_cache, instance_hash_cache);
-	return instance_hash_cache;
+	Gaff::Hash64 bucket_hash, instance_hash;
+
+	calculateInstanceAndBucketHash(bucket_hash, instance_hash);
+
+	return instance_hash;
 }
 
-Gaff::Hash64 ModelInstanceData::getBucketHash(void) const
+Gaff::Hash64 ModelInstanceData::calculateBucketHash(void) const
 {
-	calculateInstanceAndBucketHash(bucket_hash_cache, instance_hash_cache);
-	return bucket_hash_cache;
+	Gaff::Hash64 bucket_hash, instance_hash;
+
+	calculateInstanceAndBucketHash(bucket_hash, instance_hash);
+
+	return bucket_hash;
 }
 
 NS_END

@@ -32,10 +32,12 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Image.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_RenderOutput.h>
 #include <Gleam_SamplerState.h>
 #include <Gleam_CommandList.h>
+#include <Gleam_Texture.h>
 #include <Gleam_Window.h>
 #include <Gaff_Function.h>
 #include <Gaff_Assert.h>
@@ -71,9 +73,10 @@ RenderManager::~RenderManager(void)
 		for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i].command_lists); ++j) {
 			for (auto& pair : _cached_render_commands[i].command_lists[j]) {
 				for (auto& cmd : pair.second.command_list) {
-					if (!cmd.owns_command) {
-						cmd.cmd_list.release();
-					}
+					GAFF_REF(cmd);
+//					if (!cmd.owns_command) {
+//						cmd.cmd_list.release();
+//					}
 				}
 			}
 		}
@@ -770,21 +773,21 @@ ModelInstanceHandle RenderManager::registerModel(const ModelInstanceData& model_
 		GAFF_ASSERT(result.second);
 
 		it_bucket = result.first;
-		it_bucket->set_allocator(GRAPHICS_ALLOCATOR);
+		it_bucket->second.set_allocator(GRAPHICS_ALLOCATOR);
 	}
 
-	auto it_instance = it_bucket->find(handle.instance_hash);
+	auto it_instance = it_bucket->second.find(handle.instance_hash);
 
-	if (it_instance == it_bucket->end()) {
-		const auto result = it_bucket->insert(handle.instance_hash);
+	if (it_instance == it_bucket->second.end()) {
+		const auto result = it_bucket->second.insert(handle.instance_hash);
 		GAFF_ASSERT(result.second);
 
 		it_instance = result.first;
-		it_instance->set_allocator(GRAPHICS_ALLOCATOR);
+		it_instance->second.set_allocator(GRAPHICS_ALLOCATOR);
 	}
 
-	GAFF_ASSERT(!Gaff::Contains(*it_instance, &tform_provider));
-	it_instance->emplace_back(&tform_provider);
+	GAFF_ASSERT(!Gaff::Contains(it_instance->second, &tform_provider));
+	it_instance->second.emplace_back(&tform_provider);
 
 	return handle;
 }
@@ -798,27 +801,27 @@ void RenderManager::unregisterModel(ModelInstanceHandle handle)
 		return;
 	}
 
-	auto it_instance = it_bucket->find(handle.instance_hash);
+	auto it_instance = it_bucket->second.find(handle.instance_hash);
 
-	if (it_instance == it_bucket->end()) {
+	if (it_instance == it_bucket->second.end()) {
 		// $TODO: Log warning.
 		return;
 	}
 
-	const auto it = Gaff::Find(*it_instance, &tform_provider);
+	const auto it = Gaff::Find(it_instance->second, handle.transform_provider);
 
-	if (it == it_instance->end()) {
+	if (it == it_instance->second.end()) {
 		// $TODO: Log warning.
 		return;
 	}
 
-	it_instance->erase_unsorted(it);
+	it_instance->second.erase_unsorted(it);
 
-	if (it_instance->empty()) {
-		it_bucket->erase(handle.instance_hash);
+	if (it_instance->second.empty()) {
+		it_bucket->second.erase(handle.instance_hash);
 	}
 
-	if (it_bucket->empty()) {
+	if (it_bucket->second.empty()) {
 		_model_instances.erase(handle.bucket_hash);
 	}
 }
@@ -828,12 +831,19 @@ const VectorMap<Gaff::Hash64, RenderManager::ModelBucket>& RenderManager::getReg
 	return _model_instances;
 }
 
+const Vector<ModelInstanceHandle>& RenderManager::getNewRegisteredModels(void) const
+{
+	return _new_models;
+}
+
 int32_t RenderManager::registerCameraView(CameraView*& view)
 {
 	const int32_t index = _camera_views.emplace();
 	_new_camera_views.emplace_back(index);
 
 	view = &_camera_views[index];
+
+	return index;
 }
 
 int32_t RenderManager::registerCameraView(void)
@@ -850,6 +860,11 @@ void RenderManager::unregisterCameraView(int32_t id)
 CameraView& RenderManager::getCameraView(int32_t id)
 {
 	return _camera_views[id];
+}
+
+const Vector<int32_t>& RenderManager::getNewCameraViews(void) const
+{
+	return _new_camera_views;
 }
 
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)
