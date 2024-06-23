@@ -21,14 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Camera/Shibboleth_CameraView.h"
-
-NS_SHIBBOLETH
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#include <Shibboleth_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraView)
 	.template ctor<>()
 
-	.var("vertical_fov", &Shibboleth::CameraView::_vertical_fov, Shibboleth::OptionalAttribute())
-	.var("z_planes", &Shibboleth::CameraView::_z_planes, Shibboleth::OptionalAttribute())
+	.var("vertical_fov", &Shibboleth::CameraView::fov, Shibboleth::OptionalAttribute())
+	.var("z_planes", &Shibboleth::CameraView::z_planes, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraView)
-
-NS_END

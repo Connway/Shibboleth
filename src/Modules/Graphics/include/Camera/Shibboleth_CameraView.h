@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Gaff_Math.h
+#include <Reflection/Shibboleth_Reflection.h>
+#include <Gleam_Vec2.h>
+#include <Gaff_Math.h>
 
 NS_SHIBBOLETH
 

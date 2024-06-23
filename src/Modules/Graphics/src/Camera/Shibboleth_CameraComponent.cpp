@@ -28,8 +28,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
 	.template ctor<>()
 
-	.var("_fov", &Shibboleth::CameraComponent::_view.fov, Shibboleth::OptionalAttribute())
-	.var("z_planes", &Shibboleth::CameraComponent::_z_planes, Shibboleth::OptionalAttribute())
+	.var("view", &Shibboleth::CameraComponent::_view, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 
 
