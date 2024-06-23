@@ -60,6 +60,13 @@ struct MaterialInstanceData final
 	SamplerInstanceData samplers;
 };
 
+struct ModelInstanceHandle final
+{
+	Gaff::Hash64 instance_hash;
+	Gaff::Hash64 bucket_hash;
+	const ITransformProvider* transform_provider = nullptr;
+};
+
 struct ModelInstanceData final
 {
 	// $TODO: Add support for automatically sizing this according to the number of meshes in the model resource.
@@ -69,8 +76,7 @@ struct ModelInstanceData final
 	// $TODO: Fixed size.
 	int32_t instances_per_page = 64;
 
-	Gaff::Hash64 instance_hash_cache;
-	Gaff::Hash64 bucket_hash_cache;
+	ModelInstanceHandle createInstanceHandle(const ITransformProvider& tform_provider) const;
 
 	void getInstanceAndBucketHash(Gaff::Hash64& bucket_hash, Gaff::Hash64& instance_hash) const;
 	Gaff::Hash64 getInstanceHash(void) const;

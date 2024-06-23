@@ -222,8 +222,10 @@ public:
 	const RenderPipeline& getRenderPipeline(void) const;
 	RenderPipeline& getRenderPipeline(void);
 
-	void registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
-	void unregisterModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+	void unregisterModel(ModelInstanceHandle handle);
+	const VectorMap<Gaff::Hash64, ModelBucket>& getRegisteredModels(void) const;
+
 
 	int32_t registerCameraView(CameraView*& view);
 	int32_t registerCameraView(void);
@@ -254,6 +256,9 @@ private:
 
 	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
 	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
+
+	using ModelBucket = VectorMap<Gaff::Hash64, Vector<const ITransformProvider*> >;
+	VectorMap<Gaff::Hash64, ModelBucket> _model_instances{ GRAPHICS_ALLOCATOR };
 
 	SparseStack<CameraView> _camera_views{ GRAPHICS_ALLOCATOR };
 	Vector<int32_t> _new_camera_views{ GRAPHICS_ALLOCATOR };
