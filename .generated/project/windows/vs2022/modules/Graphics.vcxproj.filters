@@ -4,8 +4,11 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Components">
-      <UniqueIdentifier>{FE2CB57C-EA10-76D2-5371-70253F746054}</UniqueIdentifier>
+    <Filter Include="include\Camera">
+      <UniqueIdentifier>{E14F8AFA-CD1D-7E00-B6B1-EE26A21E5A65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Model">
+      <UniqueIdentifier>{89DB7AA3-F59B-F6D9-BED6-3F572A563BB6}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\Pipelines">
       <UniqueIdentifier>{011C00C5-6D32-FE5A-B6A9-897C22FFCEE2}</UniqueIdentifier>
@@ -16,8 +19,11 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Components">
-      <UniqueIdentifier>{221ADC4D-0EE8-CF53-F77B-407AE3E8ABB8}</UniqueIdentifier>
+    <Filter Include="src\Camera">
+      <UniqueIdentifier>{054BA008-F102-E255-5A0A-BBB146E17C46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Model">
+      <UniqueIdentifier>{2D026CB3-996C-202A-E2AA-D1CF4E54FE7E}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Pipelines">
       <UniqueIdentifier>{A5F4AB20-11B5-2757-DAEF-70D4466F6C33}</UniqueIdentifier>
@@ -27,16 +33,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Components\Shibboleth_ModelComponent.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraComponent.h">
+      <Filter>include\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraView.h">
+      <Filter>include\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h">
-      <Filter>include\Pipelines</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_MeshResource.h">
+      <Filter>include\Model</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IModelStageRegistration.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelComponent.h">
+      <Filter>include\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelInstanceData.h">
+      <Filter>include\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelResource.h">
+      <Filter>include\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderStage.h">
@@ -57,12 +75,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_MaterialResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_MeshResource.h">
-      <Filter>include\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_ModelResource.h">
-      <Filter>include\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_ProgramBuffersResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
@@ -80,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_TextureResource.h">
       <Filter>include\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h">
       <Filter>include</Filter>
@@ -110,13 +119,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Components\Shibboleth_ModelComponent.cpp">
-      <Filter>src\Components</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraComponent.cpp">
+      <Filter>src\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraView.cpp">
+      <Filter>src\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_MeshResource.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelComponent.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelInstanceData.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelResource.cpp">
+      <Filter>src\Model</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp">
-      <Filter>src\Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IModelStageRegistration.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderStage.cpp">
@@ -137,12 +158,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_MaterialResource.cpp">
       <Filter>src\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_MeshResource.cpp">
-      <Filter>src\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_ModelResource.cpp">
-      <Filter>src\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_ProgramBuffersResource.cpp">
       <Filter>src\Resources</Filter>
     </ClCompile>
@@ -160,9 +175,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_TextureResource.cpp">
       <Filter>src\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_CameraComponent.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_CameraSystem.cpp">
       <Filter>src</Filter>

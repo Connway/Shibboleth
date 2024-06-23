@@ -90,4 +90,14 @@ float CalculateFOV(float sensor_size, float focal_length)
 	return CalculateFOVRadians(sensor_size, focal_length) * RadiansToTurns;
 }
 
+float FOVConvertHorizontalToVertical(float horiz_fov, float aspect_ratio)
+{
+	return 2.0f * atan(tan(horiz_fov * 0.5f) * aspect_ratio);
+}
+
+float FOVConvertVerticalToHorizontal(float vert_fov, float aspect_ratio)
+{
+	return 2.0f * atan(tan(vert_fov * 0.5f) / aspect_ratio);
+}
+
 NS_END

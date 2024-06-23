@@ -124,4 +124,7 @@ float CalculateFOVRadians(float sensor_size, float focal_length);
 float CalculateFOVDegrees(float sensor_size, float focal_length);
 float CalculateFOV(float sensor_size, float focal_length);
 
+float FOVConvertHorizontalToVertical(float horiz_fov, float aspect_ratio);
+float FOVConvertVerticalToHorizontal(float vert_fov, float aspect_ratio);
+
 NS_END
