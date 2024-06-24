@@ -3230,7 +3230,9 @@ namespace eastl
 	{
 		// To do: This can be made slightly faster by not using lower_bound.
 		ForwardIterator i(eastl::lower_bound<ForwardIterator, T, Compare>(first, last, value, compare));
-		if((i != last) && !compare(value, *i))
+
+		// $MODIFICATION
+		if((i != last) && !compare(*i, value))
 			return i;
 		return last;
 	}
