@@ -20,14 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Resources/Shibboleth_ModelResource.h"
+#include "Model/Shibboleth_ModelResource.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
+#include <Gleam_Texture.h>
 #include <Gleam_Mesh.h>
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>

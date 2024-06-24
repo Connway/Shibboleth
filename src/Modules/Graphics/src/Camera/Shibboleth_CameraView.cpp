@@ -27,6 +27,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraView)
 	.template ctor<>()
 
+	.var("transform", &Shibboleth::CameraView::transform, Shibboleth::OptionalAttribute())
 	.var("vertical_fov", &Shibboleth::CameraView::fov, Shibboleth::OptionalAttribute())
 	.var("z_planes", &Shibboleth::CameraView::z_planes, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraView)

@@ -726,7 +726,7 @@ bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*
 			continue;
 		}
 
-		IManager* const manager = ref_def->createT<IManager>(allocator);
+		IManager* const manager = ref_def->template createT<IManager>(allocator);
 
 		if (!manager->init()) {
 			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());

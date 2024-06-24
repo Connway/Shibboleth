@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IRenderPipelineStage.h"
 #include "Shibboleth_RenderManager.h"
-#include "Shibboleth_IRenderStage.h"
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
 #include "Resources/Shibboleth_BufferResource.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
@@ -44,7 +44,7 @@ struct ModelInstanceData;
 class ResourceManager;
 
 // $TODO: This might need to be split up into more discrete stages, such as a culling stage.
-class RenderCommandStage final : public IRenderStage
+class RenderCommandStage final : public IRenderPipelineStage
 {
 public:
 	bool init(RenderManager& render_mgr) override;
@@ -142,7 +142,7 @@ private:
 	Gaff::Counter _job_counter = 0;
 
 	ManagerRef<ResourceManager> _resource_mgr;
-	ManagerRef<RenderManager> _render_mgr;
+	RenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
 
 	void addModelInstance(const ModelInstanceData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash, const ITransformProvider& transform_provider);

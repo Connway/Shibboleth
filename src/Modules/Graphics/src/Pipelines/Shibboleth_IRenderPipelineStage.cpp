@@ -20,28 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Pipelines/Shibboleth_IRenderPipelineStage.h"
 
-#include <Reflection/Shibboleth_Reflection.h>
-
-NS_SHIBBOLETH
-
-struct RenderCommandData;
-class RenderManager;
-
-class IRenderStage : public Refl::IReflectionObject
-{
-public:
-	virtual ~IRenderStage(void) {}
-
-	virtual bool init(RenderManager& /*render_mgr*/) { return true; }
-	virtual void destroy(RenderManager& /*render_mgr*/) {}
-
-	virtual void update(uintptr_t thread_id_int) = 0;
-
-	virtual const RenderCommandData& getRenderCommands(void) const = 0;
-};
-
-NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::IRenderStage)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IRenderPipelineStage)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::IRenderPipelineStage)

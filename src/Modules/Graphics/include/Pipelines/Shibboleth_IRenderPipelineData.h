@@ -22,36 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderPipelineStage.h"
-#include "Shibboleth_RenderManager.h"
-
-namespace EA::Thread
-{
-	class Mutex;
-}
+#include <Reflection/Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
-class ClearRenderTargetStage final : public IRenderPipelineStage
+class IRenderPipelineData : public Refl::IReflectionObject
 {
 public:
-	bool init(RenderManager& render_mgr) override;
-	//void destroy(RenderManager& /*render_mgr*/) override;
-
-	void update(uintptr_t thread_id_int) override;
-
-	const RenderCommandData& getRenderCommands(void) const override;
-
-private:
-	RenderCommandData _render_commands;
-	RenderManager* _render_mgr = nullptr;
-
-	const Vector<IResource*>* _render_targets = nullptr;
-	EA::Thread::Mutex* _resource_lock = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
+	virtual ~IRenderPipelineData(void) {}
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetStage)
+SHIB_REFLECTION_DECLARE(Shibboleth::IRenderPipelineData)

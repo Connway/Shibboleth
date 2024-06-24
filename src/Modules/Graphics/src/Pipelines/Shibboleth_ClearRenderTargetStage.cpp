@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <Gleam_RenderDevice.h>
 #include <Gleam_CommandList.h>
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ClearRenderTargetStage, Shibboleth::IRenderStage)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ClearRenderTargetStage, Shibboleth::IRenderPipelineStage)
 
 NS_SHIBBOLETH
 

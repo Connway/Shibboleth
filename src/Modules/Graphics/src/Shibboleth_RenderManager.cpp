@@ -317,7 +317,6 @@ bool RenderManager::init(void)
 
 void RenderManager::newFrame(void)
 {
-	_new_camera_views.clear();
 	_new_models.clear();
 }
 
@@ -836,37 +835,6 @@ const VectorMap<Gaff::Hash64, RenderManager::ModelBucket>& RenderManager::getReg
 const Vector<ModelInstanceHandle>& RenderManager::getNewRegisteredModels(void) const
 {
 	return _new_models;
-}
-
-int32_t RenderManager::registerCameraView(CameraView*& view)
-{
-	const int32_t index = _camera_views.emplace();
-	_new_camera_views.emplace_back(index);
-
-	view = &_camera_views[index];
-
-	return index;
-}
-
-int32_t RenderManager::registerCameraView(void)
-{
-	CameraView* view_ptr = nullptr;
-	return registerCameraView(view_ptr);
-}
-
-void RenderManager::unregisterCameraView(int32_t id)
-{
-	_camera_views.remove(id);
-}
-
-CameraView& RenderManager::getCameraView(int32_t id)
-{
-	return _camera_views[id];
-}
-
-const Vector<int32_t>& RenderManager::getNewCameraViews(void) const
-{
-	return _new_camera_views;
 }
 
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)

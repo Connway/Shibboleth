@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IRenderPipelineStage.h"
+#include "Shibboleth_IRenderPipelineData.h"
 #include "Shibboleth_GraphicsDefines.h"
-#include "Shibboleth_IRenderStage.h"
 #include <Containers/Shibboleth_InstancedArray.h>
 #include <Shibboleth_Error.h>
 
@@ -37,7 +38,7 @@ public:
 	template <class T>
 	const T* getRenderStagePtr(void) const
 	{
-		return const_cast<RenderPipeline>(this)->getRenderStagePtr<T>();
+		return const_cast<RenderPipeline>(this)->template getRenderStagePtr<T>();
 	}
 
 	template <class T>
@@ -76,23 +77,48 @@ public:
 		return out;
 	}
 
-	Vector<const IRenderStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def) const;
-	Vector<IRenderStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def);
+	template <class T>
+	T* getOrAddRenderData(void)
+	{
+		return static_cast<T*>(getOrAddRenderData(Refl::Reflection<T>::GetReflectionDefinition()));
+	}
 
-	const IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const;
-	IRenderStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def);
-	const IRenderStage& getRenderStage(const Refl::IReflectionDefinition& ref_def) const;
-	IRenderStage& getRenderStage(const Refl::IReflectionDefinition& ref_def);
+	template <class T>
+	const T* getRenderData(void) const
+	{
+		return const_cast<RenderPipeline*>(this)->template getRenderData<T>();
+	}
+
+	template <class T>
+	T* getRenderData(void)
+	{
+		return static_cast<T*>(getRenderData(Refl::Reflection<T>::GetReflectionDefinition()));
+	}
 
 	Error init(RenderManager& render_mgr);
 
+	Vector<const IRenderPipelineStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def) const;
+	Vector<IRenderPipelineStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def);
+
+	const IRenderPipelineStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const;
+	IRenderPipelineStage* getRenderStagePtr(const Refl::IReflectionDefinition& ref_def);
+	const IRenderPipelineStage& getRenderStage(const Refl::IReflectionDefinition& ref_def) const;
+	IRenderPipelineStage& getRenderStage(const Refl::IReflectionDefinition& ref_def);
+
+	IRenderPipelineData* getOrAddRenderData(const Refl::IReflectionDefinition& ref_def);
+	const IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def) const;
+	IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def);
+
+	const Vector< UniquePtr<IRenderPipelineData> >& getRenderData(void) const;
+
 private:
-	InstancedArray<IRenderStage> _stages{ GRAPHICS_ALLOCATOR };
+	Vector< UniquePtr<IRenderPipelineData> > _render_data{ GRAPHICS_ALLOCATOR };
+	InstancedArray<IRenderPipelineStage> _stages{ GRAPHICS_ALLOCATOR };
 
 	template <class T, class U>
 	void getRenderStagesInternal(Vector<U*>& out)
 	{
-		for (IRenderStage& stage : _stages) {
+		for (IRenderPipelineStage& stage : _stages) {
 			const Refl::IReflectionDefinition& ref_def = stage.getReflectionDefinition();
 
 			T* const interface_ptr = ref_def.template getInterface<T>(stage.getBasePointer());

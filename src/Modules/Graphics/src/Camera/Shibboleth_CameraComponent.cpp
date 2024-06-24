@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Ptrs/Shibboleth_ManagerRef.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_Texture.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)

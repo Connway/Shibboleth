@@ -20,38 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Camera/Shibboleth_CameraPipelineData.h"
 
-#include "Shibboleth_IRenderPipelineStage.h"
-#include "Shibboleth_RenderManager.h"
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPipelineData)
+	.template ctor<>()
 
-namespace EA::Thread
-{
-	class Mutex;
-}
+	.func("getView", static_cast<const Shibboleth::CameraView& (Shibboleth::CameraPipelineData::*)(int32_t) const>(&Shibboleth::CameraPipelineData::getView))
+	.func("getView", static_cast<Shibboleth::CameraView& (Shibboleth::CameraPipelineData::*)(int32_t)>(&Shibboleth::CameraPipelineData::getView))
+	.func("createView", &Shibboleth::CameraPipelineData::createView)
+	.func("removeView", &Shibboleth::CameraPipelineData::removeView)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPipelineData)
+
 
 NS_SHIBBOLETH
 
-class ClearRenderTargetStage final : public IRenderPipelineStage
+SHIB_REFLECTION_CLASS_DEFINE(CameraPipelineData)
+
+
+const CameraView& CameraPipelineData::getView(int32_t id) const
 {
-public:
-	bool init(RenderManager& render_mgr) override;
-	//void destroy(RenderManager& /*render_mgr*/) override;
+	return const_cast<CameraPipelineData*>(this)->getView(id);
+}
 
-	void update(uintptr_t thread_id_int) override;
+CameraView& CameraPipelineData::getView(int32_t id)
+{
+	return _views[id];
+}
 
-	const RenderCommandData& getRenderCommands(void) const override;
+int32_t CameraPipelineData::createView(void)
+{
+	return _views.emplace();
+}
 
-private:
-	RenderCommandData _render_commands;
-	RenderManager* _render_mgr = nullptr;
-
-	const Vector<IResource*>* _render_targets = nullptr;
-	EA::Thread::Mutex* _resource_lock = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
-};
+void CameraPipelineData::removeView(int32_t id)
+{
+	_views.remove(id);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetStage)

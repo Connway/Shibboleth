@@ -70,9 +70,11 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandStage);
 
-bool RenderCommandStage::init(RenderManager& /*render_mgr*/)
+bool RenderCommandStage::init(RenderManager& render_mgr)
 {
 	_job_pool = &GetApp().getJobPool();
+	_render_mgr = &render_mgr;
+
 	return true;
 }
 
@@ -80,9 +82,10 @@ void RenderCommandStage::update(uintptr_t thread_id_int)
 {
 	// $TODO: Remove camera dependency.
 
-	//const int32_t num_cameras = static_cast<int32_t>(_camera.size());
-
 	_device_job_data_cache.clear();
+
+	for (const CameraView& view : _render_mgr->getCameraViews()) {
+	}
 
 	//	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 	//		_ecs_mgr->iterate<Camera>(

@@ -50,11 +50,11 @@ Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 	return error;
 }
 
-Vector<const IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def) const
+Vector<const IRenderPipelineStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def) const
 {
-	Vector<const IRenderStage*> out;
+	Vector<const IRenderPipelineStage*> out;
 
-	for (const IRenderStage& stage : _stages) {
+	for (const IRenderPipelineStage& stage : _stages) {
 		const Refl::IReflectionDefinition& stage_ref_def = stage.getReflectionDefinition();
 
 		if (&stage_ref_def == &ref_def || stage_ref_def.hasInterface(ref_def)) {
@@ -65,11 +65,11 @@ Vector<const IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflect
 	return out;
 }
 
-Vector<IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def)
+Vector<IRenderPipelineStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def)
 {
-	Vector<IRenderStage*> out;
+	Vector<IRenderPipelineStage*> out;
 
-	for (IRenderStage& stage : _stages) {
+	for (IRenderPipelineStage& stage : _stages) {
 		const Refl::IReflectionDefinition& stage_ref_def = stage.getReflectionDefinition();
 
 		if (&stage_ref_def == &ref_def || stage_ref_def.hasInterface(ref_def)) {
@@ -80,14 +80,14 @@ Vector<IRenderStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDef
 	return out;
 }
 
-const IRenderStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const
+const IRenderPipelineStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def) const
 {
 	return const_cast<RenderPipeline*>(this)->getRenderStagePtr(ref_def);
 }
 
-IRenderStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def)
+IRenderPipelineStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinition& ref_def)
 {
-	for (IRenderStage& stage : _stages) {
+	for (IRenderPipelineStage& stage : _stages) {
 		const Refl::IReflectionDefinition& stage_ref_def = stage.getReflectionDefinition();
 
 		if (&stage_ref_def == &ref_def || stage_ref_def.hasInterface(ref_def)) {
@@ -98,17 +98,53 @@ IRenderStage* RenderPipeline::getRenderStagePtr(const Refl::IReflectionDefinitio
 	return nullptr;
 }
 
-const IRenderStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def) const
+const IRenderPipelineStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def) const
 {
 	return const_cast<RenderPipeline*>(this)->getRenderStage(ref_def);
 }
 
-IRenderStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def)
+IRenderPipelineStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefinition& ref_def)
 {
-	IRenderStage* const stage = getRenderStagePtr(ref_def);
+	IRenderPipelineStage* const stage = getRenderStagePtr(ref_def);
 	GAFF_ASSERT(stage);
 
 	return *stage;
+}
+
+IRenderPipelineData* RenderPipeline::getOrAddRenderData(const Refl::IReflectionDefinition& ref_def)
+{
+	IRenderPipelineData* data = getRenderData(ref_def);
+
+	if (!data) {
+		ProxyAllocator allocator = GRAPHICS_ALLOCATOR;
+		data = ref_def.template createT<IRenderPipelineData>(allocator);
+	}
+
+	return data;
+}
+
+const IRenderPipelineData* RenderPipeline::getRenderData(const Refl::IReflectionDefinition& ref_def) const
+{
+	return const_cast<RenderPipeline*>(this)->getRenderData(ref_def);
+}
+
+IRenderPipelineData* RenderPipeline::getRenderData(const Refl::IReflectionDefinition& ref_def)
+{
+	const auto it = Gaff::FindSorted(
+		_render_data,
+		ref_def,
+		[](const UniquePtr<IRenderPipelineData>& data, const Refl::IReflectionDefinition& ref_def) -> bool
+		{
+			return &data->getReflectionDefinition() == &ref_def;
+		}
+	);
+
+	return (it == _render_data.end()) ? nullptr : it->get();
+}
+
+const Vector< UniquePtr<IRenderPipelineData> >& RenderPipeline::getRenderData(void) const
+{
+	return _render_data;
 }
 
 NS_END

@@ -23,15 +23,15 @@ THE SOFTWARE.
 #pragma once
 
 #include <Reflection/Shibboleth_Reflection.h>
+#include <Gleam_Transform.h>
 #include <Gleam_Vec2.h>
 #include <Gaff_Math.h>
 
 NS_SHIBBOLETH
 
-// $TODO: Since this camera view structure lives at the RenderManager level, it's not super
-// flexible to custom pipelines that may want to add additional data to this structure.
 struct CameraView final
 {
+	Gleam::TransformRT transform;
 	Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
 	float fov = 75.0f * Gaff::DegreesToTurns;
 
