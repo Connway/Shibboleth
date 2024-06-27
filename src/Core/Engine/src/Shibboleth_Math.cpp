@@ -36,6 +36,12 @@ namespace
 			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec3(%f, %f, %f)", value.x, value.y, value.z);
 		} else if constexpr (std::is_same<T, Gleam::Vec2>::value) {
 			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec2(%f, %f)", value.x, value.y);
+		} else if constexpr (std::is_same<T, Gleam::IVec4>::value) {
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec4(%i, %i, %i, %i)", value.x, value.y, value.z, value.w);
+		} else if constexpr (std::is_same<T, Gleam::IVec3>::value) {
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec3(%i, %i, %i)", value.x, value.y, value.z);
+		} else if constexpr (std::is_same<T, Gleam::IVec2>::value) {
+			return snprintf(reinterpret_cast<char*>(buffer), static_cast<size_t>(size), "Gleam::Vec2(%i, %i)", value.x, value.y);
 		}
 	}
 }
@@ -186,6 +192,123 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
 	.var("s", &Gleam::Vec2::s, Shibboleth::OptionalAttribute())
 	.var("t", &Gleam::Vec2::t, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Gleam::Vec2)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec4)
+	.template ctor<const Gleam::IVec4&>()
+	.template ctor<const Gleam::IVec2&, int32_t, int32_t>()
+	.template ctor<const Gleam::IVec3&, int32_t>()
+	.template ctor<int32_t, int32_t, int32_t, int32_t>()
+	.template ctor<int32_t>()
+	.template ctor<>()
+
+	.template opAdd<int32_t>()
+	.template opSub<int32_t>()
+	.template opMul<int32_t>()
+	.template opDiv<int32_t>()
+
+	.template opIndex<glm::length_t>()
+
+	.opAdd()
+	.opSub()
+	.opMul()
+	.opDiv()
+
+	.opEqual()
+
+	.opMinus()
+	.opPlus()
+
+	.template opToString< VecToString<Gleam::IVec4> >()
+
+	.var("x", &Gleam::IVec4::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::IVec4::y, Shibboleth::OptionalAttribute())
+	.var("z", &Gleam::IVec4::z, Shibboleth::OptionalAttribute())
+	.var("w", &Gleam::IVec4::w, Shibboleth::OptionalAttribute())
+
+	.var("r", &Gleam::IVec4::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::IVec4::g, Shibboleth::OptionalAttribute())
+	.var("b", &Gleam::IVec4::b, Shibboleth::OptionalAttribute())
+	.var("a", &Gleam::IVec4::a, Shibboleth::OptionalAttribute())
+
+	.var("s", &Gleam::IVec4::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::IVec4::t, Shibboleth::OptionalAttribute())
+	.var("p", &Gleam::IVec4::p, Shibboleth::OptionalAttribute())
+	.var("q", &Gleam::IVec4::q, Shibboleth::OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::IVec4)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec3)
+	.template ctor<const Gleam::IVec2&, int32_t>()
+	.template ctor<const Gleam::IVec3&>()
+	.template ctor<int32_t, int32_t, int32_t>()
+	.template ctor<int32_t>()
+	.template ctor<>()
+
+	.template opAdd<int32_t>()
+	.template opSub<int32_t>()
+	.template opMul<int32_t>()
+	.template opDiv<int32_t>()
+
+	.template opIndex<glm::length_t>()
+
+	.opAdd()
+	.opSub()
+	.opMul()
+	.opDiv()
+
+	.opEqual()
+
+	.opMinus()
+	.opPlus()
+
+	.template opToString< VecToString<Gleam::IVec3> >()
+
+	.var("x", &Gleam::IVec3::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::IVec3::y, Shibboleth::OptionalAttribute())
+	.var("z", &Gleam::IVec3::z, Shibboleth::OptionalAttribute())
+
+	.var("r", &Gleam::IVec3::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::IVec3::g, Shibboleth::OptionalAttribute())
+	.var("b", &Gleam::IVec3::b, Shibboleth::OptionalAttribute())
+
+	.var("s", &Gleam::IVec3::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::IVec3::t, Shibboleth::OptionalAttribute())
+	.var("p", &Gleam::IVec3::p, Shibboleth::OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::IVec3)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec2)
+	.template ctor<const Gleam::IVec2&>()
+	.template ctor<int32_t, int32_t>()
+	.template ctor<int32_t>()
+	.template ctor<>()
+
+	.template opAdd<int32_t>()
+	.template opSub<int32_t>()
+	.template opMul<int32_t>()
+	.template opDiv<int32_t>()
+
+	.template opIndex<glm::length_t>()
+
+	.opAdd()
+	.opSub()
+	.opMul()
+	.opDiv()
+
+	.opEqual()
+
+	.opMinus()
+	.opPlus()
+
+	.template opToString< VecToString<Gleam::IVec2> >()
+
+	.var("x", &Gleam::IVec2::x, Shibboleth::OptionalAttribute())
+	.var("y", &Gleam::IVec2::y, Shibboleth::OptionalAttribute())
+
+	.var("r", &Gleam::IVec2::r, Shibboleth::OptionalAttribute())
+	.var("g", &Gleam::IVec2::g, Shibboleth::OptionalAttribute())
+
+	.var("s", &Gleam::IVec2::s, Shibboleth::OptionalAttribute())
+	.var("t", &Gleam::IVec2::t, Shibboleth::OptionalAttribute())
+SHIB_REFLECTION_DEFINE_END(Gleam::IVec2)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gleam::TransformRT)
 	.var("translation", &Gleam::TransformRT::getTranslation, &Gleam::TransformRT::setTranslation)
