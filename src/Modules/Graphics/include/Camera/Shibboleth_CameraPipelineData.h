@@ -26,22 +26,64 @@ THE SOFTWARE.
 #include "Camera/Shibboleth_CameraView.h"
 #include "Shibboleth_GraphicsDefines.h"
 #include <Containers/Shibboleth_SparseStack.h>
+#include <Containers/Shibboleth_VectorMap.h>
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_RenderTarget.h>
+#include <Gleam_Texture.h>
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
 
 NS_SHIBBOLETH
+
+struct GBuffer final
+{
+	UniquePtr<Gleam::RenderTarget> render_target;
+
+	UniquePtr<Gleam::Texture> diffuse;
+	UniquePtr<Gleam::Texture> specular;
+	UniquePtr<Gleam::Texture> normal;
+	UniquePtr<Gleam::Texture> position;
+	UniquePtr<Gleam::Texture> depth;
+
+	UniquePtr<Gleam::ShaderResourceView> diffuse_srv;
+	UniquePtr<Gleam::ShaderResourceView> specular_srv;
+	UniquePtr<Gleam::ShaderResourceView> normal_srv;
+	UniquePtr<Gleam::ShaderResourceView> position_srv;
+	UniquePtr<Gleam::ShaderResourceView> depth_srv;
+
+	// These fields are only filled out if doing off-screen rendering.
+	UniquePtr<Gleam::RenderTarget> final_render_target;
+	UniquePtr<Gleam::ShaderResourceView> final_srv;
+	UniquePtr<Gleam::Texture> final_image;
+};
+
+struct CameraRenderData final
+{
+	VectorMap<Gleam::RenderDevice*, GBuffer> g_buffers{ GRAPHICS_ALLOCATOR };
+	CameraView view;
+};
 
 class CameraPipelineData final : public IRenderPipelineData
 {
 public:
+	const CameraRenderData& getRenderData(int32_t id) const;
+	CameraRenderData& getRenderData(int32_t id);
+
 	const CameraView& getView(int32_t id) const;
 	CameraView& getView(int32_t id);
 
-	int32_t createView(void);
-	void removeView(int32_t id);
+	int32_t createRenderData(
+		Gaff::Hash32 device_tag,
+		const Gleam::IVec2& size,
+		bool create_render_texture = true
+	);
+
+	void removeRenderData(int32_t id);
 
 private:
-	SparseStack<CameraView> _views{ GRAPHICS_ALLOCATOR };
-
-	// $TODO: Move G-Buffers into here.
+	SparseStack<CameraRenderData> _render_data{ GRAPHICS_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(CameraPipelineData);
 };
@@ -49,3 +91,5 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::CameraPipelineData)
+SHIB_REFLECTION_DECLARE(Shibboleth::CameraRenderData)
+SHIB_REFLECTION_DECLARE(Shibboleth::GBuffer)
