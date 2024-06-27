@@ -713,27 +713,6 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	return thread_it->second.get();
 }
 
-const RenderManager::OutputRenderData* RenderManager::getOutputRenderData(Gaff::Hash32 output_name) const
-{
-	return const_cast<RenderManager*>(this)->getOutputRenderData(output_name);
-}
-
-const RenderManager::OutputRenderData* RenderManager::getOutputRenderData(const char* output_name) const
-{
-	return const_cast<RenderManager*>(this)->getOutputRenderData(output_name);
-}
-
-RenderManager::OutputRenderData* RenderManager::getOutputRenderData(Gaff::Hash32 output_name)
-{
-	const auto it = _outputs.find(output_name);
-	return (it != _outputs.end()) ? &it->second.render_data : nullptr;
-}
-
-RenderManager::OutputRenderData* RenderManager::getOutputRenderData(const char* output_name)
-{
-	return getOutputRenderData(Gaff::FNV1aHash32String(output_name));
-}
-
 void RenderManager::initializeRenderCommandData(RenderCommandData& render_commands) const
 {
 	GAFF_ASSERT(render_commands.command_lists[0].empty());

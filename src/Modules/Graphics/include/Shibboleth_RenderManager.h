@@ -88,15 +88,6 @@ struct RenderCommandData final
 class RenderManager final : public IManager
 {
 public:
-	struct OutputRenderData final
-	{
-		Gleam::TransformRT transform;
-		Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
-		float vertical_fov = 0.25f; // turns
-
-		// DOF?
-	};
-
 	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::Window>;
 
@@ -107,27 +98,6 @@ public:
 
 	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;
 
-//	struct GBuffer final
-//	{
-//		RenderTargetPtr render_target;
-//
-//		TexturePtr diffuse;
-//		TexturePtr specular;
-//		TexturePtr normal;
-//		TexturePtr position;
-//		TexturePtr depth;
-//
-//		ShaderResourceViewPtr diffuse_srv;
-//		ShaderResourceViewPtr specular_srv;
-//		ShaderResourceViewPtr normal_srv;
-//		ShaderResourceViewPtr position_srv;
-//		ShaderResourceViewPtr depth_srv;
-//
-//		// These fields are only filled out if doing off-screen rendering.
-//		RenderTargetPtr final_render_target;
-//		TexturePtr final_image;
-//		ShaderResourceViewPtr final_srv;
-//	};
 
 	enum class RenderOrder
 	{
@@ -206,11 +176,6 @@ public:
 	const Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const;
 	Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id);
 
-	const OutputRenderData* getOutputRenderData(Gaff::Hash32 output_name) const;
-	const OutputRenderData* getOutputRenderData(const char* output_name) const;
-	OutputRenderData* getOutputRenderData(Gaff::Hash32 output_name);
-	OutputRenderData* getOutputRenderData(const char* output_name);
-
 	void initializeRenderCommandData(RenderCommandData& render_commands) const;
 
 	int32_t getRenderCacheIndex(void) const;
@@ -229,13 +194,9 @@ public:
 private:
 	struct RenderOutput final
 	{
-		//GBuffer g_buffer;
 		RenderOutputPtr output;
 		WindowPtr window;
 		Gleam::RenderDevice* render_device = nullptr;
-
-		// $TODO: Move this as part of pipeline data instead?
-		OutputRenderData render_data;
 	};
 
 	RenderPipeline _render_pipeline;
