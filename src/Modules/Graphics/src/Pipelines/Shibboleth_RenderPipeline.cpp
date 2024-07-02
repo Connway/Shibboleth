@@ -37,7 +37,6 @@ NS_SHIBBOLETH
 Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 {
 	const Refl::ReflectionDefinition<RenderPipeline>& ref_def = Refl::Reflection<RenderPipeline>::GetReflectionDefinition();
-
 	const InitFromConfigAttribute* const config_attr = ref_def.getClassAttr<InitFromConfigAttribute>();
 	GAFF_ASSERT(config_attr);
 

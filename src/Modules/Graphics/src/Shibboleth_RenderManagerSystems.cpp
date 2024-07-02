@@ -24,25 +24,25 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_AppUtils.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManagerNewFrameSystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManagerPipelineSystem)
 	.template base<Shibboleth::ISystem>()
 	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManagerNewFrameSystem)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManagerPipelineSystem)
 
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(RenderManagerNewFrameSystem)
+SHIB_REFLECTION_CLASS_DEFINE(RenderManagerPipelineSystem)
 
-bool RenderManagerNewFrameSystem::init(void)
+bool RenderManagerPipelineSystem::init(void)
 {
 	_render_mgr = &GetManagerTFast<RenderManager>();
 	return true;
 }
 
-void RenderManagerNewFrameSystem::update(uintptr_t /*thread_id_int*/)
+void RenderManagerPipelineSystem::update(uintptr_t /*thread_id_int*/)
 {
-	_render_mgr->newFrame();
+	RenderPipeline& render_pipeline = _render_mgr->getRenderPipeline();
 }
 
 NS_END

@@ -80,8 +80,6 @@ bool RenderCommandStage::init(RenderManager& render_mgr)
 
 void RenderCommandStage::update(uintptr_t thread_id_int)
 {
-	// $TODO: Remove camera dependency.
-
 	_device_job_data_cache.clear();
 
 	for (const CameraView& view : _render_mgr->getCameraViews()) {

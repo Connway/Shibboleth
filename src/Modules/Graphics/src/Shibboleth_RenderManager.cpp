@@ -315,11 +315,6 @@ bool RenderManager::init(void)
 	return true;
 }
 
-void RenderManager::newFrame(void)
-{
-	_new_models.clear();
-}
-
 //void RenderManager::updateWindows(void)
 //{
 //	Gleam::Window::PollEvents();
@@ -739,81 +734,6 @@ const RenderPipeline& RenderManager::getRenderPipeline(void) const
 RenderPipeline& RenderManager::getRenderPipeline(void)
 {
 	return _render_pipeline;
-}
-
-ModelInstanceHandle RenderManager::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
-{
-	const ModelInstanceHandle handle = model_data.createInstanceHandle(tform_provider);
-	auto it_bucket = _model_instances.find(handle.bucket_hash);
-
-	if (it_bucket == _model_instances.end()) {
-		const auto result = _model_instances.insert(handle.bucket_hash);
-		GAFF_ASSERT(result.second);
-
-		it_bucket = result.first;
-		it_bucket->second.set_allocator(GRAPHICS_ALLOCATOR);
-	}
-
-	auto it_instance = it_bucket->second.find(handle.instance_hash);
-
-	if (it_instance == it_bucket->second.end()) {
-		const auto result = it_bucket->second.insert(handle.instance_hash);
-		GAFF_ASSERT(result.second);
-
-		it_instance = result.first;
-		it_instance->second.set_allocator(GRAPHICS_ALLOCATOR);
-	}
-
-	GAFF_ASSERT(!Gaff::Contains(it_instance->second, &tform_provider));
-	it_instance->second.emplace_back(&tform_provider);
-
-	_new_models.emplace_back(handle);
-
-	return handle;
-}
-
-void RenderManager::unregisterModel(ModelInstanceHandle handle)
-{
-	const auto it_bucket = _model_instances.find(handle.bucket_hash);
-
-	if (it_bucket == _model_instances.end()) {
-		// $TODO: Log warning.
-		return;
-	}
-
-	auto it_instance = it_bucket->second.find(handle.instance_hash);
-
-	if (it_instance == it_bucket->second.end()) {
-		// $TODO: Log warning.
-		return;
-	}
-
-	const auto it = Gaff::Find(it_instance->second, handle.transform_provider);
-
-	if (it == it_instance->second.end()) {
-		// $TODO: Log warning.
-		return;
-	}
-
-	it_instance->second.erase_unsorted(it);
-
-	if (it_instance->second.empty()) {
-		it_bucket->second.erase(handle.instance_hash);
-	}
-
-	if (it_bucket->second.empty()) {
-		_model_instances.erase(handle.bucket_hash);
-	}
-}
-
-const VectorMap<Gaff::Hash64, RenderManager::ModelBucket>& RenderManager::getRegisteredModels(void) const
-{
-	return _model_instances;
-}
-
-const Vector<ModelInstanceHandle>& RenderManager::getNewRegisteredModels(void) const
-{
-	return _new_models;
 }
 
 Gleam::RenderDevice* RenderManager::createRenderDevice(const Gleam::Window& window)
