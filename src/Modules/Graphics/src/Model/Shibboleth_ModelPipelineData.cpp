@@ -251,15 +251,14 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 				const auto& srv_vars = device_data.pipeline_data[shader_type_index].srv_vars;
 
 				for (const Gleam::U8String& var_name : pipeline_refl.var_decl_order) {
-					// $TODO: Just use Hash32 instead? No need to store copy of string just to do a lookup on the hash.
-					const HashString32<> name(var_name.data());
-					const auto it = srv_vars.find(name);
+					const Gaff::Hash32 name_hash = Gaff::FNV1aHash32String(var_name.data());
+					const auto it = srv_vars.find(name_hash);
 
 					if (it != srv_vars.end()) {
 						pb->addResourceView(shader_type, *it->second.srv);
 
 					} else {
-						const auto it_buf = buffer_vars.find(name);
+						const auto it_buf = buffer_vars.find(name_hash);
 
 						if (it_buf != buffer_vars.end()) {
 							pb->addResourceView(shader_type, *it_buf->second.pages[0].srv);
