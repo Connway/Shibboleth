@@ -55,9 +55,12 @@ public:
 
 	const Gleam::Vec3& getCenteringVector(void) const;
 
+	int32_t getInstancesPerBuffer(void) const;
+
 private:
 	Vector< ResourcePtr<MeshResource> > _meshes{ GRAPHICS_ALLOCATOR };
 	Gleam::Vec3 _centering_vector = glm::zero<Gleam::Vec3>();
+	int32_t _instances_per_buffer = 32;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelResource);
 };

@@ -24,33 +24,25 @@ THE SOFTWARE.
 
 #include "Shibboleth_IRenderPipelineStage.h"
 
-namespace EA::Thread
-{
-	class Mutex;
-}
-
 NS_SHIBBOLETH
 
-class ClearRenderTargetStage final : public IRenderPipelineStage
+class ModelPipelineData;
+
+class ProcessModelsStage final : public IRenderPipelineStage
 {
 public:
 	bool init(RenderManager& render_mgr) override;
-	//void destroy(RenderManager& /*render_mgr*/) override;
 
 	void update(uintptr_t thread_id_int) override;
 
 	const RenderCommandData& getRenderCommands(void) const override;
 
 private:
-	RenderCommandData _render_commands;
-	RenderManager* _render_mgr = nullptr;
+	ModelPipelineData* _model_data = nullptr;
 
-	const Vector<IResource*>* _render_targets = nullptr;
-	EA::Thread::Mutex* _resource_lock = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
+	SHIB_REFLECTION_CLASS_DECLARE(ProcessModelsStage);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetStage)
+SHIB_REFLECTION_DECLARE(Shibboleth::ProcessModelsStage)

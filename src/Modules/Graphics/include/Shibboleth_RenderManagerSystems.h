@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 class RenderManager;
 
-class RenderManagerNewFrameSystem final : public ISystem
+class RenderManagerPipelineSystem final : public ISystem
 {
 public:
 	bool init(void) override;
@@ -38,9 +38,9 @@ public:
 private:
 	RenderManager* _render_mgr = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(RenderManagerNewFrameSystem);
+	SHIB_REFLECTION_CLASS_DECLARE(RenderManagerPipelineSystem);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::RenderManagerNewFrameSystem)
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderManagerPipelineSystem)

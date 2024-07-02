@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Shibboleth_ClearRenderTargetStage.h"
 #include "Resources/Shibboleth_RenderTargetResource.h"
+#include "Shibboleth_RenderManager.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Gleam_RenderTarget.h>

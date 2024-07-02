@@ -20,37 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Pipelines/Shibboleth_ProcessModelsStage.h"
+#include "Model/Shibboleth_ModelPipelineData.h"
+#include "Shibboleth_RenderManager.h"
 
-#include "Shibboleth_IRenderPipelineStage.h"
-
-namespace EA::Thread
-{
-	class Mutex;
-}
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ProcessModelsStage, Shibboleth::IRenderPipelineStage)
 
 NS_SHIBBOLETH
 
-class ClearRenderTargetStage final : public IRenderPipelineStage
+SHIB_REFLECTION_CLASS_DEFINE(ProcessModelsStage)
+
+bool ProcessModelsStage::init(RenderManager& render_mgr)
 {
-public:
-	bool init(RenderManager& render_mgr) override;
-	//void destroy(RenderManager& /*render_mgr*/) override;
+	_model_data = &render_mgr.getRenderPipelines().template getOrAddRenderData<ModelPipelineData>();
+	GAFF_ASSERT(_model_data);
 
-	void update(uintptr_t thread_id_int) override;
+	return true;
+}
 
-	const RenderCommandData& getRenderCommands(void) const override;
+void ProcessModelsStage::update(uintptr_t thread_id_int)
+{
+	_model_data->processChanges(thread_id_int);
+}
 
-private:
-	RenderCommandData _render_commands;
-	RenderManager* _render_mgr = nullptr;
-
-	const Vector<IResource*>* _render_targets = nullptr;
-	EA::Thread::Mutex* _resource_lock = nullptr;
-
-	SHIB_REFLECTION_CLASS_DECLARE(ClearRenderTargetStage);
-};
+const RenderCommandData& ProcessModelsStage::getRenderCommands(void) const
+{
+	static const RenderCommandData s_empty_command_data;
+	return s_empty_command_data;
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::ClearRenderTargetStage)

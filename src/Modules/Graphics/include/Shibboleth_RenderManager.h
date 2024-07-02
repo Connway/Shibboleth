@@ -116,8 +116,6 @@ public:
 
 	bool init(void) override;
 
-	void newFrame(void);
-
 	void manageRenderDevice(Gleam::RenderDevice& device);
 
 	// Are these functions necessary?
@@ -184,13 +182,6 @@ public:
 	RenderPipeline& getRenderPipeline(void);
 
 
-	using ModelBucket = VectorMap<Gaff::Hash64, Vector<const ITransformProvider*> >;
-
-	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
-	void unregisterModel(ModelInstanceHandle handle);
-	const VectorMap<Gaff::Hash64, ModelBucket>& getRegisteredModels(void) const;
-	const Vector<ModelInstanceHandle>& getNewRegisteredModels(void) const;
-
 private:
 	struct RenderOutput final
 	{
@@ -210,10 +201,6 @@ private:
 
 	VectorMap<Gaff::Hash32, RenderOutput> _outputs{ GRAPHICS_ALLOCATOR };
 	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
-
-	// $TODO: Move into render pipeline data.
-	VectorMap<Gaff::Hash64, ModelBucket> _model_instances{ GRAPHICS_ALLOCATOR };
-	Vector<ModelInstanceHandle> _new_models{ GRAPHICS_ALLOCATOR };
 
 	// $TODO: Move a lot of these into RenderPipeline.
 	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };

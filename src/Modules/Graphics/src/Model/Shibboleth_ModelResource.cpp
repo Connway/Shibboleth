@@ -44,6 +44,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelResource)
 
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
+
+	.var("instances_per_buffer", &Shibboleth::ModelResource::_instances_per_buffer)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelResource)
 
 NS_SHIBBOLETH
@@ -296,6 +298,11 @@ int32_t ModelResource::getNumMeshes(void) const
 const Gleam::Vec3& ModelResource::getCenteringVector(void) const
 {
 	return _centering_vector;
+}
+
+int32_t ModelResource::getInstancesPerBuffer(void) const
+{
+	return _instances_per_buffer;
 }
 
 NS_END
