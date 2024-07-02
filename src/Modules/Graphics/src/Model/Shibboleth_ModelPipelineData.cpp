@@ -256,13 +256,13 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 					const auto it = srv_vars.find(name);
 
 					if (it != srv_vars.end()) {
-						pb->addResourceView(shader_type, it->second.srv.get());
+						pb->addResourceView(shader_type, *it->second.srv);
 
 					} else {
 						const auto it_buf = buffer_vars.find(name);
 
 						if (it_buf != buffer_vars.end()) {
-							pb->addResourceView(shader_type, it_buf->second.pages[0].srv.get());
+							pb->addResourceView(shader_type, *it_buf->second.pages[0].srv);
 						} else {
 							// $TODO: Log error.
 						}
@@ -388,7 +388,7 @@ void ModelPipelineData::addConstantBuffers(
 		const HashString32<> name{ const_buf_refl.name.data() };
 		var_map[std::move(name)].reset(buffer);
 
-		pb.addConstantBuffer(shader_type, buffer);
+		pb.addConstantBuffer(shader_type, *buffer);
 	}
 }
 
@@ -408,16 +408,16 @@ void ModelPipelineData::addSamplers(
 		const auto it = sampler_map->find(key);
 
 		if (it == sampler_map->end()) {
-			pb.addSamplerState(shader_type, default_sampler);
+			pb.addSamplerState(shader_type, *default_sampler);
 
 		} else {
 			const Gleam::SamplerState* const sampler = it->second->getSamplerState(device);
 
 			if (sampler) {
-				pb.addSamplerState(shader_type, sampler);
+				pb.addSamplerState(shader_type, *sampler);
 			} else {
 				// $TODO: Log error.
-				pb.addSamplerState(shader_type, default_sampler);
+				pb.addSamplerState(shader_type, *default_sampler);
 			}
 		}
 	}
