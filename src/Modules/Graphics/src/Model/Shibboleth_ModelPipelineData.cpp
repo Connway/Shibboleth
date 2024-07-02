@@ -21,7 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Model/Shibboleth_ModelPipelineData.h"
+#include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_RenderManager.h"
+#include <Shibboleth_ITransformProvider.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_Texture.h>
@@ -149,17 +151,11 @@ void ModelPipelineData::addInstance(const ModelInstanceData& model_data, ModelIn
 
 	// Already registered.
 	if (it_tform != bucket.transform_providers.end() && *it_tform == handle.transform_provider) {
+		LogWarningGraphics("ModelPipelineData::addInstance: Model instance '%s' is already registered.", handle.transform_provider->getDebugName());
 		return;
 	}
 
 	bucket.transform_providers.emplace(it_tform, handle.transform_provider);
-
-	//MeshInstance& mesh_instance = (bucket.mesh_instances.empty() || bucket.mesh_instances.back().buffer_instance_count == model_data.instances_per_page) ?
-		//createNewMeshInstance(bucket, model_data)) :
-		//bucket.mesh_instance.last();
-
-//	if (!mesh_instance.buffer_instance_count) {
-//	}
 }
 
 void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
@@ -180,6 +176,19 @@ void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
 			return;
 		}
 	}
+
+	auto it_bucket = _model_buckets.find(handle.bucket_hash);
+	GAFF_ASSERT(it_bucket != _model_buckets.end());
+
+	const auto it_tform = Gaff::LowerBound(it_bucket->second.transform_providers, handle.transform_provider);
+
+	// Not registered in this bucket.
+	if (it_tform == it_bucket->second.transform_providers.end() || *it_tform != handle.transform_provider) {
+		LogWarningGraphics("ModelPipelineData::removeInstance: Model instance '%s' is not registered.", handle.transform_provider->getDebugName());
+		return;
+	}
+
+	it_bucket->second.transform_providers.erase(it_tform);
 }
 
 ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)
