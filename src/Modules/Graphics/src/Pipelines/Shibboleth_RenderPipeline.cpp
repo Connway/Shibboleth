@@ -21,6 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Pipelines/Shibboleth_RenderPipeline.h"
+#include "Shibboleth_GraphicsLogging.h"
+#include "Shibboleth_RenderManager.h"
+#include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Config/Shibboleth_Config.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
@@ -117,6 +120,11 @@ IRenderPipelineData* RenderPipeline::getOrAddRenderData(const Refl::IReflectionD
 	if (!data) {
 		ProxyAllocator allocator = GRAPHICS_ALLOCATOR;
 		data = ref_def.template createT<IRenderPipelineData>(allocator);
+
+		if (!data->init(*ManagerRef<RenderManager>{})) {
+			LogErrorGraphics("RenderPipeline::getOrAddRenderData: Failed to initialize '%s'.", ref_def.getReflectionInstance().getName());
+			return nullptr;
+		}
 	}
 
 	return data;

@@ -30,8 +30,6 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_IShader.h>
-//#include <Gaff_IncludeEASTLAtomic.h>
-#include <eathread/eathread_rwmutex.h>
 
 
 NS_GLEAM
@@ -57,48 +55,6 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 
 private:
-	struct InstanceData final
-	{
-		struct InstanceBufferPage final
-		{
-			VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::ShaderResourceView> > srv_map{ GRAPHICS_ALLOCATOR };
-			ResourcePtr<BufferResource> buffer;
-		};
-
-		struct InstanceBufferData final
-		{
-			Vector<InstanceBufferPage> pages{ GRAPHICS_ALLOCATOR };
-			U8String buffer_string{ GRAPHICS_ALLOCATOR };
-			int32_t srv_index = -1;
-		};
-
-		using BufferVarMap = VectorMap<HashString32<>, InstanceBufferData>;
-		using VarMap = VectorMap< HashString32<>, UniquePtr<Gleam::ShaderResourceView> >;
-
-		struct PipelineData final
-		{
-			BufferVarMap buffer_vars{ GRAPHICS_ALLOCATOR };
-			VectorMap<const Gleam::RenderDevice*, VarMap> srv_vars{ GRAPHICS_ALLOCATOR };
-		};
-
-		struct MeshInstanceData final
-		{
-			PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
-			ResourcePtr<ProgramBuffersResource> program_buffers;
-
-			InstanceBufferData* model_to_proj_data = nullptr;
-
-			int32_t buffer_instance_count = 1;
-			int32_t model_to_proj_offset = -1;
-		};
-
-		Vector<const ITransformProvider*> transform_providers{ GRAPHICS_ALLOCATOR };
-		Vector<MeshInstanceData> mesh_instances{ GRAPHICS_ALLOCATOR };
-
-		// $TODO: When texture arrays are a thing, use this lock when copying new textures.
-		EA::Thread::RWMutex lock;
-	};
-
 	struct RenderJobData final
 	{
 		RenderCommandStage* rcs;
@@ -134,54 +90,12 @@ private:
 
 	RenderCommandData _render_commands;
 
-	VectorMap<Gaff::Hash64, InstanceData> _instance_data{ GRAPHICS_ALLOCATOR };
-	EA::Thread::RWMutex _instance_data_lock;
-
 	Vector<DeviceJobData> _device_job_data_cache{ GRAPHICS_ALLOCATOR };
 	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 	Gaff::Counter _job_counter = 0;
 
-	ManagerRef<ResourceManager> _resource_mgr;
 	RenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
-
-	void addModelInstance(const ModelInstanceData& data, InstanceData& instance_data, Gaff::Hash64 instance_hash, const ITransformProvider& transform_provider);
-	bool createInstanceBucket(const ModelInstanceData& data, Gaff::Hash64 bucket_hash);
-
-	void addStructuredBuffersSRVs(
-		InstanceData::MeshInstanceData& instance_data,
-		Gaff::Hash64 instance_hash,
-		const Vector<Gleam::RenderDevice*>& devices,
-		const Gleam::IShader::Type shader_type,
-		const Gleam::ShaderReflection& refl,
-		const MaterialResource& material
-	);
-
-	void addTextureSRVs(
-		const Gleam::IShader::Type shader_type,
-		const MaterialData& material_data,
-		const Gleam::ShaderReflection& refl,
-		InstanceData::VarMap& var_map,
-		Gleam::RenderDevice& rd
-	);
-
-	void addConstantBuffers(
-		Gaff::Hash64 instance_hash,
-		const Vector<Gleam::RenderDevice*>& devices,
-		const Gleam::IShader::Type shader_type,
-		const Gleam::ShaderReflection& refl,
-		Gleam::ProgramBuffers& pb,
-		Gleam::RenderDevice& rd
-	);
-
-	void addSamplers(
-		const Gleam::IShader::Type shader_type,
-		const MaterialData& material_data,
-		const Gleam::ShaderReflection& refl,
-		Gleam::ProgramBuffers& pb,
-		Gleam::RenderDevice& rd
-	);
-
 
 	static void GenerateCommandListJob(uintptr_t id_int, void* data);
 	static void DeviceJob(uintptr_t id_int, void* data);

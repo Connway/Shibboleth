@@ -31,8 +31,10 @@ THE SOFTWARE.
 #include <Ptrs/Shibboleth_SmartPtrs.h>
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_IManager.h>
+#include <Gleam_ShaderResourceView.h>
 #include <Gleam_CommandList.h>
 #include <Gleam_Transform.h>
+#include <Gleam_Texture.h>
 #include <Gleam_Vec2.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread.h>
@@ -88,15 +90,9 @@ struct RenderCommandData final
 class RenderManager final : public IManager
 {
 public:
+	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;
 	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
 	using WindowPtr = UniquePtr<Gleam::Window>;
-
-	//using ShaderResourceViewPtr = UniquePtr<Gleam::ShaderResourceView>;
-	//using ProgramBuffersPtr = UniquePtr<Gleam::ProgramBuffers>;
-	using SamplerStatePtr = UniquePtr<Gleam::SamplerState>;
-	//using TexturePtr = UniquePtr<Gleam::Texture>;
-
-	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;
 
 
 	enum class RenderOrder
@@ -203,7 +199,7 @@ private:
 	Vector<RenderOutput> _pending_window_removes{ GRAPHICS_ALLOCATOR };
 
 	// $TODO: Move a lot of these into RenderPipeline.
-	VectorMap<const Gleam::RenderDevice*, SamplerStatePtr> _to_screen_samplers{ GRAPHICS_ALLOCATOR };
+	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _to_screen_samplers{ GRAPHICS_ALLOCATOR };
 
 	RenderCommandData _cached_render_commands[static_cast<size_t>(RenderOrder::Count)];
 

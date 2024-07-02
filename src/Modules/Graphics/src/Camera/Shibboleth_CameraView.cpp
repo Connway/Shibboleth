@@ -29,5 +29,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraView)
 
 	.var("transform", &Shibboleth::CameraView::transform, Shibboleth::OptionalAttribute())
 	.var("vertical_fov", &Shibboleth::CameraView::fov, Shibboleth::OptionalAttribute())
+	// $TODO: Horizontal FOV
 	.var("z_planes", &Shibboleth::CameraView::z_planes, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraView)

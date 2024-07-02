@@ -32,7 +32,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ProcessModelsStage)
 
 bool ProcessModelsStage::init(RenderManager& render_mgr)
 {
-	_model_data = &render_mgr.getRenderPipelines().template getOrAddRenderData<ModelPipelineData>();
+	_model_data = render_mgr.getRenderPipeline().template getOrAddRenderData<ModelPipelineData>();
 	GAFF_ASSERT(_model_data);
 
 	return true;

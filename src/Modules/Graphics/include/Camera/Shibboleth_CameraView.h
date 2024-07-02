@@ -33,7 +33,7 @@ struct CameraView final
 {
 	Gleam::TransformRT transform;
 	Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
-	float fov = 75.0f * Gaff::DegreesToTurns;
+	float fov = 60.0f * Gaff::DegreesToTurns;
 
 	// $TODO: Depth of field.
 };

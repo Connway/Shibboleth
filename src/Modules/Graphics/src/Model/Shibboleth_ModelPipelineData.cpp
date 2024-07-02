@@ -123,7 +123,7 @@ void ModelPipelineData::processChanges(uintptr_t /*thread_id_int*/)
 		_new_models.swap(_new_models_cache);
 	}
 
-	// $TODO: Might want to thread these.
+	// $TODO: Might want to thread these depending on workloads.
 	for (const auto& entry : _pending_removes_cache) {
 		for (const ModelInstanceHandle& handle : entry.second) {
 			removeInstance(handle);

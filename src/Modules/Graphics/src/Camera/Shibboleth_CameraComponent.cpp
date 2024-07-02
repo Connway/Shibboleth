@@ -21,11 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Camera/Shibboleth_CameraComponent.h"
+#include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Shibboleth_RenderManager.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Ptrs/Shibboleth_ManagerRef.h>
-#include <Gleam_ShaderResourceView.h>
-#include <Gleam_Texture.h>
 #include <Gaff_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
@@ -39,14 +38,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CameraComponent)
-
-bool CameraComponent::init(void)
-{
-	ManagerRef<RenderManager> render_mgr;
-	_view_id = render_mgr->registerCameraView();
-
-	return true;
-}
 
 void CameraComponent::setFOV(float focal_length, float sensor_size)
 {
@@ -87,7 +78,16 @@ float CameraComponent::getFOV(void) const
 	return _view.fov;
 }
 
-CameraView& CameraComponent::getView(void)
+const CameraView& CameraComponent::generateView(float /*dt*/)
+{
+	const Gleam::Transform& tform = getTransformWorld();
+	_view.transform.setTranslation(tform.getTranslation());
+	_view.transform.setRotation(tform.getRotation());
+
+	return _view;
+}
+
+const CameraView& CameraComponent::getCurrentView(void) const
 {
 	return _view;
 }
