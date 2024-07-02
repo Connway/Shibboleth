@@ -38,7 +38,7 @@ public:
 	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::Type type) const = 0;
 	virtual const IBuffer* getConstantBuffer(IShader::Type type, int32_t index) const = 0;
 	virtual IBuffer* getConstantBuffer(IShader::Type type, int32_t index) = 0;
-	virtual void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) = 0;
+	virtual void addConstantBuffer(IShader::Type type, IBuffer& const_buffer) = 0;
 	virtual void removeConstantBuffer(IShader::Type type, int32_t index) = 0;
 	virtual void popConstantBuffer(IShader::Type type, int32_t count = 1) = 0;
 
@@ -48,17 +48,17 @@ public:
 	virtual const Vector<IShaderResourceView*>& getResourceViews(IShader::Type type) const = 0;
 	virtual const IShaderResourceView* getResourceView(IShader::Type type, int32_t index) const = 0;
 	virtual IShaderResourceView* getResourceView(IShader::Type type, int32_t index) = 0;
-	virtual void addResourceView(IShader::Type type, IShaderResourceView* resource_view) = 0;
+	virtual void addResourceView(IShader::Type type, IShaderResourceView& resource_view) = 0;
 	virtual void removeResourceView(IShader::Type type, int32_t index) = 0;
 	virtual void popResourceView(IShader::Type type, int32_t count = 1) = 0;
-	virtual void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) = 0;
+	virtual void setResourceView(IShader::Type type, int32_t index, IShaderResourceView& resource_view) = 0;
 
 	virtual int32_t getResourceViewCount(IShader::Type type) const = 0;
 	virtual int32_t getResourceViewCount(void) const = 0;
 
 	virtual const Vector<const ISamplerState*>& getSamplerStates(IShader::Type type) const = 0;
 	virtual const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const = 0;
-	virtual void addSamplerState(IShader::Type type, const ISamplerState* sampler) = 0;
+	virtual void addSamplerState(IShader::Type type, const ISamplerState& sampler) = 0;
 	virtual void removeSamplerState(IShader::Type type, int32_t index) = 0;
 	virtual void popSamplerState(IShader::Type type, int32_t count = 1) = 0;
 

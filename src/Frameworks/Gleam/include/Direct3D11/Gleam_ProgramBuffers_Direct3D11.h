@@ -36,7 +36,7 @@ public:
 	const Vector<IBuffer*>& getConstantBuffers(IShader::Type type) const override;
 	const IBuffer* getConstantBuffer(IShader::Type type, int32_t index) const override;
 	IBuffer* getConstantBuffer(IShader::Type type, int32_t index) override;
-	void addConstantBuffer(IShader::Type type, IBuffer* const_buffer) override;
+	void addConstantBuffer(IShader::Type type, IBuffer& const_buffer) override;
 	void removeConstantBuffer(IShader::Type type, int32_t index) override;
 	void popConstantBuffer(IShader::Type type, int32_t count = 1) override;
 
@@ -46,17 +46,17 @@ public:
 	const Vector<IShaderResourceView*>& getResourceViews(IShader::Type type) const override;
 	const IShaderResourceView* getResourceView(IShader::Type type, int32_t index) const override;
 	IShaderResourceView* getResourceView(IShader::Type type, int32_t index) override;
-	void addResourceView(IShader::Type type, IShaderResourceView* resource_view) override;
+	void addResourceView(IShader::Type type, IShaderResourceView& resource_view) override;
 	void removeResourceView(IShader::Type type, int32_t index) override;
 	void popResourceView(IShader::Type type, int32_t count = 1) override;
-	void setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view) override;
+	void setResourceView(IShader::Type type, int32_t index, IShaderResourceView& resource_view) override;
 
 	int32_t getResourceViewCount(IShader::Type type) const override;
 	int32_t getResourceViewCount(void) const override;
 
 	const Vector<const ISamplerState*>& getSamplerStates(IShader::Type type) const override;
 	const ISamplerState* getSamplerState(IShader::Type type, int32_t index) const override;
-	void addSamplerState(IShader::Type type, const ISamplerState* sampler) override;
+	void addSamplerState(IShader::Type type, const ISamplerState& sampler) override;
 	void removeSamplerState(IShader::Type type, int32_t index) override;
 	void popSamplerState(IShader::Type type, int32_t count = 1) override;
 

@@ -85,13 +85,13 @@ IBuffer* ProgramBuffers::getConstantBuffer(IShader::Type type, int32_t index)
 	return _constant_buffers[static_cast<int32_t>(type)][index];
 }
 
-void ProgramBuffers::addConstantBuffer(IShader::Type type, IBuffer* const_buffer)
+void ProgramBuffers::addConstantBuffer(IShader::Type type, IBuffer& const_buffer)
 {
-	GAFF_ASSERT(const_buffer && const_buffer->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(const_buffer.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 
-	_constant_buffers[static_cast<int32_t>(type)].emplace_back(const_buffer);
-	_d3d_buffers[static_cast<int32_t>(type)].emplace_back(static_cast<const Buffer*>(const_buffer)->getBuffer());
+	_constant_buffers[static_cast<int32_t>(type)].emplace_back(&const_buffer);
+	_d3d_buffers[static_cast<int32_t>(type)].emplace_back(static_cast<const Buffer&>(const_buffer).getBuffer());
 
 	_constant_buffers[static_cast<int32_t>(type)].shrink_to_fit();
 	_d3d_buffers[static_cast<int32_t>(type)].shrink_to_fit();
@@ -160,13 +160,13 @@ IShaderResourceView* ProgramBuffers::getResourceView(IShader::Type type, int32_t
 	return _resource_views[static_cast<int32_t>(type)][index];
 }
 
-void ProgramBuffers::addResourceView(IShader::Type type, IShaderResourceView* resource_view)
+void ProgramBuffers::addResourceView(IShader::Type type, IShaderResourceView& resource_view)
 {
-	GAFF_ASSERT(resource_view && resource_view->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(resource_view.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 
-	_resource_views[static_cast<int32_t>(type)].emplace_back(resource_view);
-	_d3d_res_views[static_cast<int32_t>(type)].emplace_back(static_cast<const ShaderResourceView*>(resource_view)->getResourceView());
+	_resource_views[static_cast<int32_t>(type)].emplace_back(&resource_view);
+	_d3d_res_views[static_cast<int32_t>(type)].emplace_back(static_cast<const ShaderResourceView&>(resource_view).getResourceView());
 
 	_constant_buffers[static_cast<int32_t>(type)].shrink_to_fit();
 	_d3d_res_views[static_cast<int32_t>(type)].shrink_to_fit();
@@ -200,13 +200,14 @@ void ProgramBuffers::popResourceView(IShader::Type type, int32_t count)
 	_d3d_res_views[static_cast<int32_t>(type)].shrink_to_fit();
 }
 
-void ProgramBuffers::setResourceView(IShader::Type type, int32_t index, IShaderResourceView* resource_view)
+void ProgramBuffers::setResourceView(IShader::Type type, int32_t index, IShaderResourceView& resource_view)
 {
+	GAFF_ASSERT(resource_view.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_resource_views[static_cast<int32_t>(type)].size()));
 
-	_resource_views[static_cast<int32_t>(type)][index] = resource_view;
-	_d3d_res_views[static_cast<int32_t>(type)][index] = static_cast<const ShaderResourceView*>(resource_view)->getResourceView();
+	_resource_views[static_cast<int32_t>(type)][index] = &resource_view;
+	_d3d_res_views[static_cast<int32_t>(type)][index] = static_cast<const ShaderResourceView&>(resource_view).getResourceView();
 }
 
 int32_t ProgramBuffers::getResourceViewCount(IShader::Type type) const
@@ -239,13 +240,13 @@ const ISamplerState* ProgramBuffers::getSamplerState(IShader::Type type, int32_t
 	return _sampler_states[static_cast<int32_t>(type)][index];
 }
 
-void ProgramBuffers::addSamplerState(IShader::Type type, const ISamplerState* sampler)
+void ProgramBuffers::addSamplerState(IShader::Type type, const ISamplerState& sampler)
 {
-	GAFF_ASSERT(sampler && sampler->getRendererType() == RendererType::Direct3D11);
+	GAFF_ASSERT(sampler.getRendererType() == RendererType::Direct3D11);
 	GAFF_ASSERT(static_cast<int32_t>(type) >= 0 && type < IShader::Type::Count);
 
-	_sampler_states[static_cast<int32_t>(type)].emplace_back(sampler);
-	_d3d_samplers[static_cast<int32_t>(type)].emplace_back(static_cast<const SamplerState*>(sampler)->getSamplerState());
+	_sampler_states[static_cast<int32_t>(type)].emplace_back(&sampler);
+	_d3d_samplers[static_cast<int32_t>(type)].emplace_back(static_cast<const SamplerState&>(sampler).getSamplerState());
 
 	_sampler_states[static_cast<int32_t>(type)].shrink_to_fit();
 	_d3d_samplers[static_cast<int32_t>(type)].shrink_to_fit();
