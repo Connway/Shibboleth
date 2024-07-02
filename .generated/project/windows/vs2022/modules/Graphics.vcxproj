@@ -243,10 +243,12 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_MeshResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelInstanceData.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelPipelineData.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineData.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineStage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ProcessModelsStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderCommandStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipeline.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_BufferResource.h" />
@@ -275,10 +277,12 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_MeshResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelInstanceData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelPipelineData.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineData.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineStage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ProcessModelsStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderCommandStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_BufferResource.cpp" />

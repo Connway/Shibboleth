@@ -65,6 +65,13 @@ struct ModelInstanceHandle final
 	Gaff::Hash64 instance_hash;
 	Gaff::Hash64 bucket_hash;
 	const ITransformProvider* transform_provider = nullptr;
+
+	bool operator==(const ModelInstanceHandle& rhs) const
+	{
+		return instance_hash == rhs.instance_hash &&
+			bucket_hash == rhs.bucket_hash &&
+			transform_provider == rhs.transform_provider;
+	}
 };
 
 struct ModelInstanceData final

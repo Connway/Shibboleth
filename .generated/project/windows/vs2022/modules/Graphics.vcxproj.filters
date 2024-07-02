@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelInstanceData.h">
       <Filter>include\Model</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelPipelineData.h">
+      <Filter>include\Model</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelResource.h">
       <Filter>include\Model</Filter>
     </ClInclude>
@@ -64,6 +67,9 @@
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineStage.h">
+      <Filter>include\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ProcessModelsStage.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderCommandStage.h">
@@ -146,6 +152,9 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelInstanceData.cpp">
       <Filter>src\Model</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelPipelineData.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelResource.cpp">
       <Filter>src\Model</Filter>
     </ClCompile>
@@ -156,6 +165,9 @@
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineStage.cpp">
+      <Filter>src\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ProcessModelsStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderCommandStage.cpp">

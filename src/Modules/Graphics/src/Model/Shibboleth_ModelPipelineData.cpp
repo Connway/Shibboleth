@@ -21,12 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Model/Shibboleth_ModelPipelineData.h"
+#include <Gleam_ShaderResourceView.h>
+#include <Gleam_RenderDevice.h>
+#include <Gleam_Texture.h>
 #include <Gaff_ContainerAlgorithm.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelPipelineData)
 	.template ctor<>()
-
-	.var("instance_data", &Shibboleth::ModelPipelineData::_instance_data)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelPipelineData)
 
 
@@ -87,7 +88,13 @@ ModelInstanceHandle ModelPipelineData::registerModel(const ModelInstanceData& mo
 void ModelPipelineData::unregisterModel(ModelInstanceHandle handle)
 {
 	const EA::Thread::AutoMutex lock(_pending_removes_lock);
-	_pending_removes[handle.bucket_hash].emplace_back(handle);
+	auto& handles = _pending_removes[handle.bucket_hash];
+
+	if (handles.empty()) {
+		handles.set_allocator(GRAPHICS_ALLOCATOR);
+	}
+
+	handles.emplace_back(handle);
 }
 
 void ModelPipelineData::markDirty(ModelInstanceHandle handle)
@@ -96,7 +103,7 @@ void ModelPipelineData::markDirty(ModelInstanceHandle handle)
 	GAFF_REF(handle);
 }
 
-void ModelPipelineData::processChanges(uintptr_t thread_id_int)
+void ModelPipelineData::processChanges(uintptr_t /*thread_id_int*/)
 {
 	// Cache the queues so that while the next frame is simulating, it doesn't stomp over anything.
 	{
@@ -109,14 +116,14 @@ void ModelPipelineData::processChanges(uintptr_t thread_id_int)
 
 	// $TODO: Might want to thread these.
 	for (const auto& entry : _pending_removes_cache) {
-		for (const ModelInstanceData& handle : entry.second) {
+		for (const ModelInstanceHandle& handle : entry.second) {
 			removeInstance(handle);
 		}
 	}
 
 	for (const auto& entry : _new_models) {
-		for (const NewModelInstance& new_instance : entry.second) {
-			addInstance(new_instance.data, new_instance.handle);
+		for (const ModelInstanceHandle& handle : entry.second.handles) {
+			addInstance(entry.second.data, handle);
 		}
 	}
 
@@ -140,13 +147,12 @@ void ModelPipelineData::addInstance(const ModelInstanceData& model_data, ModelIn
 
 	bucket.transform_providers.emplace(it_tform, handle.transform_provider);
 
-	MeshInstance& mesh_instance = (bucket.mesh_instances.empty() || bucket.mesh_instances.last().buffer_instance_count == model_data.instances_per_page) ?
-		createNewMeshInstance(bucket, model_data)) :
-		bucket.mesh_instance.last();
+	//MeshInstance& mesh_instance = (bucket.mesh_instances.empty() || bucket.mesh_instances.back().buffer_instance_count == model_data.instances_per_page) ?
+		//createNewMeshInstance(bucket, model_data)) :
+		//bucket.mesh_instance.last();
 
-	if (!mesh_instance.buffer_instance_count) {
-
-	}
+//	if (!mesh_instance.buffer_instance_count) {
+//	}
 }
 
 void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
@@ -169,23 +175,23 @@ void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
 	}
 }
 
-ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)
+ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)
 {
-	MeshBucket& mesh_bucket = _model_buckets[handle.bucket_hash];
+	ModelBucket& model_bucket = _model_buckets[handle.bucket_hash];
 
 	// $TODO: Maybe error check this?
 	// Assuming that all resources have the same devices.
 	const auto devices = model_data.material_data.front().material->getDevices();
 	GAFF_ASSERT(!devices.empty());
 
-	mesh_bucket.mesh_instances.resize(model_data.model->getNumMeshes());
+	model_bucket.mesh_instances.resize(model_data.model->getNumMeshes());
 
 	Gleam::ShaderReflection shader_refl[static_cast<size_t>(Gleam::IShader::Type::Count)];
 
 	// Shader reflection should be the same across all devices. Caching once up front instead of requesting it per device.
 	for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type>()) {
 		const int32_t shader_type_index = static_cast<int32_t>(shader_type);
-		const Gleam::Program* const program = model_data.material_data.material->getProgram(*devices[0]);
+		const Gleam::Program* const program = model_data.material_data[0].material->getProgram(*devices[0]);
 		const Gleam::Shader* const shader = (program) ? static_cast<const Gleam::Shader*>(program->getAttachedShader(shader_type)) : nullptr;
 
 		GAFF_ASSERT(shader);
@@ -193,11 +199,11 @@ ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHand
 		shader_refl[shader_type_index] = shader->getReflectionData();
 	}
 
-	for (int32_t i = 0; i < static_cast<int32_t>(mesh_bucket.mesh_instances.size()); ++i) {
-		const MaterialData& material_data = mesh_data.material_data[i];
-		MeshInstance& mesh_instance = mesh_bucket.mesh_instances[i];
+	for (int32_t i = 0; i < static_cast<int32_t>(model_bucket.mesh_instances.size()); ++i) {
+		const MaterialInstanceData& material_data = model_data.material_data[i];
+		MeshInstance& mesh_instance = model_bucket.mesh_instances[i];
 
-		mesh_instance.buffer_instance_count = model_data->model->getInstancesPerBuffer();
+		mesh_instance.buffer_instance_count = model_data.model->getInstancesPerBuffer();
 		mesh_instance.device_data.reserve(devices.size());
 
 		for (Gleam::RenderDevice* rd : devices) {
@@ -231,14 +237,12 @@ ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHand
 				// $TODO: When texture arrays are added, move this out of bucket data and into instance data.
 				addTextureSRVs(*rd, device_data, shader_type, pipeline_refl, material_data);
 
-				Gleam::ProgramBuffers* const pb = mesh_instance.program_buffers->getProgramBuffer(*rd);
+				//addConstantBuffers(bucket_hash, devices, shader_type, shader_refl, *pb, *rd);
+				//addSamplers(shader_type, material_data, shader_refl, *pb, *rd);
 
-				addConstantBuffers(bucket_hash, devices, shader_type, shader_refl, *pb, *rd);
-				addSamplers(shader_type, material_data, shader_refl, *pb, *rd);
+				//auto& var_srvs = mesh_instance.pipeline_data[shader_type_index].srv_vars;
 
-				auto& var_srvs = mesh_instance.pipeline_data[shader_type_index].srv_vars;
-
-				for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
+				/*for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
 					// $TODO: Just use Hash32 instead? No need to store copy of string just to do a lookup on the hash.
 					const HashString32<> name(var_name.data());
 					const auto it = var_srvs.find(name);
@@ -256,16 +260,16 @@ ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHand
 							// $TODO: Log error.
 						}
 					}
-				}
+				}*/
 			}
 		}
 	}
 
-	return mesh_bucket;
+	return model_bucket;
 }
 
 void ModelPipelineData::addStructuredBuffersSRVs(
-	MeshInstanceData& mesh_instance,
+	MeshInstance& mesh_instance,
 	Gleam::RenderDevice& device,
 	MeshInstanceDeviceData& device_data,
 	const Gleam::IShader::Type shader_type,
@@ -320,8 +324,8 @@ void ModelPipelineData::addTextureSRVs(
 	const Gleam::ShaderReflection& refl,
 	const MaterialInstanceData& material_data)
 {
-	VarMap& var_map = device_data.pipeline_data[static_cast<int32_t>(shader_type)].buffer_vars;
-	const TextureData::TextureMap* const texture_map = GetResourceMap(material_data.textures, shader_type);
+	VarMap& var_map = device_data.pipeline_data[static_cast<int32_t>(shader_type)].srv_vars;
+	const TextureInstanceData::TextureMap* const texture_map = GetResourceMap(material_data.textures, shader_type);
 
 	for (const Gleam::U8String& texture_name : refl.textures) {
 		const HashString32<> name(texture_name.data());
@@ -329,11 +333,12 @@ void ModelPipelineData::addTextureSRVs(
 
 		if (it == texture_map->end()) {
 			// $TODO: Use error texture.
+			// $TODO: Log error.
 			continue;
 		}
 
 		Gleam::ShaderResourceView* const srv = SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator);
-		const Gleam::Texture* const texture = it->second->getTexture(rd);
+		const Gleam::Texture* const texture = it->second->getTexture(device);
 
 		if (!srv->init(device, *texture)) {
 			// $TODO: Log error.

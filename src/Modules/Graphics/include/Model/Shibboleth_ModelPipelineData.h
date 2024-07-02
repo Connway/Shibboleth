@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelInstanceData.h"
 #include "Pipelines/Shibboleth_IRenderPipelineData.h"
+#include <Gleam_ProgramBuffers.h>
 
 NS_SHIBBOLETH
 
@@ -91,11 +92,11 @@ private:
 		Vector<ModelInstanceHandle> handles{ GRAPHICS_ALLOCATOR };
 	};
 
-	VectorMap<Gaff::Hash64, ModelInstanceHandle> _pending_removes{ GRAPHICS_ALLOCATOR };
+	VectorMap< Gaff::Hash64, Vector<ModelInstanceHandle> > _pending_removes{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, NewModelInstance> _new_models{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, ModelBucket> _model_buckets{ GRAPHICS_ALLOCATOR };
 
-	VectorMap<Gaff::Hash64, ModelInstanceHandle> _pending_removes_cache{ GRAPHICS_ALLOCATOR };
+	VectorMap< Gaff::Hash64, Vector<ModelInstanceHandle> > _pending_removes_cache{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, NewModelInstance> _new_models_cache{ GRAPHICS_ALLOCATOR };
 
 	EA::Thread::Mutex _pending_removes_lock;
@@ -108,8 +109,8 @@ private:
 	ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 
 	void addStructuredBuffersSRVs(
-		MeshInstanceData& mesh_instance,
-		Gleam::RenderDevice* device,
+		MeshInstance& mesh_instance,
+		Gleam::RenderDevice& device,
 		MeshInstanceDeviceData& device_data,
 		const Gleam::IShader::Type shader_type,
 		const Gleam::ShaderReflection& refl
