@@ -31,6 +31,8 @@ NS_SHIBBOLETH
 class ModelPipelineData final : public IRenderPipelineData
 {
 public:
+	bool init(RenderManager& render_mgr) override;
+
 	// Should never be called with model_data resources not loaded.
 	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
 	void unregisterModel(ModelInstanceHandle handle);
@@ -51,17 +53,25 @@ private:
 		UniquePtr<Gleam::Buffer> buffer;
 	};
 
+	struct InstanceTexture final
+	{
+		UniquePtr<Gleam::ShaderResourceView> srv;
+		const Gleam::Texture* texture = nullptr; // Resource should keep this texture alive for now. In the future, we won't need to hold onto this reference, as we will create a texture array.
+	};
+
 	struct InstanceBufferData final
 	{
 		Vector<InstanceBuffer> pages{ GRAPHICS_ALLOCATOR };
 		int32_t srv_index = -1;
 	};
 
-	using VarMap = VectorMap< HashString32<>, UniquePtr<Gleam::ShaderResourceView> >;
+	using ConstBufferVarMap = VectorMap< HashString32<>, UniquePtr<Gleam::Buffer> >;
 	using BufferVarMap = VectorMap<HashString32<>, InstanceBufferData>;
+	using VarMap = VectorMap<HashString32<>, InstanceTexture>;
 
 	struct PipelineData final
 	{
+		ConstBufferVarMap const_buffer_vars{ GRAPHICS_ALLOCATOR };
 		BufferVarMap buffer_vars{ GRAPHICS_ALLOCATOR };
 		VarMap srv_vars{ GRAPHICS_ALLOCATOR };
 	};
@@ -102,6 +112,8 @@ private:
 	EA::Thread::Mutex _pending_removes_lock;
 	EA::Thread::Mutex _new_models_lock;
 
+	RenderManager* _render_mgr = nullptr;
+
 
 	void addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 	void removeInstance(ModelInstanceHandle handle);
@@ -122,6 +134,22 @@ private:
 		const Gleam::IShader::Type shader_type,
 		const Gleam::ShaderReflection& refl,
 		const MaterialInstanceData& material_data
+	);
+
+	void addConstantBuffers(
+		Gleam::RenderDevice& device,
+		MeshInstanceDeviceData& device_data,
+		const Gleam::IShader::Type shader_type,
+		const Gleam::ShaderReflection& refl,
+		Gleam::ProgramBuffers& pb
+	);
+
+	void addSamplers(
+		Gleam::RenderDevice& device,
+		const Gleam::IShader::Type shader_type,
+		const Gleam::ShaderReflection& refl,
+		const MaterialInstanceData& material_data,
+		Gleam::ProgramBuffers& pb
 	);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ModelPipelineData);

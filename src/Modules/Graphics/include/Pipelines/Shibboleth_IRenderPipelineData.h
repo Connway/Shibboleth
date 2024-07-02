@@ -26,10 +26,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class RenderManager;
+
 class IRenderPipelineData : public Refl::IReflectionObject
 {
 public:
 	virtual ~IRenderPipelineData(void) {}
+
+	virtual bool init(RenderManager& /*render_mgr*/) { return true; }
 };
 
 NS_END

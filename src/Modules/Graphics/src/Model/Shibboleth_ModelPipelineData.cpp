@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Model/Shibboleth_ModelPipelineData.h"
+#include "Shibboleth_RenderManager.h"
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_Texture.h>
@@ -65,6 +66,12 @@ namespace
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ModelPipelineData)
+
+bool ModelPipelineData::init(RenderManager& render_mgr)
+{
+	_render_mgr = &render_mgr;
+	return true;
+}
 
 ModelInstanceHandle ModelPipelineData::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
 {
@@ -237,30 +244,30 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 				// $TODO: When texture arrays are added, move this out of bucket data and into instance data.
 				addTextureSRVs(*rd, device_data, shader_type, pipeline_refl, material_data);
 
-				//addConstantBuffers(bucket_hash, devices, shader_type, shader_refl, *pb, *rd);
-				//addSamplers(shader_type, material_data, shader_refl, *pb, *rd);
+				addConstantBuffers(*rd, device_data, shader_type, pipeline_refl, *pb);
+				addSamplers(*rd, shader_type, pipeline_refl, material_data, *pb);
 
-				//auto& var_srvs = mesh_instance.pipeline_data[shader_type_index].srv_vars;
+				const auto& buffer_vars = device_data.pipeline_data[shader_type_index].buffer_vars;
+				const auto& srv_vars = device_data.pipeline_data[shader_type_index].srv_vars;
 
-				/*for (const Gleam::U8String& var_name : shader_refl.var_decl_order) {
+				for (const Gleam::U8String& var_name : pipeline_refl.var_decl_order) {
 					// $TODO: Just use Hash32 instead? No need to store copy of string just to do a lookup on the hash.
 					const HashString32<> name(var_name.data());
-					const auto it = var_srvs.find(name);
+					const auto it = srv_vars.find(name);
 
-					if (it != var_srvs.end()) {
-						pb->addResourceView(shader_type, it->second.get());
+					if (it != srv_vars.end()) {
+						pb->addResourceView(shader_type, it->second.srv.get());
 
 					} else {
-						auto& buffers = mesh_instance.pipeline_data[shader_type_index].buffer_vars;
-						const auto it_buf = buffers.find(name);
+						const auto it_buf = buffer_vars.find(name);
 
-						if (it_buf != buffers.end()) {
-							pb->addResourceView(shader_type, it_buf->second.pages[0].srv_map[rd].get());
+						if (it_buf != buffer_vars.end()) {
+							pb->addResourceView(shader_type, it_buf->second.pages[0].srv.get());
 						} else {
 							// $TODO: Log error.
 						}
 					}
-				}*/
+				}
 			}
 		}
 	}
@@ -324,8 +331,8 @@ void ModelPipelineData::addTextureSRVs(
 	const Gleam::ShaderReflection& refl,
 	const MaterialInstanceData& material_data)
 {
-	VarMap& var_map = device_data.pipeline_data[static_cast<int32_t>(shader_type)].srv_vars;
 	const TextureInstanceData::TextureMap* const texture_map = GetResourceMap(material_data.textures, shader_type);
+	VarMap& var_map = device_data.pipeline_data[static_cast<int32_t>(shader_type)].srv_vars;
 
 	for (const Gleam::U8String& texture_name : refl.textures) {
 		const HashString32<> name(texture_name.data());
@@ -345,7 +352,74 @@ void ModelPipelineData::addTextureSRVs(
 			GAFF_ASSERT(false);
 		}
 
-		var_map[std::move(name)].reset(srv);
+		InstanceTexture& inst = var_map[std::move(name)];
+		inst.texture = texture;
+		inst.srv.reset(srv);
+	}
+}
+
+void ModelPipelineData::addConstantBuffers(
+	Gleam::RenderDevice& device,
+	MeshInstanceDeviceData& device_data,
+	const Gleam::IShader::Type shader_type,
+	const Gleam::ShaderReflection& refl,
+	Gleam::ProgramBuffers& pb)
+{
+	ConstBufferVarMap& var_map = device_data.pipeline_data[static_cast<int32_t>(shader_type)].const_buffer_vars;
+
+	for (const Gleam::ConstBufferReflection& const_buf_refl : refl.const_buff_reflection) {
+		const Gleam::IBuffer::Settings settings = {
+			nullptr,
+			const_buf_refl.size_bytes, // size
+			static_cast<int32_t>(const_buf_refl.size_bytes), // stride
+			static_cast<int32_t>(const_buf_refl.size_bytes), // elem_size
+			Gleam::IBuffer::Type::ShaderConstantData,
+			Gleam::IBuffer::MapType::Write,
+			true
+		};
+
+		Gleam::Buffer* const buffer = SHIB_ALLOCT(Gleam::Buffer, s_allocator);
+
+		if (!buffer->init(device, settings)) {
+			// $TODO: Log error.
+			GAFF_ASSERT(false);
+		}
+
+		const HashString32<> name{ const_buf_refl.name.data() };
+		var_map[std::move(name)].reset(buffer);
+
+		pb.addConstantBuffer(shader_type, buffer);
+	}
+}
+
+void ModelPipelineData::addSamplers(
+	Gleam::RenderDevice& device,
+	const Gleam::IShader::Type shader_type,
+	const Gleam::ShaderReflection& refl,
+	const MaterialInstanceData& material_data,
+	Gleam::ProgramBuffers& pb)
+{
+	const SamplerInstanceData::SamplerMap* const sampler_map = GetResourceMap(material_data.samplers, shader_type);
+	const ResourcePtr<SamplerStateResource>& default_sampler_res = _render_mgr->getDefaultSamplerState();
+	const Gleam::SamplerState* const default_sampler = default_sampler_res->getSamplerState(device);
+
+	for (const Gleam::U8String& sampler_name : refl.samplers) {
+		const HashString32<> key(sampler_name.data());
+		const auto it = sampler_map->find(key);
+
+		if (it == sampler_map->end()) {
+			pb.addSamplerState(shader_type, default_sampler);
+
+		} else {
+			const Gleam::SamplerState* const sampler = it->second->getSamplerState(device);
+
+			if (sampler) {
+				pb.addSamplerState(shader_type, sampler);
+			} else {
+				// $TODO: Log error.
+				pb.addSamplerState(shader_type, default_sampler);
+			}
+		}
 	}
 }
 
