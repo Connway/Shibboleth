@@ -36,6 +36,8 @@ public:
 
 	virtual Gleam::Transform getTransformFromGenerator(Gaff::Hash32 /*generator_name*/) const { return Gleam::Transform(); }
 	virtual const ITransformProvider* getTransformGenerator(Gaff::Hash32 /*generator_name*/) const { return nullptr; }
+
+	virtual const char8_t* getDebugName(void) const { return u8"<INVALID>"; }
 };
 
 NS_END
