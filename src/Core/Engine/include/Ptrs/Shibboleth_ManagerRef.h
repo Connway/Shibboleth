@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <class T, bool k_use_fast_getter = true>
+template <class T, bool k_use_fast_getter = true, bool k_lazy_init = false>
 class ManagerRef final
 {
 public:
 	ManagerRef(void):
-		_manager(k_use_fast_getter ? GetManagerTFast<T>() : GetManagerT<T>())
+		_manager(init())
 	{
 	}
 
@@ -57,12 +57,22 @@ public:
 
 	const T* get(void) const
 	{
-		return &_manager;
+		return const_cast<ManagerRef*>(this)->get();
 	}
 
 	T* get(void)
 	{
-		return &_manager;
+		if constexpr (k_lazy_init) {
+			if (!_manager) {
+				if constexpr (k_use_fast_getter) {
+					_manager = &GetManagerTFast<T>();
+				} else {
+					_manager = &GetManagerT<T>();
+				}
+			}
+		}
+
+		return _manager;
 	}
 
 	operator const T*(void) const
@@ -76,10 +86,22 @@ public:
 	}
 
 private:
-	T& _manager;
+	T* _manager = nullptr;
+
+	T* init(void)
+	{
+		if constexpr (k_lazy_init) {
+			return nullptr;
+		} else {
+			return get();
+		}
+	}
 };
 
-template <class T>
-using ManagerRefSafe = ManagerRef<T, false>;
+template <class T, bool k_use_fast_getter = true>
+using ManagerRefLazy = ManagerRef<T, k_use_fast_getter, true>;
+
+template <class T, bool k_lazy_init = false>
+using ManagerRefSafe = ManagerRef<T, false, k_lazy_init>;
 
 NS_END
