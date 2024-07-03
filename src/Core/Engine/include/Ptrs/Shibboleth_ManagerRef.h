@@ -47,12 +47,12 @@ public:
 
 	const T& operator*(void) const
 	{
-		return _manager;
+		return *_manager;
 	}
 
 	T& operator*(void)
 	{
-		return _manager;
+		return *_manager;
 	}
 
 	const T* get(void) const

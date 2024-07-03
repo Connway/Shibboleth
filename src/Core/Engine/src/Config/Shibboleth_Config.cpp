@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 #include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_SerializeReader.h"
+#include <cctype>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)
 	.classAttrs(
