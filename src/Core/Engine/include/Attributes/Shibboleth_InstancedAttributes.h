@@ -31,19 +31,30 @@ NS_SHIBBOLETH
 class InstancedOptionalAttribute final : public Refl::IAttribute
 {
 public:
-	explicit InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix = nullptr, bool leave_empty_element = true);
+	enum class Flag
+	{
+		LeaveEmptyElements,
+		StripPrefix,
+		StripSuffix,
+
+		Count
+	};
+
+	InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix, Gaff::Flags<Flag> flags = Gaff::Flags<Flag>{ Flag::LeaveEmptyElements, Flag::StripPrefix, Flag::StripSuffix });
+	explicit InstancedOptionalAttribute(const char8_t* prefix, Gaff::Flags<Flag> flags = Gaff::Flags<Flag>{ Flag::LeaveEmptyElements, Flag::StripPrefix, Flag::StripSuffix });
 	InstancedOptionalAttribute(const InstancedOptionalAttribute& attr) = default;
 
 	const char8_t* getPrefix(void) const;
 	const char8_t* getSuffix(void) const;
 	bool shouldLeaveEmptyElement(void) const;
 
+	eastl::u8string_view stripPrefixAndSuffix(const char8_t* name) const;
 	bool matches(const char8_t* name) const;
 
 private:
 	const char8_t* const _prefix = nullptr;
 	const char8_t* const _suffix = nullptr;
-	bool _leave_empty_element = true;
+	Gaff::Flags<Flag> _flags{ Flag::LeaveEmptyElements, Flag::StripPrefix, Flag::StripSuffix };
 
 	SHIB_REFLECTION_ATTRIBUTE_DECLARE(InstancedOptionalAttribute);
 };

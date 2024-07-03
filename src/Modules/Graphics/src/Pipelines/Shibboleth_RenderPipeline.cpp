@@ -28,10 +28,13 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
 	.classAttrs(
-		Shibboleth::ConfigFileAttribute(u8"graphics/render_pipelines"),
-		Shibboleth::InitFromConfigAttribute()
+		Shibboleth::ConfigFileAttribute{ u8"graphics/render_pipelines" },
+		Shibboleth::InitFromConfigAttribute{}
 	)
 
+	.serialize(&Shibboleth::RenderPipeline::Load)
+
+	.var("render_data", &Shibboleth::RenderPipeline::_render_data, Shibboleth::OptionalAttribute{})
 	.var("stages", &Shibboleth::RenderPipeline::_stages)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
 
@@ -118,8 +121,7 @@ IRenderPipelineData* RenderPipeline::getOrAddRenderData(const Refl::IReflectionD
 	IRenderPipelineData* data = getRenderData(ref_def);
 
 	if (!data) {
-		ProxyAllocator allocator = GRAPHICS_ALLOCATOR;
-		data = ref_def.template createT<IRenderPipelineData>(allocator);
+		data = &_render_data.push(ref_def);
 
 		if (!data->init(*ManagerRef<RenderManager>{})) {
 			LogErrorGraphics("RenderPipeline::getOrAddRenderData: Failed to initialize '%s'.", ref_def.getReflectionInstance().getName());
@@ -137,21 +139,107 @@ const IRenderPipelineData* RenderPipeline::getRenderData(const Refl::IReflection
 
 IRenderPipelineData* RenderPipeline::getRenderData(const Refl::IReflectionDefinition& ref_def)
 {
-	const auto it = Gaff::FindSorted(
+	const auto it = Gaff::Find(
 		_render_data,
 		ref_def,
-		[](const UniquePtr<IRenderPipelineData>& data, const Refl::IReflectionDefinition& ref_def) -> bool
+		[](const IRenderPipelineData& data, const Refl::IReflectionDefinition& ref_def) -> bool
 		{
-			return &data->getReflectionDefinition() == &ref_def;
+			return &data.getReflectionDefinition() == &ref_def;
 		}
 	);
 
-	return (it == _render_data.end()) ? nullptr : it->get();
+	return (it == _render_data.end()) ? nullptr : it.get();
 }
 
-const Vector< UniquePtr<IRenderPipelineData> >& RenderPipeline::getRenderData(void) const
+const InstancedArray<IRenderPipelineData>& RenderPipeline::getRenderData(void) const
 {
 	return _render_data;
+}
+
+bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object)
+{
+	GAFF_REF(reader, object);
+
+	{
+		const auto guard = reader.enterElementGuard(u8"render_data");
+
+		if (!reader.isNull()) {
+			Refl::IReflectionVar* const var = Refl::Reflection<RenderPipeline>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const(u8"render_data"));
+			GAFF_ASSERT(var);
+
+			if (!var->load(reader, &object._render_data)) {
+				return false;
+			}
+		}
+	}
+
+	const auto guard = reader.enterElementGuard(u8"stages");
+
+	if (reader.isNull()) {
+		return true;
+	}
+
+	if (!reader.isArray()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	static constexpr auto k_add_stage = [](const ISerializeReader& reader, RenderPipeline& object) -> bool
+	{
+		GAFF_ASSERT(reader.isString());
+
+		const char8_t * const class_name = reader.readString();
+		const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(class_name));
+		GAFF_ASSERT(ref_def->template hasInterface<IRenderPipelineStage>());
+
+		if (ref_def) {
+			object._stages.push(*ref_def);
+			reader.freeString(class_name);
+			return true;
+
+		} else {
+			// $TODO: Log error.
+			reader.freeString(class_name);
+
+			return false;
+		}
+	};
+
+	bool success = true;
+
+	reader.forEachInArray([&](int32_t) -> bool
+	{
+		int32_t group_count = 0;
+
+		if (reader.isArray()) {
+			reader.forEachInArray([&](int32_t) -> bool
+			{
+				if (k_add_stage(reader, object)) {
+					++group_count;
+				}
+
+				return false;
+			});
+
+		} else if (reader.isString()) {
+			if (k_add_stage(reader, object)) {
+				++group_count;
+			}
+
+		} else {
+			// $TODO: Log error.
+			success = false;
+		}
+
+		if (group_count) {
+			object._update_groups.emplace_back(group_count);
+		}
+
+		return false;
+	});
+
+	object._update_groups.shrink_to_fit();
+	return success;
 }
 
 NS_END

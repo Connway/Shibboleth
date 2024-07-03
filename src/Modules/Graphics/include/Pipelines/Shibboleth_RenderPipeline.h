@@ -109,11 +109,12 @@ public:
 	const IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def) const;
 	IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def);
 
-	const Vector< UniquePtr<IRenderPipelineData> >& getRenderData(void) const;
+	const InstancedArray<IRenderPipelineData>& getRenderData(void) const;
 
 private:
-	Vector< UniquePtr<IRenderPipelineData> > _render_data{ GRAPHICS_ALLOCATOR };
+	InstancedArray<IRenderPipelineData> _render_data{ GRAPHICS_ALLOCATOR };
 	InstancedArray<IRenderPipelineStage> _stages{ GRAPHICS_ALLOCATOR };
+	Vector<int32_t> _update_groups{ GRAPHICS_ALLOCATOR };
 
 	template <class T, class U>
 	void getRenderStagesInternal(Vector<U*>& out)
@@ -128,6 +129,8 @@ private:
 			}
 		}
 	}
+
+	static bool Load(const ISerializeReader& reader, RenderPipeline& object);
 
 	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(RenderPipeline);
 };
