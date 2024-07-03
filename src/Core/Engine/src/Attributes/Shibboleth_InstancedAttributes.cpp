@@ -28,8 +28,13 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_ATTRIBUTE_DEFINE(InstancedOptionalAttribute)
 
-InstancedOptionalAttribute::InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix, bool leave_empty_element):
-	_prefix(prefix), _suffix(suffix), _leave_empty_element(leave_empty_element)
+InstancedOptionalAttribute::InstancedOptionalAttribute(const char8_t* prefix, const char8_t* suffix, Gaff::Flags<Flag> flags):
+	_prefix(prefix), _suffix(suffix), _flags(flags)
+{
+}
+
+InstancedOptionalAttribute::InstancedOptionalAttribute(const char8_t* prefix, Gaff::Flags<Flag> flags):
+	_prefix(prefix), _suffix(nullptr), _flags(flags)
 {
 }
 
@@ -45,7 +50,22 @@ const char8_t* InstancedOptionalAttribute::getSuffix(void) const
 
 bool InstancedOptionalAttribute::shouldLeaveEmptyElement(void) const
 {
-	return _leave_empty_element;
+	return _flags.testAll(Flag::LeaveEmptyElements);
+}
+
+eastl::u8string_view InstancedOptionalAttribute::stripPrefixAndSuffix(const char8_t* name) const
+{
+	eastl::u8string_view stripped_name = name;
+
+	if (_prefix && _flags.testAll(Flag::StripPrefix) && Gaff::StartsWith(name, _prefix)) {
+		stripped_name = stripped_name.substr(eastl::CharStrlen(_prefix));
+	}
+
+	if (_suffix && _flags.testAll(Flag::StripSuffix) && stripped_name.ends_with(_suffix)) {
+		stripped_name = stripped_name.substr(0, stripped_name.size() - eastl::CharStrlen(_suffix));
+	}
+
+	return stripped_name;
 }
 
 bool InstancedOptionalAttribute::matches(const char8_t* name) const

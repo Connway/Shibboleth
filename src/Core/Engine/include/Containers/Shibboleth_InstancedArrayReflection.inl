@@ -205,7 +205,8 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 		}
 
 		if (class_name && class_name[0]) {
-			const Refl::IReflectionDefinition* const ref_def = ref_mgr.getReflection(Gaff::FNV1aHash64String(class_name));
+			const eastl::u8string_view stripped_class_name = (optional_attr) ? optional_attr->stripPrefixAndSuffix(class_name) : class_name;
+			const Refl::IReflectionDefinition* const ref_def = ref_mgr.getReflection(Gaff::FNV1aHash64String(stripped_class_name));
 
 			if (ref_def) {
 				VarType& instance = var->push(*ref_def);
@@ -220,7 +221,8 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 				}
 
 			} else {
-				if (!optional_attr || optional_attr->matches(class_name)) {
+				// This entry is not optional.
+				if (!optional_attr || stripped_class_name.size() != eastl::CharStrlen(class_name)) {
 					// $TODO: Log error.
 					reader.freeString(class_name);
 					success = false;
