@@ -510,6 +510,30 @@ constexpr Hash32 FNV1Hash32Const(eastl::basic_string_view<T> key, Hash32 init = 
 }
 
 template <class T>
+constexpr Hash64 FNV1aHash64String(eastl::basic_string_view<T> key, Hash64 init = k_init_hash64)
+{
+	return FNV1aHash64(reinterpret_cast<const char*>(key.data()), key.size() * sizeof(T), init);
+}
+
+template <class T>
+constexpr Hash64 FNV1Hash64String(eastl::basic_string_view<T> key, Hash64 init = k_init_hash64)
+{
+	return FNV1Hash64(reinterpret_cast<const char*>(key.data()), key.size() * sizeof(T), init);
+}
+
+template <class T>
+constexpr Hash32 FNV1aHash32String(eastl::basic_string_view<T> key, Hash32 init = k_init_hash32)
+{
+	return FNV1aHash32(reinterpret_cast<const char*>(key.data()), key.size() * sizeof(T), init);
+}
+
+template <class T>
+constexpr Hash32 FNV1Hash32String(eastl::basic_string_view<T> key, Hash32 init = k_init_hash32)
+{
+	return FNV1Hash32(reinterpret_cast<const char*>(key.data()), key.size() * sizeof(T), init);
+}
+
+template <class T>
 Hash64 FNV1aHash64String(const T* string, Hash64 init = k_init_hash64)
 {
 	return FNV1aHash64(reinterpret_cast<const char*>(string), eastl::CharStrlen(string) * sizeof(T), init);
