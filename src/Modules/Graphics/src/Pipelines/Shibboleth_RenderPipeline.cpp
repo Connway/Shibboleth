@@ -34,8 +34,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
 
 	.serialize(&Shibboleth::RenderPipeline::Load)
 
-	.var("render_data", &Shibboleth::RenderPipeline::_render_data, Shibboleth::OptionalAttribute{})
+	.var("render_data", &Shibboleth::RenderPipeline::_render_data)
 	.var("stages", &Shibboleth::RenderPipeline::_stages)
+	.var("update_groups", &Shibboleth::RenderPipeline::_update_groups)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
 
 NS_SHIBBOLETH
