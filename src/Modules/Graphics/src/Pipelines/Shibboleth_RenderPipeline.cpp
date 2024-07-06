@@ -117,7 +117,7 @@ IRenderPipelineStage& RenderPipeline::getRenderStage(const Refl::IReflectionDefi
 	return *stage;
 }
 
-IRenderPipelineData* RenderPipeline::getOrAddRenderData(const Refl::IReflectionDefinition& ref_def)
+IRenderPipelineData& RenderPipeline::getOrAddRenderData(const Refl::IReflectionDefinition& ref_def)
 {
 	IRenderPipelineData* data = getRenderData(ref_def);
 
@@ -130,7 +130,7 @@ IRenderPipelineData* RenderPipeline::getOrAddRenderData(const Refl::IReflectionD
 		}
 	}
 
-	return data;
+	return *data;
 }
 
 const IRenderPipelineData* RenderPipeline::getRenderData(const Refl::IReflectionDefinition& ref_def) const

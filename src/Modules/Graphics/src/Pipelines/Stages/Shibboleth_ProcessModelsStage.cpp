@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Pipelines/Shibboleth_ProcessModelsStage.h"
+#include "Pipelines/Stages/Shibboleth_ProcessModelsStage.h"
 #include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_RenderManager.h"
 
@@ -32,9 +32,7 @@ SHIB_REFLECTION_CLASS_DEFINE(ProcessModelsStage)
 
 bool ProcessModelsStage::init(RenderManager& render_mgr)
 {
-	_model_data = render_mgr.getRenderPipeline().template getOrAddRenderData<ModelPipelineData>();
-	GAFF_ASSERT(_model_data);
-
+	_model_data = &render_mgr.getRenderPipeline().template getOrAddRenderData<ModelPipelineData>();
 	return true;
 }
 

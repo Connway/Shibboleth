@@ -53,6 +53,32 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(CameraPipelineData)
 
+bool CameraPipelineData::init(RenderManager& render_mgr)
+{
+	// Create a g-buffer for each output window. 99.99% of the time, this will be a single window.
+	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
+		Gleam::RenderOutput* const output = render_mgr.getOutput(i);
+		Gleam::RenderDevice* const device = render_mgr.getDevice(*output);
+		GBuffer g_buffer;
+
+		if (!createGBuffer(g_buffer, *device, output->getSize(), false)) {
+			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera [%u].", device_tag);
+			return -1;
+		}
+
+		render_data.g_buffers.emplace(device, std::move(g_buffer));
+	}
+}
+
+const SparseStack<CameraRenderData>& CameraPipelineData::getRenderData(void) const
+{
+	return _render_data;
+}
+
+SparseStack<CameraRenderData>& CameraPipelineData::getRenderData(void)
+{
+	return _render_data;
+}
 
 const CameraRenderData& CameraPipelineData::getRenderData(int32_t id) const
 {
@@ -83,7 +109,7 @@ int32_t CameraPipelineData::createRenderData(
 	const auto* const devices = render_mgr->getDevicesByTag(device_tag);
 
 	if (!devices || devices->empty()) {
-		LogErrorGraphics("Failed to create diffuse texture for camera [%u].", device_tag);
+		LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create diffuse texture for camera [%u].", device_tag);
 		return -1;
 	}
 
@@ -93,97 +119,9 @@ int32_t CameraPipelineData::createRenderData(
 	for (Gleam::RenderDevice* device : *devices) {
 		GBuffer g_buffer;
 
-		g_buffer.render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
-
-		g_buffer.diffuse.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-		g_buffer.specular.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-		g_buffer.normal.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-		g_buffer.position.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-		g_buffer.depth.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-
-		g_buffer.diffuse_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-		g_buffer.specular_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-		g_buffer.normal_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-		g_buffer.position_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-		g_buffer.depth_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-
-		if (!g_buffer.diffuse->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-			LogErrorGraphics("Failed to create diffuse texture for camera [%u].", device_tag);
+		if (!createGBuffer(g_buffer, *device, size, create_render_texture)) {
+			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera [%u].", device_tag);
 			return -1;
-		}
-
-		if (!g_buffer.specular->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-			LogErrorGraphics("Failed to create specular texture for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.normal->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-			LogErrorGraphics("Failed to create normal texture for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.position->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-			LogErrorGraphics("Failed to create position texture for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.depth->initDepthStencil(*device, size.x, size.y, Gleam::ITexture::Format::DEPTH_32_F)) {
-			LogErrorGraphics("Failed to create depth texture for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.diffuse_srv->init(*device, *g_buffer.diffuse)) {
-			LogErrorGraphics("Failed to create diffuse srv for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.specular_srv->init(*device, *g_buffer.specular)) {
-			LogErrorGraphics("Failed to create specular srv for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.normal_srv->init(*device, *g_buffer.normal)) {
-			LogErrorGraphics("Failed to create normal srv for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.position_srv->init(*device, *g_buffer.position)) {
-			LogErrorGraphics("Failed to create position srv for camera [%u].", device_tag);
-			return -1;
-		}
-
-		if (!g_buffer.depth_srv->init(*device, *g_buffer.depth)) {
-			LogErrorGraphics("Failed to create depth srv for camera [%u].", device_tag);
-			return -1;
-		}
-
-		g_buffer.render_target->addTexture(*device, *g_buffer.specular);
-		g_buffer.render_target->addTexture(*device, *g_buffer.diffuse);
-		g_buffer.render_target->addTexture(*device, *g_buffer.normal);
-		g_buffer.render_target->addTexture(*device, *g_buffer.position);
-		g_buffer.render_target->addDepthStencilBuffer(*device, *g_buffer.depth);
-
-		if (create_render_texture) {
-			g_buffer.final_image.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-
-			if (!g_buffer.final_image->init2D(*device, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
-				LogErrorGraphics("Failed to create final output texture for camera [%u].", device_tag);
-				return -1;
-			}
-
-			g_buffer.final_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-
-			if (!g_buffer.final_srv->init(*device, *g_buffer.final_image)) {
-				LogErrorGraphics("Failed to create final output srv for camera [%u].", device_tag);
-				return -1;
-			}
-
-			g_buffer.final_render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
-
-			if (!g_buffer.final_render_target->addTexture(*device,* g_buffer.final_image)) {
-				LogErrorGraphics("Failed to create final output render target for camera [%u].", device_tag);
-				return -1;
-			}
 		}
 
 		render_data.g_buffers.emplace(device, std::move(g_buffer));
@@ -195,6 +133,104 @@ int32_t CameraPipelineData::createRenderData(
 void CameraPipelineData::removeRenderData(int32_t id)
 {
 	_render_data.remove(id);
+}
+
+bool CameraPipelineData::createGBuffer(GBuffer& g_buffer, Gleam::RenderDevice& rd, const Gleam::IVec2& size, bool create_render_texture)
+{
+	g_buffer.render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
+
+	g_buffer.diffuse.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+	g_buffer.specular.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+	g_buffer.normal.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+	g_buffer.position.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+	g_buffer.depth.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+
+	g_buffer.diffuse_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+	g_buffer.specular_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+	g_buffer.normal_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+	g_buffer.position_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+	g_buffer.depth_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+
+	if (!g_buffer.diffuse->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create diffuse texture for camera.");
+		return false;
+	}
+
+	if (!g_buffer.specular->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create specular texture for camera.");
+		return false;
+	}
+
+	if (!g_buffer.normal->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create normal texture for camera.");
+		return false;
+	}
+
+	if (!g_buffer.position->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create position texture for camera.");
+		return false;
+	}
+
+	if (!g_buffer.depth->initDepthStencil(rd, size.x, size.y, Gleam::ITexture::Format::DEPTH_32_F)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create depth texture for camera.");
+		return false;
+	}
+
+	if (!g_buffer.diffuse_srv->init(rd, *g_buffer.diffuse)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create diffuse srv for camera.");
+		return false;
+	}
+
+	if (!g_buffer.specular_srv->init(rd, *g_buffer.specular)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create specular srv for camera.");
+		return false;
+	}
+
+	if (!g_buffer.normal_srv->init(rd, *g_buffer.normal)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create normal srv for camera.");
+		return false;
+	}
+
+	if (!g_buffer.position_srv->init(rd, *g_buffer.position)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create position srv for camera.");
+		return false;
+	}
+
+	if (!g_buffer.depth_srv->init(rd, *g_buffer.depth)) {
+		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create depth srv for camera.");
+		return false;
+	}
+
+	g_buffer.render_target->addTexture(rd, *g_buffer.specular);
+	g_buffer.render_target->addTexture(rd, *g_buffer.diffuse);
+	g_buffer.render_target->addTexture(rd, *g_buffer.normal);
+	g_buffer.render_target->addTexture(rd, *g_buffer.position);
+	g_buffer.render_target->addDepthStencilBuffer(rd, *g_buffer.depth);
+
+	if (create_render_texture) {
+		g_buffer.final_image.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+
+		if (!g_buffer.final_image->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
+			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output texture for camera.");
+			return false;
+		}
+
+		g_buffer.final_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+
+		if (!g_buffer.final_srv->init(rd, *g_buffer.final_image)) {
+			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output srv for camera.");
+			return false;
+		}
+
+		g_buffer.final_render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
+
+		if (!g_buffer.final_render_target->addTexture(rd,* g_buffer.final_image)) {
+			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output render target for camera.");
+			return false;
+		}
+	}
+
+	return true;
 }
 
 NS_END

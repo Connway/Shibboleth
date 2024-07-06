@@ -20,51 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Model/Shibboleth_ModelComponent.h"
-#include "Model/Shibboleth_ModelPipelineData.h"
-#include "Shibboleth_RenderManager.h"
-#include <Ptrs/Shibboleth_ManagerRef.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
-	.template base<Shibboleth::EntitySceneComponent>()
-	.template ctor<>()
+#include "Pipelines/Stages/Shibboleth_RenderGBufferStage.h"
+#include "Camera/Shibboleth_CameraPipelineData.h"
 
-	.var("data", &Shibboleth::ModelComponent::_model_instance_data)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
-
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderGBufferStage, Shibboleth::IRenderPipelineStage)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ModelComponent)
+SHIB_REFLECTION_CLASS_DEFINE(RenderGBufferStage)
 
-bool ModelComponent::init(void)
+bool RenderGBufferStage::init(RenderManager& render_mgr)
 {
-	// Nothing to register.
-	if (!_model_instance_data.model) {
-		return true;
-	}
-
-	ManagerRef<RenderManager> render_mgr;
-	ModelPipelineData& model_data = render_mgr->getRenderPipeline().getOrAddRenderData<ModelPipelineData>();
-
-	_handle = model_data.registerModel(_model_instance_data, *this);
-
-	return true;
+	_camera_data = &render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
 }
 
-void ModelComponent::destroy(void)
+void RenderGBufferStage::update(uintptr_t thread_id_int)
 {
-	if (!_model_instance_data.model) {
-		return;
-	}
+	GAFF_REF(thread_id_int);
+}
 
-	ManagerRef<RenderManager> render_mgr;
-	ModelPipelineData* const model_data = render_mgr->getRenderPipeline().getRenderData<ModelPipelineData>();
-
-	GAFF_ASSERT(model_data);
-
-	model_data->unregisterModel(_handle);
-	_handle = ModelInstanceHandle{};
+const RenderCommandData& RenderGBufferStage::getRenderCommands(void) const
+{
+	return _render_commands;
 }
 
 NS_END

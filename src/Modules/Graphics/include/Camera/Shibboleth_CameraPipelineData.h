@@ -65,9 +65,15 @@ struct CameraRenderData final
 	CameraView view;
 };
 
+// $TODO: Camera's can be set to render specific scenes.
 class CameraPipelineData final : public IRenderPipelineData
 {
 public:
+	bool init(RenderManager& render_mgr) override;
+
+	const SparseStack<CameraRenderData>& getRenderData(void) const;
+	SparseStack<CameraRenderData>& getRenderData(void);
+
 	const CameraRenderData& getRenderData(int32_t id) const;
 	CameraRenderData& getRenderData(int32_t id);
 
@@ -77,6 +83,7 @@ public:
 	int32_t createRenderData(
 		Gaff::Hash32 device_tag,
 		const Gleam::IVec2& size,
+		// $TODO: Scenes that render to this g-buffer.
 		bool create_render_texture = true
 	);
 
@@ -84,6 +91,14 @@ public:
 
 private:
 	SparseStack<CameraRenderData> _render_data{ GRAPHICS_ALLOCATOR };
+
+	static bool createGBuffer(
+		GBuffer& g_buffer,
+		Gleam::RenderDevice& rd,
+		const Gleam::IVec2& size,
+		// $TODO: Scenes that render to this g-buffer.
+		bool create_render_texture
+	);
 
 	SHIB_REFLECTION_CLASS_DECLARE(CameraPipelineData);
 };

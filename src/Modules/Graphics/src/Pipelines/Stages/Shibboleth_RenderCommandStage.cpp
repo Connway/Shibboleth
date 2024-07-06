@@ -20,7 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Pipelines/Shibboleth_RenderCommandStage.h"
+#include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
+#include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include <Shibboleth_ITransformProvider.h>
 #include <Shibboleth_ResourceManager.h>
@@ -36,67 +37,35 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderCommandStage);
 
 bool RenderCommandStage::init(RenderManager& render_mgr)
 {
+	_camera_data = &render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
 	_job_pool = &GetApp().getJobPool();
 	_render_mgr = &render_mgr;
+
+	// Fill device job cache.
+	const auto& devices = render_mgr.getDevices();
+
+	_device_job_data_cache.reserve(devices.size());
+	_job_data_cache.reserve(devices.size());
+
+	for (auto& device : devices) {
+		_device_job_cache.emplace_back(DeviceJobData{ *this, *device });
+		_job_data_cache.emplace_back(Gaff::JobData{ &_device_job_data_cache.back(), DeviceJob });
+	}
 
 	return true;
 }
 
 void RenderCommandStage::update(uintptr_t thread_id_int)
 {
-	_device_job_data_cache.clear();
+	if (_job_data_cache.size() > 1) {
+		const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
-//	for (const CameraView& view : _render_mgr->getCameraViews()) {
-//	}
-
-	//	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-	//		_ecs_mgr->iterate<Camera>(
-	//			_camera[camera_index],
-	//			[&](ECSEntityID, const Camera& camera) -> void
-	//			{
-	//				const auto devices = _render_mgr->getDevicesByTag(camera.device_tag);
-	//
-	//				if (!devices) {
-	//					// $TODO: Log error.
-	//					return;
-	//				}
-	//
-	//				for (int32_t i = 0; i < static_cast<int32_t>(devices->size()); ++i) {
-	//					auto it = Gaff::Find(
-	//						_device_job_data_cache,
-	//						devices->at(i),
-	//						[](const DeviceJobData& lhs, const Gleam::IRenderDevice* device) -> bool
-	//						{
-	//							return lhs.device == device;
-	//						});
-	//
-	//					if (it == _device_job_data_cache.end()) {
-	//						DeviceJobData& job_data = _device_job_data_cache.emplace_back();
-	//						job_data.rcs = this;
-	//						job_data.device = devices->at(i);
-	//
-	//					} else {
-	//						it->render_job_data_cache.clear();
-	//						it->job_data_cache.clear();
-	//					}
-	//				}
-	//			}
-	//		);
-	//	}
-
-	// Do a second loop so that none of our _device_job_data_cache pointers get invalidated.
-	_job_data_cache.resize(_device_job_data_cache.size());
-
-	for (int32_t i = 0; i < static_cast<int32_t>(_device_job_data_cache.size()); ++i) {
-		_job_data_cache[i].job_data = &_device_job_data_cache[i];
-		_job_data_cache[i].job_func = DeviceJob;
-	}
-
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-
-	if (_job_data_cache.size() > 0) {
 		_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
 		_job_pool->helpWhileWaiting(thread_id, _job_counter);
+
+	// Only one device, just update in place.
+	} else if (_job_data_cache.size() == 1) {
+		DeviceJob(thread_id_int, _device_job_data.data());
 	}
 }
 
@@ -282,21 +251,82 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 
 void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
 	//const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
-	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
 	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderCacheIndex();
-
 	Gleam::RenderDevice& device = *job_data.device;
-	job_data.render_job_data_cache.clear();
 
 	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
 		*job_data.device,
 		RenderManager::RenderOrder::InWorldWithDepthTest,
 		cache_index
 	);
+
+
+	const auto& camera_render_data = _camera_data->getRenderData();
+
+	job_data.render_job_data_cache.clear();
+	job_data.render_job_data_cache.reserve(static_cast<size_t>(camera_render_data.getValidSize()));
+
+	for (const CameraRenderData& camera_data : camera_render_data) {
+		const auto it = camera_data.g_buffers.find(&device);
+		GAFF_ASSERT(it != camera_data.g_buffers.end());
+
+		Gleam::RenderTarget* const render_target = it->second.render_target.get();
+
+		const Gleam::IVec2& size = render_target->getSize();
+		const Gleam::Mat4x4 projection = glm::perspectiveFovLH(
+			camera.GetVerticalFOV() * Gaff::TurnsToRad,
+			static_cast<float>(size.x),
+			static_cast<float>(size.y),
+			camera.z_near, camera.z_far
+		);
+
+		const Gleam::Vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
+		Gleam::Mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
+		camera_transform[3] = Gleam::Vec4(cam_pos.value, 1.0f);
+
+		const Gleam::Mat4x4 final_camera = projection * glm::inverse(camera_transform);
+
+		for (int32_t i = 0; i < num_objects; ++i) {
+			const int32_t cache_index = cache_index;
+			const int32_t cmd_list_end = job_data.rcs->_cmd_list_end[cache_index];
+			Gleam::ICommandList* cmd_list = nullptr;
+
+			// Grab command list from the cache.
+			if (job_data.rcs->_cmd_lists[cache_index].size() > static_cast<size_t>(cmd_list_end)) {
+				cmd_list = job_data.rcs->_cmd_lists[cache_index][cmd_list_end].get();
+
+			// Cache is full, create a new one and add it to the cache.
+			} else {
+				cmd_list = job_data.rcs->_render_mgr->createCommandList();
+				job_data.rcs->_cmd_lists[cache_index].emplace_back(cmd_list);
+			}
+
+			++job_data.rcs->_cmd_list_end[cache_index];
+
+			render_cmds.lock.Lock();
+			auto& cmd = render_cmds.command_list.emplace_back();
+			cmd.cmd_list.reset(cmd_list);
+			cmd.owns_command = false;
+			render_cmds.lock.Unlock();
+
+			RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
+			render_data.rcs = job_data.rcs;
+			render_data.index = i;
+			render_data.cmd_list = cmd_list;
+			render_data.device = &device;
+			render_data.target = render_target;
+			render_data.view_projection = final_camera;
+		}
+	}
+
+
+
+
 
 	//	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
 	//		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>(

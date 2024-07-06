@@ -31,17 +31,16 @@ THE SOFTWARE.
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_IShader.h>
 
-
 NS_GLEAM
 	class RenderTarget;
 NS_END
 
 NS_SHIBBOLETH
 
-struct ModelInstanceData;
+class CameraPipelineData;
 class ResourceManager;
 
-// $TODO: This might need to be split up into more discrete stages, such as a culling stage.
+// $TODO: This should be split up into more discrete stages.
 class RenderCommandStage final : public IRenderPipelineStage
 {
 public:
@@ -57,12 +56,12 @@ public:
 private:
 	struct RenderJobData final
 	{
-		RenderCommandStage* rcs;
+		RenderCommandStage* rcs = nullptr;
 		int32_t index;
 
-		Gleam::RenderDevice* device;
-		Gleam::CommandList* cmd_list;
-		Gleam::RenderTarget* target;
+		Gleam::RenderDevice* device = nullptr;
+		Gleam::CommandList* cmd_list = nullptr;
+		Gleam::RenderTarget* target = nullptr;
 
 		Gleam::Mat4x4 view_projection;
 	};
@@ -72,19 +71,22 @@ private:
 		DeviceJobData(void) = default;
 		DeviceJobData(DeviceJobData&& data)
 		{
-			rcs = data.rcs;
-
 			render_job_data_cache = std::move(data.render_job_data_cache);
 			job_data_cache = std::move(data.job_data_cache);
 			device = data.device;
+			rcs = data.rcs;
 			job_counter = static_cast<int32_t>(data.job_counter);
 		}
 
-		RenderCommandStage* rcs;
+		DeviceJobData(RenderCommandStage& stage, Gleam::RenderDevice& rd):
+			rcs(stage), device(&rd)
+		{
+		}
 
 		Vector<RenderJobData> render_job_data_cache{ GRAPHICS_ALLOCATOR };
 		Vector<Gaff::JobData> job_data_cache{ GRAPHICS_ALLOCATOR };
-		Gleam::RenderDevice* device;
+		Gleam::RenderDevice* device = nullptr;
+		RenderCommandStage* rcs = nullptr;
 		Gaff::Counter job_counter = 0;
 	};
 
@@ -93,6 +95,8 @@ private:
 	Vector<DeviceJobData> _device_job_data_cache{ GRAPHICS_ALLOCATOR };
 	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 	Gaff::Counter _job_counter = 0;
+
+	const CameraPipelineData* _camera_data = nullptr;
 
 	RenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;
