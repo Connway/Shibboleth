@@ -49,7 +49,7 @@ public:
 
 	void update(uintptr_t thread_id_int) override;
 
-	const RenderCommandData& getRenderCommands(void) const override;
+	const RenderCommandData* getRenderCommands(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderCommandStage);
 

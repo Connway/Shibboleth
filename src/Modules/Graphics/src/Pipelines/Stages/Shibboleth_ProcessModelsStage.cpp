@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Stages/Shibboleth_ProcessModelsStage.h"
 #include "Model/Shibboleth_ModelPipelineData.h"
+#include "Shibboleth_RenderCommands.h"
 #include "Shibboleth_RenderManager.h"
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::ProcessModelsStage, Shibboleth::IRenderPipelineStage)
@@ -32,19 +33,13 @@ SHIB_REFLECTION_CLASS_DEFINE(ProcessModelsStage)
 
 bool ProcessModelsStage::init(RenderManager& render_mgr)
 {
-	_model_data = &render_mgr.getRenderPipeline().template getOrAddRenderData<ModelPipelineData>();
+	_model_data = render_mgr.getRenderPipeline().template getOrAddRenderData<ModelPipelineData>();
 	return true;
 }
 
 void ProcessModelsStage::update(uintptr_t thread_id_int)
 {
 	_model_data->processChanges(thread_id_int);
-}
-
-const RenderCommandData& ProcessModelsStage::getRenderCommands(void) const
-{
-	static const RenderCommandData s_empty_command_data;
-	return s_empty_command_data;
 }
 
 NS_END

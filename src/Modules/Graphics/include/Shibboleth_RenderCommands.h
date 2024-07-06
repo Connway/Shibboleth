@@ -22,36 +22,51 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Resources/Shibboleth_MaterialResource.h"
-#include "Resources/Shibboleth_SamplerStateResource.h"
-#include "Resources/Shibboleth_TextureResource.h"
-//#include <Shibboleth_ECSComponentBase.h>
-//#include <Shibboleth_ECSEntity.h>
+#include "Shibboleth_GraphicsDefines.h"
+#include <Gleam_CommandList.h>
+
+NS_GLEAM
+	class RenderDevice;
+NS_END
+
 
 NS_SHIBBOLETH
 
-//class ECSManager;
-//
-//class Material final : public ECSComponentBaseShared<Material>
-//{
-//public:
-//	MaterialResourcePtr material;
-//
-//	using TextureMap = VectorMap<U8String, TextureResourcePtr>;
-//	TextureMap textures_vertex;
-//	TextureMap textures_pixel;
-//	TextureMap textures_domain;
-//	TextureMap textures_geometry;
-//	TextureMap textures_hull;
-//
-//	using SamplerMap = VectorMap<U8String, SamplerStateResourcePtr>;
-//	SamplerMap samplers_vertex;
-//	SamplerMap samplers_pixel;
-//	SamplerMap samplers_domain;
-//	SamplerMap samplers_geometry;
-//	SamplerMap samplers_hull;
-//};
+struct RenderCommands final
+{
+	UniquePtr<Gleam::CommandList> commands;
+	//Gleam::RenderTarget* target = nullptr;
+};
+
+struct RenderCommandList final
+{
+	Vector<RenderCommands> command_list{ GRAPHICS_ALLOCATOR };
+
+	// $TODO: Evaluate if we need this once converted over to render pipeline.
+	//EA::Thread::SpinLock lock;
+};
+
+// $TODO: Break this out into its own file.
+struct RenderCommandData final
+{
+	using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
+	static constexpr int32_t CacheIndexCount = 2;
+
+	DeviceCommandListMap command_lists[CacheIndexCount] =
+	{
+		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+	};
+
+	const RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index) const
+	{
+		return const_cast<RenderCommandData*>(this)->getCommandList(device, cache_index);
+	}
+
+	RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index)
+	{
+		return command_lists[cache_index][&device];
+	}
+};
 
 NS_END
-
-//SHIB_REFLECTION_DECLARE(Shibboleth::Material)

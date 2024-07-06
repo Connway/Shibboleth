@@ -13,6 +13,9 @@
     <Filter Include="include\Pipelines">
       <UniqueIdentifier>{011C00C5-6D32-FE5A-B6A9-897C22FFCEE2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Pipelines\Stages">
+      <UniqueIdentifier>{57D38130-43F8-D0B0-6C43-B64058C7CFCE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\Resources">
       <UniqueIdentifier>{3394DBFB-9FAA-D991-E821-65B35477AA19}</UniqueIdentifier>
     </Filter>
@@ -27,6 +30,9 @@
     </Filter>
     <Filter Include="src\Pipelines">
       <UniqueIdentifier>{A5F4AB20-11B5-2757-DAEF-70D4466F6C33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Pipelines\Stages">
+      <UniqueIdentifier>{7B0B9743-679A-200D-10B9-3408FC2631B3}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Resources">
       <UniqueIdentifier>{D76C8757-432D-038E-0C68-4C0B78E7476A}</UniqueIdentifier>
@@ -60,23 +66,26 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Model\Shibboleth_ModelResource.h">
       <Filter>include\Model</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ClearRenderTargetStage.h">
-      <Filter>include\Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineData.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineStage.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_ProcessModelsStage.h">
-      <Filter>include\Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderCommandStage.h">
-      <Filter>include\Pipelines</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipeline.h">
       <Filter>include\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.h">
+      <Filter>include\Pipelines\Stages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_ProcessModelsStage.h">
+      <Filter>include\Pipelines\Stages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_RenderCommandStage.h">
+      <Filter>include\Pipelines\Stages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_RenderGBufferStage.h">
+      <Filter>include\Pipelines\Stages</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_BufferResource.h">
       <Filter>include\Resources</Filter>
@@ -120,10 +129,10 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_MaterialComponent.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommands.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h">
@@ -158,23 +167,26 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_ModelResource.cpp">
       <Filter>src\Model</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ClearRenderTargetStage.cpp">
-      <Filter>src\Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineData.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineStage.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_ProcessModelsStage.cpp">
-      <Filter>src\Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderCommandStage.cpp">
-      <Filter>src\Pipelines</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp">
       <Filter>src\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.cpp">
+      <Filter>src\Pipelines\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_ProcessModelsStage.cpp">
+      <Filter>src\Pipelines\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_RenderCommandStage.cpp">
+      <Filter>src\Pipelines\Stages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_RenderGBufferStage.cpp">
+      <Filter>src\Pipelines\Stages</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_BufferResource.cpp">
       <Filter>src\Resources</Filter>
@@ -213,9 +225,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsReflection.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_MaterialComponent.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderCommandSystem.cpp">

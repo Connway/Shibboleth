@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Stages/Shibboleth_RenderGBufferStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
+#include "Shibboleth_RenderManager.h"
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderGBufferStage, Shibboleth::IRenderPipelineStage)
 
@@ -33,7 +34,8 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderGBufferStage)
 
 bool RenderGBufferStage::init(RenderManager& render_mgr)
 {
-	_camera_data = &render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
+	_camera_data = render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
+	return true;
 }
 
 void RenderGBufferStage::update(uintptr_t thread_id_int)
@@ -41,9 +43,9 @@ void RenderGBufferStage::update(uintptr_t thread_id_int)
 	GAFF_REF(thread_id_int);
 }
 
-const RenderCommandData& RenderGBufferStage::getRenderCommands(void) const
+const RenderCommandData* RenderGBufferStage::getRenderCommands(void) const
 {
-	return _render_commands;
+	return &_render_commands;
 }
 
 NS_END
