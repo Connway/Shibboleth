@@ -22,14 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderPipelineStage.h"
-#include "Shibboleth_RenderManager.h"
+#include "Pipelines/Shibboleth_IRenderPipelineStage.h"
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
 #include "Resources/Shibboleth_BufferResource.h"
+#include "Shibboleth_RenderCommands.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ShaderResourceView.h>
-#include <Gleam_IShader.h>
+#include <Gleam_Matrix4x4.h>
+#include <Gleam_Shader.h>
 
 NS_GLEAM
 	class RenderTarget;
@@ -79,7 +80,7 @@ private:
 		}
 
 		DeviceJobData(RenderCommandStage& stage, Gleam::RenderDevice& rd):
-			rcs(stage), device(&rd)
+			rcs(&stage), device(&rd)
 		{
 		}
 
