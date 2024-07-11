@@ -21,16 +21,165 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Transform.h"
+#include <Gaff_Math.h>
+#include <glm/gtx/euler_angles.hpp>
 
 NS_GLEAM
+
+TransformRTEuler::TransformRTEuler(const Vec3& translation , const Vec3& rotation):
+	_translation(translation), _rotation(rotation)
+{
+}
+
+TransformRTEuler::TransformRTEuler(const TransformRT& tform):
+	_translation(tform.getTranslation()), _rotation(tform.getRotationEuler())
+{
+}
+
+TransformRTEuler::TransformRTEuler(const Transform& tform):
+	_translation(tform.getTranslation()), _rotation(tform.getRotationEuler())
+{
+}
+
+bool TransformRTEuler::operator==(const TransformRTEuler& rhs) const
+{
+	return _translation == rhs._translation && _rotation == rhs._rotation;
+}
+
+bool TransformRTEuler::operator!=(const TransformRTEuler& rhs) const
+{
+	return _translation != rhs._translation || _rotation != rhs._rotation;
+}
+
+TransformRTEuler& TransformRTEuler::operator+=(const TransformRTEuler& rhs)
+{
+	return concatThis(rhs);
+}
+
+TransformRTEuler TransformRTEuler::operator+(const TransformRTEuler& rhs) const
+{
+	return concat(rhs);
+}
+
+const Vec3& TransformRTEuler::getRotation(void) const
+{
+	return _rotation;
+}
+
+void TransformRTEuler::setRotation(const Vec3& rotation)
+{
+	_rotation = rotation;
+}
+
+Quat TransformRTEuler::getRotationQuatTurns(void) const
+{
+	return Quat(_rotation * Gaff::TurnsToRadians);
+}
+
+Quat TransformRTEuler::getRotationQuat(void) const
+{
+	return Quat(_rotation);
+}
+
+void TransformRTEuler::setRotationQuatTurns(const Quat& rotation)
+{
+	_rotation = glm::eulerAngles(rotation) * Gaff::RadiansToTurns;
+}
+
+void TransformRTEuler::setRotationQuat(const Quat& rotation)
+{
+	_rotation = glm::eulerAngles(rotation);
+}
+
+const Vec3& TransformRTEuler::getTranslation(void) const
+{
+	return _translation;
+}
+
+void TransformRTEuler::setTranslation(const Vec3& translation)
+{
+	_translation = translation;
+}
+
+TransformRTEuler TransformRTEuler::append(const TransformRTEuler& rhs) const
+{
+	return TransformRTEuler {
+		_translation + rhs._translation,
+		_rotation + rhs._rotation
+	};
+}
+
+TransformRTEuler TransformRTEuler::concat(const TransformRTEuler& rhs) const
+{
+	return TransformRTEuler{ TransformRT{ *this }.concat(TransformRT{ rhs }) };
+}
+
+TransformRTEuler TransformRTEuler::inverse(void) const
+{
+	return TransformRTEuler(-_translation, -_rotation);
+}
+
+TransformRTEuler& TransformRTEuler::appendThis(const TransformRTEuler& rhs)
+{
+	_translation += rhs._translation;
+	_rotation += rhs._rotation;
+	return *this;
+}
+
+TransformRTEuler& TransformRTEuler::concatThis(const TransformRTEuler& rhs)
+{
+	*this = concat(rhs);
+	return *this;
+}
+
+TransformRTEuler& TransformRTEuler::inverseThis(void)
+{
+	_translation = -_translation;
+	_rotation = -_rotation;
+}
+
+Vec3 TransformRTEuler::transformVector(const Vec3& rhs) const
+{
+	return TransformRT{ *this }.transformVector(rhs);
+}
+
+Vec3 TransformRTEuler::transformPoint(const Vec3& rhs) const
+{
+	return TransformRT{ *this }.transformPoint(rhs);
+}
+
+Mat4x4 TransformRTEuler::toMatrix(void) const
+{
+	return glm::yawPitchRoll(_rotation.y, _rotation.x, _rotation.z);
+}
+
+TransformRTEuler TransformRTEuler::lerp(const TransformRTEuler& end, float t)
+{
+	return TransformRTEuler{
+		_translation + t * (end._translation - _translation),
+		// $TODO: Shortest path rotation.
+		_rotation + t * (end._rotation - _rotation)
+	};
+}
+
+TransformRTEuler& TransformRTEuler::lerpThis(const TransformRTEuler& end, float t)
+{
+	_translation += t * (end._translation - _translation);
+	// $TODO: Shortest path rotation.
+	_rotation += t * (end._rotation - _rotation);
+
+	return *this;
+}
+
+
 
 TransformRT::TransformRT(const Vec3& translation, const Quat& rotation):
 	_translation(translation), _rotation(rotation)
 {
 }
 
-TransformRT::TransformRT(const TransformRT& tform):
-	_translation(tform.getTranslation()), _rotation(tform.getRotation())
+TransformRT::TransformRT(const TransformRTEuler& tform):
+	_translation(tform.getTranslation()), _rotation(tform.getRotationQuat())
 {
 }
 
@@ -39,23 +188,14 @@ TransformRT::TransformRT(const Transform& tform):
 {
 }
 
-TransformRT& TransformRT::operator=(const TransformRT& rhs)
-{
-	_translation = rhs.getTranslation();
-	_rotation = rhs.getRotation();
-	return *this;
-}
-
 bool TransformRT::operator==(const TransformRT& rhs) const
 {
-	return _translation == rhs._translation &&
-		_rotation == rhs._rotation;
+	return _translation == rhs._translation && _rotation == rhs._rotation;
 }
 
 bool TransformRT::operator!=(const TransformRT& rhs) const
 {
-	return _translation != rhs._translation &&
-		_rotation != rhs._rotation;
+	return _translation != rhs._translation || _rotation != rhs._rotation;
 }
 
 TransformRT& TransformRT::operator+=(const TransformRT& rhs)
@@ -78,14 +218,24 @@ void TransformRT::setRotation(const Quat& rotation)
 	_rotation = rotation;
 }
 
+Vec3 TransformRT::getRotationEulerTurns(void) const
+{
+	return getRotationEuler() * Gaff::RadiansToTurns;
+}
+
 Vec3 TransformRT::getRotationEuler(void) const
 {
 	return glm::eulerAngles(_rotation);
 }
 
+void TransformRT::setRotationEulerTurns(const Vec3& rotation)
+{
+	setRotationEuler(rotation * Gaff::TurnsToRadians);
+}
+
 void TransformRT::setRotationEuler(const Vec3& rotation)
 {
-	_rotation = Gleam::Quat(rotation);
+	_rotation = Quat(rotation);
 }
 
 const Vec3& TransformRT::getTranslation(void) const
@@ -170,22 +320,14 @@ Transform::Transform(const Vec3& translation, const Quat& rotation, const Vec3& 
 {
 }
 
+Transform::Transform(const TransformRTEuler& tform, const Vec3& scale):
+	_translation(tform.getTranslation()), _rotation(tform.getRotationQuat()), _scale(scale)
+{
+}
+
 Transform::Transform(const TransformRT& tform, const Vec3& scale):
 	_translation(tform.getTranslation()), _rotation(tform.getRotation()), _scale(scale)
 {
-}
-
-Transform::Transform(const Transform& tform):
-	_translation(tform._translation), _rotation(tform._rotation), _scale(tform._scale)
-{
-}
-
-Transform& Transform::operator=(const Transform& rhs)
-{
-	_translation = rhs._translation;
-	_rotation = rhs._rotation;
-	_scale = rhs._scale;
-	return *this;
 }
 
 bool Transform::operator==(const Transform& rhs) const
@@ -197,8 +339,8 @@ bool Transform::operator==(const Transform& rhs) const
 
 bool Transform::operator!=(const Transform& rhs) const
 {
-	return _translation != rhs._translation &&
-		_rotation != rhs._rotation &&
+	return _translation != rhs._translation ||
+		_rotation != rhs._rotation ||
 		_scale != rhs._scale;
 }
 
@@ -237,14 +379,24 @@ void Transform::setRotation(const Quat& rotation)
 	_rotation = rotation;
 }
 
+Vec3 Transform::getRotationEulerTurns(void) const
+{
+	return getRotationEuler() * Gaff::RadiansToTurns;
+}
+
 Vec3 Transform::getRotationEuler(void) const
 {
 	return glm::eulerAngles(_rotation);
 }
 
+void Transform::setRotationEulerTurns(const Vec3& rotation)
+{
+	setRotationEuler(rotation * Gaff::TurnsToRadians);
+}
+
 void Transform::setRotationEuler(const Vec3& rotation)
 {
-	_rotation = Gleam::Quat(rotation);
+	_rotation = Quat(rotation);
 }
 
 const Vec3& Transform::getTranslation(void) const

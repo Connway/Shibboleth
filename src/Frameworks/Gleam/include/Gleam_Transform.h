@@ -28,16 +28,61 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class TransformRT;
 class Transform;
+
+class TransformRTEuler
+{
+public:
+	TransformRTEuler(const Vec3& translation = glm::zero<Vec3>(), const Vec3& rotation = glm::zero<Vec3>());
+	TransformRTEuler(const TransformRTEuler& tform) = default;
+	explicit TransformRTEuler(const TransformRT& tform);
+	explicit TransformRTEuler(const Transform& tform);
+
+	TransformRTEuler& operator=(const TransformRTEuler& rhs) = default;
+	bool operator==(const TransformRTEuler& rhs) const;
+	bool operator!=(const TransformRTEuler& rhs) const;
+
+	TransformRTEuler& operator+=(const TransformRTEuler& rhs);
+	TransformRTEuler operator+(const TransformRTEuler& rhs) const;
+
+	const Vec3& getRotation(void) const;
+	void setRotation(const Vec3& rotation);
+	Quat getRotationQuatTurns(void) const;
+	Quat getRotationQuat(void) const;
+	void setRotationQuatTurns(const Quat& rotation);
+	void setRotationQuat(const Quat& rotation);
+	const Vec3& getTranslation(void) const;
+	void setTranslation(const Vec3& translation);
+
+	TransformRTEuler append(const TransformRTEuler& rhs) const;
+	TransformRTEuler concat(const TransformRTEuler& rhs) const;
+	TransformRTEuler inverse(void) const;
+	TransformRTEuler& appendThis(const TransformRTEuler& rhs);
+	TransformRTEuler& concatThis(const TransformRTEuler& rhs);
+	TransformRTEuler& inverseThis(void);
+
+	Vec3 transformVector(const Vec3& rhs) const;
+	Vec3 transformPoint(const Vec3& rhs) const;
+	Mat4x4 toMatrix(void) const;
+
+	TransformRTEuler lerp(const TransformRTEuler& end, float t);
+	TransformRTEuler& lerpThis(const TransformRTEuler& end, float t);
+
+private:
+	Vec3 _translation = glm::zero<Vec3>();
+	Vec3 _rotation = glm::zero<Vec3>();
+};
 
 class TransformRT
 {
 public:
 	TransformRT(const Vec3& translation = glm::zero<Vec3>(), const Quat& rotation = glm::identity<Quat>());
-	TransformRT(const TransformRT& tform);
-	TransformRT(const Transform& tform);
+	TransformRT(const TransformRTEuler& tform);
+	TransformRT(const TransformRT& tform) = default;
+	explicit TransformRT(const Transform& tform);
 
-	TransformRT& operator=(const TransformRT& rhs);
+	TransformRT& operator=(const TransformRT& rhs) = default;
 	bool operator==(const TransformRT& rhs) const;
 	bool operator!=(const TransformRT& rhs) const;
 
@@ -46,7 +91,9 @@ public:
 
 	const Quat& getRotation(void) const;
 	void setRotation(const Quat& rotation);
+	Vec3 getRotationEulerTurns(void) const;
 	Vec3 getRotationEuler(void) const;
+	void setRotationEulerTurns(const Vec3& rotation);
 	void setRotationEuler(const Vec3& rotation);
 	const Vec3& getTranslation(void) const;
 	void setTranslation(const Vec3& translation);
@@ -64,18 +111,19 @@ public:
 	TransformRT& lerpThis(const TransformRT& end, float t);
 
 private:
-	Vec3 _translation;
-	Quat _rotation;
+	Vec3 _translation = glm::zero<Vec3>();
+	Quat _rotation = glm::identity<Quat>();
 };
 
 class Transform
 {
 public:
 	Transform(const Vec3& translation = glm::zero<Vec3>(), const Quat& rotation = glm::identity<Quat>(), const Vec3& scale = Vec3(1.0f));
-	Transform(const TransformRT& tform, const Vec3& scale = Vec3(1.0f));
-	Transform(const Transform& tform);
+	explicit Transform(const TransformRTEuler& tform, const Vec3& scale = Vec3(1.0f));
+	explicit Transform(const TransformRT& tform, const Vec3& scale = Vec3(1.0f));
+	Transform(const Transform& tform) = default;
 
-	Transform& operator=(const Transform& rhs);
+	Transform& operator=(const Transform& rhs) = default;
 	bool operator==(const Transform& rhs) const;
 	bool operator!=(const Transform& rhs) const;
 
@@ -87,7 +135,9 @@ public:
 	void setScale(float scale);
 	const Quat& getRotation(void) const;
 	void setRotation(const Quat& rotation);
+	Vec3 getRotationEulerTurns(void) const;
 	Vec3 getRotationEuler(void) const;
+	void setRotationEulerTurns(const Vec3& rotation);
 	void setRotationEuler(const Vec3& rotation);
 	const Vec3& getTranslation(void) const;
 	void setTranslation(const Vec3& translation);
@@ -105,9 +155,9 @@ public:
 	Transform& lerpThis(const Transform& end, float t);
 
 private:
-	Vec3 _translation;
-	Quat _rotation;
-	Vec3 _scale;
+	Vec3 _translation = glm::zero<Vec3>();
+	Quat _rotation = glm::identity<Quat>();
+	Vec3 _scale{ 1.0f };
 };
 
 NS_END
