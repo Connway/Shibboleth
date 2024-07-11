@@ -26,3 +26,9 @@ THE SOFTWARE.
 
 #define GRAPHICS_ALLOCATOR_POOL_NAME "Graphics"
 #define GRAPHICS_ALLOCATOR Shibboleth::ProxyAllocator{ GRAPHICS_ALLOCATOR_POOL_NAME }
+
+NS_SHIBBOLETH
+
+static constexpr int32_t k_cache_index_count = 2;
+
+NS_END

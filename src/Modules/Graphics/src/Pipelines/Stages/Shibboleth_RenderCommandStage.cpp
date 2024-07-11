@@ -255,7 +255,7 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderCacheIndex();
+	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderPipeline().getRenderCacheIndex();
 	const auto& camera_render_data = _camera_data->getRenderData();
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	Gleam::RenderDevice& device = *job_data.device;

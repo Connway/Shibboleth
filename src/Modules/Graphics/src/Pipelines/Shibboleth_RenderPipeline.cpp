@@ -43,6 +43,8 @@ NS_SHIBBOLETH
 
 Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 {
+	_job_pool = &GetApp().getJobPool();
+
 	const Refl::ReflectionDefinition<RenderPipeline>& ref_def = Refl::Reflection<RenderPipeline>::GetReflectionDefinition();
 	const InitFromConfigAttribute* const config_attr = ref_def.getClassAttr<InitFromConfigAttribute>();
 	GAFF_ASSERT(config_attr);
@@ -51,9 +53,22 @@ Error RenderPipeline::init(RenderManager& /*render_mgr*/)
 
 	if (error.hasError()) {
 		// $TODO: Log error.
+		return error;
 	}
 
 	return error;
+}
+
+void RenderPipeline::update(uintptr_t thread_id_int)
+{
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
+	for (const auto& update_group : _update_job_cache) {
+		_job_pool->addJobs(update_group.data(), static_cast<int32_t>(update_group.size()), _update_job_count);
+		_job_pool->helpWhileWaiting(thread_id, _update_job_count);
+	}
+
+	_current_render_cache_index = (_current_render_cache_index + 1) % k_cache_index_count;
 }
 
 Vector<const IRenderPipelineStage*> RenderPipeline::getRenderStages(const Refl::IReflectionDefinition& ref_def) const
@@ -157,6 +172,11 @@ const InstancedArray<IRenderPipelineData>& RenderPipeline::getRenderData(void) c
 	return _render_data;
 }
 
+int32 RenderPipeline::getRenderCacheIndex(void) const
+{
+	return _current_render_cache_index;
+}
+
 bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object)
 {
 	GAFF_REF(reader, object);
@@ -194,7 +214,9 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 		GAFF_ASSERT(ref_def->template hasInterface<IRenderPipelineStage>());
 
 		if (ref_def) {
-			object._stages.push(*ref_def);
+			IRenerPipelineStage& stage = object._stages.push(*ref_def);
+			stage._owner = &object;
+
 			reader.freeString(class_name);
 			return true;
 
@@ -206,6 +228,7 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 		}
 	};
 
+	Vector<int32_t> update_groups_counts{ GRAPHICS_ALLOCATOR };
 	bool success = true;
 
 	reader.forEachInArray([&](int32_t) -> bool
@@ -233,14 +256,36 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 		}
 
 		if (group_count) {
-			object._update_groups.emplace_back(group_count);
+			update_groups_counts.emplace_back(group_count);
 		}
 
 		return false;
 	});
 
-	object._update_groups.shrink_to_fit();
+	// Create update jobs.
+	object._update_job_cache.resize(update_groups_count.size());
+	int32_t stage_index = 0;
+
+	for (int32_t i = 0; i < static_cast<int32_t>(update_groups_counts.size()); ++i) {
+		Vector<Gaff::JobData>& job_data = object._update_job_cache[i];
+		const int32_t count = update_groups_counts[i];
+
+		job_data.set_allocator(GRAPHICS_ALLOCATOR);
+		job_data.resize(static_cast<size_t>(count));
+
+		for (int32_t j = 0; j < count; ++j) {
+			job_data.emplace_back(Gaff::JobData{ UpdateStage, object._stages[stage_index] });
+			++stage_index;
+		}
+	}
+
 	return success;
+}
+
+void RenderPipeline::UpdateStage(uintptr_t thread_id_int, void* data)
+{
+	IRenderPipelineStage* const stage = reinterpret_cast<IRenderPipelineStage*>(data);
+	stage->update(thread_id_int);
 }
 
 NS_END

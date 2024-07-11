@@ -39,8 +39,8 @@ struct JobData final
 {
 	using JobFunc = void (*)(uintptr_t, void*);
 
-	JobFunc job_func;
-	void* job_data;
+	JobFunc job_func = nullptr;
+	void* job_data = nullptr;
 };
 
 using Counter = eastl::atomic<int32_t>;

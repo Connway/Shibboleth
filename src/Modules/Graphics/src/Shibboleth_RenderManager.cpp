@@ -517,11 +517,6 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	return thread_it->second.get();
 }
 
-int32_t RenderManager::getRenderCacheIndex(void) const
-{
-	return _render_cache_index;
-}
-
 const RenderPipeline& RenderManager::getRenderPipeline(void) const
 {
 	return _render_pipeline;

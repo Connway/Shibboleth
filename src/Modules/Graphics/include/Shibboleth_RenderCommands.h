@@ -49,9 +49,8 @@ struct RenderCommandList final
 struct RenderCommandData final
 {
 	using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
-	static constexpr int32_t CacheIndexCount = 2;
 
-	DeviceCommandListMap command_lists[CacheIndexCount] =
+	DeviceCommandListMap command_lists[k_cache_index_count] =
 	{
 		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
 		DeviceCommandListMap{ GRAPHICS_ALLOCATOR }

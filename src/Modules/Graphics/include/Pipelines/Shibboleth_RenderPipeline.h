@@ -96,6 +96,7 @@ public:
 	}
 
 	Error init(RenderManager& render_mgr);
+	void update(uintptr_t thread_id_int);
 
 	Vector<const IRenderPipelineStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def) const;
 	Vector<IRenderPipelineStage*> getRenderStages(const Refl::IReflectionDefinition& ref_def);
@@ -111,10 +112,17 @@ public:
 
 	const InstancedArray<IRenderPipelineData>& getRenderData(void) const;
 
+	int32 getRenderCacheIndex(void) const;
+
 private:
 	InstancedArray<IRenderPipelineData> _render_data{ GRAPHICS_ALLOCATOR };
 	InstancedArray<IRenderPipelineStage> _stages{ GRAPHICS_ALLOCATOR };
-	Vector<int32_t> _update_groups{ GRAPHICS_ALLOCATOR };
+
+	Vector< Vector<Gaff::JobData> > _update_job_cache{ GRAPHICS_ALLOCATOR };
+	Gaff::Counter _update_job_count = 0;
+	JobPool* _job_pool = nullptr;
+
+	int32_t _current_render_cache_index = 0;
 
 	template <class T, class U>
 	void getRenderStagesInternal(Vector<U*>& out)
@@ -131,6 +139,7 @@ private:
 	}
 
 	static bool Load(const ISerializeReader& reader, RenderPipeline& object);
+	static void UpdateStage(uintptr_t thread_id_int, void* data);
 
 	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(RenderPipeline);
 };

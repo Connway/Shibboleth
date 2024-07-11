@@ -117,9 +117,6 @@ public:
 	const Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const;
 	Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id);
 
-	// $TODO: Move to render pipeline.
-	int32_t getRenderCacheIndex(void) const;
-
 	const RenderPipeline& getRenderPipeline(void) const;
 	RenderPipeline& getRenderPipeline(void);
 
@@ -152,8 +149,6 @@ private:
 	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _to_screen_samplers{ GRAPHICS_ALLOCATOR };
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
-
-	int32_t _render_cache_index = 0;
 
 	Gleam::RenderDevice* createRenderDevice(const Gleam::Window& window);
 	Gleam::RenderDevice* createRenderDevice(int32_t adapter_id);

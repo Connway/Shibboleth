@@ -81,7 +81,7 @@ void ClearRenderTargetStage::update(uintptr_t thread_id_int)
 		}
 
 		Gleam::RenderDevice* const deferred_device = _render_mgr->getDeferredDevice(*device, thread_id);
-		const int32_t cache_index = _render_mgr->getRenderCacheIndex();
+		const int32_t cache_index = _render_mgr->getRenderPipeline().getRenderCacheIndex();
 
 		Gleam::CommandList* const cmd_list = _render_commands.getCommandList(*deferred_device, cache_index).command_list[0].commands.get();
 

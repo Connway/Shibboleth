@@ -27,6 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 struct RenderCommandData;
+class RenderPipeline;
 class RenderManager;
 
 class IRenderPipelineStage : public Refl::IReflectionObject
@@ -40,6 +41,14 @@ public:
 	virtual void update(uintptr_t thread_id_int) = 0;
 
 	virtual const RenderCommandData* getRenderCommands(void) const;
+
+	const RenderPipeline* getOwner(void) const { return _owner; }
+	RenderPipeline* getOwner(void) { return _owner; }
+
+private:
+	RenderPipeline* _owner = nullptr;
+
+	friend class RenderPipeline;
 };
 
 NS_END
