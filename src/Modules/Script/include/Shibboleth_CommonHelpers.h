@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IReflectionDefinition.h>
+#include <Reflection/Shibboleth_IReflectionDefinition.h>
 #include <Shibboleth_ProxyAllocator.h>
 #include <Containers/Shibboleth_VectorMap.h>
 #include <Containers/Shibboleth_Vector.h>

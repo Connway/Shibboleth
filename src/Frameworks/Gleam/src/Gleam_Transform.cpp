@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Transform.h"
 #include <Gaff_Math.h>
-#include <glm/gtx/euler_angles.hpp>
+#include <gtx/euler_angles.hpp>
 
 NS_GLEAM
 
@@ -136,6 +136,7 @@ TransformRTEuler& TransformRTEuler::inverseThis(void)
 {
 	_translation = -_translation;
 	_rotation = -_rotation;
+	return *this;
 }
 
 Vec3 TransformRTEuler::transformVector(const Vec3& rhs) const

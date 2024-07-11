@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_Math.h>
+#include <Gleam_RenderOutput.h>
 #include <Gleam_RenderDevice.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPipelineData)
@@ -63,11 +64,13 @@ bool CameraPipelineData::init(RenderManager& render_mgr)
 
 		if (!createGBuffer(g_buffer, *device, output->getSize(), false)) {
 			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera [%u].", device_tag);
-			return -1;
+			return false;
 		}
 
 		render_data.g_buffers.emplace(device, std::move(g_buffer));
 	}
+
+	return true;
 }
 
 const SparseStack<CameraRenderData>& CameraPipelineData::getRenderData(void) const

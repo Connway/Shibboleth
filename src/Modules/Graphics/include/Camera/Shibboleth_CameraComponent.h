@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+// $TODO: Move this into the Camera Module.
 class CameraComponent final : public EntitySceneComponent
 {
 public:
