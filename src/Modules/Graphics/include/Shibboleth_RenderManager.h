@@ -52,8 +52,6 @@ class RenderManager final : public IManager
 {
 public:
 	using RenderDevicePtr = UniquePtr<Gleam::RenderDevice>;
-	using RenderOutputPtr = UniquePtr<Gleam::RenderOutput>;
-	using WindowPtr = UniquePtr<Gleam::Window>;
 
 
 	enum class RenderOrder
@@ -114,19 +112,12 @@ public:
 	const ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void) const;
 	ResourcePtr<SamplerStateResource>& getDefaultSamplerState(void);
 
-	//GBuffer* createGBuffer(Gleam::RenderTarget& output);
-
-	//bool createGBuffer(ECSEntityID id, Gaff::Hash32 device_tag, const Gleam::IVec2& size, bool create_render_texture = false);
-	//const GBufferData* getGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
-	//bool removeGBuffer(ECSEntityID id);
-	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
-	//bool hasGBuffer(ECSEntityID id) const;
-
 	void presentAllOutputs(void);
 
 	const Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const;
 	Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id);
 
+	// $TODO: Move to render pipeline.
 	int32_t getRenderCacheIndex(void) const;
 
 	const RenderPipeline& getRenderPipeline(void) const;
@@ -134,10 +125,14 @@ public:
 
 
 private:
+	// $TODO: Do we need all these allocated pointers to Gleam data structures? We're not using the interface versions of these,
+	// so the implementation is known at compile time. Most of these data structures are just holding onto RefPtrs and other small
+	// amounts of data. Can probably just in-place construct these instead of allocating UniquePtrs.
+
 	struct RenderOutput final
 	{
-		RenderOutputPtr output;
-		WindowPtr window;
+		UniquePtr<Gleam::RenderOutput> output;
+		UniquePtr<Gleam::Window> window;
 		Gleam::RenderDevice* render_device = nullptr;
 	};
 

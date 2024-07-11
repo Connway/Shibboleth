@@ -51,6 +51,8 @@ private:
 	{
 		UniquePtr<Gleam::ShaderResourceView> srv;
 		UniquePtr<Gleam::Buffer> buffer;
+
+		// $TODO: Command list per buffer?
 	};
 
 	struct InstanceTexture final
@@ -80,6 +82,8 @@ private:
 	{
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
 		UniquePtr<Gleam::ProgramBuffers> program_buffers;
+
+		// $TODO: Command list for each mesh to render.
 	};
 
 	struct MeshInstance final

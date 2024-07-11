@@ -34,7 +34,7 @@ NS_SHIBBOLETH
 
 struct RenderCommands final
 {
-	UniquePtr<Gleam::CommandList> commands;
+	UniquePtr<Gleam::CommandList> commands; // $TODO: This is basically a unique ptr to a ref ptr. Remove the unique ptr?
 	//Gleam::RenderTarget* target = nullptr;
 };
 
@@ -46,7 +46,6 @@ struct RenderCommandList final
 	//EA::Thread::SpinLock lock;
 };
 
-// $TODO: Break this out into its own file.
 struct RenderCommandData final
 {
 	using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
@@ -55,7 +54,7 @@ struct RenderCommandData final
 	DeviceCommandListMap command_lists[CacheIndexCount] =
 	{
 		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
+		DeviceCommandListMap{ GRAPHICS_ALLOCATOR }
 	};
 
 	const RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index) const

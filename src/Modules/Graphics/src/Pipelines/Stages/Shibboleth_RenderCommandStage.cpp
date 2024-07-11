@@ -101,35 +101,35 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	const int32_t num_meshes = job_data.rcs->_models[job_data.index]->value->getNumMeshes();
 
 	if (!num_meshes) {
-		// $TODO: LOG ERROR
+		// $TODO: Log error
 		return;
 	}
 
 	Gleam::Program* const program = job_data.rcs->_materials[job_data.index]->material->getProgram(owning_device);
 
 	if (!program) {
-		// $TODO: LOG ERROR
+		// $TODO: Log error
 		return;
 	}
 
 	Gleam::Layout* const layout = job_data.rcs->_materials[job_data.index]->material->getLayout(owning_device);
 
 	if (!layout) {
-		// $TODO: LOG ERROR
+		// $TODO: Log error
 		return;
 	}
 
 	Gleam::RasterState* const raster_state = job_data.rcs->_raster_states[job_data.index]->value->getRasterState(owning_device);
 
 	if (!raster_state) {
-		// $TODO: LOG ERROR
+		// $TODO: Log error
 		return;
 	}
 
 	InstanceData& instance_data = job_data.rcs->_instance_data[job_data.index];
 
 	if (!instance_data.instance_data) {
-		// $TODO: LOG ERROR
+		// $TODO: Log error
 		return;
 	}
 
@@ -242,6 +242,8 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 
 			pb->bind(*deferred_device);
 			mesh->renderInstanced(*deferred_device, object_count);
+
+			// $TODO: Add support and convert to render instanced indirect.
 		}
 	}
 
@@ -273,22 +275,35 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 
 		const Gleam::IVec2& size = render_target->getSize();
 		const Gleam::Mat4x4 projection = glm::perspectiveFovLH(
-			camera.GetVerticalFOV() * Gaff::TurnsToRad,
+			camera_data.view.fov * Gaff::TurnsToRadians,
 			static_cast<float>(size.x),
 			static_cast<float>(size.y),
-			camera.z_near, camera.z_far
+			camera_data.view.z_planes.x,
+			camera_data.view.z_planes.y
 		);
 
-		const Gleam::Vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-		Gleam::Mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-		camera_transform[3] = Gleam::Vec4(cam_pos.value, 1.0f);
-
+		const Gleam::Mat4x4 camera_transform = camera_data.view.transform.toMatrixTurns();
 		const Gleam::Mat4x4 final_camera = projection * glm::inverse(camera_transform);
 
+		RenderJobData render_data;
+		render_data.rcs = job_data.rcs;
+		render_data.device = &device;
+		render_data.target = render_target;
+		render_data.view_projection = final_camera;
+
+		// $TODO: Resize command list to number of object types to render.
+		// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
+		RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
+
+		// $TODO: Iterate over all models/meshes.
+		// $TODO: Filter models/meshes by scene.
+		// $TODO: Cache command list based on model/mesh.
+		// $TODO: Only regenerate command list if there are dirty instances.
+		// $TODO: Dirty instances should mainly only need to update transform buffer. Only if we are adding/removing instances pages should we need to regenerate the command list.
+		// $TODO: Double check above assumption.
 		for (int32_t i = 0; i < num_objects; ++i) {
-			const int32_t cache_index = cache_index;
 			const int32_t cmd_list_end = job_data.rcs->_cmd_list_end[cache_index];
-			Gleam::ICommandList* cmd_list = nullptr;
+			Gleam::CommandList* cmd_list = nullptr;
 
 			// Grab command list from the cache.
 			if (job_data.rcs->_cmd_lists[cache_index].size() > static_cast<size_t>(cmd_list_end)) {
@@ -300,109 +315,12 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 				job_data.rcs->_cmd_lists[cache_index].emplace_back(cmd_list);
 			}
 
-			++job_data.rcs->_cmd_list_end[cache_index];
-
-			render_cmds.lock.Lock();
-			auto& cmd = render_cmds.command_list.emplace_back();
-			cmd.cmd_list.reset(cmd_list);
-			cmd.owns_command = false;
-			render_cmds.lock.Unlock();
-
-			RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
-			render_data.rcs = job_data.rcs;
 			render_data.index = i;
 			render_data.cmd_list = cmd_list;
-			render_data.device = &device;
-			render_data.target = render_target;
-			render_data.view_projection = final_camera;
+
+			job_data.render_job_data_cache.emplace_back(render_data);
 		}
 	}
-
-	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
-	//const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
-
-
-	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
-		*job_data.device,
-		RenderManager::RenderOrder::InWorldWithDepthTest,
-		cache_index
-	);
-
-
-
-
-	//	for (int32_t camera_index = 0; camera_index < num_cameras; ++camera_index) {
-	//		job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Camera>(
-	//			job_data.rcs->_camera_position[camera_index],
-	//			job_data.rcs->_camera_rotation[camera_index],
-	//			job_data.rcs->_camera[camera_index],
-	//			[&](ECSEntityID id, const Position& cam_pos, const Rotation& cam_rot, const Camera& camera) -> void
-	//			{
-	//				const auto devices = job_data.rcs->_render_mgr->getDevicesByTag(camera.device_tag);
-	//
-	//				if (!devices || Gaff::Find(*devices, &device) == devices->end()) {
-	//					return;
-	//				}
-	//
-	//				const auto* const g_buffer = job_data.rcs->_render_mgr->getGBuffer(id, device);
-	//
-	//				if (!g_buffer) {
-	//					// $TODO: Log error.
-	//					return;
-	//				}
-	//
-	//				Gleam::IRenderTarget* const render_target = g_buffer->render_target.get();
-	//
-	//				if (num_objects > 0) {
-	//					const Gleam::IVec2& size = render_target->getSize();
-	//					const Gleam::Mat4x4 projection = glm::perspectiveFovLH(
-	//						camera.GetVerticalFOV() * Gaff::TurnsToRad,
-	//						static_cast<float>(size.x),
-	//						static_cast<float>(size.y),
-	//						camera.z_near, camera.z_far
-	//					);
-	//
-	//					const Gleam::Vec3 euler_angles = cam_rot.value * Gaff::TurnsToRad;
-	//					Gleam::Mat4x4 camera_transform = glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z);
-	//					camera_transform[3] = Gleam::Vec4(cam_pos.value, 1.0f);
-	//
-	//					const Gleam::Mat4x4 final_camera = projection * glm::inverse(camera_transform);
-	//
-	//					for (int32_t i = 0; i < num_objects; ++i) {
-	//						const int32_t cache_index = cache_index;
-	//						const int32_t cmd_list_end = job_data.rcs->_cmd_list_end[cache_index];
-	//						Gleam::ICommandList* cmd_list = nullptr;
-	//
-	//						// Grab command list from the cache.
-	//						if (job_data.rcs->_cmd_lists[cache_index].size() > static_cast<size_t>(cmd_list_end)) {
-	//							cmd_list = job_data.rcs->_cmd_lists[cache_index][cmd_list_end].get();
-	//
-	//						// Cache is full, create a new one and add it to the cache.
-	//						} else {
-	//							cmd_list = job_data.rcs->_render_mgr->createCommandList();
-	//							job_data.rcs->_cmd_lists[cache_index].emplace_back(cmd_list);
-	//						}
-	//
-	//						++job_data.rcs->_cmd_list_end[cache_index];
-	//
-	//						render_cmds.lock.Lock();
-	//						auto& cmd = render_cmds.command_list.emplace_back();
-	//						cmd.cmd_list.reset(cmd_list);
-	//						cmd.owns_command = false;
-	//						render_cmds.lock.Unlock();
-	//
-	//						RenderJobData& render_data = job_data.render_job_data_cache.emplace_back();
-	//						render_data.rcs = job_data.rcs;
-	//						render_data.index = i;
-	//						render_data.cmd_list = cmd_list;
-	//						render_data.device = &device;
-	//						render_data.target = render_target;
-	//						render_data.view_projection = final_camera;
-	//					}
-	//				}
-	//			}
-	//		);
-	//	}
 
 	// Do a second loop so that none of our job_data.render_job_data_cache pointers get invalidated.
 	if (job_data.job_data_cache.size() != job_data.render_job_data_cache.size()) {
@@ -421,9 +339,6 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 
 		job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
 	}
-
-	// Clear this for next run.
-	job_data.rcs->_cmd_list_end[cache_index] = 0;
 }
 
 NS_END
