@@ -42,7 +42,6 @@ bool ClearRenderTargetStage::init(RenderManager& render_mgr)
 	_resource_lock = &res_mgr->getResourceBucketLock<RenderTargetResource>();
 
 	_render_mgr = &render_mgr;
-	_render_mgr->initializeRenderCommandData(_render_commands);
 
 	for (auto& command_map : _render_commands.command_lists) {
 		for (auto& map_entry : command_map) {
@@ -95,9 +94,9 @@ void ClearRenderTargetStage::update(uintptr_t thread_id_int)
 	}
 }
 
-const RenderCommandData& ClearRenderTargetStage::getRenderCommands(void) const
+const RenderCommandData* ClearRenderTargetStage::getRenderCommands(void) const
 {
-	return _render_commands;
+	return &_render_commands;
 }
 
 NS_END

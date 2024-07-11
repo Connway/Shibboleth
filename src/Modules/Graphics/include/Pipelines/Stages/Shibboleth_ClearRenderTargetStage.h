@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderPipelineStage.h"
+#include "Pipelines/Shibboleth_IRenderPipelineStage.h"
+#include "Shibboleth_RenderCommands.h"
 
 namespace EA::Thread
 {
@@ -30,6 +31,8 @@ namespace EA::Thread
 }
 
 NS_SHIBBOLETH
+
+class IResource;
 
 class ClearRenderTargetStage final : public IRenderPipelineStage
 {
@@ -39,7 +42,7 @@ public:
 
 	void update(uintptr_t thread_id_int) override;
 
-	const RenderCommandData& getRenderCommands(void) const override;
+	const RenderCommandData* getRenderCommands(void) const override;
 
 private:
 	RenderCommandData _render_commands;

@@ -69,19 +69,6 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderManager)
 
 RenderManager::~RenderManager(void)
 {
-	for (int32_t i = 0; static_cast<size_t>(i) < std::size(_cached_render_commands); ++i) {
-		for (int32_t j = 0; static_cast<size_t>(j) < std::size(_cached_render_commands[i].command_lists); ++j) {
-			for (auto& pair : _cached_render_commands[i].command_lists[j]) {
-				for (auto& cmd : pair.second.command_list) {
-					GAFF_REF(cmd);
-//					if (!cmd.owns_command) {
-//						cmd.cmd_list.release();
-//					}
-				}
-			}
-		}
-	}
-
 	Gleam::Window::GlobalShutdown();
 }
 
@@ -326,13 +313,6 @@ void RenderManager::manageRenderDevice(Gleam::RenderDevice& device)
 	GAFF_ASSERT(it == _render_devices.end());
 
 	_render_devices.emplace_back(&device);
-
-	for (int32_t i = 0; i < static_cast<int32_t>(RenderOrder::Count); ++i) {
-		for (int32_t j = 0; j < RenderCommandData::CacheIndexCount; ++j) {
-			// Create entry for newly managed device.
-			_cached_render_commands[i].command_lists[j].insert(&device);
-		}
-	}
 }
 
 const Gleam::RenderDevice* RenderManager::getDevice(const Gleam::RenderOutput& output) const
@@ -665,22 +645,6 @@ ResourcePtr<SamplerStateResource>& RenderManager::getDefaultSamplerState(void)
 //	return _g_buffers.find(id) != _g_buffers.end();
 //}
 
-const RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const
-{
-	return const_cast<RenderManager*>(this)->getRenderCommands(device, order, cache_index);
-}
-
-RenderCommandList& RenderManager::getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index)
-{
-	GAFF_ASSERT(order != RenderOrder::Count);
-	GAFF_ASSERT(Gaff::ValidIndex(cache_index, 1));
-
-	const auto it = _cached_render_commands[static_cast<int32_t>(order)].command_lists[cache_index].find(&device);
-	GAFF_ASSERT(it != _cached_render_commands[static_cast<int32_t>(order)].command_lists[cache_index].end());
-
-	return it->second;
-}
-
 void RenderManager::presentAllOutputs(void)
 {
 	for (auto& entry: _outputs) {
@@ -706,19 +670,6 @@ Gleam::RenderDevice* RenderManager::getDeferredDevice(const Gleam::RenderDevice&
 	GAFF_ASSERT(thread_it != device_it->second.end());
 
 	return thread_it->second.get();
-}
-
-void RenderManager::initializeRenderCommandData(RenderCommandData& render_commands) const
-{
-	GAFF_ASSERT(render_commands.command_lists[0].empty());
-
-	for (auto& command_map : render_commands.command_lists) {
-		command_map.reserve(_deferred_devices.size());
-
-		for (const auto& entry : _deferred_devices) {
-			command_map.insert(entry.first);
-		}
-	}
 }
 
 int32_t RenderManager::getRenderCacheIndex(void) const

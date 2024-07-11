@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderPipelineStage.h"
+#include "Pipelines/Shibboleth_IRenderPipelineStage.h"
 
 NS_SHIBBOLETH
 
@@ -34,8 +34,6 @@ public:
 	bool init(RenderManager& render_mgr) override;
 
 	void update(uintptr_t thread_id_int) override;
-
-	const RenderCommandData& getRenderCommands(void) const override;
 
 private:
 	ModelPipelineData* _model_data = nullptr;

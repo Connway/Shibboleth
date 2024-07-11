@@ -78,7 +78,7 @@ public:
 	}
 
 	template <class T>
-	T& getOrAddRenderData(void)
+	T* getOrAddRenderData(void)
 	{
 		return static_cast<T*>(getOrAddRenderData(Refl::Reflection<T>::GetReflectionDefinition()));
 	}
@@ -105,7 +105,7 @@ public:
 	const IRenderPipelineStage& getRenderStage(const Refl::IReflectionDefinition& ref_def) const;
 	IRenderPipelineStage& getRenderStage(const Refl::IReflectionDefinition& ref_def);
 
-	IRenderPipelineData& getOrAddRenderData(const Refl::IReflectionDefinition& ref_def);
+	IRenderPipelineData* getOrAddRenderData(const Refl::IReflectionDefinition& ref_def);
 	const IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def) const;
 	IRenderPipelineData* getRenderData(const Refl::IReflectionDefinition& ref_def);
 

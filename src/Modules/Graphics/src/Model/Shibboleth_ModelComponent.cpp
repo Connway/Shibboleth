@@ -45,9 +45,9 @@ bool ModelComponent::init(void)
 	}
 
 	ManagerRef<RenderManager> render_mgr;
-	ModelPipelineData& model_data = render_mgr->getRenderPipeline().getOrAddRenderData<ModelPipelineData>();
+	ModelPipelineData* const model_data = render_mgr->getRenderPipeline().getOrAddRenderData<ModelPipelineData>();
 
-	_handle = model_data.registerModel(_model_instance_data, *this);
+	_handle = model_data->registerModel(_model_instance_data, *this);
 
 	return true;
 }

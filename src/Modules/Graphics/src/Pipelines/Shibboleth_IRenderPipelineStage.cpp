@@ -24,3 +24,12 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IRenderPipelineStage)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::IRenderPipelineStage)
+
+NS_SHIBBOLETH
+
+const RenderCommandData* IRenderPipelineStage::getRenderCommands(void) const
+{
+	return nullptr;
+}
+
+NS_END

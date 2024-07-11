@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ITransformProvider.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Gleam_RenderDevice.h>
@@ -37,7 +38,7 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderCommandStage);
 
 bool RenderCommandStage::init(RenderManager& render_mgr)
 {
-	_camera_data = &render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
+	_camera_data = render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
 	_job_pool = &GetApp().getJobPool();
 	_render_mgr = &render_mgr;
 
@@ -48,8 +49,8 @@ bool RenderCommandStage::init(RenderManager& render_mgr)
 	_job_data_cache.reserve(devices.size());
 
 	for (auto& device : devices) {
-		_device_job_cache.emplace_back(DeviceJobData{ *this, *device });
-		_job_data_cache.emplace_back(Gaff::JobData{ &_device_job_data_cache.back(), DeviceJob });
+		_device_job_data_cache.emplace_back(DeviceJobData{ *this, *device });
+		_job_data_cache.emplace_back(Gaff::JobData{ DeviceJob, &_device_job_data_cache.back() });
 	}
 
 	return true;
@@ -65,13 +66,13 @@ void RenderCommandStage::update(uintptr_t thread_id_int)
 
 	// Only one device, just update in place.
 	} else if (_job_data_cache.size() == 1) {
-		DeviceJob(thread_id_int, _device_job_data.data());
+		DeviceJob(thread_id_int, _device_job_data_cache.data());
 	}
 }
 
-const RenderCommandData& RenderCommandStage::getRenderCommands(void) const
+const RenderCommandData* RenderCommandStage::getRenderCommands(void) const
 {
-	return _render_commands;
+	return &_render_commands;
 }
 
 void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* data)

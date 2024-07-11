@@ -39,7 +39,7 @@ public:
 
 	virtual void update(uintptr_t thread_id_int) = 0;
 
-	virtual const RenderCommandData& getRenderCommands(void) const = 0;
+	virtual const RenderCommandData* getRenderCommands(void) const;
 };
 
 NS_END

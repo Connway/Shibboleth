@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <Shibboleth_ResourcePtr.h>
 #include <Shibboleth_IManager.h>
 #include <Gleam_ShaderResourceView.h>
-#include <Gleam_CommandList.h>
 #include <Gleam_Transform.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Vec2.h>
@@ -43,49 +42,11 @@ THE SOFTWARE.
 NS_GLEAM
 	class RenderOutput;
 	class RenderDevice;
-	class Texture;
 	class Window;
 NS_END
 
 
 NS_SHIBBOLETH
-
-struct RenderCommands final
-{
-	UniquePtr<Gleam::CommandList> commands;
-	//Gleam::RenderTarget* target = nullptr;
-};
-
-struct RenderCommandList final
-{
-	Vector<RenderCommands> command_list{ GRAPHICS_ALLOCATOR };
-
-	// $TODO: Evaluate if we need this once converted over to render pipeline.
-	//EA::Thread::SpinLock lock;
-};
-
-struct RenderCommandData final
-{
-	using DeviceCommandListMap = VectorMap<const Gleam::RenderDevice*, RenderCommandList>;
-	static constexpr int32_t CacheIndexCount = 2;
-
-	DeviceCommandListMap command_lists[CacheIndexCount] =
-	{
-		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-		DeviceCommandListMap{ GRAPHICS_ALLOCATOR },
-	};
-
-	const RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index) const
-	{
-		return const_cast<RenderCommandData*>(this)->getCommandList(device, cache_index);
-	}
-
-	RenderCommandList& getCommandList(const Gleam::RenderDevice& device, int32_t cache_index)
-	{
-		return command_lists[cache_index][&device];
-	}
-};
-
 
 class RenderManager final : public IManager
 {
@@ -161,16 +122,10 @@ public:
 	//bool hasGBuffer(ECSEntityID id, const Gleam::IRenderDevice& device) const;
 	//bool hasGBuffer(ECSEntityID id) const;
 
-	// $TODO: More configurable pipelines instead of this hardcoded pipeline.
-	const RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index) const;
-	RenderCommandList& getRenderCommands(const Gleam::RenderDevice& device, RenderOrder order, int32_t cache_index);
-
 	void presentAllOutputs(void);
 
 	const Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id) const;
 	Gleam::RenderDevice* getDeferredDevice(const Gleam::RenderDevice& device, EA::Thread::ThreadId thread_id);
-
-	void initializeRenderCommandData(RenderCommandData& render_commands) const;
 
 	int32_t getRenderCacheIndex(void) const;
 
@@ -200,8 +155,6 @@ private:
 
 	// $TODO: Move a lot of these into RenderPipeline.
 	VectorMap< const Gleam::RenderDevice*, UniquePtr<Gleam::SamplerState> > _to_screen_samplers{ GRAPHICS_ALLOCATOR };
-
-	RenderCommandData _cached_render_commands[static_cast<size_t>(RenderOrder::Count)];
 
 	ResourcePtr<SamplerStateResource> _default_sampler;
 
