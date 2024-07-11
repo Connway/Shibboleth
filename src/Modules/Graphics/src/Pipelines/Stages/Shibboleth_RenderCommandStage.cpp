@@ -252,28 +252,21 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
-	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
-	//const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
-
 	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderCacheIndex();
-	Gleam::RenderDevice& device = *job_data.device;
-
-	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
-		*job_data.device,
-		RenderManager::RenderOrder::InWorldWithDepthTest,
-		cache_index
-	);
-
-
 	const auto& camera_render_data = _camera_data->getRenderData();
+	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
+	Gleam::RenderDevice& device = *job_data.device;
 
 	job_data.render_job_data_cache.clear();
 	job_data.render_job_data_cache.reserve(static_cast<size_t>(camera_render_data.getValidSize()));
 
+	// Render all cameras on this device.
 	for (const CameraRenderData& camera_data : camera_render_data) {
 		const auto it = camera_data.g_buffers.find(&device);
-		GAFF_ASSERT(it != camera_data.g_buffers.end());
+
+		if (it == camera_data.g_buffers.end()) {
+			continue;
+		}
 
 		Gleam::RenderTarget* const render_target = it->second.render_target.get();
 
@@ -324,6 +317,15 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		}
 	}
 
+	const int32_t num_objects = static_cast<int32_t>(job_data.rcs->_instance_data.size());
+	//const int32_t num_cameras = static_cast<int32_t>(job_data.rcs->_camera.size());
+
+
+	auto& render_cmds = job_data.rcs->_render_mgr->getRenderCommands(
+		*job_data.device,
+		RenderManager::RenderOrder::InWorldWithDepthTest,
+		cache_index
+	);
 
 
 

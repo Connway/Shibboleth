@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 
 struct CameraView final
 {
-	Gleam::TransformRT transform;
+	Gleam::TransformRTEuler transform; // Rotation in turns.
 	Gleam::Vec2 z_planes{ 0.001f, 2000.0f }; // m
 	float fov = 60.0f * Gaff::DegreesToTurns;
 
