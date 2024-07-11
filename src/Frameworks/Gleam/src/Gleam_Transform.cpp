@@ -148,9 +148,21 @@ Vec3 TransformRTEuler::transformPoint(const Vec3& rhs) const
 	return TransformRT{ *this }.transformPoint(rhs);
 }
 
+Mat4x4 TransformRTEuler::toMatrixTurns(void) const
+{
+	const Vec3 rotation = _rotation * Gaff::TurnsToRadians;
+	Mat4x4 matrix = glm::yawPitchRoll(rotation.y, rotation.x, rotation.z);
+	matrix[3] = Vec4(_translation, 1.0f);
+
+	return matrix;
+}
+
 Mat4x4 TransformRTEuler::toMatrix(void) const
 {
-	return glm::yawPitchRoll(_rotation.y, _rotation.x, _rotation.z);
+	Mat4x4 matrix = glm::yawPitchRoll(_rotation.y, _rotation.x, _rotation.z);
+	matrix[3] = Vec4(_translation, 1.0f);
+
+	return matrix;
 }
 
 TransformRTEuler TransformRTEuler::lerp(const TransformRTEuler& end, float t)
@@ -291,9 +303,7 @@ Vec3 TransformRT::transformPoint(const Vec3& rhs) const
 Mat4x4 TransformRT::toMatrix(void) const
 {
 	Mat4x4 matrix = glm::mat4_cast(_rotation);
-	matrix[3][0] = _translation.x;
-	matrix[3][1] = _translation.y;
-	matrix[3][2] = _translation.z;
+	matrix[3] = Vec4(_translation, 1.0f);
 
 	return matrix;
 }

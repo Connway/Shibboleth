@@ -64,6 +64,7 @@ public:
 
 	Vec3 transformVector(const Vec3& rhs) const;
 	Vec3 transformPoint(const Vec3& rhs) const;
+	Mat4x4 toMatrixTurns(void) const;
 	Mat4x4 toMatrix(void) const;
 
 	TransformRTEuler lerp(const TransformRTEuler& end, float t);
