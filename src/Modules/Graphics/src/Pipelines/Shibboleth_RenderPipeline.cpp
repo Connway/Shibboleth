@@ -179,8 +179,6 @@ int32 RenderPipeline::getRenderCacheIndex(void) const
 
 bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object)
 {
-	GAFF_REF(reader, object);
-
 	{
 		const auto guard = reader.enterElementGuard(u8"render_data");
 

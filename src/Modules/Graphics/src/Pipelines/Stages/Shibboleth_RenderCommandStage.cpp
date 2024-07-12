@@ -32,6 +32,11 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibboleth::IRenderPipelineStage)
 
+namespace
+{
+	static ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
+}
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(RenderCommandStage);
@@ -164,7 +169,7 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 
 				if (!srv->init(*rd, buffer->getBuffer(*rd))) {
 					// $TODO: Log error and use error texture.
-					SHIB_FREET(srv, GetAllocator());
+					SHIB_FREET(srv, s_allocator);
 					return;
 				}
 
@@ -175,7 +180,7 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 		}
 	}
 
-	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, GRAPHICS_ALLOCATOR);
+	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, s_allocator);
 
 	for (int32_t j = 0; j < static_cast<int32_t>(buffer_cache.size()); ++j) {
 		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);
@@ -295,6 +300,18 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
 		RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
 
+		// Ensure we have enough command lists.
+		if (cmd_list.command_list.size() < static_cast<size_t>(num_objects)) {
+			cmd_list.command_list.reserve(static_cast<size_t>(num_objects));
+
+			for (int32_t i = static_cast<size_t>(cmd_list.command_list.size()); i < num_objects; ++i) {
+				cmd_list.command_list.emplace_back(SHIB_ALLOCT(Gleam::CommandList, s_allocator));
+			}
+
+		} else if (cmd_list.command_list.size() > static_cast<size_t>(num_objects)) {
+			cmd_list.command_list.resize(static_cast<size_t>(num_objects));
+		}
+
 		// $TODO: Iterate over all models/meshes.
 		// $TODO: Filter models/meshes by scene.
 		// $TODO: Cache command list based on model/mesh.
@@ -302,21 +319,8 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		// $TODO: Dirty instances should mainly only need to update transform buffer. Only if we are adding/removing instances pages should we need to regenerate the command list.
 		// $TODO: Double check above assumption.
 		for (int32_t i = 0; i < num_objects; ++i) {
-			const int32_t cmd_list_end = job_data.rcs->_cmd_list_end[cache_index];
-			Gleam::CommandList* cmd_list = nullptr;
-
-			// Grab command list from the cache.
-			if (job_data.rcs->_cmd_lists[cache_index].size() > static_cast<size_t>(cmd_list_end)) {
-				cmd_list = job_data.rcs->_cmd_lists[cache_index][cmd_list_end].get();
-
-			// Cache is full, create a new one and add it to the cache.
-			} else {
-				cmd_list = job_data.rcs->_render_mgr->createCommandList();
-				job_data.rcs->_cmd_lists[cache_index].emplace_back(cmd_list);
-			}
-
+			render_data.cmd_list = cmd_list.command_list[i].get();
 			render_data.index = i;
-			render_data.cmd_list = cmd_list;
 
 			job_data.render_job_data_cache.emplace_back(render_data);
 		}
