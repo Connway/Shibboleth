@@ -39,6 +39,7 @@ NS_END
 NS_SHIBBOLETH
 
 class CameraPipelineData;
+class ModelPipelineData;
 class ResourceManager;
 
 // $TODO: This should be split up into more discrete stages.
@@ -98,6 +99,7 @@ private:
 	Gaff::Counter _job_counter = 0;
 
 	const CameraPipelineData* _camera_data = nullptr;
+	const ModelPipelineData* _model_data = nullptr;
 
 	RenderManager* _render_mgr = nullptr;
 	JobPool* _job_pool = nullptr;

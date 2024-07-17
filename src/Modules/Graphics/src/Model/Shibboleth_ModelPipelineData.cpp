@@ -189,6 +189,22 @@ void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
 	}
 
 	it_bucket->second.transform_providers.erase(it_tform);
+
+	// No more instances for this model. Remove the bucket.
+	if (it_bucket->second.transform_providers.empty() && _new_models_cache.find(it_bucket->first) == _new_models_cache.end()) {
+		_mesh_count -= static_cast<int32_t>(it_bucket->second.mesh_instances.size());
+		_model_buckets.erase(it_bucket);
+	}
+}
+
+int32_t ModelPipelineData::getModelCount(void) const
+{
+	return static_cast<int32_t>(_model_buckets.size());
+}
+
+int32_t ModelPipelineData::getMeshCount(void) const
+{
+	return _mesh_count;
 }
 
 ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)
@@ -201,6 +217,7 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 	GAFF_ASSERT(!devices.empty());
 
 	model_bucket.mesh_instances.resize(model_data.model->getNumMeshes());
+	_mesh_count += model_data.model->getNumMeshes();
 
 	Gleam::ShaderReflection shader_refl[static_cast<size_t>(Gleam::IShader::Type::Count)];
 

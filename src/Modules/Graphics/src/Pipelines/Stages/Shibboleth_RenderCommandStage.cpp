@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
+#include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ITransformProvider.h>
@@ -44,6 +45,7 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderCommandStage);
 bool RenderCommandStage::init(RenderManager& render_mgr)
 {
 	_camera_data = render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
+	_model_data = render_mgr.getRenderPipeline().getOrAddRenderData<ModelPipelineData>();
 	_job_pool = &GetApp().getJobPool();
 	_render_mgr = &render_mgr;
 
@@ -261,7 +263,7 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderPipeline().getRenderCacheIndex();
-	const auto& camera_render_data = _camera_data->getRenderData();
+	const auto& camera_render_data = job_data.rcs->_camera_data->getRenderData();
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	Gleam::RenderDevice& device = *job_data.device;
 
@@ -300,16 +302,19 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
 		RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
 
-		// Ensure we have enough command lists.
-		if (cmd_list.command_list.size() < static_cast<size_t>(num_objects)) {
-			cmd_list.command_list.reserve(static_cast<size_t>(num_objects));
+		// $TODO: num_meshes is based on the scene(s) this camera is rendering.
+		const int32_t num_meshes = job_data.rcs->_model_data->getNumMeshes();
 
-			for (int32_t i = static_cast<size_t>(cmd_list.command_list.size()); i < num_objects; ++i) {
+		// Ensure we have enough command lists.
+		if (cmd_list.command_list.size() < static_cast<size_t>(num_meshes)) {
+			cmd_list.command_list.reserve(static_cast<size_t>(num_meshes));
+
+			for (int32_t i = static_cast<int32_t>(cmd_list.command_list.size()); i < num_meshes; ++i) {
 				cmd_list.command_list.emplace_back(SHIB_ALLOCT(Gleam::CommandList, s_allocator));
 			}
 
-		} else if (cmd_list.command_list.size() > static_cast<size_t>(num_objects)) {
-			cmd_list.command_list.resize(static_cast<size_t>(num_objects));
+		} else if (cmd_list.command_list.size() > static_cast<size_t>(num_meshes)) {
+			cmd_list.command_list.resize(static_cast<size_t>(num_meshes));
 		}
 
 		// $TODO: Iterate over all models/meshes.
@@ -318,9 +323,10 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		// $TODO: Only regenerate command list if there are dirty instances.
 		// $TODO: Dirty instances should mainly only need to update transform buffer. Only if we are adding/removing instances pages should we need to regenerate the command list.
 		// $TODO: Double check above assumption.
-		for (int32_t i = 0; i < num_objects; ++i) {
+		for (int32_t i = 0; i < num_meshes; ++i) {
 			render_data.cmd_list = cmd_list.command_list[i].get();
 			render_data.index = i;
+			// Probably need a model index and mesh index.
 
 			job_data.render_job_data_cache.emplace_back(render_data);
 		}

@@ -116,11 +116,16 @@ private:
 	EA::Thread::Mutex _pending_removes_lock;
 	EA::Thread::Mutex _new_models_lock;
 
+	int32_t mesh_count = 0;
+
 	RenderManager* _render_mgr = nullptr;
 
 
 	void addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 	void removeInstance(ModelInstanceHandle handle);
+
+	int32_t getModelCount(void) const;
+	int32_t getMeshCount(void) const;
 
 	ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 
