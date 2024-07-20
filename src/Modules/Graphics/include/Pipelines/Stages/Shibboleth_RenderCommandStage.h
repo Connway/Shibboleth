@@ -58,8 +58,8 @@ public:
 private:
 	struct RenderJobData final
 	{
+		const ModelPipelineData::MeshInstanceDeviceData* mesh_instance_data = nullptr;
 		RenderCommandStage* rcs = nullptr;
-		int32_t index;
 
 		Gleam::RenderDevice* device = nullptr;
 		Gleam::CommandList* cmd_list = nullptr;

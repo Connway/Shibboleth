@@ -31,22 +31,6 @@ NS_SHIBBOLETH
 class ModelPipelineData final : public IRenderPipelineData
 {
 public:
-	bool init(RenderManager& render_mgr) override;
-
-	// Should never be called with model_data resources not loaded.
-	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
-	void unregisterModel(ModelInstanceHandle handle);
-
-	void markDirty(ModelInstanceHandle handle);
-
-	void processChanges(uintptr_t thread_id_int	);
-
-	// $TODO: Register model instance as dirty.
-
-	//const VectorMap<Gaff::Hash64, ModelBucket>& getRegisteredModels(void) const;
-	//const Vector<ModelInstanceHandle>& getNewRegisteredModels(void) const;
-
-private:
 	struct InstanceBuffer final
 	{
 		UniquePtr<Gleam::ShaderResourceView> srv;
@@ -106,6 +90,23 @@ private:
 		Vector<ModelInstanceHandle> handles{ GRAPHICS_ALLOCATOR };
 	};
 
+
+
+	bool init(RenderManager& render_mgr) override;
+
+	// Should never be called with model_data resources not loaded.
+	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+	void unregisterModel(ModelInstanceHandle handle);
+
+	void markDirty(ModelInstanceHandle handle);
+
+	void processChanges(uintptr_t thread_id_int);
+
+	// $TODO: Register model instance as dirty.
+
+	const VectorMap<Gaff::Hash64, ModelBucket>& getRegisteredModels(void) const;
+
+private:
 	VectorMap< Gaff::Hash64, Vector<ModelInstanceHandle> > _pending_removes{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, NewModelInstance> _new_models{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, ModelBucket> _model_buckets{ GRAPHICS_ALLOCATOR };

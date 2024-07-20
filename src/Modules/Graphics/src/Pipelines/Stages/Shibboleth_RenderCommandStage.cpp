@@ -267,6 +267,11 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	Gleam::RenderDevice& device = *job_data.device;
 
+	// $TODO: Resize command list to number of object types to render.
+	// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
+	RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
+	int32_t total_command_lists = 0;
+
 	job_data.render_job_data_cache.clear();
 	job_data.render_job_data_cache.reserve(static_cast<size_t>(camera_render_data.getValidSize()));
 
@@ -298,23 +303,18 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		render_data.target = render_target;
 		render_data.view_projection = final_camera;
 
-		// $TODO: Resize command list to number of object types to render.
-		// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
-		RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
-
 		// $TODO: num_meshes is based on the scene(s) this camera is rendering.
 		const int32_t num_meshes = job_data.rcs->_model_data->getNumMeshes();
 
-		// Ensure we have enough command lists.
-		if (cmd_list.command_list.size() < static_cast<size_t>(num_meshes)) {
-			cmd_list.command_list.reserve(static_cast<size_t>(num_meshes));
+		total_command_lists += num_meshes;
 
-			for (int32_t i = static_cast<int32_t>(cmd_list.command_list.size()); i < num_meshes; ++i) {
+		// Ensure we have enough command lists.
+		if (cmd_list.command_list.size() < static_cast<size_t>(total_command_lists)) {
+			cmd_list.command_list.reserve(static_cast<size_t>(total_command_lists));
+
+			for (int32_t i = static_cast<int32_t>(cmd_list.command_list.size()); i < total_command_lists; ++i) {
 				cmd_list.command_list.emplace_back(SHIB_ALLOCT(Gleam::CommandList, s_allocator));
 			}
-
-		} else if (cmd_list.command_list.size() > static_cast<size_t>(num_meshes)) {
-			cmd_list.command_list.resize(static_cast<size_t>(num_meshes));
 		}
 
 		// $TODO: Iterate over all models/meshes.
@@ -323,13 +323,23 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		// $TODO: Only regenerate command list if there are dirty instances.
 		// $TODO: Dirty instances should mainly only need to update transform buffer. Only if we are adding/removing instances pages should we need to regenerate the command list.
 		// $TODO: Double check above assumption.
-		for (int32_t i = 0; i < num_meshes; ++i) {
-			render_data.cmd_list = cmd_list.command_list[i].get();
-			render_data.index = i;
-			// Probably need a model index and mesh index.
+		const auto& models = job_data.rcs->_model_data->getRegisteredModels();
+		int32_t cmd_list_index = 0;
 
-			job_data.render_job_data_cache.emplace_back(render_data);
+		for (const auto& entry : models) {
+			for (const auto& mesh_instance : entry.second.mesh_instances) {
+				render_data.mesh_instance_data = &mesh_instance.device_data[&device];
+				render_data.cmd_list = cmd_list.command_list[cmd_list_index].get();
+
+				job_data.render_job_data_cache.emplace_back(render_data);
+				++cmd_list_index;
+			}
 		}
+	}
+
+	// Trim off unused command lists.
+	if (cmd_list.command_list.size() > static_cast<size_t>(total_command_lists)) {
+		cmd_list.command_list.resize(static_cast<size_t>(total_command_lists));
 	}
 
 	// Do a second loop so that none of our job_data.render_job_data_cache pointers get invalidated.
@@ -345,7 +355,7 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 	if (job_data.job_data_cache.size() > 0) {
 		job_data.rcs->_job_pool->addJobs(job_data.job_data_cache.data(), static_cast<int32_t>(job_data.job_data_cache.size()), job_data.job_counter);
 
-		// $TODO: If the cache is significantly higher than the current usage, shrink the cache.
+		// $TODO: If the cache capacity is significantly higher than the current size, shrink to fit.
 
 		job_data.rcs->_job_pool->helpWhileWaiting(thread_id, job_data.job_counter);
 	}

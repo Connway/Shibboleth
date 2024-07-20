@@ -140,6 +140,11 @@ void ModelPipelineData::processChanges(uintptr_t /*thread_id_int*/)
 	_new_models_cache.clear();
 }
 
+const VectorMap<Gaff::Hash64, ModelBucket>& ModelPipelineData::getRegisteredModels(void) const
+{
+	return _model_buckets;
+}
+
 void ModelPipelineData::addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle)
 {
 	auto it_bucket = _model_buckets.find(handle.bucket_hash);
