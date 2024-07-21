@@ -112,6 +112,20 @@ public:
 		ConstIterator operator--(int) { return ConstIterator(_iterator--); }
 		ConstIterator& operator--() { --_iterator; return *this; }
 
+		bool operator==(const ConstIterator& rhs) const { return _iterator == rhs._iterator; }
+		bool operator!=(const ConstIterator& rhs) const { return _iterator != rhs._iterator; }
+		bool operator<=(const ConstIterator& rhs) const { return _iterator <= rhs._iterator; }
+		bool operator<(const ConstIterator& rhs) const { return _iterator < rhs._iterator; }
+		bool operator>=(const ConstIterator& rhs) const { return _iterator >= rhs._iterator; }
+		bool operator>(const ConstIterator& rhs) const { return _iterator > rhs._iterator; }
+
+		bool operator==(const Iterator& rhs) const { return _iterator == rhs; }
+		bool operator!=(const Iterator& rhs) const { return _iterator != rhs; }
+		bool operator<=(const Iterator& rhs) const { return _iterator <= rhs; }
+		bool operator<(const Iterator& rhs) const { return _iterator < rhs; }
+		bool operator>=(const Iterator& rhs) const { return _iterator >= rhs; }
+		bool operator>(const Iterator& rhs) const { return _iterator > rhs; }
+
 		const T* operator->(void) const { return &(*_iterator); }
 		const T& operator*(void) const { return *_iterator; }
 
