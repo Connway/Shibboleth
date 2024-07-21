@@ -106,6 +106,9 @@ public:
 
 	const VectorMap<Gaff::Hash64, ModelBucket>& getRegisteredModels(void) const;
 
+	int32_t getModelCount(void) const;
+	int32_t getMeshCount(void) const;
+
 private:
 	VectorMap< Gaff::Hash64, Vector<ModelInstanceHandle> > _pending_removes{ GRAPHICS_ALLOCATOR };
 	VectorMap<Gaff::Hash64, NewModelInstance> _new_models{ GRAPHICS_ALLOCATOR };
@@ -117,16 +120,13 @@ private:
 	EA::Thread::Mutex _pending_removes_lock;
 	EA::Thread::Mutex _new_models_lock;
 
-	int32_t mesh_count = 0;
+	int32_t _mesh_count = 0;
 
 	RenderManager* _render_mgr = nullptr;
 
 
 	void addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 	void removeInstance(ModelInstanceHandle handle);
-
-	int32_t getModelCount(void) const;
-	int32_t getMeshCount(void) const;
 
 	ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle);
 

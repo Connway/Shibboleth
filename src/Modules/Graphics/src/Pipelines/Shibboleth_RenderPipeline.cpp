@@ -36,7 +36,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
 
 	.var("render_data", &Shibboleth::RenderPipeline::_render_data)
 	.var("stages", &Shibboleth::RenderPipeline::_stages)
-	.var("update_groups", &Shibboleth::RenderPipeline::_update_groups)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
 
 NS_SHIBBOLETH
@@ -172,7 +171,7 @@ const InstancedArray<IRenderPipelineData>& RenderPipeline::getRenderData(void) c
 	return _render_data;
 }
 
-int32 RenderPipeline::getRenderCacheIndex(void) const
+int32_t RenderPipeline::getRenderCacheIndex(void) const
 {
 	return _current_render_cache_index;
 }
@@ -212,7 +211,7 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 		GAFF_ASSERT(ref_def->template hasInterface<IRenderPipelineStage>());
 
 		if (ref_def) {
-			IRenerPipelineStage& stage = object._stages.push(*ref_def);
+			IRenderPipelineStage& stage = object._stages.push(*ref_def);
 			stage._owner = &object;
 
 			reader.freeString(class_name);
@@ -261,7 +260,7 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 	});
 
 	// Create update jobs.
-	object._update_job_cache.resize(update_groups_count.size());
+	object._update_job_cache.resize(update_groups_counts.size());
 	int32_t stage_index = 0;
 
 	for (int32_t i = 0; i < static_cast<int32_t>(update_groups_counts.size()); ++i) {

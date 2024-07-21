@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_IRenderPipelineData.h"
 #include "Shibboleth_GraphicsDefines.h"
 #include <Containers/Shibboleth_InstancedArray.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_Error.h>
 
 NS_SHIBBOLETH
@@ -112,7 +113,7 @@ public:
 
 	const InstancedArray<IRenderPipelineData>& getRenderData(void) const;
 
-	int32 getRenderCacheIndex(void) const;
+	int32_t getRenderCacheIndex(void) const;
 
 private:
 	InstancedArray<IRenderPipelineData> _render_data{ GRAPHICS_ALLOCATOR };

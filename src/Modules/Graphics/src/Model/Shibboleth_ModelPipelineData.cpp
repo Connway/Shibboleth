@@ -140,9 +140,19 @@ void ModelPipelineData::processChanges(uintptr_t /*thread_id_int*/)
 	_new_models_cache.clear();
 }
 
-const VectorMap<Gaff::Hash64, ModelBucket>& ModelPipelineData::getRegisteredModels(void) const
+const VectorMap<Gaff::Hash64, ModelPipelineData::ModelBucket>& ModelPipelineData::getRegisteredModels(void) const
 {
 	return _model_buckets;
+}
+
+int32_t ModelPipelineData::getModelCount(void) const
+{
+	return static_cast<int32_t>(_model_buckets.size());
+}
+
+int32_t ModelPipelineData::getMeshCount(void) const
+{
+	return _mesh_count;
 }
 
 void ModelPipelineData::addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle)
@@ -200,16 +210,6 @@ void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
 		_mesh_count -= static_cast<int32_t>(it_bucket->second.mesh_instances.size());
 		_model_buckets.erase(it_bucket);
 	}
-}
-
-int32_t ModelPipelineData::getModelCount(void) const
-{
-	return static_cast<int32_t>(_model_buckets.size());
-}
-
-int32_t ModelPipelineData::getMeshCount(void) const
-{
-	return _mesh_count;
 }
 
 ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)

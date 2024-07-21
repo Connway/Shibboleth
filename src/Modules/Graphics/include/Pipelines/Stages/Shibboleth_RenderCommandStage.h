@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Pipelines/Shibboleth_IRenderPipelineStage.h"
 #include "Resources/Shibboleth_ProgramBuffersResource.h"
 #include "Resources/Shibboleth_BufferResource.h"
+#include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_RenderCommands.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_JobPool.h>
@@ -39,7 +40,6 @@ NS_END
 NS_SHIBBOLETH
 
 class CameraPipelineData;
-class ModelPipelineData;
 class ResourceManager;
 
 // $TODO: This should be split up into more discrete stages.

@@ -63,7 +63,8 @@ bool CameraPipelineData::init(RenderManager& render_mgr)
 		GBuffer g_buffer;
 
 		if (!createGBuffer(g_buffer, *device, output->getSize(), false)) {
-			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera [%u].", device_tag);
+			// $TODO: Implement Gleam::Window::getTitle()
+			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera/window [%s].", render_mgr.getWindow(i)->getTitle());
 			return false;
 		}
 

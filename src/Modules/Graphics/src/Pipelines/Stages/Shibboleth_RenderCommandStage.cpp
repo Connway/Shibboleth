@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
-#include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ITransformProvider.h>
@@ -35,7 +34,7 @@ SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibbo
 
 namespace
 {
-	static ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
+	static Shibboleth::ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
 }
 
 NS_SHIBBOLETH
@@ -262,14 +261,15 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
+
 	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderPipeline().getRenderCacheIndex();
 	const auto& camera_render_data = job_data.rcs->_camera_data->getRenderData();
-	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	Gleam::RenderDevice& device = *job_data.device;
 
 	// $TODO: Resize command list to number of object types to render.
 	// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
-	RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
+	RenderCommandList& cmd_list = job_data.rcs->_render_commands.getCommandList(device, cache_index);
 	int32_t total_command_lists = 0;
 
 	job_data.render_job_data_cache.clear();
@@ -304,7 +304,7 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		render_data.view_projection = final_camera;
 
 		// $TODO: num_meshes is based on the scene(s) this camera is rendering.
-		const int32_t num_meshes = job_data.rcs->_model_data->getNumMeshes();
+		const int32_t num_meshes = job_data.rcs->_model_data->getMeshCount();
 
 		total_command_lists += num_meshes;
 
@@ -328,8 +328,8 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 
 		for (const auto& entry : models) {
 			for (const auto& mesh_instance : entry.second.mesh_instances) {
-				render_data.mesh_instance_data = &mesh_instance.device_data[&device];
-				render_data.cmd_list = cmd_list.command_list[cmd_list_index].get();
+				render_data.mesh_instance_data = &mesh_instance.device_data.at_key(&device);
+				render_data.cmd_list = cmd_list.command_list[cmd_list_index].commands.get();
 
 				job_data.render_job_data_cache.emplace_back(render_data);
 				++cmd_list_index;
