@@ -435,6 +435,12 @@ void Window::setTitle(const char8_t* title)
 	glfwSetWindowTitle(_window, reinterpret_cast<const char*>(title));
 }
 
+const char* Window::getTitle(void) const
+{
+	GAFF_ASSERT(_window);
+	return glfwGetWindowTitle(_window);
+}
+
 void Window::setIcon(const GLFWimage* icons, int32_t count)
 {
 	GAFF_ASSERT(_window);

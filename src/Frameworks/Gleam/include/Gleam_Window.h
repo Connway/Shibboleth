@@ -123,6 +123,7 @@ public:
 	IVec2 getPos(void) const;
 
 	void setTitle(const char8_t* title);
+	const char* getTitle(void) const;
 
 	void setIcon(const GLFWimage* icons, int32_t count);
 	void setIcon(const GLFWimage& icon);

@@ -1,6 +1,9 @@
 This folder contains libraries that are slightly modified. I have also added a custom config header
 for projects that require them.
 
+Dependencies with modifications will be tagged with $MODIFICATION in the source code.
+Dependencies that have been modified, but not updated to have the tag are listed below.
+
 While not that much different than the original source, these packages ARE NOT
 the original source.
 
@@ -22,13 +25,6 @@ Libraries Affected:
 	zlib-ng
 		Fixed compilation error on Linux when compiling on a system that does not support AVX.
 		Fixing compilation errors.
-
-	EASTL
-		Fixed compilation error on Linux/Mac with bitvector.
-		Fixed compilation error on Linux/Mac with deque.
-		Fixed a compilation warning with an unreferenced variable in Strlcpy.
-		"Fixed" compilation error with GCC in eastl::swap about maybe uninitialized variables. "Fix" is to disable the warning for now.
-		Fixed compilation error on Mac with barriers. Replaced OSMemoryBarrier with std::atomic_thread_fence.
 
 	premake-qt
 		Fixed unnecessarily adding links libs to StaticLib projects.
