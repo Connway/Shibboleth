@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_Math.h>
 #include <Gleam_RenderOutput.h>
 #include <Gleam_RenderDevice.h>
+#include <Gleam_Window.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPipelineData)
 	.template ctor<>()
@@ -49,6 +50,10 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraPipelineData)
 //SHIB_REFLECTION_DEFINE_END(Shibboleth::GBuffer)
 
 
+namespace
+{
+	static Shibboleth::ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
+}
 
 NS_SHIBBOLETH
 
@@ -60,15 +65,17 @@ bool CameraPipelineData::init(RenderManager& render_mgr)
 	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
 		Gleam::RenderOutput* const output = render_mgr.getOutput(i);
 		Gleam::RenderDevice* const device = render_mgr.getDevice(*output);
+
+		CameraRenderData render_data;
 		GBuffer g_buffer;
 
 		if (!createGBuffer(g_buffer, *device, output->getSize(), false)) {
-			// $TODO: Implement Gleam::Window::getTitle()
 			LogErrorGraphics("CameraPipelineData::createRenderData: Failed to create g-buffer for camera/window [%s].", render_mgr.getWindow(i)->getTitle());
 			return false;
 		}
 
 		render_data.g_buffers.emplace(device, std::move(g_buffer));
+		_render_data.emplace(std::move(render_data));
 	}
 
 	return true;
@@ -117,7 +124,6 @@ int32_t CameraPipelineData::createRenderData(
 		return -1;
 	}
 
-	ProxyAllocator allocator = GRAPHICS_ALLOCATOR;
 	CameraRenderData render_data;
 
 	for (Gleam::RenderDevice* device : *devices) {
@@ -141,19 +147,19 @@ void CameraPipelineData::removeRenderData(int32_t id)
 
 bool CameraPipelineData::createGBuffer(GBuffer& g_buffer, Gleam::RenderDevice& rd, const Gleam::IVec2& size, bool create_render_texture)
 {
-	g_buffer.render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
+	g_buffer.render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, s_allocator));
 
-	g_buffer.diffuse.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-	g_buffer.specular.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-	g_buffer.normal.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-	g_buffer.position.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
-	g_buffer.depth.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+	g_buffer.diffuse.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
+	g_buffer.specular.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
+	g_buffer.normal.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
+	g_buffer.position.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
+	g_buffer.depth.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
 
-	g_buffer.diffuse_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-	g_buffer.specular_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-	g_buffer.normal_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-	g_buffer.position_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
-	g_buffer.depth_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+	g_buffer.diffuse_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
+	g_buffer.specular_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
+	g_buffer.normal_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
+	g_buffer.position_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
+	g_buffer.depth_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
 
 	if (!g_buffer.diffuse->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 		LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create diffuse texture for camera.");
@@ -212,21 +218,21 @@ bool CameraPipelineData::createGBuffer(GBuffer& g_buffer, Gleam::RenderDevice& r
 	g_buffer.render_target->addDepthStencilBuffer(rd, *g_buffer.depth);
 
 	if (create_render_texture) {
-		g_buffer.final_image.reset(SHIB_ALLOCT(Gleam::Texture, allocator));
+		g_buffer.final_image.reset(SHIB_ALLOCT(Gleam::Texture, s_allocator));
 
 		if (!g_buffer.final_image->init2D(rd, size.x, size.y, Gleam::ITexture::Format::RGBA_8_UNORM)) {
 			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output texture for camera.");
 			return false;
 		}
 
-		g_buffer.final_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, allocator));
+		g_buffer.final_srv.reset(SHIB_ALLOCT(Gleam::ShaderResourceView, s_allocator));
 
 		if (!g_buffer.final_srv->init(rd, *g_buffer.final_image)) {
 			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output srv for camera.");
 			return false;
 		}
 
-		g_buffer.final_render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, allocator));
+		g_buffer.final_render_target.reset(SHIB_ALLOCT(Gleam::RenderTarget, s_allocator));
 
 		if (!g_buffer.final_render_target->addTexture(rd,* g_buffer.final_image)) {
 			LogErrorGraphics("CameraPipelineData::createGBuffer: Failed to create final output render target for camera.");
