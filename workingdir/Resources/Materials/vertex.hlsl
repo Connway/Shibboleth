@@ -9,9 +9,10 @@
 //	//matrix proj_matrix;
 //};
 
+// $TODO: Convert to cbuffer.
 struct InstanceData
 {
-	matrix _model_to_proj_matrix;
+	matrix model_to_proj_matrix;
 };
 
 struct VertexInputType
@@ -43,7 +44,7 @@ PixelInputType VertexMain(VertexInputType input)
 	PixelInputType output;
 
 	output.position = mul(
-		instance_data[input.instance_id]._model_to_proj_matrix,
+		instance_data[input.instance_id].model_to_proj_matrix,
 		float4(input.position, 1.0)
 	);
 

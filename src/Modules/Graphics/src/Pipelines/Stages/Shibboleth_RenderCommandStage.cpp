@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
+#include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ITransformProvider.h>
@@ -34,7 +35,7 @@ SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibbo
 
 namespace
 {
-	static Shibboleth::ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
+	static ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
 }
 
 NS_SHIBBOLETH
@@ -104,34 +105,6 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	Gleam::RenderDevice& owning_device = *job_data.device;
 	Gleam::RenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(owning_device, thread_id);
 
-	const int32_t num_meshes = job_data.rcs->_models[job_data.index]->value->getNumMeshes();
-
-	if (!num_meshes) {
-		// $TODO: Log error
-		return;
-	}
-
-	Gleam::Program* const program = job_data.rcs->_materials[job_data.index]->material->getProgram(owning_device);
-
-	if (!program) {
-		// $TODO: Log error
-		return;
-	}
-
-	Gleam::Layout* const layout = job_data.rcs->_materials[job_data.index]->material->getLayout(owning_device);
-
-	if (!layout) {
-		// $TODO: Log error
-		return;
-	}
-
-	Gleam::RasterState* const raster_state = job_data.rcs->_raster_states[job_data.index]->value->getRasterState(owning_device);
-
-	if (!raster_state) {
-		// $TODO: Log error
-		return;
-	}
-
 	InstanceData& instance_data = job_data.rcs->_instance_data[job_data.index];
 
 	if (!instance_data.instance_data) {
@@ -140,54 +113,22 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	}
 
 	job_data.target->bind(*deferred_device);
-	raster_state->bind(*deferred_device);
-	program->bind(*deferred_device);
-	layout->bind(*deferred_device);
+	job_data.mesh_instance_data->raster_state->bind(*deferred_device);
+	job_data.mesh_instance_data->program->bind(*deferred_device);
+	job_data.mesh_instance_data->layout->bind(*deferred_device);
 
 	const int32_t stride = instance_data.instance_data->pages[0].buffer->getBuffer(owning_device)->getStride();
 	const int32_t object_count = job_data.rcs->_ecs_mgr->getNumEntities(job_data.rcs->_position[job_data.index]);
 	const int32_t num_pages = (object_count / instance_data.buffer_instance_count) + 1;
 	int32_t object_index = 0;
 
-	// Make sure we have enough buffers for the number of object's we are rendering.
-	if (int32_t start_index = static_cast<int32_t>(instance_data.instance_data->pages.size()); start_index < num_pages) {
-		instance_data.instance_data->pages.resize(static_cast<size_t>(num_pages));
-		const auto devices = job_data.rcs->_materials[job_data.index]->material->getDevices();
+	Vector<void*> buffer_cache(s_allocator);
+	buffer_cache.reserve(job_data.mesh_instance_data->instance_data->pages.size());
 
-
-		for (; start_index < num_pages; ++start_index) {
-			const size_t colon_index = instance_data.instance_data->buffer_string.rfind(':');
-
-			instance_data.instance_data->buffer_string.erase(colon_index + 1);
-			instance_data.instance_data->buffer_string.append_sprintf(u8"%i", start_index);
-
-			BufferResourcePtr buffer = job_data.rcs->_resource_mgr->createResourceT<BufferResource>(
-				instance_data.instance_data->buffer_string.data()
-			);
-
-			for (Gleam::RenderDevice* rd : devices) {
-				Gleam::ShaderResourceView* const srv = job_data.rcs->_render_mgr->createShaderResourceView();
-
-				if (!srv->init(*rd, buffer->getBuffer(*rd))) {
-					// $TODO: Log error and use error texture.
-					SHIB_FREET(srv, s_allocator);
-					return;
-				}
-
-				instance_data.instance_data->pages[start_index].srv_map[rd].reset(srv);
-			}
-
-			instance_data.instance_data->pages[start_index].buffer = std::move(buffer);
-		}
+	// $TODO: Iterate over all pages.
+	for (const auto& page : job_data.mesh_instance_data->instance_data->pages) {
+		buffer_cache.emplace_back(page.buffer->map(*deferred_device));
 	}
-
-	Vector<void*> buffer_cache(instance_data.instance_data->pages.size(), nullptr, s_allocator);
-
-	for (int32_t j = 0; j < static_cast<int32_t>(buffer_cache.size()); ++j) {
-		buffer_cache[j] = instance_data.instance_data->pages[j].buffer->getBuffer(owning_device)->map(*deferred_device);
-	}
-
-	const Gleam::Vec3& centering_vector = job_data.rcs->_models[job_data.index]->value->getCenteringVector();
 
 	//	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>(
 	//		job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index],
@@ -205,7 +146,7 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	//
 	//			// Write to instance buffer.
 	//			Gleam::Mat4x4 center_object = glm::identity<Gleam::Mat4x4>();
-	//			center_object[3] = Gleam::Vec4(centering_vector, 1.0f);
+	//			center_object[3] = Gleam::Vec4(job_data.center, 1.0f);
 	//
 	//			Gleam::Mat4x4* const matrix = reinterpret_cast<Gleam::Mat4x4*>(reinterpret_cast<int8_t*>(buffer) + (stride * instance_index) + instance_data.model_to_proj_offset);
 	//			*matrix = job_data.view_projection * transform * center_object;
@@ -214,8 +155,8 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	//		}
 	//	);
 
-	for (const auto& page : instance_data.instance_data->pages) {
-		page.buffer->getBuffer(owning_device)->unmap(*deferred_device);
+	for (const auto& page : job_data.mesh_instance_data->instance_data->pages) {
+		page.buffer->unmap(*deferred_device);
 	}
 
 
@@ -261,15 +202,14 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 {
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
-	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
-
 	const int32_t cache_index = job_data.rcs->_render_mgr->getRenderPipeline().getRenderCacheIndex();
 	const auto& camera_render_data = job_data.rcs->_camera_data->getRenderData();
+	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 	Gleam::RenderDevice& device = *job_data.device;
 
 	// $TODO: Resize command list to number of object types to render.
 	// $TODO: Submit jobs as we process. Don't wait to generate data for all jobs and then run.
-	RenderCommandList& cmd_list = job_data.rcs->_render_commands.getCommandList(device, cache_index);
+	RenderCommandList& cmd_list = _render_commands.getCommandList(device, cache_index);
 	int32_t total_command_lists = 0;
 
 	job_data.render_job_data_cache.clear();
@@ -304,7 +244,7 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 		render_data.view_projection = final_camera;
 
 		// $TODO: num_meshes is based on the scene(s) this camera is rendering.
-		const int32_t num_meshes = job_data.rcs->_model_data->getMeshCount();
+		const int32_t num_meshes = job_data.rcs->_model_data->getNumMeshes();
 
 		total_command_lists += num_meshes;
 
@@ -328,8 +268,9 @@ void RenderCommandStage::DeviceJob(uintptr_t thread_id_int, void* data)
 
 		for (const auto& entry : models) {
 			for (const auto& mesh_instance : entry.second.mesh_instances) {
-				render_data.mesh_instance_data = &mesh_instance.device_data.at_key(&device);
-				render_data.cmd_list = cmd_list.command_list[cmd_list_index].commands.get();
+				render_data.mesh_instance_data = &mesh_instance.device_data[&device];
+				render_data.cmd_list = cmd_list.command_list[cmd_list_index].get();
+				render_data.center = entry.second.model->getCenteringVector();
 
 				job_data.render_job_data_cache.emplace_back(render_data);
 				++cmd_list_index;

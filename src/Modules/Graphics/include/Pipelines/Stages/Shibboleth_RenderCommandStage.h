@@ -66,6 +66,7 @@ private:
 		Gleam::RenderTarget* target = nullptr;
 
 		Gleam::Mat4x4 view_projection;
+		Gleam::Vec3 center;
 	};
 
 	struct DeviceJobData final

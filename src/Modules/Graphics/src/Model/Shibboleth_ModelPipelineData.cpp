@@ -61,7 +61,7 @@ namespace
 		return static_cast<decltype(&texture_data.vertex)>(nullptr);
 	}
 
-	static constexpr const char8_t* const k_mtp_mat_name = u8"_model_to_proj_matrix";
+	static constexpr const char8_t* const k_mtp_mat_name = u8"model_to_proj_matrix";
 	static Shibboleth::ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
 }
 
@@ -248,6 +248,10 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 			Gleam::ProgramBuffers* const pb = SHIB_ALLOCT(Gleam::ProgramBuffers, s_allocator);
 			MeshInstanceDeviceData& device_data = mesh_instance.device_data[rd];
 
+			device_data.program = material_data.material->getProgram(*rd);
+			device_data.layout = material_data.material->getLayout(*rd);
+			device_data.mesh = model_data.model->getMesh(i)->getMesh(*rd);
+
 			device_data.program_buffers.reset(pb);
 
 			for (const Gleam::IShader::Type shader_type : Gaff::EnumIterator<Gleam::IShader::Type>()) {
@@ -255,10 +259,14 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 				const auto& pipeline_refl = shader_refl[shader_type_index];
 
 				if (shader_type == Gleam::IShader::Type::Vertex) {
+					// $TODO: Check constant buffers too.
 					for (const auto& sb_refl : pipeline_refl.structured_buffers) {
 						const auto it = Gaff::Find(sb_refl.vars, k_mtp_mat_name, [](const Gleam::VarReflection& lhs, const char8_t* rhs)->bool { return lhs.name == rhs; });
 
 						if (it != sb_refl.vars.end()) {
+							device_data.instance_data = &device_data.pipeline_data[shader_type_index].buffer_vars[HashString32<>(sb_refl.name.data())];
+
+							GAFF_ASSERT(mesh_instance.model_to_proj_offset == -1 || mesh_instance.model_to_proj_offset == static_cast<int32_t>(it->start_offset));
 							mesh_instance.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
 						}
 					}

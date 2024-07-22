@@ -14,14 +14,14 @@ struct PixelOutputType
 	//float depth : SV_DEPTH;
 };
 
-SamplerState sample;
+SamplerState sampler;
 Texture2D tex;
 
 PixelOutputType PixelMain(PixelInputType input)
 {
 	PixelOutputType output;
 
-	output.diffuse = tex.Sample(sample, input.uv);
+	output.diffuse = tex.Sample(sampler, input.uv);
 
 	output.specular = float4(1.0, 0.0, 0.0, 1.0);
 	output.normal = input.normal;

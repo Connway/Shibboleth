@@ -67,6 +67,12 @@ public:
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
 		UniquePtr<Gleam::ProgramBuffers> program_buffers;
 
+		Gleam::Program* program = nullptr;
+		Gleam::Layout* layout = nullptr;
+		Gleam::Mesh* mesh = nullptr;
+
+		InstanceBufferData* instance_data = nullptr;
+
 		// $TODO: Command list for each mesh to render.
 	};
 
@@ -82,6 +88,8 @@ public:
 	{
 		Vector<const ITransformProvider*> transform_providers{ GRAPHICS_ALLOCATOR };
 		Vector<MeshInstance> mesh_instances{ GRAPHICS_ALLOCATOR };
+
+		ResourcePtr<ModelResource> model;
 	};
 
 	struct NewModelInstance final
