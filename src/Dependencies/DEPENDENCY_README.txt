@@ -38,10 +38,6 @@ Libraries Affected:
 	argparse
 		Commented out unused variables to fix compilation issues.
 
-	GLFW
-		Fixing compilation error with CLOCK_REALTIME and CLOCK_MONOTONIC not being defined.
-		Fixing compilation errors on Mac OS X.
-
 	LuaJIT
 		Modified msvcbuild.bat to use /MDd, /MD, /Od, and /Fd flags.
 		Added lua_isinteger.
