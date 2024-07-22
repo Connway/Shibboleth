@@ -21,7 +21,7 @@ DependencyProject("GLFW", "SharedLib")
 	filter { "system:macosx" }
 		defines { "_GLFW_COCOA" }
 		files { "**.m" }
-		links { "Cocoa.framework", "IOKit.framework" }
+		links { "Cocoa.framework", "IOKit.framework", "QuartzCore.framework" }
 
 	filter { "system:linux", "options:not wayland" }
 		removefiles { "src/wl_*.*" }
