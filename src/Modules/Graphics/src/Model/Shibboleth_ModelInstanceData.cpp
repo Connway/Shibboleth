@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Model/Shibboleth_ModelInstanceData.h"
 #include <Gleam_ShaderResourceView.h>
+#include <Gleam_RasterState.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Mesh.h>
 
@@ -56,6 +57,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::SamplerInstanceData)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelInstanceData)
 	.template ctor<>()
 
+	.var("raster_state", &Shibboleth::ModelInstanceData::raster_state)
 	.var("model", &Shibboleth::ModelInstanceData::model)
 	.var("material_data", &Shibboleth::ModelInstanceData::material_data)
 	.var("instances_per_page", &Shibboleth::ModelInstanceData::instances_per_page, Shibboleth::OptionalAttribute())
@@ -83,6 +85,7 @@ void ModelInstanceData::calculateInstanceAndBucketHash(Gaff::Hash64& bucket_hash
 	};
 
 	bucket_hash = Gaff::FNV1aHash64T(model.get());
+	bucket_hash = Gaff::FNV1aHash64T(raster_state.get());
 
 	for (const MaterialInstanceData& data : material_data) {
 		bucket_hash = Gaff::FNV1aHash64T(data.material.get(), bucket_hash);

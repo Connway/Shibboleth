@@ -286,6 +286,11 @@ bool ModelResource::createMesh(const Vector< ResourcePtr<MeshResource> >& meshes
 
 const ResourcePtr<MeshResource>& ModelResource::getMesh(int32_t index) const
 {
+	return const_cast<ModelResource*>(this)->getMesh(index);
+}
+
+ResourcePtr<MeshResource>& ModelResource::getMesh(int32_t index)
+{
 	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_meshes.size())));
 	return _meshes[index];
 }

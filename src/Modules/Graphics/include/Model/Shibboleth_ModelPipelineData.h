@@ -67,6 +67,7 @@ public:
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
 		UniquePtr<Gleam::ProgramBuffers> program_buffers;
 
+		Gleam::RasterState* raster_state = nullptr;
 		Gleam::Program* program = nullptr;
 		Gleam::Layout* layout = nullptr;
 		Gleam::Mesh* mesh = nullptr;
@@ -103,7 +104,7 @@ public:
 	bool init(RenderManager& render_mgr) override;
 
 	// Should never be called with model_data resources not loaded.
-	ModelInstanceHandle registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider);
+	ModelInstanceHandle registerModel(ModelInstanceData& model_data, const ITransformProvider& tform_provider);
 	void unregisterModel(ModelInstanceHandle handle);
 
 	void markDirty(ModelInstanceHandle handle);
@@ -133,10 +134,10 @@ private:
 	RenderManager* _render_mgr = nullptr;
 
 
-	void addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle);
+	void addInstance(ModelInstanceData& model_data, ModelInstanceHandle handle);
 	void removeInstance(ModelInstanceHandle handle);
 
-	ModelBucket& createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle);
+	ModelBucket& createBucket(ModelInstanceData& model_data, ModelInstanceHandle handle);
 
 	void addStructuredBuffersSRVs(
 		MeshInstance& mesh_instance,

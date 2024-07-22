@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Resources/Shibboleth_SamplerStateResource.h"
+#include "Resources/Shibboleth_RasterStateResource.h"
 #include "Resources/Shibboleth_MaterialResource.h"
 #include "Resources/Shibboleth_TextureResource.h"
 #include "Model/Shibboleth_ModelResource.h"
@@ -78,6 +79,7 @@ struct ModelInstanceData final
 {
 	// $TODO: Add support for automatically sizing this according to the number of meshes in the model resource.
 	Vector<MaterialInstanceData> material_data{ GRAPHICS_ALLOCATOR };
+	ResourcePtr<RasterStateResource> raster_state;
 	ResourcePtr<ModelResource> model;
 
 	// $TODO: Fixed size.

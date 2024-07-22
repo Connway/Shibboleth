@@ -51,6 +51,7 @@ public:
 	bool createMesh(const Vector< ResourcePtr<MeshResource> >& meshes);
 
 	const ResourcePtr<MeshResource>& getMesh(int32_t index) const;
+	ResourcePtr<MeshResource>& getMesh(int32_t index);
 	int32_t getNumMeshes(void) const;
 
 	const Gleam::Vec3& getCenteringVector(void) const;

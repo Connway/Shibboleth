@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_ITransformProvider.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Gleam_RenderDevice.h>
+#include <Gleam_RasterState.h>
 #include <Gleam_Mesh.h>
 #include <Gaff_Function.h>
 
@@ -35,7 +36,7 @@ SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::RenderCommandStage, Shibbo
 
 namespace
 {
-	static ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
+	static Shibboleth::ProxyAllocator s_allocator{ GRAPHICS_ALLOCATOR };
 }
 
 NS_SHIBBOLETH
@@ -105,13 +106,6 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	Gleam::RenderDevice& owning_device = *job_data.device;
 	Gleam::RenderDevice* const deferred_device = job_data.rcs->_render_mgr->getDeferredDevice(owning_device, thread_id);
 
-	InstanceData& instance_data = job_data.rcs->_instance_data[job_data.index];
-
-	if (!instance_data.instance_data) {
-		// $TODO: Log error
-		return;
-	}
-
 	job_data.target->bind(*deferred_device);
 	job_data.mesh_instance_data->raster_state->bind(*deferred_device);
 	job_data.mesh_instance_data->program->bind(*deferred_device);
@@ -129,6 +123,8 @@ void RenderCommandStage::GenerateCommandListJob(uintptr_t thread_id_int, void* d
 	for (const auto& page : job_data.mesh_instance_data->instance_data->pages) {
 		buffer_cache.emplace_back(page.buffer->map(*deferred_device));
 	}
+
+	// $TODO: Update instance data.
 
 	//	job_data.rcs->_ecs_mgr->iterate<Position, Rotation, Scale>(
 	//		job_data.rcs->_position[job_data.index], job_data.rcs->_rotation[job_data.index], job_data.rcs->_scale[job_data.index],

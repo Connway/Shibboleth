@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_ITransformProvider.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
+#include <Gleam_RasterState.h>
 #include <Gleam_Texture.h>
 #include <Gaff_ContainerAlgorithm.h>
 
@@ -75,8 +76,12 @@ bool ModelPipelineData::init(RenderManager& render_mgr)
 	return true;
 }
 
-ModelInstanceHandle ModelPipelineData::registerModel(const ModelInstanceData& model_data, const ITransformProvider& tform_provider)
+ModelInstanceHandle ModelPipelineData::registerModel(ModelInstanceData& model_data, const ITransformProvider& tform_provider)
 {
+	GAFF_ASSERT(model_data.raster_state);
+	GAFF_ASSERT(model_data.model);
+	GAFF_ASSERT(static_cast<int32_t>(model_data.material_data.size()) == model_data.model->getNumMeshes());
+
 	const ModelInstanceHandle handle = model_data.createInstanceHandle(tform_provider);
 	const EA::Thread::AutoMutex lock(_new_models_lock);
 	auto it_bucket = _new_models.find(handle.bucket_hash);
@@ -130,7 +135,7 @@ void ModelPipelineData::processChanges(uintptr_t /*thread_id_int*/)
 		}
 	}
 
-	for (const auto& entry : _new_models) {
+	for (auto& entry : _new_models) {
 		for (const ModelInstanceHandle& handle : entry.second.handles) {
 			addInstance(entry.second.data, handle);
 		}
@@ -155,7 +160,7 @@ int32_t ModelPipelineData::getMeshCount(void) const
 	return _mesh_count;
 }
 
-void ModelPipelineData::addInstance(const ModelInstanceData& model_data, ModelInstanceHandle handle)
+void ModelPipelineData::addInstance(ModelInstanceData& model_data, ModelInstanceHandle handle)
 {
 	auto it_bucket = _model_buckets.find(handle.bucket_hash);
 	ModelBucket& bucket = (it_bucket == _model_buckets.end()) ?
@@ -212,7 +217,7 @@ void ModelPipelineData::removeInstance(ModelInstanceHandle handle)
 	}
 }
 
-ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInstanceData& model_data, ModelInstanceHandle handle)
+ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(ModelInstanceData& model_data, ModelInstanceHandle handle)
 {
 	ModelBucket& model_bucket = _model_buckets[handle.bucket_hash];
 
@@ -238,7 +243,7 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(const ModelInsta
 	}
 
 	for (int32_t i = 0; i < static_cast<int32_t>(model_bucket.mesh_instances.size()); ++i) {
-		const MaterialInstanceData& material_data = model_data.material_data[i];
+		MaterialInstanceData& material_data = model_data.material_data[i];
 		MeshInstance& mesh_instance = model_bucket.mesh_instances[i];
 
 		mesh_instance.buffer_instance_count = model_data.model->getInstancesPerBuffer();

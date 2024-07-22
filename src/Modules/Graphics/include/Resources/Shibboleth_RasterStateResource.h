@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 	class RenderDevice;
-class RasterState;
+	class RasterState;
 NS_END
 
 NS_SHIBBOLETH
