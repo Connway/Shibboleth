@@ -58,15 +58,15 @@ public:
 private:
 	struct RenderJobData final
 	{
-		const ModelPipelineData::MeshInstanceDeviceData* mesh_instance_data = nullptr;
-		RenderCommandStage* rcs = nullptr;
+		Gleam::Mat4x4 view_projection;
 
+		const ModelPipelineData::MeshInstanceDeviceData* mesh_instance_data = nullptr;
+		const ModelPipelineData::ModelBucket* model_bucket = nullptr;
 		Gleam::RenderDevice* device = nullptr;
 		Gleam::CommandList* cmd_list = nullptr;
 		Gleam::RenderTarget* target = nullptr;
 
-		Gleam::Mat4x4 view_projection;
-		Gleam::Vec3 center;
+		RenderCommandStage* rcs = nullptr;
 	};
 
 	struct DeviceJobData final

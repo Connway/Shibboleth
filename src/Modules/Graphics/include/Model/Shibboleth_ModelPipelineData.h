@@ -64,6 +64,7 @@ public:
 
 	struct MeshInstanceDeviceData final
 	{
+		// $TODO: This would be more cache efficient if each page had pipeline data. Instead of the pipeline data having pages.
 		PipelineData pipeline_data[static_cast<size_t>(Gleam::IShader::Type::PipelineCount)];
 		UniquePtr<Gleam::ProgramBuffers> program_buffers;
 
@@ -80,9 +81,6 @@ public:
 	struct MeshInstance final
 	{
 		VectorMap<const Gleam::RenderDevice*, MeshInstanceDeviceData> device_data;
-
-		int32_t buffer_instance_count = 1;
-		int32_t model_to_proj_offset = -1;
 	};
 
 	struct ModelBucket final
@@ -91,6 +89,9 @@ public:
 		Vector<MeshInstance> mesh_instances{ GRAPHICS_ALLOCATOR };
 
 		ResourcePtr<ModelResource> model;
+
+		int32_t instances_per_buffer = 32;
+		int32_t model_to_proj_offset = -1;
 	};
 
 	struct NewModelInstance final
@@ -140,7 +141,7 @@ private:
 	ModelBucket& createBucket(ModelInstanceData& model_data, ModelInstanceHandle handle);
 
 	void addStructuredBuffersSRVs(
-		MeshInstance& mesh_instance,
+		ModelBucket& model_bucket,
 		Gleam::RenderDevice& device,
 		MeshInstanceDeviceData& device_data,
 		const Gleam::IShader::Type shader_type,

@@ -246,7 +246,7 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(ModelInstanceDat
 		MaterialInstanceData& material_data = model_data.material_data[i];
 		MeshInstance& mesh_instance = model_bucket.mesh_instances[i];
 
-		mesh_instance.buffer_instance_count = model_data.model->getInstancesPerBuffer();
+		model_bucket.instances_per_buffer = model_data.model->getInstancesPerBuffer();
 		mesh_instance.device_data.reserve(devices.size());
 
 		for (Gleam::RenderDevice* rd : devices) {
@@ -271,14 +271,14 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(ModelInstanceDat
 						if (it != sb_refl.vars.end()) {
 							device_data.instance_data = &device_data.pipeline_data[shader_type_index].buffer_vars[HashString32<>(sb_refl.name.data())];
 
-							GAFF_ASSERT(mesh_instance.model_to_proj_offset == -1 || mesh_instance.model_to_proj_offset == static_cast<int32_t>(it->start_offset));
-							mesh_instance.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
+							GAFF_ASSERT(model_bucket.model_to_proj_offset == -1 || model_bucket.model_to_proj_offset == static_cast<int32_t>(it->start_offset));
+							model_bucket.model_to_proj_offset = static_cast<int32_t>(it->start_offset);
 						}
 					}
 				}
 
 				addStructuredBuffersSRVs(
-					mesh_instance,
+					model_bucket,
 					*rd,
 					device_data,
 					shader_type,
@@ -319,7 +319,7 @@ ModelPipelineData::ModelBucket& ModelPipelineData::createBucket(ModelInstanceDat
 }
 
 void ModelPipelineData::addStructuredBuffersSRVs(
-	MeshInstance& mesh_instance,
+	ModelBucket& model_bucket,
 	Gleam::RenderDevice& device,
 	MeshInstanceDeviceData& device_data,
 	const Gleam::IShader::Type shader_type,
@@ -330,7 +330,7 @@ void ModelPipelineData::addStructuredBuffersSRVs(
 	for (const auto& sb_refl : refl.structured_buffers) {
 		const Gleam::IBuffer::Settings settings = {
 			nullptr,
-			sb_refl.size_bytes * static_cast<size_t>(mesh_instance.buffer_instance_count), // size
+			sb_refl.size_bytes * static_cast<size_t>(model_bucket.instances_per_buffer), // size
 			static_cast<int32_t>(sb_refl.size_bytes), // stride
 			static_cast<int32_t>(sb_refl.size_bytes), // elem_size
 			Gleam::IBuffer::Type::StructuredData,
