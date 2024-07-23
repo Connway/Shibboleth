@@ -80,7 +80,7 @@ const CameraView& CameraComponent::generateView(float /*dt*/)
 {
 	const Gleam::Transform& tform = getTransformWorld();
 	_view.transform.setTranslation(tform.getTranslation());
-	_view.transform.setRotation(tform.getRotation());
+	_view.transform.setRotationQuatTurns(tform.getRotation());
 
 	return _view;
 }

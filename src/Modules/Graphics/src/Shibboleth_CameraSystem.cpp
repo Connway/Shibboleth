@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraSystem.h"
 //#include "Shibboleth_RenderManagerBase.h"
-#include "Shibboleth_CameraComponent.h"
+//#include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ResourceManager.h>
 
 //SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPreRenderSystem)

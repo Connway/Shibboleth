@@ -40,9 +40,10 @@ bool RenderManagerPipelineSystem::init(void)
 	return true;
 }
 
-void RenderManagerPipelineSystem::update(uintptr_t /*thread_id_int*/)
+void RenderManagerPipelineSystem::update(uintptr_t thread_id_int)
 {
 	RenderPipeline& render_pipeline = _render_mgr->getRenderPipeline();
+	render_pipeline.update(thread_id_int);
 }
 
 NS_END

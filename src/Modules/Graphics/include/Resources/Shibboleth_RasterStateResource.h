@@ -24,11 +24,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_IResource.h>
-#include <Gleam_IRasterState.h>
+#include <Gleam_RasterState.h>
 
 NS_GLEAM
 	class RenderDevice;
-	class RasterState;
 NS_END
 
 NS_SHIBBOLETH
