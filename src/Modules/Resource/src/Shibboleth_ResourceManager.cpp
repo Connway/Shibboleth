@@ -304,7 +304,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<const IResourc
 	CallbackData& data = _callbacks[hash];
 
 	if (data.resources.empty()) {
-		data.resources = resources;
+		data.resources = *reinterpret_cast<Vector<IResource*>*>(const_cast<Vector<const IResource*>*>(&resources));
 	}
 
 	ResourceCallbackID id{ hash, data.next_id++ };
@@ -413,7 +413,7 @@ void ResourceManager::checkCallbacks(void)
 		auto& cb_data = _callbacks[hash];
 		bool not_loaded = false;
 
-		for (IResource* res : cb_data.resources) {
+		for (const IResource* res : cb_data.resources) {
 			if (res->getState() == ResourceState::Pending) {
 				not_loaded = true;
 				break;
@@ -425,7 +425,7 @@ void ResourceManager::checkCallbacks(void)
 		}
 
 		for (auto& cb : cb_data.callbacks) {
-			cb.second(cb_data.resources);
+			cb.second(*reinterpret_cast<const Vector<const IResource*>*>(&cb_data.resources));
 		}
 
 		_callbacks.erase(hash);
