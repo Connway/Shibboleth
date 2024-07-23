@@ -266,7 +266,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsDefines.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsLogging.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommandSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommands.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerSystems.h" />
@@ -300,7 +299,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsConfig.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsReflection.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderCommandSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManagerSystems.cpp" />
   </ItemGroup>
